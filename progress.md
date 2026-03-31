@@ -1,0 +1,91 @@
+Status: Supportive
+Authority: Working log for this asset-baseline pass, not a source-of-truth architecture doc.
+Last verified against code: 2026-03-24
+
+Original prompt: Export tighter runtime assets and wire the game to them so gameplay stops relying on magnification/resizing.
+
+- 2026-03-22: Browser review confirmed the main scale problems were world coins, the padded owl NPC, and the oversized door sheet being resized at runtime.
+- 2026-03-22: Generated new gameplay-ready exports from repo-local source art:
+  - `public/assets/sprites/characters/npcs/owl-runtime-64.png`
+  - `public/assets/sprites/ui/coin/coinsprite-runtime-32.png`
+  - `public/assets/sprites/objects/door/door-36-runtime-88x96.png`
+- 2026-03-22: Wired BootScene and gameplay code to trust those runtime assets directly instead of forcing `setDisplaySize` / `setScale` in world objects.
+- 2026-03-22: Reduced HUD icon size slightly so the new world-scale baseline reads more clearly.
+- 2026-03-22: Verification passed with `npm.cmd run validate`, `npx.cmd tsc --noEmit`, and `npm.cmd run build`.
+- 2026-03-22: Browser spot-check on desktop shows coins and the owl reading more naturally relative to the crow. Door export was validated by load/build, but not by a dedicated in-level screenshot yet.
+- 2026-03-23: Switched the desktop render baseline from `960x544` to `960x540` so `1920x1080` can render at a crisp exact `2x` scale.
+- 2026-03-23: Replaced free-fit desktop presentation with a parent-container sizing policy: integer-multiple desktop scaling when the viewport allows it, fit-down fallback for undersized windows, and fit-style behavior retained for touch/mobile contexts.
+- 2026-03-23: Frontend QA pass found mojibake in the live English strings file; replaced the broken symbol-prefixed labels with clean ASCII labels so menu and level-select buttons render reliably.
+- 2026-03-23: Added a dev-only `window.__crowGame` handle in `main.ts` so Playwright can jump scenes directly during frontend QA without relying on flaky canvas input.
+- 2026-03-23: Frontend QA pass found the HUD coin counter was showing a fake `+savedCoins` popup on level load because it booted from `0`; HUDScene now seeds the counter from save data before `COINS_CHANGED` events arrive.
+- 2026-03-23: Added enemy-vs-NPC collision in `GameScene` so cockroaches no longer visually phase into the owl NPC at level start.
+- 2026-03-23: Frontend QA pass cleaned up the math overlay: it now hides the HUD while active, uses a stronger dim, removes the emoji-style owl prefix from the title, and adds a subtle header backdrop so the NPC intro reads clearly over gameplay.
+- 2026-03-23: Main menu `Switch User` control is now a real pill-style button instead of loose top-left text, which reads more like intentional UI on desktop.
+- 2026-03-23: Playwright desktop pass confirmed the menu labels are visible after their entrance animation settles, the math overlay now owns the screen cleanly, and the remaining big frontend gap is still missing SFX rather than a rendering/layout regression.
+- 2026-03-23: Agent-skills-guided grounding review confirmed the reported float was a visual grounding/read issue, not a collision gap: player/enemy body bottoms and tile tops still matched exactly at runtime.
+- 2026-03-23: All compiled levels currently point at `public/assets/tilesets/forest_tiles.png`, so the grounding fix targeted the live floor art rather than adding sprite Y/body-offset hacks.
+- 2026-03-23: Applied a minimal grass-lip readability adjustment to `public/assets/tilesets/forest_tiles.png` and mirrored it to `public/assets/tilesets/level1_tiles.png` for fallback consistency. No collision, origin, or camera math changed.
+- 2026-03-23: Wrote `docs/GROUNDING_REVIEW_2026-03-23.md` with the Lead Producer report, Frontend Team review, Game Design review, and explicit `What this is` / `What this is not` boundaries.
+- 2026-03-23: Follow-up grounding pass corrected the earlier floor-only diagnosis. The remaining issue was the sprite contact silhouette itself, especially the crow feet/claws and the owl's detached bottom smudges.
+- 2026-03-23: Edited the actual runtime PNGs instead of adding any per-asset runtime hacks:
+  - `public/assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png`
+  - `public/assets/sprites/characters/crow2/crow3/crow-walk-64px-fixed.png`
+  - `public/assets/sprites/characters/npcs/owl-runtime-64.png`
+  - `public/assets/sprites/characters/npcs/cockroach.png`
+- 2026-03-23: Sprite pass removed low-alpha junk near the ground and strengthened the contact patch inside the asset itself. Playwright still measured `playerGap = 0` and `enemyGap = 0` afterward.
+- 2026-03-23: Updated `docs/GROUNDING_REVIEW_2026-03-23.md` so it no longer overstates the floor-art-only conclusion.
+- 2026-03-23: Final grounding fix came from the asset frame itself, not the collider. Live Playwright crops showed the visible art was still sitting too high inside the 64x64 runtime frames even though `sprite.y` and tile-top math matched.
+- 2026-03-23: Lowered the runtime art inside the PNG frames and rechecked the same level in Playwright until the grounded read improved:
+  - `public/assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png`
+  - `public/assets/sprites/characters/crow2/crow3/crow-walk-64px-fixed.png`
+  - `public/assets/sprites/characters/npcs/owl-runtime-64.png`
+  - `public/assets/sprites/characters/npcs/cockroach.png`
+- 2026-03-23: Verified after the asset-only shift that the scene math still remained unchanged (`playerY = 512`, `enemyY = 512`, `npcY = 512` on level 01) while the visual grounding read improved in the live browser.
+- 2026-03-23: User review correctly called out that the sprite-only downward shifts were overcorrecting owl/cockroach and cutting into the art. Restored owl and cockroach from cleaner source art before continuing the investigation.
+- 2026-03-23: Live Playwright testing supported the user's tile/collision hypothesis direction: the collision plane at the very top of the grass tile was visually too high for the art language of the ground, even when the underlying collision math was correct.
+- 2026-03-23: Landed a shared world-actor grounding policy instead of more per-asset edits. `src/utils/applyGroundingVisualSink.ts` now applies a single `4px` visual sink to player, cockroach, and NPC sprites while counter-shifting the Arcade body offset so gameplay/collision behavior stays the same.
+- 2026-03-23: Wired the shared grounding inset into:
+  - `src/entities/Player.ts`
+  - `src/entities/enemies/Cockroach.ts`
+  - `src/entities/npc/BaseNPC.ts`
+- 2026-03-23: Validation passed after the shared grounding change with `npx.cmd tsc --noEmit`, `npm.cmd run validate`, and `npm.cmd run build`. Live Playwright check at `1920x1080` showed noticeably better grounded reads for crow, cockroach, and owl without further sprite mutilation.
+- 2026-03-24: Reworked local math progression so owl selection is now curriculum-step capped instead of directly authorizing harder questions from raw ELO alone.
+- 2026-03-24: Added per-problem `curriculumStep` and `difficultyTraits` metadata across all live math pools, plus validator enforcement to keep that metadata aligned with the authored prompt content.
+- 2026-03-24: Added per-domain curriculum progress to learner state: `currentStep`, `winsAtCurrentStep`, and recent step results now drive promotion after 5 strong wins and demotion after rough stretches.
+- 2026-03-24: Removed local stretch selection for owl math, changed the within-domain mix to easier/review/current-step only, and replaced broad fallback with step-down-only behavior.
+- 2026-03-24: Kept mixed-domain play but changed domain choice from "least-practiced domain wins" to a `70/30` configured-domain bias so subtraction can appear as a lucky easy prompt without hijacking the whole session.
+- 2026-03-24: Added a local owl safety rail of `maxOperand <= 20`, which keeps two-digit addition and subtraction out of the live local owl loop until a denser later ladder exists.
+- 2026-03-24: Runtime-faithful local simulation confirmed the first 15 fresh-profile owl prompts stayed in addition steps `0-2`, and the first mixed addition/subtraction prompts after subtraction unlock stayed in tiny single-digit addition and subtraction with no operands above `5`.
+
+- 2026-03-24: Authored Bridge Pack A directly into `public/data/math/problems_curriculum.json` so the local child ladder gets denser without loosening the selector safety rails.
+- 2026-03-24: Addition steps `10-19` now each have 6 unique prompts in the live local owl path, including the previously empty addition steps `11` and `12`.
+- 2026-03-24: Subtraction steps `6-13` now each have 6 unique prompts in the live local owl path, and targeted duplicate prompt texts in those bands were replaced with unique bridge prompts.
+- 2026-03-24: Added a tiny subtraction step `5` bridge (`10 - 0`, `10 - 10`) so local step progression does not dead-end there, while documenting that this step remains structurally sparse under the current derivation.
+- 2026-03-24: Added an offline math authoring layer under `authoring/math/**` with a seed curriculum copy, canonical band table, 18 deterministic batch specs, and JSON schemas for both source files.
+- 2026-03-24: Implemented `tools/math_authoring.ts`, `tools/materialize_math_batches.ts`, and `tools/review_math_batches.ts` so Crow can materialize concrete curriculum output from offline templates without changing the runtime pool contract.
+- 2026-03-24: Materialized the first full trusted expansion from `300` total runtime problems to `3000`, with `2885` now living in the curriculum pool and the final full-repo domain totals landing at:
+  - addition `1000`
+  - subtraction `850`
+  - multiplication `400`
+  - division `250`
+  - counting `125`
+  - comparison `125`
+  - pattern matching `125`
+  - number sequence `125`
+- 2026-03-24: Added batch review reports under `reports/math-batches/**` and moved the review gate to a lead-producer-style triple review: template review, concrete batch review, and runtime simulation review.
+- 2026-03-24: Late-wave batch review originally stalled because the simulation proxy walked sparse integer steps as if every step existed. Updated the proxy to follow populated batch step bands instead.
+- 2026-03-24: Review summary now shows `18/18` accepted batches with an average accepted grade of `9.86`.
+- 2026-03-24: `npm.cmd run validate` now checks authoring schemas, band alignment, and drift between offline batch specs and the live materialized curriculum pool.
+- 2026-03-24: Tightened the trust surface after external review: the materializer now protects exact prompt text already present in the seed plus the legacy runtime pools, instead of only deduping generated rows against each other.
+- 2026-03-24: Added independent arithmetic truth checks in `tools/math_verifier.ts`; validation and concrete batch review now recompute arithmetic answers from the prompt text and fail on answer drift.
+- 2026-03-24: Fixed division `difficultyTraits.maxOperand` so the live local owl cap reflects the biggest visible number in the division problem instead of underreporting most division prompts.
+- 2026-03-24: Added `reports/math-batches/runtime-selector-smoke.json`, which exercises the live local owl selector and learner-state path directly; current smoke result is green with 0 operand-cap breaches, 0 selector-cap breaches, 0 early subtraction unlocks, and 0 exhaustion events.
+- 2026-03-24: Cleaned exact prompt collisions still living in the seed and legacy runtime pools so `npm.cmd run validate` now passes duplicate-prompt checks across the full shipped runtime surface, not just the generated curriculum wave.
+- 2026-03-24: Sealed the shipped owl fallback path so both primary and fallback selection now stay inside the same difficulty, operand, and curriculum-step rails.
+- 2026-03-24: The owl is now addition-first but no longer arithmetic-only overall; the fresh opening state mixes in counting, pattern matching joins later through the normal unlock rules, and encounters serve `2` problems for more built-in repetition.
+- 2026-03-24: Fixed the last internal selector escape hatch in `MathProblemManager` so recent-window resets and uninitialized-ELO fallback both preserve owl-safe caps instead of silently widening selection.
+- 2026-03-24: Follow-up owl questions now prefer an alternate unlocked domain before falling back to the full owl-safe set, which makes two-problem encounters meaningfully more varied without loosening the child-safe rails.
+- 2026-03-24: The runtime smoke report now mirrors the shared owl-selection helper used by the live component, and the latest generated scorecard is green at `9.9/10` with fallback safety explicitly passing.
+- 2026-03-24: Added `tools/math_browser_smoke.mjs` plus `npm.cmd run math:browser-smoke`, a literal browser-backed smoke that drives the live owl interaction through wrong-answer retry, follow-up problem, and overlay close without changing runtime behavior.
+- 2026-03-24: Tightened the dev-only math smoke hook in `src/main.ts` so it keeps completion history for two-problem encounters and only reports math state while `MathChallengeScene` is actually active.
+- 2026-03-24: Green browser smoke now writes `reports/math-batches/runtime-browser-smoke.json` and refreshes screenshots in `output/playwright/math-browser-smoke/`, giving the math authoring pipeline an explicit "what it is / what it is not" browser-proof artifact alongside the selector-only smoke.

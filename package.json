@@ -1,0 +1,38 @@
+{
+    "name": "crow-platformer",
+    "description": "A 2D pixel art educational platformer featuring a crow protagonist.",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "vite --config vite/config.dev.mjs",
+        "build": "npm run validate && npm run compile && vite build --config vite/config.prod.mjs",
+        "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js",
+        "validate:docs": "node tools/validate_docs.js",
+        "validate:assets": "node tools/validate_assets.js",
+        "compile": "tsx tools/compile-levels.ts",
+        "math:materialize": "tsx tools/materialize_math_batches.ts",
+        "math:review": "tsx tools/review_math_batches.ts",
+        "math:browser-smoke": "node tools/math_browser_smoke.mjs",
+        "math:sync-metadata": "tsx tools/sync_math_problem_metadata.ts",
+        "process:audio": "node tools/process_audio.js",
+        "ai:extract": "node tools/process_ai_assets.js --mode extract",
+        "ai:process": "node tools/process_ai_assets.js",
+        "dev:host": "vite --config vite/config.dev.mjs --host"
+    },
+    "devDependencies": {
+        "ajv": "^8.17.1",
+        "ajv-formats": "^3.0.1",
+        "chalk": "^5.6.2",
+        "cli-progress": "^3.12.0",
+        "fast-glob": "^3.3.3",
+        "playwright-core": "^1.58.2",
+        "sharp": "^0.34.5",
+        "tsx": "^4.21.0",
+        "typescript": "~5.7.2",
+        "vite": "^6.3.1"
+    },
+    "dependencies": {
+        "phaser": "^3.90.0",
+        "terser": "^5.39.0"
+    }
+}

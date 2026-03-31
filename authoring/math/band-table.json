@@ -1,0 +1,436 @@
+{
+  "bands": [
+    {
+      "id": "add_under_10",
+      "domain": "addition",
+      "family": "single_digit_addition",
+      "curriculumStepRange": [
+        0,
+        9
+      ],
+      "targetEloRange": [
+        100,
+        240
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "add_teens_bridge",
+      "domain": "addition",
+      "family": "bridge_to_teens",
+      "curriculumStepRange": [
+        5,
+        20
+      ],
+      "targetEloRange": [
+        180,
+        380
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sub_to_10",
+      "domain": "subtraction",
+      "family": "single_digit_subtraction",
+      "curriculumStepRange": [
+        0,
+        6
+      ],
+      "targetEloRange": [
+        120,
+        240
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sub_under_20_borrow",
+      "domain": "subtraction",
+      "family": "teens_subtraction",
+      "curriculumStepRange": [
+        7,
+        20
+      ],
+      "targetEloRange": [
+        220,
+        420
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "counting_basics",
+      "domain": "counting",
+      "family": "counting",
+      "curriculumStepRange": [
+        0,
+        6
+      ],
+      "targetEloRange": [
+        100,
+        400
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "comparison_basics",
+      "domain": "comparison",
+      "family": "comparison",
+      "curriculumStepRange": [
+        0,
+        6
+      ],
+      "targetEloRange": [
+        100,
+        400
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sequence_basics",
+      "domain": "number_sequence",
+      "family": "sequence",
+      "curriculumStepRange": [
+        0,
+        7
+      ],
+      "targetEloRange": [
+        100,
+        450
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "pattern_basics",
+      "domain": "pattern_matching",
+      "family": "pattern",
+      "curriculumStepRange": [
+        0,
+        7
+      ],
+      "targetEloRange": [
+        100,
+        450
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "counting_variance",
+      "domain": "counting",
+      "family": "counting_variance",
+      "curriculumStepRange": [
+        2,
+        10
+      ],
+      "targetEloRange": [
+        300,
+        600
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "comparison_variance",
+      "domain": "comparison",
+      "family": "comparison_variance",
+      "curriculumStepRange": [
+        4,
+        10
+      ],
+      "targetEloRange": [
+        300,
+        600
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sequence_variance",
+      "domain": "number_sequence",
+      "family": "sequence_variance",
+      "curriculumStepRange": [
+        4,
+        12
+      ],
+      "targetEloRange": [
+        300,
+        700
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "pattern_variance",
+      "domain": "pattern_matching",
+      "family": "pattern_variance",
+      "curriculumStepRange": [
+        4,
+        12
+      ],
+      "targetEloRange": [
+        300,
+        700
+      ],
+      "ageBand": [
+        5,
+        7
+      ],
+      "notes": ""
+    },
+    {
+      "id": "add_20_50_no_carry",
+      "domain": "addition",
+      "family": "two_digit_addition",
+      "curriculumStepRange": [
+        21,
+        26
+      ],
+      "targetEloRange": [
+        430,
+        560
+      ],
+      "ageBand": [
+        6,
+        8
+      ],
+      "notes": ""
+    },
+    {
+      "id": "add_20_50_carry",
+      "domain": "addition",
+      "family": "two_digit_addition_carry",
+      "curriculumStepRange": [
+        21,
+        26
+      ],
+      "targetEloRange": [
+        500,
+        680
+      ],
+      "ageBand": [
+        6,
+        8
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sub_20_50_no_borrow",
+      "domain": "subtraction",
+      "family": "two_digit_subtraction",
+      "curriculumStepRange": [
+        21,
+        26
+      ],
+      "targetEloRange": [
+        430,
+        560
+      ],
+      "ageBand": [
+        6,
+        8
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sub_20_50_borrow",
+      "domain": "subtraction",
+      "family": "two_digit_subtraction_borrow",
+      "curriculumStepRange": [
+        21,
+        26
+      ],
+      "targetEloRange": [
+        500,
+        680
+      ],
+      "ageBand": [
+        6,
+        8
+      ],
+      "notes": ""
+    },
+    {
+      "id": "mult_2_5",
+      "domain": "multiplication",
+      "family": "tables_2_to_5",
+      "curriculumStepRange": [
+        4,
+        10
+      ],
+      "targetEloRange": [
+        340,
+        520
+      ],
+      "ageBand": [
+        6,
+        8
+      ],
+      "notes": ""
+    },
+    {
+      "id": "div_2_5",
+      "domain": "division",
+      "family": "division_2_to_5",
+      "curriculumStepRange": [
+        4,
+        16
+      ],
+      "targetEloRange": [
+        360,
+        620
+      ],
+      "ageBand": [
+        6,
+        8
+      ],
+      "notes": ""
+    },
+    {
+      "id": "add_50_100_no_carry",
+      "domain": "addition",
+      "family": "upper_two_digit_addition",
+      "curriculumStepRange": [
+        27,
+        36
+      ],
+      "targetEloRange": [
+        620,
+        780
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": ""
+    },
+    {
+      "id": "add_50_100_carry",
+      "domain": "addition",
+      "family": "upper_two_digit_addition_carry",
+      "curriculumStepRange": [
+        27,
+        36
+      ],
+      "targetEloRange": [
+        700,
+        900
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sub_50_100_no_borrow",
+      "domain": "subtraction",
+      "family": "upper_two_digit_subtraction",
+      "curriculumStepRange": [
+        27,
+        36
+      ],
+      "targetEloRange": [
+        620,
+        780
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": ""
+    },
+    {
+      "id": "sub_50_100_borrow",
+      "domain": "subtraction",
+      "family": "upper_two_digit_subtraction_borrow",
+      "curriculumStepRange": [
+        27,
+        36
+      ],
+      "targetEloRange": [
+        700,
+        900
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": ""
+    },
+    {
+      "id": "mult_6_9",
+      "domain": "multiplication",
+      "family": "tables_6_to_9",
+      "curriculumStepRange": [
+        8,
+        18
+      ],
+      "targetEloRange": [
+        520,
+        820
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": ""
+    },
+    {
+      "id": "div_6_9",
+      "domain": "division",
+      "family": "division_6_to_9",
+      "curriculumStepRange": [
+        8,
+        20
+      ],
+      "targetEloRange": [
+        540,
+        860
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": ""
+    }
+  ]
+}

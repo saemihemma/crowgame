@@ -1,0 +1,18 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "PlayerTuning",
+    "description": "Data-driven physics parameters for the player character",
+    "type": "object",
+    "required": ["accel", "drag", "maxSpeed", "jumpVelocity", "coyoteMs", "jumpBufferMs", "gravityScale", "terminalVelocity"],
+    "properties": {
+        "accel": { "type": "number", "minimum": 0, "description": "Horizontal acceleration (pixels/sec²)" },
+        "drag": { "type": "number", "minimum": 0, "description": "Horizontal drag when no input (pixels/sec²)" },
+        "maxSpeed": { "type": "number", "minimum": 0, "description": "Maximum horizontal speed (pixels/sec)" },
+        "jumpVelocity": { "type": "number", "minimum": 0, "description": "Initial upward velocity on jump (pixels/sec)" },
+        "coyoteMs": { "type": "number", "minimum": 0, "description": "Grace period after leaving edge (ms)" },
+        "jumpBufferMs": { "type": "number", "minimum": 0, "description": "Jump input buffer window (ms)" },
+        "gravityScale": { "type": "number", "minimum": 0, "description": "Gravity multiplier (1.0 = normal)" },
+        "terminalVelocity": { "type": "number", "minimum": 0, "description": "Maximum fall speed (pixels/sec)" }
+    },
+    "additionalProperties": false
+}

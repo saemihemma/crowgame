@@ -1,0 +1,2237 @@
+{
+  "reviewMethod": {
+    "kind": "computed_rubric",
+    "independentReview": false,
+    "note": "This is a deterministic repository-side review stack. It proves mechanical consistency and local-safe runtime rail coverage, not telemetry-backed pedagogy or independent ELO calibration."
+  },
+  "generatedProblemCount": 2700,
+  "acceptedBatchCount": 18,
+  "averageAcceptedGrade": 9.86,
+  "domainTotals": {
+    "addition": 1000,
+    "subtraction": 850,
+    "multiplication": 400,
+    "division": 250,
+    "counting": 125,
+    "comparison": 125,
+    "pattern_matching": 125,
+    "number_sequence": 125
+  },
+  "owlSurface": {
+    "domains": [
+      "addition",
+      "counting",
+      "pattern_matching",
+      "subtraction",
+      "comparison",
+      "number_sequence"
+    ],
+    "openingUnlockedDomains": [
+      "addition",
+      "counting"
+    ],
+    "owlEligibleProblemCount": 757,
+    "owlEligibleUniquePromptCount": 757,
+    "owlEligibleUniqueFactCount": 261,
+    "domainCounts": {
+      "addition": 371,
+      "counting": 55,
+      "pattern_matching": 43,
+      "subtraction": 223,
+      "comparison": 25,
+      "number_sequence": 40
+    },
+    "openingUnlockedInventoryProblemCount": 426,
+    "openingUnlockedInventoryUniquePromptCount": 426,
+    "openingUnlockedInventoryUniqueFactCount": 103,
+    "freshReachableProblemCount": 80,
+    "freshReachableUniquePromptCount": 80,
+    "freshReachableUniqueFactCount": 17,
+    "freshReachableDomainCounts": {
+      "addition": 62,
+      "counting": 18
+    },
+    "freshReachableAdditionFactCount": 10,
+    "freshReachableCountingFactCount": 7,
+    "currentInteractionProblemCount": 2,
+    "owlAdditionByStep": [
+      {
+        "step": 0,
+        "rowCount": 13,
+        "uniquePromptCount": 13,
+        "uniqueFactCount": 3
+      },
+      {
+        "step": 1,
+        "rowCount": 18,
+        "uniquePromptCount": 18,
+        "uniqueFactCount": 3
+      },
+      {
+        "step": 2,
+        "rowCount": 31,
+        "uniquePromptCount": 31,
+        "uniqueFactCount": 4
+      },
+      {
+        "step": 3,
+        "rowCount": 33,
+        "uniquePromptCount": 33,
+        "uniqueFactCount": 5
+      },
+      {
+        "step": 4,
+        "rowCount": 29,
+        "uniquePromptCount": 29,
+        "uniqueFactCount": 5
+      },
+      {
+        "step": 5,
+        "rowCount": 28,
+        "uniquePromptCount": 28,
+        "uniqueFactCount": 5
+      }
+    ]
+  },
+  "batchReviews": [
+    {
+      "batchId": "batch_01_addition_under_10",
+      "title": "Addition under 10",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.8,
+          "summary": "Template coverage is stable: 10 templates, 6 families, steps 0-9.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 6,
+            "minStep": 0,
+            "maxStep": 9,
+            "promptVariantCount": 30,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.8,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 9.8,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 9.9,
+            "strugglingChildGrade": 9.9,
+            "strongChildGrade": 9.7,
+            "openingProbeStep": 0,
+            "middleProbeStep": 4,
+            "upperProbeStep": 9,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.7,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.9,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 9.9,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Complete: 0 + 6 = ?",
+        "0 + 5 = ?",
+        "Complete: 0 + 1 = ?",
+        "Complete: 0 + 5 = ?",
+        "0 + 7 ="
+      ]
+    },
+    {
+      "batchId": "batch_02_addition_bridge_teens",
+      "title": "Addition bridge to 10 and teens",
+      "accepted": true,
+      "averageGrade": 9.7,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Template coverage is stable: 10 templates, 6 families, steps 6-19.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 6,
+            "minStep": 6,
+            "maxStep": 19,
+            "promptVariantCount": 27,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.5,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 9.6,
+            "strugglingChildGrade": 9.7,
+            "strongChildGrade": 9.6,
+            "openingProbeStep": 6,
+            "middleProbeStep": 12,
+            "upperProbeStep": 19,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.6,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 9.7,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Try this: 10 + 1",
+        "10 + 3 equals ?",
+        "Try this: 10 + 3",
+        "Try this: 10 + 2",
+        "Try this: 10 + 4"
+      ]
+    },
+    {
+      "batchId": "batch_03_subtraction_to_10",
+      "title": "Subtraction to 10",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.8,
+          "summary": "Template coverage is stable: 10 templates, 6 families, steps 0-6.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 6,
+            "minStep": 0,
+            "maxStep": 6,
+            "promptVariantCount": 26,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.8,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 0,
+            "middleProbeStep": 3,
+            "upperProbeStep": 6,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Complete: 4 - 0 = ?",
+        "6 - 0 = ?",
+        "Solve: 2 - 0",
+        "Complete: 8 - 0 = ?",
+        "How much is 3 - 0?"
+      ]
+    },
+    {
+      "batchId": "batch_04_subtraction_borrow_under_20",
+      "title": "Subtraction borrow under 20",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Template coverage is stable: 10 templates, 1 families, steps 7-14.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 1,
+            "minStep": 7,
+            "maxStep": 14,
+            "promptVariantCount": 35,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.6,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 7,
+            "middleProbeStep": 10,
+            "upperProbeStep": 14,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Solve: 13 - 4",
+        "Solve: 13 - 5",
+        "Complete: 13 - 4 = ?",
+        "What is 12 - 4?",
+        "How much is 13 - 4?"
+      ]
+    },
+    {
+      "batchId": "batch_05_count_compare_sequence_basics",
+      "title": "Counting, comparison, and sequence basics",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.7,
+          "summary": "Template coverage is stable: 15 templates, 4 families, steps 0-6.",
+          "metrics": {
+            "templateCount": 15,
+            "familyCount": 4,
+            "minStep": 0,
+            "maxStep": 6,
+            "promptVariantCount": 30,
+            "averageProblemsPerTemplate": 10
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.7,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.9,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.4,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 0,
+            "middleProbeStep": 3,
+            "upperProbeStep": 6,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Count these: o",
+        "Count the dots: o o",
+        "Count these: o o",
+        "How many are here: o",
+        "Count the dots: o o o"
+      ]
+    },
+    {
+      "batchId": "batch_06_pattern_and_easy_variance",
+      "title": "Pattern basics and mixed easy variance",
+      "accepted": true,
+      "averageGrade": 9.8,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.7,
+          "summary": "Template coverage is stable: 13 templates, 7 families, steps 0-10.",
+          "metrics": {
+            "templateCount": 13,
+            "familyCount": 7,
+            "minStep": 0,
+            "maxStep": 10,
+            "promptVariantCount": 26,
+            "averageProblemsPerTemplate": 11.5
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.7,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.5,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 9.7,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 9.7,
+            "strugglingChildGrade": 9.9,
+            "strongChildGrade": 9.6,
+            "openingProbeStep": 0,
+            "middleProbeStep": 5,
+            "upperProbeStep": 10,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.7,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 9.9,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "What comes next in the repeat pattern: 1, 2, 1, 2, 1, ?",
+        "Keep the repeat going: 2, 1, 2, 1, 2, ?",
+        "What comes next in the repeat pattern: 4, 3, 4, 3, 4, ?",
+        "What comes next in the repeat pattern: 2, 3, 2, 3, 2, ?",
+        "Keep the repeat going: 1, 4, 1, 4, 1, ?"
+      ]
+    },
+    {
+      "batchId": "batch_07_addition_20_50_no_carry",
+      "title": "Addition 20-50 without carry",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Template coverage is stable: 10 templates, 1 families, steps 21-26.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 1,
+            "minStep": 21,
+            "maxStep": 26,
+            "promptVariantCount": 27,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.6,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 21,
+            "middleProbeStep": 23,
+            "upperProbeStep": 26,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Complete: 24 + 1 = ?",
+        "How much is 24 + 3?",
+        "How much is 24 + 1?",
+        "23 + 4 = ?",
+        "What is 23 + 1?"
+      ]
+    },
+    {
+      "batchId": "batch_08_addition_20_50_carry",
+      "title": "Addition 20-50 with carry",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Template coverage is stable: 10 templates, 1 families, steps 21-26.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 1,
+            "minStep": 21,
+            "maxStep": 26,
+            "promptVariantCount": 27,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.6,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 21,
+            "middleProbeStep": 23,
+            "upperProbeStep": 26,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Answer: 21 + 9",
+        "What is 23 + 8?",
+        "What is 23 + 9?",
+        "24 + 9 equals ?",
+        "23 + 8 ="
+      ]
+    },
+    {
+      "batchId": "batch_09_subtraction_20_50_no_borrow",
+      "title": "Subtraction 20-50 without borrow",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Template coverage is stable: 10 templates, 1 families, steps 21-26.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 1,
+            "minStep": 21,
+            "maxStep": 26,
+            "promptVariantCount": 27,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.6,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 21,
+            "middleProbeStep": 23,
+            "upperProbeStep": 26,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Complete: 24 - 3 = ?",
+        "Complete: 22 - 1 = ?",
+        "Complete: 23 - 1 = ?",
+        "24 - 2 =",
+        "Complete: 22 - 2 = ?"
+      ]
+    },
+    {
+      "batchId": "batch_10_subtraction_20_50_borrow",
+      "title": "Subtraction 20-50 with borrow",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Template coverage is stable: 10 templates, 1 families, steps 21-26.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 1,
+            "minStep": 21,
+            "maxStep": 26,
+            "promptVariantCount": 27,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.6,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 21,
+            "middleProbeStep": 23,
+            "upperProbeStep": 26,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Answer: 23 - 9",
+        "Complete: 22 - 6 = ?",
+        "21 - 7 equals ?",
+        "What is 24 - 8?",
+        "What is 24 - 6?"
+      ]
+    },
+    {
+      "batchId": "batch_11_multiplication_2_5",
+      "title": "Multiplication tables 2-5",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.8,
+          "summary": "Template coverage is stable: 10 templates, 10 families, steps 5-10.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 10,
+            "minStep": 5,
+            "maxStep": 10,
+            "promptVariantCount": 22,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.8,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 5,
+            "middleProbeStep": 7,
+            "upperProbeStep": 10,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "What is 2 × 3?",
+        "What is 2 × 4?",
+        "What is 2 × 5?",
+        "2 × 2 equals ?",
+        "Complete: 2 × 1 = ?"
+      ]
+    },
+    {
+      "batchId": "batch_12_division_2_5_plus_variance",
+      "title": "Division facts 2-5",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Template coverage is stable: 11 templates, 7 families, steps 3-16.",
+          "metrics": {
+            "templateCount": 11,
+            "familyCount": 7,
+            "minStep": 3,
+            "maxStep": 16,
+            "promptVariantCount": 26,
+            "averageProblemsPerTemplate": 13.6
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.6,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.5,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 3,
+            "middleProbeStep": 9,
+            "upperProbeStep": 16,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Complete: 20 ÷ 2 = ?",
+        "Solve: 4 ÷ 2",
+        "14 ÷ 2 = ?",
+        "6 ÷ 2 =",
+        "Answer: 2 ÷ 2"
+      ]
+    },
+    {
+      "batchId": "batch_13_addition_50_100_no_carry",
+      "title": "Addition 50-100 without carry plus lighter-domain variance",
+      "accepted": true,
+      "averageGrade": 9.8,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.4,
+          "summary": "Template coverage is stable: 11 templates, 4 families, steps 5-36.",
+          "metrics": {
+            "templateCount": 11,
+            "familyCount": 4,
+            "minStep": 5,
+            "maxStep": 36,
+            "promptVariantCount": 26,
+            "averageProblemsPerTemplate": 13.6
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.4,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.3,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.5,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 9.9,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 9.7,
+            "strongChildGrade": 10,
+            "openingProbeStep": 5,
+            "middleProbeStep": 28,
+            "upperProbeStep": 36,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 9.7,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "53 + 1 =",
+        "Quick check: 51 + 2",
+        "Complete: 53 + 1 = ?",
+        "Quick check: 51 + 3",
+        "What is 51 + 3?"
+      ]
+    },
+    {
+      "batchId": "batch_14_addition_50_100_carry",
+      "title": "Addition 50-100 with carry plus lighter-domain variance",
+      "accepted": true,
+      "averageGrade": 9.8,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.4,
+          "summary": "Template coverage is stable: 11 templates, 4 families, steps 4-36.",
+          "metrics": {
+            "templateCount": 11,
+            "familyCount": 4,
+            "minStep": 4,
+            "maxStep": 36,
+            "promptVariantCount": 26,
+            "averageProblemsPerTemplate": 13.6
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.4,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.3,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.5,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 9.9,
+            "strongChildGrade": 10,
+            "openingProbeStep": 4,
+            "middleProbeStep": 28,
+            "upperProbeStep": 36,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 9.9,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Answer: 54 + 8",
+        "Answer: 54 + 9",
+        "Quick check: 51 + 9",
+        "Answer: 54 + 6",
+        "Answer: 54 + 7"
+      ]
+    },
+    {
+      "batchId": "batch_15_subtraction_50_100_no_borrow",
+      "title": "Subtraction 50-100 without borrow plus lighter-domain variance",
+      "accepted": true,
+      "averageGrade": 9.8,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.5,
+          "summary": "Template coverage is stable: 14 templates, 6 families, steps 3-36.",
+          "metrics": {
+            "templateCount": 14,
+            "familyCount": 6,
+            "minStep": 3,
+            "maxStep": 36,
+            "promptVariantCount": 32,
+            "averageProblemsPerTemplate": 10.7
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.5,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.5,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.4,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 9.9,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 9.9,
+            "strongChildGrade": 9.7,
+            "openingProbeStep": 3,
+            "middleProbeStep": 27,
+            "upperProbeStep": 36,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.7,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 9.9,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Complete: 54 - 2 = ?",
+        "Try this: 54 - 4",
+        "Answer: 53 - 3",
+        "Try this: 54 - 3",
+        "Answer: 53 - 2"
+      ]
+    },
+    {
+      "batchId": "batch_16_subtraction_50_100_borrow",
+      "title": "Subtraction 50-100 with borrow plus lighter-domain variance",
+      "accepted": true,
+      "averageGrade": 9.8,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.4,
+          "summary": "Template coverage is stable: 14 templates, 5 families, steps 3-36.",
+          "metrics": {
+            "templateCount": 14,
+            "familyCount": 5,
+            "minStep": 3,
+            "maxStep": 36,
+            "promptVariantCount": 32,
+            "averageProblemsPerTemplate": 10.7
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.4,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.4,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.4,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 9.9,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 9.9,
+            "strugglingChildGrade": 9.9,
+            "strongChildGrade": 9.9,
+            "openingProbeStep": 3,
+            "middleProbeStep": 27,
+            "upperProbeStep": 36,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.9,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.9,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 9.9,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "How much is 53 - 8?",
+        "How much is 53 - 6?",
+        "52 - 7 equals ?",
+        "54 - 9 equals ?",
+        "53 - 7 equals ?"
+      ]
+    },
+    {
+      "batchId": "batch_17_multiplication_6_9",
+      "title": "Multiplication tables 6-9",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.8,
+          "summary": "Template coverage is stable: 10 templates, 10 families, steps 13-18.",
+          "metrics": {
+            "templateCount": 10,
+            "familyCount": 10,
+            "minStep": 13,
+            "maxStep": 18,
+            "promptVariantCount": 22,
+            "averageProblemsPerTemplate": 15
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.8,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 13,
+            "middleProbeStep": 15,
+            "upperProbeStep": 18,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "6 × 10 =",
+        "Solve: 6 × 10",
+        "6 × 5 equals ?",
+        "What is 6 × 6?",
+        "What is 6 × 3?"
+      ]
+    },
+    {
+      "batchId": "batch_18_division_6_9_and_variance",
+      "title": "Division 6-9 plus lighter-domain variance",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Template coverage is stable: 12 templates, 8 families, steps 5-20.",
+          "metrics": {
+            "templateCount": 12,
+            "familyCount": 8,
+            "minStep": 5,
+            "maxStep": 20,
+            "promptVariantCount": 28,
+            "averageProblemsPerTemplate": 12.5
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.7,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.5,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 5,
+            "middleProbeStep": 15,
+            "upperProbeStep": 20,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "How much is 42 ÷ 6?",
+        "60 ÷ 6 = ?",
+        "54 ÷ 6 equals ?",
+        "Answer: 48 ÷ 6",
+        "72 ÷ 6 = ?"
+      ]
+    }
+  ],
+  "runtimeSelectorSmoke": {
+    "accepted": true,
+    "averageGrade": 9.9,
+    "summary": "Runtime-aligned owl selector smoke covered the opening path plus a deeper progression probe, with 0 operand-cap breaches, 0 selector-cap breaches, 0 early subtraction unlocks, 0 missed depth unlocks, and 0 exhaustion events.",
+    "metrics": {
+      "capBreaches": 0,
+      "selectorCapBreaches": 0,
+      "earlySubtractionUnlocks": 0,
+      "depthUnlockMisses": 0,
+      "exhaustionCount": 0,
+      "recentWindowFallbackPreserved": true,
+      "uninitializedFallbackPreserved": true,
+      "currentStepFallbackPreserved": true,
+      "maxOperandSeen": 8,
+      "maxCurriculumStepSeen": 7,
+      "followUpSelections": 124,
+      "alternateFollowUpSelections": 124,
+      "followUpAlternateRate": 1,
+      "steadyFirstSubtractionUnlockAttempt": 38,
+      "strugglingFirstSubtractionUnlockAttempt": -1,
+      "depthProbeFirstSubtractionUnlockAttempt": 39,
+      "steadyFirstSubtractionSelectionAttempt": 40,
+      "strugglingFirstSubtractionSelectionAttempt": -1,
+      "depthProbeFirstSubtractionSelectionAttempt": 57,
+      "owlEligibleProblemCount": 757,
+      "owlEligibleUniquePromptCount": 757,
+      "owlEligibleUniqueFactCount": 261,
+      "openingUnlockedInventoryProblemCount": 426,
+      "openingUnlockedInventoryUniquePromptCount": 426,
+      "openingUnlockedInventoryUniqueFactCount": 103,
+      "freshReachableProblemCount": 80,
+      "freshReachableUniquePromptCount": 80,
+      "freshReachableUniqueFactCount": 17,
+      "freshReachableAdditionFactCount": 10,
+      "freshReachableCountingFactCount": 7,
+      "openingAdditionStep0Facts": 3,
+      "openingAdditionStep1Facts": 3,
+      "openingAdditionStep2Facts": 4,
+      "interactionProblemCount": 2,
+      "owlDomains": "addition,counting,pattern_matching,subtraction,comparison,number_sequence",
+      "openingUnlockedDomains": "addition,counting"
+    },
+    "roleGrades": [
+      {
+        "role": "role-game-designer",
+        "grade": 10,
+        "rationale": "Steady child checks the opening owl path for gentle pacing without early cliffs."
+      },
+      {
+        "role": "role-qa-engineer",
+        "grade": 10,
+        "rationale": "Struggling child verifies the shipped local-safe rails stay soft under misses and review pressure."
+      },
+      {
+        "role": "Lead Producer",
+        "grade": 9.7,
+        "rationale": "Depth probe checks actual unlock timing and deeper local-safe selector coverage, not just the opening few facts."
+      }
+    ],
+    "devilAdvocate": {
+      "passed": true,
+      "note": "Devils Advocate: the runtime-aligned owl selector path stayed inside its local-safe rails, preserved fallback constraints, and the deeper probe unlocked subtraction without breaching caps."
+    },
+    "caveats": [
+      "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
+      "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 757 local-safe rows overall, while a fresh profile currently reaches 80 step-capped rows across addition, counting and 2 problems per owl interaction."
+    ]
+  }
+}

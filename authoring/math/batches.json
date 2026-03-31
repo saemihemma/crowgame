@@ -1,0 +1,5451 @@
+{
+  "batches": [
+    {
+      "id": "batch_01_addition_under_10",
+      "title": "Addition under 10",
+      "theme": "single-digit comfort and make-10 families",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "zero_left",
+          "kind": "addition",
+          "family": "zero_addition",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "basic_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "equals"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftValues": [
+            0
+          ],
+          "rightRange": [
+            0,
+            9
+          ],
+          "allowZero": true
+        },
+        {
+          "id": "zero_right",
+          "kind": "addition",
+          "family": "zero_addition",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "basic_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "equals"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            1,
+            9
+          ],
+          "rightValues": [
+            0
+          ],
+          "allowZero": true
+        },
+        {
+          "id": "doubles_1_5",
+          "kind": "addition",
+          "family": "doubles",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "single_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftValues": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "rightValues": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "operandDeltaRange": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "near_doubles_low",
+          "kind": "addition",
+          "family": "near_doubles",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "single_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            1,
+            5
+          ],
+          "rightRange": [
+            1,
+            6
+          ],
+          "operandDeltaRange": [
+            1,
+            1
+          ],
+          "orderedOperands": false
+        },
+        {
+          "id": "count_on_1",
+          "kind": "addition",
+          "family": "count_on",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "basic_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            1,
+            9
+          ],
+          "rightValues": [
+            1
+          ],
+          "resultRange": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "count_on_2",
+          "kind": "addition",
+          "family": "count_on",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "basic_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            1,
+            8
+          ],
+          "rightValues": [
+            2
+          ],
+          "resultRange": [
+            3,
+            10
+          ]
+        },
+        {
+          "id": "make_5",
+          "kind": "addition",
+          "family": "make_five",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "basic_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            1,
+            4
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "sumRange": [
+            5,
+            5
+          ]
+        },
+        {
+          "id": "make_6_7",
+          "kind": "addition",
+          "family": "make_ten",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "basic_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            1,
+            6
+          ],
+          "rightRange": [
+            1,
+            6
+          ],
+          "sumRange": [
+            6,
+            7
+          ],
+          "orderedOperands": false
+        },
+        {
+          "id": "make_8_9",
+          "kind": "addition",
+          "family": "make_ten",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "basic_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            1,
+            8
+          ],
+          "rightRange": [
+            1,
+            8
+          ],
+          "sumRange": [
+            8,
+            9
+          ],
+          "orderedOperands": false
+        },
+        {
+          "id": "make_10",
+          "kind": "addition",
+          "family": "make_ten",
+          "bandId": "add_under_10",
+          "count": 15,
+          "skill": "single_digit_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            1,
+            9
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "sumRange": [
+            10,
+            10
+          ],
+          "orderedOperands": false
+        }
+      ]
+    },
+    {
+      "id": "batch_02_addition_bridge_teens",
+      "title": "Addition bridge to 10 and teens",
+      "theme": "9+n, 10+n, doubles, and teen plus small numbers",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "ten_plus_1_4",
+          "kind": "addition",
+          "family": "ten_plus",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftValues": [
+            10
+          ],
+          "rightRange": [
+            1,
+            4
+          ]
+        },
+        {
+          "id": "ten_plus_5_9",
+          "kind": "addition",
+          "family": "ten_plus",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftValues": [
+            10
+          ],
+          "rightRange": [
+            5,
+            9
+          ]
+        },
+        {
+          "id": "nine_plus_1_4",
+          "kind": "addition",
+          "family": "nine_plus",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftValues": [
+            9
+          ],
+          "rightRange": [
+            1,
+            4
+          ]
+        },
+        {
+          "id": "nine_plus_5_9",
+          "kind": "addition",
+          "family": "nine_plus",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftValues": [
+            9
+          ],
+          "rightRange": [
+            5,
+            9
+          ]
+        },
+        {
+          "id": "doubles_5_9",
+          "kind": "addition",
+          "family": "doubles",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftValues": [
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "rightValues": [
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "operandDeltaRange": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "near_doubles_5_9",
+          "kind": "addition",
+          "family": "near_doubles",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            5,
+            9
+          ],
+          "rightRange": [
+            5,
+            10
+          ],
+          "operandDeltaRange": [
+            1,
+            1
+          ],
+          "orderedOperands": false
+        },
+        {
+          "id": "teen_plus_1",
+          "kind": "addition",
+          "family": "teen_plus_small",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            11,
+            19
+          ],
+          "rightValues": [
+            1
+          ]
+        },
+        {
+          "id": "teen_plus_2",
+          "kind": "addition",
+          "family": "teen_plus_small",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            11,
+            18
+          ],
+          "rightValues": [
+            2
+          ]
+        },
+        {
+          "id": "teen_plus_3",
+          "kind": "addition",
+          "family": "teen_plus_small",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            11,
+            17
+          ],
+          "rightValues": [
+            3
+          ]
+        },
+        {
+          "id": "bridge_make_ten",
+          "kind": "addition",
+          "family": "make_ten",
+          "bandId": "add_teens_bridge",
+          "count": 15,
+          "skill": "single_digit_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            6,
+            9
+          ],
+          "rightRange": [
+            2,
+            5
+          ],
+          "requireCarry": true,
+          "resultRange": [
+            10,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_03_subtraction_to_10",
+      "title": "Subtraction to 10",
+      "theme": "count back, self-minus-self, and ten-minus facts",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "minus_zero",
+          "kind": "subtraction",
+          "family": "subtract_zero",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "basic_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "equals"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            1,
+            10
+          ],
+          "rightValues": [
+            0
+          ]
+        },
+        {
+          "id": "self_minus_self",
+          "kind": "subtraction",
+          "family": "same_minus_same",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "basic_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftValues": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "rightValues": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "operandDeltaRange": [
+            0,
+            0
+          ]
+        },
+        {
+          "id": "ten_minus_1_3",
+          "kind": "subtraction",
+          "family": "ten_minus",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftValues": [
+            10
+          ],
+          "rightRange": [
+            1,
+            3
+          ]
+        },
+        {
+          "id": "ten_minus_4_6",
+          "kind": "subtraction",
+          "family": "ten_minus",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftValues": [
+            10
+          ],
+          "rightRange": [
+            4,
+            6
+          ]
+        },
+        {
+          "id": "ten_minus_7_10",
+          "kind": "subtraction",
+          "family": "ten_minus",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftValues": [
+            10
+          ],
+          "rightRange": [
+            7,
+            10
+          ]
+        },
+        {
+          "id": "count_back_1",
+          "kind": "subtraction",
+          "family": "count_back",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "basic_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightValues": [
+            1
+          ]
+        },
+        {
+          "id": "count_back_2",
+          "kind": "subtraction",
+          "family": "count_back",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "basic_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            3,
+            10
+          ],
+          "rightValues": [
+            2
+          ]
+        },
+        {
+          "id": "count_back_3",
+          "kind": "subtraction",
+          "family": "count_back",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "basic_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            4,
+            10
+          ],
+          "rightValues": [
+            3
+          ]
+        },
+        {
+          "id": "difference_1",
+          "kind": "subtraction",
+          "family": "difference_one",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            1,
+            10
+          ],
+          "rightRange": [
+            0,
+            9
+          ],
+          "resultRange": [
+            1,
+            1
+          ]
+        },
+        {
+          "id": "difference_2_4",
+          "kind": "subtraction",
+          "family": "difference_small",
+          "bandId": "sub_to_10",
+          "count": 15,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightRange": [
+            0,
+            8
+          ],
+          "resultRange": [
+            2,
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_04_subtraction_borrow_under_20",
+      "title": "Subtraction borrow under 20",
+      "theme": "teens borrow patterns in narrow families",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "borrow_11_13_a",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            11,
+            13
+          ],
+          "rightRange": [
+            4,
+            5
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "borrow_11_13_b",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            11,
+            13
+          ],
+          "rightRange": [
+            6,
+            7
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "borrow_11_13_c",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            11,
+            13
+          ],
+          "rightRange": [
+            8,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "borrow_14_16_a",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            14,
+            16
+          ],
+          "rightRange": [
+            5,
+            6
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "borrow_14_16_b",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            14,
+            16
+          ],
+          "rightRange": [
+            7,
+            8
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "borrow_14_16_c",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            14,
+            16
+          ],
+          "rightValues": [
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "borrow_17_19_a",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            17,
+            19
+          ],
+          "rightRange": [
+            8,
+            9
+          ],
+          "requireBorrow": true,
+          "promptLeadIn": "Borrow and solve:"
+        },
+        {
+          "id": "borrow_17_19_b",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            15,
+            19
+          ],
+          "rightRange": [
+            8,
+            9
+          ],
+          "requireBorrow": true,
+          "promptLeadIn": "Quick borrow fact:"
+        },
+        {
+          "id": "borrow_17_19_c",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            14,
+            19
+          ],
+          "requireBorrow": true,
+          "rightRange": [
+            7,
+            9
+          ],
+          "promptLeadIn": "Try this borrow problem:"
+        },
+        {
+          "id": "borrow_17_19_d",
+          "kind": "subtraction",
+          "family": "teens_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            12,
+            19
+          ],
+          "requireBorrow": true,
+          "rightRange": [
+            6,
+            9
+          ],
+          "promptLeadIn": "Finish this borrow problem:"
+        }
+      ]
+    },
+    {
+      "id": "batch_05_count_compare_sequence_basics",
+      "title": "Counting, comparison, and sequence basics",
+      "theme": "lighter domains for early replay variety",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "count_1_4",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_basics",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            1,
+            4
+          ],
+          "symbol": "o"
+        },
+        {
+          "id": "count_5_8",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_basics",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            5,
+            8
+          ],
+          "symbol": "*"
+        },
+        {
+          "id": "count_9_12",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_basics",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            9,
+            12
+          ],
+          "symbol": "#"
+        },
+        {
+          "id": "count_13_16",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_basics",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            13,
+            16
+          ],
+          "symbol": "+"
+        },
+        {
+          "id": "count_17_20",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_basics",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            17,
+            20
+          ],
+          "symbol": "x"
+        },
+        {
+          "id": "compare_small_greater",
+          "kind": "comparison",
+          "family": "greater_than",
+          "bandId": "comparison_basics",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "greater",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            1,
+            5
+          ],
+          "rightRange": [
+            1,
+            5
+          ]
+        },
+        {
+          "id": "compare_small_smaller",
+          "kind": "comparison",
+          "family": "less_than",
+          "bandId": "comparison_basics",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "smaller",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            1,
+            5
+          ],
+          "rightRange": [
+            1,
+            5
+          ]
+        },
+        {
+          "id": "compare_mid_greater",
+          "kind": "comparison",
+          "family": "greater_than",
+          "bandId": "comparison_basics",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "greater",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            6,
+            10
+          ],
+          "rightRange": [
+            6,
+            10
+          ]
+        },
+        {
+          "id": "compare_mid_smaller",
+          "kind": "comparison",
+          "family": "less_than",
+          "bandId": "comparison_basics",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "smaller",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            6,
+            10
+          ],
+          "rightRange": [
+            6,
+            10
+          ]
+        },
+        {
+          "id": "compare_mixed",
+          "kind": "comparison",
+          "family": "greater_than",
+          "bandId": "comparison_basics",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "greater",
+          "promptVariants": [
+            "pick",
+            "which"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            1,
+            10
+          ],
+          "rightRange": [
+            1,
+            10
+          ]
+        },
+        {
+          "id": "sequence_plus1_low",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_basics",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            1,
+            6
+          ],
+          "stepChoices": [
+            1
+          ],
+          "length": 4
+        },
+        {
+          "id": "sequence_plus2_low",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_basics",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            2,
+            8
+          ],
+          "stepChoices": [
+            2
+          ],
+          "length": 4
+        },
+        {
+          "id": "sequence_plus3_low",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_basics",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            1,
+            9
+          ],
+          "stepChoices": [
+            3
+          ],
+          "length": 4
+        },
+        {
+          "id": "sequence_plus5",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_basics",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            5,
+            20
+          ],
+          "stepChoices": [
+            5
+          ],
+          "length": 3
+        },
+        {
+          "id": "sequence_plus1_long",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_basics",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            10,
+            18
+          ],
+          "stepChoices": [
+            1
+          ],
+          "length": 5
+        }
+      ]
+    },
+    {
+      "id": "batch_06_pattern_and_easy_variance",
+      "title": "Pattern basics and mixed easy variance",
+      "theme": "repeat patterns plus a little extra variety",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "pattern_ab_low",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_basics",
+          "count": 15,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 2,
+          "valueRange": [
+            1,
+            4
+          ],
+          "cycles": 3
+        },
+        {
+          "id": "pattern_ab_mid",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_basics",
+          "count": 15,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 2,
+          "valueRange": [
+            5,
+            8
+          ],
+          "cycles": 3
+        },
+        {
+          "id": "pattern_abc_low",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_basics",
+          "count": 15,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 3,
+          "valueRange": [
+            1,
+            6
+          ],
+          "cycles": 2
+        },
+        {
+          "id": "pattern_abc_mid",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_variance",
+          "count": 15,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 3,
+          "valueRange": [
+            4,
+            9
+          ],
+          "cycles": 2
+        },
+        {
+          "id": "pattern_abcd",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_variance",
+          "count": 15,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 4,
+          "valueRange": [
+            1,
+            7
+          ],
+          "cycles": 2
+        },
+        {
+          "id": "count_variance_a",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_variance",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "count_them"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            6,
+            10
+          ],
+          "symbol": "@"
+        },
+        {
+          "id": "count_variance_b",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_variance",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "how_many",
+            "count_them"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            11,
+            15
+          ],
+          "symbol": "%"
+        },
+        {
+          "id": "compare_variance_greater",
+          "kind": "comparison",
+          "family": "greater_than",
+          "bandId": "comparison_variance",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "greater",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            8,
+            15
+          ],
+          "rightRange": [
+            8,
+            15
+          ]
+        },
+        {
+          "id": "compare_variance_smaller",
+          "kind": "comparison",
+          "family": "less_than",
+          "bandId": "comparison_variance",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "smaller",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            10,
+            18
+          ],
+          "rightRange": [
+            10,
+            18
+          ]
+        },
+        {
+          "id": "sequence_variance_a",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_variance",
+          "count": 5,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            3,
+            12
+          ],
+          "stepChoices": [
+            2,
+            4
+          ],
+          "length": 4
+        },
+        {
+          "id": "sequence_variance_b",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_variance",
+          "count": 5,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            5,
+            14
+          ],
+          "stepChoices": [
+            3,
+            5
+          ],
+          "length": 4
+        },
+        {
+          "id": "mult_2_3_mix",
+          "kind": "multiplication",
+          "family": "times_tables_2_3",
+          "bandId": "mult_2_5",
+          "count": 12,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            2,
+            3
+          ],
+          "rightRange": [
+            1,
+            10
+          ]
+        },
+        {
+          "id": "mult_4_5_mix",
+          "kind": "multiplication",
+          "family": "times_tables_4_5",
+          "bandId": "mult_2_5",
+          "count": 13,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            4,
+            5
+          ],
+          "rightRange": [
+            1,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_07_addition_20_50_no_carry",
+      "title": "Addition 20-50 without carry",
+      "theme": "two-digit addition with stable ones digits",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "a20_24_plus_1_5",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            20,
+            24
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a25_29_plus_1_4",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            25,
+            29
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a20_29_plus_10_14",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            20,
+            29
+          ],
+          "rightRange": [
+            10,
+            14
+          ],
+          "requireCarry": false,
+          "resultRange": [
+            30,
+            43
+          ]
+        },
+        {
+          "id": "a30_34_plus_1_5",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            30,
+            34
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a35_39_plus_1_4",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            35,
+            39
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a30_39_plus_10_14",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            30,
+            39
+          ],
+          "rightRange": [
+            10,
+            14
+          ],
+          "requireCarry": false,
+          "resultRange": [
+            40,
+            53
+          ]
+        },
+        {
+          "id": "a40_44_plus_1_5",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            40,
+            44
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireCarry": false,
+          "resultRange": [
+            41,
+            49
+          ]
+        },
+        {
+          "id": "a45_49_plus_1_4",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            45,
+            49
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireCarry": false,
+          "resultRange": [
+            46,
+            50
+          ]
+        },
+        {
+          "id": "a40_44_plus_6_9",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            40,
+            44
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireCarry": false,
+          "resultRange": [
+            46,
+            50
+          ]
+        },
+        {
+          "id": "a20_49_plus_2_9",
+          "kind": "addition",
+          "family": "two_digit_no_carry",
+          "bandId": "add_20_50_no_carry",
+          "count": 15,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "complete"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            20,
+            49
+          ],
+          "rightRange": [
+            2,
+            9
+          ],
+          "requireCarry": false,
+          "resultRange": [
+            24,
+            50
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_08_addition_20_50_carry",
+      "title": "Addition 20-50 with carry",
+      "theme": "two-digit addition where the ones column crosses 10",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "c20_24_plus_6_9",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            20,
+            24
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "c25_29_plus_5_9",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            25,
+            29
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "c20_29_plus_11_19",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            20,
+            29
+          ],
+          "rightRange": [
+            11,
+            19
+          ],
+          "requireCarry": true,
+          "resultRange": [
+            32,
+            48
+          ]
+        },
+        {
+          "id": "c30_34_plus_6_9",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            30,
+            34
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "c35_39_plus_5_9",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            35,
+            39
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "c30_39_plus_11_19",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            30,
+            39
+          ],
+          "rightRange": [
+            11,
+            19
+          ],
+          "requireCarry": true,
+          "resultRange": [
+            42,
+            58
+          ]
+        },
+        {
+          "id": "c40_44_plus_6_9",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            40,
+            44
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireCarry": true,
+          "resultRange": [
+            47,
+            53
+          ]
+        },
+        {
+          "id": "c45_49_plus_5_9",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            45,
+            49
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireCarry": true,
+          "resultRange": [
+            50,
+            58
+          ]
+        },
+        {
+          "id": "c40_49_plus_11_19",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            40,
+            49
+          ],
+          "rightRange": [
+            11,
+            19
+          ],
+          "requireCarry": true,
+          "resultRange": [
+            52,
+            68
+          ]
+        },
+        {
+          "id": "c23_48_plus_7_9",
+          "kind": "addition",
+          "family": "two_digit_carry",
+          "bandId": "add_20_50_carry",
+          "count": 15,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "complete"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            23,
+            48
+          ],
+          "rightRange": [
+            7,
+            9
+          ],
+          "requireCarry": true,
+          "resultRange": [
+            30,
+            57
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_09_subtraction_20_50_no_borrow",
+      "title": "Subtraction 20-50 without borrow",
+      "theme": "two-digit subtraction where ones stay stable",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "s20_24_minus_1_4",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            20,
+            24
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s25_29_minus_1_5",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            25,
+            29
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s30_34_minus_1_4",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            30,
+            34
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s35_39_minus_1_5",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            35,
+            39
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s40_44_minus_1_4",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            40,
+            44
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s45_49_minus_1_5",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            45,
+            49
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s20_29_minus_10_14",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            20,
+            29
+          ],
+          "rightRange": [
+            10,
+            14
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s30_39_minus_10_14",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            30,
+            39
+          ],
+          "rightRange": [
+            10,
+            14
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s40_49_minus_10_14",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            40,
+            49
+          ],
+          "rightRange": [
+            10,
+            14
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s24_49_minus_2_9",
+          "kind": "subtraction",
+          "family": "two_digit_no_borrow",
+          "bandId": "sub_20_50_no_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "complete"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            24,
+            49
+          ],
+          "rightRange": [
+            2,
+            9
+          ],
+          "requireBorrow": false
+        }
+      ]
+    },
+    {
+      "id": "batch_10_subtraction_20_50_borrow",
+      "title": "Subtraction 20-50 with borrow",
+      "theme": "two-digit subtraction where the ones column crosses under",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "b20_24_minus_6_9",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            20,
+            24
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b25_29_minus_5_9",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            25,
+            29
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b30_34_minus_6_9",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            30,
+            34
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b35_39_minus_5_9",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            35,
+            39
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b40_44_minus_6_9",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            40,
+            44
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b45_49_minus_5_9",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            45,
+            49
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b20_29_minus_11_19",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            20,
+            29
+          ],
+          "rightRange": [
+            11,
+            19
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b30_39_minus_11_19",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            30,
+            39
+          ],
+          "rightRange": [
+            11,
+            19
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b40_49_minus_11_19",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            40,
+            49
+          ],
+          "rightRange": [
+            11,
+            19
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b23_49_minus_7_9",
+          "kind": "subtraction",
+          "family": "two_digit_borrow",
+          "bandId": "sub_20_50_borrow",
+          "count": 15,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "complete"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            23,
+            49
+          ],
+          "rightRange": [
+            7,
+            9
+          ],
+          "requireBorrow": true
+        }
+      ]
+    },
+    {
+      "id": "batch_11_multiplication_2_5",
+      "title": "Multiplication tables 2-5",
+      "theme": "core repeated-group facts",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "times_2_forward",
+          "kind": "multiplication",
+          "family": "table_2",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            2
+          ],
+          "rightRange": [
+            1,
+            12
+          ]
+        },
+        {
+          "id": "times_2_reverse",
+          "kind": "multiplication",
+          "family": "table_2_reverse",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftRange": [
+            1,
+            12
+          ],
+          "rightValues": [
+            2
+          ]
+        },
+        {
+          "id": "times_3_forward",
+          "kind": "multiplication",
+          "family": "table_3",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            3
+          ],
+          "rightRange": [
+            1,
+            12
+          ]
+        },
+        {
+          "id": "times_3_reverse",
+          "kind": "multiplication",
+          "family": "table_3_reverse",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftRange": [
+            1,
+            12
+          ],
+          "rightValues": [
+            3
+          ]
+        },
+        {
+          "id": "times_4_forward",
+          "kind": "multiplication",
+          "family": "table_4",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            4
+          ],
+          "rightRange": [
+            1,
+            12
+          ]
+        },
+        {
+          "id": "times_4_reverse",
+          "kind": "multiplication",
+          "family": "table_4_reverse",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftRange": [
+            1,
+            12
+          ],
+          "rightValues": [
+            4
+          ]
+        },
+        {
+          "id": "times_5_forward",
+          "kind": "multiplication",
+          "family": "table_5",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            5
+          ],
+          "rightRange": [
+            1,
+            12
+          ]
+        },
+        {
+          "id": "times_5_reverse",
+          "kind": "multiplication",
+          "family": "table_5_reverse",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftRange": [
+            1,
+            12
+          ],
+          "rightValues": [
+            5
+          ]
+        },
+        {
+          "id": "mix_2_3",
+          "kind": "multiplication",
+          "family": "mix_2_3",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            2,
+            3
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "orderedOperands": false,
+          "promptLeadIn": "Mixed fact:"
+        },
+        {
+          "id": "mix_4_5",
+          "kind": "multiplication",
+          "family": "mix_4_5",
+          "bandId": "mult_2_5",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            4,
+            5
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "orderedOperands": false,
+          "promptLeadIn": "Mixed fact:"
+        }
+      ]
+    },
+    {
+      "id": "batch_12_division_2_5_plus_variance",
+      "title": "Division facts 2-5",
+      "theme": "equal groups plus a little light-domain variance",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "div_by_2_a",
+          "kind": "division",
+          "family": "divide_by_2",
+          "bandId": "div_2_5",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            2,
+            24
+          ],
+          "rightValues": [
+            2
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_3_a",
+          "kind": "division",
+          "family": "divide_by_3",
+          "bandId": "div_2_5",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            3,
+            36
+          ],
+          "rightValues": [
+            3
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_4_a",
+          "kind": "division",
+          "family": "divide_by_4",
+          "bandId": "div_2_5",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            4,
+            40
+          ],
+          "rightValues": [
+            4
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_5_a",
+          "kind": "division",
+          "family": "divide_by_5",
+          "bandId": "div_2_5",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            5,
+            50
+          ],
+          "rightValues": [
+            5
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_2_mix",
+          "kind": "division",
+          "family": "divide_by_2",
+          "bandId": "div_2_5",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            10,
+            40
+          ],
+          "rightValues": [
+            2
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_3_mix",
+          "kind": "division",
+          "family": "divide_by_3",
+          "bandId": "div_2_5",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            12,
+            48
+          ],
+          "rightValues": [
+            3
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_4_mix",
+          "kind": "division",
+          "family": "divide_by_4",
+          "bandId": "div_2_5",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            16,
+            48
+          ],
+          "rightValues": [
+            4
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_5_mix",
+          "kind": "division",
+          "family": "divide_by_5",
+          "bandId": "div_2_5",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            20,
+            60
+          ],
+          "rightValues": [
+            5
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "count_div_variance",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_variance",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            8,
+            14
+          ],
+          "symbol": "&"
+        },
+        {
+          "id": "compare_div_variance_a",
+          "kind": "comparison",
+          "family": "greater_than",
+          "bandId": "comparison_variance",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "greater",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            12,
+            20
+          ],
+          "rightRange": [
+            12,
+            20
+          ]
+        },
+        {
+          "id": "compare_div_variance_b",
+          "kind": "comparison",
+          "family": "less_than",
+          "bandId": "comparison_variance",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "smaller",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            12,
+            20
+          ],
+          "rightRange": [
+            12,
+            20
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_13_addition_50_100_no_carry",
+      "title": "Addition 50-100 without carry plus lighter-domain variance",
+      "theme": "larger two-digit addition with stable ones digits, plus lighter variance packs to keep replay breadth honest",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "a50_54_plus_1_5",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 17,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            50,
+            54
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a55_59_plus_1_4",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 17,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            55,
+            59
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a60_69_plus_1_9",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 17,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            60,
+            69
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a70_79_plus_1_9",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 17,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            70,
+            79
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a80_89_plus_1_9",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 17,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            80,
+            89
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a90_94_plus_1_5",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 17,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            90,
+            94
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireCarry": false,
+          "resultRange": [
+            91,
+            99
+          ]
+        },
+        {
+          "id": "a95_99_plus_1_4",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 17,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            95,
+            99
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireCarry": false,
+          "resultRange": [
+            96,
+            100
+          ]
+        },
+        {
+          "id": "seq_50_100_a",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_variance",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            20,
+            40
+          ],
+          "stepChoices": [
+            5
+          ],
+          "length": 4
+        },
+        {
+          "id": "seq_50_100_b",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_variance",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            30,
+            50
+          ],
+          "stepChoices": [
+            10
+          ],
+          "length": 3
+        },
+        {
+          "id": "mult_6_mix_a",
+          "kind": "multiplication",
+          "family": "table_6_mix",
+          "bandId": "mult_6_9",
+          "count": 5,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            6
+          ],
+          "rightRange": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "mult_7_mix_a",
+          "kind": "multiplication",
+          "family": "table_7_mix",
+          "bandId": "mult_6_9",
+          "count": 6,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            7
+          ],
+          "rightRange": [
+            2,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_14_addition_50_100_carry",
+      "title": "Addition 50-100 with carry plus lighter-domain variance",
+      "theme": "larger two-digit addition where ones cross 10, plus lighter variance packs to keep replay breadth honest",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "c50_54_plus_6_9",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 17,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            50,
+            54
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "c55_59_plus_5_9",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 17,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            55,
+            59
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "c60_69_plus_6_9",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 17,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            60,
+            69
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "c70_79_plus_6_9",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 17,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            70,
+            79
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "c80_89_plus_6_9",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 17,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            80,
+            89
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "c90_94_plus_6_9",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 17,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            90,
+            94
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireCarry": true,
+          "resultRange": [
+            97,
+            103
+          ]
+        },
+        {
+          "id": "c95_99_plus_5_9",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 17,
+          "skill": "addition_with_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            95,
+            99
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireCarry": true,
+          "resultRange": [
+            100,
+            108
+          ]
+        },
+        {
+          "id": "pattern_50_100_a",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_variance",
+          "count": 10,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 2,
+          "valueRange": [
+            8,
+            18
+          ],
+          "cycles": 3
+        },
+        {
+          "id": "pattern_50_100_b",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_variance",
+          "count": 10,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 3,
+          "valueRange": [
+            9,
+            20
+          ],
+          "cycles": 2
+        },
+        {
+          "id": "mult_8_mix_a",
+          "kind": "multiplication",
+          "family": "table_8_mix",
+          "bandId": "mult_6_9",
+          "count": 5,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            8
+          ],
+          "rightRange": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "mult_9_mix_a",
+          "kind": "multiplication",
+          "family": "table_9_mix",
+          "bandId": "mult_6_9",
+          "count": 6,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            9
+          ],
+          "rightRange": [
+            2,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_15_subtraction_50_100_no_borrow",
+      "title": "Subtraction 50-100 without borrow plus lighter-domain variance",
+      "theme": "larger subtraction with stable ones digits, plus lighter variance packs to keep replay breadth honest",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "s50_54_minus_1_5",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 11,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            50,
+            54
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s55_59_minus_1_4",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 11,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            55,
+            59
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s60_69_minus_1_9",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 11,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            60,
+            69
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s70_79_minus_1_9",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 11,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            70,
+            79
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s80_89_minus_1_9",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 11,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            80,
+            89
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s90_94_minus_1_5",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 11,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            90,
+            94
+          ],
+          "rightRange": [
+            1,
+            5
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s95_99_minus_1_4",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 11,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            95,
+            99
+          ],
+          "rightRange": [
+            1,
+            4
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "count_hi_a",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_variance",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            10,
+            14
+          ],
+          "symbol": "$"
+        },
+        {
+          "id": "count_hi_b",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_variance",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            15,
+            20
+          ],
+          "symbol": "^"
+        },
+        {
+          "id": "compare_hi_a",
+          "kind": "comparison",
+          "family": "greater_than",
+          "bandId": "comparison_variance",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "greater",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            15,
+            25
+          ],
+          "rightRange": [
+            15,
+            25
+          ]
+        },
+        {
+          "id": "compare_hi_b",
+          "kind": "comparison",
+          "family": "less_than",
+          "bandId": "comparison_variance",
+          "count": 10,
+          "skill": "number_comparison",
+          "relation": "smaller",
+          "promptVariants": [
+            "which",
+            "pick"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            15,
+            25
+          ],
+          "rightRange": [
+            15,
+            25
+          ]
+        },
+        {
+          "id": "sequence_hi_a",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_variance",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            12,
+            24
+          ],
+          "stepChoices": [
+            2,
+            4
+          ],
+          "length": 4
+        },
+        {
+          "id": "sequence_hi_b",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_variance",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            20,
+            35
+          ],
+          "stepChoices": [
+            5
+          ],
+          "length": 3
+        },
+        {
+          "id": "mult_hi_mix_a",
+          "kind": "multiplication",
+          "family": "table_6_7_mix",
+          "bandId": "mult_6_9",
+          "count": 13,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            6,
+            7
+          ],
+          "rightRange": [
+            3,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_16_subtraction_50_100_borrow",
+      "title": "Subtraction 50-100 with borrow plus lighter-domain variance",
+      "theme": "larger subtraction where the ones cross under, plus lighter variance packs to keep replay breadth honest",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "b50_54_minus_6_9",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 11,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            50,
+            54
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b55_59_minus_5_9",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 11,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            55,
+            59
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b60_69_minus_6_9",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 11,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            60,
+            69
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b70_79_minus_6_9",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 11,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            70,
+            79
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b80_89_minus_6_9",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 11,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            80,
+            89
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b90_94_minus_6_9",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 11,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            90,
+            94
+          ],
+          "rightRange": [
+            6,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "b95_99_minus_5_9",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 12,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            95,
+            99
+          ],
+          "rightRange": [
+            5,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "count_borrow_a",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_variance",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            9,
+            13
+          ],
+          "symbol": "!"
+        },
+        {
+          "id": "count_borrow_b",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_variance",
+          "count": 11,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many"
+          ],
+          "hintStrategy": "count_symbols",
+          "explanationStrategy": "count_result",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "countRange": [
+            14,
+            19
+          ],
+          "symbol": "?"
+        },
+        {
+          "id": "pattern_borrow_a",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_variance",
+          "count": 10,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 2,
+          "valueRange": [
+            10,
+            18
+          ],
+          "cycles": 3
+        },
+        {
+          "id": "pattern_borrow_b",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_variance",
+          "count": 10,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 3,
+          "valueRange": [
+            11,
+            20
+          ],
+          "cycles": 2
+        },
+        {
+          "id": "sequence_borrow_a",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_variance",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            15,
+            28
+          ],
+          "stepChoices": [
+            2,
+            3
+          ],
+          "length": 4
+        },
+        {
+          "id": "sequence_borrow_b",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_variance",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            25,
+            40
+          ],
+          "stepChoices": [
+            4,
+            5
+          ],
+          "length": 3
+        },
+        {
+          "id": "mult_hi_mix_b",
+          "kind": "multiplication",
+          "family": "table_8_9_mix",
+          "bandId": "mult_6_9",
+          "count": 11,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            8,
+            9
+          ],
+          "rightRange": [
+            3,
+            10
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_17_multiplication_6_9",
+      "title": "Multiplication tables 6-9",
+      "theme": "upper times tables for later progression",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "times_6_forward",
+          "kind": "multiplication",
+          "family": "table_6",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            6
+          ],
+          "rightRange": [
+            1,
+            12
+          ]
+        },
+        {
+          "id": "times_6_reverse",
+          "kind": "multiplication",
+          "family": "table_6_reverse",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftRange": [
+            1,
+            12
+          ],
+          "rightValues": [
+            6
+          ]
+        },
+        {
+          "id": "times_7_forward",
+          "kind": "multiplication",
+          "family": "table_7",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            7
+          ],
+          "rightRange": [
+            1,
+            12
+          ]
+        },
+        {
+          "id": "times_7_reverse",
+          "kind": "multiplication",
+          "family": "table_7_reverse",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftRange": [
+            1,
+            12
+          ],
+          "rightValues": [
+            7
+          ]
+        },
+        {
+          "id": "times_8_forward",
+          "kind": "multiplication",
+          "family": "table_8",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            8
+          ],
+          "rightRange": [
+            1,
+            12
+          ]
+        },
+        {
+          "id": "times_8_reverse",
+          "kind": "multiplication",
+          "family": "table_8_reverse",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftRange": [
+            1,
+            12
+          ],
+          "rightValues": [
+            8
+          ]
+        },
+        {
+          "id": "times_9_forward",
+          "kind": "multiplication",
+          "family": "table_9",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            9
+          ],
+          "rightRange": [
+            1,
+            12
+          ]
+        },
+        {
+          "id": "times_9_reverse",
+          "kind": "multiplication",
+          "family": "table_9_reverse",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftRange": [
+            1,
+            12
+          ],
+          "rightValues": [
+            9
+          ]
+        },
+        {
+          "id": "mix_6_7",
+          "kind": "multiplication",
+          "family": "mix_6_7",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            6,
+            7
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "orderedOperands": false,
+          "promptLeadIn": "Mixed upper fact:"
+        },
+        {
+          "id": "mix_8_9",
+          "kind": "multiplication",
+          "family": "mix_8_9",
+          "bandId": "mult_6_9",
+          "count": 15,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            8,
+            9
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "orderedOperands": false,
+          "promptLeadIn": "Mixed upper fact:"
+        }
+      ]
+    },
+    {
+      "id": "batch_18_division_6_9_and_variance",
+      "title": "Division 6-9 plus lighter-domain variance",
+      "theme": "upper division facts and final replay padding",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "div_by_6_a",
+          "kind": "division",
+          "family": "divide_by_6",
+          "bandId": "div_6_9",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            12,
+            72
+          ],
+          "rightValues": [
+            6
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_6_b",
+          "kind": "division",
+          "family": "divide_by_6",
+          "bandId": "div_6_9",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            18,
+            90
+          ],
+          "rightValues": [
+            6
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_7_a",
+          "kind": "division",
+          "family": "divide_by_7",
+          "bandId": "div_6_9",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            14,
+            84
+          ],
+          "rightValues": [
+            7
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_7_b",
+          "kind": "division",
+          "family": "divide_by_7",
+          "bandId": "div_6_9",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            21,
+            98
+          ],
+          "rightValues": [
+            7
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_8_a",
+          "kind": "division",
+          "family": "divide_by_8",
+          "bandId": "div_6_9",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            16,
+            96
+          ],
+          "rightValues": [
+            8
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_8_b",
+          "kind": "division",
+          "family": "divide_by_8",
+          "bandId": "div_6_9",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            24,
+            104
+          ],
+          "rightValues": [
+            8
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_9_a",
+          "kind": "division",
+          "family": "divide_by_9",
+          "bandId": "div_6_9",
+          "count": 15,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            18,
+            108
+          ],
+          "rightValues": [
+            9
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "div_by_9_b",
+          "kind": "division",
+          "family": "divide_by_9",
+          "bandId": "div_6_9",
+          "count": 16,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "leftRange": [
+            27,
+            117
+          ],
+          "rightValues": [
+            9
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "compare_final",
+          "kind": "comparison",
+          "family": "greater_than",
+          "bandId": "comparison_variance",
+          "count": 11,
+          "skill": "number_comparison",
+          "relation": "greater",
+          "promptVariants": [
+            "pick",
+            "which"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "distinctOperands": true,
+          "leftRange": [
+            18,
+            30
+          ],
+          "rightRange": [
+            18,
+            30
+          ]
+        },
+        {
+          "id": "pattern_final",
+          "kind": "pattern_matching",
+          "family": "repeat_pattern",
+          "bandId": "pattern_variance",
+          "count": 6,
+          "skill": "simple_patterns",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "patternLength": 4,
+          "valueRange": [
+            12,
+            22
+          ],
+          "cycles": 2
+        },
+        {
+          "id": "sequence_final",
+          "kind": "number_sequence",
+          "family": "next_number",
+          "bandId": "sequence_variance",
+          "count": 2,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            40,
+            45
+          ],
+          "stepChoices": [
+            10
+          ],
+          "length": 3
+        },
+        {
+          "id": "mult_final_mix",
+          "kind": "multiplication",
+          "family": "final_mix",
+          "bandId": "mult_6_9",
+          "count": 10,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "leftValues": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "rightRange": [
+            4,
+            10
+          ],
+          "orderedOperands": false,
+          "promptLeadIn": "Final mixed fact:"
+        }
+      ]
+    }
+  ]
+}

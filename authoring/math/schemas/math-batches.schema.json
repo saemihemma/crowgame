@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MathBatchCollection",
+  "type": "object",
+  "required": ["batches"],
+  "properties": {
+    "batches": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "theme", "targetCount", "templates"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "theme": { "type": "string", "minLength": 1 },
+          "targetCount": { "type": "integer", "minimum": 1 },
+          "templates": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "kind",
+                "family",
+                "bandId",
+                "count",
+                "skill",
+                "promptVariants",
+                "hintStrategy",
+                "explanationStrategy",
+                "misconceptionTags"
+              ],
+              "properties": {
+                "id": { "type": "string", "minLength": 1 },
+                "kind": {
+                  "type": "string",
+                  "enum": ["addition", "subtraction", "multiplication", "division", "counting", "comparison", "pattern_matching", "number_sequence"]
+                },
+                "family": { "type": "string", "minLength": 1 },
+                "bandId": { "type": "string", "minLength": 1 },
+                "count": { "type": "integer", "minimum": 1 },
+                "skill": { "type": "string", "minLength": 1 },
+                "promptVariants": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "type": "string", "minLength": 1 }
+                },
+                "hintStrategy": { "type": "string", "minLength": 1 },
+                "explanationStrategy": { "type": "string", "minLength": 1 },
+                "promptLeadIn": { "type": "string", "minLength": 1 },
+                "misconceptionTags": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "type": "string", "minLength": 1 }
+                },
+                "templateStepRange": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "ageBand": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 3, "maximum": 12 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "leftRange": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "leftValues": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 }
+                },
+                "rightRange": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "rightValues": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 }
+                },
+                "resultRange": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "sumRange": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "allowZero": { "type": "boolean" },
+                "distinctOperands": { "type": "boolean" },
+                "orderedOperands": { "type": "boolean" },
+                "operandDeltaRange": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "requireCarry": { "type": "boolean" },
+                "requireBorrow": { "type": "boolean" },
+                "forceDivisible": { "type": "boolean" },
+                "maxOperand": { "type": "integer", "minimum": 0 },
+                "minOperand": { "type": "integer", "minimum": 0 },
+                "countRange": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "symbol": { "type": "string", "minLength": 1 },
+                "relation": { "type": "string", "enum": ["greater", "smaller"] },
+                "startRange": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "stepChoices": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "type": "integer", "minimum": 1, "maximum": 10 }
+                },
+                "length": { "type": "integer", "minimum": 3, "maximum": 6 },
+                "patternLength": { "type": "integer", "enum": [2, 3, 4] },
+                "valueRange": {
+                  "type": "array",
+                  "items": { "type": "integer", "minimum": 0 },
+                  "minItems": 2,
+                  "maxItems": 2
+                },
+                "cycles": { "type": "integer", "minimum": 2, "maximum": 5 }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

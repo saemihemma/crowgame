@@ -1,0 +1,76 @@
+{
+  "domains": [
+    "addition",
+    "counting",
+    "pattern_matching",
+    "subtraction",
+    "comparison",
+    "number_sequence"
+  ],
+  "openingUnlockedDomains": [
+    "addition",
+    "counting"
+  ],
+  "owlEligibleProblemCount": 757,
+  "owlEligibleUniquePromptCount": 757,
+  "owlEligibleUniqueFactCount": 261,
+  "domainCounts": {
+    "addition": 371,
+    "counting": 55,
+    "pattern_matching": 43,
+    "subtraction": 223,
+    "comparison": 25,
+    "number_sequence": 40
+  },
+  "openingUnlockedInventoryProblemCount": 426,
+  "openingUnlockedInventoryUniquePromptCount": 426,
+  "openingUnlockedInventoryUniqueFactCount": 103,
+  "freshReachableProblemCount": 80,
+  "freshReachableUniquePromptCount": 80,
+  "freshReachableUniqueFactCount": 17,
+  "freshReachableDomainCounts": {
+    "addition": 62,
+    "counting": 18
+  },
+  "freshReachableAdditionFactCount": 10,
+  "freshReachableCountingFactCount": 7,
+  "currentInteractionProblemCount": 2,
+  "owlAdditionByStep": [
+    {
+      "step": 0,
+      "rowCount": 13,
+      "uniquePromptCount": 13,
+      "uniqueFactCount": 3
+    },
+    {
+      "step": 1,
+      "rowCount": 18,
+      "uniquePromptCount": 18,
+      "uniqueFactCount": 3
+    },
+    {
+      "step": 2,
+      "rowCount": 31,
+      "uniquePromptCount": 31,
+      "uniqueFactCount": 4
+    },
+    {
+      "step": 3,
+      "rowCount": 33,
+      "uniquePromptCount": 33,
+      "uniqueFactCount": 5
+    },
+    {
+      "step": 4,
+      "rowCount": 29,
+      "uniquePromptCount": 29,
+      "uniqueFactCount": 5
+    },
+    {
+      "step": 5,
+      "rowCount": 28,
+      "uniquePromptCount": 28,
+      "uniqueFactCount": 5
+    }
+  ]
+}

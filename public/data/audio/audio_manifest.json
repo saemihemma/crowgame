@@ -1,0 +1,30 @@
+{
+  "sfx": {},
+  "music": {
+    "level_01_music": {
+      "file": "assets/audio/music/level_01.mp3",
+      "volume": 0.4,
+      "loop": true
+    },
+    "level_02_music": {
+      "file": "assets/audio/music/level_02.mp3",
+      "volume": 0.4,
+      "loop": true
+    },
+    "level_03_music": {
+      "file": "assets/audio/music/level_03.mp3",
+      "volume": 0.4,
+      "loop": true
+    },
+    "level_04_music": {
+      "file": "assets/audio/music/level_04.mp3",
+      "volume": 0.4,
+      "loop": true
+    },
+    "level_05_music": {
+      "file": "assets/audio/music/level_05.mp3",
+      "volume": 0.4,
+      "loop": true
+    }
+  }
+}

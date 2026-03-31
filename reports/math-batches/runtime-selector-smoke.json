@@ -1,0 +1,69 @@
+{
+  "accepted": true,
+  "averageGrade": 9.9,
+  "summary": "Runtime-aligned owl selector smoke covered the opening path plus a deeper progression probe, with 0 operand-cap breaches, 0 selector-cap breaches, 0 early subtraction unlocks, 0 missed depth unlocks, and 0 exhaustion events.",
+  "metrics": {
+    "capBreaches": 0,
+    "selectorCapBreaches": 0,
+    "earlySubtractionUnlocks": 0,
+    "depthUnlockMisses": 0,
+    "exhaustionCount": 0,
+    "recentWindowFallbackPreserved": true,
+    "uninitializedFallbackPreserved": true,
+    "currentStepFallbackPreserved": true,
+    "maxOperandSeen": 8,
+    "maxCurriculumStepSeen": 7,
+    "followUpSelections": 124,
+    "alternateFollowUpSelections": 124,
+    "followUpAlternateRate": 1,
+    "steadyFirstSubtractionUnlockAttempt": 38,
+    "strugglingFirstSubtractionUnlockAttempt": -1,
+    "depthProbeFirstSubtractionUnlockAttempt": 39,
+    "steadyFirstSubtractionSelectionAttempt": 40,
+    "strugglingFirstSubtractionSelectionAttempt": -1,
+    "depthProbeFirstSubtractionSelectionAttempt": 57,
+    "owlEligibleProblemCount": 757,
+    "owlEligibleUniquePromptCount": 757,
+    "owlEligibleUniqueFactCount": 261,
+    "openingUnlockedInventoryProblemCount": 426,
+    "openingUnlockedInventoryUniquePromptCount": 426,
+    "openingUnlockedInventoryUniqueFactCount": 103,
+    "freshReachableProblemCount": 80,
+    "freshReachableUniquePromptCount": 80,
+    "freshReachableUniqueFactCount": 17,
+    "freshReachableAdditionFactCount": 10,
+    "freshReachableCountingFactCount": 7,
+    "openingAdditionStep0Facts": 3,
+    "openingAdditionStep1Facts": 3,
+    "openingAdditionStep2Facts": 4,
+    "interactionProblemCount": 2,
+    "owlDomains": "addition,counting,pattern_matching,subtraction,comparison,number_sequence",
+    "openingUnlockedDomains": "addition,counting"
+  },
+  "roleGrades": [
+    {
+      "role": "role-game-designer",
+      "grade": 10,
+      "rationale": "Steady child checks the opening owl path for gentle pacing without early cliffs."
+    },
+    {
+      "role": "role-qa-engineer",
+      "grade": 10,
+      "rationale": "Struggling child verifies the shipped local-safe rails stay soft under misses and review pressure."
+    },
+    {
+      "role": "Lead Producer",
+      "grade": 9.7,
+      "rationale": "Depth probe checks actual unlock timing and deeper local-safe selector coverage, not just the opening few facts."
+    }
+  ],
+  "devilAdvocate": {
+    "passed": true,
+    "note": "Devils Advocate: the runtime-aligned owl selector path stayed inside its local-safe rails, preserved fallback constraints, and the deeper probe unlocked subtraction without breaching caps."
+  },
+  "caveats": [
+    "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
+    "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
+    "The 3000 headline is total shipped runtime inventory; the current owl rails expose 757 local-safe rows overall, while a fresh profile currently reaches 80 step-capped rows across addition, counting and 2 problems per owl interaction."
+  ]
+}

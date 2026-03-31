@@ -1,0 +1,15 @@
+{
+    "enemies": [
+        {
+            "id": "cockroach_basic",
+            "name": "Cockroach",
+            "spriteKey": "cockroach",
+            "frameWidth": 64,
+            "frameHeight": 64,
+            "behavior": "patrol",
+            "speed": 40,
+            "damage": 1,
+            "coinReward": 2
+        }
+    ]
+}

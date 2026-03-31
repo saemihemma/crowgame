@@ -1,0 +1,8 @@
+{
+  "laser_speed": 400,
+  "laser_range": 500,
+  "laser_cooldown_ms": 1000,
+  "knockback_force": 200,
+  "invulnerability_ms": 1500,
+  "damage_flash_duration": 200
+}

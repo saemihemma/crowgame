@@ -1,0 +1,6949 @@
+{
+  "problems": [
+    {
+      "id": "cur_add_001",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "Count: one... then one more!",
+      "explanation": "1 plus 1 makes 2!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 1,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_002",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "Start at 1, then count 2 more!",
+      "explanation": "1 plus 2 makes 3!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_003",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "Start at 2, then count 1 more!",
+      "explanation": "2 plus 1 makes 3!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_004",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "Two fingers on one hand, two on the other!",
+      "explanation": "2 plus 2 makes 4!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_005",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "Start at 1 and count 3 more: 2, 3, 4!",
+      "explanation": "1 plus 3 makes 4!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_006",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "Start at 3 and count 1 more!",
+      "explanation": "3 plus 1 makes 4!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_007",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "Hold up 2 fingers, then 3 more. Count them all!",
+      "explanation": "2 plus 3 makes 5!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_008",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "Hold up 3 fingers, then 2 more. Count them all!",
+      "explanation": "3 plus 2 makes 5!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_009",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          3,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "3 on one hand, 3 on the other. Count them all!",
+      "explanation": "3 plus 3 makes 6!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_010",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "Start at 4 and count just 1 more!",
+      "explanation": "4 plus 1 makes 5!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_011",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "Start at 1 and count 4 more: 2, 3, 4, 5!",
+      "explanation": "1 plus 4 makes 5!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_012",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "Start at 4, then count 2 more: 5, 6!",
+      "explanation": "4 plus 2 makes 6!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_013",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "Start at 2, then count 4 more: 3, 4, 5, 6!",
+      "explanation": "2 plus 4 makes 6!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_014",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "0 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "Zero means nothing! So 0 plus 1 is just 1!",
+      "explanation": "Adding zero changes nothing. 0 plus 1 is 1!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 1,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_015",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + 0 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "Adding zero means nothing changes. You still have 1!",
+      "explanation": "1 plus 0 is still 1! Zero doesn't add anything.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 1,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_016",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "0 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "Zero means nothing there! So you just have 2!",
+      "explanation": "0 plus 2 is 2! Adding zero keeps the number the same.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_017",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + 0 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "You have 2 and add nothing. Still 2!",
+      "explanation": "2 plus 0 is 2! Adding zero keeps the number the same.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_018",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "0 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "Start with nothing, add 3. You get 3!",
+      "explanation": "0 plus 3 is 3! Zero plus any number is that number.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_019",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 0 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "You have 3 and add nothing. Still 3!",
+      "explanation": "3 plus 0 is still 3!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_020",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "4 on one hand, 4 on the other. Count them all!",
+      "explanation": "4 plus 4 makes 8!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_021",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "Start at 5 and count 1 more!",
+      "explanation": "5 plus 1 makes 6!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_022",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "Start at 1 and count 5 more!",
+      "explanation": "1 plus 5 makes 6!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_023",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "Start at 5, then count 2 more: 6, 7!",
+      "explanation": "5 plus 2 makes 7!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_024",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "Start at 2, then count 5 more!",
+      "explanation": "2 plus 5 makes 7!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_025",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "Start at 5, then count 3 more: 6, 7, 8!",
+      "explanation": "5 plus 3 makes 8!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_026",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "Start at 3, then count 5 more!",
+      "explanation": "3 plus 5 makes 8!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_027",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "Start at 4, then count 3 more: 5, 6, 7!",
+      "explanation": "4 plus 3 makes 7!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_028",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "Start at 3, then count 4 more: 4, 5, 6, 7!",
+      "explanation": "3 plus 4 makes 7!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_029",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What is 4 + 4?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "Two groups of 4! Count them all together!",
+      "explanation": "4 plus 4 makes 8! Double 4 is 8!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_030",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "One full hand (5) plus 4 more fingers!",
+      "explanation": "5 plus 4 makes 9!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_031",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "4 fingers plus a whole hand (5)!",
+      "explanation": "4 plus 5 makes 9!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_032",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "Both hands! 5 fingers on each!",
+      "explanation": "5 plus 5 makes 10! That is all your fingers!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_033",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "6 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "Start at 6, then count 1 more!",
+      "explanation": "6 plus 1 makes 7!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_034",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "Start at 1, then count 6 more!",
+      "explanation": "1 plus 6 makes 7!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_035",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "6 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "Start at 6, then count 2 more: 7, 8!",
+      "explanation": "6 plus 2 makes 8!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_036",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "Start at 2, then count 6 more!",
+      "explanation": "2 plus 6 makes 8!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_037",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "6 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "Start at 6, then count 3 more: 7, 8, 9!",
+      "explanation": "6 plus 3 makes 9!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_038",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "Start at 3, then count 6 more!",
+      "explanation": "3 plus 6 makes 9!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_039",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "7 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "Start at 7 and count just 1 more!",
+      "explanation": "7 plus 1 makes 8!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_040",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "Start at 1, then count 7 more!",
+      "explanation": "1 plus 7 makes 8!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_041",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "7 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "Start at 7, then count 2 more: 8, 9!",
+      "explanation": "7 plus 2 makes 9!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_042",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "Start at 2, then count 7 more!",
+      "explanation": "2 plus 7 makes 9!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_043",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "7 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "Start at 7, then count 3 more: 8, 9, 10!",
+      "explanation": "7 plus 3 makes 10!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_044",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "8 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "Start at 8 and count just 1 more!",
+      "explanation": "8 plus 1 makes 9!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_045",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "8 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "Start at 8, then count 2 more: 9, 10!",
+      "explanation": "8 plus 2 makes 10!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_046",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.5,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "6 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "Start at 6, then count 4 more: 7, 8, 9, 10!",
+      "explanation": "6 plus 4 makes 10!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_047",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.5,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "Start at 4, then count 6 more!",
+      "explanation": "4 plus 6 makes 10!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_048",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.5,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "6 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "6 plus 5 is one more than 10! Think: 6 + 4 = 10, plus 1 more!",
+      "explanation": "6 plus 5 makes 11!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_049",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.5,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "5 plus 6 is one more than 10! Think: 5 + 5 = 10, plus 1 more!",
+      "explanation": "5 plus 6 makes 11!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_050",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.5,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What is 7 + 3?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "7 and 3 are best friends that make 10!",
+      "explanation": "7 plus 3 makes 10!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_051",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.5,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "3 and 7 are best friends that make 10!",
+      "explanation": "3 plus 7 makes 10!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_052",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "7 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "7 + 3 = 10, and 1 more makes 11!",
+      "explanation": "7 plus 4 makes 11!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_053",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "4 + 6 = 10, and 1 more makes 11!",
+      "explanation": "4 plus 7 makes 11!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_054",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "8 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "8 + 2 = 10, and 1 more makes 11!",
+      "explanation": "8 plus 3 makes 11!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_055",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 8 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "Start at 8 (the bigger number), then count 3 more!",
+      "explanation": "3 plus 8 makes 11!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_056",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "8 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "8 + 2 = 10, then 2 more makes 12!",
+      "explanation": "8 plus 4 makes 12!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_057",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + 8 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "Start at 8 (the bigger number), then count 4 more!",
+      "explanation": "4 plus 8 makes 12!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_058",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "9 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "9 is just 1 away from 10!",
+      "explanation": "9 plus 1 makes 10!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_059",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + 9 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "Start at 9 (the bigger number), then add 1!",
+      "explanation": "1 plus 9 makes 10!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_060",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "9 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "9 + 1 = 10, then 1 more makes 11!",
+      "explanation": "9 plus 2 makes 11!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_061",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + 9 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "Start at 9 (the bigger number), then add 2!",
+      "explanation": "2 plus 9 makes 11!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_062",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "9 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "9 + 1 = 10, then 2 more makes 12!",
+      "explanation": "9 plus 3 makes 12!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_063",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + 9 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "Start at 9 (the bigger number), then count 3 more!",
+      "explanation": "3 plus 9 makes 12!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_064",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "8 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 13,
+        "options": [
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "hint": "8 + 2 = 10, then 3 more makes 13!",
+      "explanation": "8 plus 5 makes 13!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_065",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 + 8 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 13,
+        "options": [
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "hint": "Start at 8 (the bigger number), then count 5 more!",
+      "explanation": "5 plus 8 makes 13!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_066",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "7 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "7 + 3 = 10, then 2 more makes 12!",
+      "explanation": "7 plus 5 makes 12!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_067",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 + 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "Start at 7 (the bigger number), then count 5 more!",
+      "explanation": "5 plus 7 makes 12!",
+      "misconceptionTags": [
+        "off_by_one",
+        "swapped_operands"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_068",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "6 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "Double 6! Think of two dice both showing 6!",
+      "explanation": "6 plus 6 makes 12! Double 6 is 12!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_069",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "9 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 13,
+        "options": [
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "hint": "9 + 1 = 10, then 3 more makes 13!",
+      "explanation": "9 plus 4 makes 13!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_070",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 15,
+        "options": [
+          13,
+          14,
+          15,
+          16
+        ]
+      },
+      "hint": "10 plus 5 is easy! Just put a 1 in front of the 5!",
+      "explanation": "10 plus 5 makes 15!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_071",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "Start at 10, then count 1 more step to reach 11.",
+      "explanation": "10 plus 1 makes 11!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_072",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "Start at 10, then count 2 more steps to reach 12.",
+      "explanation": "10 plus 2 makes 12!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_073",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 13,
+        "options": [
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "hint": "Start at 10, then count 3 more steps to reach 13.",
+      "explanation": "10 plus 3 makes 13!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_074",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 14,
+        "options": [
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "hint": "Start at 10, then count 4 more steps to reach 14.",
+      "explanation": "10 plus 4 makes 14!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_075",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 16,
+        "options": [
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      "hint": "Start at 10, then count 6 more steps to reach 16.",
+      "explanation": "10 plus 6 makes 16!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_076",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "11 plus 1 is the next number: 12.",
+      "explanation": "11 plus 1 makes 12!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_077",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 13,
+        "options": [
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "hint": "Start at 11, then count 2 more: 12, 13.",
+      "explanation": "11 plus 2 makes 13!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_078",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 14,
+        "options": [
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "hint": "Start at 11, then count 3 more: 12, 13, 14.",
+      "explanation": "11 plus 3 makes 14!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_079",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 15,
+        "options": [
+          13,
+          14,
+          15,
+          16
+        ]
+      },
+      "hint": "Start at 11, then count 4 more steps to reach 15.",
+      "explanation": "11 plus 4 makes 15!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_080",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 16,
+        "options": [
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      "hint": "Start at 11, then count 5 more steps to reach 16.",
+      "explanation": "11 plus 5 makes 16!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_081",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 17,
+        "options": [
+          15,
+          16,
+          17,
+          18
+        ]
+      },
+      "hint": "Start at 11, then count 6 more steps to reach 17.",
+      "explanation": "11 plus 6 makes 17!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_082",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 13,
+        "options": [
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "hint": "12 plus 1 is the next number: 13.",
+      "explanation": "12 plus 1 makes 13!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_083",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 14,
+        "options": [
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "hint": "Start at 12, then count 2 more: 13, 14.",
+      "explanation": "12 plus 2 makes 14!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_084",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 15,
+        "options": [
+          13,
+          14,
+          15,
+          16
+        ]
+      },
+      "hint": "Start at 12, then count 3 more: 13, 14, 15.",
+      "explanation": "12 plus 3 makes 15!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_085",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 16,
+        "options": [
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      "hint": "Start at 12, then count 4 more steps to reach 16.",
+      "explanation": "12 plus 4 makes 16!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_086",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 17,
+        "options": [
+          15,
+          16,
+          17,
+          18
+        ]
+      },
+      "hint": "Start at 12, then count 5 more steps to reach 17.",
+      "explanation": "12 plus 5 makes 17!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_087",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 18,
+        "options": [
+          16,
+          17,
+          18,
+          19
+        ]
+      },
+      "hint": "Start at 12, then count 6 more steps to reach 18.",
+      "explanation": "12 plus 6 makes 18!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_088",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "13 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 14,
+        "options": [
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "hint": "13 plus 1 is the next number: 14.",
+      "explanation": "13 plus 1 makes 14!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 13,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_089",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "13 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 15,
+        "options": [
+          13,
+          14,
+          15,
+          16
+        ]
+      },
+      "hint": "Start at 13, then count 2 more: 14, 15.",
+      "explanation": "13 plus 2 makes 15!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 13,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_090",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "13 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 16,
+        "options": [
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      "hint": "Start at 13, then count 3 more: 14, 15, 16.",
+      "explanation": "13 plus 3 makes 16!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 13,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_091",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "13 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 17,
+        "options": [
+          15,
+          16,
+          17,
+          18
+        ]
+      },
+      "hint": "Start at 13, then count 4 more steps to reach 17.",
+      "explanation": "13 plus 4 makes 17!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 13,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_092",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "13 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 18,
+        "options": [
+          16,
+          17,
+          18,
+          19
+        ]
+      },
+      "hint": "Start at 13, then count 5 more steps to reach 18.",
+      "explanation": "13 plus 5 makes 18!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 13,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_093",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 15,
+        "options": [
+          13,
+          14,
+          15,
+          16
+        ]
+      },
+      "hint": "14 plus 1 is the next number: 15.",
+      "explanation": "14 plus 1 makes 15!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_094",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 16,
+        "options": [
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      "hint": "Start at 14, then count 2 more: 15, 16.",
+      "explanation": "14 plus 2 makes 16!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_095",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 17,
+        "options": [
+          15,
+          16,
+          17,
+          18
+        ]
+      },
+      "hint": "Start at 14, then count 3 more: 15, 16, 17.",
+      "explanation": "14 plus 3 makes 17!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_096",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 18,
+        "options": [
+          16,
+          17,
+          18,
+          19
+        ]
+      },
+      "hint": "Start at 14, then count 4 more steps to reach 18.",
+      "explanation": "14 plus 4 makes 18!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_097",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 19,
+        "options": [
+          17,
+          18,
+          19,
+          20
+        ]
+      },
+      "hint": "Start at 14, then count 5 more steps to reach 19.",
+      "explanation": "14 plus 5 makes 19!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_098",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "15 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 16,
+        "options": [
+          14,
+          15,
+          16,
+          17
+        ]
+      },
+      "hint": "15 plus 1 is the next number: 16.",
+      "explanation": "15 plus 1 makes 16!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 14,
+      "difficultyTraits": {
+        "maxOperand": 15,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_099",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "15 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 17,
+        "options": [
+          15,
+          16,
+          17,
+          18
+        ]
+      },
+      "hint": "Start at 15, then count 2 more: 16, 17.",
+      "explanation": "15 plus 2 makes 17!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 14,
+      "difficultyTraits": {
+        "maxOperand": 15,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_100",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "15 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 18,
+        "options": [
+          16,
+          17,
+          18,
+          19
+        ]
+      },
+      "hint": "Start at 15, then count 3 more: 16, 17, 18.",
+      "explanation": "15 plus 3 makes 18!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 14,
+      "difficultyTraits": {
+        "maxOperand": 15,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_101",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "15 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 19,
+        "options": [
+          17,
+          18,
+          19,
+          20
+        ]
+      },
+      "hint": "Start at 15, then count 4 more steps to reach 19.",
+      "explanation": "15 plus 4 makes 19!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 14,
+      "difficultyTraits": {
+        "maxOperand": 15,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_102",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "15 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 20,
+        "options": [
+          18,
+          19,
+          20,
+          21
+        ]
+      },
+      "hint": "Start at 15, then count 5 more steps to reach 20.",
+      "explanation": "15 plus 5 makes 20!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 15,
+      "difficultyTraits": {
+        "maxOperand": 15,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_103",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "16 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 17,
+        "options": [
+          15,
+          16,
+          17,
+          18
+        ]
+      },
+      "hint": "16 plus 1 is the next number: 17.",
+      "explanation": "16 plus 1 makes 17!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 15,
+      "difficultyTraits": {
+        "maxOperand": 16,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_104",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "16 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 18,
+        "options": [
+          16,
+          17,
+          18,
+          19
+        ]
+      },
+      "hint": "Start at 16, then count 2 more: 17, 18.",
+      "explanation": "16 plus 2 makes 18!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 15,
+      "difficultyTraits": {
+        "maxOperand": 16,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_105",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "16 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 19,
+        "options": [
+          17,
+          18,
+          19,
+          20
+        ]
+      },
+      "hint": "Start at 16, then count 3 more: 17, 18, 19.",
+      "explanation": "16 plus 3 makes 19!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 15,
+      "difficultyTraits": {
+        "maxOperand": 16,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_106",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "16 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 20,
+        "options": [
+          18,
+          19,
+          20,
+          21
+        ]
+      },
+      "hint": "Start at 16, then count 4 more steps to reach 20.",
+      "explanation": "16 plus 4 makes 20!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 16,
+      "difficultyTraits": {
+        "maxOperand": 16,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_107",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "16 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 21,
+        "options": [
+          19,
+          20,
+          21,
+          22
+        ]
+      },
+      "hint": "16 + 4 = 20, then 1 more makes 21.",
+      "explanation": "16 plus 5 makes 21!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 16,
+      "difficultyTraits": {
+        "maxOperand": 16,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_108",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 18,
+        "options": [
+          16,
+          17,
+          18,
+          19
+        ]
+      },
+      "hint": "17 plus 1 is the next number: 18.",
+      "explanation": "17 plus 1 makes 18!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 16,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_109",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 19,
+        "options": [
+          17,
+          18,
+          19,
+          20
+        ]
+      },
+      "hint": "Start at 17, then count 2 more: 18, 19.",
+      "explanation": "17 plus 2 makes 19!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 16,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_110",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 20,
+        "options": [
+          18,
+          19,
+          20,
+          21
+        ]
+      },
+      "hint": "Start at 17, then count 3 more: 18, 19, 20.",
+      "explanation": "17 plus 3 makes 20!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 17,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_111",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 21,
+        "options": [
+          19,
+          20,
+          21,
+          22
+        ]
+      },
+      "hint": "17 + 3 = 20, then 1 more makes 21.",
+      "explanation": "17 plus 4 makes 21!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 17,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_112",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 22,
+        "options": [
+          20,
+          21,
+          22,
+          23
+        ]
+      },
+      "hint": "17 + 3 = 20, then 2 more makes 22.",
+      "explanation": "17 plus 5 makes 22!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 17,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_113",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "18 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 19,
+        "options": [
+          17,
+          18,
+          19,
+          20
+        ]
+      },
+      "hint": "18 plus 1 is the next number: 19.",
+      "explanation": "18 plus 1 makes 19!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 17,
+      "difficultyTraits": {
+        "maxOperand": 18,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "cur_add_114",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "18 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 20,
+        "options": [
+          18,
+          19,
+          20,
+          21
+        ]
+      },
+      "hint": "Start at 18, then count 2 more: 19, 20.",
+      "explanation": "18 plus 2 makes 20!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 18,
+      "difficultyTraits": {
+        "maxOperand": 18,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_115",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "18 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 21,
+        "options": [
+          19,
+          20,
+          21,
+          22
+        ]
+      },
+      "hint": "Start at 18, then count 3 more: 19, 20, 21.",
+      "explanation": "18 plus 3 makes 21!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 18,
+      "difficultyTraits": {
+        "maxOperand": 18,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_116",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "18 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 22,
+        "options": [
+          20,
+          21,
+          22,
+          23
+        ]
+      },
+      "hint": "18 + 2 = 20, then 2 more makes 22.",
+      "explanation": "18 plus 4 makes 22!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 18,
+      "difficultyTraits": {
+        "maxOperand": 18,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_117",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "18 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 23,
+        "options": [
+          21,
+          22,
+          23,
+          24
+        ]
+      },
+      "hint": "18 + 2 = 20, then 3 more makes 23.",
+      "explanation": "18 plus 5 makes 23!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 18,
+      "difficultyTraits": {
+        "maxOperand": 18,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_118",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "19 + 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 20,
+        "options": [
+          18,
+          19,
+          20,
+          21
+        ]
+      },
+      "hint": "19 plus 1 is the next number: 20.",
+      "explanation": "19 plus 1 makes 20!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 19,
+      "difficultyTraits": {
+        "maxOperand": 19,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_119",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "19 + 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 21,
+        "options": [
+          19,
+          20,
+          21,
+          22
+        ]
+      },
+      "hint": "Start at 19, then count 2 more: 20, 21.",
+      "explanation": "19 plus 2 makes 21!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 19,
+      "difficultyTraits": {
+        "maxOperand": 19,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_120",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "19 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 22,
+        "options": [
+          20,
+          21,
+          22,
+          23
+        ]
+      },
+      "hint": "Start at 19, then count 3 more: 20, 21, 22.",
+      "explanation": "19 plus 3 makes 22!",
+      "misconceptionTags": [
+        "counting_on_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 19,
+      "difficultyTraits": {
+        "maxOperand": 19,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_121",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "19 + 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 23,
+        "options": [
+          21,
+          22,
+          23,
+          24
+        ]
+      },
+      "hint": "19 + 1 = 20, then 3 more makes 23.",
+      "explanation": "19 plus 4 makes 23!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 19,
+      "difficultyTraits": {
+        "maxOperand": 19,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_add_122",
+      "domain": "addition",
+      "skills": [
+        "teens_addition"
+      ],
+      "difficulty": 2.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "19 + 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 24,
+        "options": [
+          22,
+          23,
+          24,
+          25
+        ]
+      },
+      "hint": "19 + 1 = 20, then 4 more makes 24.",
+      "explanation": "19 plus 5 makes 24!",
+      "misconceptionTags": [
+        "bridge_through_ten_error",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 19,
+      "difficultyTraits": {
+        "maxOperand": 19,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "cur_sub_001",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "3 - 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 3, take away 1. How many are left?",
+      "explanation": "3 take away 1 leaves 2!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_002",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "3 - 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "You have 3, take away 2. How many are left?",
+      "explanation": "3 take away 2 leaves 1!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_003",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "4 - 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 4, take away 1. How many are left?",
+      "explanation": "4 take away 1 leaves 3!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_004",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "4 - 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 4, take away 2. How many are left?",
+      "explanation": "4 take away 2 leaves 2!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_005",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "4 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "You have 4, take away 3. Just 1 is left!",
+      "explanation": "4 take away 3 leaves 1!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_006",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "5 - 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "You have 5 fingers up, put 1 down. How many are still up?",
+      "explanation": "5 take away 1 leaves 4!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_007",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "5 - 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 5 fingers up, put 2 down. How many are still up?",
+      "explanation": "5 take away 2 leaves 3!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_008",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "5 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 5, take away 3. Count what is left!",
+      "explanation": "5 take away 3 leaves 2!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_009",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "5 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "You have 5, take away 4. Almost all gone! Just 1 left!",
+      "explanation": "5 take away 4 leaves 1!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_010",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "6 - 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "You have 6, take away 1. Count back one from 6!",
+      "explanation": "6 take away 1 leaves 5!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_011",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "6 - 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "You have 6, take away 2. Count back: 5, 4!",
+      "explanation": "6 take away 2 leaves 4!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_012",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "6 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 6, take away 3. Half of 6 is left!",
+      "explanation": "6 take away 3 leaves 3!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_013",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "6 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 6, take away 4. Count what is left!",
+      "explanation": "6 take away 4 leaves 2!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_014",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "6 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      "hint": "You have 6, take away 5. Almost all gone!",
+      "explanation": "6 take away 5 leaves just 1!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_015",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.3,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "7 - 1 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "You have 7, take away 1. Count back one from 7!",
+      "explanation": "7 take away 1 leaves 6!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_016",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.5,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "7 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "You have 7, take away 3. Count back: 6, 5, 4!",
+      "explanation": "7 take away 3 leaves 4!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_017",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.5,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "7 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 7, take away 4. Count back: 6, 5, 4, 3!",
+      "explanation": "7 take away 4 leaves 3!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_018",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.5,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "8 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "You have 8, take away 3. Count back: 7, 6, 5!",
+      "explanation": "8 take away 3 leaves 5!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_019",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.5,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "8 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "You have 8, take away 4. Half of 8 is left!",
+      "explanation": "8 take away 4 leaves 4! Half of 8 is 4!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_020",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.6,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "8 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 8, take away 5. Think: 5 + 3 = 8, so 3 are left!",
+      "explanation": "8 take away 5 leaves 3!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_021",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.6,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "9 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "You have 9, take away 3. Count back: 8, 7, 6!",
+      "explanation": "9 take away 3 leaves 6!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_022",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.6,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "9 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "You have 9, take away 4. Think: 4 + 5 = 9, so 5 are left!",
+      "explanation": "9 take away 4 leaves 5!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_023",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.6,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "9 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "You have 9, take away 5. Think: 5 + 4 = 9, so 4 are left!",
+      "explanation": "9 take away 5 leaves 4!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_024",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.7,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "10 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "You have 10, take away 3. Count back: 9, 8, 7!",
+      "explanation": "10 take away 3 leaves 7!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_025",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 - 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "Think: 2 + 8 = 10.",
+      "explanation": "10 take away 2 leaves 8!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_026",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.7,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "10 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "You have 10, take away 5. Half of 10 is left!",
+      "explanation": "10 take away 5 leaves 5! Half of 10 is 5!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_027",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.7,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "10 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "hint": "You have 10, take away 7. Think: 7 + 3 = 10, so 3 are left!",
+      "explanation": "10 take away 7 leaves 3!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_028",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "12 - 2 = 10, then 10 - 1 = 9.",
+      "explanation": "12 take away 3 leaves 9!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_029",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 - 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "11 - 1 = 10, then 10 - 1 = 9.",
+      "explanation": "11 take away 2 leaves 9!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_030",
+      "domain": "subtraction",
+      "skills": [
+        "harder_subtraction"
+      ],
+      "difficulty": 2.8,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "11 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "You have 11, take away 7. Think: 7 + 4 = 11, so 4 are left!",
+      "explanation": "11 take away 7 leaves 4!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_031",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 - 0 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "Taking away 0 changes nothing, so 10 stays 10.",
+      "explanation": "10 take away 0 leaves 10!",
+      "misconceptionTags": [
+        "zero_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_032",
+      "domain": "subtraction",
+      "skills": [
+        "basic_subtraction"
+      ],
+      "difficulty": 2.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 - 10 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          0,
+          1,
+          2,
+          10
+        ]
+      },
+      "hint": "If you take all 10 away, 0 are left.",
+      "explanation": "10 take away 10 leaves 0!",
+      "misconceptionTags": [
+        "zero_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_033",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.6,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 - 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "Think: 6 + 4 = 10.",
+      "explanation": "10 take away 6 leaves 4!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_034",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "11 - 1 = 10, then 10 - 2 = 8.",
+      "explanation": "11 take away 3 leaves 8!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_035",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "11 - 1 = 10, then 10 - 4 = 6.",
+      "explanation": "11 take away 5 leaves 6!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_036",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "11 - 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "11 - 1 = 10, then 10 - 5 = 5.",
+      "explanation": "11 take away 6 leaves 5!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 11,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_037",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "12 - 2 = 10, then 10 - 2 = 8.",
+      "explanation": "12 take away 4 leaves 8!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_038",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 - 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "12 - 2 = 10, then 10 - 4 = 6.",
+      "explanation": "12 take away 6 leaves 6!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_039",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "12 - 8 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "12 - 2 = 10, then 10 - 6 = 4.",
+      "explanation": "12 take away 8 leaves 4!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 12,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_040",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "13 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "13 - 3 = 10, then 10 - 1 = 9.",
+      "explanation": "13 take away 4 leaves 9!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 13,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_041",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "13 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "13 - 3 = 10, then 10 - 2 = 8.",
+      "explanation": "13 take away 5 leaves 8!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 13,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_042",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "13 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "13 - 3 = 10, then 10 - 4 = 6.",
+      "explanation": "13 take away 7 leaves 6!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 13,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_043",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 2.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 - 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "Count back 3 from 14 to reach 11.",
+      "explanation": "14 take away 3 leaves 11!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 9,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_044",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "14 - 4 = 10, then 10 - 1 = 9.",
+      "explanation": "14 take away 5 leaves 9!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_045",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 - 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "14 - 4 = 10, then 10 - 2 = 8.",
+      "explanation": "14 take away 6 leaves 8!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_046",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "14 - 4 = 10, then 10 - 3 = 7.",
+      "explanation": "14 take away 7 leaves 7!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_047",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "14 - 9 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "14 - 4 = 10, then 10 - 5 = 5.",
+      "explanation": "14 take away 9 leaves 5!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 14,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_048",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "15 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "Think: 4 + 11 = 15.",
+      "explanation": "15 take away 4 leaves 11!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 10,
+      "difficultyTraits": {
+        "maxOperand": 15,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_049",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "15 - 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "15 - 5 = 10, then 10 - 1 = 9.",
+      "explanation": "15 take away 6 leaves 9!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 15,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_050",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "15 - 8 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "15 - 5 = 10, then 10 - 3 = 7.",
+      "explanation": "15 take away 8 leaves 7!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 15,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_051",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "15 - 9 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "15 - 5 = 10, then 10 - 4 = 6.",
+      "explanation": "15 take away 9 leaves 6!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 15,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_052",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "16 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "Think: 4 + 12 = 16.",
+      "explanation": "16 take away 4 leaves 12!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 16,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_053",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 2.9,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "16 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "Think: 5 + 11 = 16.",
+      "explanation": "16 take away 5 leaves 11!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 11,
+      "difficultyTraits": {
+        "maxOperand": 16,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_054",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "16 - 8 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "hint": "16 - 6 = 10, then 10 - 2 = 8.",
+      "explanation": "16 take away 8 leaves 8!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 16,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_055",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 13,
+        "options": [
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "hint": "Think: 4 + 13 = 17.",
+      "explanation": "17 take away 4 leaves 13!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_056",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "Think: 5 + 12 = 17.",
+      "explanation": "17 take away 5 leaves 12!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_057",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 - 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "Think: 6 + 11 = 17.",
+      "explanation": "17 take away 6 leaves 11!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_058",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          8,
+          9,
+          10,
+          11
+        ]
+      },
+      "hint": "Think: 7 + 10 = 17.",
+      "explanation": "17 take away 7 leaves 10!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 12,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_059",
+      "domain": "subtraction",
+      "skills": [
+        "subtraction_with_borrow"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "17 - 8 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "17 - 7 = 10, then 10 - 1 = 9.",
+      "explanation": "17 take away 8 leaves 9!",
+      "misconceptionTags": [
+        "borrow_confusion",
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 17,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "cur_sub_060",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "18 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 14,
+        "options": [
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      "hint": "Think: 4 + 14 = 18.",
+      "explanation": "18 take away 4 leaves 14!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 18,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_061",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "18 - 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 13,
+        "options": [
+          11,
+          12,
+          13,
+          14
+        ]
+      },
+      "hint": "Think: 5 + 13 = 18.",
+      "explanation": "18 take away 5 leaves 13!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 18,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_062",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "18 - 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "Think: 6 + 12 = 18.",
+      "explanation": "18 take away 6 leaves 12!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 18,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "cur_sub_063",
+      "domain": "subtraction",
+      "skills": [
+        "teens_subtraction"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "18 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 11,
+        "options": [
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "hint": "Think: 7 + 11 = 18.",
+      "explanation": "18 take away 7 leaves 11!",
+      "misconceptionTags": [
+        "counting_back_error"
+      ],
+      "generator": null,
+      "curriculumStep": 13,
+      "difficultyTraits": {
+        "maxOperand": 18,
+        "requiresBorrow": false
+      }
+    }
+  ]
+}

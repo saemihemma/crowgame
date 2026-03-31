@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crow - Translation and Learner Admin</title>
+<style>
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: #1a1a2e;
+        color: #e0e0e0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+        min-height: 100vh;
+    }
+
+    header {
+        background: #16213e;
+        border-bottom: 2px solid #ffd700;
+        padding: 1.25rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+        color: #ffd700;
+        letter-spacing: 0.05em;
+    }
+
+    header h1 span {
+        color: #e0e0e0;
+        font-weight: 400;
+    }
+
+    .toolbar {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    button {
+        background: #16213e;
+        color: #e0e0e0;
+        border: 1px solid #3a3a5c;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.875rem;
+        font-family: inherit;
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    button:hover {
+        background: #1f2b47;
+        border-color: #ffd700;
+    }
+
+    button.primary {
+        background: #ffd700;
+        color: #1a1a2e;
+        border-color: #ffd700;
+        font-weight: 600;
+    }
+
+    button.primary:hover {
+        background: #e6c200;
+    }
+
+    button.danger {
+        border-color: #e74c3c;
+        color: #e74c3c;
+    }
+
+    button.danger:hover {
+        background: #e74c3c;
+        color: #fff;
+    }
+
+    .search-bar,
+    .stats,
+    .table-wrap,
+    .panel {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+
+    .search-bar {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        background: #16213e;
+    }
+
+    .search-bar input,
+    .api-config input {
+        width: 100%;
+        max-width: 560px;
+        padding: 0.625rem 1rem;
+        background: #0f0f23;
+        border: 1px solid #3a3a5c;
+        border-radius: 6px;
+        color: #e0e0e0;
+        font-size: 0.9375rem;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+
+    .search-bar input:focus,
+    .api-config input:focus,
+    .translation-cell input:focus {
+        border-color: #ffd700;
+    }
+
+    .stats {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        font-size: 0.8125rem;
+        color: #888;
+    }
+
+    .table-wrap {
+        padding-bottom: 2rem;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 0.5rem;
+    }
+
+    thead th {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        background: #16213e;
+        border-bottom: 2px solid #3a3a5c;
+        font-weight: 600;
+        font-size: 0.8125rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #aaa;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #2a2a4a;
+        transition: background 0.1s;
+    }
+
+    tbody tr:hover {
+        background: #1f2b47;
+    }
+
+    td {
+        padding: 0.625rem 1rem;
+        vertical-align: top;
+    }
+
+    .key-cell {
+        width: 45%;
+    }
+
+    .key-name {
+        font-family: "Cascadia Code", "Consolas", monospace;
+        font-size: 0.875rem;
+        color: #ffd700;
+        word-break: break-all;
+    }
+
+    .key-default {
+        font-size: 0.8125rem;
+        color: #888;
+        margin-top: 0.2rem;
+    }
+
+    .translation-cell {
+        width: 55%;
+    }
+
+    .translation-cell input {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        background: #0f0f23;
+        border: 1px solid #3a3a5c;
+        border-radius: 4px;
+        color: #e0e0e0;
+        font-size: 0.9375rem;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.15s;
+    }
+
+    .translation-cell input.has-value {
+        border-color: #4caf50;
+    }
+
+    .panel {
+        padding-top: 1.25rem;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .panel-body {
+        background: #16213e;
+        border: 1px solid #2a2a4a;
+        border-radius: 12px;
+        padding: 1.25rem;
+    }
+
+    .panel h2 {
+        font-size: 1.125rem;
+        color: #ffd700;
+        margin-bottom: 0.35rem;
+    }
+
+    .panel p {
+        color: #9aa3c1;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    .api-config {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .api-config input {
+        flex: 1 1 320px;
+        max-width: none;
+    }
+
+    .learner-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .learner-card {
+        background: #0f0f23;
+        border: 1px solid #2a2a4a;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+
+    .learner-card h3 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1rem;
+        color: #ffd700;
+        margin-bottom: 0.75rem;
+    }
+
+    .sync-pill {
+        font-size: 0.75rem;
+        padding: 0.18rem 0.55rem;
+        border-radius: 999px;
+        background: #1f2b47;
+        color: #a8c5ff;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+    }
+
+    .metric-row,
+    .domain-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        font-size: 0.875rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .metric-row span:first-child,
+    .domain-row span:first-child {
+        color: #9aa3c1;
+    }
+
+    .domain-row {
+        border-top: 1px solid #23234a;
+        padding-top: 0.5rem;
+        margin-top: 0.5rem;
+    }
+
+    .flag-list {
+        margin: 0.75rem 0 0;
+        padding-left: 1rem;
+        color: #ffcc88;
+        font-size: 0.8125rem;
+    }
+
+    .skills-note {
+        color: #a8c5ff;
+        font-size: 0.8125rem;
+        margin-top: 0.75rem;
+    }
+
+    .toast {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: #16213e;
+        border: 1px solid #ffd700;
+        color: #ffd700;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-size: 0.9375rem;
+        opacity: 0;
+        transition: transform 0.3s, opacity 0.3s;
+        z-index: 100;
+    }
+
+    .toast.visible {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+
+    #import-input {
+        display: none;
+    }
+
+    @media (max-width: 700px) {
+        header,
+        .search-bar,
+        .stats,
+        .table-wrap,
+        .panel {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        td,
+        th {
+            padding: 0.5rem;
+        }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Crow <span>- Translation and Learner Admin</span></h1>
+    <div class="toolbar">
+        <button class="primary" id="btn-save">Save</button>
+        <button id="btn-export">Export JSON</button>
+        <button id="btn-import">Import JSON</button>
+        <button class="danger" id="btn-clear">Clear All</button>
+        <input type="file" id="import-input" accept=".json">
+    </div>
+</header>
+
+<div class="search-bar">
+    <input type="text" id="search" placeholder="Filter by key name..." autocomplete="off">
+</div>
+
+<div class="stats" id="stats"></div>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th class="key-cell">Key / English Default</th>
+                <th class="translation-cell">Translation</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+</div>
+
+<section class="panel">
+    <div class="panel-body">
+        <h2>Learner Summary</h2>
+        <p>Reads per-child learner snapshots from the current browser storage. If a learner API base URL is set, the game will also try hosted sync using that endpoint.</p>
+        <div class="api-config">
+            <input type="text" id="learner-api-base" placeholder="Optional learner API base URL, e.g. https://example.com/api">
+            <button id="btn-save-api">Save API URL</button>
+            <button id="btn-refresh-learners">Refresh Summary</button>
+        </div>
+        <div class="learner-grid" id="learner-summary"></div>
+    </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+    const STORAGE_KEY = "crow_translations";
+    const STRINGS_URL = "data/i18n/strings_en.json";
+    const PROFILES_KEY = "crow_profiles";
+    const LEARNER_API_BASE_KEY = "crow_learner_api_base";
+
+    let defaults = {};
+    let overrides = {};
+
+    const tbody = document.getElementById("tbody");
+    const searchInput = document.getElementById("search");
+    const statsEl = document.getElementById("stats");
+    const toastEl = document.getElementById("toast");
+    const learnerSummaryEl = document.getElementById("learner-summary");
+    const learnerApiBaseInput = document.getElementById("learner-api-base");
+
+    let toastTimer = null;
+
+    function showToast(message) {
+        toastEl.textContent = message;
+        toastEl.classList.add("visible");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+            toastEl.classList.remove("visible");
+        }, 2200);
+    }
+
+    function readJson(key, fallbackValue) {
+        try {
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallbackValue;
+        } catch (error) {
+            return fallbackValue;
+        }
+    }
+
+    function loadOverrides() {
+        overrides = readJson(STORAGE_KEY, {});
+    }
+
+    function loadDefaults() {
+        return fetch(STRINGS_URL)
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch " + STRINGS_URL + " (" + response.status + ")");
+                }
+                return response.json();
+            })
+            .then(function (json) {
+                defaults = json;
+            });
+    }
+
+    function renderTranslations() {
+        tbody.innerHTML = "";
+        const keys = Object.keys(defaults);
+        const filter = searchInput.value.toLowerCase();
+        let visibleCount = 0;
+        let overrideCount = 0;
+
+        keys.forEach(function (key) {
+            const defaultValue = defaults[key];
+            const override = overrides[key] || "";
+            if (override) overrideCount++;
+
+            if (filter && key.toLowerCase().indexOf(filter) === -1) {
+                return;
+            }
+
+            visibleCount++;
+
+            const row = document.createElement("tr");
+            const keyCell = document.createElement("td");
+            keyCell.className = "key-cell";
+
+            const keyName = document.createElement("div");
+            keyName.className = "key-name";
+            keyName.textContent = key;
+
+            const keyDefault = document.createElement("div");
+            keyDefault.className = "key-default";
+            keyDefault.textContent = defaultValue;
+
+            keyCell.appendChild(keyName);
+            keyCell.appendChild(keyDefault);
+
+            const translationCell = document.createElement("td");
+            translationCell.className = "translation-cell";
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.placeholder = defaultValue;
+            input.value = override;
+            if (override) {
+                input.classList.add("has-value");
+            }
+
+            input.addEventListener("input", function () {
+                overrides[key] = this.value;
+                if (this.value) {
+                    this.classList.add("has-value");
+                } else {
+                    this.classList.remove("has-value");
+                }
+            });
+
+            translationCell.appendChild(input);
+            row.appendChild(keyCell);
+            row.appendChild(translationCell);
+            tbody.appendChild(row);
+        });
+
+        statsEl.textContent = visibleCount + " of " + keys.length + " keys shown - " + overrideCount + " translation(s) set";
+    }
+
+    function createMetric(label, value) {
+        const row = document.createElement("div");
+        row.className = "metric-row";
+
+        const left = document.createElement("span");
+        left.textContent = label;
+
+        const right = document.createElement("span");
+        right.textContent = value;
+
+        row.appendChild(left);
+        row.appendChild(right);
+        return row;
+    }
+
+    function formatPercent(value) {
+        return Math.round((value || 0) * 100) + "%";
+    }
+
+    function getActiveFlags(summary) {
+        if (!summary || !summary.frustrationFlags) {
+            return [];
+        }
+
+        const flags = [];
+        if (summary.frustrationFlags.repeatMisses) flags.push("Repeat misses");
+        if (summary.frustrationFlags.responseTimeSpike) flags.push("Response-time spike");
+        if (summary.frustrationFlags.repeatedHints) flags.push("Repeated hint use");
+        if (summary.frustrationFlags.lowConfidence) flags.push("Low confidence");
+        return flags;
+    }
+
+    function renderLearnerSummary() {
+        learnerSummaryEl.innerHTML = "";
+        const profiles = readJson(PROFILES_KEY, []);
+
+        if (!profiles.length) {
+            learnerSummaryEl.innerHTML = '<div class="learner-card">No child profiles found yet.</div>';
+            return;
+        }
+
+        profiles.forEach(function (profile) {
+            const save = readJson("crow_save_" + profile.username, null);
+            const snapshot = readJson("crow_learner_snapshot_" + profile.childId, null) || (save && save.learnerState) || null;
+            const summary = snapshot && snapshot.summary ? snapshot.summary : null;
+            const visibleDomains = summary && summary.domains
+                ? summary.domains.filter(function (domain) {
+                    return domain.recentProblemCount > 0 || domain.activeReviewCount > 0 || domain.unlocked;
+                }).slice(0, 4)
+                : [];
+            const flags = getActiveFlags(summary);
+
+            const card = document.createElement("div");
+            card.className = "learner-card";
+
+            const heading = document.createElement("h3");
+            const title = document.createElement("span");
+            title.textContent = profile.username;
+            const pill = document.createElement("span");
+            pill.className = "sync-pill";
+            pill.textContent = snapshot && snapshot.syncStatus ? snapshot.syncStatus : "local-only";
+            heading.appendChild(title);
+            heading.appendChild(pill);
+            card.appendChild(heading);
+
+            card.appendChild(createMetric("First-attempt accuracy", summary ? formatPercent(summary.firstAttemptAccuracy) : "No data yet"));
+            card.appendChild(createMetric("Active review skills", summary ? String(summary.activeReviewSkills.length) : "0"));
+            card.appendChild(createMetric("Child ID", profile.childId || "missing"));
+
+            visibleDomains.forEach(function (domain) {
+                const row = document.createElement("div");
+                row.className = "domain-row";
+
+                const left = document.createElement("span");
+                left.textContent = domain.domain;
+
+                const right = document.createElement("span");
+                right.textContent =
+                    "ELO " + Math.round(domain.masteryELO) +
+                    " | Conf " + (domain.confidenceOffset >= 0 ? "+" : "") + Math.round(domain.confidenceOffset) +
+                    " | " + formatPercent(domain.firstAttemptAccuracy) +
+                    " | Review " + domain.activeReviewCount;
+
+                row.appendChild(left);
+                row.appendChild(right);
+                card.appendChild(row);
+            });
+
+            if (flags.length) {
+                const list = document.createElement("ul");
+                list.className = "flag-list";
+                flags.forEach(function (flag) {
+                    const item = document.createElement("li");
+                    item.textContent = flag;
+                    list.appendChild(item);
+                });
+                card.appendChild(list);
+            }
+
+            const skillsNote = document.createElement("div");
+            skillsNote.className = "skills-note";
+            skillsNote.textContent = summary && summary.activeReviewSkills.length
+                ? "Review queue: " + summary.activeReviewSkills.join(", ")
+                : "Review queue: clear";
+            card.appendChild(skillsNote);
+
+            learnerSummaryEl.appendChild(card);
+        });
+    }
+
+    document.getElementById("btn-save").addEventListener("click", function () {
+        const toSave = {};
+        Object.keys(overrides).forEach(function (key) {
+            if (overrides[key]) {
+                toSave[key] = overrides[key];
+            }
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+        overrides = toSave;
+        showToast("Translations saved (" + Object.keys(toSave).length + " keys)");
+    });
+
+    document.getElementById("btn-export").addEventListener("click", function () {
+        const toExport = {};
+        Object.keys(overrides).forEach(function (key) {
+            if (overrides[key]) {
+                toExport[key] = overrides[key];
+            }
+        });
+
+        const blob = new Blob([JSON.stringify(toExport, null, 4)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "crow_translations.json";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast("Exported " + Object.keys(toExport).length + " translations");
+    });
+
+    const importInput = document.getElementById("import-input");
+    document.getElementById("btn-import").addEventListener("click", function () {
+        importInput.click();
+    });
+
+    importInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            try {
+                const imported = JSON.parse(event.target.result);
+                if (typeof imported !== "object" || imported === null || Array.isArray(imported)) {
+                    throw new Error("Invalid format");
+                }
+
+                overrides = imported;
+                renderTranslations();
+                showToast("Imported " + Object.keys(imported).length + " translations");
+            } catch (error) {
+                showToast("Import failed: " + error.message);
+            }
+        };
+
+        reader.readAsText(file);
+        this.value = "";
+    });
+
+    document.getElementById("btn-clear").addEventListener("click", function () {
+        if (!confirm("Clear all translations? This will also remove them from localStorage.")) return;
+        overrides = {};
+        localStorage.removeItem(STORAGE_KEY);
+        renderTranslations();
+        showToast("All translations cleared");
+    });
+
+    document.getElementById("btn-save-api").addEventListener("click", function () {
+        const value = learnerApiBaseInput.value.trim();
+        if (value) {
+            localStorage.setItem(LEARNER_API_BASE_KEY, value);
+            showToast("Learner API URL saved");
+        } else {
+            localStorage.removeItem(LEARNER_API_BASE_KEY);
+            showToast("Learner API URL cleared");
+        }
+    });
+
+    document.getElementById("btn-refresh-learners").addEventListener("click", function () {
+        renderLearnerSummary();
+        showToast("Learner summary refreshed");
+    });
+
+    searchInput.addEventListener("input", function () {
+        renderTranslations();
+    });
+
+    loadOverrides();
+    learnerApiBaseInput.value = localStorage.getItem(LEARNER_API_BASE_KEY) || "";
+    loadDefaults()
+        .then(function () {
+            renderTranslations();
+            renderLearnerSummary();
+        })
+        .catch(function (error) {
+            tbody.innerHTML = '<tr><td colspan="2" style="color:#e74c3c;padding:2rem;">Error loading strings: ' + error.message + '</td></tr>';
+        });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,70 @@
+{
+    "id": "level_99",
+    "name": "Math Practice Arena",
+    "theme": "forest",
+    "difficulty": 1,
+    "music": "forest_theme",
+    "criticalPath": {
+        "length": "long",
+        "motifs": ["flat_run"]
+    },
+    "platforms": [
+        { "type": "ground", "x": 0, "width": 200, "y": 16 }
+    ],
+    "spawns": {
+        "player": { "x": 2, "y": 14 },
+        "npcs": [
+            { "npc_id": "owl_teacher_01", "x": 10, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 20, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 30, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 40, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 50, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 60, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 70, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 80, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 90, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 100, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 110, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 120, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 130, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 140, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 150, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 160, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 170, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 180, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 190, "y": 16 },
+            { "npc_id": "owl_teacher_01", "x": 195, "y": 16 }
+        ],
+        "collectibles": [
+            { "type": "coin", "x": 5, "y": 14 },
+            { "type": "coin", "x": 15, "y": 14 },
+            { "type": "coin", "x": 25, "y": 14 },
+            { "type": "coin", "x": 35, "y": 14 },
+            { "type": "coin", "x": 45, "y": 14 },
+            { "type": "coin", "x": 55, "y": 14 },
+            { "type": "coin", "x": 65, "y": 14 },
+            { "type": "coin", "x": 75, "y": 14 },
+            { "type": "coin", "x": 85, "y": 14 },
+            { "type": "coin", "x": 95, "y": 14 },
+            { "type": "coin", "x": 105, "y": 14 },
+            { "type": "coin", "x": 115, "y": 14 },
+            { "type": "coin", "x": 125, "y": 14 },
+            { "type": "coin", "x": 135, "y": 14 },
+            { "type": "coin", "x": 145, "y": 14 },
+            { "type": "coin", "x": 155, "y": 14 },
+            { "type": "coin", "x": 165, "y": 14 },
+            { "type": "coin", "x": 175, "y": 14 },
+            { "type": "coin", "x": 185, "y": 14 },
+            { "type": "coin", "x": 198, "y": 14 }
+        ]
+    },
+    "hazards": [],
+    "enemies": [],
+    "exits": [
+        { "x": 198, "y": 16, "target_level": "level_01" }
+    ],
+    "mathGating": {
+        "skills": ["addition", "subtraction", "counting", "comparison", "pattern_matching", "number_sequence"],
+        "difficultyBand": [1, 3]
+    }
+}
