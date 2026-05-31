@@ -1,0 +1,8 @@
+# The web image only serves the prebuilt Godot export. Keep the build context to
+# just what deploy/web/Dockerfile copies (output/web + the Caddyfile), so Railway
+# never touches the TS project, node_modules, or the Godot source.
+*
+!deploy/
+!output/
+output/linux/
+output/*.zip
