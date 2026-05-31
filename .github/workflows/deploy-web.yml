@@ -1,0 +1,68 @@
+name: Deploy Crow Web build to Pages
+
+# Fast iteration loop: every push that touches the Godot project rebuilds the
+# HTML5 export and publishes it to GitHub Pages at a stable URL. On your phone,
+# just refresh the home-screen icon to get the latest.
+#
+# One-time setup (repo Settings -> Pages -> Build and deployment ->
+# Source: "GitHub Actions"). Then the URL is:
+#   https://<owner>.github.io/<repo>/
+
+on:
+  push:
+    branches: [claude/godot-port-KMQIW, main]
+    paths:
+      - 'godot/**'
+      - '.github/workflows/deploy-web.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4.3 + Web export templates
+        run: |
+          set -euo pipefail
+          curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          sudo mv Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
+          sudo chmod +x /usr/local/bin/godot
+          curl -fsSL -o templates.tpz "https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_export_templates.tpz"
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.3.stable"
+          unzip -q templates.tpz
+          cp templates/* "$HOME/.local/share/godot/export_templates/4.3.stable/"
+          godot --version --headless
+
+      - name: Export Web build
+        run: |
+          set -euo pipefail
+          mkdir -p output/web
+          godot --headless --path godot --import || true
+          godot --headless --path godot --export-release "Web" "$GITHUB_WORKSPACE/output/web/index.html"
+          test -f output/web/index.html
+          test -f output/web/index.wasm
+          # GitHub Pages 404s on files Jekyll ignores; disable Jekyll.
+          touch output/web/.nojekyll
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: output/web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
