@@ -7,8 +7,14 @@ extends CharacterBody2D
 @export var crow_texture_path := "res://assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png"
 @export var crow_walk_path := "res://assets/sprites/characters/crow2/crow3/crow-walk-64px-fixed.png"
 
+const PROJECTILE_SCENE := preload("res://scenes/Projectile.tscn")
+
 var _tuning: Dictionary = {}
 var _state: Dictionary = PlayerMotion.new_state()
+var _facing := 1
+var _shoot_cooldown := 0.0
+var _laser_speed := 400.0
+var _laser_cooldown := 1.0
 
 @onready var _sprite: Sprite2D = $Sprite
 
@@ -20,6 +26,9 @@ func _ready() -> void:
 			"coyoteMs": 80, "jumpBufferMs": 100, "gravityScale": 1.0, "terminalVelocity": 500}
 	if _sprite and ResourceLoader.exists(crow_texture_path):
 		_sprite.texture = load(crow_texture_path)
+	var combat := DataManager.get_dict("COMBAT_TUNING")
+	_laser_speed = float(combat.get("laser_speed", 400))
+	_laser_cooldown = float(combat.get("laser_cooldown_ms", 1000)) / 1000.0
 
 func _physics_process(delta: float) -> void:
 	var input := {
@@ -35,11 +44,23 @@ func _physics_process(delta: float) -> void:
 	_state["vx"] = velocity.x
 	_state["vy"] = velocity.y
 
+	if input["left"]:
+		_facing = -1
+	elif input["right"]:
+		_facing = 1
 	if _sprite:
-		if input["left"]:
-			_sprite.flip_h = true
-		elif input["right"]:
-			_sprite.flip_h = false
+		_sprite.flip_h = _facing < 0
+
+	_shoot_cooldown = maxf(0.0, _shoot_cooldown - delta)
+	if Input.is_action_just_pressed("shoot") and _shoot_cooldown <= 0.0:
+		_shoot()
+
+func _shoot() -> void:
+	_shoot_cooldown = _laser_cooldown
+	var proj := PROJECTILE_SCENE.instantiate()
+	proj.global_position = global_position + Vector2(_facing * 20.0, -40.0)
+	proj.setup(_facing, _laser_speed)
+	get_parent().add_child(proj)
 
 ## Test/feel hooks ----------------------------------------------------------
 func get_motion_state() -> Dictionary:

@@ -17,6 +17,7 @@ func _ready() -> void:
 	_add_button("move_right", ">", Vector2(PAD + BTN + GAP, dpad_y))
 	_add_button("jump", "JUMP", Vector2(vw - PAD - BTN, dpad_y))
 	_add_button("interact", "E", Vector2(vw - PAD - BTN, dpad_y - BTN - GAP))
+	_add_button("shoot", "PECK", Vector2(vw - PAD - BTN * 2 - GAP, dpad_y))
 	# Hide on non-touch desktop to avoid clutter (keyboard still works).
 	if not (DisplayServer.is_touchscreen_available() or OS.has_feature("web") or OS.has_feature("mobile")):
 		visible = false

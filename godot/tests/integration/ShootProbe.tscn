@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0crowshootprb"]
+
+[ext_resource type="Script" path="res://tests/integration/shoot_probe.gd" id="1_probe"]
+
+[node name="ShootProbe" type="Node"]
+script = ExtResource("1_probe")
