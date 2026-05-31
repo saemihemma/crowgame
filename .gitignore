@@ -26,3 +26,7 @@ dist-ssr
 
 # Local Godot desktop test builds (mobile Web build under output/web is committed)
 /output/linux/
+
+# Godot export build artifacts (web build itself is tracked under output/web)
+/output/*.zip
+/output/linux/
