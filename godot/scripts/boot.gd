@@ -10,7 +10,11 @@ func _ready() -> void:
 	# Autoloads have initialized (data/save/profile). Route to the menu.
 	# (Login flow is deferred; MainMenu -> Play starts the game.)
 	await get_tree().create_timer(0.4).timeout
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	# Route to the active profile's menu, or the login screen.
+	if ProfileManager.get_active_user() != null:
+		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	else:
+		get_tree().change_scene_to_file("res://scenes/Login.tscn")
 
 func _build_placeholder() -> void:
 	# Sky is the project's default_clear_color (#87CEEB), matching src/main.ts.

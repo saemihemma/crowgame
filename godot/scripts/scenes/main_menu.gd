@@ -21,7 +21,9 @@ func _ready() -> void:
 
 	_add_button(col, TextManager.t("menu.play"), _on_play)
 	if SaveManager.has_save():
-		_add_button(col, TextManager.t("menu.continue") if TextManager.get_default("menu.continue") != "" else "Continue", _on_play)
+		_add_button(col, "Continue", _on_continue)
+	if ProfileManager.get_active_user() != null:
+		_add_button(col, "Switch Player", _on_switch_user)
 
 func _add_button(parent: Node, text: String, cb: Callable) -> void:
 	var b := Button.new()
@@ -30,7 +32,15 @@ func _add_button(parent: Node, text: String, cb: Callable) -> void:
 	b.add_theme_font_size_override("font_size", 32)
 	b.pressed.connect(cb)
 	parent.add_child(b)
-	b.grab_focus()
+	if parent.get_child_count() == 2:  # focus the first button (after title)
+		b.grab_focus()
 
 func _on_play() -> void:
+	get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn")
+
+func _on_continue() -> void:
 	get_tree().change_scene_to_file("res://scenes/Game.tscn")
+
+func _on_switch_user() -> void:
+	ProfileManager.logout()
+	get_tree().change_scene_to_file("res://scenes/Login.tscn")
