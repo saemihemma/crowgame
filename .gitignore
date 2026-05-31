@@ -23,3 +23,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local Godot desktop test builds (mobile Web build under output/web is committed)
+/output/linux/
