@@ -8,6 +8,8 @@ const PLAYER_SCENE := preload("res://scenes/Player.tscn")
 const COIN_SCENE := preload("res://scenes/Coin.tscn")
 const HAZARD_SCENE := preload("res://scenes/Hazard.tscn")
 const DOOR_SCENE := preload("res://scenes/Door.tscn")
+const NPC_SCENE := preload("res://scenes/Npc.tscn")
+const MATH_CHALLENGE_SCENE := preload("res://scenes/MathChallenge.tscn")
 
 const MAX_LIVES := 3
 
@@ -89,8 +91,13 @@ func _spawn_entities() -> void:
 				door.position = Vector2(s["x"] + 16.0, s["y"])
 				door.target_level = String(s["props"].get("target_level", ""))
 				_world.add_child(door)
+			"npc":
+				var npc := NPC_SCENE.instantiate()
+				npc.npc_id = String(s["props"].get("npc_id", ""))
+				npc.position = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
+				_world.add_child(npc)
 			_:
-				# npc / enemy handled in later slices.
+				# enemy handled in a later slice.
 				pass
 
 func _setup_camera() -> void:
@@ -241,3 +248,27 @@ func _update_shake(delta: float) -> void:
 
 func get_player() -> CharacterBody2D:
 	return _player
+
+# ─── Math challenge overlay ───────────────────────────────
+var _math_challenge: CanvasLayer
+
+func is_math_challenge_active() -> bool:
+	return is_instance_valid(_math_challenge)
+
+func get_math_challenge() -> CanvasLayer:
+	return _math_challenge
+
+func launch_math_challenge(problem: Dictionary, opts: Dictionary) -> void:
+	if is_math_challenge_active():
+		return
+	_math_challenge = MATH_CHALLENGE_SCENE.instantiate()
+	add_child(_math_challenge)
+	_math_challenge.closed.connect(_on_challenge_closed)
+	if _player:
+		_player.set_physics_process(false)  # pause gameplay during the challenge
+	_math_challenge.present(problem, opts)
+
+func _on_challenge_closed() -> void:
+	_math_challenge = null
+	if _player:
+		_player.set_physics_process(true)

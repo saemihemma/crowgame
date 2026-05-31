@@ -19,5 +19,7 @@ echo "=== integration probes ==="
 land_status=$?
 "$GODOT" --headless --path "$HERE" res://tests/integration/CoinProbe.tscn
 coin_status=$?
+"$GODOT" --headless --path "$HERE" res://tests/integration/OwlProbe.tscn
+owl_status=$?
 
-exit $(( unit_status != 0 || land_status != 0 || coin_status != 0 ))
+exit $(( unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 ))

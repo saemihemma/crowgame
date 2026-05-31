@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0crowmathchal1"]
+
+[ext_resource type="Script" path="res://scripts/ui/math_challenge.gd" id="1_mc"]
+
+[node name="MathChallenge" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_mc")
