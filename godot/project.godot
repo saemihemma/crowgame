@@ -24,6 +24,8 @@ LevelManager="*res://scripts/autoload/level_manager.gd"
 LevelingManager="*res://scripts/autoload/leveling_manager.gd"
 ThemeManager="*res://scripts/autoload/theme_manager.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"
+ELOManager="*res://scripts/math/elo_manager.gd"
+LearnerStateManager="*res://scripts/systems/learner_state_manager.gd"
 
 [display]
 

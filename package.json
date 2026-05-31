@@ -14,6 +14,7 @@
         "math:review": "tsx tools/review_math_batches.ts",
         "math:browser-smoke": "node tools/math_browser_smoke.mjs",
         "math:sync-metadata": "tsx tools/sync_math_problem_metadata.ts",
+        "godot:gen-math-fixtures": "tsx tools/golden/gen_math_fixtures.ts",
         "process:audio": "node tools/process_audio.js",
         "ai:extract": "node tools/process_ai_assets.js --mode extract",
         "ai:process": "node tools/process_ai_assets.js",
