@@ -1,0 +1,314 @@
+[gd_scene load_steps=2 format=4]
+
+[ext_resource type="TileSet" path="res://resources/tilesets/forest_tiles.tres" id="1_pyv2x"]
+
+[node name="Level_level_01_forest" type="Node2D"]
+
+[node name="background" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_pyv2x")
+collision_enabled = false
+
+[node name="ground" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray("AAA5AAgAAAACAAAAAAA6AAgAAAACAAAAAABGAAkAAAACAAAAAABHAAkAAAACAAAAAABIAAkAAAACAAAAAAAMAAoAAAACAAAAAAANAAoAAAACAAAAAAAOAAoAAAACAAAAAAApAAoAAAACAAAAAAAqAAoAAAACAAAAAAArAAoAAAACAAAAAAA1AAoAAAACAAAAAAA2AAoAAAACAAAAAAA3AAoAAAACAAAAAAA4AAoAAAACAAAAAABWAAoAAAACAAAAAABXAAoAAAACAAAAAABYAAoAAAACAAAAAAAWAAwAAAACAAAAAAAXAAwAAAACAAAAAAAYAAwAAAACAAAAAAAZAAwAAAACAAAAAABCAAwAAAACAAAAAABDAAwAAAACAAAAAABEAAwAAAACAAAAAAAIAA0AAAACAAAAAAAJAA0AAAACAAAAAAAKAA0AAAACAAAAAAAlAA0AAAACAAAAAAAmAA0AAAACAAAAAAAnAA0AAAACAAAAAAAxAA0AAAACAAAAAAAyAA0AAAACAAAAAAAzAA0AAAACAAAAAABRAA0AAAACAAAAAABSAA0AAAACAAAAAABTAA0AAAACAAAAAABUAA0AAAACAAAAAABaAA0AAAACAAAAAABbAA0AAAACAAAAAABcAA0AAAACAAAAAAAAABAAAAAAAAAAAAABABAAAAAAAAAAAAACABAAAAAAAAAAAAADABAAAAAAAAAAAAAEABAAAAAAAAAAAAAFABAAAAAAAAAAAAAGABAAAAAAAAAAAAAHABAAAAAAAAAAAAAIABAAAAAAAAAAAAAJABAAAAAAAAAAAAAKABAAAAAAAAAAAAALABAAAAAAAAAAAAAMABAAAAAAAAAAAAANABAAAAAAAAAAAAAOABAAAAAAAAAAAAASABAAAAAAAAAAAAATABAAAAAAAAAAAAAUABAAAAAAAAAAAAAVABAAAAAAAAAAAAAWABAAAAAAAAAAAAAXABAAAAAAAAAAAAAYABAAAAAAAAAAAAAZABAAAAAAAAAAAAAaABAAAAAAAAAAAAAbABAAAAAAAAAAAAAcABAAAAAAAAAAAAAdABAAAAAAAAAAAAAhABAAAAAAAAAAAAAiABAAAAAAAAAAAAAjABAAAAAAAAAAAAAkABAAAAAAAAAAAAAlABAAAAAAAAAAAAAmABAAAAAAAAAAAAAnABAAAAAAAAAAAAAoABAAAAAAAAAAAAApABAAAAAAAAAAAAAqABAAAAAAAAAAAAAuABAAAAAAAAAAAAAvABAAAAAAAAAAAAAwABAAAAAAAAAAAAAxABAAAAAAAAAAAAAyABAAAAAAAAAAAAAzABAAAAAAAAAAAAA0ABAAAAAAAAAAAAA1ABAAAAAAAAAAAAA2ABAAAAAAAAAAAAA3ABAAAAAAAAAAAAA4ABAAAAAAAAAAAAA5ABAAAAAAAAAAAAA6ABAAAAAAAAAAAAA7ABAAAAAAAAAAAAA/ABAAAAAAAAAAAABAABAAAAAAAAAAAABBABAAAAAAAAAAAABCABAAAAAAAAAAAABDABAAAAAAAAAAAABEABAAAAAAAAAAAABFABAAAAAAAAAAAABGABAAAAAAAAAAAABHABAAAAAAAAAAAABIABAAAAAAAAAAAABJABAAAAAAAAAAAABKABAAAAAAAAAAAABOABAAAAAAAAAAAABPABAAAAAAAAAAAABQABAAAAAAAAAAAABRABAAAAAAAAAAAABSABAAAAAAAAAAAABTABAAAAAAAAAAAABUABAAAAAAAAAAAABVABAAAAAAAAAAAABWABAAAAAAAAAAAABXABAAAAAAAAAAAABYABAAAAAAAAAAAABZABAAAAAAAAAAAABaABAAAAAAAAAAAABbABAAAAAAAAAAAABcABAAAAAAAAAAAABgABAAAAAAAAAAAABhABAAAAAAAAAAAABiABAAAAAAAAAAAABjABAAAAAAAAAAAABkABAAAAAAAAAAAABlABAAAAAAAAAAAABmABAAAAAAAAAAAABnABAAAAAAAAAAAABoABAAAAAAAAAAAABpABAAAAAAAAAAAABqABAAAAAAAAAAAABrABAAAAAAAAAAAAAAABEAAAABAAAAAAABABEAAAABAAAAAAACABEAAAABAAAAAAADABEAAAABAAAAAAAEABEAAAABAAAAAAAFABEAAAABAAAAAAAGABEAAAABAAAAAAAHABEAAAABAAAAAAAIABEAAAABAAAAAAAJABEAAAABAAAAAAAKABEAAAABAAAAAAALABEAAAABAAAAAAAMABEAAAABAAAAAAANABEAAAABAAAAAAAOABEAAAABAAAAAAASABEAAAABAAAAAAATABEAAAABAAAAAAAUABEAAAABAAAAAAAVABEAAAABAAAAAAAWABEAAAABAAAAAAAXABEAAAABAAAAAAAYABEAAAABAAAAAAAZABEAAAABAAAAAAAaABEAAAABAAAAAAAbABEAAAABAAAAAAAcABEAAAABAAAAAAAdABEAAAABAAAAAAAhABEAAAABAAAAAAAiABEAAAABAAAAAAAjABEAAAABAAAAAAAkABEAAAABAAAAAAAlABEAAAABAAAAAAAmABEAAAABAAAAAAAnABEAAAABAAAAAAAoABEAAAABAAAAAAApABEAAAABAAAAAAAqABEAAAABAAAAAAAuABEAAAABAAAAAAAvABEAAAABAAAAAAAwABEAAAABAAAAAAAxABEAAAABAAAAAAAyABEAAAABAAAAAAAzABEAAAABAAAAAAA0ABEAAAABAAAAAAA1ABEAAAABAAAAAAA2ABEAAAABAAAAAAA3ABEAAAABAAAAAAA4ABEAAAABAAAAAAA5ABEAAAABAAAAAAA6ABEAAAABAAAAAAA7ABEAAAABAAAAAAA/ABEAAAABAAAAAABAABEAAAABAAAAAABBABEAAAABAAAAAABCABEAAAABAAAAAABDABEAAAABAAAAAABEABEAAAABAAAAAABFABEAAAABAAAAAABGABEAAAABAAAAAABHABEAAAABAAAAAABIABEAAAABAAAAAABJABEAAAABAAAAAABKABEAAAABAAAAAABOABEAAAABAAAAAABPABEAAAABAAAAAABQABEAAAABAAAAAABRABEAAAABAAAAAABSABEAAAABAAAAAABTABEAAAABAAAAAABUABEAAAABAAAAAABVABEAAAABAAAAAABWABEAAAABAAAAAABXABEAAAABAAAAAABYABEAAAABAAAAAABZABEAAAABAAAAAABaABEAAAABAAAAAABbABEAAAABAAAAAABcABEAAAABAAAAAABgABEAAAABAAAAAABhABEAAAABAAAAAABiABEAAAABAAAAAABjABEAAAABAAAAAABkABEAAAABAAAAAABlABEAAAABAAAAAABmABEAAAABAAAAAABnABEAAAABAAAAAABoABEAAAABAAAAAABpABEAAAABAAAAAABqABEAAAABAAAAAABrABEAAAABAAAAAAAAABIAAAABAAAAAAABABIAAAABAAAAAAACABIAAAABAAAAAAADABIAAAABAAAAAAAEABIAAAABAAAAAAAFABIAAAABAAAAAAAGABIAAAABAAAAAAAHABIAAAABAAAAAAAIABIAAAABAAAAAAAJABIAAAABAAAAAAAKABIAAAABAAAAAAALABIAAAABAAAAAAAMABIAAAABAAAAAAANABIAAAABAAAAAAAOABIAAAABAAAAAAASABIAAAABAAAAAAATABIAAAABAAAAAAAUABIAAAABAAAAAAAVABIAAAABAAAAAAAWABIAAAABAAAAAAAXABIAAAABAAAAAAAYABIAAAABAAAAAAAZABIAAAABAAAAAAAaABIAAAABAAAAAAAbABIAAAABAAAAAAAcABIAAAABAAAAAAAdABIAAAABAAAAAAAhABIAAAABAAAAAAAiABIAAAABAAAAAAAjABIAAAABAAAAAAAkABIAAAABAAAAAAAlABIAAAABAAAAAAAmABIAAAABAAAAAAAnABIAAAABAAAAAAAoABIAAAABAAAAAAApABIAAAABAAAAAAAqABIAAAABAAAAAAAuABIAAAABAAAAAAAvABIAAAABAAAAAAAwABIAAAABAAAAAAAxABIAAAABAAAAAAAyABIAAAABAAAAAAAzABIAAAABAAAAAAA0ABIAAAABAAAAAAA1ABIAAAABAAAAAAA2ABIAAAABAAAAAAA3ABIAAAABAAAAAAA4ABIAAAABAAAAAAA5ABIAAAABAAAAAAA6ABIAAAABAAAAAAA7ABIAAAABAAAAAAA/ABIAAAABAAAAAABAABIAAAABAAAAAABBABIAAAABAAAAAABCABIAAAABAAAAAABDABIAAAABAAAAAABEABIAAAABAAAAAABFABIAAAABAAAAAABGABIAAAABAAAAAABHABIAAAABAAAAAABIABIAAAABAAAAAABJABIAAAABAAAAAABKABIAAAABAAAAAABOABIAAAABAAAAAABPABIAAAABAAAAAABQABIAAAABAAAAAABRABIAAAABAAAAAABSABIAAAABAAAAAABTABIAAAABAAAAAABUABIAAAABAAAAAABVABIAAAABAAAAAABWABIAAAABAAAAAABXABIAAAABAAAAAABYABIAAAABAAAAAABZABIAAAABAAAAAABaABIAAAABAAAAAABbABIAAAABAAAAAABcABIAAAABAAAAAABgABIAAAABAAAAAABhABIAAAABAAAAAABiABIAAAABAAAAAABjABIAAAABAAAAAABkABIAAAABAAAAAABlABIAAAABAAAAAABmABIAAAABAAAAAABnABIAAAABAAAAAABoABIAAAABAAAAAABpABIAAAABAAAAAABqABIAAAABAAAAAABrABIAAAABAAAAAAAAABMAAAABAAAAAAABABMAAAABAAAAAAACABMAAAABAAAAAAADABMAAAABAAAAAAAEABMAAAABAAAAAAAFABMAAAABAAAAAAAGABMAAAABAAAAAAAHABMAAAABAAAAAAAIABMAAAABAAAAAAAJABMAAAABAAAAAAAKABMAAAABAAAAAAALABMAAAABAAAAAAAMABMAAAABAAAAAAANABMAAAABAAAAAAAOABMAAAABAAAAAAASABMAAAABAAAAAAATABMAAAABAAAAAAAUABMAAAABAAAAAAAVABMAAAABAAAAAAAWABMAAAABAAAAAAAXABMAAAABAAAAAAAYABMAAAABAAAAAAAZABMAAAABAAAAAAAaABMAAAABAAAAAAAbABMAAAABAAAAAAAcABMAAAABAAAAAAAdABMAAAABAAAAAAAhABMAAAABAAAAAAAiABMAAAABAAAAAAAjABMAAAABAAAAAAAkABMAAAABAAAAAAAlABMAAAABAAAAAAAmABMAAAABAAAAAAAnABMAAAABAAAAAAAoABMAAAABAAAAAAApABMAAAABAAAAAAAqABMAAAABAAAAAAAuABMAAAABAAAAAAAvABMAAAABAAAAAAAwABMAAAABAAAAAAAxABMAAAABAAAAAAAyABMAAAABAAAAAAAzABMAAAABAAAAAAA0ABMAAAABAAAAAAA1ABMAAAABAAAAAAA2ABMAAAABAAAAAAA3ABMAAAABAAAAAAA4ABMAAAABAAAAAAA5ABMAAAABAAAAAAA6ABMAAAABAAAAAAA7ABMAAAABAAAAAAA/ABMAAAABAAAAAABAABMAAAABAAAAAABBABMAAAABAAAAAABCABMAAAABAAAAAABDABMAAAABAAAAAABEABMAAAABAAAAAABFABMAAAABAAAAAABGABMAAAABAAAAAABHABMAAAABAAAAAABIABMAAAABAAAAAABJABMAAAABAAAAAABKABMAAAABAAAAAABOABMAAAABAAAAAABPABMAAAABAAAAAABQABMAAAABAAAAAABRABMAAAABAAAAAABSABMAAAABAAAAAABTABMAAAABAAAAAABUABMAAAABAAAAAABVABMAAAABAAAAAABWABMAAAABAAAAAABXABMAAAABAAAAAABYABMAAAABAAAAAABZABMAAAABAAAAAABaABMAAAABAAAAAABbABMAAAABAAAAAABcABMAAAABAAAAAABgABMAAAABAAAAAABhABMAAAABAAAAAABiABMAAAABAAAAAABjABMAAAABAAAAAABkABMAAAABAAAAAABlABMAAAABAAAAAABmABMAAAABAAAAAABnABMAAAABAAAAAABoABMAAAABAAAAAABpABMAAAABAAAAAABqABMAAAABAAAAAABrABMAAAABAAAAAAA=")
+tile_set = ExtResource("1_pyv2x")
+
+[node name="decoration" type="TileMapLayer" parent="."]
+tile_set = ExtResource("1_pyv2x")
+collision_enabled = false
+
+[node name="Spawns" type="Node2D" parent="."]
+
+[node name="player_spawn_64_448" type="Marker2D" parent="Spawns"]
+position = Vector2(64, 448)
+metadata/type = "player_spawn"
+metadata/width = 32.0
+metadata/height = 64.0
+metadata/props = {}
+
+[node name="npc_768_512" type="Marker2D" parent="Spawns"]
+position = Vector2(768, 512)
+metadata/type = "npc"
+metadata/width = 64.0
+metadata/height = 64.0
+metadata/props = {
+"npc_id": "owl_teacher_01"
+}
+
+[node name="npc_2176_512" type="Marker2D" parent="Spawns"]
+position = Vector2(2176, 512)
+metadata/type = "npc"
+metadata/width = 64.0
+metadata/height = 64.0
+metadata/props = {
+"npc_id": "owl_teacher_01"
+}
+
+[node name="collectible_288_352" type="Marker2D" parent="Spawns"]
+position = Vector2(288, 352)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_320_352" type="Marker2D" parent="Spawns"]
+position = Vector2(320, 352)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_416_256" type="Marker2D" parent="Spawns"]
+position = Vector2(416, 256)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_608_448" type="Marker2D" parent="Spawns"]
+position = Vector2(608, 448)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_640_448" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 448)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_736_320" type="Marker2D" parent="Spawns"]
+position = Vector2(736, 320)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_1216_352" type="Marker2D" parent="Spawns"]
+position = Vector2(1216, 352)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_1344_256" type="Marker2D" parent="Spawns"]
+position = Vector2(1344, 256)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_1600_352" type="Marker2D" parent="Spawns"]
+position = Vector2(1600, 352)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_1728_256" type="Marker2D" parent="Spawns"]
+position = Vector2(1728, 256)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_1824_192" type="Marker2D" parent="Spawns"]
+position = Vector2(1824, 192)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_1856_192" type="Marker2D" parent="Spawns"]
+position = Vector2(1856, 192)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_2144_320" type="Marker2D" parent="Spawns"]
+position = Vector2(2144, 320)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_2272_224" type="Marker2D" parent="Spawns"]
+position = Vector2(2272, 224)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_2624_352" type="Marker2D" parent="Spawns"]
+position = Vector2(2624, 352)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_2656_352" type="Marker2D" parent="Spawns"]
+position = Vector2(2656, 352)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_2784_256" type="Marker2D" parent="Spawns"]
+position = Vector2(2784, 256)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_2912_352" type="Marker2D" parent="Spawns"]
+position = Vector2(2912, 352)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_3200_448" type="Marker2D" parent="Spawns"]
+position = Vector2(3200, 448)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="collectible_3232_448" type="Marker2D" parent="Spawns"]
+position = Vector2(3232, 448)
+metadata/type = "collectible"
+metadata/width = 32.0
+metadata/height = 32.0
+metadata/props = {
+"collectible_type": "coin"
+}
+
+[node name="door_3392_512" type="Marker2D" parent="Spawns"]
+position = Vector2(3392, 512)
+metadata/type = "door"
+metadata/width = 32.0
+metadata/height = 64.0
+metadata/props = {
+"target_level": "level_02"
+}
+
+[node name="hazard_480_608" type="Marker2D" parent="Spawns"]
+position = Vector2(480, 608)
+metadata/type = "hazard"
+metadata/width = 96.0
+metadata/height = 32.0
+metadata/props = {
+"hazard_type": "spikes"
+}
+
+[node name="hazard_960_608" type="Marker2D" parent="Spawns"]
+position = Vector2(960, 608)
+metadata/type = "hazard"
+metadata/width = 96.0
+metadata/height = 32.0
+metadata/props = {
+"hazard_type": "spikes"
+}
+
+[node name="hazard_1376_608" type="Marker2D" parent="Spawns"]
+position = Vector2(1376, 608)
+metadata/type = "hazard"
+metadata/width = 96.0
+metadata/height = 32.0
+metadata/props = {
+"hazard_type": "spikes"
+}
+
+[node name="hazard_1920_608" type="Marker2D" parent="Spawns"]
+position = Vector2(1920, 608)
+metadata/type = "hazard"
+metadata/width = 96.0
+metadata/height = 32.0
+metadata/props = {
+"hazard_type": "spikes"
+}
+
+[node name="hazard_2400_608" type="Marker2D" parent="Spawns"]
+position = Vector2(2400, 608)
+metadata/type = "hazard"
+metadata/width = 96.0
+metadata/height = 32.0
+metadata/props = {
+"hazard_type": "spikes"
+}
+
+[node name="hazard_2976_608" type="Marker2D" parent="Spawns"]
+position = Vector2(2976, 608)
+metadata/type = "hazard"
+metadata/width = 96.0
+metadata/height = 32.0
+metadata/props = {
+"hazard_type": "spikes"
+}
+
+[node name="enemy_640_480" type="Marker2D" parent="Spawns"]
+position = Vector2(640, 480)
+metadata/type = "enemy"
+metadata/width = 48.0
+metadata/height = 32.0
+metadata/props = {
+"enemy_id": "cockroach_basic"
+}
+
+[node name="enemy_1664_480" type="Marker2D" parent="Spawns"]
+position = Vector2(1664, 480)
+metadata/type = "enemy"
+metadata/width = 48.0
+metadata/height = 32.0
+metadata/props = {
+"enemy_id": "cockroach_basic"
+}
+
+[node name="enemy_2624_480" type="Marker2D" parent="Spawns"]
+position = Vector2(2624, 480)
+metadata/type = "enemy"
+metadata/width = 48.0
+metadata/height = 32.0
+metadata/props = {
+"enemy_id": "cockroach_basic"
+}

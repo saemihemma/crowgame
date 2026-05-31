@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0crowplayer01"]
+
+[ext_resource type="Script" path="res://scripts/entities/player.gd" id="1_player"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(40, 56)
+
+[node name="Player" type="CharacterBody2D"]
+script = ExtResource("1_player")
+
+[node name="Sprite" type="Sprite2D" parent="."]
+offset = Vector2(0, -32)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -28)
+shape = SubResource("RectangleShape2D_player")

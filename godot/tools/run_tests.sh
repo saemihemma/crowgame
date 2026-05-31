@@ -11,3 +11,11 @@ GODOT="${GODOT:-godot}"
 
 "$GODOT" --headless --path "$HERE" --import >/dev/null 2>&1 || true
 "$GODOT" --headless --path "$HERE" res://tests/TestRunner.tscn
+unit_status=$?
+
+# Headless physics integration probes (separate scenes; advance real frames).
+echo "=== integration probes ==="
+"$GODOT" --headless --path "$HERE" res://tests/integration/LandProbe.tscn
+probe_status=$?
+
+exit $(( unit_status != 0 || probe_status != 0 ))
