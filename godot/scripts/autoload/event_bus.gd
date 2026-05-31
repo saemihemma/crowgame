@@ -15,6 +15,8 @@ signal math_challenge_complete(payload: Dictionary)
 
 # Player
 signal player_died()
+signal player_hurt()
+signal lives_changed(lives: int)
 signal ability_granted(payload: Dictionary)
 signal ability_revoked(payload: Dictionary)
 

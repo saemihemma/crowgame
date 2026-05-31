@@ -9,7 +9,11 @@ const COIN_SCENE := preload("res://scenes/Coin.tscn")
 const HAZARD_SCENE := preload("res://scenes/Hazard.tscn")
 const DOOR_SCENE := preload("res://scenes/Door.tscn")
 const NPC_SCENE := preload("res://scenes/Npc.tscn")
+const ENEMY_SCENE := preload("res://scenes/Enemy.tscn")
 const MATH_CHALLENGE_SCENE := preload("res://scenes/MathChallenge.tscn")
+const HUD_SCENE := preload("res://scenes/Hud.tscn")
+const TOUCH_SCENE := preload("res://scenes/TouchControls.tscn")
+const PAUSE_SCENE := preload("res://scenes/Pause.tscn")
 
 const MAX_LIVES := 3
 
@@ -36,6 +40,8 @@ func _ready() -> void:
 	coin_count = int(SaveManager.get_data().get("coins", 0))
 	coins_at_level_start = coin_count
 	_setup_fx_layer()
+	add_child(HUD_SCENE.instantiate())
+	add_child(TOUCH_SCENE.instantiate())
 	var key := level_key
 	if key == "":
 		key = LevelManager.get_current_level_key()
@@ -68,6 +74,7 @@ func _load_level(key: String) -> void:
 	_spawn_entities()
 	_setup_camera()
 	EventBus.coins_changed.emit(coin_count)
+	EventBus.lives_changed.emit(lives)
 
 func _spawn_entities() -> void:
 	for s in _parsed.get("spawns", []):
@@ -96,8 +103,12 @@ func _spawn_entities() -> void:
 				npc.npc_id = String(s["props"].get("npc_id", ""))
 				npc.position = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
 				_world.add_child(npc)
+			"enemy":
+				var enemy := ENEMY_SCENE.instantiate()
+				enemy.enemy_id = String(s["props"].get("enemy_id", "cockroach_basic"))
+				enemy.position = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
+				_world.add_child(enemy)
 			_:
-				# enemy handled in a later slice.
 				pass
 
 func _setup_camera() -> void:
@@ -126,6 +137,23 @@ func _physics_process(delta: float) -> void:
 	_check_pit_death()
 	_update_shake(delta)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("pause") and not is_math_challenge_active():
+		_toggle_pause()
+
+var _pause_overlay: CanvasLayer
+
+func _toggle_pause() -> void:
+	if is_instance_valid(_pause_overlay):
+		return
+	_pause_overlay = PAUSE_SCENE.instantiate()
+	add_child(_pause_overlay)
+	get_tree().paused = true
+
+func award_enemy_coins(amount: int) -> void:
+	coin_count += amount
+	EventBus.coins_changed.emit(coin_count)
+
 # ─── Coins ────────────────────────────────────────────────
 func collect_coin(coin: Node) -> void:
 	if transitioning:
@@ -139,6 +167,8 @@ func hurt_player() -> void:
 	if respawning or transitioning:
 		return
 	lives -= 1
+	EventBus.lives_changed.emit(lives)
+	EventBus.player_hurt.emit()
 	_camera_shake(0.15, 6.0)
 	_screen_flash(Color(1, 0, 0, 0.45), 0.2)
 	if lives <= 0:
@@ -154,6 +184,7 @@ func player_die() -> void:
 	coin_count = coins_at_level_start
 	EventBus.coins_changed.emit(coin_count)
 	lives = MAX_LIVES
+	EventBus.lives_changed.emit(lives)
 	_reset_player_to_spawn()
 	_blink_invuln()
 
