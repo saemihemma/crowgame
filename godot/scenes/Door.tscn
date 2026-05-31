@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0crowdoor0001"]
+
+[ext_resource type="Script" path="res://scripts/entities/door.gd" id="1_door"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(56, 80)
+
+[node name="Door" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_door")
+
+[node name="Anim" type="AnimatedSprite2D" parent="."]
+offset = Vector2(0, -48)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -40)
+shape = SubResource("RectangleShape2D_door")

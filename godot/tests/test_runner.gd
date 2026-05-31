@@ -11,6 +11,13 @@ const TESTS_DIR := "res://tests"
 const SKIP := ["test_framework.gd", "test_runner.gd"]
 
 func _ready() -> void:
+	# Defer one frame so the root scene finishes setup; tests may add live nodes
+	# (e.g. the Game scene) to the tree, which fails while root is "busy".
+	await get_tree().process_frame
+	await get_tree().process_frame
+	_run()
+
+func _run() -> void:
 	var total_pass := 0
 	var total_fail := 0
 	var suites := _discover()

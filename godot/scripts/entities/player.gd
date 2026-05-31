@@ -13,6 +13,7 @@ var _state: Dictionary = PlayerMotion.new_state()
 @onready var _sprite: Sprite2D = $Sprite
 
 func _ready() -> void:
+	add_to_group("player")
 	_tuning = DataManager.get_dict("PLAYER_TUNING")
 	if _tuning.is_empty():
 		_tuning = {"accel": 600, "drag": 800, "maxSpeed": 160, "jumpVelocity": 475,

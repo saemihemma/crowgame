@@ -16,6 +16,8 @@ unit_status=$?
 # Headless physics integration probes (separate scenes; advance real frames).
 echo "=== integration probes ==="
 "$GODOT" --headless --path "$HERE" res://tests/integration/LandProbe.tscn
-probe_status=$?
+land_status=$?
+"$GODOT" --headless --path "$HERE" res://tests/integration/CoinProbe.tscn
+coin_status=$?
 
-exit $(( unit_status != 0 || probe_status != 0 ))
+exit $(( unit_status != 0 || land_status != 0 || coin_status != 0 ))

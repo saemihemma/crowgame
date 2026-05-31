@@ -1,17 +1,39 @@
 extends Node2D
-## Game — Godot port of the level-load/spawn/camera core of GameScene.ts.
-## Slice 4 scope: load the compiled level, build tilemap layers, spawn the player
-## at player_spawn, and follow with a deadzone camera. Coins/lives/hazards/doors/
-## enemies/NPCs arrive in later slices.
+## Game — Godot port of the GameScene core: level load, spawns, coins, lives,
+## hazards, doors, camera follow, hurt/respawn/death, and pit death.
+## NPCs/enemies arrive in slices 6-7. Screen shake + damage flash are ported as
+## Godot-native FX (Tier-2), not transliterated Phaser tweens.
 
 const PLAYER_SCENE := preload("res://scenes/Player.tscn")
+const COIN_SCENE := preload("res://scenes/Coin.tscn")
+const HAZARD_SCENE := preload("res://scenes/Hazard.tscn")
+const DOOR_SCENE := preload("res://scenes/Door.tscn")
 
-@export var level_key := ""  # empty -> LevelManager current, else default level_01
+const MAX_LIVES := 3
+
+@export var level_key := ""
 
 var _parsed: Dictionary = {}
 var _player: CharacterBody2D
+var _world: Node2D
+var _camera: Camera2D
+
+var coin_count := 0
+var coins_at_level_start := 0
+var lives := MAX_LIVES
+var transitioning := false
+var respawning := false
+var spawn_point := Vector2.ZERO
+
+# Tier-2 FX state
+var _shake_time := 0.0
+var _shake_strength := 0.0
+var _flash: ColorRect
 
 func _ready() -> void:
+	coin_count = int(SaveManager.get_data().get("coins", 0))
+	coins_at_level_start = coin_count
+	_setup_fx_layer()
 	var key := level_key
 	if key == "":
 		key = LevelManager.get_current_level_key()
@@ -33,49 +55,189 @@ func _load_level(key: String) -> void:
 	var level: Dictionary = JSON.parse_string(f.get_as_text())
 	f.close()
 
-	var world := Node2D.new()
-	world.name = "World"
-	add_child(world)
-	_parsed = LevelLoader.build(world, level)
+	_world = Node2D.new()
+	_world.name = "World"
+	add_child(_world)
+	_parsed = LevelLoader.build(_world, level)
 
+	lives = MAX_LIVES
+	transitioning = false
+	respawning = false
 	_spawn_entities()
 	_setup_camera()
+	EventBus.coins_changed.emit(coin_count)
 
 func _spawn_entities() -> void:
 	for s in _parsed.get("spawns", []):
 		match s["type"]:
 			"player_spawn":
+				spawn_point = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
 				_player = PLAYER_SCENE.instantiate()
-				# Tiled object: place feet (player origin) at bottom-center of the box.
-				_player.global_position = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
-				add_child(_player)
+				_player.global_position = spawn_point
+				_world.add_child(_player)
+			"collectible":
+				var coin := COIN_SCENE.instantiate()
+				coin.position = Vector2(s["x"], s["y"])
+				_world.add_child(coin)
+			"hazard":
+				var hz := HAZARD_SCENE.instantiate()
+				hz.position = Vector2(s["x"], s["y"])
+				_world.add_child(hz)
+				hz.configure(s["width"], s["height"])
+			"door":
+				var door := DOOR_SCENE.instantiate()
+				door.position = Vector2(s["x"] + 16.0, s["y"])
+				door.target_level = String(s["props"].get("target_level", ""))
+				_world.add_child(door)
 			_:
-				# collectible/npc/door/hazard/enemy handled in later slices.
+				# npc / enemy handled in later slices.
 				pass
 
 func _setup_camera() -> void:
 	if _player == null:
 		return
-	var cam := Camera2D.new()
-	cam.name = "Camera"
+	_camera = Camera2D.new()
+	_camera.name = "Camera"
 	var tuning := DataManager.get_dict("CAMERA_TUNING")
-	# followLerp 0.1 -> smoothed follow; deadzone -> drag margins.
-	cam.position_smoothing_enabled = true
-	cam.position_smoothing_speed = maxf(1.0, float(tuning.get("followLerp", 0.1)) * 50.0)
+	_camera.position_smoothing_enabled = true
+	_camera.position_smoothing_speed = maxf(1.0, float(tuning.get("followLerp", 0.1)) * 50.0)
 	var dz: Dictionary = tuning.get("deadzone", {"width": 200, "height": 100})
-	cam.drag_horizontal_enabled = true
-	cam.drag_vertical_enabled = true
-	cam.drag_left_margin = clampf((float(dz.get("width", 200)) * 0.5) / 480.0, 0.0, 0.9)
-	cam.drag_right_margin = cam.drag_left_margin
-	cam.drag_top_margin = clampf((float(dz.get("height", 100)) * 0.5) / 270.0, 0.0, 0.9)
-	cam.drag_bottom_margin = cam.drag_top_margin
-	# Map limits.
-	cam.limit_left = 0
-	cam.limit_top = 0
-	cam.limit_right = int(_parsed["width"]) * int(_parsed["tile_w"])
-	cam.limit_bottom = int(_parsed["height"]) * int(_parsed["tile_h"])
-	_player.add_child(cam)
-	cam.make_current()
+	_camera.drag_horizontal_enabled = true
+	_camera.drag_vertical_enabled = true
+	_camera.drag_left_margin = clampf((float(dz.get("width", 200)) * 0.5) / 480.0, 0.0, 0.9)
+	_camera.drag_right_margin = _camera.drag_left_margin
+	_camera.drag_top_margin = clampf((float(dz.get("height", 100)) * 0.5) / 270.0, 0.0, 0.9)
+	_camera.drag_bottom_margin = _camera.drag_top_margin
+	_camera.limit_left = 0
+	_camera.limit_top = 0
+	_camera.limit_right = int(_parsed["width"]) * int(_parsed["tile_w"])
+	_camera.limit_bottom = int(_parsed["height"]) * int(_parsed["tile_h"])
+	_player.add_child(_camera)
+	_camera.make_current()
+
+func _physics_process(delta: float) -> void:
+	_check_pit_death()
+	_update_shake(delta)
+
+# ─── Coins ────────────────────────────────────────────────
+func collect_coin(coin: Node) -> void:
+	if transitioning:
+		return
+	coin.queue_free()
+	coin_count += 1
+	EventBus.coins_changed.emit(coin_count)
+
+# ─── Damage / death / respawn ─────────────────────────────
+func hurt_player() -> void:
+	if respawning or transitioning:
+		return
+	lives -= 1
+	_camera_shake(0.15, 6.0)
+	_screen_flash(Color(1, 0, 0, 0.45), 0.2)
+	if lives <= 0:
+		player_die()
+	else:
+		respawn_player()
+
+func player_die() -> void:
+	respawning = true
+	EventBus.player_died.emit()
+	# Soft reset (Godot adaptation of scene.restart): coins back to level start,
+	# lives refilled, player returned to spawn.
+	coin_count = coins_at_level_start
+	EventBus.coins_changed.emit(coin_count)
+	lives = MAX_LIVES
+	_reset_player_to_spawn()
+	_blink_invuln()
+
+func respawn_player() -> void:
+	respawning = true
+	_reset_player_to_spawn()
+	_blink_invuln()
+
+func _reset_player_to_spawn() -> void:
+	if _player == null:
+		return
+	_player.velocity = Vector2.ZERO
+	_player.get_motion_state()["vx"] = 0.0
+	_player.get_motion_state()["vy"] = 0.0
+	_player.global_position = spawn_point
+
+func _blink_invuln() -> void:
+	if _player == null:
+		respawning = false
+		return
+	var sprite: Node = _player.get_node_or_null("Sprite")
+	var tw := create_tween()
+	for i in 5:
+		if sprite:
+			tw.tween_property(sprite, "modulate:a", 0.3, 0.1)
+			tw.tween_property(sprite, "modulate:a", 1.0, 0.1)
+	tw.tween_callback(func():
+		if sprite:
+			sprite.modulate.a = 1.0
+		respawning = false)
+
+func _check_pit_death() -> void:
+	if respawning or transitioning or _player == null or _parsed.is_empty():
+		return
+	var map_height := int(_parsed["height"]) * int(_parsed["tile_h"])
+	if _player.global_position.y > map_height + 64:
+		hurt_player()
+
+# ─── Doors / transitions ──────────────────────────────────
+func transition_to_level(target_level: String) -> void:
+	if transitioning:
+		return
+	transitioning = true
+	if _player:
+		_player.velocity = Vector2.ZERO
+		_player.set_physics_process(false)
+	LevelManager.transition_to(target_level)
+	if target_level == "__complete__":
+		return
+	# Swap to the next level (deferred so we're outside the Area2D callback).
+	call_deferred("_swap_level", target_level)
+
+func _swap_level(target_level: String) -> void:
+	if _world:
+		_world.queue_free()
+	_player = null
+	await get_tree().process_frame
+	_load_level(target_level)
+
+# ─── Tier-2 FX ────────────────────────────────────────────
+func _setup_fx_layer() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "FX"
+	add_child(layer)
+	_flash = ColorRect.new()
+	_flash.color = Color(1, 0, 0, 0)
+	_flash.anchor_right = 1.0
+	_flash.anchor_bottom = 1.0
+	_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(_flash)
+
+func _screen_flash(color: Color, duration: float) -> void:
+	if _flash == null:
+		return
+	_flash.color = color
+	var tw := create_tween()
+	tw.tween_property(_flash, "color:a", 0.0, duration)
+
+func _camera_shake(duration: float, strength: float) -> void:
+	_shake_time = duration
+	_shake_strength = strength
+
+func _update_shake(delta: float) -> void:
+	if _camera == null:
+		return
+	if _shake_time > 0.0:
+		_shake_time -= delta
+		var amp := _shake_strength * (_shake_time / 0.15)
+		_camera.offset = Vector2(randf_range(-amp, amp), randf_range(-amp, amp))
+	elif _camera.offset != Vector2.ZERO:
+		_camera.offset = Vector2.ZERO
 
 func get_player() -> CharacterBody2D:
 	return _player
