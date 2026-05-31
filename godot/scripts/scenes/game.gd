@@ -73,6 +73,9 @@ func _load_level(key: String) -> void:
 	respawning = false
 	_spawn_entities()
 	_setup_camera()
+	var music := String(entry.get("music", ""))
+	if music != "":
+		AudioManager.play_music(music)
 	EventBus.coins_changed.emit(coin_count)
 	EventBus.lives_changed.emit(lives)
 
@@ -158,8 +161,11 @@ func award_enemy_coins(amount: int) -> void:
 func collect_coin(coin: Node) -> void:
 	if transitioning:
 		return
+	if _world and coin is Node2D:
+		DopamineFX.burst(_world, coin.position)
 	coin.queue_free()
 	coin_count += 1
+	AudioManager.play_sfx("coin_collect")
 	EventBus.coins_changed.emit(coin_count)
 
 # ─── Damage / death / respawn ─────────────────────────────

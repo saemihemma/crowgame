@@ -20,6 +20,14 @@ func _ready() -> void:
 	EventBus.coins_changed.connect(func(c): _coins = c; _refresh())
 	EventBus.owl_saved.connect(func(): _owls += 1; _refresh())
 	EventBus.lives_changed.connect(func(l): _lives = l; _refresh())
+	ThemeManager.theme_changed.connect(func(_id): _apply_theme())
+	_apply_theme()
+
+func _apply_theme() -> void:
+	# Tier-3: HUD accents follow the active skin's palette (restyle on swap).
+	var accent := ThemeManager.get_color_value("accent")
+	_coin_label.add_theme_color_override("font_color", accent)
+	_owl_label.add_theme_color_override("font_color", accent)
 
 func _build() -> void:
 	var root := MarginContainer.new()

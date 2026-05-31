@@ -24,15 +24,28 @@ func _ready() -> void:
 	title.add_theme_font_size_override("font_size", 56)
 	col.add_child(title)
 	_button(col, TextManager.t("pause.resume"), _resume)
+	_theme_btn = _button(col, _theme_label(), _toggle_theme)
 	_button(col, TextManager.t("pause.quit") if TextManager.get_default("pause.quit") != "" else "Quit", _quit)
 
-func _button(parent: Node, text: String, cb: Callable) -> void:
+var _theme_btn: Button
+
+func _theme_label() -> String:
+	return "Theme: %s" % ThemeManager.get_theme_id()
+
+func _toggle_theme() -> void:
+	# Tier-3 demo: hot-swap the skin at runtime; HUD restyles via theme_changed.
+	ThemeManager.set_theme("scifi" if ThemeManager.get_theme_id() == "forest" else "forest")
+	if is_instance_valid(_theme_btn):
+		_theme_btn.text = _theme_label()
+
+func _button(parent: Node, text: String, cb: Callable) -> Button:
 	var b := Button.new()
 	b.text = text
 	b.custom_minimum_size = Vector2(240, 64)
 	b.add_theme_font_size_override("font_size", 28)
 	b.pressed.connect(cb)
 	parent.add_child(b)
+	return b
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pause"):
