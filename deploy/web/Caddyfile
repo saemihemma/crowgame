@@ -1,0 +1,20 @@
+{
+	admin off
+	auto_https off
+}
+
+# Railway injects $PORT; default to 8080 for local `docker run`.
+:{$PORT:8080} {
+	root * /srv
+	encode zstd gzip
+	file_server
+
+	# Active-iteration: always serve the freshest build (no stale cache on phone).
+	header Cache-Control "no-store"
+
+	# NOTE: the current export is single-threaded, so no special headers are
+	# needed. If we later ship the multi-threaded export (better perf), enable
+	# cross-origin isolation here:
+	#   header Cross-Origin-Opener-Policy "same-origin"
+	#   header Cross-Origin-Embedder-Policy "require-corp"
+}
