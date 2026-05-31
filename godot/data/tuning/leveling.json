@@ -1,0 +1,10 @@
+{
+    "maxLevel": 10,
+    "xpPerLevel": [10, 15, 20, 30, 40, 55, 70, 90, 120, 150],
+    "scoring": {
+        "correctFirstAttempt": 3,
+        "correctSecondAttempt": 1,
+        "doubleFailure": -1
+    },
+    "levelUnlocks": {}
+}

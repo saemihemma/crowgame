@@ -1,0 +1,44 @@
+{
+    "id": "scifi",
+    "name": "Sci-Fi",
+    "palette": {
+        "primary": "#2a5c8a",
+        "secondary": "#4a4a5e",
+        "accent": "#44ccff",
+        "danger": "#ff4444",
+        "textColor": "#00ff88",
+        "textShadow": "#001122",
+        "boardBg": "#1a1a2e",
+        "boardBorder": "#333355",
+        "buttonBg": "#2a2a44",
+        "buttonText": "#00ff88"
+    },
+    "hud": {
+        "healthIcon": "ui_scifi_battery",
+        "healthMax": 3,
+        "coinIcon": "ui_scifi_gear",
+        "font": "monospace"
+    },
+    "mathBoard": {
+        "frameSprite": "ui_scifi_board_frame",
+        "bgSprite": "ui_scifi_board_bg",
+        "optionSprite": "ui_scifi_option_btn",
+        "correctFx": "sparkle_blue",
+        "wrongFx": "shake_red"
+    },
+    "controls": {
+        "dpadSprite": "ui_scifi_dpad",
+        "jumpBtnSprite": "ui_scifi_jump",
+        "peckBtnSprite": "ui_scifi_peck"
+    },
+    "door": {
+        "sprite": "door_scifi",
+        "openAnim": "door_scifi_open"
+    },
+    "dialog": {
+        "frameSprite": "ui_scifi_dialog_frame",
+        "portraitBorder": "#333355",
+        "textColor": "#00ff88",
+        "nameColor": "#44ccff"
+    }
+}

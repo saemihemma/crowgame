@@ -26,7 +26,8 @@ func assert_true(cond: bool, msg: String = "") -> void:
 
 func assert_eq(actual, expected, msg: String = "") -> void:
 	_assertions += 1
-	if actual != expected:
+	# Short-circuit on type mismatch so comparing e.g. String vs bool can't throw.
+	if typeof(actual) != typeof(expected) or actual != expected:
 		_fail("assert_eq failed: %s (got %s, expected %s)" % [msg, str(actual), str(expected)])
 
 func assert_almost_eq(actual: float, expected: float, tol: float = 0.0001, msg: String = "") -> void:

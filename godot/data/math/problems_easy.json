@@ -1,0 +1,485 @@
+{
+  "problems": [
+    {
+      "id": "add_001",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "How much is 2 + 3?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "Count 2 fingers, then count 3 more!",
+      "explanation": "2 plus 3 makes 5!",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "add_002",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.5,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Answer: 4 + 1",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "Start at 4 and count one more!",
+      "explanation": "4 plus 1 makes 5!",
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "add_003",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.5,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Solve: 1 + 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "hint": "Start at 6 and count one more!",
+      "explanation": "1 plus 6 makes 7!",
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "sub_001",
+      "domain": "subtraction",
+      "skills": [
+        "single_digit_subtraction"
+      ],
+      "difficulty": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Solve: 5 - 2",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "Start with 5 fingers and put 2 down!",
+      "explanation": "5 take away 2 leaves 3!",
+      "generator": null,
+      "curriculumStep": 0,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "sub_002",
+      "domain": "subtraction",
+      "skills": [
+        "single_digit_subtraction"
+      ],
+      "difficulty": 3.5,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What is 7 - 3?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "Start with 7 and take away 3!",
+      "explanation": "7 take away 3 leaves 4!",
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresBorrow": false
+      }
+    },
+    {
+      "id": "count_001",
+      "domain": "counting",
+      "skills": [
+        "counting_objects"
+      ],
+      "difficulty": 1.2,
+      "ageBand": [
+        5,
+        6
+      ],
+      "prompt": {
+        "text": "How many stars? * * * * *",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "hint": "Point to each star as you count!",
+      "explanation": "There are 5 stars!",
+      "generator": null,
+      "curriculumStep": 1
+    },
+    {
+      "id": "count_002",
+      "domain": "counting",
+      "skills": [
+        "counting_objects"
+      ],
+      "difficulty": 1.8,
+      "ageBand": [
+        5,
+        6
+      ],
+      "prompt": {
+        "text": "How many dots? . . .",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "hint": "Count each dot carefully!",
+      "explanation": "There are 3 dots!",
+      "generator": null,
+      "curriculumStep": 0
+    },
+    {
+      "id": "comp_001",
+      "domain": "comparison",
+      "skills": [
+        "number_comparison"
+      ],
+      "difficulty": 1.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Which number is bigger: 3 or 8?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          3,
+          8
+        ]
+      },
+      "hint": "Think about which number comes later when counting!",
+      "explanation": "8 is bigger than 3!",
+      "generator": null,
+      "curriculumStep": 2
+    },
+    {
+      "id": "comp_002",
+      "domain": "comparison",
+      "skills": [
+        "number_comparison"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Which number is smaller: 6 or 2?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          6,
+          2
+        ]
+      },
+      "hint": "Think about which number comes first when counting!",
+      "explanation": "2 is smaller than 6!",
+      "generator": null,
+      "curriculumStep": 2
+    },
+    {
+      "id": "pat_001",
+      "domain": "pattern_matching",
+      "skills": [
+        "number_patterns"
+      ],
+      "difficulty": 2.7,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "What comes next? 2, 4, 6, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          7,
+          8,
+          9,
+          10
+        ]
+      },
+      "hint": "Each number goes up by the same amount!",
+      "explanation": "The pattern goes up by 2 each time: 2, 4, 6, 8!",
+      "generator": null,
+      "curriculumStep": 3
+    },
+    {
+      "id": "seq_001",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 2.1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Fill in the blank: 1, __, 3, 4, 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          0,
+          2,
+          6,
+          8
+        ]
+      },
+      "hint": "The numbers go in order!",
+      "explanation": "The numbers go 1, 2, 3, 4, 5!",
+      "generator": null,
+      "curriculumStep": 2
+    },
+    {
+      "id": "add_004",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.8,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What is 3 + 3?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "Three fingers on each hand!",
+      "explanation": "3 plus 3 makes 6!",
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      }
+    },
+    {
+      "id": "add_005",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 2.4,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "Solve: 7 + 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          10,
+          11,
+          12,
+          13
+        ]
+      },
+      "hint": "Start at 7 and count up 5 more!",
+      "explanation": "7 plus 5 makes 12!",
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": true
+      }
+    },
+    {
+      "id": "sub_003",
+      "domain": "subtraction",
+      "skills": [
+        "single_digit_subtraction"
+      ],
+      "difficulty": 4,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "10 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          5,
+          6,
+          7
+        ]
+      },
+      "hint": "Start at 10 and count back 4!",
+      "explanation": "10 take away 4 leaves 6!",
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresBorrow": true
+      }
+    },
+    {
+      "id": "pat_002",
+      "domain": "pattern_matching",
+      "skills": [
+        "number_patterns"
+      ],
+      "difficulty": 2.7,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "What comes next? 5, 10, 15, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 20,
+        "options": [
+          16,
+          18,
+          20,
+          25
+        ]
+      },
+      "hint": "Each number goes up by 5!",
+      "explanation": "The pattern goes up by 5 each time: 5, 10, 15, 20!",
+      "generator": null,
+      "curriculumStep": 5
+    }
+  ]
+}

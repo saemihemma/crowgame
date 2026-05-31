@@ -1,14 +1,16 @@
-extends SceneTree
-## Headless test runner. Discovers every res://tests/test_*.gd (except the
-## framework/runner), instantiates it, runs each `test_*` method, and reports.
+extends Node
+## Headless test runner (scene-based). Run as the main scene so autoloads
+## initialize (their _ready fires) BEFORE this node's _ready — a custom
+## SceneTree via --script would quit before the first frame and skip autoload
+## _ready, so we run under the normal main loop instead.
 ##
-## Usage: godot --headless --path godot --script res://tests/test_runner.gd
+## Usage: godot --headless --path godot res://tests/TestRunner.tscn
 ## Exits non-zero if any assertion fails, so CI can gate on it.
 
 const TESTS_DIR := "res://tests"
 const SKIP := ["test_framework.gd", "test_runner.gd"]
 
-func _initialize() -> void:
+func _ready() -> void:
 	var total_pass := 0
 	var total_fail := 0
 	var suites := _discover()
@@ -26,7 +28,6 @@ func _initialize() -> void:
 			var mname: String = method.name
 			if not mname.begins_with("test_"):
 				continue
-			# Reset accumulators per test for isolation if supported.
 			if instance.has_method("_reset"):
 				instance.call("_reset")
 			var before: int = instance.failures().size()
@@ -42,7 +43,7 @@ func _initialize() -> void:
 				print("  [pass] %s::%s" % [suite_name, mname])
 
 	print("\n=== %d passed, %d failed ===\n" % [total_pass, total_fail])
-	quit(1 if total_fail > 0 else 0)
+	get_tree().quit(1 if total_fail > 0 else 0)
 
 func _discover() -> Array[String]:
 	var found: Array[String] = []

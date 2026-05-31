@@ -1,0 +1,44 @@
+{
+    "id": "forest",
+    "name": "Forest",
+    "palette": {
+        "primary": "#4a7c59",
+        "secondary": "#8b6914",
+        "accent": "#ffd700",
+        "danger": "#cc3333",
+        "textColor": "#ffffff",
+        "textShadow": "#000000",
+        "boardBg": "#5c3a1e",
+        "boardBorder": "#3d2510",
+        "buttonBg": "#6b4e1b",
+        "buttonText": "#ffffff"
+    },
+    "hud": {
+        "healthIcon": "ui_forest_feather",
+        "healthMax": 3,
+        "coinIcon": "ui_forest_coin",
+        "font": "monospace"
+    },
+    "mathBoard": {
+        "frameSprite": "ui_forest_board_frame",
+        "bgSprite": "ui_forest_board_bg",
+        "optionSprite": "ui_forest_option_btn",
+        "correctFx": "sparkle_gold",
+        "wrongFx": "shake_red"
+    },
+    "controls": {
+        "dpadSprite": "ui_forest_dpad",
+        "jumpBtnSprite": "ui_forest_jump",
+        "peckBtnSprite": "ui_forest_peck"
+    },
+    "door": {
+        "sprite": "door_forest",
+        "openAnim": "door_forest_open"
+    },
+    "dialog": {
+        "frameSprite": "ui_forest_dialog_frame",
+        "portraitBorder": "#5c3a1e",
+        "textColor": "#ffffff",
+        "nameColor": "#ffd700"
+    }
+}

@@ -12,6 +12,19 @@ run/main_scene="res://scenes/Boot.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Persistence="*res://scripts/autoload/persistence.gd"
+EventBus="*res://scripts/autoload/event_bus.gd"
+DataManager="*res://scripts/autoload/data_manager.gd"
+ProfileManager="*res://scripts/autoload/profile_manager.gd"
+SaveManager="*res://scripts/autoload/save_manager.gd"
+TextManager="*res://scripts/autoload/text_manager.gd"
+LevelManager="*res://scripts/autoload/level_manager.gd"
+LevelingManager="*res://scripts/autoload/leveling_manager.gd"
+ThemeManager="*res://scripts/autoload/theme_manager.gd"
+AudioManager="*res://scripts/autoload/audio_manager.gd"
+
 [display]
 
 window/size/viewport_width=960

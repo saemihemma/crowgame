@@ -10,4 +10,4 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 GODOT="${GODOT:-godot}"
 
 "$GODOT" --headless --path "$HERE" --import >/dev/null 2>&1 || true
-"$GODOT" --headless --path "$HERE" --script res://tests/test_runner.gd
+"$GODOT" --headless --path "$HERE" res://tests/TestRunner.tscn

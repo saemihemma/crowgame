@@ -1,0 +1,7 @@
+{
+  "interaction_radius": 64,
+  "cooldown_ms": 2000,
+  "float_bob_amplitude": 8,
+  "float_bob_speed": 1.5,
+  "greeting_animation_delay": 300
+}
