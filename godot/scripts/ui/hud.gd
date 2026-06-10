@@ -14,6 +14,7 @@ var _lives := 3
 func _ready() -> void:
 	layer = 5
 	_build()
+	_build_ability_row()
 	_coins = int(SaveManager.get_data().get("coins", 0))
 	_owls = int(SaveManager.get_data().get("owlsSaved", 0))
 	_refresh()
@@ -21,8 +22,43 @@ func _ready() -> void:
 	EventBus.owl_saved.connect(func(): _owls += 1; _refresh())
 	EventBus.lives_changed.connect(func(l): _lives = l; _refresh())
 	EventBus.player_hurt.connect(_shake_lives)
+	EventBus.ability_granted.connect(_on_ability_granted)
+	EventBus.ability_revoked.connect(_on_ability_revoked)
 	ThemeManager.theme_changed.connect(func(_id): _apply_theme())
 	_apply_theme()
+
+# ─── AbilitySlots (top-right, AbilitySlots.ts) ─────────────
+var _ability_row: HBoxContainer
+var _ability_chips: Dictionary = {}  # abilityId -> Label
+
+func _build_ability_row() -> void:
+	_ability_row = HBoxContainer.new()
+	_ability_row.add_theme_constant_override("separation", 8)
+	_ability_row.anchor_left = 1.0
+	_ability_row.anchor_right = 1.0
+	_ability_row.offset_left = -176
+	_ability_row.offset_top = 16
+	_ability_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_ability_row)
+
+func _on_ability_granted(payload: Dictionary) -> void:
+	var id := String(payload.get("abilityId", ""))
+	if id == "" or _ability_chips.has(id):
+		return
+	var chip := Label.new()
+	chip.text = id.capitalize()
+	chip.add_theme_font_size_override("font_size", 16)
+	chip.add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
+	chip.add_theme_color_override("font_shadow_color", Color.BLACK)
+	_ability_row.add_child(chip)
+	_ability_chips[id] = chip
+	UiFx.elastic_entrance.call_deferred(chip)
+
+func _on_ability_revoked(payload: Dictionary) -> void:
+	var id := String(payload.get("abilityId", ""))
+	if _ability_chips.has(id):
+		_ability_chips[id].queue_free()
+		_ability_chips.erase(id)
 
 func _on_coins_changed(c: int) -> void:
 	var crossed_milestone := c > _coins and [10, 25, 50, 100].has(c)

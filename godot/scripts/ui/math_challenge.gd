@@ -135,10 +135,17 @@ func _build_ui(opts: Dictionary) -> void:
 		b.focus_mode = Control.FOCUS_ALL
 		var idx := i
 		b.pressed.connect(func(): submit_answer(idx))
+		UiFx.attach_focus_highlight(b)
 		row.add_child(b)
 		_buttons.append(b)
 	if _buttons.size() > 0:
 		_buttons[0].grab_focus()
+	# Elastic pop-in once the layout has computed sizes.
+	_pop_in.call_deferred(vbox)
+
+func _pop_in(node: Control) -> void:
+	if is_instance_valid(node):
+		UiFx.elastic_entrance(node)
 
 func _set_buttons_enabled(enabled: bool) -> void:
 	for b in _buttons:

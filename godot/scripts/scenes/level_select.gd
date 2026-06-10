@@ -29,12 +29,16 @@ func _ready() -> void:
 		b.custom_minimum_size = Vector2(360, 56)
 		b.add_theme_font_size_override("font_size", 26)
 		b.pressed.connect(func(): _play(key))
+		UiFx.attach_focus_highlight(b)
 		col.add_child(b)
+		if col.get_child_count() == 2:  # first level button (after title)
+			b.grab_focus()
 
 	var back := Button.new()
 	back.text = "Back"
 	back.custom_minimum_size = Vector2(360, 48)
 	back.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/MainMenu.tscn"))
+	UiFx.attach_focus_highlight(back)
 	col.add_child(back)
 
 func _is_unlocked(level: Dictionary, completed: Array) -> bool:

@@ -42,11 +42,13 @@ func _show_profile_list() -> void:
 		b.add_theme_font_size_override("font_size", 28)
 		var uname := String(p.get("username", ""))
 		b.pressed.connect(func(): _show_pin_entry(uname))
+		UiFx.attach_focus_highlight(b)
 		_col.add_child(b)
 	var nb := Button.new()
 	nb.text = "+ New Player"
 	nb.custom_minimum_size = Vector2(280, 56)
 	nb.pressed.connect(_show_new_player)
+	UiFx.attach_focus_highlight(nb)
 	_col.add_child(nb)
 
 func _show_pin_entry(username: String) -> void:
@@ -79,13 +81,28 @@ func _show_new_player() -> void:
 	_action_button("Back", _show_profile_list)
 	_name_edit.grab_focus()
 
+var _pin_dots: Label
+
 func _make_pin_edit() -> LineEdit:
 	var e := LineEdit.new()
 	e.max_length = 4
 	e.secret = true
 	e.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	e.custom_minimum_size = Vector2(160, 48)
+	# Kid-friendly PIN dots (LoginScene.ts shows filled/empty circles per digit).
+	_pin_dots = Label.new()
+	_pin_dots.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_pin_dots.add_theme_font_size_override("font_size", 30)
+	_col.add_child(_pin_dots)
+	e.text_changed.connect(_update_pin_dots)
+	_update_pin_dots("")
 	return e
+
+func _update_pin_dots(text: String) -> void:
+	if _pin_dots == null:
+		return
+	var filled := mini(text.length(), 4)
+	_pin_dots.text = "● ".repeat(filled) + "○ ".repeat(4 - filled)
 
 func _make_status() -> Label:
 	var l := Label.new()
@@ -98,6 +115,7 @@ func _action_button(text: String, cb: Callable) -> void:
 	b.text = text
 	b.custom_minimum_size = Vector2(280, 52)
 	b.pressed.connect(cb)
+	UiFx.attach_focus_highlight(b)
 	_col.add_child(b)
 
 func _try_login(username: String, pin: String) -> void:

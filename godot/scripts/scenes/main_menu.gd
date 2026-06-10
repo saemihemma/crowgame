@@ -31,6 +31,7 @@ func _add_button(parent: Node, text: String, cb: Callable) -> void:
 	b.custom_minimum_size = Vector2(280, 72)
 	b.add_theme_font_size_override("font_size", 32)
 	b.pressed.connect(cb)
+	UiFx.attach_focus_highlight(b)
 	parent.add_child(b)
 	if parent.get_child_count() == 2:  # focus the first button (after title)
 		b.grab_focus()

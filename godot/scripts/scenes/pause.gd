@@ -44,6 +44,7 @@ func _button(parent: Node, text: String, cb: Callable) -> Button:
 	b.custom_minimum_size = Vector2(240, 64)
 	b.add_theme_font_size_override("font_size", 28)
 	b.pressed.connect(cb)
+	UiFx.attach_focus_highlight(b)
 	parent.add_child(b)
 	return b
 
