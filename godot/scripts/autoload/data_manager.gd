@@ -28,6 +28,7 @@ const PATHS := {
 	"THEME_SCIFI": "themes/theme_scifi.json",
 	"AUDIO_MANIFEST": "audio/audio_manifest.json",
 	"STRINGS_EN": "i18n/strings_en.json",
+	"STRINGS_IS": "i18n/strings_is.json",
 }
 
 var _cache: Dictionary = {}

@@ -4,23 +4,44 @@ extends Node
 ## under the same key (crow_translations). t(key, args...) does {0},{1} substitution.
 
 const STORAGE_KEY := "crow_translations"
+const LOCALE_KEY := "crow_locale"
+const LOCALE_FILES := { "en": "STRINGS_EN", "is": "STRINGS_IS" }
 
-var _defaults: Dictionary = {}
+signal locale_changed(code: String)
+
+var _defaults: Dictionary = {}        # English — always the fallback
+var _locale_strings: Dictionary = {}  # active non-English locale (empty for en)
+var _locale := "en"
 var _overrides: Dictionary = {}
 
 func _ready() -> void:
-	# BootScene.create() called init(strings_en); here we self-init from DataManager.
+	# English is the canonical fallback; active locale overlays it.
 	init(DataManager.get_dict("STRINGS_EN"))
+	var saved: Variant = Persistence.get_item(LOCALE_KEY)
+	set_locale(String(saved) if saved != null else "en")
 
 func init(default_strings: Dictionary) -> void:
 	_defaults = default_strings
 	_load_overrides()
 
+## Resolution order: user override -> active locale -> English -> raw key.
 func t(key: String, args: Array = []) -> String:
-	var value := String(_overrides.get(key, _defaults.get(key, key)))
+	var value := String(_overrides.get(key, _locale_strings.get(key, _defaults.get(key, key))))
 	for i in args.size():
 		value = value.replace("{%d}" % i, str(args[i]))
 	return value
+
+func set_locale(code: String) -> void:
+	_locale = code if LOCALE_FILES.has(code) else "en"
+	_locale_strings = {} if _locale == "en" else DataManager.get_dict(LOCALE_FILES[_locale])
+	Persistence.set_item(LOCALE_KEY, _locale)
+	locale_changed.emit(_locale)
+
+func get_locale() -> String:
+	return _locale
+
+func available_locales() -> Array:
+	return LOCALE_FILES.keys()
 
 func get_all_keys() -> Array:
 	return _defaults.keys()

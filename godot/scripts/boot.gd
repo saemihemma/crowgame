@@ -31,7 +31,7 @@ func _build_placeholder() -> void:
 	add_child(label)
 
 	var subtitle := Label.new()
-	subtitle.text = "Godot 4 port — booting…"
+	subtitle.text = TextManager.t("boot.loading")
 	subtitle.add_theme_font_size_override("font_size", 20)
 	subtitle.add_theme_color_override("font_color", ThemeManager.get_color_value("text_dim"))
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

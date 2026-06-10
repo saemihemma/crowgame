@@ -14,7 +14,7 @@ func _ready() -> void:
 	center.add_child(col)
 
 	var title := Label.new()
-	title.text = "Pick a Level"
+	title.text = TextManager.t("level_select.title")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 56)
 	col.add_child(title)
@@ -35,7 +35,7 @@ func _ready() -> void:
 			b.grab_focus()
 
 	var back := Button.new()
-	back.text = "Back"
+	back.text = TextManager.t("level_select.back")
 	back.custom_minimum_size = Vector2(360, 48)
 	back.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/MainMenu.tscn"))
 	UiFx.attach_focus_highlight(back)

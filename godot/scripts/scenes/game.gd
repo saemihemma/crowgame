@@ -208,7 +208,7 @@ func _show_death_text() -> void:
 	if layer == null:
 		return
 	var l := Label.new()
-	l.text = "Oops!"
+	l.text = TextManager.t("game.oops")
 	l.add_theme_font_size_override("font_size", 48)
 	l.add_theme_color_override("font_color", ThemeManager.get_color_value("death_text"))
 	l.add_theme_color_override("font_shadow_color", Color.BLACK)
@@ -299,8 +299,7 @@ func _show_completion_screen() -> void:
 	center.add_child(col)
 
 	var title := Label.new()
-	var title_text := TextManager.t("game.congratulations_title")
-	title.text = title_text if title_text != "game.congratulations_title" else "You did it!"
+	title.text = TextManager.t("game.congratulations_title")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 64)
 	title.add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
@@ -308,19 +307,19 @@ func _show_completion_screen() -> void:
 
 	var stats := Label.new()
 	var save := SaveManager.get_data()
-	stats.text = "Owls saved: %d    Coins: %d" % [int(save.get("owlsSaved", 0)), coin_count]
+	stats.text = TextManager.t("game.completion_stats", [int(save.get("owlsSaved", 0)), coin_count])
 	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stats.add_theme_font_size_override("font_size", 26)
 	col.add_child(stats)
 
 	var again := Button.new()
-	again.text = "Play Again"
+	again.text = TextManager.t("game.play_again")
 	again.custom_minimum_size = Vector2(280, 64)
 	again.add_theme_font_size_override("font_size", 28)
 	again.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn"))
 	col.add_child(again)
 	var menu := Button.new()
-	menu.text = "Back to Menu"
+	menu.text = TextManager.t("game.back_to_menu")
 	menu.custom_minimum_size = Vector2(280, 56)
 	menu.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/MainMenu.tscn"))
 	col.add_child(menu)

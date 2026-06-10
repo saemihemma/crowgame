@@ -21,9 +21,9 @@ func _ready() -> void:
 
 	_add_button(col, TextManager.t("menu.play"), _on_play)
 	if SaveManager.has_save():
-		_add_button(col, "Continue", _on_continue)
+		_add_button(col, TextManager.t("menu.continue"), _on_continue)
 	if ProfileManager.get_active_user() != null:
-		_add_button(col, "Switch Player", _on_switch_user)
+		_add_button(col, TextManager.t("menu.switch_user"), _on_switch_user)
 	_add_build_stamp()
 
 ## Tiny build stamp (bottom-right) so phone refreshes visibly confirm a new

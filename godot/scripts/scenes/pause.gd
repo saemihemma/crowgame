@@ -25,12 +25,12 @@ func _ready() -> void:
 	col.add_child(title)
 	_button(col, TextManager.t("pause.resume"), _resume)
 	_theme_btn = _button(col, _theme_label(), _toggle_theme)
-	_button(col, TextManager.t("pause.quit") if TextManager.get_default("pause.quit") != "" else "Quit", _quit)
+	_button(col, TextManager.t("pause.quit"), _quit)
 
 var _theme_btn: Button
 
 func _theme_label() -> String:
-	return "Theme: %s" % ThemeManager.get_theme_id()
+	return TextManager.t("pause.theme", [ThemeManager.get_theme_id()])
 
 func _toggle_theme() -> void:
 	# Tier-3 demo: hot-swap the skin at runtime; HUD restyles via theme_changed.

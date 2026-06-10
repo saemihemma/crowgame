@@ -113,6 +113,6 @@ func _make_label() -> Label:
 	return l
 
 func _refresh() -> void:
-	_lives_label.text = "Lives: " + "*".repeat(maxi(0, _lives))
-	_coin_label.text = "Coins " + TextManager.t("hud.coins", [_coins])
-	_owl_label.text = "Owls " + TextManager.t("hud.owls", [_owls])
+	_lives_label.text = TextManager.t("hud.lives", ["*".repeat(maxi(0, _lives))])
+	_coin_label.text = TextManager.t("hud.coins_label", [_coins])
+	_owl_label.text = TextManager.t("hud.owls_label", [_owls])

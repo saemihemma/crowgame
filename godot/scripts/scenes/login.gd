@@ -34,7 +34,7 @@ func _title(text: String, size := 40) -> void:
 
 func _show_profile_list() -> void:
 	_clear()
-	_title("Who's playing?")
+	_title(TextManager.t("login.subtitle"))
 	for p in ProfileManager.get_profiles():
 		var b := Button.new()
 		b.text = String(p.get("username", ""))
@@ -45,7 +45,7 @@ func _show_profile_list() -> void:
 		UiFx.attach_focus_highlight(b)
 		_col.add_child(b)
 	var nb := Button.new()
-	nb.text = "+ New Player"
+	nb.text = TextManager.t("login.new_user")
 	nb.custom_minimum_size = Vector2(280, 56)
 	nb.pressed.connect(_show_new_player)
 	UiFx.attach_focus_highlight(nb)
@@ -54,31 +54,31 @@ func _show_profile_list() -> void:
 func _show_pin_entry(username: String) -> void:
 	_selected_user = username
 	_clear()
-	_title("Hi, %s!" % username, 32)
-	_title("Enter your 4-digit PIN", 22)
+	_title(TextManager.t("login.hi", [username]), 32)
+	_title(TextManager.t("login.enter_pin"), 22)
 	_pin_edit = _make_pin_edit()
 	_col.add_child(_pin_edit)
 	_status = _make_status()
 	_col.add_child(_status)
-	_action_button("Play", func(): _try_login(username, _pin_edit.text))
-	_action_button("Back", _show_profile_list)
+	_action_button(TextManager.t("login.play"), func(): _try_login(username, _pin_edit.text))
+	_action_button(TextManager.t("login.back"), _show_profile_list)
 	_pin_edit.grab_focus()
 
 func _show_new_player() -> void:
 	_clear()
-	_title("New Player", 32)
+	_title(TextManager.t("login.create_title"), 32)
 	_name_edit = LineEdit.new()
-	_name_edit.placeholder_text = "Your name"
+	_name_edit.placeholder_text = TextManager.t("login.name_placeholder")
 	_name_edit.max_length = 12
 	_name_edit.custom_minimum_size = Vector2(280, 48)
 	_col.add_child(_name_edit)
-	_title("Pick a 4-digit PIN", 22)
+	_title(TextManager.t("login.pick_pin"), 22)
 	_pin_edit = _make_pin_edit()
 	_col.add_child(_pin_edit)
 	_status = _make_status()
 	_col.add_child(_status)
-	_action_button("Create", _try_create)
-	_action_button("Back", _show_profile_list)
+	_action_button(TextManager.t("login.create"), _try_create)
+	_action_button(TextManager.t("login.back"), _show_profile_list)
 	_name_edit.grab_focus()
 
 var _pin_dots: Label
@@ -122,7 +122,7 @@ func _try_login(username: String, pin: String) -> void:
 	if ProfileManager.login(username, pin):
 		_finish_login()
 	else:
-		_status.text = "Wrong PIN, try again!"
+		_status.text = TextManager.t("login.wrong_pin")
 		_pin_edit.text = ""
 
 func _try_create() -> void:
