@@ -18,6 +18,10 @@ var _dead := false
 @onready var _edge_ray: RayCast2D = $EdgeRay
 @onready var _hitbox: Area2D = $Hitbox
 
+func setup_from_spawn(s: Dictionary) -> void:
+	position = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
+	enemy_id = String(s.get("props", {}).get("enemy_id", enemy_id))
+
 func _ready() -> void:
 	add_to_group("enemy")
 	definition = _lookup(enemy_id)
@@ -50,7 +54,7 @@ func kill() -> void:
 		return
 	_dead = true
 	_hitbox.set_deferred("monitoring", false)
-	AudioManager.play_sfx("enemy_death")
+	AudioManager.play_event("enemy_defeat")
 	# Death burst + "+N" coin fly-up (GameScene.killEnemy feedback).
 	var fx_parent := get_parent()
 	if fx_parent != null:

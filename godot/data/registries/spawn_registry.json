@@ -1,0 +1,8 @@
+{
+  "_comment": "Tiled object type -> entity scene. game.gd spawns by looking up here and calling the scene's setup_from_spawn(spawn). Add a new object type = add a scene with setup_from_spawn() + one entry here (no code change). 'player_spawn' is handled specially (player + camera).",
+  "collectible": { "scene": "res://scenes/Coin.tscn" },
+  "hazard": { "scene": "res://scenes/Hazard.tscn" },
+  "door": { "scene": "res://scenes/Door.tscn" },
+  "npc": { "scene": "res://scenes/Npc.tscn" },
+  "enemy": { "scene": "res://scenes/Enemy.tscn" }
+}

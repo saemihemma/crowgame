@@ -140,4 +140,4 @@ func _finish_login() -> void:
 	LearnerStateManager.initialize(ProfileManager.get_active_profile(), save.get("learnerState", null), ELOManager.get_stats())
 	LearnerSyncService.init(LearnerStateManager.get_snapshot())
 	MathProblemManager.hydrate_recent_problems(save.get("telemetry", {}).get("answeredProblemIds", []))
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	SceneRouter.goto("main_menu")

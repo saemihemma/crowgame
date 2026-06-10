@@ -1,0 +1,18 @@
+{
+  "_comment": "Gameplay event -> sfx key (in audio_manifest.json). Call AudioManager.play_event('coin'); re-map a sound by editing here, no code change.",
+  "coin": "coin_collect",
+  "jump": "player_jump",
+  "land": "land",
+  "hurt": "hurt",
+  "enemy_defeat": "enemy_death",
+  "shoot": "laser_shoot",
+  "owl_greet": "owl_greet",
+  "owl_saved": "owl_saved",
+  "door": "door",
+  "button": "button",
+  "answer_correct": "correct",
+  "answer_wrong": "wrong",
+  "level_complete": "level_complete",
+  "ability": "ability",
+  "milestone": "milestone"
+}

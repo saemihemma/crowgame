@@ -58,4 +58,4 @@ func _resume() -> void:
 
 func _quit() -> void:
 	get_tree().paused = false
-	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+	SceneRouter.goto("main_menu")

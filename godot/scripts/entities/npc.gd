@@ -23,6 +23,10 @@ var _sprite_base_y := 0.0
 @onready var _sprite: Sprite2D = $Sprite
 @onready var _zone: Area2D = $InteractZone
 
+func setup_from_spawn(s: Dictionary) -> void:
+	position = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
+	npc_id = String(s.get("props", {}).get("npc_id", npc_id))
+
 func _ready() -> void:
 	add_to_group("npc")
 	definition = _lookup_definition(npc_id)
@@ -91,6 +95,7 @@ func interact() -> void:
 	if Time.get_ticks_msec() < _cooldown_until:
 		return
 	_interacting = true
+	AudioManager.play_event("owl_greet")
 	for c in _components:
 		c.on_interact()
 

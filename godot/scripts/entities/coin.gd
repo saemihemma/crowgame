@@ -7,6 +7,9 @@ const COIN_TEXTURE := "res://assets/sprites/ui/coin/coinsprite-runtime-32.png"
 
 @onready var _anim: AnimatedSprite2D = $Anim
 
+func setup_from_spawn(s: Dictionary) -> void:
+	position = Vector2(s["x"], s["y"])
+
 func _ready() -> void:
 	if ResourceLoader.exists(COIN_TEXTURE):
 		_anim.sprite_frames = SpriteSheet.build_frames(load(COIN_TEXTURE), 32, 32, 9, 12.0, "spin")

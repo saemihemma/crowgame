@@ -12,9 +12,9 @@ func _ready() -> void:
 	await get_tree().create_timer(0.4).timeout
 	# Route to the active profile's menu, or the login screen.
 	if ProfileManager.get_active_user() != null:
-		get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")
+		SceneRouter.goto("main_menu")
 	else:
-		get_tree().change_scene_to_file("res://scenes/Login.tscn")
+		SceneRouter.goto("login")
 
 func _build_placeholder() -> void:
 	# Sky is the project's default_clear_color (#87CEEB), matching src/main.ts.

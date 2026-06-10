@@ -61,7 +61,7 @@ func _add_button(parent: Node, text: String, cb: Callable) -> void:
 		b.grab_focus()
 
 func _on_play() -> void:
-	get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn")
+	SceneRouter.goto("level_select")
 
 ## Continue resumes the level stored in the save (MainMenuScene.ts passes
 ## save.currentLevel to GameScene). Falls back to level_01 for unknown keys.
@@ -71,8 +71,8 @@ func resolve_continue_key(save: Dictionary) -> String:
 
 func _on_continue() -> void:
 	LevelManager.set_current_level(resolve_continue_key(SaveManager.get_data()))
-	get_tree().change_scene_to_file("res://scenes/Game.tscn")
+	SceneRouter.goto("game")
 
 func _on_switch_user() -> void:
 	ProfileManager.logout()
-	get_tree().change_scene_to_file("res://scenes/Login.tscn")
+	SceneRouter.goto("login")

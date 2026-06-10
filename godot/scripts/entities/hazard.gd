@@ -7,8 +7,14 @@ extends Area2D
 var _w := 32.0
 var _h := 32.0
 
+var _pending := Vector2(32, 32)
+
 @onready var _shape: CollisionShape2D = $CollisionShape2D
 @onready var _spikes: Polygon2D = $Spikes
+
+func setup_from_spawn(s: Dictionary) -> void:
+	position = Vector2(s["x"], s["y"])
+	_pending = Vector2(s.get("width", 32), s.get("height", 32))  # applied in _ready (needs nodes)
 
 func configure(w: float, h: float) -> void:
 	_w = maxf(8.0, w)
@@ -20,6 +26,7 @@ func configure(w: float, h: float) -> void:
 	_draw_spikes()
 
 func _ready() -> void:
+	configure(_pending.x, _pending.y)
 	body_entered.connect(_on_body_entered)
 
 func _draw_spikes() -> void:

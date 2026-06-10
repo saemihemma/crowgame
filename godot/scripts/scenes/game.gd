@@ -40,6 +40,7 @@ func _ready() -> void:
 	coin_count = int(SaveManager.get_data().get("coins", 0))
 	coins_at_level_start = coin_count
 	_setup_fx_layer()
+	EventBus.owl_saved.connect(func(): AudioManager.play_event("owl_saved"))
 	add_child(HUD_SCENE.instantiate())
 	add_child(TOUCH_SCENE.instantiate())
 	var key := level_key
@@ -82,40 +83,29 @@ func _load_level(key: String) -> void:
 	EventBus.coins_changed.emit(coin_count)
 	EventBus.lives_changed.emit(lives)
 
+## Data-driven spawning: player_spawn is special (player + camera); every other
+## object type is looked up in spawn_registry.json -> scene, which self-configures
+## from the Tiled object via setup_from_spawn(spawn). New object type = new scene
+## + one registry entry, no code here.
 func _spawn_entities() -> void:
+	var registry := DataManager.get_dict("SPAWN_REGISTRY")
 	for s in _parsed.get("spawns", []):
-		match s["type"]:
-			"player_spawn":
-				spawn_point = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
-				_player = PLAYER_SCENE.instantiate()
-				_player.global_position = spawn_point
-				_world.add_child(_player)
-			"collectible":
-				var coin := COIN_SCENE.instantiate()
-				coin.position = Vector2(s["x"], s["y"])
-				_world.add_child(coin)
-			"hazard":
-				var hz := HAZARD_SCENE.instantiate()
-				hz.position = Vector2(s["x"], s["y"])
-				_world.add_child(hz)
-				hz.configure(s["width"], s["height"])
-			"door":
-				var door := DOOR_SCENE.instantiate()
-				door.position = Vector2(s["x"] + 16.0, s["y"])
-				door.target_level = String(s["props"].get("target_level", ""))
-				_world.add_child(door)
-			"npc":
-				var npc := NPC_SCENE.instantiate()
-				npc.npc_id = String(s["props"].get("npc_id", ""))
-				npc.position = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
-				_world.add_child(npc)
-			"enemy":
-				var enemy := ENEMY_SCENE.instantiate()
-				enemy.enemy_id = String(s["props"].get("enemy_id", "cockroach_basic"))
-				enemy.position = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
-				_world.add_child(enemy)
-			_:
-				pass
+		var type := String(s["type"])
+		if type == "player_spawn":
+			spawn_point = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
+			_player = PLAYER_SCENE.instantiate()
+			_player.global_position = spawn_point
+			_world.add_child(_player)
+			continue
+		var entry: Dictionary = registry.get(type, {})
+		var scene_path := String(entry.get("scene", ""))
+		if scene_path == "" or not ResourceLoader.exists(scene_path):
+			continue
+		var node: Node = load(scene_path).instantiate()
+		# setup_from_spawn runs BEFORE _ready (so @export/id props are set in time).
+		if node.has_method("setup_from_spawn"):
+			node.setup_from_spawn(s)
+		_world.add_child(node)
 
 func _setup_camera() -> void:
 	if _player == null:
@@ -168,7 +158,7 @@ func collect_coin(coin: Node) -> void:
 		DopamineFX.burst(_world, coin.position, ThemeManager.get_color_value("coin"), int(Config.fx("burst/coin", 20)))
 	coin.queue_free()
 	coin_count += 1
-	AudioManager.play_sfx("coin_collect")
+	AudioManager.play_event("coin")
 	EventBus.coins_changed.emit(coin_count)
 
 # ─── Damage / death / respawn ─────────────────────────────
@@ -178,6 +168,7 @@ func hurt_player() -> void:
 	lives -= 1
 	EventBus.lives_changed.emit(lives)
 	EventBus.player_hurt.emit()
+	AudioManager.play_event("hurt")
 	_camera_shake(Config.fx("shake/duration", 0.15), Config.fx("shake/strength", 6.0))
 	var flash := ThemeManager.get_color_value("danger_flash")
 	flash.a = Config.fx("hurt_flash_alpha", 0.45)
@@ -282,6 +273,7 @@ func _show_completion_screen() -> void:
 	layer.name = "Completion"
 	layer.layer = 15
 	add_child(layer)
+	AudioManager.play_event("level_complete")
 
 	var bg := ColorRect.new()
 	bg.color = ThemeManager.get_color_value("primary")
@@ -316,12 +308,12 @@ func _show_completion_screen() -> void:
 	again.text = TextManager.t("game.play_again")
 	again.custom_minimum_size = Vector2(280, 64)
 	again.add_theme_font_size_override("font_size", 28)
-	again.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn"))
+	again.pressed.connect(func(): SceneRouter.goto("level_select"))
 	col.add_child(again)
 	var menu := Button.new()
 	menu.text = TextManager.t("game.back_to_menu")
 	menu.custom_minimum_size = Vector2(280, 56)
-	menu.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/MainMenu.tscn"))
+	menu.pressed.connect(func(): SceneRouter.goto("main_menu"))
 	col.add_child(menu)
 	again.grab_focus()
 

@@ -47,6 +47,7 @@ func submit_answer(index: int) -> void:
 	EventBus.math_answer_submitted.emit({"problemId": current_problem.get("id", ""), "selectedAnswer": options[index], "isCorrect": is_correct})
 
 	if is_correct:
+		AudioManager.play_event("answer_correct")
 		_done = true
 		_set_buttons_enabled(false)
 		var first_attempt := _wrong_attempts == 0
@@ -54,6 +55,7 @@ func submit_answer(index: int) -> void:
 			_finish.bind(true, first_attempt), CONNECT_ONE_SHOT)
 	else:
 		_wrong_attempts += 1
+		AudioManager.play_event("answer_wrong")
 		if _wrong_attempts >= 2:
 			_done = true
 			_set_buttons_enabled(false)

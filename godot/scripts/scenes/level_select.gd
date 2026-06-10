@@ -37,7 +37,7 @@ func _ready() -> void:
 	var back := Button.new()
 	back.text = TextManager.t("level_select.back")
 	back.custom_minimum_size = Vector2(360, 48)
-	back.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/MainMenu.tscn"))
+	back.pressed.connect(func(): SceneRouter.goto("main_menu"))
 	UiFx.attach_focus_highlight(back)
 	col.add_child(back)
 
@@ -49,4 +49,4 @@ func _is_unlocked(level: Dictionary, completed: Array) -> bool:
 
 func _play(key: String) -> void:
 	LevelManager.set_current_level(key)
-	get_tree().change_scene_to_file("res://scenes/Game.tscn")
+	SceneRouter.goto("game")

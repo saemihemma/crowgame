@@ -21,6 +21,13 @@ func _ready() -> void:
 func init(manifest: Dictionary) -> void:
 	_manifest = manifest
 
+## Play a gameplay EVENT (decoupled from the asset): maps event -> sfx key via
+## data/audio/sound_events.json so sounds can be re-assigned without code.
+func play_event(event: String) -> void:
+	var key := String(DataManager.get_dict("SOUND_EVENTS").get(event, ""))
+	if key != "":
+		play_sfx(key)
+
 func play_sfx(key: String, _volume_override: float = -1.0) -> void:
 	if _silent:
 		return

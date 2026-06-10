@@ -95,7 +95,7 @@ func _update_animation() -> void:
 		_sprite.play("idle")
 
 func _on_jumped() -> void:
-	AudioManager.play_sfx("player_jump")
+	AudioManager.play_event("jump")
 	var dust := ThemeManager.get_color_value("dust")
 	dust.a = Config.fx("dust_alpha", 0.8)
 	DopamineFX.burst(get_parent(), global_position + Vector2(0, -4), dust, int(Config.fx("burst/jump_dust", 8)))
@@ -106,7 +106,7 @@ func _shoot() -> void:
 	proj.global_position = global_position + Vector2(_facing * 20.0, -40.0)
 	proj.setup(_facing, _laser_speed)
 	get_parent().add_child(proj)
-	AudioManager.play_sfx("laser_shoot")
+	AudioManager.play_event("shoot")
 	# Muzzle screen-flash (GameScene.ts shoot feedback) — color from theme.
 	var game := _find_game()
 	if game != null:

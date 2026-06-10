@@ -52,6 +52,7 @@ func _on_ability_granted(payload: Dictionary) -> void:
 	chip.add_theme_color_override("font_shadow_color", Color.BLACK)
 	_ability_row.add_child(chip)
 	_ability_chips[id] = chip
+	AudioManager.play_event("ability")
 	UiFx.elastic_entrance.call_deferred(chip)
 
 func _on_ability_revoked(payload: Dictionary) -> void:
@@ -66,6 +67,7 @@ func _on_coins_changed(c: int) -> void:
 	_refresh()
 	if crossed_milestone:
 		# CoinCounter.ts milestone burst at 10/25/50/100.
+		AudioManager.play_event("milestone")
 		DopamineFX.burst(self, _coin_label.global_position + Vector2(80, 12), ThemeManager.get_color_value("coin"), 20)
 		DopamineFX.number_fly_up(self, _coin_label.global_position + Vector2(110, 0), TextManager.t("hud.coins_milestone", [c]))
 

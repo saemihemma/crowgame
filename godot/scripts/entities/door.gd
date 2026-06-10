@@ -13,6 +13,10 @@ var _opened := false
 
 @onready var _anim: AnimatedSprite2D = $Anim
 
+func setup_from_spawn(s: Dictionary) -> void:
+	position = Vector2(s["x"] + 16.0, s["y"])
+	target_level = String(s.get("props", {}).get("target_level", ""))
+
 func _ready() -> void:
 	if ResourceLoader.exists(DOOR_TEXTURE):
 		var tex: Texture2D = load(DOOR_TEXTURE)
@@ -42,6 +46,7 @@ func _process(_delta: float) -> void:
 	var near := global_position.distance_to(player.global_position) < PROXIMITY
 	if near and not _opened:
 		_opened = true
+		AudioManager.play_event("door")
 		if _anim.sprite_frames and _anim.sprite_frames.has_animation("open"):
 			_anim.play("open")
 	elif not near and _opened:
