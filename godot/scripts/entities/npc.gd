@@ -13,6 +13,10 @@ var _components: Array = []
 var _interacting := false
 var _cooldown_until := 0
 var _flown := false
+var _player_in_range := false
+var _prompt: Label
+var _bob_time := 0.0
+var _sprite_base_y := 0.0
 
 @onready var _sprite: Sprite2D = $Sprite
 @onready var _zone: Area2D = $InteractZone
@@ -26,16 +30,58 @@ func _ready() -> void:
 	var tex_path := "res://%s" % sheet
 	if ResourceLoader.exists(tex_path):
 		_sprite.texture = load(tex_path)
+	_sprite_base_y = _sprite.position.y
 	_build_components(definition.get("components", []))
+	_build_prompt()
 	_zone.body_entered.connect(_on_body_entered)
+	_zone.body_exited.connect(_on_body_exited)
 
 func _process(delta: float) -> void:
 	for c in _components:
 		c.update_component(delta)
+	_update_idle_bob(delta)
+	# Phaser overlap is continuous: if the player stays in range, re-trigger
+	# once the interaction cooldown elapses (BaseNPC interaction loop).
+	if _player_in_range and not _interacting and not _flown and Time.get_ticks_msec() >= _cooldown_until:
+		interact()
+	_update_prompt_visibility()
+
+func _update_idle_bob(delta: float) -> void:
+	# Idle float-bob from npc_tuning.json (amplitude 8 px, speed 1.5 Hz-ish).
+	var tuning := DataManager.get_dict("NPC_TUNING")
+	var amp := float(tuning.get("float_bob_amplitude", 8))
+	var speed := float(tuning.get("float_bob_speed", 1.5))
+	_bob_time += delta * speed
+	if _sprite and not _flown:
+		_sprite.position.y = _sprite_base_y + sin(_bob_time * TAU * 0.5) * amp * 0.5
+
+func _build_prompt() -> void:
+	_prompt = Label.new()
+	_prompt.text = display_name
+	_prompt.add_theme_font_size_override("font_size", 16)
+	_prompt.add_theme_color_override("font_color", Color.WHITE)
+	_prompt.add_theme_color_override("font_shadow_color", Color.BLACK)
+	_prompt.add_theme_constant_override("shadow_offset_x", 2)
+	_prompt.add_theme_constant_override("shadow_offset_y", 2)
+	_prompt.position = Vector2(-48, -96)
+	_prompt.size = Vector2(96, 20)
+	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_prompt.visible = false
+	add_child(_prompt)
+
+func _update_prompt_visibility() -> void:
+	if _prompt == null:
+		return
+	_prompt.visible = _player_in_range and not _interacting and not _flown
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("player"):
+		_player_in_range = true
 		interact()
+
+func _on_body_exited(body: Node) -> void:
+	if body.is_in_group("player"):
+		_player_in_range = false
 
 func interact() -> void:
 	if _interacting or _flown:

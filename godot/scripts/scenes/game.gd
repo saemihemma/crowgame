@@ -355,6 +355,10 @@ func _setup_fx_layer() -> void:
 	_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(_flash)
 
+## Public screen flash (used for damage, muzzle flash, etc).
+func flash_screen(color: Color, duration: float) -> void:
+	_screen_flash(color, duration)
+
 func _screen_flash(color: Color, duration: float) -> void:
 	if _flash == null:
 		return

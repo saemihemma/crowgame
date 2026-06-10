@@ -17,11 +17,31 @@ func _ready() -> void:
 	_coins = int(SaveManager.get_data().get("coins", 0))
 	_owls = int(SaveManager.get_data().get("owlsSaved", 0))
 	_refresh()
-	EventBus.coins_changed.connect(func(c): _coins = c; _refresh())
+	EventBus.coins_changed.connect(_on_coins_changed)
 	EventBus.owl_saved.connect(func(): _owls += 1; _refresh())
 	EventBus.lives_changed.connect(func(l): _lives = l; _refresh())
+	EventBus.player_hurt.connect(_shake_lives)
 	ThemeManager.theme_changed.connect(func(_id): _apply_theme())
 	_apply_theme()
+
+func _on_coins_changed(c: int) -> void:
+	var crossed_milestone := c > _coins and [10, 25, 50, 100].has(c)
+	_coins = c
+	_refresh()
+	if crossed_milestone:
+		# CoinCounter.ts milestone burst at 10/25/50/100.
+		DopamineFX.burst(self, _coin_label.global_position + Vector2(80, 12), Color("#ffd700"), 20)
+		DopamineFX.number_fly_up(self, _coin_label.global_position + Vector2(110, 0), TextManager.t("hud.coins_milestone", [c]))
+
+## HealthBar.ts shakes the bar on hurt.
+func _shake_lives() -> void:
+	if _lives_label == null:
+		return
+	var origin := _lives_label.position
+	var tw := _lives_label.create_tween()
+	for i in 4:
+		tw.tween_property(_lives_label, "position:x", origin.x + (4 if i % 2 == 0 else -4), 0.04)
+	tw.tween_property(_lives_label, "position:x", origin.x, 0.04)
 
 func _apply_theme() -> void:
 	# Tier-3: HUD accents follow the active skin's palette (restyle on swap).

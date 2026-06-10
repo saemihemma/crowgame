@@ -50,6 +50,12 @@ func kill() -> void:
 		return
 	_dead = true
 	_hitbox.set_deferred("monitoring", false)
+	AudioManager.play_sfx("enemy_death")
+	# Death burst + "+N" coin fly-up (GameScene.killEnemy feedback).
+	var fx_parent := get_parent()
+	if fx_parent != null:
+		DopamineFX.burst(fx_parent, global_position + Vector2(0, -24), Color("#ff6644"), 18)
+		DopamineFX.number_fly_up(fx_parent, global_position + Vector2(-10, -52), "+%d" % coin_reward)
 	var game := _find_game()
 	if game != null and game.has_method("award_enemy_coins"):
 		game.award_enemy_coins(coin_reward)
