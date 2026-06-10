@@ -4,9 +4,10 @@ extends CanvasLayer
 ## an InputMap action, so touch drives the exact same actions player.gd reads
 ## (no separate input path). Auto-shows on touch devices; harmless on desktop.
 
-const BTN := 88
-const GAP := 12
-const PAD := 16
+# Sizes from data/tuning/ui_tuning.json (Config.ui("touch/...")).
+@onready var BTN: int = int(Config.ui("touch/button_size", 88))
+@onready var GAP: int = int(Config.ui("touch/gap", 12))
+@onready var PAD: int = int(Config.ui("touch/pad", 16))
 
 func _ready() -> void:
 	layer = 8

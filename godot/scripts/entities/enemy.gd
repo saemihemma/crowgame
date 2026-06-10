@@ -37,7 +37,7 @@ func _physics_process(delta: float) -> void:
 	if is_on_wall():
 		_dir = -_dir
 	# Edge detection: probe one tile ahead at foot level; reverse if no ground.
-	_edge_ray.position.x = _dir * 28.0
+	_edge_ray.position.x = _dir * float(Config.ui("enemy/edge_probe_x", 28.0))
 	_edge_ray.force_raycast_update()
 	if is_on_floor() and not _edge_ray.is_colliding():
 		_dir = -_dir

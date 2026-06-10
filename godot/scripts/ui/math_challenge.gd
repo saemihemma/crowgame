@@ -8,9 +8,10 @@ extends CanvasLayer
 
 signal closed
 
-const CORRECT_DELAY := 1.5
-const FAIL_DELAY := 0.8
-const RETRY_LOCKOUT := 0.6
+# Timings come from data/tuning/ui_tuning.json (Config.ui("math_challenge/...")).
+@onready var CORRECT_DELAY: float = Config.ui("math_challenge/correct_delay", 1.5)
+@onready var FAIL_DELAY: float = Config.ui("math_challenge/fail_delay", 0.8)
+@onready var RETRY_LOCKOUT: float = Config.ui("math_challenge/retry_lockout", 0.6)
 
 var current_problem: Dictionary = {}
 var _coins_reward := 1
@@ -111,13 +112,13 @@ func _build_ui(opts: Dictionary) -> void:
 		var idx := int(opts.get("currentProblemIndex", 1))
 		var progress := "\nProblem %d of %d" % [idx, pc] if pc > 1 else ""
 		header.text = "%s\n\"%s\"%s" % [name_str, greet, progress]
-		header.add_theme_font_size_override("font_size", 22)
+		header.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/header_font_size", 22)))
 		vbox.add_child(header)
 
 	_question_label = Label.new()
 	_question_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_question_label.text = String(current_problem.get("prompt", {}).get("text", ""))
-	_question_label.add_theme_font_size_override("font_size", 40)
+	_question_label.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/question_font_size", 40)))
 	vbox.add_child(_question_label)
 
 	var row := HBoxContainer.new()
@@ -130,8 +131,8 @@ func _build_ui(opts: Dictionary) -> void:
 	for i in options.size():
 		var b := Button.new()
 		b.text = str(options[i])
-		b.custom_minimum_size = Vector2(96, 72)
-		b.add_theme_font_size_override("font_size", 32)
+		b.custom_minimum_size = Vector2(Config.ui("math_challenge/option_min_w", 96), Config.ui("math_challenge/option_min_h", 72))
+		b.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/option_font_size", 32)))
 		b.focus_mode = Control.FOCUS_ALL
 		var idx := i
 		b.pressed.connect(func(): submit_answer(idx))

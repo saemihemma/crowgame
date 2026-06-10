@@ -5,7 +5,7 @@ extends Area2D
 ## triggers the level transition on contact.
 
 const DOOR_TEXTURE := "res://assets/sprites/objects/door/door-36-runtime-88x96.png"
-const PROXIMITY := 100.0
+@onready var PROXIMITY: float = Config.ui("door/proximity", 100.0)
 
 var target_level := ""
 var _in_proximity := false

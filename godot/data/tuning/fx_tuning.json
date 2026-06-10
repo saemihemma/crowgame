@@ -1,0 +1,13 @@
+{
+  "_comment": "Juice/FX tuning — shake, flash, particles, timings. JSON-first; colors come from the active theme palette (ThemeManager), amounts/durations from here.",
+  "shake": { "duration": 0.15, "strength": 6.0 },
+  "hurt_flash_duration": 0.2,
+  "muzzle_flash_duration": 0.05,
+  "death_beat": 0.8,
+  "pit_margin": 64,
+  "invuln_blinks": 5,
+  "invuln_blink_step": 0.1,
+  "burst": { "coin": 20, "enemy": 18, "jump_dust": 8, "completion": 24, "default": 14 },
+  "number_fly_up": { "rise": 36.0, "duration": 0.6 },
+  "completion_burst_count": 3
+}

@@ -10,7 +10,7 @@ extends CharacterBody2D
 @export var crow_walk_path := "res://assets/sprites/characters/crow2/crow3/crow-walk-64px-fixed.png"
 
 const PROJECTILE_SCENE := preload("res://scenes/Projectile.tscn")
-const WALK_SPEED_THRESHOLD := 10.0  # |vx| above which the walk anim plays (Player.ts)
+@onready var WALK_SPEED_THRESHOLD: float = Config.ui("player/walk_speed_threshold", 10.0)  # |vx| for walk anim (Player.ts)
 
 var _tuning: Dictionary = {}
 var _state: Dictionary = PlayerMotion.new_state()

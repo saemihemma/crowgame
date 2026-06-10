@@ -178,8 +178,8 @@ func hurt_player() -> void:
 	lives -= 1
 	EventBus.lives_changed.emit(lives)
 	EventBus.player_hurt.emit()
-	_camera_shake(0.15, 6.0)
-	_screen_flash(Color(1, 0, 0, 0.45), 0.2)
+	_camera_shake(Config.fx("shake/duration", 0.15), Config.fx("shake/strength", 6.0))
+	_screen_flash(Color(1, 0, 0, 0.45), Config.fx("hurt_flash_duration", 0.2))
 	if lives <= 0:
 		player_die()
 	else:
@@ -197,7 +197,7 @@ func player_die() -> void:
 	_show_death_text()
 	# Full level reload, mirroring Phaser's scene.restart(): coins and enemies
 	# respawn, lives refill (handled by _load_level).
-	get_tree().create_timer(0.8).timeout.connect(
+	get_tree().create_timer(Config.fx("death_beat", 0.8)).timeout.connect(
 		_swap_level.bind(LevelManager.get_current_level_key()), CONNECT_ONE_SHOT)
 
 func _show_death_text() -> void:
@@ -241,7 +241,7 @@ func _blink_invuln() -> void:
 		return
 	var sprite: Node = _player.get_node_or_null("Sprite")
 	var tw := create_tween()
-	for i in 5:
+	for i in int(Config.fx("invuln_blinks", 5)):
 		if sprite:
 			tw.tween_property(sprite, "modulate:a", 0.3, 0.1)
 			tw.tween_property(sprite, "modulate:a", 1.0, 0.1)
@@ -254,7 +254,7 @@ func _check_pit_death() -> void:
 	if respawning or transitioning or _player == null or _parsed.is_empty():
 		return
 	var map_height := int(_parsed["height"]) * int(_parsed["tile_h"])
-	if _player.global_position.y > map_height + 64:
+	if _player.global_position.y > map_height + int(Config.fx("pit_margin", 64)):
 		hurt_player()
 
 # ─── Doors / transitions ──────────────────────────────────
@@ -325,7 +325,7 @@ func _show_completion_screen() -> void:
 	again.grab_focus()
 
 	# Celebration bursts, staggered like the TS version.
-	for i in 3:
+	for i in int(Config.fx("completion_burst_count", 3)):
 		get_tree().create_timer(0.3 + i * 0.3).timeout.connect(
 			_completion_burst.bind(bg, Vector2(480 + (i - 1) * 150, 160)), CONNECT_ONE_SHOT)
 
@@ -375,7 +375,7 @@ func _update_shake(delta: float) -> void:
 		return
 	if _shake_time > 0.0:
 		_shake_time -= delta
-		var amp := _shake_strength * (_shake_time / 0.15)
+		var amp := _shake_strength * (_shake_time / maxf(0.001, Config.fx("shake/duration", 0.15)))
 		_camera.offset = Vector2(randf_range(-amp, amp), randf_range(-amp, amp))
 	elif _camera.offset != Vector2.ZERO:
 		_camera.offset = Vector2.ZERO
