@@ -16,6 +16,8 @@ var _flown := false
 var _player_in_range := false
 var _prompt: Label
 var _bob_time := 0.0
+var _bob_amp := 8.0
+var _bob_speed := 1.5
 var _sprite_base_y := 0.0
 
 @onready var _sprite: Sprite2D = $Sprite
@@ -31,6 +33,9 @@ func _ready() -> void:
 	if ResourceLoader.exists(tex_path):
 		_sprite.texture = load(tex_path)
 	_sprite_base_y = _sprite.position.y
+	var npc_tuning := DataManager.get_dict("NPC_TUNING")
+	_bob_amp = float(npc_tuning.get("float_bob_amplitude", 8))
+	_bob_speed = float(npc_tuning.get("float_bob_speed", 1.5))
 	_build_components(definition.get("components", []))
 	_build_prompt()
 	_zone.body_entered.connect(_on_body_entered)
@@ -47,13 +52,10 @@ func _process(delta: float) -> void:
 	_update_prompt_visibility()
 
 func _update_idle_bob(delta: float) -> void:
-	# Idle float-bob from npc_tuning.json (amplitude 8 px, speed 1.5 Hz-ish).
-	var tuning := DataManager.get_dict("NPC_TUNING")
-	var amp := float(tuning.get("float_bob_amplitude", 8))
-	var speed := float(tuning.get("float_bob_speed", 1.5))
-	_bob_time += delta * speed
+	# Idle float-bob from npc_tuning.json (cached at _ready; amplitude 8, speed 1.5).
+	_bob_time += delta * _bob_speed
 	if _sprite and not _flown:
-		_sprite.position.y = _sprite_base_y + sin(_bob_time * TAU * 0.5) * amp * 0.5
+		_sprite.position.y = _sprite_base_y + sin(_bob_time * TAU * 0.5) * _bob_amp * 0.5
 
 func _build_prompt() -> void:
 	_prompt = Label.new()

@@ -25,5 +25,7 @@ owl_status=$?
 shoot_status=$?
 "$GODOT" --headless --path "$HERE" res://tests/integration/DeathProbe.tscn
 death_status=$?
+"$GODOT" --headless --path "$HERE" res://tests/integration/PerfProbe.tscn
+perf_status=$?
 
-exit $(( unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 || shoot_status != 0 || death_status != 0 ))
+exit $(( unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 || shoot_status != 0 || death_status != 0 || perf_status != 0 ))

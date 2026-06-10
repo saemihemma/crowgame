@@ -1,0 +1,32 @@
+name: CI
+
+# Regression gate for the Godot game: runs the headless test suite + physics
+# integration probes (godot/tools/run_tests.sh) on every push/PR to main.
+# Keep main green — this is the contract every roadmap phase ships against.
+
+on:
+  push:
+    branches: [main]
+    paths: ['godot/**', '.github/workflows/ci.yml']
+  pull_request:
+    branches: [main]
+    paths: ['godot/**', '.github/workflows/ci.yml']
+  workflow_dispatch:
+
+jobs:
+  godot-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Godot 4.3 (headless)
+        run: |
+          set -euo pipefail
+          curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip"
+          unzip -q godot.zip
+          sudo mv Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
+          sudo chmod +x /usr/local/bin/godot
+          godot --version --headless
+
+      - name: Run test suite (unit + physics probes)
+        run: bash godot/tools/run_tests.sh

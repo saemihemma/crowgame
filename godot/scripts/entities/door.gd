@@ -33,7 +33,7 @@ func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 
 func _process(_delta: float) -> void:
-	var game := _find_game()
+	var game := _game()
 	if game == null:
 		return
 	var player = game.get_player()
@@ -51,9 +51,19 @@ func _process(_delta: float) -> void:
 func _on_body_entered(body: Node) -> void:
 	if not body.is_in_group("player"):
 		return
-	var game := _find_game()
+	var game := _game()
 	if game != null:
 		game.transition_to_level(target_level)
+
+var _game_cache: Node
+
+## Cached game lookup (the ancestor doesn't change after spawn) — avoids walking
+## the parent chain every _process frame.
+func _game() -> Node:
+	if is_instance_valid(_game_cache):
+		return _game_cache
+	_game_cache = _find_game()
+	return _game_cache
 
 func _find_game() -> Node:
 	var n := get_parent()

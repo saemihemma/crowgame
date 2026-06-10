@@ -35,6 +35,8 @@ func load_save() -> void:
 	var raw: Variant = Persistence.get_item(_get_save_key())
 	if raw != null:
 		var parsed: Variant = JSON.parse_string(String(raw))
+		if parsed is Dictionary:
+			parsed = migrate_save(parsed)
 		if parsed is Dictionary and int(parsed.get("version", -1)) == SAVE_VERSION:
 			var defaults := _create_default_save()
 			# Shallow-merge defaults <- parsed (parsed wins), like {...defaults, ...parsed}.
@@ -49,6 +51,20 @@ func load_save() -> void:
 				_data["learnerState"] = parsed["learnerState"]
 			return
 	_data = _create_default_save()
+
+## Migration seam: upgrade an older save dict toward SAVE_VERSION so schema
+## changes never discard a child's progress. Add one step per version bump.
+## A save with no version is treated as v1 (the original shape). A newer-than-
+## known version is left as-is (load_save then falls back to defaults safely —
+## we never downgrade an unknown future schema).
+func migrate_save(parsed: Dictionary) -> Dictionary:
+	var data := parsed.duplicate(true)
+	var v := int(data.get("version", 1))
+	# while v < SAVE_VERSION: match v: 1: <upgrade v1 -> v2 here>; v += 1
+	# v1 is current — no migration steps yet; the seam + tests guard future bumps.
+	if not data.has("version"):
+		data["version"] = v
+	return data
 
 func switch_profile() -> void:
 	_data = _create_default_save()
