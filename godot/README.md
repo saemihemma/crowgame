@@ -15,8 +15,16 @@ from `public/data/**` and `public/assets/**`.
   (coyote/jump-buffer/variable-jump/drag/maxSpeed/terminal), verified against a TS reference.
 - **Gameplay**: tilemap dual pipeline (runtime loader + editable level scenes), coins, lives,
   hazards, doors, camera, enemies (cockroach patrol), laser projectile, abilities framework.
-- **Owl flow**: NPC components → MathChallenge overlay → 2 problems → ELO/learner update → save.
-- **UI**: HUD, touch controls (mobile), Login (PIN), MainMenu, LevelSelect, Pause.
+- **Owl flow**: NPC components → MathChallenge overlay → 2 problems (600ms retry lockout on a
+  first wrong answer) → ELO/learner update → save → optional hosted sync.
+- **LearnerSyncService**: snapshot cache + pending-attempt queue with identical storage keys;
+  local-only by default, hosted sync via `crow_learner_api_base` when configured.
+- **UI**: HUD (lives/coins/owls/ability chips, milestone bursts), touch controls (mobile),
+  Login (PIN dots), MainMenu (build stamp), LevelSelect, Pause, completion screen.
+- **Feel**: crow walk animation, NPC name prompt + idle bob, jump dust, enemy death burst,
+  projectile trail + muzzle flash, focus highlights, elastic board entrance.
+- **Progression parity**: death fully reloads the level (Phaser `scene.restart()` semantics);
+  Continue resumes `save.currentLevel`.
 - **Tier-3 modularity**: typed level scenes editable in Godot's TileMap editor; runtime
   **skin swap** (forest↔scifi) restyling via palette with no code change.
 - **Mobile**: single-threaded Web export in `../output/web/` (plays on any static host).
@@ -57,5 +65,7 @@ godot --headless --path . --script res://tools/import_level.gd
 - **Experience parity (ported feel, Godot-native):** screen shake, damage flash, dopamine
   particles, dialog/menus are implemented with Godot tweens/GPUParticles2D/shaders rather than
   transliterating Phaser draw calls.
-- Hosted learner sync (`LearnerSyncService`) is left local-only for now (optional in the source).
+- Hosted learner sync defaults to local-only (the TS default); set the
+  `crow_learner_api_base` persistence key to enable a backend.
 - Web build is single-threaded for static-host/mobile compatibility.
+- Still not ported (deliberate): `admin.html` learner dashboard; multi-threaded web export.
