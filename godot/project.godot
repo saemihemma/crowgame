@@ -27,6 +27,7 @@ AudioManager="*res://scripts/autoload/audio_manager.gd"
 ELOManager="*res://scripts/math/elo_manager.gd"
 LearnerStateManager="*res://scripts/systems/learner_state_manager.gd"
 MathProblemManager="*res://scripts/math/math_problem_manager.gd"
+LearnerSyncService="*res://scripts/systems/learner_sync_service.gd"
 ELOUpdateManager="*res://scripts/systems/elo_update_manager.gd"
 
 [display]

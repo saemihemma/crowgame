@@ -138,5 +138,6 @@ func _finish_login() -> void:
 	var save := SaveManager.get_data()
 	ELOManager.initialize(save.get("eloStats", null))
 	LearnerStateManager.initialize(ProfileManager.get_active_profile(), save.get("learnerState", null), ELOManager.get_stats())
+	LearnerSyncService.init(LearnerStateManager.get_snapshot())
 	MathProblemManager.hydrate_recent_problems(save.get("telemetry", {}).get("answeredProblemIds", []))
 	get_tree().change_scene_to_file("res://scenes/MainMenu.tscn")

@@ -11,6 +11,12 @@ ROOT="$(cd "$HERE/.." && pwd)"                               # repo root
 GODOT="${GODOT:-godot}"
 
 mkdir -p "$ROOT/output/web"
+
+# Bake a build stamp shown in the MainMenu corner so phone refreshes are
+# visibly confirmed during fast iteration.
+COMMIT="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo dev)"
+printf '{"builtAt":"%s","commit":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%MZ)" "$COMMIT" > "$HERE/build_info.json"
+
 "$GODOT" --headless --path "$HERE" --import >/dev/null 2>&1 || true
 "$GODOT" --headless --path "$HERE" --export-release "Web" "$ROOT/output/web/index.html"
 echo "Web build written to $ROOT/output/web/"

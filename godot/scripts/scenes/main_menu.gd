@@ -24,6 +24,30 @@ func _ready() -> void:
 		_add_button(col, "Continue", _on_continue)
 	if ProfileManager.get_active_user() != null:
 		_add_button(col, "Switch Player", _on_switch_user)
+	_add_build_stamp()
+
+## Tiny build stamp (bottom-right) so phone refreshes visibly confirm a new
+## build during fast iteration. Written by tools/build_web.sh.
+func _add_build_stamp() -> void:
+	if not FileAccess.file_exists("res://build_info.json"):
+		return
+	var f := FileAccess.open("res://build_info.json", FileAccess.READ)
+	var info: Variant = JSON.parse_string(f.get_as_text())
+	f.close()
+	if not (info is Dictionary):
+		return
+	var l := Label.new()
+	l.text = "build %s · %s" % [String(info.get("commit", "?")), String(info.get("builtAt", ""))]
+	l.add_theme_font_size_override("font_size", 12)
+	l.add_theme_color_override("font_color", Color(1, 1, 1, 0.55))
+	l.anchor_left = 1.0
+	l.anchor_top = 1.0
+	l.anchor_right = 1.0
+	l.anchor_bottom = 1.0
+	l.offset_left = -260
+	l.offset_top = -24
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	add_child(l)
 
 func _add_button(parent: Node, text: String, cb: Callable) -> void:
 	var b := Button.new()

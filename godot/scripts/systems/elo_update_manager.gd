@@ -52,7 +52,7 @@ func _on_challenge_complete(data: Dictionary) -> void:
 		"problemId": attempt["problemId"],
 	})
 	SaveManager.save()
-	# LearnerSyncService.submit_attempt(attempt) — optional hosted sync (local-only for now).
+	LearnerSyncService.submit_attempt(attempt)  # fire-and-forget; local-only when no API base
 	_clear_context()
 
 func _build_attempt(data: Dictionary) -> Dictionary:

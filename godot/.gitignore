@@ -3,3 +3,4 @@
 # Exported builds.
 /build/
 export.cfg
+build_info.json
