@@ -6,7 +6,7 @@ extends Node
 ## windows, unlock prerequisites, and the derived summary. Constants match the
 ## source exactly. ELO mastery is read from the ELOManager autoload.
 
-const ALL_MATH_DOMAINS := ["addition", "subtraction", "multiplication", "division", "counting", "comparison", "pattern_matching", "number_sequence"]
+const ALL_MATH_DOMAINS := MathDomains.ALL
 
 const MAX_RECENT_ATTEMPTS := 40
 const MAX_RECENT_PROBLEMS := 12

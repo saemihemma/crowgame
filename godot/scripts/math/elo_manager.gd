@@ -9,7 +9,7 @@ extends Node
 ##   totalChange clamped to [-12, +8]; split 0.7 global / 0.3 domain;
 ##   global clamp [100,1200], domain modifier clamp [-100,+100].
 
-const DOMAINS := ["addition", "subtraction", "multiplication", "division", "counting", "comparison", "pattern_matching", "number_sequence"]
+const DOMAINS := MathDomains.ALL
 
 var _stats: Dictionary = {}
 
