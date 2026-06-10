@@ -71,6 +71,9 @@ func _load_level(key: String) -> void:
 	lives = MAX_LIVES
 	transitioning = false
 	respawning = false
+	# Persist where the player is (GameScene.ts does this on create) so the
+	# main menu's Continue resumes the right level.
+	SaveManager.set_current_level(key)
 	_spawn_entities()
 	_setup_camera()
 	var music := String(entry.get("music", ""))
@@ -184,15 +187,40 @@ func hurt_player() -> void:
 
 func player_die() -> void:
 	respawning = true
+	transitioning = true
 	EventBus.player_died.emit()
-	# Soft reset (Godot adaptation of scene.restart): coins back to level start,
-	# lives refilled, player returned to spawn.
+	# Coins collected this level are lost (back to level-start count).
 	coin_count = coins_at_level_start
 	EventBus.coins_changed.emit(coin_count)
-	lives = MAX_LIVES
-	EventBus.lives_changed.emit(lives)
-	_reset_player_to_spawn()
-	_blink_invuln()
+	if _player:
+		_player.set_physics_process(false)
+	_show_death_text()
+	# Full level reload, mirroring Phaser's scene.restart(): coins and enemies
+	# respawn, lives refill (handled by _load_level).
+	get_tree().create_timer(0.8).timeout.connect(
+		_swap_level.bind(LevelManager.get_current_level_key()), CONNECT_ONE_SHOT)
+
+func _show_death_text() -> void:
+	# "Oops!" float-up (MathChallengeScene-era death text from GameScene.ts).
+	var layer := get_node_or_null("FX")
+	if layer == null:
+		return
+	var l := Label.new()
+	l.text = "Oops!"
+	l.add_theme_font_size_override("font_size", 48)
+	l.add_theme_color_override("font_color", Color("#ff4444"))
+	l.add_theme_color_override("font_shadow_color", Color.BLACK)
+	l.add_theme_constant_override("shadow_offset_x", 3)
+	l.add_theme_constant_override("shadow_offset_y", 3)
+	l.anchor_right = 1.0
+	l.anchor_bottom = 1.0
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	layer.add_child(l)
+	var tw := l.create_tween().set_parallel(true)
+	tw.tween_property(l, "position:y", -40.0, 0.6).set_trans(Tween.TRANS_QUAD)
+	tw.tween_property(l, "modulate:a", 0.0, 0.8)
+	tw.chain().tween_callback(l.queue_free)
 
 func respawn_player() -> void:
 	respawning = true
@@ -239,12 +267,77 @@ func transition_to_level(target_level: String) -> void:
 		_player.set_physics_process(false)
 	LevelManager.transition_to(target_level)
 	if target_level == "__complete__":
+		AudioManager.stop_music()
+		call_deferred("_show_completion_screen")
 		return
 	# Swap to the next level (deferred so we're outside the Area2D callback).
 	call_deferred("_swap_level", target_level)
 
+## Full-screen celebration when all levels are completed (GameScene.ts
+## showCompletionScreen, rebuilt with Godot UI + FX).
+func _show_completion_screen() -> void:
+	var layer := CanvasLayer.new()
+	layer.name = "Completion"
+	layer.layer = 15
+	add_child(layer)
+
+	var bg := ColorRect.new()
+	bg.color = ThemeManager.get_color_value("primary")
+	bg.anchor_right = 1.0
+	bg.anchor_bottom = 1.0
+	layer.add_child(bg)
+
+	var center := CenterContainer.new()
+	center.anchor_right = 1.0
+	center.anchor_bottom = 1.0
+	bg.add_child(center)
+	var col := VBoxContainer.new()
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.add_theme_constant_override("separation", 24)
+	center.add_child(col)
+
+	var title := Label.new()
+	var title_text := TextManager.t("game.congratulations_title")
+	title.text = title_text if title_text != "game.congratulations_title" else "You did it!"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 64)
+	title.add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
+	col.add_child(title)
+
+	var stats := Label.new()
+	var save := SaveManager.get_data()
+	stats.text = "Owls saved: %d    Coins: %d" % [int(save.get("owlsSaved", 0)), coin_count]
+	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	stats.add_theme_font_size_override("font_size", 26)
+	col.add_child(stats)
+
+	var again := Button.new()
+	again.text = "Play Again"
+	again.custom_minimum_size = Vector2(280, 64)
+	again.add_theme_font_size_override("font_size", 28)
+	again.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/LevelSelect.tscn"))
+	col.add_child(again)
+	var menu := Button.new()
+	menu.text = "Back to Menu"
+	menu.custom_minimum_size = Vector2(280, 56)
+	menu.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/MainMenu.tscn"))
+	col.add_child(menu)
+	again.grab_focus()
+
+	# Celebration bursts, staggered like the TS version.
+	for i in 3:
+		get_tree().create_timer(0.3 + i * 0.3).timeout.connect(
+			_completion_burst.bind(bg, Vector2(480 + (i - 1) * 150, 160)), CONNECT_ONE_SHOT)
+
+func _completion_burst(parent: Node, pos: Vector2) -> void:
+	if is_instance_valid(parent):
+		DopamineFX.burst(parent, pos, Color("#ffd700"), 24)
+
 func _swap_level(target_level: String) -> void:
 	if _world:
+		# Vacate the "World" name now: the freed node lingers until end of frame
+		# and would force the replacement to be auto-renamed (@World@2).
+		_world.name = "WorldOld"
 		_world.queue_free()
 	_player = null
 	await get_tree().process_frame

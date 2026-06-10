@@ -61,13 +61,15 @@ func _on_math_complete(data: Dictionary) -> void:
 	if data.get("correct", false):
 		_problems_completed += 1
 		if _problems_completed < problem_count:
-			npc.get_tree().create_timer(0.22).timeout.connect(func():
-				if npc != null and npc.is_interacting():
-					_launch(), CONNECT_ONE_SHOT)
+			npc.get_tree().create_timer(0.22).timeout.connect(_launch_next, CONNECT_ONE_SHOT)
 			return
 		EventBus.owl_saved.emit()
 	npc.end_interaction()
 	npc.fly_away()
+
+func _launch_next() -> void:
+	if npc != null and is_instance_valid(npc) and npc.is_interacting():
+		_launch()
 
 func _selection_config() -> Dictionary:
 	var configured := problem_types.duplicate()

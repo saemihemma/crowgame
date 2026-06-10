@@ -56,6 +56,8 @@ func test_hurt_decrements_and_respawns() -> void:
 	g.free()
 
 func test_death_resets_run() -> void:
+	# Death now schedules a FULL level reload (Phaser scene.restart parity);
+	# the respawn-of-entities half is covered by the DeathProbe integration test.
 	var g := _make_game()
 	var died := [false]
 	var dcb := func(): died[0] = true
@@ -65,10 +67,22 @@ func test_death_resets_run() -> void:
 	g.respawning = false
 	g.hurt_player()  # -> lives 0 -> player_die()
 	assert_true(died[0], "player_died emitted")
-	assert_eq(g.lives, 3, "lives refilled on death")
 	assert_eq(g.coin_count, g.coins_at_level_start, "coins reset to level start on death")
+	assert_true(g.transitioning, "level reload pending after death")
 	EventBus.player_died.disconnect(dcb)
 	g.free()
+
+func test_level_start_persists_current_level() -> void:
+	var g := _make_game()
+	assert_eq(String(SaveManager.get_data().get("currentLevel", "")), "level_01", "save.currentLevel written on level start")
+	g.free()
+
+func test_continue_resolves_saved_level() -> void:
+	var mm = load("res://scripts/scenes/main_menu.gd").new()
+	assert_eq(mm.resolve_continue_key({"currentLevel": "level_03"}), "level_03", "continue uses saved level")
+	assert_eq(mm.resolve_continue_key({"currentLevel": "level_404"}), "level_01", "unknown level falls back")
+	assert_eq(mm.resolve_continue_key({}), "level_01", "missing key falls back")
+	mm.free()
 
 func test_transition_sets_flag() -> void:
 	var g := _make_game()

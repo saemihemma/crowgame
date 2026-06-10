@@ -10,6 +10,7 @@ signal closed
 
 const CORRECT_DELAY := 1.5
 const FAIL_DELAY := 0.8
+const RETRY_LOCKOUT := 0.6
 
 var current_problem: Dictionary = {}
 var _coins_reward := 1
@@ -48,18 +49,29 @@ func submit_answer(index: int) -> void:
 		_done = true
 		_set_buttons_enabled(false)
 		var first_attempt := _wrong_attempts == 0
-		get_tree().create_timer(CORRECT_DELAY).timeout.connect(func():
-			EventBus.math_challenge_complete.emit(_result(true, first_attempt))
-			_close(), CONNECT_ONE_SHOT)
+		get_tree().create_timer(CORRECT_DELAY).timeout.connect(
+			_finish.bind(true, first_attempt), CONNECT_ONE_SHOT)
 	else:
 		_wrong_attempts += 1
 		if _wrong_attempts >= 2:
 			_done = true
 			_set_buttons_enabled(false)
-			get_tree().create_timer(FAIL_DELAY).timeout.connect(func():
-				EventBus.math_challenge_complete.emit(_result(false, false))
-				_close(), CONNECT_ONE_SHOT)
-		# First wrong: leave buttons enabled for a retry.
+			get_tree().create_timer(FAIL_DELAY).timeout.connect(
+				_finish.bind(false, false), CONNECT_ONE_SHOT)
+		else:
+			# First wrong: brief lockout before the retry (MathBoard re-enables
+			# after 600ms — anti-spam pacing for young players).
+			_set_buttons_enabled(false)
+			get_tree().create_timer(RETRY_LOCKOUT).timeout.connect(
+				_reenable_for_retry, CONNECT_ONE_SHOT)
+
+func _finish(correct: bool, first_attempt: bool) -> void:
+	EventBus.math_challenge_complete.emit(_result(correct, first_attempt))
+	_close()
+
+func _reenable_for_retry() -> void:
+	if not _done:
+		_set_buttons_enabled(true)
 
 func _result(correct: bool, first_attempt: bool) -> Dictionary:
 	var has_hint: bool = String(current_problem.get("hint", "")) != "" and _wrong_attempts > 0
