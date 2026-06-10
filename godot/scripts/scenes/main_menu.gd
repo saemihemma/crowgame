@@ -39,7 +39,7 @@ func _add_build_stamp() -> void:
 	var l := Label.new()
 	l.text = "build %s · %s" % [String(info.get("commit", "?")), String(info.get("builtAt", ""))]
 	l.add_theme_font_size_override("font_size", 12)
-	l.add_theme_color_override("font_color", Color(1, 1, 1, 0.55))
+	l.add_theme_color_override("font_color", ThemeManager.get_color_value("text_dim"))
 	l.anchor_left = 1.0
 	l.anchor_top = 1.0
 	l.anchor_right = 1.0

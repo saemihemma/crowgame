@@ -96,7 +96,9 @@ func _update_animation() -> void:
 
 func _on_jumped() -> void:
 	AudioManager.play_sfx("player_jump")
-	DopamineFX.burst(get_parent(), global_position + Vector2(0, -4), Color(0.9, 0.9, 0.85, 0.8), 8)
+	var dust := ThemeManager.get_color_value("dust")
+	dust.a = Config.fx("dust_alpha", 0.8)
+	DopamineFX.burst(get_parent(), global_position + Vector2(0, -4), dust, int(Config.fx("burst/jump_dust", 8)))
 
 func _shoot() -> void:
 	_shoot_cooldown = _laser_cooldown
@@ -105,10 +107,12 @@ func _shoot() -> void:
 	proj.setup(_facing, _laser_speed)
 	get_parent().add_child(proj)
 	AudioManager.play_sfx("laser_shoot")
-	# Orange muzzle screen-flash (GameScene.ts shoot feedback).
+	# Muzzle screen-flash (GameScene.ts shoot feedback) — color from theme.
 	var game := _find_game()
 	if game != null:
-		game.flash_screen(Color(1.0, 0.667, 0.0, 0.25), 0.05)
+		var muzzle := ThemeManager.get_color_value("muzzle")
+		muzzle.a = Config.fx("muzzle_flash_alpha", 0.25)
+		game.flash_screen(muzzle, Config.fx("muzzle_flash_duration", 0.05))
 
 func _find_game() -> Node:
 	var n := get_parent()

@@ -5,7 +5,7 @@ class_name DopamineFX
 ## reproduce the feel, optimized for Godot.
 
 ## A short burst of colored particles at a world position (e.g. coin pickup).
-static func burst(parent: Node, pos: Vector2, color: Color = Color("#ffd700"), amount := 14) -> void:
+static func burst(parent: Node, pos: Vector2, color: Color = Color.WHITE, amount := 14) -> void:
 	if parent == null or not parent.is_inside_tree():
 		return
 	var p := GPUParticles2D.new()
@@ -32,7 +32,7 @@ static func burst(parent: Node, pos: Vector2, color: Color = Color("#ffd700"), a
 	parent.get_tree().create_timer(p.lifetime + 0.2).timeout.connect(p.queue_free, CONNECT_ONE_SHOT)
 
 ## A celebratory "number fly-up" label (e.g. "+2") at a world position.
-static func number_fly_up(parent: Node, pos: Vector2, text: String, color: Color = Color("#ffd700")) -> void:
+static func number_fly_up(parent: Node, pos: Vector2, text: String, color: Color = Color.WHITE) -> void:
 	if parent == null or not parent.is_inside_tree():
 		return
 	var l := Label.new()

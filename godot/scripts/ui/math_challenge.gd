@@ -87,7 +87,7 @@ func _result(correct: bool, first_attempt: bool) -> Dictionary:
 
 func _build_ui(opts: Dictionary) -> void:
 	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.62)
+	dim.color = ThemeManager.get_color_value("scrim")
 	dim.anchor_right = 1.0
 	dim.anchor_bottom = 1.0
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP

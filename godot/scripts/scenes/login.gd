@@ -107,7 +107,7 @@ func _update_pin_dots(text: String) -> void:
 func _make_status() -> Label:
 	var l := Label.new()
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.add_theme_color_override("font_color", Color(1, 0.5, 0.5))
+	l.add_theme_color_override("font_color", ThemeManager.get_color_value("text_error"))
 	return l
 
 func _action_button(text: String, cb: Callable) -> void:

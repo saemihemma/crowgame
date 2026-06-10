@@ -35,7 +35,7 @@ func _draw_spikes() -> void:
 		pts.append(Vector2(x + base, y0))
 		x += base
 	_spikes.polygon = pts
-	_spikes.color = Color("#999999")
+	_spikes.color = ThemeManager.get_color_value("spike")
 
 func _on_body_entered(body: Node) -> void:
 	if not body.is_in_group("player"):

@@ -33,7 +33,9 @@ func _add_trail() -> void:
 	mat.gravity = Vector3.ZERO
 	mat.scale_min = 1.0
 	mat.scale_max = 2.0
-	mat.color = Color(1.0, 0.55, 0.1, 0.8)
+	var laser := ThemeManager.get_color_value("laser")
+	laser.a = Config.fx("laser_alpha", 0.8)
+	mat.color = laser
 	p.process_material = mat
 	add_child(p)
 

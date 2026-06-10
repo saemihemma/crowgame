@@ -29,7 +29,7 @@ func _add_button(action: String, label: String, pos: Vector2) -> void:
 	b.position = pos
 	# Visual: a semi-transparent rounded panel + label, sized BTN x BTN.
 	var panel := ColorRect.new()
-	panel.color = Color(1, 1, 1, 0.18)
+	panel.color = ThemeManager.get_color_value("touch_panel")
 	panel.size = Vector2(BTN, BTN)
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.add_child(panel)
@@ -38,7 +38,7 @@ func _add_button(action: String, label: String, pos: Vector2) -> void:
 	lbl.size = Vector2(BTN, BTN)
 	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_color_override("font_color", Color(1, 1, 1, 0.85))
+	lbl.add_theme_color_override("font_color", ThemeManager.get_color_value("touch_label"))
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.add_child(lbl)
 	# Square press shape covering the panel.

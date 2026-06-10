@@ -6,7 +6,7 @@ func _ready() -> void:
 	layer = 20
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var dim := ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.6)
+	dim.color = ThemeManager.get_color_value("scrim_soft")
 	dim.anchor_right = 1.0
 	dim.anchor_bottom = 1.0
 	add_child(dim)

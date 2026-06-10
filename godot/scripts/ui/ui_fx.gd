@@ -16,7 +16,8 @@ static func _on_focus(button: Button, focused: bool) -> void:
 	var tw := button.create_tween()
 	tw.set_parallel(true)
 	tw.tween_property(button, "scale", Vector2.ONE * (1.08 if focused else 1.0), 0.12).set_trans(Tween.TRANS_BACK)
-	tw.tween_property(button, "modulate", Color(1.15, 1.15, 1.0) if focused else Color.WHITE, 0.12)
+	var b := float(Config.fx("focus_brightness", 1.15))
+	tw.tween_property(button, "modulate", Color(b, b, 1.0) if focused else Color.WHITE, 0.12)
 
 ## Elastic pop-in for panels/boards (DopamineFX.elasticEntrance equivalent).
 static func elastic_entrance(node: Control, duration := 0.3) -> void:

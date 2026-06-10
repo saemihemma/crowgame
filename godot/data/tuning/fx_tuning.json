@@ -9,5 +9,10 @@
   "invuln_blink_step": 0.1,
   "burst": { "coin": 20, "enemy": 18, "jump_dust": 8, "completion": 24, "default": 14 },
   "number_fly_up": { "rise": 36.0, "duration": 0.6 },
-  "completion_burst_count": 3
+  "completion_burst_count": 3,
+  "hurt_flash_alpha": 0.45,
+  "muzzle_flash_alpha": 0.25,
+  "dust_alpha": 0.8,
+  "laser_alpha": 0.8,
+  "focus_brightness": 1.15
 }

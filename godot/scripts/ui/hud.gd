@@ -61,12 +61,12 @@ func _on_ability_revoked(payload: Dictionary) -> void:
 		_ability_chips.erase(id)
 
 func _on_coins_changed(c: int) -> void:
-	var crossed_milestone := c > _coins and [10, 25, 50, 100].has(c)
+	var crossed_milestone := c > _coins and (Config.ui("hud/coin_milestones", [10, 25, 50, 100]) as Array).has(c)
 	_coins = c
 	_refresh()
 	if crossed_milestone:
 		# CoinCounter.ts milestone burst at 10/25/50/100.
-		DopamineFX.burst(self, _coin_label.global_position + Vector2(80, 12), Color("#ffd700"), 20)
+		DopamineFX.burst(self, _coin_label.global_position + Vector2(80, 12), ThemeManager.get_color_value("coin"), 20)
 		DopamineFX.number_fly_up(self, _coin_label.global_position + Vector2(110, 0), TextManager.t("hud.coins_milestone", [c]))
 
 ## HealthBar.ts shakes the bar on hurt.

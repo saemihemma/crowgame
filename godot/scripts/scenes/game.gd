@@ -165,7 +165,7 @@ func collect_coin(coin: Node) -> void:
 	if transitioning:
 		return
 	if _world and coin is Node2D:
-		DopamineFX.burst(_world, coin.position)
+		DopamineFX.burst(_world, coin.position, ThemeManager.get_color_value("coin"), int(Config.fx("burst/coin", 20)))
 	coin.queue_free()
 	coin_count += 1
 	AudioManager.play_sfx("coin_collect")
@@ -179,7 +179,9 @@ func hurt_player() -> void:
 	EventBus.lives_changed.emit(lives)
 	EventBus.player_hurt.emit()
 	_camera_shake(Config.fx("shake/duration", 0.15), Config.fx("shake/strength", 6.0))
-	_screen_flash(Color(1, 0, 0, 0.45), Config.fx("hurt_flash_duration", 0.2))
+	var flash := ThemeManager.get_color_value("danger_flash")
+	flash.a = Config.fx("hurt_flash_alpha", 0.45)
+	_screen_flash(flash, Config.fx("hurt_flash_duration", 0.2))
 	if lives <= 0:
 		player_die()
 	else:
@@ -208,7 +210,7 @@ func _show_death_text() -> void:
 	var l := Label.new()
 	l.text = "Oops!"
 	l.add_theme_font_size_override("font_size", 48)
-	l.add_theme_color_override("font_color", Color("#ff4444"))
+	l.add_theme_color_override("font_color", ThemeManager.get_color_value("death_text"))
 	l.add_theme_color_override("font_shadow_color", Color.BLACK)
 	l.add_theme_constant_override("shadow_offset_x", 3)
 	l.add_theme_constant_override("shadow_offset_y", 3)
@@ -331,7 +333,7 @@ func _show_completion_screen() -> void:
 
 func _completion_burst(parent: Node, pos: Vector2) -> void:
 	if is_instance_valid(parent):
-		DopamineFX.burst(parent, pos, Color("#ffd700"), 24)
+		DopamineFX.burst(parent, pos, ThemeManager.get_color_value("coin"), 24)
 
 func _swap_level(target_level: String) -> void:
 	if _world:
@@ -349,7 +351,7 @@ func _setup_fx_layer() -> void:
 	layer.name = "FX"
 	add_child(layer)
 	_flash = ColorRect.new()
-	_flash.color = Color(1, 0, 0, 0)
+	_flash.color = Color.TRANSPARENT
 	_flash.anchor_right = 1.0
 	_flash.anchor_bottom = 1.0
 	_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
