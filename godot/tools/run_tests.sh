@@ -9,6 +9,12 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 GODOT="${GODOT:-godot}"
 
+# Hardcode guard first — fail fast on inline colors / untranslated UI strings.
+echo "=== hardcode guard ==="
+python3 "$HERE/tools/check_hardcoding.py" --selftest
+python3 "$HERE/tools/check_hardcoding.py"
+guard_status=$?
+
 "$GODOT" --headless --path "$HERE" --import >/dev/null 2>&1 || true
 "$GODOT" --headless --path "$HERE" res://tests/TestRunner.tscn
 unit_status=$?
@@ -28,4 +34,4 @@ death_status=$?
 "$GODOT" --headless --path "$HERE" res://tests/integration/PerfProbe.tscn
 perf_status=$?
 
-exit $(( unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 || shoot_status != 0 || death_status != 0 || perf_status != 0 ))
+exit $(( guard_status != 0 || unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 || shoot_status != 0 || death_status != 0 || perf_status != 0 ))

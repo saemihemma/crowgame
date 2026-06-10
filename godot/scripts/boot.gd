@@ -19,7 +19,7 @@ func _ready() -> void:
 func _build_placeholder() -> void:
 	# Sky is the project's default_clear_color (#87CEEB), matching src/main.ts.
 	var label := Label.new()
-	label.text = "CROW"
+	label.text = TextManager.t("menu.title")
 	label.add_theme_font_size_override("font_size", 96)
 	label.add_theme_color_override("font_color", Color.WHITE)
 	label.add_theme_color_override("font_shadow_color", Color.BLACK)
