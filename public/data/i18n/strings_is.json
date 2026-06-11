@@ -59,5 +59,6 @@
   "touch.jump": "STÖKK",
   "touch.peck": "GOGGA",
   "touch.zap": "SKJÓTA",
-  "boot.loading": "Hleð…"
+  "boot.loading": "Hleð…",
+  "game.owl_saved": "Uglu bjargað!"
 }

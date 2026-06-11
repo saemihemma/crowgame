@@ -59,5 +59,6 @@
   "hud.coins_label": "Coins {0}",
   "hud.owls_label": "Owls {0}",
   "boot.loading": "Loading…",
-  "touch.peck": "PECK"
+  "touch.peck": "PECK",
+  "game.owl_saved": "Owl saved!"
 }

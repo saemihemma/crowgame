@@ -1,11 +1,47 @@
 {
-  "_comment": "UI/layout tuning — sizes, delays, thresholds for menus/HUD/touch/math board. JSON-first: edit here, never hardcode in .gd. (Tier-1 math/learner constants intentionally live in code, not here.)",
-  "touch": { "button_size": 88, "gap": 12, "pad": 16 },
-  "math_challenge": { "correct_delay": 1.5, "fail_delay": 0.8, "retry_lockout": 0.6, "option_min_w": 96, "option_min_h": 72, "option_font_size": 32, "question_font_size": 40, "header_font_size": 22 },
-  "player": { "walk_speed_threshold": 10.0 },
-  "door": { "proximity": 100.0 },
-  "enemy": { "edge_probe_x": 28.0 },
-  "hud": { "coin_milestones": [10, 25, 50, 100], "font_size": 22, "margin_left": 16, "margin_top": 12 },
-  "npc": { "prompt_offset_y": -96, "prompt_width": 96 },
-  "menu": { "button_min_w": 280, "button_min_h": 72, "title_font_size": 96 }
+  "_comment": "UI/layout tuning \u2014 sizes, delays, thresholds for menus/HUD/touch/math board. JSON-first: edit here, never hardcode in .gd. (Tier-1 math/learner constants intentionally live in code, not here.)",
+  "touch": {
+    "button_size": 104,
+    "gap": 14,
+    "pad": 16
+  },
+  "math_challenge": {
+    "correct_delay": 1.5,
+    "fail_delay": 0.8,
+    "retry_lockout": 0.6,
+    "option_min_w": 116,
+    "option_min_h": 88,
+    "option_font_size": 32,
+    "question_font_size": 40,
+    "header_font_size": 22
+  },
+  "player": {
+    "walk_speed_threshold": 10.0
+  },
+  "door": {
+    "proximity": 100.0
+  },
+  "enemy": {
+    "edge_probe_x": 28.0
+  },
+  "hud": {
+    "coin_milestones": [
+      10,
+      25,
+      50,
+      100
+    ],
+    "font_size": 22,
+    "margin_left": 16,
+    "margin_top": 12
+  },
+  "npc": {
+    "prompt_offset_y": -96,
+    "prompt_width": 96
+  },
+  "menu": {
+    "button_min_w": 280,
+    "button_min_h": 72,
+    "title_font_size": 96
+  }
 }

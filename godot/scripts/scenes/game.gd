@@ -40,7 +40,7 @@ func _ready() -> void:
 	coin_count = int(SaveManager.get_data().get("coins", 0))
 	coins_at_level_start = coin_count
 	_setup_fx_layer()
-	EventBus.owl_saved.connect(func(): AudioManager.play_event("owl_saved"))
+	EventBus.owl_saved.connect(_on_owl_saved)
 	add_child(HUD_SCENE.instantiate())
 	add_child(TOUCH_SCENE.instantiate())
 	var key := level_key
@@ -149,6 +149,32 @@ func _toggle_pause() -> void:
 func award_enemy_coins(amount: int) -> void:
 	coin_count += amount
 	EventBus.coins_changed.emit(coin_count)
+
+# ─── Owl saved (the emotional payoff for doing the math) ──
+func _on_owl_saved() -> void:
+	AudioManager.play_event("owl_saved")
+	var layer := get_node_or_null("FX")
+	if layer == null:
+		return
+	var vw := float(ProjectSettings.get_setting("display/window/size/viewport_width"))
+	DopamineFX.burst(layer, Vector2(vw * 0.5, 200.0), ThemeManager.get_color_value("coin"), int(Config.fx("burst/owl_saved", 30)))
+	var banner := Label.new()
+	banner.text = TextManager.t("game.owl_saved")
+	banner.add_theme_font_size_override("font_size", 44)
+	banner.add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
+	banner.add_theme_color_override("font_shadow_color", Color.BLACK)
+	banner.add_theme_constant_override("shadow_offset_x", 3)
+	banner.add_theme_constant_override("shadow_offset_y", 3)
+	banner.anchor_right = 1.0
+	banner.anchor_bottom = 1.0
+	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	banner.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	layer.add_child(banner)
+	UiFx.elastic_entrance.call_deferred(banner)
+	var tw := banner.create_tween()
+	tw.tween_interval(0.9)
+	tw.tween_property(banner, "modulate:a", 0.0, 0.4)
+	tw.tween_callback(banner.queue_free)
 
 # ─── Coins ────────────────────────────────────────────────
 func collect_coin(coin: Node) -> void:
