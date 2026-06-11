@@ -19,6 +19,15 @@ func _ready() -> void:
 	title.add_theme_color_override("font_color", Color.WHITE)
 	col.add_child(title)
 
+	# Returning players see their level — surfaces XP progress earned in play.
+	if SaveManager.has_save():
+		var lvl := Label.new()
+		lvl.text = TextManager.t("hud.level", [LevelingManager.get_player_level()])
+		lvl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lvl.add_theme_font_size_override("font_size", int(Config.ui("menu/level_font_size", 36)))
+		lvl.add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
+		col.add_child(lvl)
+
 	_add_button(col, TextManager.t("menu.play"), _on_play)
 	if SaveManager.has_save():
 		_add_button(col, TextManager.t("menu.continue"), _on_continue)

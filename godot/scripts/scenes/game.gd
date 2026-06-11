@@ -41,6 +41,7 @@ func _ready() -> void:
 	coins_at_level_start = coin_count
 	_setup_fx_layer()
 	EventBus.owl_saved.connect(_on_owl_saved)
+	EventBus.level_up.connect(_on_level_up)
 	add_child(HUD_SCENE.instantiate())
 	add_child(TOUCH_SCENE.instantiate())
 	var key := level_key
@@ -150,16 +151,24 @@ func award_enemy_coins(amount: int) -> void:
 	coin_count += amount
 	EventBus.coins_changed.emit(coin_count)
 
-# ─── Owl saved (the emotional payoff for doing the math) ──
+# ─── Celebration moments (owl saved, level up) ───────────
 func _on_owl_saved() -> void:
 	AudioManager.play_event("owl_saved")
+	_celebrate(TextManager.t("game.owl_saved"), int(Config.fx("burst/owl_saved", 30)))
+
+func _on_level_up(payload: Dictionary) -> void:
+	AudioManager.play_event("level_up")
+	_celebrate(TextManager.t("hud.level_up", [int(payload.get("level", 0))]), int(Config.fx("burst/owl_saved", 30)))
+
+## Shared center-screen celebration: particle burst + pop-in banner that fades.
+func _celebrate(text: String, burst_amount: int) -> void:
 	var layer := get_node_or_null("FX")
 	if layer == null:
 		return
 	var vw := float(ProjectSettings.get_setting("display/window/size/viewport_width"))
-	DopamineFX.burst(layer, Vector2(vw * 0.5, 200.0), ThemeManager.get_color_value("coin"), int(Config.fx("burst/owl_saved", 30)))
+	DopamineFX.burst(layer, Vector2(vw * 0.5, 200.0), ThemeManager.get_color_value("coin"), burst_amount)
 	var banner := Label.new()
-	banner.text = TextManager.t("game.owl_saved")
+	banner.text = text
 	banner.add_theme_font_size_override("font_size", 44)
 	banner.add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
 	banner.add_theme_color_override("font_shadow_color", Color.BLACK)

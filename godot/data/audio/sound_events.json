@@ -13,6 +13,7 @@
   "answer_correct": "correct",
   "answer_wrong": "wrong",
   "level_complete": "level_complete",
+  "level_up": "level_complete",
   "ability": "ability",
   "milestone": "milestone"
 }

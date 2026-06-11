@@ -42,6 +42,7 @@
   "menu": {
     "button_min_w": 280,
     "button_min_h": 72,
-    "title_font_size": 96
+    "title_font_size": 96,
+    "level_font_size": 36
   }
 }
