@@ -118,7 +118,7 @@ Snapshot as of 2026-03-24:
 - [public/data/levels/level_registry.json](./public/data/levels/level_registry.json) contains 6 levels, including `level_99`.
 - [public/data/npcs/npc_registry.json](./public/data/npcs/npc_registry.json) contains 1 NPC entry.
 - [public/data/enemies/enemy_registry.json](./public/data/enemies/enemy_registry.json) contains 1 enemy type.
-- [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) currently exposes 5 music tracks and no live SFX entries.
+- [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) currently exposes 5 music tracks and 15 live SFX entries.
 - Math UI is currently MCQ-only in [src/ui/components/MathBoard.ts](./src/ui/components/MathBoard.ts).
 - The shipped owl path is a smaller local-safe subset of that inventory, not the whole `3000`; use `reports/math-batches/owl-surface-summary.json` for the owl-safe inventory and fresh-profile subset, not just the full runtime headline.
 
