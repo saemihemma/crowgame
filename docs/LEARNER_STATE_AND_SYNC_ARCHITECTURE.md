@@ -6,7 +6,7 @@ Last verified against code: 2026-03-31
 
 ## Purpose
 
-This document explains how Crow stores child identity, learner state, local cache, pending sync work, and optional hosted backend integration.
+This document explains how Hörmann stores child identity, learner state, local cache, pending sync work, and optional hosted backend integration.
 
 What this is:
 - the current identity, save, cache, and hosted-sync reference
@@ -81,7 +81,7 @@ Ownership boundary:
 
 ## Identity Model
 
-Crow is now family-oriented even when used locally.
+Hörmann is now family-oriented even when used locally.
 
 Live identity fields in [src/systems/ProfileManager.ts](../src/systems/ProfileManager.ts):
 
@@ -372,7 +372,7 @@ Use this table to avoid mixing storage layers:
 
 ## Offline Behavior
 
-Crow is intentionally safe during short network loss:
+Hörmann is intentionally safe during short network loss:
 
 - local mastery and learner state update immediately
 - attempts are queued before remote submission

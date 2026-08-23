@@ -42,7 +42,7 @@ Use this path:
 6. test in game
 
 Notes:
-- Crow currently ships music-only manifest entries
+- Hörmann currently ships music-only manifest entries
 - do not assume a dedicated AI audio automation pipeline exists just because older notes mention one
 
 ## Quality Bar

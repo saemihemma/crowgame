@@ -64,6 +64,8 @@ const STRING_LITERAL = /'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"|`(?:[^`\\]|\\.)*
  * Numbers come from reading the scene source; see the review for derivations.
  */
 const BOXES = {
+    'menu.title': { size: 72, max: 900, where: 'MainMenuScene title, centred on a 960 canvas' },
+    'login.title': { size: 64, max: 900, where: 'LoginScene title, centred on a 960 canvas' },
     'menu.play': { size: 24, max: 240, where: 'MainMenuScene button 240x52' },
     'menu.continue': { size: 24, max: 240, where: 'MainMenuScene button 240x52' },
     'pause.title': { size: 32, max: 320, where: 'PauseScene panel 320 wide' },

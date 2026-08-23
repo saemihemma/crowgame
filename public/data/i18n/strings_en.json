@@ -1,5 +1,5 @@
 {
-  "menu.title": "CROW",
+  "menu.title": "HÖRMANN",
   "menu.subtitle": "A Math Adventure",
   "menu.play": "> PLAY",
   "menu.continue": "> CONTINUE",
@@ -25,7 +25,7 @@
   "math.greeting_5": "Take your time!",
   "math.correct_label": "Correct!",
   "math.try_again": "Let's try again!",
-  "login.title": "CROW",
+  "login.title": "HÖRMANN",
   "login.subtitle": "Who's playing?",
   "login.new_user": "+ New User",
   "login.enter_pin": "Enter PIN",

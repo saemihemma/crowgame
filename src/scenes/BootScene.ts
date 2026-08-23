@@ -381,7 +381,7 @@ export class BootScene extends Phaser.Scene {
             repeat: 0,
         });
 
-        // ── Crow Walking Animation ──────────────────────────────
+        // ── Hörmann Walking Animation ──────────────────────────────
         // 9 frames walking animation (3x3 grid)
         // frameRate: 10 for better pixel art clarity (typical range: 8-10 fps)
         this.anims.create({

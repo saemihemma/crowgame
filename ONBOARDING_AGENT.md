@@ -1,4 +1,4 @@
-# Crow Agent Onboarding
+# Hörmann Agent Onboarding
 
 Status: Current
 Authority: Operational guide. Runtime truth still lives in `src/**`, `public/data/**`, manifests, and referenced assets.
@@ -6,7 +6,7 @@ Last verified against code: 2026-03-31
 
 ## Purpose
 
-Audience: agents starting their first Crow task or returning after a gap.
+Audience: agents starting their first Hörmann task or returning after a gap.
 
 Outcome: after reading this document, you should know where to start, which docs are current, which files are authoritative, which verification loop to run, and which generated or archived areas not to edit.
 
@@ -100,7 +100,7 @@ Notes:
 
 Snapshot as of 2026-03-24:
 
-- Crow is a Vite + TypeScript + Phaser game with a separate translation and learner admin surface in [admin.html](./admin.html).
+- Hörmann is a Vite + TypeScript + Phaser game with a separate translation and learner admin surface in [admin.html](./admin.html).
 - [src/main.ts](./src/main.ts) registers 8 scenes:
   - `BootScene`
   - `LoginScene`
@@ -163,7 +163,7 @@ Important:
 
 ## Task Routing
 
-| Task | Start Here In Crow | Deep Doc If Needed | Verify | Optional External Skill |
+| Task | Start Here In Hörmann | Deep Doc If Needed | Verify | Optional External Skill |
 | --- | --- | --- | --- | --- |
 | Level or layout changes | `public/data/levels/specs/*.spec.json`, `public/data/levels/level_registry.json`, `tools/compile-levels.ts` | [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md) | `npm.cmd run compile`, `npm.cmd run validate`, manual smoke | `agent-skills` routing if useful |
 | Combat or player feel | `src/entities/Player.ts`, `public/data/tuning/player_base.json`, `public/data/tuning/combat_tuning.json`, `public/data/tuning/camera_tuning.json` | [AGENT_CONTEXT.md](./AGENT_CONTEXT.md) | `npx.cmd tsc --noEmit`, manual smoke | `agent-skills` routing if useful |
@@ -242,10 +242,10 @@ If a local skills workspace is present:
 - start at `INDEX.md`
 - use `Quick Routing` and `Disambiguation`
 - load only the chosen `SKILL.md`
-- treat the skills workspace as workflow guidance, not Crow truth
+- treat the skills workspace as workflow guidance, not Hörmann truth
 
 If missing:
-- continue with Crow-local docs and code only
+- continue with Hörmann-local docs and code only
 
 ## Guardrails
 

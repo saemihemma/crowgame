@@ -57,7 +57,7 @@ export class MainMenuScene extends Phaser.Scene {
             strokeThickness: 4,
         }).setOrigin(0.5, 0.5);
 
-        // Crow sprite
+        // Hörmann sprite
         const crow = this.add.sprite(cx, cy - 20, 'crow');
         const targetSize = 192;
         const scale = targetSize / Math.max(crow.width, crow.height);

@@ -1,4 +1,4 @@
-# Crow Math Authoring Pipeline
+# Hörmann Math Authoring Pipeline
 
 Status: Current
 Authority: Current workflow guide for offline math authoring, materialization, and review. Runtime truth still lives in `public/data/math/**` plus the live selection code in `src/math/**` and `src/systems/**`.
@@ -7,7 +7,7 @@ Last verified against code: 2026-03-31
 ## Purpose
 
 What this is:
-- the current offline pipeline for growing Crow math content from trusted templates
+- the current offline pipeline for growing Hörmann math content from trusted templates
 - the source of truth for where batch specs, band tables, seed content, and review outputs live
 - the guide for how lead-producer-style triple verification is encoded in the repo today
 
@@ -41,7 +41,7 @@ flowchart LR
 
 ## Current Model
 
-Crow still ships concrete JSON math pools at runtime.
+Hörmann still ships concrete JSON math pools at runtime.
 
 The authoring layer is offline-only:
 - `authoring/math/seed/problems_curriculum_seed.json`
@@ -90,7 +90,7 @@ npm.cmd run validate
 
 `math:browser-smoke`:
 - runs a literal browser-backed smoke against the live dev app
-- clears local Crow state for the smoke run, starts `level_01`, triggers the first owl, answers one wrong then corrected retry, answers the follow-up problem, and verifies overlay close plus completion payloads
+- clears local Hörmann state for the smoke run, starts `level_01`, triggers the first owl, answers one wrong then corrected retry, answers the follow-up problem, and verifies overlay close plus completion payloads
 - rewrites `reports/math-batches/runtime-browser-smoke.json`
 - refreshes screenshots in `output/playwright/math-browser-smoke/*.png`
 

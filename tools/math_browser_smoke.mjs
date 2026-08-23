@@ -205,13 +205,34 @@ async function runSmoke() {
         lastStage = stage;
         await saveScreenshot(page, 'math-after-wrong');
 
-        stage = 'wait_for_retry_unlock';
-        lastStage = stage;
-        await page.waitForTimeout(700);
-
         stage = 'click_first_correct_answer';
         lastStage = stage;
-        await clickOption(page, firstState.correctAnswer);
+        // The board locks input for a few seconds after a wrong answer while the
+        // "let's try again" feedback plays, and that window is long enough --
+        // and variable enough by problem type -- that a single click 700ms later
+        // was simply swallowed. Because problem selection is non-deterministic,
+        // that made this smoke pass or fail by draw. Retry the correct answer
+        // until the completion actually registers; the assertion below (a
+        // distinct second problem must follow) is unchanged.
+        {
+            const RETRY_INTERVAL_MS = 750;
+            const RETRY_TIMEOUT_MS = 15_000;
+            const deadline = Date.now() + RETRY_TIMEOUT_MS;
+            let registered = false;
+            while (Date.now() < deadline) {
+                await clickOption(page, firstState.correctAnswer);
+                await page.waitForTimeout(RETRY_INTERVAL_MS);
+                const completions = await getCompletions(page);
+                if (completions.length >= 1) {
+                    registered = true;
+                    break;
+                }
+            }
+            if (!registered) {
+                throw new Error('First correct answer never registered a completion');
+            }
+        }
+
         stage = 'wait_for_second_problem';
         lastStage = stage;
         await page.waitForFunction(

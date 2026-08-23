@@ -1,6 +1,6 @@
 {
     "name": "crow-platformer",
-    "description": "A 2D pixel art educational platformer featuring a crow protagonist.",
+    "description": "A 2D pixel art educational platformer featuring Hörmann, a crow protagonist.",
     "version": "0.1.0",
     "private": true,
     "scripts": {

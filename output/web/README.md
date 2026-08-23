@@ -1,6 +1,6 @@
-# Crow — Web build (mobile playable)
+# Hörmann — Web build (mobile playable)
 
-This is the Godot 4 Web (HTML5) export of the Crow port. It's a **single-threaded**
+This is the Godot 4 Web (HTML5) export of the Hörmann port. It's a **single-threaded**
 build, so it runs from any static host with no special headers (works on phones).
 
 ## Play it
