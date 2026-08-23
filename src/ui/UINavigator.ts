@@ -111,6 +111,29 @@ export class UINavigator {
         return this.items.length;
     }
 
+    /** Index of the focused item, or -1 when navigation is disabled. */
+    getFocusIndex(): number {
+        return this.enabled ? this.focusIndex : -1;
+    }
+
+    /**
+     * Move a registered item's on-screen position.
+     *
+     * Items that live inside a ScrollList move as the list scrolls, and the
+     * focus ring is drawn in screen space, so the list pushes new coordinates
+     * in here on every scroll. Deliberately does not re-fire `onFocus`: that
+     * repaints the item, and this can run every frame during a flick.
+     */
+    setItemPosition(index: number, x: number, y: number): void {
+        const item = this.items[index];
+        if (!item) return;
+        item.x = x;
+        item.y = y;
+        if (this.enabled && index === this.focusIndex) {
+            this.highlight.show(item.x, item.y, item.width, item.height);
+        }
+    }
+
     destroy(): void {
         this.disable();
         this.scene.events.off('update', this.updateHandler);
