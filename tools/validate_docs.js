@@ -75,6 +75,9 @@ function formatInlineCodeList(values) {
     return `${leading}, and \`${values[values.length - 1]}\``;
 }
 
+/** Vendored, generated and archived trees are never documentation we own. */
+const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', '.godot']);
+
 function walkMarkdownFiles(directoryRelativePath) {
     const absoluteDirectory = path.join(root, directoryRelativePath);
     const results = [];
@@ -82,7 +85,7 @@ function walkMarkdownFiles(directoryRelativePath) {
     for (const entry of fs.readdirSync(absoluteDirectory, { withFileTypes: true })) {
         const relativePath = toPosix(path.join(directoryRelativePath, entry.name));
         if (entry.isDirectory()) {
-            if (relativePath === 'node_modules' || relativePath === 'dist') {
+            if (SKIP_DIRS.has(entry.name)) {
                 continue;
             }
             results.push(...walkMarkdownFiles(relativePath));
@@ -104,6 +107,7 @@ function walkTextFiles(relativeDirectory, allowedExtensions) {
     for (const entry of fs.readdirSync(absoluteDirectory, { withFileTypes: true })) {
         const relativePath = toPosix(path.join(relativeDirectory, entry.name));
         if (entry.isDirectory()) {
+            if (SKIP_DIRS.has(entry.name)) continue;
             files.push(...walkTextFiles(relativePath, allowedExtensions));
             continue;
         }
@@ -384,9 +388,9 @@ function validateLiveSourceReferences() {
     ];
 
     const liveSourceFiles = [
-        ...walkTextFiles('src', new Set(['.ts', '.tsx'])),
+        ...walkTextFiles('godot/scripts', new Set(['.gd'])),
         ...walkTextFiles('godot/data', new Set(['.json'])),
-        'admin.html',
+        ...walkTextFiles('math-kernel', new Set(['.ts'])),
     ];
 
     for (const file of liveSourceFiles) {

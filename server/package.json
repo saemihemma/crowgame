@@ -1,0 +1,28 @@
+{
+    "name": "crow-api",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "description": "Crow API: client error ingestion, and (from Phase 2) family auth and cloud save.",
+    "engines": { "node": ">=22" },
+    "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "build": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "migrate": "tsx src/migrate.ts",
+        "maintenance": "tsx src/maintenance.ts",
+        "test": "node --test --import tsx test/*.test.ts"
+    },
+    "dependencies": {
+        "@fastify/rate-limit": "^10.2.2",
+        "fastify": "^5.2.1",
+        "pg": "^8.13.1"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.5",
+        "@types/pg": "^8.11.10",
+        "tsx": "^4.21.0",
+        "typescript": "~5.7.2"
+    }
+}

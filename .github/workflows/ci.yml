@@ -118,3 +118,64 @@ jobs:
         run: npm run typecheck
       - name: Validate content, docs and assets
         run: npm run validate
+
+  api:
+    name: API (server tests against Postgres)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: crow_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/crow_test?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install server deps
+        run: npm --prefix server ci
+      - name: Typecheck
+        run: npm --prefix server run typecheck
+      - name: Migrate
+        run: npm --prefix server run migrate
+      - name: Test
+        # The throttle and the partition-drop retention are SQL behaviour, so
+        # these run against a real Postgres rather than a mock.
+        run: npm --prefix server test
+
+  error-pipeline-e2e:
+    name: Error pipeline end-to-end (browser -> API -> Postgres)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: crow_e2e
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/crow_e2e?sslmode=disable
+      # Runners ship Chrome; no browser download needed.
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm --prefix server ci
+      # No Godot needed: output/web is committed, so this exercises the exact
+      # bytes that get deployed.
+      - name: Run the pipeline end to end
+        run: npm run e2e:errors
