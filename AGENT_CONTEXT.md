@@ -16,6 +16,17 @@ Use it for:
 
 Do not use it as the final source of truth when it conflicts with runtime code or current architecture docs.
 
+## Open Work Lives in roadmap.md
+
+`roadmap.md` is the single list of what is still to do. It carries hard rules at
+the top: **finished items are deleted from it, never ticked off or annotated**,
+and what you actually did goes in `progress.md`. `npm run validate` fails the
+build if the roadmap picks up checkboxes, strikethrough, "(done)" notes or a
+completed-work heading, or if the rules block is removed.
+
+Before starting work, read it. After finishing work, the roadmap should be
+shorter.
+
 ## Quick Working Model
 
 - `BootScene` is the system wiring hub.

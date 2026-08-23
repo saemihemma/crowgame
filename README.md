@@ -6,6 +6,12 @@ Last verified against code: 2026-03-31
 
 Hörmann is a child-first educational platformer for early elementary math practice.
 
+## What is still to do
+
+See [roadmap.md](./roadmap.md). It lists open work only — finished items are
+deleted from it rather than ticked off, and `npm run validate` enforces that.
+Finished work is recorded in [progress.md](./progress.md).
+
 ## Purpose
 
 What this is:

@@ -434,6 +434,62 @@ function validateMathAuthoringReportContracts() {
     }
 }
 
+/**
+ * roadmap.md lists open work only. Finished items must be deleted, not ticked
+ * off, so this fails the build on the markers people reach for instead of
+ * deleting. The rule is stated at the top of the file; this is what makes it
+ * stick.
+ */
+function validateRoadmapHasNoCompletedItems() {
+    const relativePath = 'roadmap.md';
+    if (!fs.existsSync(path.join(root, relativePath))) {
+        return;
+    }
+    const text = readText(relativePath);
+
+    // Scan the entries only. The rules block quotes the markers it forbids, and
+    // the Settled section is explicitly allowed to describe closed decisions.
+    const firstEntry = text.search(/\n## (?!READ THIS FIRST)/);
+    const settledIndex = text.indexOf('## Settled');
+    const start = firstEntry === -1 ? 0 : firstEntry;
+    const end = settledIndex === -1 ? text.length : settledIndex;
+    const openWork = start < end ? text.slice(start, end) : '';
+
+    // Everything after the rules block, so a finished item cannot hide by being
+    // appended below the Settled list.
+    const everythingButTheRules = start < text.length ? text.slice(start) : '';
+
+    const banned = [
+        // Never appropriate anywhere in this file.
+        { pattern: /^\s*[-*]\s*\[[xX]\]/m, why: 'a ticked checkbox', scope: everythingButTheRules },
+        { pattern: /~~/, why: 'strikethrough', scope: everythingButTheRules },
+        { pattern: /\u2705|\u2714/, why: 'a check-mark character', scope: everythingButTheRules },
+        { pattern: /^\s*#+\s*(?:done|completed|shipped|finished)\b/im, why: 'a completed-work heading', scope: everythingButTheRules },
+        // Prose in the Settled section may legitimately discuss closed work.
+        { pattern: /\((?:done|DONE|Done|completed|COMPLETED|shipped|SHIPPED)\)/, why: 'a "(done)" style annotation', scope: openWork },
+    ];
+
+    for (const { pattern, why, scope } of banned) {
+        const match = scope.match(pattern);
+        if (match) {
+            fail(
+                `${relativePath}: contains ${why} (${JSON.stringify(match[0].trim())}). ` +
+                'Finished items must be DELETED from the roadmap, not marked complete. ' +
+                'Record what you did in progress.md instead.',
+            );
+        }
+    }
+
+    for (const heading of ['## READ THIS FIRST', 'DELETE IT']) {
+        if (!text.includes(heading)) {
+            fail(
+                `${relativePath}: the enforcement notice is missing ("${heading}"). ` +
+                'Do not remove the rules block at the top of the roadmap.',
+            );
+        }
+    }
+}
+
 function main() {
     console.log('Validating documentation...');
 
@@ -446,6 +502,7 @@ function main() {
     validateDocWordingAndTaxonomy();
     validateMathAuthoringReportContracts();
     validateLiveSourceReferences();
+    validateRoadmapHasNoCompletedItems();
 
     if (errors.length > 0) {
         console.error('\nDocumentation validation failed:');
