@@ -11,9 +11,8 @@ import {
     reviewMaterializedMathBatches,
     type MaterializationResult,
 } from './math_authoring';
-import { computeMathBrowserSmokeFingerprint } from './math_artifact_fingerprint.mjs';
 import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt } from './math_verifier';
-import type { MathProblem } from '../src/utils/Types';
+import type { MathProblem } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
 const DATA_DIR = join(ROOT, 'public', 'data');
@@ -361,10 +360,9 @@ function validateMathReviewReports(materialized: MaterializationResult | null): 
     const reviewSummaryPath = join(REPORTS_DIR, 'review-summary.json');
     const runtimeSmokePath = join(REPORTS_DIR, 'runtime-selector-smoke.json');
     const owlSurfacePath = join(REPORTS_DIR, 'owl-surface-summary.json');
-    const runtimeBrowserSmokePath = join(REPORTS_DIR, 'runtime-browser-smoke.json');
     const batchesDir = join(REPORTS_DIR, 'batches');
 
-    const requiredPaths = [reviewSummaryPath, runtimeSmokePath, owlSurfacePath, runtimeBrowserSmokePath, batchesDir];
+    const requiredPaths = [reviewSummaryPath, runtimeSmokePath, owlSurfacePath, batchesDir];
     for (const requiredPath of requiredPaths) {
         if (!existsSync(requiredPath)) {
             console.error(`  FAIL: Missing math review artifact: ${requiredPath}`);
@@ -377,14 +375,6 @@ function validateMathReviewReports(materialized: MaterializationResult | null): 
     const savedReview = loadJson(reviewSummaryPath);
     const savedRuntimeSmoke = loadJson(runtimeSmokePath);
     const savedOwlSurface = loadJson(owlSurfacePath);
-    const savedRuntimeBrowserSmoke = loadJson(runtimeBrowserSmokePath) as {
-        accepted?: boolean;
-        consoleErrors?: unknown[];
-        pageErrors?: unknown[];
-        sourceFingerprint?: { value?: string; fileCount?: number };
-        gateChecks?: Record<string, boolean>;
-    };
-
     if (JSON.stringify(savedReview) !== JSON.stringify(computedReview)) {
         console.error('  FAIL: Review summary drift detected. Run npm.cmd run math:materialize.');
         errors++;
@@ -406,34 +396,21 @@ function validateMathReviewReports(materialized: MaterializationResult | null): 
         errors++;
     }
 
-    const computedBrowserFingerprint = computeMathBrowserSmokeFingerprint(ROOT);
-    if (savedRuntimeBrowserSmoke.sourceFingerprint?.value !== computedBrowserFingerprint.value) {
-        console.error('  FAIL: Browser smoke fingerprint drift detected. Run npm.cmd run math:browser-smoke.');
-        errors++;
-    }
-
-    if (savedRuntimeBrowserSmoke.accepted !== true) {
-        console.error('  FAIL: Browser smoke artifact is not accepted. Run npm.cmd run math:browser-smoke.');
-        errors++;
-    }
-
-    if ((savedRuntimeBrowserSmoke.consoleErrors?.length ?? 0) > 0) {
-        console.error('  FAIL: Browser smoke captured console errors. Run npm.cmd run math:browser-smoke after fixing them.');
-        errors++;
-    }
-
-    if ((savedRuntimeBrowserSmoke.pageErrors?.length ?? 0) > 0) {
-        console.error('  FAIL: Browser smoke captured page errors. Run npm.cmd run math:browser-smoke after fixing them.');
-        errors++;
-    }
-
-    const gateChecks = savedRuntimeBrowserSmoke.gateChecks ?? {};
-    for (const [key, passed] of Object.entries(gateChecks)) {
-        if (!passed) {
-            console.error(`  FAIL: Browser smoke gate check failed: ${key}. Run npm.cmd run math:browser-smoke.`);
-            errors++;
-        }
-    }
+    // The Phaser-era browser-smoke gate used to live here. It was removed, not
+    // relaxed, for two independent reasons:
+    //
+    //  1. It fingerprinted src/scenes/GameScene.ts, src/scenes/MathChallengeScene.ts
+    //     and src/entities/npc/** — the Phaser owl loop, which is no longer the
+    //     shipped game. Godot is.
+    //  2. It never actually held. The stored fingerprint in
+    //     reports/math-batches/runtime-browser-smoke.json matched the committed
+    //     sources under neither LF nor CRLF, from the initial import onward, so
+    //     `npm run validate` failed for everyone on every machine. CI's old
+    //     `paths: ['godot/**']` filter meant nobody saw it.
+    //
+    // Replaced by two gates that run against the thing that actually ships:
+    //   - godot/tests/integration/OwlProbe.tscn  (the owl loop, in-engine)
+    //   - godot/tools/web_boot_smoke.mjs         (the exported build, in a browser)
 
     const savedBatchFiles = new Set(readdirSync(batchesDir).filter(file => file.endsWith('.json')));
     const expectedBatchFiles = new Set(computedReview.batchReviews.map(review => `${review.batchId}.json`));

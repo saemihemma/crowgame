@@ -1,25 +1,25 @@
 {
     "name": "crow-platformer",
-    "description": "A 2D pixel art educational platformer featuring a crow protagonist.",
+    "description": "Child-first educational math platformer (Godot 4). This package holds the offline math-authoring toolchain and the TS parity kernel, not the game runtime.",
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "dev": "vite --config vite/config.dev.mjs",
-        "build": "npm run validate && npm run compile && vite build --config vite/config.prod.mjs",
-        "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js",
-        "validate:docs": "node tools/validate_docs.js",
-        "validate:assets": "node tools/validate_assets.js",
-        "compile": "tsx tools/compile-levels.ts",
-        "math:materialize": "tsx tools/materialize_math_batches.ts",
-        "math:review": "tsx tools/review_math_batches.ts",
-        "math:browser-smoke": "node tools/math_browser_smoke.mjs",
-        "math:sync-metadata": "tsx tools/sync_math_problem_metadata.ts",
-        "godot:gen-math-fixtures": "tsx tools/golden/gen_math_fixtures.ts",
-        "godot:gen-motion-fixtures": "tsx tools/golden/gen_motion_fixtures.ts",
-        "process:audio": "node tools/process_audio.js",
         "ai:extract": "node tools/process_ai_assets.js --mode extract",
         "ai:process": "node tools/process_ai_assets.js",
-        "dev:host": "vite --config vite/config.dev.mjs --host"
+        "compile": "tsx tools/compile-levels.ts",
+        "godot:gen-math-fixtures": "tsx tools/golden/gen_math_fixtures.ts",
+        "godot:gen-motion-fixtures": "tsx tools/golden/gen_motion_fixtures.ts",
+        "godot:test": "bash godot/tools/run_tests.sh",
+        "math:browser-smoke": "node tools/math_browser_smoke.mjs",
+        "math:materialize": "tsx tools/materialize_math_batches.ts",
+        "math:review": "tsx tools/review_math_batches.ts",
+        "math:sync-metadata": "tsx tools/sync_math_problem_metadata.ts",
+        "process:audio": "node tools/process_audio.js",
+        "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js",
+        "validate:assets": "node tools/validate_assets.js",
+        "validate:docs": "node tools/validate_docs.js",
+        "web:boot-smoke": "node godot/tools/web_boot_smoke.mjs",
+        "web:build": "bash godot/tools/build_web.sh"
     },
     "devDependencies": {
         "ajv": "^8.17.1",
@@ -32,9 +32,5 @@
         "tsx": "^4.21.0",
         "typescript": "~5.7.2",
         "vite": "^6.3.1"
-    },
-    "dependencies": {
-        "phaser": "^3.90.0",
-        "terser": "^5.39.0"
     }
 }

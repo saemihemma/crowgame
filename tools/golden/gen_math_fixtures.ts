@@ -14,10 +14,10 @@
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { ELOManager } from '../../src/math/ELOManager';
-import { ProblemPoolManager } from '../../src/math/ProblemPoolManager';
-import { buildProblemReplayKey } from '../../src/math/problemReplayKey';
-import { LearnerStateManager } from '../../src/systems/LearnerStateManager';
+import { ELOManager } from '../../math-kernel/math/ELOManager';
+import { ProblemPoolManager } from '../../math-kernel/math/ProblemPoolManager';
+import { buildProblemReplayKey } from '../../math-kernel/math/problemReplayKey';
+import { LearnerStateManager } from '../../math-kernel/systems/LearnerStateManager';
 
 // ── seeded PRNG (mulberry32) replacing Math.random for reproducible output ──
 let _seed = 0x9e3779b9;

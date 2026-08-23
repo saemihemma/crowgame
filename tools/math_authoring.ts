@@ -2,12 +2,12 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from 'path';
 import { deriveCurriculumStep, deriveDifficultyTraits } from './math_curriculum';
 import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt } from './math_verifier';
-import { ELOManager } from '../src/math/ELOManager';
-import { MathProblemManager } from '../src/math/MathProblemManager';
-import { selectOwlProblem, type OwlSelectionConfig } from '../src/math/owlSelection';
-import { buildProblemReplayKey } from '../src/math/problemReplayKey';
-import { LearnerStateManager } from '../src/systems/LearnerStateManager';
-import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool, SelectionLane } from '../src/utils/Types';
+import { ELOManager } from '../math-kernel/math/ELOManager';
+import { MathProblemManager } from '../math-kernel/math/MathProblemManager';
+import { selectOwlProblem, type OwlSelectionConfig } from '../math-kernel/math/owlSelection';
+import { buildProblemReplayKey } from '../math-kernel/math/problemReplayKey';
+import { LearnerStateManager } from '../math-kernel/systems/LearnerStateManager';
+import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool, SelectionLane } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
 const AUTHORING_DIR = join(ROOT, 'authoring', 'math');

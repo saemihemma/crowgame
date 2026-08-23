@@ -189,14 +189,11 @@ function buildDocsByStatus(markdownFiles) {
 }
 
 function extractSceneCount() {
-    const mainTs = readText('src/main.ts');
-    const sceneBlock = mainTs.match(/scene:\s*\[([\s\S]*?)\]/m);
-    if (!sceneBlock) {
-        fail('src/main.ts: could not determine scene count for onboarding snapshot');
-        return 0;
-    }
-
-    return (sceneBlock[1].match(/\b[A-Za-z]+Scene\b/g) || []).length;
+    // The shipped game is the Godot build, so the scene count comes from the
+    // Godot scene registry (the routing source of truth per godot/ARCHITECTURE.md
+    // rule 4) rather than from the retired Phaser `scene: [...]` array.
+    const registry = loadJson('godot/data/registries/scenes.json');
+    return Object.keys(registry).filter(key => !key.startsWith('_')).length;
 }
 
 function validateRequiredDocStatuses(markdownFiles) {
@@ -275,23 +272,23 @@ function validateOnboardingSnapshot(currentDocs) {
 }
 
 function validateMathAndLearnerContracts() {
-    ensureSourcePattern('src/math/ELOManager.ts', /globalELO:\s*150/, 'starting global ELO');
-    ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*50\)\s*return\s+4;/, 'first K-factor band');
-    ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*200\)\s*return\s+3;/, 'second K-factor band');
-    ensureSourcePattern('src/math/ELOManager.ts', /return\s+2;/, 'third K-factor band');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /clamp\(decayed\s*\+\s*delta,\s*-50,\s*20\)/, 'confidence clamp');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*PROMOTION_WIN_TARGET/, 'curriculum promotion gate');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*DEMOTION_WRONG_THRESHOLD/, 'curriculum demotion gate');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /stage:\s*'immediate'/, 'immediate review stage');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /case\s+'day_7':/, 'day_7 review stage');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /comfort:\s*0\.5/, 'comfort lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /review:\s*laneCandidates\.review\.length\s*>\s*0\s*\?\s*0\.25\s*:\s*0/, 'review lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /at_level:\s*0\.25/, 'at-level lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /stretch:\s*0/, 'stretch lane removal');
-    ensureSourcePattern('src/ui/components/MathBoard.ts', /problem\.answer\.mode\s*===\s*'mcq'/, 'MCQ-only UI branch');
-    ensureSourcePattern('src/scenes/LoginScene.ts', /private\s+loginSuccess\(\):\s*void/, 'login success rehydrate owner');
-    ensureSourcePattern('src/scenes/BootScene.ts', /SaveManager\.getInstance\(\)\.switchProfile\(\);/, 'boot profile-switch mirror');
-    ensureSourcePattern('src/entities/npc/components/MathChallengeComponent.ts', /maxOperand:\s*20/, 'local owl max-operand ceiling');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /globalELO:\s*150/, 'starting global ELO');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*50\)\s*return\s+4;/, 'first K-factor band');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*200\)\s*return\s+3;/, 'second K-factor band');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /return\s+2;/, 'third K-factor band');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /clamp\(decayed\s*\+\s*delta,\s*-50,\s*20\)/, 'confidence clamp');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*PROMOTION_WIN_TARGET/, 'curriculum promotion gate');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*DEMOTION_WRONG_THRESHOLD/, 'curriculum demotion gate');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /stage:\s*'immediate'/, 'immediate review stage');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /case\s+'day_7':/, 'day_7 review stage');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /comfort:\s*0\.5/, 'comfort lane weight');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /review:\s*laneCandidates\.review\.length\s*>\s*0\s*\?\s*0\.25\s*:\s*0/, 'review lane weight');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /at_level:\s*0\.25/, 'at-level lane weight');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /stretch:\s*0/, 'stretch lane removal');
+    ensureSourcePattern('godot/scripts/ui/math_challenge.gd', /var options: Array = answer\.get\("options", \[\]\)/, 'MCQ options drive the answer buttons');
+    ensureSourcePattern('godot/scripts/scenes/login.gd', /func _finish_login\(\) -> void:/, 'login success rehydrate owner');
+    ensureSourcePattern('godot/scripts/scenes/login.gd', /SaveManager\.switch_profile\(\)/, 'profile-switch on login');
+    ensureSourcePattern('godot/scripts/math/owl_selection.gd', /"maxOperand": config\.get\("maxOperand", 20\)/, 'local owl max-operand ceiling');
 
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'default starting global ELO: `150`', 'starting ELO contract');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `4` before 50 attempts', 'K-factor first band');
@@ -332,19 +329,25 @@ function validateMathAndLearnerContracts() {
 }
 
 function validateStorageContracts() {
-    ensureSourcePattern('src/systems/ProfileManager.ts', /PROFILES_KEY\s*=\s*'crow_profiles'/, 'profiles key');
-    ensureSourcePattern('src/systems/ProfileManager.ts', /ACTIVE_KEY\s*=\s*'crow_active_user'/, 'active user key');
-    ensureSourcePattern('src/systems/ProfileManager.ts', /FAMILY_KEY\s*=\s*'crow_family_id'/, 'family id key');
-    ensureSourcePattern('src/systems/ProfileManager.ts', /return\s+`crow_save_\$\{username\}`;/, 'profile save key template');
-    ensureSourcePattern('src/systems/ProfileManager.ts', /return\s+'crow_save_v1';/, 'legacy save fallback key');
-    ensureSourcePattern('src/systems/TextManager.ts', /STORAGE_KEY\s*=\s*'crow_translations'/, 'translation storage key');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /API_BASE_KEY\s*=\s*'crow_learner_api_base'/, 'learner API base key');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /return\s+`crow_learner_snapshot_\$\{childId\}`;/, 'learner snapshot key template');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /return\s+`crow_learner_pending_attempts_\$\{childId\}`;/, 'pending attempts key template');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /normalized\.childId\s*=\s*activeProfile\.childId;/, 'active profile childId normalization');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /normalized\.familyId\s*=\s*activeProfile\.familyId;/, 'active profile familyId normalization');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /LearnerStateManager\.getInstance\(\)\.replaceSnapshot\(snapshot\);/, 'remote snapshot replacement');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /LearnerStateManager\.getInstance\(\)\.replaceSnapshot\(syncedSnapshot\);/, 'remote sync snapshot replacement');
+    // These assert the SHIPPED game's storage contract. The keys are identical to
+    // the ones the retired Phaser build used — that was the porting requirement —
+    // but the file that owns them is now GDScript, so the patterns are GDScript.
+    const PM = 'godot/scripts/autoload/profile_manager.gd';
+    const LSS = 'godot/scripts/systems/learner_sync_service.gd';
+
+    ensureSourcePattern(PM, /const PROFILES_KEY := "crow_profiles"/, 'profiles key');
+    ensureSourcePattern(PM, /const ACTIVE_KEY := "crow_active_user"/, 'active user key');
+    ensureSourcePattern(PM, /const FAMILY_KEY := "crow_family_id"/, 'family id key');
+    ensureSourcePattern(PM, /return "crow_save_%s" % username/, 'profile save key template');
+    ensureSourcePattern(PM, /const LEGACY_SAVE_KEY := "crow_save_v1"/, 'legacy save fallback key');
+    ensureSourcePattern('godot/scripts/autoload/text_manager.gd', /const STORAGE_KEY := "crow_translations"/, 'translation storage key');
+    ensureSourcePattern(LSS, /const API_BASE_KEY := "crow_learner_api_base"/, 'learner API base key');
+    ensureSourcePattern(LSS, /return "crow_learner_snapshot_%s" % child_id/, 'learner snapshot key template');
+    ensureSourcePattern(LSS, /return "crow_learner_pending_attempts_%s" % child_id/, 'pending attempts key template');
+    ensureSourcePattern(LSS, /normalized\["childId"\] = profile\["childId"\]/, 'active profile childId normalization');
+    ensureSourcePattern(LSS, /normalized\["familyId"\] = profile\["familyId"\]/, 'active profile familyId normalization');
+    ensureSourcePattern(LSS, /LearnerStateManager\.replace_snapshot\(snapshot\)/, 'remote snapshot replacement');
+    ensureSourcePattern(LSS, /LearnerStateManager\.replace_snapshot\(synced\)/, 'remote sync snapshot replacement');
 
     for (const key of STORAGE_KEYS) {
         ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', `- \`${key}\``, `learner-storage key ${key}`);

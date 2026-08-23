@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { join, resolve } from 'path';
 import { deriveCurriculumStep, deriveDifficultyTraits } from './math_curriculum';
-import type { MathProblem } from '../src/utils/Types';
+import type { MathProblem } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
 
