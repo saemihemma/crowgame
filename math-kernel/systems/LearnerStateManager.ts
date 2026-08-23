@@ -11,7 +11,7 @@ import type {
     PlayerELOStats,
     ReviewItem,
 } from '../utils/Types';
-import type { UserProfile } from './ProfileManager';
+import type { UserProfile } from '../utils/Types';
 
 const ALL_MATH_DOMAINS: MathDomain[] = [
     'addition',

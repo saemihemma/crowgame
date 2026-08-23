@@ -114,5 +114,7 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - name: Typecheck the reference kernel and the toolchain
+        run: npm run typecheck
       - name: Validate content, docs and assets
         run: npm run validate

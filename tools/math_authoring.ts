@@ -253,8 +253,10 @@ function loadLiveOwlMathConfig(): LiveOwlMathConfig {
         : [];
     const difficultyRange = Array.isArray(mathComponent.difficultyRange) && mathComponent.difficultyRange.length === 2
         ? [Number(mathComponent.difficultyRange[0]), Number(mathComponent.difficultyRange[1])] as [number, number]
-        : [1, 2];
-    const domains = configuredDomains.length > 0 ? configuredDomains : ['addition', 'subtraction'];
+        : [1, 2] as [number, number];
+    const domains: MathDomain[] = configuredDomains.length > 0
+        ? configuredDomains
+        : ['addition', 'subtraction'];
 
     return {
         domains,
@@ -1492,7 +1494,11 @@ function verifyConstraintPreservingFallbacks(
     const recentWindowResult = manager.getNextProblemELOAware('addition', impossibleOptions);
     const recentWindowFallbackPreserved = recentWindowResult === null;
 
-    const managerWithPrivate = manager as MathProblemManager & { eloStrategy: unknown };
+    // Deliberate private-field poke: this simulation has to prove the owl
+    // selector keeps its safety rails even when the ELO strategy is missing.
+    // `Manager & { eloStrategy }` collapses to never because the real member is
+    // private, so route through unknown.
+    const managerWithPrivate = manager as unknown as { eloStrategy: unknown };
     const originalEloStrategy = managerWithPrivate.eloStrategy;
     managerWithPrivate.eloStrategy = null;
     manager.resetAnswered();
@@ -1624,7 +1630,7 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                 }
 
                 const currentDomainStep = LearnerStateManager.getInstance().getCurrentStep('addition');
-                const previousProblemDomain = encounterProblemIndex > 0 ? previousEncounterDomain : null;
+                const previousProblemDomain: MathDomain | null = encounterProblemIndex > 0 ? previousEncounterDomain : null;
             const problem = selectOwlProblem(manager, owlConfig, previousProblemDomain);
 
                 if (!problem) {

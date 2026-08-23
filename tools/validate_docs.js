@@ -222,15 +222,15 @@ function validateRequiredDocStatuses(markdownFiles) {
 function validateOnboardingSnapshot(currentDocs) {
     const onboarding = readText('ONBOARDING_AGENT.md');
     const sceneCount = extractSceneCount();
-    const easyCount = loadJson('public/data/math/problems_easy.json').problems.length;
-    const datasetCount = loadJson('public/data/math/problems_dataset.json').problems.length;
-    const gapsCount = loadJson('public/data/math/problems_gaps.json').problems.length;
-    const curriculumCount = loadJson('public/data/math/problems_curriculum.json').problems.length;
+    const easyCount = loadJson('godot/data/math/problems_easy.json').problems.length;
+    const datasetCount = loadJson('godot/data/math/problems_dataset.json').problems.length;
+    const gapsCount = loadJson('godot/data/math/problems_gaps.json').problems.length;
+    const curriculumCount = loadJson('godot/data/math/problems_curriculum.json').problems.length;
     const totalProblems = easyCount + datasetCount + gapsCount + curriculumCount;
-    const levelCount = loadJson('public/data/levels/level_registry.json').levels.length;
-    const npcCount = loadJson('public/data/npcs/npc_registry.json').npcs.length;
-    const enemyCount = loadJson('public/data/enemies/enemy_registry.json').enemies.length;
-    const audioManifest = loadJson('public/data/audio/audio_manifest.json');
+    const levelCount = loadJson('godot/data/levels/level_registry.json').levels.length;
+    const npcCount = loadJson('godot/data/npcs/npc_registry.json').npcs.length;
+    const enemyCount = loadJson('godot/data/enemies/enemy_registry.json').enemies.length;
+    const audioManifest = loadJson('godot/data/audio/audio_manifest.json');
     const musicCount = countObjectKeys(audioManifest.music);
     const sfxCount = countObjectKeys(audioManifest.sfx);
 
@@ -385,7 +385,7 @@ function validateLiveSourceReferences() {
 
     const liveSourceFiles = [
         ...walkTextFiles('src', new Set(['.ts', '.tsx'])),
-        ...walkTextFiles('public/data', new Set(['.json'])),
+        ...walkTextFiles('godot/data', new Set(['.json'])),
         'admin.html',
     ];
 
@@ -400,7 +400,7 @@ function validateMathAuthoringReportContracts() {
     const owlSurface = loadJson('reports/math-batches/owl-surface-summary.json');
     const runtimeSelectorSmoke = loadJson('reports/math-batches/runtime-selector-smoke.json');
     const reviewSummary = loadJson('reports/math-batches/review-summary.json');
-    const npcRegistry = loadJson('public/data/npcs/npc_registry.json');
+    const npcRegistry = loadJson('godot/data/npcs/npc_registry.json');
     const owlDefinition = npcRegistry.npcs?.find(npc => npc.id === 'owl_teacher_01') ?? npcRegistry.npcs?.[0];
     const mathComponent = owlDefinition?.components?.find(component => component.type === 'math_challenge');
     const configuredProblemCount = Number(mathComponent?.problemCount ?? 1);

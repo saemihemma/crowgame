@@ -431,3 +431,24 @@ export interface SaveData {
     };
     timestamp: number;
 }
+
+/**
+ * A child profile as stored on one device, in `crow_profiles`.
+ *
+ * Note on `pinHash`: despite the name it is NOT a hash. ProfileManager computes
+ * `btoa(pin + ':' + username)`, which is trivially reversible. The 4-digit PIN
+ * is a "which kid am I" selector on a shared family device, not authentication,
+ * and it must never be sent to or stored by a server.
+ *
+ * Note on `childId` / `familyId`: these are minted per device
+ * (`"child-<ms>-<rand>"`), so the same child on two devices has two different
+ * ids. They are device-local handles, never global identity and never an
+ * authorization subject. Server-issued ids live alongside them.
+ */
+export interface UserProfile {
+    username: string;
+    pinHash: string;
+    createdAt: number;
+    childId: string;
+    familyId: string;
+}
