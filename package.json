@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "vite --config vite/config.dev.mjs",
         "build": "npm run validate && npm run compile && vite build --config vite/config.prod.mjs",
-        "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js",
+        "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js && node tools/validate_i18n.mjs",
         "validate:docs": "node tools/validate_docs.js",
         "validate:assets": "node tools/validate_assets.js",
         "compile": "tsx tools/compile-levels.ts",
@@ -19,7 +19,9 @@
         "process:audio": "node tools/process_audio.js",
         "ai:extract": "node tools/process_ai_assets.js --mode extract",
         "ai:process": "node tools/process_ai_assets.js",
-        "dev:host": "vite --config vite/config.dev.mjs --host"
+        "dev:host": "vite --config vite/config.dev.mjs --host",
+        "validate:i18n": "node tools/validate_i18n.mjs",
+        "i18n:screenshots": "node tools/i18n_screenshots.mjs"
     },
     "devDependencies": {
         "ajv": "^8.17.1",

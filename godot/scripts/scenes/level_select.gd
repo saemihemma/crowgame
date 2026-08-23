@@ -24,7 +24,7 @@ func _ready() -> void:
 		var key := String(level.get("key", ""))
 		var unlocked := _is_unlocked(level, completed)
 		var b := Button.new()
-		b.text = String(level.get("name", key)) + ("" if unlocked else "  (locked)")
+		b.text = _level_label(level, key, unlocked)
 		b.disabled = not unlocked
 		b.custom_minimum_size = Vector2(360, 56)
 		b.add_theme_font_size_override("font_size", 26)
@@ -40,6 +40,16 @@ func _ready() -> void:
 	back.pressed.connect(func(): SceneRouter.goto("main_menu"))
 	UiFx.attach_focus_highlight(back)
 	col.add_child(back)
+
+## Level names are translated when a `level.<key>.name` key exists, and fall
+## back to the registry name so a newly authored level still shows something.
+## The locked suffix used to be the literal English "  (locked)".
+func _level_label(level: Dictionary, key: String, unlocked: bool) -> String:
+	var name_key := "level.%s.name" % key
+	var display := TextManager.t(name_key) if TextManager.has(name_key) else String(level.get("name", key))
+	if unlocked:
+		return display
+	return "%s  (%s)" % [display, TextManager.t("level_select.locked")]
 
 func _is_unlocked(level: Dictionary, completed: Array) -> bool:
 	var req = level.get("unlockRequirement", null)

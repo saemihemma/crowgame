@@ -108,6 +108,11 @@ export class LevelSelectScene extends Phaser.Scene {
         const tt = TextManager.getInstance();
         const nodeW = 360;
         const nodeH = 80;
+        // Labels used to start at x-40, which left a 112px hole after the index
+        // and ran the name into the padlock on locked rows -- "Kristalshellir"
+        // touched it exactly. Starting in the hole gives every name in both
+        // languages room to clear the icon.
+        const LABEL_OFFSET = -110;
 
         const nodeBg = this.add.graphics();
         if (!isUnlocked) {
@@ -133,24 +138,29 @@ export class LevelSelectScene extends Phaser.Scene {
         }).setOrigin(0.5, 0.5);
 
         const nameColor = isUnlocked ? tm.getColor('textColor') : '#666666';
-        this.add.text(x - 40, y - 12, level.name, {
+        // Level names are translated when a `level.<key>.name` key exists, and
+        // fall back to the registry name so a newly authored level still shows
+        // something before anyone translates it.
+        const nameKey = `level.${level.key}.name`;
+        const levelName = tt.has(nameKey) ? tt.t(nameKey) : level.name;
+        this.add.text(x + LABEL_OFFSET, y - 12, levelName, {
             fontSize: '20px', fontFamily: 'monospace', color: nameColor,
             stroke: '#000000', strokeThickness: 2,
         }).setOrigin(0, 0.5);
 
         if (isCompleted) {
-            this.add.text(x - 40, y + 16, tt.t('level_select.complete'), {
+            this.add.text(x + LABEL_OFFSET, y + 16, tt.t('level_select.complete'), {
                 fontSize: '16px', fontFamily: 'monospace', color: '#ffd700',
                 stroke: '#000000', strokeThickness: 2,
             }).setOrigin(0, 0.5);
         } else if (isUnlocked) {
-            this.add.text(x - 40, y + 16, tt.t('level_select.ready'), {
+            this.add.text(x + LABEL_OFFSET, y + 16, tt.t('level_select.ready'), {
                 fontSize: '16px', fontFamily: 'monospace', color: '#88ff88',
                 stroke: '#000000', strokeThickness: 2,
             }).setOrigin(0, 0.5);
         } else {
-            this.add.text(x + nodeW / 2 - 40, y, '🔒', { fontSize: '28px' }).setOrigin(0.5, 0.5);
-            this.add.text(x - 40, y + 16, tt.t('level_select.locked'), {
+            this.drawPadlock(x + nodeW / 2 - 24, y);
+            this.add.text(x + LABEL_OFFSET, y + 16, tt.t('level_select.locked'), {
                 fontSize: '16px', fontFamily: 'monospace', color: '#888888',
                 stroke: '#000000', strokeThickness: 2,
             }).setOrigin(0, 0.5);
@@ -204,4 +214,34 @@ export class LevelSelectScene extends Phaser.Scene {
             this.scene.start(SCENES.GAME, { levelKey });
         });
     }
+
+    /**
+     * Draw the "locked" padlock as vector geometry rather than the emoji U+1F512.
+     *
+     * The emoji was rendered as text with no font family set at all, so it
+     * depended entirely on the device having an emoji font -- the same failure
+     * that turned the login PIN dots into missing-glyph boxes.  Drawing it
+     * removes the font dependency.
+     */
+    private drawPadlock(cx: number, cy: number): void {
+        const bodyW = 22;
+        const bodyH = 17;
+        const bodyTop = cy - 1;
+        const g = this.add.graphics();
+
+        // Shackle: an open arc sitting on top of the body.
+        g.lineStyle(4, 0xdddddd, 1);
+        g.beginPath();
+        g.arc(cx, bodyTop, 7, Phaser.Math.DegToRad(180), Phaser.Math.DegToRad(360), false);
+        g.strokePath();
+
+        // Body.
+        g.fillStyle(0xdddddd, 1);
+        g.fillRoundedRect(cx - bodyW / 2, bodyTop, bodyW, bodyH, 4);
+
+        // Keyhole.
+        g.fillStyle(0x555555, 1);
+        g.fillCircle(cx, bodyTop + bodyH / 2, 2.5);
+    }
+
 }

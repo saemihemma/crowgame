@@ -66,8 +66,9 @@ export class BootScene extends Phaser.Scene {
         // --- Load audio manifest ---
         this.load.json('audio_manifest', DATA_PATHS.AUDIO_MANIFEST);
 
-        // --- Load i18n strings ---
+        // --- Load i18n strings (every shipped locale; English is the fallback) ---
         this.load.json('strings_en', DATA_PATHS.STRINGS_EN);
+        this.load.json('strings_is', DATA_PATHS.STRINGS_IS);
 
         // --- Global error handler for missing assets ---
         this.load.on('loaderror', (file: Phaser.Loader.File) => {
@@ -119,11 +120,12 @@ export class BootScene extends Phaser.Scene {
     }
 
     create(): void {
-        // Initialize TextManager with default strings
-        const defaultStrings = this.cache.json.get('strings_en') as Record<string, string>;
-        if (defaultStrings) {
-            TextManager.getInstance().init(defaultStrings);
-        }
+        // Initialize TextManager with every locale bundle. It picks the active
+        // locale from the stored player choice, else the browser language.
+        TextManager.getInstance().init({
+            en: this.cache.json.get('strings_en') as Record<string, string> | undefined,
+            is: this.cache.json.get('strings_is') as Record<string, string> | undefined,
+        });
 
         // Initialize ProfileManager (loads from localStorage)
         ProfileManager.getInstance();

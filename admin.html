@@ -99,6 +99,35 @@
         background: #16213e;
     }
 
+    .editor-controls {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .locale-picker {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #8b9bb4;
+        white-space: nowrap;
+    }
+
+    .locale-picker select {
+        padding: 0.5rem 0.75rem;
+        background: #0f0f23;
+        color: #e8e8f0;
+        border: 1px solid #2a2a4a;
+        border-radius: 6px;
+        font: inherit;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
     .search-bar input,
     .api-config input {
         width: 100%;
@@ -371,7 +400,16 @@
 </header>
 
 <div class="search-bar">
-    <input type="text" id="search" placeholder="Filter by key name..." autocomplete="off">
+    <div class="editor-controls">
+        <input type="text" id="search" placeholder="Filter by key name..." autocomplete="off">
+        <label class="locale-picker" for="locale">
+            <span>Editing</span>
+            <select id="locale">
+                <option value="en">English</option>
+                <option value="is">Íslenska</option>
+            </select>
+        </label>
+    </div>
 </div>
 
 <div class="stats" id="stats"></div>
@@ -405,16 +443,26 @@
 
 <script>
 (function () {
-    const STORAGE_KEY = "crow_translations";
+    // Per-locale override buckets, matching TextManager. Overrides used to live
+    // in one flat map, which meant an Icelandic edit also overrode English once
+    // a second locale became selectable.
+    const STORAGE_KEY = "crow_translations_v2";
+    const LEGACY_STORAGE_KEY = "crow_translations";
+    const LOCALES = ["en", "is"];
     const STRINGS_URL = "data/i18n/strings_en.json";
+    const LOCALE_STRINGS_URL = { en: "data/i18n/strings_en.json", is: "data/i18n/strings_is.json" };
     const PROFILES_KEY = "crow_profiles";
     const LEARNER_API_BASE_KEY = "crow_learner_api_base";
 
-    let defaults = {};
-    let overrides = {};
+    let defaults = {};        // English, always shown as the reference
+    let shipped = {};         // the shipped bundle for the locale being edited
+    let allOverrides = {};    // { en: {...}, is: {...} }
+    let overrides = {};       // allOverrides[locale], by reference
+    let locale = "en";
 
     const tbody = document.getElementById("tbody");
     const searchInput = document.getElementById("search");
+    const localeSelect = document.getElementById("locale");
     const statsEl = document.getElementById("stats");
     const toastEl = document.getElementById("toast");
     const learnerSummaryEl = document.getElementById("learner-summary");
@@ -441,7 +489,38 @@
     }
 
     function loadOverrides() {
-        overrides = readJson(STORAGE_KEY, {});
+        const stored = readJson(STORAGE_KEY, null);
+        if (stored) {
+            allOverrides = stored;
+        } else {
+            // First run on the new format: fold the old flat map into English
+            // and leave the legacy key on disk so an older build still works.
+            allOverrides = { en: readJson(LEGACY_STORAGE_KEY, {}) };
+        }
+        LOCALES.forEach(function (code) {
+            if (!allOverrides[code]) allOverrides[code] = {};
+        });
+        overrides = allOverrides[locale];
+    }
+
+    function loadShipped() {
+        const url = LOCALE_STRINGS_URL[locale];
+        return fetch(url)
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch " + url + " (" + response.status + ")");
+                }
+                return response.json();
+            })
+            .then(function (json) {
+                shipped = json;
+            });
+    }
+
+    function setLocale(code) {
+        locale = LOCALES.indexOf(code) === -1 ? "en" : code;
+        overrides = allOverrides[locale];
+        return loadShipped().then(renderTranslations);
     }
 
     function loadDefaults() {
@@ -485,7 +564,11 @@
 
             const keyDefault = document.createElement("div");
             keyDefault.className = "key-default";
-            keyDefault.textContent = defaultValue;
+            // Always show the English reference; when editing another locale,
+            // show the shipped translation next to it.
+            keyDefault.textContent = locale === "en"
+                ? defaultValue
+                : defaultValue + "   ->   " + (shipped[key] || "(untranslated)");
 
             keyCell.appendChild(keyName);
             keyCell.appendChild(keyDefault);
@@ -495,7 +578,7 @@
 
             const input = document.createElement("input");
             input.type = "text";
-            input.placeholder = defaultValue;
+            input.placeholder = shipped[key] || defaultValue;
             input.value = override;
             if (override) {
                 input.classList.add("has-value");
@@ -516,7 +599,8 @@
             tbody.appendChild(row);
         });
 
-        statsEl.textContent = visibleCount + " of " + keys.length + " keys shown - " + overrideCount + " translation(s) set";
+        statsEl.textContent = visibleCount + " of " + keys.length + " keys shown - " + overrideCount
+            + " override(s) set for " + locale.toUpperCase();
     }
 
     function createMetric(label, value) {
@@ -636,9 +720,10 @@
                 toSave[key] = overrides[key];
             }
         });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
-        overrides = toSave;
-        showToast("Translations saved (" + Object.keys(toSave).length + " keys)");
+        allOverrides[locale] = toSave;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allOverrides));
+        overrides = allOverrides[locale];
+        showToast("Saved " + Object.keys(toSave).length + " " + locale.toUpperCase() + " override(s)");
     });
 
     document.getElementById("btn-export").addEventListener("click", function () {
@@ -653,12 +738,12 @@
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = "crow_translations.json";
+        link.download = "crow_translations_" + locale + ".json";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        showToast("Exported " + Object.keys(toExport).length + " translations");
+        showToast("Exported " + Object.keys(toExport).length + " " + locale.toUpperCase() + " translations");
     });
 
     const importInput = document.getElementById("import-input");
@@ -678,9 +763,10 @@
                     throw new Error("Invalid format");
                 }
 
-                overrides = imported;
+                allOverrides[locale] = imported;
+                overrides = allOverrides[locale];
                 renderTranslations();
-                showToast("Imported " + Object.keys(imported).length + " translations");
+                showToast("Imported " + Object.keys(imported).length + " into " + locale.toUpperCase());
             } catch (error) {
                 showToast("Import failed: " + error.message);
             }
@@ -691,11 +777,12 @@
     });
 
     document.getElementById("btn-clear").addEventListener("click", function () {
-        if (!confirm("Clear all translations? This will also remove them from localStorage.")) return;
-        overrides = {};
-        localStorage.removeItem(STORAGE_KEY);
+        if (!confirm("Clear all " + locale.toUpperCase() + " overrides? This also removes them from localStorage.")) return;
+        allOverrides[locale] = {};
+        overrides = allOverrides[locale];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allOverrides));
         renderTranslations();
-        showToast("All translations cleared");
+        showToast(locale.toUpperCase() + " overrides cleared");
     });
 
     document.getElementById("btn-save-api").addEventListener("click", function () {
@@ -718,9 +805,17 @@
         renderTranslations();
     });
 
+    localeSelect.addEventListener("change", function () {
+        setLocale(this.value).catch(function (error) {
+            showToast("Could not load " + localeSelect.value + ": " + error.message);
+        });
+    });
+
     loadOverrides();
+    localeSelect.value = locale;
     learnerApiBaseInput.value = localStorage.getItem(LEARNER_API_BASE_KEY) || "";
     loadDefaults()
+        .then(loadShipped)
         .then(function () {
             renderTranslations();
             renderLearnerSummary();

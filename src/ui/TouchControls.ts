@@ -1,6 +1,7 @@
 import { ThemeManager, THEME_CHANGED } from './theme/ThemeManager';
 import { EventBus } from '../utils/EventBus';
 import { GAME_WIDTH, GAME_HEIGHT } from '../utils/Constants';
+import { TextManager } from '../systems/TextManager';
 
 /**
  * Virtual gamepad for mobile: D-pad (left/right) + Jump + Peck buttons.
@@ -64,6 +65,7 @@ export class TouchControls {
         this.container.removeAll(true);
 
         const tm = ThemeManager.getInstance();
+        const tt = TextManager.getInstance();
         const padding = 16;
         const btnSize = 88;
         const btnGap = 12;
@@ -79,6 +81,7 @@ export class TouchControls {
             btnSize,
             '<',
             tm.getColorNum('secondary'),
+            TouchControls.SYMBOL_FONT_SIZE,
         );
         this.setupButtonInput(leftBtn, 'left');
         this.buttons.set('left', leftBtn);
@@ -91,6 +94,7 @@ export class TouchControls {
             btnSize,
             '>',
             tm.getColorNum('secondary'),
+            TouchControls.SYMBOL_FONT_SIZE,
         );
         this.setupButtonInput(rightBtn, 'right');
         this.buttons.set('right', rightBtn);
@@ -101,7 +105,7 @@ export class TouchControls {
             dpadY,
             btnSize,
             btnSize,
-            'JUMP',
+            tt.t('touch.jump'),
             tm.getColorNum('primary'),
         );
         this.setupButtonInput(jumpBtn, 'jump');
@@ -113,7 +117,7 @@ export class TouchControls {
             dpadY,
             btnSize,
             btnSize,
-            'ZAP',
+            tt.t('touch.zap'),
             tm.getColorNum('danger'),
         );
         this.setupButtonInput(laserBtn, 'shoot');
@@ -125,11 +129,34 @@ export class TouchControls {
             dpadY - btnSize - btnGap,
             btnSize,
             btnSize,
-            'PECK',
+            tt.t('touch.peck'),
             tm.getColorNum('accent'),
         );
         this.setupButtonInput(peckBtn, 'peck');
         this.buttons.set('peck', peckBtn);
+    }
+
+    /** Type size for single-character symbol buttons (the d-pad arrows). */
+    private static readonly SYMBOL_FONT_SIZE = 32;
+    /** Type size for word buttons (JUMP / ZAP / PECK and their translations). */
+    private static readonly WORD_FONT_SIZE = 18;
+
+    /**
+     * Shrink a label's type size until it fits the button.
+     *
+     * The size used to be picked from character count
+     * (`label.length > 2 ? '18px' : '32px'`), which only worked by luck: every
+     * symbol is one character and every word in both languages is three or
+     * more. A two-character label in any language would have jumped to 32px and
+     * overflowed. Size now comes from the button's role, with this as the net.
+     */
+    private static fitFontSize(label: string, preferred: number, maxWidth: number): number {
+        if (label.length === 0) return preferred;
+        // Monospace advance is ~0.6em; assume slightly wider so a broad
+        // fallback font still fits.
+        const ADVANCE_RATIO = 0.63;
+        const fits = Math.floor(maxWidth / (label.length * ADVANCE_RATIO));
+        return Math.max(10, Math.min(preferred, fits));
     }
 
     private createButton(
@@ -139,6 +166,7 @@ export class TouchControls {
         h: number,
         label: string,
         bgColor: number,
+        fontSize: number = TouchControls.WORD_FONT_SIZE,
     ): Phaser.GameObjects.Container {
         const btnContainer = this.scene.add.container(x, y);
 
@@ -152,7 +180,7 @@ export class TouchControls {
 
         // Label
         const text = this.scene.add.text(w / 2, h / 2, label, {
-            fontSize: label.length > 2 ? '18px' : '32px',
+            fontSize: `${TouchControls.fitFontSize(label, fontSize, w - 12)}px`,
             fontFamily: 'monospace',
             color: '#ffffff',
             stroke: '#000000',

@@ -20,7 +20,7 @@ export class DialogBox {
     private nameText!: Phaser.GameObjects.Text;
     private bodyText!: Phaser.GameObjects.Text;
     private portrait: Phaser.GameObjects.Image | null = null;
-    private advanceIndicator!: Phaser.GameObjects.Text;
+    private advanceIndicator!: Phaser.GameObjects.Graphics;
 
     private lines: DialogLine[] = [];
     private lineIndex = 0;
@@ -99,17 +99,27 @@ export class DialogBox {
         ).setOrigin(0, 0);
         this.container.add(this.bodyText);
 
-        // Advance indicator (blinking triangle)
-        this.advanceIndicator = this.scene.add.text(
+        // Advance indicator (blinking triangle).
+        //
+        // Drawn rather than set as the text character U+25BC: that lives in the
+        // Unicode "Geometric Shapes" block, which the browser's unpinned
+        // `monospace` fallback does not always carry, so on those devices the
+        // "there is more to read" cue became a missing-glyph box. Same defect
+        // that used to hit the login PIN dots.
+        const arrowW = 16;
+        const arrowH = 10;
+        this.advanceIndicator = this.scene.add.graphics();
+        this.advanceIndicator.fillStyle(tm.getColorNum('accent'), 1);
+        this.advanceIndicator.fillTriangle(
+            -arrowW, -arrowH,
+            0, -arrowH,
+            -arrowW / 2, 0,
+        );
+        this.advanceIndicator.setPosition(
             halfW - this.padding - 8,
             halfH - this.padding - 4,
-            '▼',
-            {
-                fontSize: '20px',
-                fontFamily: 'monospace',
-                color: tm.getColor('accent'),
-            },
-        ).setOrigin(1, 1).setAlpha(0);
+        );
+        this.advanceIndicator.setAlpha(0);
         this.container.add(this.advanceIndicator);
 
         // Blinking tween for advance indicator

@@ -31,7 +31,7 @@
   "login.enter_pin": "Enter PIN",
   "login.confirm_pin": "Confirm PIN",
   "login.create_title": "Create Character",
-  "login.name_placeholder": "Type your name...",
+  "login.name_placeholder": "Your name...",
   "login.go": "GO!",
   "login.pin_mismatch": "PINs don't match!",
   "login.name_taken": "Name already taken!",
@@ -58,7 +58,16 @@
   "hud.lives": "Lives: {0}",
   "hud.coins_label": "Coins {0}",
   "hud.owls_label": "Owls {0}",
-  "boot.loading": "Loading…",
+  "boot.loading": "Loading...",
   "touch.peck": "PECK",
-  "game.owl_saved": "Owl saved!"
+  "game.owl_saved": "Owl saved!",
+  "level.level_99.name": "Practice Arena",
+  "math.progress": "Problem {0} of {1}",
+  "fx.level_complete": "Level Complete!",
+  "fx.level_up": "LEVEL UP!",
+  "level.level_01.name": "Forest Clearing",
+  "level.level_02.name": "Crystal Cave",
+  "level.level_03.name": "Sunny Meadow",
+  "level.level_04.name": "Mossy Bridge",
+  "level.level_05.name": "Treetop Trail"
 }

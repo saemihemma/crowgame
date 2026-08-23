@@ -27,6 +27,9 @@ export const GameEvents = {
     XP_CHANGED: 'xp-changed',
     LEVEL_UP: 'level-up',
 
+    // Settings
+    LOCALE_CHANGED: 'locale-changed',
+
     // NPC
     NPC_INTERACT: 'npc-interact',
     DIALOG_START: 'dialog-start',

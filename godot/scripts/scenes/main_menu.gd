@@ -24,7 +24,13 @@ func _ready() -> void:
 		_add_button(col, TextManager.t("menu.continue"), _on_continue)
 	if ProfileManager.get_active_user() != null:
 		_add_button(col, TextManager.t("menu.switch_user"), _on_switch_user)
+	# Language selector, top-right, out of the way of the centred column.
+	add_child(LanguageToggle.build(_on_locale_changed))
 	_add_build_stamp()
+
+
+func _on_locale_changed() -> void:
+	SceneRouter.goto("main_menu")
 
 ## Tiny build stamp (bottom-right) so phone refreshes visibly confirm a new
 ## build during fast iteration. Written by tools/build_web.sh.

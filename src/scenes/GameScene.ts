@@ -740,7 +740,7 @@ export class GameScene extends Phaser.Scene {
             // "Oops!" text
             const cx = this.cameras.main.width / 2;
             const cy = this.cameras.main.height / 2;
-            const deathText = this.add.text(cx, cy, 'Oops!', {
+            const deathText = this.add.text(cx, cy, TextManager.getInstance().t('game.oops'), {
                 fontSize: '48px',
                 fontFamily: 'monospace',
                 color: '#ff4444',

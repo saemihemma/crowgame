@@ -10,6 +10,7 @@ import { AudioManager } from '../systems/AudioManager';
 import { LearnerStateManager } from '../systems/LearnerStateManager';
 import { LearnerSyncService } from '../systems/LearnerSyncService';
 import { MathProblemManager } from '../math/MathProblemManager';
+import { LanguageToggle } from '../ui/components/LanguageToggle';
 
 type LoginState = 'userList' | 'pinEntry' | 'newUser';
 
@@ -36,7 +37,7 @@ export class LoginScene extends Phaser.Scene {
 
     // PIN entry tracking
     private pinDigits: string[] = [];
-    private pinDots: Phaser.GameObjects.Text[] = [];
+    private pinDots: Phaser.GameObjects.Graphics[] = [];
     private selectedUsername = '';
 
     // New-user flow
@@ -69,6 +70,16 @@ export class LoginScene extends Phaser.Scene {
         const groundGfx = this.add.graphics();
         groundGfx.fillStyle(this.tm.getColorNum('secondary'), 0.6);
         groundGfx.fillRect(0, GAME_HEIGHT - 96, GAME_WIDTH, 96);
+
+        // Language selector. Deliberately built outside `stateContainer` so it
+        // survives sub-state swaps and is reachable *before* the PIN screen --
+        // this is where a parent sets the language up on first launch.
+        new LanguageToggle(this, {
+            right: 20,
+            top: 20,
+            canvasWidth: GAME_WIDTH,
+            onChange: () => this.scene.restart(),
+        });
 
         this.showState('userList');
     }
@@ -212,26 +223,26 @@ export class LoginScene extends Phaser.Scene {
         }
 
         // 4 dot placeholders
-        const dotY = 150;
+        const dotY = 132;
         const dotSpacing = 48;
         const dotStartX = cx - (dotSpacing * 1.5);
 
         for (let i = 0; i < 4; i++) {
-            const dot = this.add.text(dotStartX + i * dotSpacing, dotY, '\u25CB', {
-                fontSize: '40px',
-                fontFamily: 'monospace',
-                color: this.tm.getColor('textColor'),
-                stroke: '#000000',
-                strokeThickness: 2,
-            }).setOrigin(0.5, 0.5);
+            const dot = this.add.graphics();
+            dot.setPosition(dotStartX + i * dotSpacing, dotY);
+            this.drawPinDot(dot, false);
             this.stateContainer.add(dot);
             this.pinDots.push(dot);
             DopamineFX.elasticEntrance(this, dot, 300, delay);
             delay += 40;
         }
 
-        // Number pad (3 columns x 4 rows: 1-9, then empty/0/empty)
-        const padStartY = 220;
+        // Number pad (3 columns x 4 rows: 1-9, then empty/0/empty).
+        // The pad and the Back button below it have to fit inside GAME_HEIGHT:
+        // at the old padStartY of 220 the Back button landed at y=564 on a
+        // 540-tall canvas, so a child who picked the wrong profile had no way
+        // back. Keep the arithmetic below in step with GAME_HEIGHT.
+        const padStartY = 186;
         const padBtnSize = 72;
         const padGap = 12;
         const padStartX = cx - (padBtnSize + padGap);
@@ -265,8 +276,8 @@ export class LoginScene extends Phaser.Scene {
             }
         }
 
-        // Back button
-        const backY = padStartY + 4 * (padBtnSize + padGap) + 8;
+        // Back button, tucked under the last pad row and inside the canvas.
+        const backY = padStartY + 4 * (padBtnSize + padGap) - 14;
         const { zone: backZone, text: backText } = this.createColorButton(
             cx, backY, 200, 52, this.txt.t('login.back'), this.tm.getColorNum('secondary'),
         );
@@ -288,7 +299,7 @@ export class LoginScene extends Phaser.Scene {
 
         // Update dot display
         for (let i = 0; i < 4; i++) {
-            this.pinDots[i].setText(i < this.pinDigits.length ? '\u25CF' : '\u25CB');
+            this.drawPinDot(this.pinDots[i], i < this.pinDigits.length);
         }
 
         AudioManager.getInstance().playSFX('ui_click');
@@ -397,7 +408,7 @@ export class LoginScene extends Phaser.Scene {
 
         // Clear dots visually
         for (const dot of this.pinDots) {
-            dot.setText('\u25CB');
+            this.drawPinDot(dot, false);
         }
         this.pinDigits = [];
     }
@@ -512,6 +523,26 @@ export class LoginScene extends Phaser.Scene {
     }
 
     // ─── Helpers ──────────────────────────────────────────────
+
+    /**
+     * Draw one PIN placeholder as vector geometry rather than a font glyph.
+     *
+     * These used to be the text characters U+25CF / U+25CB.  Both live in the
+     * Unicode "Geometric Shapes" block, which the browser's unpinned
+     * `monospace` fallback does not always carry -- on those devices the four
+     * dots rendered as missing-glyph boxes, so the child got no feedback that a
+     * keypress had registered.  Drawn circles cannot fail that way.
+     */
+    private drawPinDot(dot: Phaser.GameObjects.Graphics, filled: boolean): void {
+        const radius = 14;
+        dot.clear();
+        if (filled) {
+            dot.fillStyle(this.tm.getColorNum('textColor'), 1);
+            dot.fillCircle(0, 0, radius);
+        }
+        dot.lineStyle(4, this.tm.getColorNum('textColor'), filled ? 1 : 0.75);
+        dot.strokeCircle(0, 0, radius);
+    }
 
     private resetNewUserFlow(): void {
         this.newUserName = '';

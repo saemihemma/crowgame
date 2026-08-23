@@ -36,6 +36,7 @@ export const DATA_PATHS = {
     THEME_SCIFI: 'data/themes/theme_scifi.json',
     AUDIO_MANIFEST: 'data/audio/audio_manifest.json',
     STRINGS_EN: 'data/i18n/strings_en.json',
+    STRINGS_IS: 'data/i18n/strings_is.json',
     MATH_CURRICULUM: 'data/math/problems_curriculum.json',
     COMBAT_TUNING: 'data/tuning/combat_tuning.json',
     CAMERA_TUNING: 'data/tuning/camera_tuning.json',
