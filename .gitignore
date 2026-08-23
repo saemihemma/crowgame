@@ -34,3 +34,6 @@ dist-ssr
 # Precompressed payload is generated in the Docker image build, never committed.
 output/web/*.gz
 output/web/*.br
+
+# Boot-smoke report is a CI check result, not a gated artifact.
+reports/web/
