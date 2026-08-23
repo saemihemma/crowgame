@@ -4,25 +4,37 @@ extends Control
 ## ELO/learner managers, then routes to the main menu. Uses the tested
 ## ProfileManager for all profile/PIN logic.
 
+const LIST_TOP_MARGIN := 24.0
+const LIST_BOTTOM_MARGIN := 16.0
+
 const PIN_DOT_COUNT := 4
 const PIN_DOT_SIZE := 22.0
 const PIN_DOT_GAP := 12
 
 var _selected_user := ""
+var _scroll: ScrollContainer
 var _col: VBoxContainer
 var _pin_edit: LineEdit
 var _name_edit: LineEdit
 var _status: Label
 
 func _ready() -> void:
-	var center := CenterContainer.new()
-	center.anchor_right = 1.0
-	center.anchor_bottom = 1.0
-	add_child(center)
+	# The profile list scrolls: laid out flat, a family with four or more
+	# children pushes "+ New User" off the bottom of the 540-tall viewport and
+	# a fifth can never be added -- the same defect the web build shipped.
+	_scroll = ScrollContainer.new()
+	_scroll.anchor_right = 1.0
+	_scroll.anchor_bottom = 1.0
+	_scroll.offset_top = LIST_TOP_MARGIN
+	_scroll.offset_bottom = -LIST_BOTTOM_MARGIN
+	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	add_child(_scroll)
+
 	_col = VBoxContainer.new()
-	_col.alignment = BoxContainer.ALIGNMENT_CENTER
+	_col.alignment = BoxContainer.ALIGNMENT_BEGIN
+	_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_col.add_theme_constant_override("separation", 14)
-	center.add_child(_col)
+	_scroll.add_child(_col)
 	# Language selector sits outside `_col`, so it survives the sub-state swaps
 	# and is reachable *before* the PIN screen -- this is where a parent sets the
 	# language up on first launch.
@@ -51,6 +63,7 @@ func _show_profile_list() -> void:
 		var b := Button.new()
 		b.text = String(p.get("username", ""))
 		b.custom_minimum_size = Vector2(280, 56)
+		b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		b.add_theme_font_size_override("font_size", 28)
 		var uname := String(p.get("username", ""))
 		b.pressed.connect(func(): _show_pin_entry(uname))
@@ -59,6 +72,7 @@ func _show_profile_list() -> void:
 	var nb := Button.new()
 	nb.text = TextManager.t("login.new_user")
 	nb.custom_minimum_size = Vector2(280, 56)
+	nb.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	nb.pressed.connect(_show_new_player)
 	UiFx.attach_focus_highlight(nb)
 	_col.add_child(nb)
@@ -83,6 +97,7 @@ func _show_new_player() -> void:
 	_name_edit.placeholder_text = TextManager.t("login.name_placeholder")
 	_name_edit.max_length = 12
 	_name_edit.custom_minimum_size = Vector2(280, 48)
+	_name_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_col.add_child(_name_edit)
 	_title(TextManager.t("login.pick_pin"), 22)
 	_pin_edit = _make_pin_edit()
@@ -101,6 +116,7 @@ func _make_pin_edit() -> LineEdit:
 	e.secret = true
 	e.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	e.custom_minimum_size = Vector2(160, 48)
+	e.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	# Kid-friendly PIN dots (LoginScene.ts shows filled/empty circles per digit).
 	_pin_dots = _make_pin_dots()
 	_col.add_child(_pin_dots)
@@ -127,6 +143,7 @@ func _update_pin_dots(text: String) -> void:
 func _make_pin_dots() -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_theme_constant_override("separation", PIN_DOT_GAP)
 	for _i in PIN_DOT_COUNT:
 		var dot := Panel.new()
@@ -158,6 +175,7 @@ func _action_button(text: String, cb: Callable) -> void:
 	var b := Button.new()
 	b.text = text
 	b.custom_minimum_size = Vector2(280, 52)
+	b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	b.pressed.connect(cb)
 	UiFx.attach_focus_highlight(b)
 	_col.add_child(b)
