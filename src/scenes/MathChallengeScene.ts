@@ -4,6 +4,7 @@ import { MathBoard } from '../ui/components/MathBoard';
 import { EventBus, GameEvents } from '../utils/EventBus';
 import { DopamineFX } from '../ui/fx/DopamineFX';
 import { ThemeManager } from '../ui/theme/ThemeManager';
+import { TextManager } from '../systems/TextManager';
 import type { MathProblem } from '../utils/Types';
 
 /**
@@ -141,7 +142,7 @@ export class MathChallengeScene extends Phaser.Scene {
 
         if (problemCount && problemCount > 1 && currentProblemIndex) {
             const progressY = greeting ? 62 : 32;
-            const progressText = this.add.text(0, progressY, `Problem ${currentProblemIndex} of ${problemCount}`, {
+            const progressText = this.add.text(0, progressY, TextManager.getInstance().t('math.progress', currentProblemIndex, problemCount), {
                 fontSize: '16px',
                 fontFamily: 'monospace',
                 color: tm.getColor('textColor'),

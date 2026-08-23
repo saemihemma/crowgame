@@ -6,12 +6,22 @@ deterministic, tiny, and re-generatable. Kid-first sound design: bright and
 friendly; the "wrong" cue is gentle and low (never a harsh buzzer — pedagogy
 rail: mistakes are not punished).
 
-Run: python3 tools/gen_sfx.py   (writes godot/assets/audio/sfx/*.wav)
+Run: python3 tools/gen_sfx.py
+Writes the same 15 WAVs to both runtimes: godot/assets/audio/sfx/ and
+public/assets/audio/sfx/. Both are committed, because public/data/audio/
+audio_manifest.json declares them as required assets and tools/validate_assets.js
+fails without them -- the web build was silently shipping with no SFX at all
+because the generator only ever targeted the Godot side.
 """
 import math, os, struct, wave
 
 SR = 44100
-OUT = os.path.join(os.path.dirname(__file__), "..", "godot", "assets", "audio", "sfx")
+_ROOT = os.path.join(os.path.dirname(__file__), "..")
+# Both runtimes read the same synthesized set; keep them byte-identical.
+OUTS = [
+    os.path.join(_ROOT, "godot", "assets", "audio", "sfx"),
+    os.path.join(_ROOT, "public", "assets", "audio", "sfx"),
+]
 
 
 def _env(i, n, attack=0.01, decay=None):
@@ -75,18 +85,22 @@ def arp(freqs, step=0.09, vol=0.6, wave_kind="sine"):
 
 
 def write(name, samples):
-    os.makedirs(OUT, exist_ok=True)
-    path = os.path.join(OUT, name + ".wav")
-    with wave.open(path, "w") as w:
-        w.setnchannels(1)
-        w.setsampwidth(2)
-        w.setframerate(SR)
-        frames = bytearray()
-        for s in samples:
-            v = int(max(-1.0, min(1.0, s)) * 32767)
-            frames += struct.pack("<h", v)
-        w.writeframes(frames)
-    return os.path.relpath(path)
+    frames = bytearray()
+    for s in samples:
+        v = int(max(-1.0, min(1.0, s)) * 32767)
+        frames += struct.pack("<h", v)
+
+    paths = []
+    for out_dir in OUTS:
+        os.makedirs(out_dir, exist_ok=True)
+        path = os.path.join(out_dir, name + ".wav")
+        with wave.open(path, "w") as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(SR)
+            w.writeframes(frames)
+        paths.append(os.path.relpath(path))
+    return " + ".join(paths)
 
 
 SOUNDS = {

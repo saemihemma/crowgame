@@ -10,6 +10,8 @@ import { AudioManager } from '../systems/AudioManager';
 import { LearnerStateManager } from '../systems/LearnerStateManager';
 import { LearnerSyncService } from '../systems/LearnerSyncService';
 import { MathProblemManager } from '../math/MathProblemManager';
+import { LanguageToggle } from '../ui/components/LanguageToggle';
+import { ScrollList } from '../ui/components/ScrollList';
 
 type LoginState = 'userList' | 'pinEntry' | 'newUser';
 
@@ -25,6 +27,11 @@ const PROFILE_COLORS = [0x4488ff, 0xff6644, 0x44cc66, 0xcc44cc, 0xffaa22];
  *  3. newUser    — create a new profile (name + PIN + confirm PIN)
  */
 export class LoginScene extends Phaser.Scene {
+    /** Top of the scrolling profile list, just under the subtitle. */
+    private static readonly LIST_TOP = 150;
+    /** Height of that viewport, leaving the ground stripe clear. */
+    private static readonly LIST_H = 290;
+
     private state: LoginState = 'userList';
 
     // Shared references
@@ -34,9 +41,12 @@ export class LoginScene extends Phaser.Scene {
     // Containers per state (destroyed on state switch)
     private stateContainer!: Phaser.GameObjects.Container;
 
+    // Scrolling profile list (userList state only; torn down on state change)
+    private profileList?: ScrollList;
+
     // PIN entry tracking
     private pinDigits: string[] = [];
-    private pinDots: Phaser.GameObjects.Text[] = [];
+    private pinDots: Phaser.GameObjects.Graphics[] = [];
     private selectedUsername = '';
 
     // New-user flow
@@ -70,16 +80,29 @@ export class LoginScene extends Phaser.Scene {
         groundGfx.fillStyle(this.tm.getColorNum('secondary'), 0.6);
         groundGfx.fillRect(0, GAME_HEIGHT - 96, GAME_WIDTH, 96);
 
+        // Language selector. Deliberately built outside `stateContainer` so it
+        // survives sub-state swaps and is reachable *before* the PIN screen --
+        // this is where a parent sets the language up on first launch.
+        new LanguageToggle(this, {
+            right: 20,
+            top: 20,
+            canvasWidth: GAME_WIDTH,
+            onChange: () => this.scene.restart(),
+        });
+
         this.showState('userList');
     }
 
     // ─── State Machine ────────────────────────────────────────
 
     private showState(next: LoginState): void {
-        // Tear down previous state container
+        // Tear down previous state container. The profile list owns objects
+        // outside it (mask, chrome, scene input handlers) so it goes explicitly.
         if (this.stateContainer) {
             this.stateContainer.destroy();
         }
+        this.profileList?.destroy();
+        this.profileList = undefined;
         this.stateContainer = this.add.container(0, 0);
         this.state = next;
 
@@ -130,24 +153,41 @@ export class LoginScene extends Phaser.Scene {
         DopamineFX.elasticEntrance(this, subtitle, 300, delay);
         delay += 80;
 
-        // Profile buttons
+        // Profile buttons, in a scrolling viewport.
+        //
+        // These used to be laid straight onto the scene from y=180 at an 80px
+        // pitch, so a family with four children pushed "+ New User" off the
+        // bottom of a 540-tall canvas and could not add a fifth. Same defect
+        // class as the level list, same component.
         const profiles = ProfileManager.getInstance().getProfiles();
         const btnW = 320;
         const btnH = 64;
         const gap = 16;
-        const startY = 180;
+        const pitch = btnH + gap;
+
+        this.profileList = new ScrollList(this, {
+            x: 0,
+            y: LoginScene.LIST_TOP,
+            width: GAME_WIDTH,
+            height: LoginScene.LIST_H,
+            arrowX: cx + 250,
+        });
+        const list = this.profileList;
 
         for (let i = 0; i < profiles.length; i++) {
             const profile = profiles[i];
-            const y = startY + i * (btnH + gap);
+            const y = btnH / 2 + i * pitch;
             const color = PROFILE_COLORS[i % PROFILE_COLORS.length];
 
-            const { zone, text } = this.createColorButton(
+            const { container, zone, text } = this.createColorButton(
                 cx, y, btnW, btnH, profile.username, color,
             );
-            this.stateContainer.add([zone, text]);
+            list.content.add(container);
 
-            zone.on('pointerdown', () => {
+            // Activate on pointer up, and never mid-drag: scrolling the list
+            // must not open somebody else's profile.
+            zone.on('pointerup', () => {
+                if (list.wasDrag()) return;
                 this.selectedUsername = profile.username;
                 this.showState('pinEntry');
             });
@@ -157,17 +197,20 @@ export class LoginScene extends Phaser.Scene {
         }
 
         // "+ New User" button
-        const newBtnY = startY + profiles.length * (btnH + gap) + 12;
-        const { zone: newZone, text: newText } = this.createColorButton(
+        const newBtnY = btnH / 2 + profiles.length * pitch + 12;
+        const { container: newContainer, zone: newZone, text: newText } = this.createColorButton(
             cx, newBtnY, btnW, btnH,
             this.txt.t('login.new_user'),
             this.tm.getColorNum('accent'),
         );
-        this.stateContainer.add([newZone, newText]);
+        list.content.add(newContainer);
 
-        newZone.on('pointerdown', () => {
+        newZone.on('pointerup', () => {
+            if (list.wasDrag()) return;
             this.showState('newUser');
         });
+
+        list.setContentHeight(newBtnY + btnH / 2 + 24);
 
         DopamineFX.elasticEntrance(this, newText, 300, delay);
     }
@@ -212,26 +255,26 @@ export class LoginScene extends Phaser.Scene {
         }
 
         // 4 dot placeholders
-        const dotY = 150;
+        const dotY = 132;
         const dotSpacing = 48;
         const dotStartX = cx - (dotSpacing * 1.5);
 
         for (let i = 0; i < 4; i++) {
-            const dot = this.add.text(dotStartX + i * dotSpacing, dotY, '\u25CB', {
-                fontSize: '40px',
-                fontFamily: 'monospace',
-                color: this.tm.getColor('textColor'),
-                stroke: '#000000',
-                strokeThickness: 2,
-            }).setOrigin(0.5, 0.5);
+            const dot = this.add.graphics();
+            dot.setPosition(dotStartX + i * dotSpacing, dotY);
+            this.drawPinDot(dot, false);
             this.stateContainer.add(dot);
             this.pinDots.push(dot);
             DopamineFX.elasticEntrance(this, dot, 300, delay);
             delay += 40;
         }
 
-        // Number pad (3 columns x 4 rows: 1-9, then empty/0/empty)
-        const padStartY = 220;
+        // Number pad (3 columns x 4 rows: 1-9, then empty/0/empty).
+        // The pad and the Back button below it have to fit inside GAME_HEIGHT:
+        // at the old padStartY of 220 the Back button landed at y=564 on a
+        // 540-tall canvas, so a child who picked the wrong profile had no way
+        // back. Keep the arithmetic below in step with GAME_HEIGHT.
+        const padStartY = 186;
         const padBtnSize = 72;
         const padGap = 12;
         const padStartX = cx - (padBtnSize + padGap);
@@ -251,12 +294,12 @@ export class LoginScene extends Phaser.Scene {
                 const bx = padStartX + col * (padBtnSize + padGap);
                 const by = padStartY + row * (padBtnSize + padGap);
 
-                const { zone, text } = this.createColorButton(
+                const { container, zone, text } = this.createColorButton(
                     bx, by, padBtnSize, padBtnSize, digit,
                     this.tm.getColorNum('accent'),
                 );
                 text.setFontSize('36px');
-                this.stateContainer.add([zone, text]);
+                this.stateContainer.add(container);
 
                 zone.on('pointerdown', () => this.onPinDigit(digit));
 
@@ -265,12 +308,12 @@ export class LoginScene extends Phaser.Scene {
             }
         }
 
-        // Back button
-        const backY = padStartY + 4 * (padBtnSize + padGap) + 8;
-        const { zone: backZone, text: backText } = this.createColorButton(
+        // Back button, tucked under the last pad row and inside the canvas.
+        const backY = padStartY + 4 * (padBtnSize + padGap) - 14;
+        const { container: backContainer, zone: backZone, text: backText } = this.createColorButton(
             cx, backY, 200, 52, this.txt.t('login.back'), this.tm.getColorNum('secondary'),
         );
-        this.stateContainer.add([backZone, backText]);
+        this.stateContainer.add(backContainer);
 
         backZone.on('pointerdown', () => {
             this.isConfirmingPin = false;
@@ -288,7 +331,7 @@ export class LoginScene extends Phaser.Scene {
 
         // Update dot display
         for (let i = 0; i < 4; i++) {
-            this.pinDots[i].setText(i < this.pinDigits.length ? '\u25CF' : '\u25CB');
+            this.drawPinDot(this.pinDots[i], i < this.pinDigits.length);
         }
 
         AudioManager.getInstance().playSFX('ui_click');
@@ -397,7 +440,7 @@ export class LoginScene extends Phaser.Scene {
 
         // Clear dots visually
         for (const dot of this.pinDots) {
-            dot.setText('\u25CB');
+            this.drawPinDot(dot, false);
         }
         this.pinDigits = [];
     }
@@ -440,10 +483,10 @@ export class LoginScene extends Phaser.Scene {
 
         // "Go!" button
         const goY = 280;
-        const { zone: goZone, text: goText } = this.createColorButton(
+        const { container: goContainer, zone: goZone, text: goText } = this.createColorButton(
             cx, goY, 200, 56, this.txt.t('login.go'), this.tm.getColorNum('accent'),
         );
-        this.stateContainer.add([goZone, goText]);
+        this.stateContainer.add(goContainer);
         DopamineFX.elasticEntrance(this, goText, 300, delay);
         delay += 60;
 
@@ -498,10 +541,10 @@ export class LoginScene extends Phaser.Scene {
 
         // Back button
         const backY = 360;
-        const { zone: backZone, text: backText } = this.createColorButton(
+        const { container: backContainer, zone: backZone, text: backText } = this.createColorButton(
             cx, backY, 200, 52, this.txt.t('login.back'), this.tm.getColorNum('secondary'),
         );
-        this.stateContainer.add([backZone, backText]);
+        this.stateContainer.add(backContainer);
 
         backZone.on('pointerdown', () => {
             this.resetNewUserFlow();
@@ -512,6 +555,26 @@ export class LoginScene extends Phaser.Scene {
     }
 
     // ─── Helpers ──────────────────────────────────────────────
+
+    /**
+     * Draw one PIN placeholder as vector geometry rather than a font glyph.
+     *
+     * These used to be the text characters U+25CF / U+25CB.  Both live in the
+     * Unicode "Geometric Shapes" block, which the browser's unpinned
+     * `monospace` fallback does not always carry -- on those devices the four
+     * dots rendered as missing-glyph boxes, so the child got no feedback that a
+     * keypress had registered.  Drawn circles cannot fail that way.
+     */
+    private drawPinDot(dot: Phaser.GameObjects.Graphics, filled: boolean): void {
+        const radius = 14;
+        dot.clear();
+        if (filled) {
+            dot.fillStyle(this.tm.getColorNum('textColor'), 1);
+            dot.fillCircle(0, 0, radius);
+        }
+        dot.lineStyle(4, this.tm.getColorNum('textColor'), filled ? 1 : 0.75);
+        dot.strokeCircle(0, 0, radius);
+    }
 
     private resetNewUserFlow(): void {
         this.newUserName = '';
@@ -532,15 +595,19 @@ export class LoginScene extends Phaser.Scene {
         h: number,
         label: string,
         fillColor: number,
-    ): { zone: Phaser.GameObjects.Zone; text: Phaser.GameObjects.Text } {
+    ): { container: Phaser.GameObjects.Container; zone: Phaser.GameObjects.Zone; text: Phaser.GameObjects.Text } {
+        // Children sit relative to the button's own centre so the whole button
+        // is one object the caller can place, animate, or scroll.
+        const container = this.add.container(x, y);
+
         const bg = this.add.graphics();
         bg.fillStyle(fillColor, 1);
-        bg.fillRoundedRect(x - w / 2, y - h / 2, w, h, 14);
+        bg.fillRoundedRect(-w / 2, -h / 2, w, h, 14);
         bg.lineStyle(4, 0xffffff, 0.35);
-        bg.strokeRoundedRect(x - w / 2, y - h / 2, w, h, 14);
-        this.stateContainer.add(bg);
+        bg.strokeRoundedRect(-w / 2, -h / 2, w, h, 14);
+        container.add(bg);
 
-        const text = this.add.text(x, y, label, {
+        const text = this.add.text(0, 0, label, {
             fontSize: '26px',
             fontFamily: 'monospace',
             color: '#ffffff',
@@ -548,8 +615,10 @@ export class LoginScene extends Phaser.Scene {
             strokeThickness: 4,
             align: 'center',
         }).setOrigin(0.5, 0.5);
+        container.add(text);
 
-        const zone = this.add.zone(x, y, w, h).setInteractive({ useHandCursor: true });
+        const zone = this.add.zone(0, 0, w, h).setInteractive({ useHandCursor: true });
+        container.add(zone);
 
         // Hover feedback
         zone.on('pointerover', () => text.setScale(1.08));
@@ -565,6 +634,6 @@ export class LoginScene extends Phaser.Scene {
             ease: 'Sine.easeInOut',
         });
 
-        return { zone, text };
+        return { container, zone, text };
     }
 }

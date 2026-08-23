@@ -1,4 +1,4 @@
-# Crow Agent Onboarding
+# Hörmann Agent Onboarding
 
 Status: Current
 Authority: Operational guide. Runtime truth still lives in `src/**`, `public/data/**`, manifests, and referenced assets.
@@ -6,7 +6,7 @@ Last verified against code: 2026-03-31
 
 ## Purpose
 
-Audience: agents starting their first Crow task or returning after a gap.
+Audience: agents starting their first Hörmann task or returning after a gap.
 
 Outcome: after reading this document, you should know where to start, which docs are current, which files are authoritative, which verification loop to run, and which generated or archived areas not to edit.
 
@@ -100,7 +100,7 @@ Notes:
 
 Snapshot as of 2026-03-24:
 
-- Crow is a Vite + TypeScript + Phaser game with a separate translation and learner admin surface in [admin.html](./admin.html).
+- Hörmann is a Vite + TypeScript + Phaser game with a separate translation and learner admin surface in [admin.html](./admin.html).
 - [src/main.ts](./src/main.ts) registers 8 scenes:
   - `BootScene`
   - `LoginScene`
@@ -118,7 +118,7 @@ Snapshot as of 2026-03-24:
 - [public/data/levels/level_registry.json](./public/data/levels/level_registry.json) contains 6 levels, including `level_99`.
 - [public/data/npcs/npc_registry.json](./public/data/npcs/npc_registry.json) contains 1 NPC entry.
 - [public/data/enemies/enemy_registry.json](./public/data/enemies/enemy_registry.json) contains 1 enemy type.
-- [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) currently exposes 5 music tracks and no live SFX entries.
+- [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) currently exposes 5 music tracks and 15 live SFX entries.
 - Math UI is currently MCQ-only in [src/ui/components/MathBoard.ts](./src/ui/components/MathBoard.ts).
 - The shipped owl path is a smaller local-safe subset of that inventory, not the whole `3000`; use `reports/math-batches/owl-surface-summary.json` for the owl-safe inventory and fresh-profile subset, not just the full runtime headline.
 
@@ -163,7 +163,7 @@ Important:
 
 ## Task Routing
 
-| Task | Start Here In Crow | Deep Doc If Needed | Verify | Optional External Skill |
+| Task | Start Here In Hörmann | Deep Doc If Needed | Verify | Optional External Skill |
 | --- | --- | --- | --- | --- |
 | Level or layout changes | `public/data/levels/specs/*.spec.json`, `public/data/levels/level_registry.json`, `tools/compile-levels.ts` | [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md) | `npm.cmd run compile`, `npm.cmd run validate`, manual smoke | `agent-skills` routing if useful |
 | Combat or player feel | `src/entities/Player.ts`, `public/data/tuning/player_base.json`, `public/data/tuning/combat_tuning.json`, `public/data/tuning/camera_tuning.json` | [AGENT_CONTEXT.md](./AGENT_CONTEXT.md) | `npx.cmd tsc --noEmit`, manual smoke | `agent-skills` routing if useful |
@@ -242,10 +242,10 @@ If a local skills workspace is present:
 - start at `INDEX.md`
 - use `Quick Routing` and `Disambiguation`
 - load only the chosen `SKILL.md`
-- treat the skills workspace as workflow guidance, not Crow truth
+- treat the skills workspace as workflow guidance, not Hörmann truth
 
 If missing:
-- continue with Crow-local docs and code only
+- continue with Hörmann-local docs and code only
 
 ## Guardrails
 

@@ -1,4 +1,5 @@
 import { ThemeManager } from '../theme/ThemeManager';
+import { TextManager } from '../../systems/TextManager';
 
 /**
  * Reusable library of feel-good micro-animations.
@@ -318,7 +319,7 @@ export class DopamineFX {
         DopamineFX.celebrationBurst(scene, cx, cy);
 
         // Big centered text
-        const text = scene.add.text(cx, cy, 'Level Complete!', {
+        const text = scene.add.text(cx, cy, TextManager.getInstance().t('fx.level_complete'), {
             fontSize: '48px',
             fontFamily: 'monospace',
             color: '#ffd700',
@@ -498,7 +499,7 @@ export class DopamineFX {
         DopamineFX.celebrationBurst(scene, cx, cy); // Double burst
 
         // "LEVEL UP!" text
-        const text = scene.add.text(cx, cy, 'LEVEL UP!', {
+        const text = scene.add.text(cx, cy, TextManager.getInstance().t('fx.level_up'), {
             fontSize: '64px',
             fontFamily: 'monospace',
             color: '#ffd700',

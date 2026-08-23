@@ -590,7 +590,7 @@ export class GameScene extends Phaser.Scene {
 
         const direction = this.player.sprite.flipX ? -1 : 1;
         // Position at eye/beak - crow is 64px tall, eye is ~48px up from bottom
-        // Crow is 64px wide centered, beak/eye is ~20px from center
+        // Hörmann is 64px wide centered, beak/eye is ~20px from center
         const offsetX = direction * 20;
         const x = this.player.sprite.x + offsetX;
         const y = this.player.sprite.y - 40; // Eye level (crow is 64px tall, eye ~3/4 up)
@@ -740,7 +740,7 @@ export class GameScene extends Phaser.Scene {
             // "Oops!" text
             const cx = this.cameras.main.width / 2;
             const cy = this.cameras.main.height / 2;
-            const deathText = this.add.text(cx, cy, 'Oops!', {
+            const deathText = this.add.text(cx, cy, TextManager.getInstance().t('game.oops'), {
                 fontSize: '48px',
                 fontFamily: 'monospace',
                 color: '#ff4444',

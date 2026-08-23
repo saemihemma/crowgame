@@ -6,6 +6,10 @@ extends Node
 const STORAGE_KEY := "crow_translations"
 const LOCALE_KEY := "crow_locale"
 const LOCALE_FILES := { "en": "STRINGS_EN", "is": "STRINGS_IS" }
+## Each locale's name written in its own language. Deliberately never
+## translated: a player stranded in a language they cannot read has to be able
+## to recognise their own and find the way back out.
+const LOCALE_ENDONYMS := { "en": "English", "is": "Íslenska" }
 
 signal locale_changed(code: String)
 
@@ -31,6 +35,11 @@ func t(key: String, args: Array = []) -> String:
 		value = value.replace("{%d}" % i, str(args[i]))
 	return value
 
+## Whether a key exists in the active locale or in English. Lets callers fall
+## back to data that is not translated yet (level names come from the registry).
+func has(key: String) -> bool:
+	return _locale_strings.has(key) or _defaults.has(key)
+
 func set_locale(code: String) -> void:
 	_locale = code if LOCALE_FILES.has(code) else "en"
 	_locale_strings = {} if _locale == "en" else DataManager.get_dict(LOCALE_FILES[_locale])
@@ -42,6 +51,10 @@ func get_locale() -> String:
 
 func available_locales() -> Array:
 	return LOCALE_FILES.keys()
+
+## The locale's own name for itself, for the language selector.
+func endonym(code: String) -> String:
+	return String(LOCALE_ENDONYMS.get(code, code))
 
 func get_all_keys() -> Array:
 	return _defaults.keys()

@@ -6,6 +6,7 @@ import { SaveManager } from '../systems/SaveManager';
 import { UINavigator } from '../ui/UINavigator';
 import { TextManager } from '../systems/TextManager';
 import { ProfileManager } from '../systems/ProfileManager';
+import { LanguageToggle } from '../ui/components/LanguageToggle';
 
 /**
  * Main menu / start screen.
@@ -56,7 +57,7 @@ export class MainMenuScene extends Phaser.Scene {
             strokeThickness: 4,
         }).setOrigin(0.5, 0.5);
 
-        // Crow sprite
+        // Hörmann sprite
         const crow = this.add.sprite(cx, cy - 20, 'crow');
         const targetSize = 192;
         const scale = targetSize / Math.max(crow.width, crow.height);
@@ -136,6 +137,14 @@ export class MainMenuScene extends Phaser.Scene {
             });
         }
 
+        // Language selector, top-right, balancing Switch User at top-left.
+        const languageToggle = new LanguageToggle(this, {
+            right: 20,
+            top: 16,
+            canvasWidth: GAME_WIDTH,
+            onChange: () => this.scene.restart(),
+        });
+
         // Keyboard navigation
         const nav = new UINavigator(this, 'vertical');
         nav.addButton({ x: cx, y: playBtnY, width: btnW, height: btnH,
@@ -146,6 +155,16 @@ export class MainMenuScene extends Phaser.Scene {
                 onActivate: () => this.continueGame() });
             continueBtn.zone.on('pointerover', () => nav.setFocus(1));
         }
+        // Keep the language pills keyboard-reachable like every other control.
+        // UINavigator has no index accessor, so track it alongside the pushes.
+        let navIndex = hasExistingSave && continueBtn ? 2 : 1;
+        const languageZones = languageToggle.getZones();
+        languageToggle.getNavButtons().forEach((btn, i) => {
+            const index = navIndex++;
+            nav.addButton(btn);
+            languageZones[i].on('pointerover', () => nav.setFocus(index));
+        });
+
         this.time.delayedCall(600, () => nav.enable());
 
         // Entrance animations

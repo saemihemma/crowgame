@@ -4,6 +4,10 @@ extends Control
 ## ELO/learner managers, then routes to the main menu. Uses the tested
 ## ProfileManager for all profile/PIN logic.
 
+const PIN_DOT_COUNT := 4
+const PIN_DOT_SIZE := 22.0
+const PIN_DOT_GAP := 12
+
 var _selected_user := ""
 var _col: VBoxContainer
 var _pin_edit: LineEdit
@@ -19,7 +23,15 @@ func _ready() -> void:
 	_col.alignment = BoxContainer.ALIGNMENT_CENTER
 	_col.add_theme_constant_override("separation", 14)
 	center.add_child(_col)
+	# Language selector sits outside `_col`, so it survives the sub-state swaps
+	# and is reachable *before* the PIN screen -- this is where a parent sets the
+	# language up on first launch.
+	add_child(LanguageToggle.build(_on_locale_changed))
 	_show_profile_list()
+
+
+func _on_locale_changed() -> void:
+	SceneRouter.goto("login")
 
 func _clear() -> void:
 	for c in _col.get_children():
@@ -81,7 +93,7 @@ func _show_new_player() -> void:
 	_action_button(TextManager.t("login.back"), _show_profile_list)
 	_name_edit.grab_focus()
 
-var _pin_dots: Label
+var _pin_dots: HBoxContainer
 
 func _make_pin_edit() -> LineEdit:
 	var e := LineEdit.new()
@@ -90,9 +102,7 @@ func _make_pin_edit() -> LineEdit:
 	e.alignment = HORIZONTAL_ALIGNMENT_CENTER
 	e.custom_minimum_size = Vector2(160, 48)
 	# Kid-friendly PIN dots (LoginScene.ts shows filled/empty circles per digit).
-	_pin_dots = Label.new()
-	_pin_dots.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_pin_dots.add_theme_font_size_override("font_size", 30)
+	_pin_dots = _make_pin_dots()
 	_col.add_child(_pin_dots)
 	e.text_changed.connect(_update_pin_dots)
 	_update_pin_dots("")
@@ -102,7 +112,41 @@ func _update_pin_dots(text: String) -> void:
 	if _pin_dots == null:
 		return
 	var filled := mini(text.length(), 4)
-	_pin_dots.text = "● ".repeat(filled) + "○ ".repeat(4 - filled)
+	for i in _pin_dots.get_child_count():
+		var dot := _pin_dots.get_child(i) as Panel
+		dot.add_theme_stylebox_override("panel", _pin_dot_style(i < filled))
+
+
+## PIN placeholders drawn as circles instead of text glyphs.
+##
+## These used to be the characters U+25CF / U+25CB in a Label. Both live in the
+## Unicode "Geometric Shapes" block, which Godot's built-in font does not carry,
+## so every dot rendered as a missing-glyph box printing its own hex codepoint --
+## the child got no feedback that a keypress had registered. A rounded StyleBox
+## has no font dependency, so it cannot fail that way.
+func _make_pin_dots() -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", PIN_DOT_GAP)
+	for _i in PIN_DOT_COUNT:
+		var dot := Panel.new()
+		dot.custom_minimum_size = Vector2(PIN_DOT_SIZE, PIN_DOT_SIZE)
+		dot.add_theme_stylebox_override("panel", _pin_dot_style(false))
+		row.add_child(dot)
+	return row
+
+
+func _pin_dot_style(filled: bool) -> StyleBoxFlat:
+	var colour := ThemeManager.get_color_value("text_light")
+	var box := StyleBoxFlat.new()
+	# Corner radius at half the box size turns the square into a circle.
+	var radius := int(PIN_DOT_SIZE / 2.0)
+	box.set_corner_radius_all(radius)
+	box.bg_color = colour if filled else Color(colour, 0.0)
+	box.border_color = colour
+	box.set_border_width_all(3)
+	return box
+
 
 func _make_status() -> Label:
 	var l := Label.new()

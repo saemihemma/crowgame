@@ -1,4 +1,4 @@
-# Crow Agent Context
+# Hörmann Agent Context
 
 Status: Supportive
 Authority: Practical contributor notes. Code and data outrank this file.

@@ -1,6 +1,10 @@
-# Crow — Godot 4 port
+# Hörmann — Godot 4 port
 
-A 1:1 port of the Phaser 3 / TypeScript "Crow" educational platformer to **Godot 4.3
+Status: Current
+Authority: Godot port setup, run and test instructions. Runtime truth lives in godot/ARCHITECTURE.md.
+Last verified against code: 2026-08-23
+
+A 1:1 port of the Phaser 3 / TypeScript "Hörmann" educational platformer to **Godot 4.3
 (GDScript)**, built self-contained in this folder. Data and assets are reused verbatim
 from `public/data/**` and `public/assets/**`.
 

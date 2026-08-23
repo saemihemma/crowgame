@@ -1,4 +1,4 @@
-# Crow Math System Architecture
+# Hörmann Math System Architecture
 
 Status: Current
 Authority: Runtime code and data, especially `BootScene`, `MathProblemManager`, `ELOManager`, `ELOAwareStrategy`, `LearnerStateManager`, `ELOUpdateManager`, `SaveManager`, and `LearnerSyncService`.
@@ -6,7 +6,7 @@ Last verified against code: 2026-03-31
 
 ## Purpose
 
-This document explains the live math progression system in Crow.
+This document explains the live math progression system in Hörmann.
 
 What this is:
 - the current runtime model for problem loading, adaptive selection, mastery updates, confidence shifts, review scheduling, and unlock logic
@@ -46,7 +46,7 @@ flowchart LR
 
 ## Design Intent
 
-Crow is tuned for early elementary learners and aims for:
+Hörmann is tuned for early elementary learners and aims for:
 
 - high confidence and frequent success
 - slow mastery movement
@@ -97,7 +97,7 @@ When an encounter reaches its follow-up question, the runtime now prefers an alt
 
 ## Learner Model
 
-Crow now uses 4 learner signals for local math selection.
+Hörmann now uses 4 learner signals for local math selection.
 
 ### 1. Mastery
 
@@ -166,7 +166,7 @@ Effective selection ELO is:
 masteryELO + confidenceOffset
 ```
 
-This lets Crow get easier quickly during a bad stretch without destroying long-term mastery.
+This lets Hörmann get easier quickly during a bad stretch without destroying long-term mastery.
 
 ### 4. Review
 
@@ -289,7 +289,7 @@ Math state is persisted in 2 layers:
   - `crow_learner_snapshot_<childId>`
   - `crow_learner_pending_attempts_<childId>`
 
-This gives Crow:
+This gives Hörmann:
 - immediate local continuity
 - per-profile learner persistence
 - optional hosted sync when a learner API base is configured

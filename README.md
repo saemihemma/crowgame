@@ -1,10 +1,10 @@
-# Crow
+# Hörmann
 
 Status: Current
 Authority: Repo navigation only. Runtime truth lives in `src/**`, `public/data/**`, `admin.html`, manifests, and live asset references.
 Last verified against code: 2026-03-31
 
-Crow is a child-first educational platformer for early elementary math practice.
+Hörmann is a child-first educational platformer for early elementary math practice.
 
 ## Purpose
 
