@@ -3,18 +3,48 @@
 	auto_https off
 }
 
-# Railway injects $PORT; default to 8080 for local `docker run`.
+# Crow web build (static Godot HTML5 export).
+#
+# Cache policy is environment-driven, because staging and prod want opposite
+# things. Set CROW_ASSET_CACHE per Railway service (see deploy/RAILWAY.md):
+#
+#   staging : no-store                      -> always the freshest build on a
+#                                              phone refresh; iteration speed
+#                                              matters more than bytes.
+#   prod    : no-cache                      -> the browser keeps the ~27 MB of
+#                                              wasm/pck and revalidates with an
+#                                              ETag, so a repeat launch costs a
+#                                              few hundred bytes and a 304
+#                                              instead of the whole payload.
+#
+# "no-cache" is NOT "don't cache" — it means "cache, but revalidate every time".
+# That is what we want while the export filenames are stable and unhashed: it is
+# always correct on a new deploy and still avoids re-downloading an unchanged
+# build. (Upgrade path: content-hashed filenames + immutable, see RAILWAY.md.)
 :{$PORT:8080} {
 	root * /srv
+
+	# Prefer the precompressed .br/.gz written by build_web.sh over compressing
+	# a 35 MB wasm on every request. Falls back to on-the-fly for anything else.
 	encode zstd gzip
-	file_server
 
-	# Active-iteration: always serve the freshest build (no stale cache on phone).
-	header Cache-Control "no-store"
+	# index.html is tiny and decides which assets load: never cache it.
+	@shell path /index.html /
+	header @shell Cache-Control "no-store"
 
-	# NOTE: the current export is single-threaded, so no special headers are
-	# needed. If we later ship the multi-threaded export (better perf), enable
-	# cross-origin isolation here:
-	#   header Cross-Origin-Opener-Policy "same-origin"
-	#   header Cross-Origin-Embedder-Policy "require-corp"
+	# The heavy, stable payload.
+	@payload path *.wasm *.pck *.js *.worklet.js *.png *.svg *.wav *.mp3
+	header @payload Cache-Control "{$CROW_ASSET_CACHE:no-store}"
+
+	# Keep staging out of search results. Prod leaves this unset.
+	@robots path /robots.txt
+	respond @robots "{$CROW_ROBOTS:User-agent: *\nDisallow:}" 200
+
+	header -Server
+	header X-Content-Type-Options "nosniff"
+	header Referrer-Policy "no-referrer"
+
+	file_server {
+		precompressed br gzip
+	}
 }

@@ -1,0 +1,148 @@
+/**
+ * Web-export boot smoke for the Godot build.
+ *
+ * What this is: proof that the *exported* output/web build actually boots in a
+ * real browser — engine start, pck load, first scene up, no console errors —
+ * emulating an iPad viewport and touch input. This is what catches an export
+ * config mistake (a wrongly excluded asset, a broken shell) that the headless
+ * GDScript suite cannot see, because that suite runs from source, not the pck.
+ *
+ * What this is NOT: not proof the game plays correctly on real iPad Safari.
+ * It is Chromium with an iPad viewport and touch emulation. WebKit-specific
+ * behaviour (audio-context unlock rules, memory ceilings, Safari's WASM
+ * compilation limits) still needs a device check.
+ *
+ * Usage: node godot/tools/web_boot_smoke.mjs [--port 8061]
+ */
+import { existsSync } from 'fs';
+import { spawn } from 'child_process';
+import { mkdir, writeFile } from 'fs/promises';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { chromium } from 'playwright-core';
+
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+const WEB_DIR = resolve(ROOT, 'output/web');
+const PORT = Number(process.argv.includes('--port') ? process.argv[process.argv.indexOf('--port') + 1] : 8061);
+
+const EXECUTABLE_CANDIDATES = [
+    process.env.CHROMIUM_PATH,
+    '/opt/pw-browsers/chromium',
+    '/opt/pw-browsers/chromium-1091/chrome-linux/chrome',
+].filter(Boolean);
+
+function resolveChromium() {
+    const found = EXECUTABLE_CANDIDATES.find(existsSync);
+    if (found) return found;
+    // Fall back to whatever playwright-core resolves on this machine.
+    return undefined;
+}
+
+// iPad (10th gen) CSS viewport in landscape — the owner's primary device class.
+const IPAD = { width: 1180, height: 820 };
+
+async function main() {
+    if (!existsSync(resolve(WEB_DIR, 'index.wasm'))) {
+        console.error(`FAIL: no export found at ${WEB_DIR}. Run: bash godot/tools/build_web.sh`);
+        process.exit(1);
+    }
+
+    const server = spawn('python3', ['-m', 'http.server', String(PORT)], { cwd: WEB_DIR, stdio: 'ignore' });
+    const consoleErrors = [];
+    const failedRequests = [];
+    let browser;
+    try {
+        await new Promise(r => setTimeout(r, 700));
+        browser = await chromium.launch({ executablePath: resolveChromium() });
+        const context = await browser.newContext({ viewport: IPAD, hasTouch: true, isMobile: false });
+        const page = await context.newPage();
+        page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
+        page.on('requestfailed', r => failedRequests.push(`${r.url()} ${r.failure()?.errorText ?? ''}`));
+
+        await page.goto(`http://127.0.0.1:${PORT}/`, { waitUntil: 'load', timeout: 120_000 });
+
+        // The engine reports readiness by sizing the canvas to the viewport.
+        await page.waitForFunction(() => {
+            const c = document.querySelector('canvas');
+            return c && c.width > 0 && c.height > 0;
+        }, { timeout: 180_000 });
+
+        // Let the boot scene settle and the first real scene come up.
+        await page.waitForTimeout(9000);
+
+        const canvas = await page.evaluate(() => {
+            const c = document.querySelector('canvas');
+            return { width: c.width, height: c.height, clientWidth: c.clientWidth, clientHeight: c.clientHeight };
+        });
+
+        // A blank canvas would mean "booted but rendered nothing" — check that
+        // the frame actually has more than one colour in it.
+        const shot = resolve(ROOT, 'output/playwright/web-boot-smoke/ipad-boot.png');
+        await mkdir(dirname(shot), { recursive: true });
+        await page.screenshot({ path: shot });
+
+        // Sample the CENTRE of the frame, not a corner — a corner is legitimately
+        // one flat colour (sky), which makes a corner sample useless as a
+        // "did it render anything" signal.
+        const render = await page.evaluate(() => {
+            const c = document.querySelector('canvas');
+            const g = c.getContext('webgl2') || c.getContext('webgl');
+            if (!g) return { distinctColors: -1 };
+            const w = 240, h = 240;
+            const x = Math.max(0, Math.floor((c.width - w) / 2));
+            const y = Math.max(0, Math.floor((c.height - h) / 2));
+            const px = new Uint8Array(4 * w * h);
+            g.readPixels(x, y, w, h, g.RGBA, g.UNSIGNED_BYTE, px);
+            const seen = new Set();
+            for (let i = 0; i < px.length; i += 4) seen.add(`${px[i]},${px[i+1]},${px[i+2]}`);
+            return { distinctColors: seen.size };
+        });
+        const distinctColors = render.distinctColors;
+
+        // How much of an iPad screen the 16:9 game actually uses. Recorded so a
+        // change to the stretch/aspect policy shows up as a number, not a vibe.
+        const letterbox = await page.evaluate(() => {
+            const c = document.querySelector('canvas');
+            const r = c.getBoundingClientRect();
+            const usedH = (r.width * 9) / 16;
+            return {
+                cssViewport: `${Math.round(r.width)}x${Math.round(r.height)}`,
+                gameAspect: '16:9',
+                barsTotalPx: Math.max(0, Math.round(r.height - usedH)),
+                screenUsedPct: Math.round((usedH / r.height) * 1000) / 10,
+            };
+        });
+
+        const result = {
+            accepted: consoleErrors.length === 0 && failedRequests.length === 0 && canvas.width > 0 && distinctColors > 1,
+            kind: 'web_export_boot_smoke',
+            whatThisIs: 'Exported output/web build booted in Chromium at an iPad landscape viewport with touch enabled.',
+            whatThisIsNot: 'Not real iPad Safari verification. WebKit audio unlock, memory ceilings and WASM limits are unproven here.',
+            viewport: IPAD,
+            canvas,
+            distinctCanvasColors: distinctColors,
+            letterbox,
+            consoleErrors,
+            failedRequests,
+            screenshot: 'output/playwright/web-boot-smoke/ipad-boot.png',
+        };
+        const out = resolve(ROOT, 'reports/web/boot-smoke.json');
+        await mkdir(dirname(out), { recursive: true });
+        await writeFile(out, JSON.stringify(result, null, 2) + '\n');
+
+        console.log(`canvas          : ${canvas.width}x${canvas.height} (css ${canvas.clientWidth}x${canvas.clientHeight})`);
+        console.log(`distinct colors : ${distinctColors} (centre 240x240 sample)`);
+        console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars, game uses ${letterbox.screenUsedPct}% of screen height`);
+        console.log(`console errors  : ${consoleErrors.length}`);
+        console.log(`failed requests : ${failedRequests.length}`);
+        for (const e of consoleErrors.slice(0, 5)) console.log(`  ERR ${e}`);
+        for (const f of failedRequests.slice(0, 5)) console.log(`  REQ ${f}`);
+        console.log(result.accepted ? 'PASS: exported build boots' : 'FAIL: exported build did not boot cleanly');
+        process.exitCode = result.accepted ? 0 : 1;
+    } finally {
+        if (browser) await browser.close();
+        server.kill('SIGTERM');
+    }
+}
+
+main().catch(e => { console.error('FAIL:', e.message); process.exit(1); });
