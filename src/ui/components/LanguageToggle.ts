@@ -7,6 +7,7 @@ import {
     type Locale,
 } from '../../systems/TextManager';
 import { AudioManager } from '../../systems/AudioManager';
+import { drawFlag } from './FlagIcon';
 
 export interface LanguageToggleOptions {
     /** Distance from the right edge of the canvas to the control's right edge. */
@@ -23,6 +24,7 @@ interface Segment {
     locale: Locale;
     label: Phaser.GameObjects.Text;
     fill: Phaser.GameObjects.Graphics;
+    flag: Phaser.GameObjects.Graphics;
     tick: Phaser.GameObjects.Graphics;
     zone: Phaser.GameObjects.Zone;
     centreX: number;
@@ -44,15 +46,42 @@ interface Segment {
  *  - The selected state is a filled pill *and* a drawn tick, never colour
  *    alone. The tick is vector geometry, not a font glyph, so it cannot become
  *    the missing-glyph box that the PIN dots used to be.
+ *
+ * The flag is there for the child who cannot read yet: at five, "🇮🇸" is
+ * recognisable a beat before "Íslenska" is. It sits beside the endonym rather
+ * than replacing it, because a flag names a country and not a language -- the
+ * word is what actually identifies the choice, and it is also what a player who
+ * does not recognise a flag falls back on. Like the tick, it is drawn geometry
+ * and not an emoji; see FlagIcon.ts for why that matters more than it looks.
  */
 export class LanguageToggle {
     private static readonly PILL_H = 40;
-    private static readonly PILL_PAD_X = 14;
-    private static readonly TICK_SIZE = 14;
-    private static readonly TICK_GAP = 8;
+
+    /**
+     * Sizes are tight on purpose, and the budget comes from the MAIN MENU, not
+     * the login screen.
+     *
+     * Adding the flag widened each pill by 30px. On login that took the track's
+     * left edge from x 683 to x 623 against a title ending at x 619 -- 4px of
+     * clearance, reading as touching. Sizing for that screen alone was still
+     * wrong: `menu.title` renders at 72px where `login.title` is 64px, so the
+     * menu title ends at x 636 and had 7px. The menu is the binding constraint.
+     *
+     * Both numbers were measured off the live display list. A pixel scan called
+     * it wrong first, because the selected pill is the same yellow as the title.
+     *
+     * These values put the track at x 657: 21px clear of the menu title, 38px
+     * clear of the login one. If any of them grows, re-measure against the MENU.
+     */
+    private static readonly PILL_PAD_X = 12;
+    private static readonly TICK_SIZE = 12;
+    private static readonly TICK_GAP = 5;
+    private static readonly FLAG_W = 20;
+    private static readonly FLAG_H = 14;
+    private static readonly FLAG_GAP = 6;
     private static readonly TRACK_PAD = 4;
     private static readonly SEG_GAP = 5;
-    private static readonly LABEL_SIZE = 15;
+    private static readonly LABEL_SIZE = 14;
 
     private readonly container: Phaser.GameObjects.Container;
     private readonly segments: Segment[] = [];
@@ -76,7 +105,10 @@ export class LanguageToggle {
         );
 
         const widestLabel = Math.max(...labels.map(l => l.width));
-        const contentW = LanguageToggle.TICK_SIZE + LanguageToggle.TICK_GAP + widestLabel;
+        const contentW =
+            LanguageToggle.TICK_SIZE + LanguageToggle.TICK_GAP +
+            LanguageToggle.FLAG_W + LanguageToggle.FLAG_GAP +
+            widestLabel;
         const pillW = contentW + LanguageToggle.PILL_PAD_X * 2;
         const trackW =
             pillW * LOCALES.length +
@@ -102,23 +134,30 @@ export class LanguageToggle {
 
             const fill = scene.add.graphics();
             const tick = scene.add.graphics();
+            const flag = scene.add.graphics();
+
+            const flagX = pillX + LanguageToggle.PILL_PAD_X
+                + LanguageToggle.TICK_SIZE + LanguageToggle.TICK_GAP;
+            drawFlag(
+                flag, locale,
+                flagX, centreY - LanguageToggle.FLAG_H / 2,
+                LanguageToggle.FLAG_W, LanguageToggle.FLAG_H,
+            );
 
             const label = labels[i];
-            label.setPosition(
-                pillX + LanguageToggle.PILL_PAD_X + LanguageToggle.TICK_SIZE + LanguageToggle.TICK_GAP,
-                centreY,
-            );
+            label.setPosition(flagX + LanguageToggle.FLAG_W + LanguageToggle.FLAG_GAP, centreY);
 
             const zone = scene.add
                 .zone(pillX + pillW / 2, centreY, pillW, LanguageToggle.PILL_H)
                 .setInteractive({ useHandCursor: true });
 
-            this.container.add([fill, tick, label, zone]);
+            this.container.add([fill, flag, tick, label, zone]);
 
             const seg: Segment = {
                 locale,
                 label,
                 fill,
+                flag,
                 tick,
                 zone,
                 centreX: pillX + pillW / 2,
@@ -130,10 +169,16 @@ export class LanguageToggle {
 
             zone.on('pointerdown', () => this.select(locale));
             zone.on('pointerover', () => {
-                if (this.currentLocale() !== locale) label.setAlpha(1);
+                if (this.currentLocale() !== locale) {
+                    label.setAlpha(1);
+                    flag.setAlpha(1);
+                }
             });
             zone.on('pointerout', () => {
-                if (this.currentLocale() !== locale) label.setAlpha(0.72);
+                if (this.currentLocale() !== locale) {
+                    label.setAlpha(0.72);
+                    flag.setAlpha(0.72);
+                }
             });
 
             // Repaint helpers need the geometry; stash it for select().
@@ -207,6 +252,10 @@ export class LanguageToggle {
 
         seg.label.setColor(selected ? '#231a00' : '#ffffff');
         seg.label.setAlpha(selected ? 1 : 0.72);
+        // The flag dims with its label so the unselected pill recedes as one
+        // unit -- a full-colour flag beside a faded word reads as the active
+        // choice and would fight the pill fill.
+        seg.flag.setAlpha(selected ? 1 : 0.72);
 
         // Tick: drawn, never a glyph. Also means the selected state is not
         // signalled by colour alone, which colour-blind players would miss.

@@ -241,12 +241,20 @@ The engine is generic. Adding one means: a bundle in all four locations,
 in `godot/scripts/autoload/text_manager.gd`, an endonym, and a pass of the fit
 budget in `tools/validate_i18n.mjs`.
 
-*It is 239 keys now, not 71.* 168 of them are math phrasing templates. They are
+*It is 268 keys now, not 71.* 175 of them are math phrasing templates. They are
 short and formulaic, but a new locale is a real translation job rather than an
 afternoon.
 
-*Watch out:* the selector is a segmented control sized for exactly two options.
-Three or more needs a different pattern, and the fit budget will not catch that.
+*It also needs a drawn flag.* `FlagIcon` has a case per locale in both ports and
+falls back to the US flag for anything unknown, so a third language would show
+the wrong flag until someone draws its own. Anything with a Nordic cross is a
+few lines; anything else is real work.
+
+*Watch out:* the selector is a segmented control sized for exactly two options,
+and the width is already measured against the tightest heading on each port
+(x 636 on the web main menu, x 620 on the Godot login). A third pill does not
+fit on that row. The fit budget will not catch it -- the endonyms are measured at
+runtime by the component itself.
 
 ## P4 — Build and tooling
 
@@ -278,8 +286,17 @@ of completed tasks.** Do not add finished work here.
   `Aðalvalmynd` would leave the two locales saying different things.
 - **Language names are never translated.** `English` / `Íslenska` are endonyms
   so a player stranded in a language they cannot read can still get out.
-- **No flags in the language selector.** A flag names a country, not a
-  language, and English has no single one.
+- **Flags in the selector, beside the endonym, drawn not emoji.** A flag names
+  a country and not a language, and English has no single one -- so the flag is
+  an extra affordance for a child who cannot read yet, never the identifier. The
+  word stays, and stays untranslated. 🇺🇸 was chosen for English over 🇬🇧 as the
+  owner's call.
+  They are vector geometry (`src/ui/components/FlagIcon.ts`,
+  `godot/scripts/ui/flag_icon.gd`), not emoji, for the same reason the PIN dots
+  and the tick are: a flag emoji is a regional-indicator pair far outside
+  Latin-1, Windows ships no flag glyphs so Chrome there renders it as the
+  letters "US"/"IS", and the Godot export's bundled font has no emoji at all --
+  which is exactly the tofu this whole localisation pass started from.
 - **The dated review documents under `docs/` still say "Crow".** They are
   historical records; rewriting them would be revisionist.
 - **`prompt.text`, `hint` and `explanation` stay canonical English.** Four
