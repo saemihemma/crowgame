@@ -1,7 +1,7 @@
 {
   "accepted": true,
   "kind": "browser_math_scene_smoke",
-  "reviewedAt": "2026-08-24T18:15:00.956Z",
+  "reviewedAt": "2026-08-24T18:26:25.588Z",
   "baseUrl": "http://localhost:8080/",
   "viewport": {
     "width": 1920,
@@ -24,7 +24,7 @@
       "firstAttempt": false,
       "reward": 1,
       "hintsUsed": 1,
-      "responseMs": 1099,
+      "responseMs": 942,
       "wrongAttempts": 1,
       "freebie": true,
       "golden": false
@@ -82,6 +82,6 @@
       "src/utils/Types.ts",
       "tools/math_browser_smoke.mjs"
     ],
-    "value": "1f42a478d5ad012b1180928fa82a6014c92c4b128a8553e91c7fa29f7c871033"
+    "value": "6e0dd344b91bfaffb1c0a7047924c3b2359e511dfbbb63fcac6ccb2c8b0f9d46"
   }
 }

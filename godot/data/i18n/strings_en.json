@@ -47,7 +47,6 @@
   "touch.zap": "ZAP",
   "game.oops": "Oops!",
   "game.completion_stats": "Owls saved: {0}   Coins: {1}",
-  "pause.theme": "Theme: {0}",
   "login.hi": "Hi, {0}!",
   "login.pick_pin": "Pick a 4-digit PIN",
   "login.play": "Play",
@@ -261,13 +260,14 @@
   "math.demo_watch": "Watch closely, I will show you!",
   "math.demo_your_turn": "Your turn!",
   "math.comeback": "You learned it!",
-  "theme.forest": "Forest",
-  "theme.scifi": "Sci-Fi",
   "recap.title": "Great flying!",
   "recap.owls": "Owls saved: {0}",
   "recap.problems": "Problems solved: {0}",
   "recap.stepups": "New steps reached: {0}",
   "recap.best_comeback": "Best moment: you learned it!",
   "recap.best_golden": "Best moment: a golden win!",
-  "recap.continue": "Onward!"
+  "recap.continue": "Onward!",
+  "pause.sound": "Sound: {0}",
+  "sound.on": "On",
+  "sound.off": "Off"
 }

@@ -50,7 +50,6 @@
   "npc.professor_hoot": "Prófessor Úhú",
   "pause.quit": "Hætta",
   "pause.resume": "Halda áfram",
-  "pause.theme": "Þema: {0}",
   "pause.title": "HLÉ",
   "touch.jump": "STÖKK",
   "touch.peck": "GOGGA",
@@ -261,13 +260,14 @@
   "math.demo_watch": "Fylgstu vel med, eg syni ther!",
   "math.demo_your_turn": "Þú átt leik!",
   "math.comeback": "Þú lærðir það!",
-  "theme.forest": "Skógur",
-  "theme.scifi": "Framtíð",
   "recap.title": "Vel flogið!",
   "recap.owls": "Uglum bjargað: {0}",
   "recap.problems": "Dæmi leyst: {0}",
   "recap.stepups": "Ný þrep: {0}",
   "recap.best_comeback": "Besta stundin: þú lærðir það!",
   "recap.best_golden": "Besta stundin: gylltur sigur!",
-  "recap.continue": "Áfram!"
+  "recap.continue": "Áfram!",
+  "pause.sound": "Hljóð: {0}",
+  "sound.on": "Kveikt",
+  "sound.off": "Slökkt"
 }

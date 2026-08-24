@@ -10,6 +10,7 @@ import { PauseScene } from './scenes/PauseScene';
 import { GAME_WIDTH, GAME_HEIGHT, DEFAULT_GRAVITY, SCENES } from './utils/Constants';
 import { EventBus, GameEvents } from './utils/EventBus';
 import { TextManager } from './systems/TextManager';
+import { AudioManager } from './systems/AudioManager';
 
 const prefersDesktopIntegerScaling = (): boolean =>
     window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -120,6 +121,7 @@ if (import.meta.env.DEV) {
                 optionCenters: Array<{ value: number; x: number; y: number }>;
                 canvasRect: { left: number; top: number; width: number; height: number } | null;
             } | null;
+            isAudioMuted: () => boolean;
             getLastCompletion: () => Record<string, unknown> | null;
             getCompletionHistory: () => Array<Record<string, unknown>>;
             clearLastCompletion: () => void;
@@ -246,6 +248,10 @@ if (import.meta.env.DEV) {
                 canvasRect,
             };
         },
+        // Exposed so the pause-settings check can prove the mute reached the audio
+        // system, not merely localStorage -- a stored flag the player cannot hear
+        // is not a setting.
+        isAudioMuted: () => AudioManager.getInstance().isMuted(),
         getLastCompletion: () => lastMathCompletion ? { ...lastMathCompletion } : null,
         getCompletionHistory: () => mathCompletionHistory.map(completion => ({ ...completion })),
         clearLastCompletion: () => {

@@ -37,6 +37,8 @@ export class AudioManager {
     private manifest: AudioManifest | null = null;
 
     // Volume controls (0.0 to 1.0)
+    private static readonly MUTE_KEY = 'crow_sound_muted';
+    private muted = false;
     private masterVolume = 1.0;
     private sfxVolume = 1.0;
     private musicVolume = 1.0;
@@ -107,7 +109,7 @@ export class AudioManager {
      * @param volumeOverride - Optional volume override (0.0 to 1.0)
      */
     public playSFX(key: string, volumeOverride?: number): void {
-        if (!this.scene || this.silentMode) return;
+        if (!this.scene || this.silentMode || this.muted) return;
 
         // Check if we have a pool for this sound
         const pool = this.audioPools.get(key);
@@ -144,7 +146,7 @@ export class AudioManager {
      * @param crossFadeDuration - Duration in ms for cross-fade (0 = instant)
      */
     public playMusic(key: string, crossFadeDuration: number = 500): void {
-        if (!this.scene || this.silentMode) return;
+        if (!this.scene || this.silentMode || this.muted) return;
 
         // Clear stale references (e.g. after scene restart destroys sound objects)
         if (this.currentMusic && !this.currentMusic.isPlaying) {
@@ -243,6 +245,50 @@ export class AudioManager {
             this.currentMusic.destroy();
             this.currentMusic = null;
             this.currentMusicKey = null;
+        }
+    }
+
+    /**
+     * Mute or unmute everything, and remember the choice.
+     *
+     * The volume API below has existed since the audio system was written and
+     * nothing has ever called it -- there was no way for a player to turn the
+     * sound down. A game a child plays in a car, a waiting room or a classroom
+     * needs one, and it has to survive a reload, so the choice is persisted under
+     * `crow_sound` beside `crow_locale`.
+     *
+     * Mute is a separate flag rather than "master volume 0" so unmuting restores
+     * whatever the volume was, and so a future volume slider does not have to
+     * guess whether zero meant muted or turned all the way down.
+     */
+    public setMuted(muted: boolean): void {
+        this.muted = muted;
+        try {
+            localStorage.setItem(AudioManager.MUTE_KEY, muted ? '1' : '0');
+        } catch {
+            // Private mode or blocked storage: the choice still applies to this
+            // session, it just will not survive a reload.
+        }
+        if (this.currentMusic && this.currentMusicKey) {
+            const config = this.manifest?.music[this.currentMusicKey];
+            if (config) {
+                (this.currentMusic as unknown as { setVolume: (v: number) => void }).setVolume(
+                    muted ? 0 : config.volume * this.musicVolume * this.masterVolume,
+                );
+            }
+        }
+    }
+
+    public isMuted(): boolean {
+        return this.muted;
+    }
+
+    /** Restore the stored choice. Called once during boot. */
+    public loadMutePreference(): void {
+        try {
+            this.muted = localStorage.getItem(AudioManager.MUTE_KEY) === '1';
+        } catch {
+            this.muted = false;
         }
     }
 
