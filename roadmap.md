@@ -65,13 +65,20 @@ registry matches it.
 ## P2 — Experience decisions that need making
 
 ### The post-wrong-answer input lockout is long and inconsistent
-After a wrong answer the math board ignores input for roughly three to four
-seconds while the retry feedback plays, and the duration varies by problem type.
-The option buttons stay fully lit and tappable-looking throughout, so a child who
-retries immediately gets silence. This is what made the browser smoke flaky.
+After a wrong answer the option buttons stay fully lit and tappable-looking
+while input is refused, so a child who retries immediately gets silence. This is
+what made the browser smoke flaky.
 
-*Done when:* the lockout has one deliberate duration, and the options visibly
-show they are not accepting input while it runs.
+The "three to four seconds" this entry used to claim is not what the source
+does: `MathBoard.ts:336` re-enables input at 600ms on the first miss, and
+`MathChallengeScene.ts:199` dismisses at 800ms on the second. The 1500ms hold
+after a *correct* answer (`MathChallengeScene.ts:183`) is the longest wait in
+the flow and is deliberate. Re-measure on a device before changing any number —
+what the smoke test was tripping over has not actually been identified.
+
+*Done when:* the real duration is measured, the lockout has one deliberate value
+across problem types, and the options visibly show they are not accepting input
+while it runs.
 
 ### Mid-game language switching
 The selector is on Login and Main Menu only. Switching inside a level would
@@ -95,6 +102,38 @@ bundles.
 mid-row. Snapping may read better for young players; it may also feel fighty.
 
 *Done when:* tried both ways on a device and one is chosen.
+
+### Wrong answers are painted in the damage colour
+`MathBoard.showWrongFeedback()` fills the chosen option with
+`ThemeManager.getColorNum('danger')` and flies its "Try again" text up in a
+hardcoded `#ff6666`. Both shipped themes also set `wrongFx: "shake_red"`. In a
+game whose point is making a six-year-old comfortable being wrong, the colour of
+taking damage should not appear on a maths answer.
+
+*Done when:* wrong-answer feedback uses an amber that is distinguishable from
+the correct-answer green in luminance as well as hue, the hardcoded `#ff6666` is
+gone, and red is reserved for health loss. `brand/BRAND_SYSTEM.md` §6.2 and
+`brand/tokens/verify_palettes.py` specify and check this.
+
+### Five levels, one look
+All six level specs declare `"theme": "forest"` and every `level_registry.json`
+entry loads the same `level1_tiles.png`. `ThemeManager` supports per-level
+theming and nothing uses it — `setTheme()` is called once at boot and never
+again.
+
+`brand/tokens/` holds five ready `ThemeDefinition` files and a four-step wiring
+recipe. It needs no new art: `HealthBar` falls back to generated placeholders
+for missing sprite keys and `MathBoard` draws from palette colours, so the
+worlds diverge visually from JSON alone.
+
+Also unresolved in the same area: `level-spec.schema.json` enums `theme` to a
+vocabulary (`forest`/`cave`/`village`/`mountain`/`sky`/`underwater`) that does
+not match any `ThemeManager` id, and `level_03` (7 platforms, no hazards, no
+enemies) and `level_04` (11 platforms, 1 of each) are too small to carry a
+distinct world.
+
+*Done when:* each level loads its own theme, the spec vocabulary and the theme
+ids are the same words, and no two levels share a tileset.
 
 ## P3 — Content and localisation
 
