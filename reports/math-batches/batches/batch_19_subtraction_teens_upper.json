@@ -1,20 +1,20 @@
 {
-  "batchId": "batch_02_addition_bridge_teens",
-  "title": "Addition bridge to 10 and teens",
+  "batchId": "batch_19_subtraction_teens_upper",
+  "title": "Subtraction upper teens to 20",
   "accepted": true,
-  "averageGrade": 9.7,
+  "averageGrade": 9.8,
   "criticalIssues": [],
   "templateReview": {
     "category": {
       "grade": 9.6,
-      "summary": "Template coverage is stable: 10 templates, 6 families, steps 6-19.",
+      "summary": "Template coverage is stable: 5 templates, 3 families, steps 9-16.",
       "metrics": {
-        "templateCount": 10,
-        "familyCount": 6,
-        "minStep": 6,
-        "maxStep": 19,
-        "promptVariantCount": 27,
-        "averageProblemsPerTemplate": 15
+        "templateCount": 5,
+        "familyCount": 3,
+        "minStep": 9,
+        "maxStep": 16,
+        "promptVariantCount": 15,
+        "averageProblemsPerTemplate": 30
       }
     },
     "roleGrades": [
@@ -25,7 +25,7 @@
       },
       {
         "role": "role-game-designer",
-        "grade": 9.5,
+        "grade": 9.7,
         "rationale": "Families and wording variants support replay and gentle pacing."
       },
       {
@@ -69,15 +69,15 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.7,
+      "grade": 9.9,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.7,
+        "steadyChildGrade": 9.9,
         "strugglingChildGrade": 9.7,
-        "strongChildGrade": 9.6,
-        "openingProbeStep": 6,
+        "strongChildGrade": 10,
+        "openingProbeStep": 9,
         "middleProbeStep": 12,
-        "upperProbeStep": 19,
+        "upperProbeStep": 16,
         "uniqueStartAnchors": 3,
         "probeCount": 9,
         "exhaustionWarnings": 0
@@ -86,12 +86,12 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.6,
+        "grade": 10,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.7,
+        "grade": 9.9,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
-    "10 birds sit on a branch. 2 more land. How many birds?",
-    "You have 10 berries. You find 4 more. How many berries?",
-    "Try this: 10 + 1",
-    "10 + 3 equals ?",
-    "Try this: 10 + 3"
+    "17 - 5 =",
+    "18 - 6 =",
+    "17 - 2 =",
+    "You have 18 berries. You eat 1. How many are left?",
+    "18 - 4 equals ?"
   ]
 }

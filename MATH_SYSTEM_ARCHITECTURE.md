@@ -55,7 +55,8 @@ Hörmann is tuned for early elementary learners and aims for:
 - stable unlocking of new domains only after the current domain is truly steady
 
 Current target band:
-- roughly `88-92%` first-attempt accuracy over recent history
+- roughly `70-85%` first-attempt accuracy over recent history — high enough to
+  feel like winning, low enough that the problems are still doing work
 
 ## Runtime Composition
 
@@ -88,9 +89,24 @@ Boot-time math initialization happens in [src/scenes/BootScene.ts](./src/scenes/
 
 Current answer UI:
 - MCQ only
-- option buttons are shuffled at render time; authored option order carries a
-  heavy position bias toward the last slot, so on-screen order must never
-  match data order
+- option order is shuffled twice: deterministically at generation time (the
+  old ascending order put the correct answer in a predictable slot) and again
+  at render time in `MathBoard`, which also covers the hand-authored pools
+- long prompts (framed questions and word problems) scale the question font
+  down and word-wrap so the text always fits the board
+- a second miss reveals the correct answer with the authored explanation
+  before the overlay closes, so a failed challenge ends in teaching
+- a curriculum step-up fires `CURRICULUM_STEP_UP`, and the HUD celebrates it
+  once it is visible again; demotions are never signaled
+
+Prompt wording:
+- addition and subtraction include word-problem variants ("You have 3 berries.
+  You find 2 more.") from curriculum step 3 upward; steps 0-2 stay on the bare
+  equation and simplest question form so reading load never gates the math
+- every worded shape has a parse pattern in
+  [src/math/wordedArithmetic.ts](./src/math/wordedArithmetic.ts); steps,
+  difficulty traits, replay keys, and the verifier all re-derive the fact from
+  that shared table, so wording variants of one fact share a replay key
 
 The shared type system still supports other answer modes, but the live UI does not render them.
 The shipped owl interaction is currently two problems per encounter, so total repo inventory and per-session lived variety are still not the same thing.
@@ -144,8 +160,9 @@ Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerState
 - promotion:
   - after `3` first-try correct answers at the current step
   - and at least `80%` first-attempt accuracy across the last `10` attempts in that domain
-  - the ladder advances to the next step that actually has authored problems,
-    skipping empty steps; it never promotes into an empty band
+  - the ladder advances to the next step with at least `3` authored problems,
+    skipping empty or near-empty steps; it never promotes onto a rung the
+    learner cannot practice
   - a first-try correct answer on a stretch problem promotes directly to that step
 - demotion:
   - evaluated only on a wrong answer, never re-triggered by later correct answers
@@ -252,7 +269,7 @@ Local kid-safe filter:
 - this keeps two-digit addition and subtraction out of the live local owl loop until a denser later ladder exists
 - Bridge Pack A now gives local owl play dense middle-band coverage for addition steps `10-19` and subtraction steps `6-13`.
 - Subtraction step `5` remains intentionally tiny because the current derivation only yields a narrow `10 - 0` / `10 - 10` style prompt shape there.
-- The repo now ships `3000` total runtime problems, but the current owl-safe local subset is smaller; use `reports/math-batches/owl-surface-summary.json` when you need the owl-safe inventory and fresh-profile subset instead of the full inventory headline.
+- The repo now ships `3150` total runtime problems, but the current owl-safe local subset is smaller; use `reports/math-batches/owl-surface-summary.json` when you need the owl-safe inventory and fresh-profile subset instead of the full inventory headline.
 - `openingUnlockedInventory*` in that report means unlocked-domain inventory before current-step clamping.
 - `freshReachable*` in that report means the real fresh-profile day-one reachable subset after current-step clamping.
 - The owl-safe surface is not arithmetic-only anymore: early fresh encounters can mix addition with counting, while pattern matching joins later and subtraction still waits for addition stability.

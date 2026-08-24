@@ -17,10 +17,12 @@ export class MathBoard {
     private boardBg!: Phaser.GameObjects.Graphics;
     private questionText!: Phaser.GameObjects.Text;
     private optionButtons: Phaser.GameObjects.Container[] = [];
+    private optionValues: number[] = [];
     private hintText!: Phaser.GameObjects.Text;
     private navigator: UINavigator;
     private currentProblem: MathProblem | null = null;
     private answered = false;
+    private revealed = false;
 
     private readonly boardW = 520;
     private readonly boardH = 280;
@@ -87,14 +89,22 @@ export class MathBoard {
     showProblem(problem: MathProblem): void {
         this.currentProblem = problem;
         this.answered = false;
+        this.revealed = false;
 
-        // Set question text
-        this.questionText.setText(problem.prompt.text);
+        // Set question text, scaling down for long prompts (framed questions
+        // and word problems) so the text always fits inside the board.
+        const promptLength = problem.prompt.text.length;
+        const fontSize = promptLength <= 14 ? 56 : promptLength <= 30 ? 36 : 26;
+        this.questionText
+            .setFontSize(fontSize)
+            .setWordWrapWidth(this.boardW - 50)
+            .setText(problem.prompt.text);
         this.hintText.setText('').setAlpha(0);
 
         // Clear old option buttons
         this.optionButtons.forEach(b => b.destroy(true));
         this.optionButtons = [];
+        this.optionValues = [];
 
         // Clear navigator for new problem
         this.navigator.disable();
@@ -131,6 +141,7 @@ export class MathBoard {
                 );
                 this.container.add(btn);
                 this.optionButtons.push(btn);
+                this.optionValues.push(optVal);
 
                 // Register with keyboard navigator (world coordinates)
                 const zone = btn.getAt(2) as Phaser.GameObjects.Zone;
@@ -339,11 +350,51 @@ export class MathBoard {
             });
         }
 
-        // Allow retry after a brief delay
+        // Allow retry after a brief delay (unless the answer was revealed)
         this.scene.time.delayedCall(600, () => {
+            if (this.revealed) return;
             this.answered = false;
             this.navigator.enable();
         });
+    }
+
+    /**
+     * After the final allowed miss: highlight the correct answer, dim the
+     * rest, and show the authored explanation so the miss ends in learning.
+     */
+    revealAnswer(): void {
+        if (!this.currentProblem || this.currentProblem.answer.mode !== 'mcq') return;
+        this.revealed = true;
+        this.answered = true;
+        this.navigator.disable();
+
+        const correct = (this.currentProblem.answer as MCQAnswer).correct;
+        this.optionButtons.forEach((btn, i) => {
+            const bg = btn.getAt(0) as Phaser.GameObjects.Graphics;
+            if (!bg) return;
+            if (this.optionValues[i] === correct) {
+                bg.clear();
+                bg.fillStyle(0x44cc44, 1);
+                bg.fillRoundedRect(-50, -30, 100, 60, 8);
+                bg.lineStyle(4, 0xffffff, 0.6);
+                bg.strokeRoundedRect(-50, -30, 100, 60, 8);
+                this.scene.tweens.add({
+                    targets: btn,
+                    scaleX: 1.2,
+                    scaleY: 1.2,
+                    duration: 250,
+                    ease: 'Back.easeOut',
+                });
+            } else {
+                btn.setAlpha(0.35);
+            }
+        });
+
+        const explanation = this.currentProblem.explanation || this.currentProblem.hint || '';
+        if (explanation) {
+            this.hintText.setText(explanation).setAlpha(0);
+            this.scene.tweens.add({ targets: this.hintText, alpha: 1, duration: 300 });
+        }
     }
 
     /** Dismiss the board with an exit animation */

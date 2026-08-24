@@ -62,6 +62,23 @@ stated whether a child is meant to unlock strictly one at a time.
 *Done when:* the intended progression is written down in `PROJECT.md` and the
 registry matches it.
 
+## P1.5 — Port parity
+
+### The Godot math port has drifted behind the web ladder
+Four related gaps, best fixed together:
+`godot/data/math/problems_curriculum.json` is a stale copy of the web pool and
+nothing guards the sync (add a check to `npm run validate` or copy at
+materialize time); the GDScript learner model (`godot/scripts/math/*.gd`)
+still runs the old promotion/demotion/ELO tuning; the golden parity fixtures
+(`godot/tests/fixtures/math_fixtures.json`) are pinned to that old behavior,
+so regenerating them via `npm run godot:gen-math-fixtures` will break
+`test_math_parity.gd` until the GDScript is ported to match; and
+`godot/scripts/ui/math_challenge.gd` renders MCQ options in data order — safe
+for the regenerated pool (shuffled at the source) but not for the
+hand-authored easy/dataset/gaps pools, which keep their biased order. Port the
+ladder, regenerate fixtures, sync the data, and add a render shuffle in the
+same change.
+
 ## P2 — Experience decisions that need making
 
 ### The post-wrong-answer input lockout is long and inconsistent
@@ -98,25 +115,56 @@ mid-row. Snapping may read better for young players; it may also feel fighty.
 
 ## P3 — Content and localisation
 
-### Subtraction has no problems at curriculum steps 15-20
-The raw pools jump from step 14 straight to step 21, so a learner who climbs
-subtraction to step 15 has no at-level problems until the two-digit band. The
-runtime now skips empty steps on promotion, but the band itself needs authored
-content (`tools/materialize_math_batches.ts` batch definitions).
+### Visual and richer worded prompts
+Addition and subtraction now carry two word-problem shapes each (berries,
+birds), gated to steps 3+. Still open: more story families and objects so the
+wording doesn't wear out, worded shapes for comparison and sequences, and
+visual prompts via the unused `prompt.assets` field (picture-group addition in
+the spirit of counting's dot strings). Every new worded shape needs a matching
+pattern in `src/math/wordedArithmetic.ts` — that table is what keeps steps,
+traits, and replay keys honest.
 
-### Prompts are all symbolic arithmetic with cosmetic framing
-Every domain's prompts are `N + N = ?` style with framing variants ("Solve:",
-"Quick check:") that add reading load without adding math variety. Word
-problems and visual/context prompts (beyond counting's dot strings) would give
-real variety, especially at higher curriculum steps.
+### Misconception tags are authored but nothing consumes them
+Every problem carries `misconceptionTags` (off-by-one, counting-back errors,
+…) and MCQ distractors are constructed, yet the runtime never looks at *which*
+wrong option a child picked. Mapping distractor → misconception in
+`ELOUpdateManager` would let review items target the actual confusion instead
+of just the skill, and let hints speak to the specific error.
 
-### The authored MCQ option order is heavily biased
-62% of problems place the correct answer in the last option slot and 31% in the
-third. `MathBoard` shuffles at render time so the live game is safe, but the
-authoring generator in `tools/math_authoring.ts` should randomize option order
-at generation time too, so any future surface that renders data order is not
-exploitable. The Godot port (`godot/scripts/ui/math_challenge.gd`) needs
-checking for the same render-order assumption.
+### Response time is recorded but unused as a learning signal
+`responseMs` is now honest time-to-first-answer, but nothing distinguishes
+fluent-correct from slow-correct. At fact-practice steps, fluency (fast and
+right) is the real mastery bar — consider a soft fluency component in the
+promotion gate, and retune the frustration `responseTimeSpike` threshold in
+`LearnerStateManager.buildSummary` against real session data.
+
+### Within-lane selection is uniform random and problem ELO never learns
+`ELOAwareStrategy` picks uniformly inside the chosen lane; the effective
+selection ELO it computes is unused. Weighting lane candidates toward the
+learner's edge would sharpen targeting inside a step. Relatedly,
+`ProblemPoolManager.updateProblemRating` records per-problem success rates but
+never adjusts `eloRating` — either calibrate item difficulty from that
+telemetry or rename the method to what it does.
+
+### Review backlog has no decay or cap policy
+`day_1`/`day_3`/`day_7` review items assume steady play. A child who skips a
+week comes back to a stacked, all-due backlog that crowds the 20-25% review
+lane for a long stretch. Decide a cap per domain and a staleness policy in
+`LearnerStateManager.applyReviewUpdate` / `getDueReviewItems`.
+
+### Difficulty scalar and curriculum step are two separate scales
+`difficulty` comes from authoring band ELO targets, `curriculumStep` from the
+structural derivation in `tools/math_curriculum.ts`; the owl's difficulty band
+filter sits on the first while the ladder climbs the second, which is how
+comparison got stalled before the band was widened. Unify: derive `difficulty`
+from the derived step (one source of truth), or drop the difficulty filter
+from the adaptive path once step data is fully trusted.
+
+### Multiplication and division need a fate decision
+650 authored problems sit in domains the owl never serves — not in its
+`problemTypes`, and with almost no content below step 3 (division's lowest
+band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
+the rotation for older kids, or park them explicitly in Settled.
 
 ### Four string keys are referenced by neither port
 `hud.level`, `hud.level_up`, `login.delete`, `login.delete_confirm`. Either wire

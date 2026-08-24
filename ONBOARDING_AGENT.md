@@ -110,17 +110,17 @@ Snapshot as of 2026-03-24:
   - `HUDScene`
   - `MathChallengeScene`
   - `PauseScene`
-- [src/scenes/BootScene.ts](./src/scenes/BootScene.ts) loads 4 math pools totaling 3000 problems:
+- [src/scenes/BootScene.ts](./src/scenes/BootScene.ts) loads 4 math pools totaling 3150 problems:
   - `easy`: 15
   - `dataset`: 40
   - `gaps`: 60
-  - `curriculum`: 2885
+  - `curriculum`: 3035
 - [public/data/levels/level_registry.json](./public/data/levels/level_registry.json) contains 6 levels, including `level_99`.
 - [public/data/npcs/npc_registry.json](./public/data/npcs/npc_registry.json) contains 1 NPC entry.
 - [public/data/enemies/enemy_registry.json](./public/data/enemies/enemy_registry.json) contains 1 enemy type.
 - [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) currently exposes 5 music tracks and 15 live SFX entries.
 - Math UI is currently MCQ-only in [src/ui/components/MathBoard.ts](./src/ui/components/MathBoard.ts).
-- The shipped owl path is a smaller local-safe subset of that inventory, not the whole `3000`; use `reports/math-batches/owl-surface-summary.json` for the owl-safe inventory and fresh-profile subset, not just the full runtime headline.
+- The shipped owl path is a smaller local-safe subset of that inventory, not the whole `3150`; use `reports/math-batches/owl-surface-summary.json` for the owl-safe inventory and fresh-profile subset, not just the full runtime headline.
 
 This is the only canonical numeric snapshot block in the current docs. Refresh it whenever scene count, level count, pool count, or live manifest counts change.
 
@@ -178,7 +178,7 @@ Math authoring report boundaries:
 - It is not empirical proof that the frozen ELO bands are perfect for every child.
 - Use `reports/math-batches/runtime-selector-smoke.json` for the current runtime-aligned owl selector smoke, not just the batch proxy reviews.
 - Use `reports/math-batches/runtime-browser-smoke.json` for the literal browser-backed owl/math scene smoke.
-- Use `reports/math-batches/owl-surface-summary.json` when you need the current owl-safe subset, not the full-repo `3000` inventory count.
+- Use `reports/math-batches/owl-surface-summary.json` when you need the current owl-safe subset, not the full-repo `3150` inventory count.
 - `openingUnlockedInventory*` means unlocked-domain inventory before current-step clamping.
 - `freshReachable*` means the real fresh-profile day-one reachable subset after current-step clamping.
 - Current shipped owl interaction length is `2` problems per owl encounter, and the follow-up problem now prefers an alternate unlocked domain before falling back to the full owl-safe set.
