@@ -42,16 +42,41 @@ there.
 
 ## P1 — Correctness and reachability
 
-### The web build has no CI
-`.github/workflows/ci.yml` runs the Godot suite only, and its path filter is
-`godot/**`. Nothing guards the web build on a pull request: `npm run validate`
-(TypeScript, content, docs, assets, the i18n guard) and
-`npm run math:browser-smoke` are all manual today.
+### The maths questions themselves are still English
+Icelandic is complete for every menu, label and greeting, but the problems a
+child actually reads are not. 2331 of 3000 prompts contain English words --
+"Quick check: 1 + 2", "What is 3 + 4?", "Complete: 5 - 2 = ?". A child playing in
+Icelandic gets an Icelandic shell around English questions, which for a five- to
+seven-year-old is the part that matters most.
 
-*Done when:* a workflow runs `npx tsc --noEmit` and `npm run validate` on pull
-requests touching `src/**`, `public/**`, `tools/**` or `admin.html`. The browser
-smoke needs a dev server and a Chromium, so decide separately whether it belongs
-in CI or stays a local gate.
+It is far more tractable than the raw count suggests: there are 206 distinct
+phrasings and **the top 20 cover 87%** of them. The work is translating a
+templated phrase list, not 2331 strings.
+
+*The blocker is a schema decision, not the translation.* Prompts live at
+`prompt.text` in `public/data/math/*.json` (mirrored under `godot/data/math/`),
+and those pools are covered by `tools/validate-content.ts`, `tools/math_verifier.ts`,
+duplicate-prompt checks and the golden fixtures the Godot parity tests share.
+Options: a per-locale sibling field (`prompt.text_is`), a parallel pool per
+locale, or generating prompts from a template id plus operands at runtime. The
+last is the only one that does not double the content and keeps the arithmetic
+checks meaningful.
+
+*Done when:* a locale decision is recorded in `MATH_SYSTEM_ARCHITECTURE.md` and
+the top-20 phrasings render in Icelandic in the exported build.
+
+### `output/web/` is a hand-built artifact on the deploy path
+`railway.json` -> `deploy/web/Dockerfile` copies the committed `output/web`
+straight into Caddy, so **whatever is in that directory is the live game**. It is
+produced by running `bash godot/tools/build_web.sh` locally and committing a
+23MB pack plus a 35MB wasm. Nothing checks that it matches `godot/**`, so the
+deployment silently drifted behind the source for an entire feature's worth of
+work.
+
+*Done when:* either CI rebuilds and commits (or publishes) the export when
+`godot/**` changes, or `npm run validate` fails when `output/web/index.pck` is
+older than the newest file under `godot/`. A staleness check is the cheap
+version and would have caught this.
 
 ### Confirm the intended level unlock chain
 On a fresh save only two of six levels are selectable (`level_99` and
@@ -80,6 +105,20 @@ ladder, regenerate fixtures, sync the data, and add a render shuffle in the
 same change.
 
 ## P2 — Experience decisions that need making
+
+### The on-screen controls are unverified for desktop-web mouse
+`godot/scripts/ui/touch_controls.gd` shows the d-pad whenever
+`OS.has_feature("web")` is true, which includes desktop browsers where the
+player has a mouse. `pointing/emulate_touch_from_mouse` is enabled as the
+documented fix, but it could not be confirmed: synthetic pointer input does not
+reach Godot's TouchScreenButtons in headless Chromium, by Playwright mouse or by
+CDP touch events. The touch path itself is covered by
+`godot/tests/test_touch_controls.gd`.
+
+*Done when:* someone clicks the d-pad with a real mouse in a desktop browser and
+says whether the crow moves. If it does not, the fallback is to hide the controls
+unless `DisplayServer.is_touchscreen_available()`, so desktop players are not
+shown dead buttons.
 
 ### The post-wrong-answer input lockout is long and inconsistent
 After a wrong answer the math board ignores input for roughly three to four
@@ -185,16 +224,6 @@ budget in `tools/validate_i18n.mjs`.
 Three or more needs a different pattern, and the fit budget will not catch that.
 
 ## P4 — Build and tooling
-
-### The committed web export carries the old game name
-`output/web/index.pck` is a Godot binary with `Crow` compiled in.
-`godot/project.godot` is already renamed, so a re-export fixes it. Players never
-see it — the browser tab title comes from the export's `index.html`, which is
-correct — so this is cosmetic and internal.
-
-*Note for whoever picks this up:* Godot 4.3 headless runs fine in a container
-(`godot --headless --path godot res://tests/TestRunner.tscn` passes 61/61). The
-missing piece is the export templates, not the engine.
 
 ### Web SFX are generated, not authored
 `tools/gen_sfx.py` synthesizes all 15 effects procedurally and writes them to

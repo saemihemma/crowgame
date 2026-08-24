@@ -21,7 +21,8 @@
         "ai:process": "node tools/process_ai_assets.js",
         "dev:host": "vite --config vite/config.dev.mjs --host",
         "validate:i18n": "node tools/validate_i18n.mjs",
-        "i18n:screenshots": "node tools/i18n_screenshots.mjs"
+        "i18n:screenshots": "node tools/i18n_screenshots.mjs",
+        "godot:play-smoke": "node tools/godot_play_smoke.mjs"
     },
     "devDependencies": {
         "ajv": "^8.17.1",

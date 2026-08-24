@@ -92,13 +92,16 @@ static func _apply_style(pill: Button, selected: bool) -> void:
 
 ## The tick, as a polyline rather than a text character.
 static func _make_tick() -> Line2D:
+	# Godot centres Button text, so the tick has to live in the sliver left of
+	# it. Kept narrow and hard against the edge: at 14px in it collided with the
+	# label and "Íslenska" rendered as "<tick>slenska".
 	var tick := Line2D.new()
-	var left := 14.0
+	var left := 7.0
 	var mid_y := PILL_SIZE.y * 0.5
 	tick.points = PackedVector2Array([
-		Vector2(left, mid_y + 1.0),
-		Vector2(left + 5.0, mid_y + 5.0),
-		Vector2(left + 14.0, mid_y - 6.0),
+		Vector2(left, mid_y + 0.5),
+		Vector2(left + 4.0, mid_y + 4.0),
+		Vector2(left + 10.0, mid_y - 5.0),
 	])
 	tick.width = TICK_WIDTH
 	tick.default_color = ThemeManager.get_color_value("boardBorder")
