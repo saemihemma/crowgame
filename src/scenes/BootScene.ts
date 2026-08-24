@@ -14,6 +14,7 @@ import { TextManager } from '../systems/TextManager';
 import { ProfileManager } from '../systems/ProfileManager';
 import { LearnerStateManager } from '../systems/LearnerStateManager';
 import { LearnerSyncService } from '../systems/LearnerSyncService';
+import { SessionStats } from '../systems/SessionStats';
 import type { ThemeDefinition } from '../ui/theme/ThemeTypes';
 import type { LevelRegistry, NPCRegistry, MathProblemPool } from '../utils/Types';
 import type { EnemyRegistry } from '../entities/enemies/Enemy';
@@ -198,6 +199,9 @@ export class BootScene extends Phaser.Scene {
         // Initialize ELO update listener
         ELOUpdateManager.getInstance().init();
         console.log('[Boot] ELO update system initialized');
+
+        // Session recap counters (owls, wins, step-ups, comebacks, golden).
+        SessionStats.getInstance().init();
 
         // Initialize LevelingManager
         const levelingConfig = this.cache.json.get('leveling') as LevelingConfig;

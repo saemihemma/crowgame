@@ -262,5 +262,12 @@
   "math.demo_your_turn": "Your turn!",
   "math.comeback": "You learned it!",
   "theme.forest": "Forest",
-  "theme.scifi": "Sci-Fi"
+  "theme.scifi": "Sci-Fi",
+  "recap.title": "Great flying!",
+  "recap.owls": "Owls saved: {0}",
+  "recap.problems": "Problems solved: {0}",
+  "recap.stepups": "New steps reached: {0}",
+  "recap.best_comeback": "Best moment: you learned it!",
+  "recap.best_golden": "Best moment: a golden win!",
+  "recap.continue": "Onward!"
 }

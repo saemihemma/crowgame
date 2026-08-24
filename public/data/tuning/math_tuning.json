@@ -30,5 +30,8 @@
     "rate": 0.125,
     "firstTryCoinMultiplier": 2,
     "retryCoinMultiplier": 1.5
+  },
+  "trophies": {
+    "tierSteps": [0, 4, 7, 10]
   }
 }

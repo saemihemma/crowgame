@@ -72,23 +72,6 @@ rewards only ever add (no streaks, no timers, nothing to protect), game
 progress never gated by math level, one big celebration per encounter,
 teaching skippable, no dark patterns.
 
-### Session-end recap that leaves on the best moment
-On quitting a level or the game, one warm recap screen: owls saved, problems
-solved, any step-ups, and the session's single best moment (comeback or golden
-win) as the closing image. `recentAttempts` already holds everything needed.
-Peak-end rule: a session is remembered by its peak and its ending.
-
-*Done when:* the recap shows after play, ends on the peak, and never shows a
-negative stat.
-
-### Trophy shelf on the main menu
-A per-domain badge row from the learner summary: each domain's badge grows
-with its step (sprout → leaf → flower → star). Badges record the highest step
-ever reached, so a demotion never visibly shrinks one.
-
-*Done when:* badges render from summary data in both ports and the high-water
-mark persists in the save.
-
 ### Tune the ladder against real play, not intuition
 The admin session report tags accuracy against the 70-85% sweet spot. After a
 week of family play: above 85% raise the at-level/stretch share, below 70%
@@ -209,6 +192,17 @@ at the baseline but keeps working for any NPC that raises the count.
 band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
 the rotation for older kids, or park them explicitly in Settled.
 
+### The trophy shelf has no heading
+`trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with
+the shelf but nothing ever drew it — the new dead-key guard caught it on its
+first merge. The key is deleted rather than wired up, because adding a heading
+changes the main menu's layout and that belongs to whoever designed the shelf.
+
+*Done when:* either a heading is drawn above the badge row and the key comes
+back with it, or the shelf is deliberately headingless and this entry goes.
+Note the main menu is already tight: the language selector's width is measured
+against the title ending at x 636.
+
 ### `DialogBox` and `DialogComponent` are dead code carrying English
 Nothing calls `showGreeting`, `showSuccess` or `showFailure`, so the dialogue
 never reaches the screen — the owl goes straight to the math overlay, whose
@@ -230,8 +224,24 @@ long a child stays with the game.
 
 ## P4 — Build and tooling
 
+### Code-drawn UI stand-ins need a real art pass
+Several load-bearing math-experience surfaces render with primitives drawn in
+code because no authored art exists for them: the trophy-shelf badges
+(sprout / leaf / flower / star) on both main menus, the progress pips in the
+math overlay, the golden-problem frame, the recap panel (plain themed
+rectangles), and the celebration bursts (engine particles). They are
+deliberately glyph-free and work, but they read as placeholders next to the
+character art. This is the standing contingency for any pixel-art / UI-asset
+pass: replace these surfaces first, in both ports, without touching the
+tuning-driven logic that decides when they appear (`math_tuning.json`
+`trophies.tierSteps` and `golden.rate`).
+
+*Done when:* an artist has supplied sprite versions — or explicitly blessed
+the drawn primitives as the shipped look — for badges, pips, the golden
+frame, and the recap panel, wired in both `src/` and `godot/`.
+
 ### Web SFX are generated, not authored
-`tools/gen_sfx.py` synthesizes all 15 effects procedurally and writes them to
+`tools/gen_sfx.py` synthesizes all 16 effects procedurally and writes them to
 both runtimes. They are committed and they work, but they are placeholders in
 tone.
 
