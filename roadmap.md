@@ -55,17 +55,6 @@ work.
 older than the newest file under `godot/`. A staleness check is the cheap
 version and would have caught this.
 
-### `math.expl.sub` loses the English's concrete register
-The English explanations deliberately use a five-year-old's words -- "8 take away
-5 leaves 3" -- while the Icelandic says "8 mínus 5 gerir 3", which is the
-arithmetic register. It is correct and it is what an Icelandic worksheet says,
-but it is a shade more formal than the English it translates. The same applies to
-`math.expl.add` ("plús" for "plus" is fine, but "gerir" for "makes" is flatter
-than the English).
-
-*Done when:* a native-speaking teacher has read the 32 `math.expl.*` strings
-aloud to a child in the target age band and either kept them or replaced them.
-
 ### Confirm the intended level unlock chain
 On a fresh save only two of six levels are selectable (`level_99` and
 `level_01`); 3–6 show as locked. That is consistent with
@@ -154,12 +143,14 @@ gameplay.
 the locale-change path re-renders live scenes and `GameEvents.LOCALE_CHANGED`
 has listeners that prove it.
 
-### `pause.theme` promises a theme switcher that does not exist
-The key sits in all four string bundles and `ThemeManager` supports swapping
-between `forest` and `scifi`, but no control was ever built.
+### The theme switcher exists in Godot but not on the web
+`godot/scripts/scenes/pause.gd` has a working toggle between `forest` and
+`scifi`; `src/scenes/PauseScene.ts` has no control at all, though the web
+`ThemeManager` supports the same swap. So the two ports disagree about what
+Pause offers.
 
-*Done when:* Pause offers the switch, or the key is deleted from all four
-bundles.
+*Done when:* the web Pause offers the same toggle, or the Godot one is removed
+and `pause.theme` plus the two `theme.*` names come out of all four bundles.
 
 ### Level select does not snap to rows
 `ScrollList` has momentum, clamping and a peeking next row, but a flick can rest
@@ -231,8 +222,14 @@ the rotation for older kids, or park them explicitly in Settled.
 
 ### Four string keys are referenced by neither port
 `hud.level`, `hud.level_up`, `login.delete`, `login.delete_confirm`. Either wire
-them up or remove them from all four bundle files. Note that profile deletion
-appears to be unimplemented in both ports, which is what the last two are for.
+them up or remove them from all four bundle files. Profile deletion is
+unimplemented in both ports, which is what the last two are for.
+
+*Watch out:* a naive "is this key mentioned in the source" sweep gets this wrong.
+The eight `domain.*` keys look unreferenced and are not -- both runtimes build
+them dynamically (`` t(`domain.${data.domain}`) ``), as do `level.*` and
+`theme.*`. Any dead-key check has to account for that or it will delete live
+strings.
 
 ### Only six levels exist
 `level_99` (practice) plus five real ones. More content is the main lever on how
@@ -312,6 +309,12 @@ of completed tasks.** Do not add finished work here.
   "gerir" is invariant, idiomatic in teaching, and a literal rendering of the
   English "makes". Where a phrasing cannot avoid the verb, the sentence drops it
   instead ("Bara {diff} eftir!") rather than guess.
+- **A fit-budget entry whose placeholder takes a WORD must name its fillers.**
+  `pause.theme` and `math.step_up` are filled with a theme name and a domain
+  name, and the budget's `88` stand-in reported a comfortable fit for strings
+  twice the measured width. Boxes like these carry a `fill` list in
+  `tools/validate_i18n.mjs` so the widest real substitution is what gets
+  measured.
 - **Plural agreement is a per-locale rule applied at render time.** A phrasing
   that inflects names the parameter that drives it (`plural`) and carries a
   `.one` sibling in every bundle; each runtime resolves the category itself.
