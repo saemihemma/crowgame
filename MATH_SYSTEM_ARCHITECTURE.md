@@ -88,6 +88,9 @@ Boot-time math initialization happens in [src/scenes/BootScene.ts](./src/scenes/
 
 Current answer UI:
 - MCQ only
+- option buttons are shuffled at render time; authored option order carries a
+  heavy position bias toward the last slot, so on-screen order must never
+  match data order
 
 The shared type system still supports other answer modes, but the live UI does not render them.
 The shipped owl interaction is currently two problems per encounter, so total repo inventory and per-session lived variety are still not the same thing.
@@ -116,12 +119,12 @@ Live update behavior in [src/math/ELOManager.ts](./src/math/ELOManager.ts):
   - `0.5` for corrected retry
   - `0.0` for wrong
 - K-factor:
-  - `4` before 50 attempts
-  - `3` before 200 attempts
-  - `2` afterward
+  - `16` before 30 attempts
+  - `12` before 150 attempts
+  - `8` afterward
 - delta cap:
   - `+8` max upward per answer
-  - `-12` max downward per answer
+  - `-8` max downward per answer
 - update split:
   - `70%` to global ELO
   - `30%` to the active domain modifier
@@ -136,13 +139,24 @@ Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerState
   - `currentStep`
   - `winsAtCurrentStep`
   - recent step results
-- selection is never allowed above the current step
+- selection is capped at one step above the current step, and that stretch
+  step is only reachable while the learner is hot (see selection policy)
 - promotion:
-  - `+1` step after `5` first-try correct answers at the current step
-  - and at least `90%` first-attempt accuracy across the last `10` attempts in that domain
+  - after `3` first-try correct answers at the current step
+  - and at least `80%` first-attempt accuracy across the last `10` attempts in that domain
+  - the ladder advances to the next step that actually has authored problems,
+    skipping empty steps; it never promotes into an empty band
+  - a first-try correct answer on a stretch problem promotes directly to that step
 - demotion:
+  - evaluated only on a wrong answer, never re-triggered by later correct answers
+    still inside the window
   - `-1` step after `2` wrong answers in the last `5` attempts for that domain
-  - or when confidence for that domain drops to `-15` or below
+  - or when confidence for that domain drops to `-25` or below
+  - after a demotion, confidence is softened to at most `-10` so one bad patch
+    cannot cascade into multiple demotions
+- starting steps are reconciled against the problem pools at boot: a domain
+  whose authored content starts above the stored step is raised to the first
+  step that has problems
 
 This is the primary local safety rail for young learners. ELO no longer authorizes harder local problems by itself.
 
@@ -198,10 +212,10 @@ Rules:
 
 Live local weighting in [src/math/selection/ELOAwareStrategy.ts](./src/math/selection/ELOAwareStrategy.ts):
 
-- `50%` comfort
-- `25%` review
-- `25%` at level
-- `0%` harder
+- `40%` comfort
+- `20%` review
+- `30%` at level
+- `10%` stretch
 
 Lane behavior:
 
@@ -211,12 +225,15 @@ Lane behavior:
   - due review items matched against review-friendly problems `1-2` steps easier than current
 - at level:
   - exact current curriculum step
-- harder:
-  - disabled for the local kid-focused path
+- stretch:
+  - one curriculum step harder than current
+  - only offered while the learner is hot: at least 5 recent attempts in the
+    domain, correct-answer rate `>= 80%` across the last 5, and
+    non-negative confidence
+  - a first-try correct stretch answer promotes the learner to that step
 
-If no review items are due:
-- the review share rolls into comfort when comfort exists
-- otherwise it rolls into the current step
+Empty lanes drop out and their weight is renormalized across the remaining
+non-empty lanes, so the shares above are relative, not exact odds.
 
 If the requested bands are empty:
 - strategy steps down only

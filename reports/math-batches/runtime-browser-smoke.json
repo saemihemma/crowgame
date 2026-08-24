@@ -1,7 +1,7 @@
 {
   "accepted": true,
   "kind": "browser_math_scene_smoke",
-  "reviewedAt": "2026-08-23T22:52:57.489Z",
+  "reviewedAt": "2026-08-24T00:27:34.040Z",
   "baseUrl": "http://localhost:8080/",
   "viewport": {
     "width": 1920,
@@ -10,31 +10,31 @@
   "whatThisIs": "Literal browser-backed smoke for the live owl interaction, MathChallengeScene input, wrong-answer retry, second-problem follow-up, and completion flow.",
   "whatThisIsNot": "Not telemetry-backed pedagogy proof, not an empirical ELO calibration study, and not broad cross-session child replayability evidence.",
   "clearedKeyCount": 0,
-  "firstPrompt": "Try this: 2 + 2",
-  "firstProblemId": "auth_batch_01_addition_under_10_doubles_1_5_1aljiu2",
-  "firstCorrectAnswer": 4,
-  "wrongOptionClicked": 1,
+  "firstPrompt": "Complete: 0 + 3 = ?",
+  "firstProblemId": "auth_batch_01_addition_under_10_zero_left_1yc5q77",
+  "firstCorrectAnswer": 3,
+  "wrongOptionClicked": 0,
   "wrongAttemptRegistered": true,
-  "secondPrompt": "Count the marks: * * * * * *",
-  "secondProblemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_ti8o5k",
+  "secondPrompt": "How many are here: * * * * *",
+  "secondProblemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1pw8f4t",
   "completionCount": 2,
   "completionHistory": [
     {
-      "problemId": "auth_batch_01_addition_under_10_doubles_1_5_1aljiu2",
+      "problemId": "auth_batch_01_addition_under_10_zero_left_1yc5q77",
       "correct": true,
       "firstAttempt": false,
       "reward": 0,
       "hintsUsed": 1,
-      "responseMs": 5439,
+      "responseMs": 3428,
       "wrongAttempts": 1
     },
     {
-      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_ti8o5k",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1pw8f4t",
       "correct": true,
       "firstAttempt": true,
       "reward": 1,
       "hintsUsed": 0,
-      "responseMs": 2683,
+      "responseMs": 2583,
       "wrongAttempts": 0
     }
   ],
@@ -84,6 +84,6 @@
       "src/utils/Types.ts",
       "tools/math_browser_smoke.mjs"
     ],
-    "value": "7ff4932d033041befb571f9e207cee6def23091cdfb6e708a0631cae072494a5"
+    "value": "7b6f87754e852182060a914c515aa3442f2d9d406e787196ba3f8589a87b1b15"
   }
 }

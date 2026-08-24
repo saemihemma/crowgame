@@ -103,7 +103,14 @@ export class MathBoard {
         // Create MCQ option buttons
         if (problem.answer.mode === 'mcq') {
             const mcqAnswer = problem.answer as MCQAnswer;
-            const options = mcqAnswer.options;
+            // Shuffle a copy so the correct answer's on-screen position is
+            // random. The authored data heavily favors the last slot, which
+            // kids learn to exploit.
+            const options = [...mcqAnswer.options];
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
             const btnW = 100;
             const btnH = 60;
             const gap = 24;

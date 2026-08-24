@@ -1654,7 +1654,9 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                     profileGrade -= 2;
                 }
 
-                const allowedStep = LearnerStateManager.getInstance().getCurrentStep(problem.domain);
+                // The live selector may serve one step above current via the
+                // gated stretch lane, so the rail is currentStep + 1.
+                const allowedStep = LearnerStateManager.getInstance().getCurrentStep(problem.domain) + 1;
                 if (problem.curriculumStep > allowedStep || problem.curriculumStep > owlConfig.maxCurriculumStep) {
                     selectorCapBreaches++;
                     profileGrade -= 1.5;

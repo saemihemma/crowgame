@@ -11,7 +11,7 @@
             "components": [
                 { "type": "interactable" },
                 { "type": "dialog", "greeting": "greeting_owl", "success": "success_owl", "failure": "failure_owl" },
-                { "type": "math_challenge", "problemTypes": ["addition", "counting", "pattern_matching", "subtraction", "comparison", "number_sequence"], "difficultyRange": [1, 2], "problemCount": 2 }
+                { "type": "math_challenge", "problemTypes": ["addition", "counting", "pattern_matching", "subtraction", "comparison", "number_sequence"], "difficultyRange": [1, 3], "problemCount": 2 }
             ],
             "behaviorConfig": {
                 "rewardType": "stars",

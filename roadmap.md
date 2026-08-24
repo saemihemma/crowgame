@@ -98,6 +98,26 @@ mid-row. Snapping may read better for young players; it may also feel fighty.
 
 ## P3 — Content and localisation
 
+### Subtraction has no problems at curriculum steps 15-20
+The raw pools jump from step 14 straight to step 21, so a learner who climbs
+subtraction to step 15 has no at-level problems until the two-digit band. The
+runtime now skips empty steps on promotion, but the band itself needs authored
+content (`tools/materialize_math_batches.ts` batch definitions).
+
+### Prompts are all symbolic arithmetic with cosmetic framing
+Every domain's prompts are `N + N = ?` style with framing variants ("Solve:",
+"Quick check:") that add reading load without adding math variety. Word
+problems and visual/context prompts (beyond counting's dot strings) would give
+real variety, especially at higher curriculum steps.
+
+### The authored MCQ option order is heavily biased
+62% of problems place the correct answer in the last option slot and 31% in the
+third. `MathBoard` shuffles at render time so the live game is safe, but the
+authoring generator in `tools/math_authoring.ts` should randomize option order
+at generation time too, so any future surface that renders data order is not
+exploitable. The Godot port (`godot/scripts/ui/math_challenge.gd`) needs
+checking for the same render-order assumption.
+
 ### Four string keys are referenced by neither port
 `hud.level`, `hud.level_up`, `login.delete`, `login.delete_confirm`. Either wire
 them up or remove them from all four bundle files. Note that profile deletion

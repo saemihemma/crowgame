@@ -36,6 +36,15 @@ export class ELOUpdateManager {
     init(): void {
         EventBus.on(GameEvents.MATH_PROBLEM_PRESENTED, this.onProblemPresented, this);
         EventBus.on(GameEvents.MATH_CHALLENGE_COMPLETE, this.onChallengeComplete, this);
+
+        // Let the curriculum ladder see which steps actually have problems,
+        // so promotion can skip authored holes in the step data.
+        LearnerStateManager.getInstance().setStepContentProvider((domain, step) => {
+            const poolManager = MathProblemManager.getInstance().getPoolManager();
+            if (!poolManager) return true;
+            return poolManager.getProblemsInCurriculumStepRange(domain, step, step, []).length > 0;
+        });
+
         console.log('[ELOUpdateManager] Initialized');
     }
 

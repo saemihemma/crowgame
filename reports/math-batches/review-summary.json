@@ -30,29 +30,29 @@
       "addition",
       "counting"
     ],
-    "owlEligibleProblemCount": 757,
-    "owlEligibleUniquePromptCount": 757,
-    "owlEligibleUniqueFactCount": 261,
+    "owlEligibleProblemCount": 1288,
+    "owlEligibleUniquePromptCount": 1288,
+    "owlEligibleUniqueFactCount": 521,
     "domainCounts": {
-      "addition": 371,
-      "counting": 55,
-      "pattern_matching": 43,
-      "subtraction": 223,
-      "comparison": 25,
-      "number_sequence": 40
+      "addition": 448,
+      "counting": 125,
+      "pattern_matching": 101,
+      "subtraction": 376,
+      "comparison": 125,
+      "number_sequence": 113
     },
-    "openingUnlockedInventoryProblemCount": 426,
-    "openingUnlockedInventoryUniquePromptCount": 426,
-    "openingUnlockedInventoryUniqueFactCount": 103,
-    "freshReachableProblemCount": 80,
-    "freshReachableUniquePromptCount": 80,
-    "freshReachableUniqueFactCount": 17,
+    "openingUnlockedInventoryProblemCount": 573,
+    "openingUnlockedInventoryUniquePromptCount": 573,
+    "openingUnlockedInventoryUniqueFactCount": 138,
+    "freshReachableProblemCount": 91,
+    "freshReachableUniquePromptCount": 91,
+    "freshReachableUniqueFactCount": 18,
     "freshReachableDomainCounts": {
       "addition": 62,
-      "counting": 18
+      "counting": 29
     },
     "freshReachableAdditionFactCount": 10,
-    "freshReachableCountingFactCount": 7,
+    "freshReachableCountingFactCount": 8,
     "currentInteractionProblemCount": 2,
     "owlAdditionByStep": [
       {
@@ -2167,7 +2167,7 @@
   ],
   "runtimeSelectorSmoke": {
     "accepted": true,
-    "averageGrade": 9.9,
+    "averageGrade": 10,
     "summary": "Runtime-aligned owl selector smoke covered the opening path plus a deeper progression probe, with 0 operand-cap breaches, 0 selector-cap breaches, 0 early subtraction unlocks, 0 missed depth unlocks, and 0 exhaustion events.",
     "metrics": {
       "capBreaches": 0,
@@ -2178,28 +2178,28 @@
       "recentWindowFallbackPreserved": true,
       "uninitializedFallbackPreserved": true,
       "currentStepFallbackPreserved": true,
-      "maxOperandSeen": 8,
-      "maxCurriculumStepSeen": 7,
+      "maxOperandSeen": 19,
+      "maxCurriculumStepSeen": 19,
       "followUpSelections": 124,
       "alternateFollowUpSelections": 124,
       "followUpAlternateRate": 1,
-      "steadyFirstSubtractionUnlockAttempt": 38,
+      "steadyFirstSubtractionUnlockAttempt": -1,
       "strugglingFirstSubtractionUnlockAttempt": -1,
       "depthProbeFirstSubtractionUnlockAttempt": 39,
-      "steadyFirstSubtractionSelectionAttempt": 40,
+      "steadyFirstSubtractionSelectionAttempt": -1,
       "strugglingFirstSubtractionSelectionAttempt": -1,
-      "depthProbeFirstSubtractionSelectionAttempt": 57,
-      "owlEligibleProblemCount": 757,
-      "owlEligibleUniquePromptCount": 757,
-      "owlEligibleUniqueFactCount": 261,
-      "openingUnlockedInventoryProblemCount": 426,
-      "openingUnlockedInventoryUniquePromptCount": 426,
-      "openingUnlockedInventoryUniqueFactCount": 103,
-      "freshReachableProblemCount": 80,
-      "freshReachableUniquePromptCount": 80,
-      "freshReachableUniqueFactCount": 17,
+      "depthProbeFirstSubtractionSelectionAttempt": 70,
+      "owlEligibleProblemCount": 1288,
+      "owlEligibleUniquePromptCount": 1288,
+      "owlEligibleUniqueFactCount": 521,
+      "openingUnlockedInventoryProblemCount": 573,
+      "openingUnlockedInventoryUniquePromptCount": 573,
+      "openingUnlockedInventoryUniqueFactCount": 138,
+      "freshReachableProblemCount": 91,
+      "freshReachableUniquePromptCount": 91,
+      "freshReachableUniqueFactCount": 18,
       "freshReachableAdditionFactCount": 10,
-      "freshReachableCountingFactCount": 7,
+      "freshReachableCountingFactCount": 8,
       "openingAdditionStep0Facts": 3,
       "openingAdditionStep1Facts": 3,
       "openingAdditionStep2Facts": 4,
@@ -2220,7 +2220,7 @@
       },
       {
         "role": "Lead Producer",
-        "grade": 9.7,
+        "grade": 10,
         "rationale": "Depth probe checks actual unlock timing and deeper local-safe selector coverage, not just the opening few facts."
       }
     ],
@@ -2231,7 +2231,7 @@
     "caveats": [
       "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
       "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 757 local-safe rows overall, while a fresh profile currently reaches 80 step-capped rows across addition, counting and 2 problems per owl interaction."
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1288 local-safe rows overall, while a fresh profile currently reaches 91 step-capped rows across addition, counting and 2 problems per owl interaction."
     ]
   }
 }
