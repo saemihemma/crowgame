@@ -5094,7 +5094,7 @@
           "name": "player_spawn",
           "type": "player_spawn",
           "x": 64,
-          "y": 512,
+          "y": 448,
           "width": 32,
           "height": 64
         },

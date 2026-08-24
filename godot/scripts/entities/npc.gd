@@ -1,4 +1,5 @@
 extends Node2D
+class_name Npc
 ## Npc — composition-based NPC (Godot port of BaseNPC + NPCFactory).
 ## Loads its definition from npc_registry by id, builds components, and triggers
 ## interaction when the player enters the 96x96 zone (cooldown-guarded). Flies
@@ -23,8 +24,24 @@ var _sprite_base_y := 0.0
 @onready var _sprite: Sprite2D = $Sprite
 @onready var _zone: Area2D = $InteractZone
 
+## Where this NPC's feet belong, in world space.
+##
+## NPC objects are authored as Tiled *tile* objects, whose origin is bottom-left,
+## so the spawn's `y` is already the ground line. The player spawn and enemies are
+## authored as plain rectangles, whose `y` is the top edge - which is why those
+## add `height` and this must not. The level compiler records both shapes as the
+## same {x, y, width, height} and loses the distinction, so each entity has to
+## know which convention its own objects use.
+##
+## Adding `height` here put every NPC in the game exactly one sprite height
+## underground. The owl sprite is 64px tall and NPC spawns are 64px boxes, so the
+## error was the full height of the character: the owls were not sunk, they were
+## buried, standing in the soil with their heads below the grass line.
+static func feet_from_spawn(s: Dictionary) -> Vector2:
+	return Vector2(float(s["x"]) + float(s["width"]) * 0.5, float(s["y"]))
+
 func setup_from_spawn(s: Dictionary) -> void:
-	position = Vector2(s["x"] + s["width"] * 0.5, s["y"] + s["height"])
+	position = feet_from_spawn(s)
 	npc_id = String(s.get("props", {}).get("npc_id", npc_id))
 
 func _ready() -> void:
@@ -57,9 +74,15 @@ func _process(delta: float) -> void:
 
 func _update_idle_bob(delta: float) -> void:
 	# Idle float-bob from npc_tuning.json (cached at _ready; amplitude 8, speed 1.5).
+	#
+	# Upward only. The bob used to swing symmetrically around the rest position,
+	# which meant a ground-standing NPC had its feet in the soil for half of
+	# every cycle. Same travel and same rate, biased so the resting pose is the
+	# lowest the sprite ever goes.
 	_bob_time += delta * _bob_speed
 	if _sprite and not _flown:
-		_sprite.position.y = _sprite_base_y + sin(_bob_time * TAU * 0.5) * _bob_amp * 0.5
+		var rise := (1.0 - cos(_bob_time * TAU * 0.5)) * 0.5
+		_sprite.position.y = _sprite_base_y - rise * _bob_amp
 
 func _build_prompt() -> void:
 	_prompt = Label.new()
