@@ -24,6 +24,7 @@ export class MathBoard {
     private currentProblem: MathProblem | null = null;
     private answered = false;
     private revealed = false;
+    private inputLocked = false;
 
     private readonly boardW = 520;
     private readonly boardH = 280;
@@ -131,6 +132,7 @@ export class MathBoard {
         this.currentProblem = problem;
         this.answered = false;
         this.revealed = false;
+        this.inputLocked = false;
 
         // Set the question in the active locale, measured to fit its band.
         MathBoard.fitInto(
@@ -199,7 +201,27 @@ export class MathBoard {
         DopamineFX.elasticEntrance(this.scene, this.container, 400);
 
         // Enable keyboard navigation after entrance animation
-        this.scene.time.delayedCall(450, () => this.navigator.enable());
+        this.scene.time.delayedCall(450, () => {
+            if (!this.inputLocked) this.navigator.enable();
+        });
+    }
+
+    /** Block answering entirely — the worked-example demo shows, it never asks. */
+    lockInput(): void {
+        this.inputLocked = true;
+        this.answered = true;
+        this.navigator.disable();
+    }
+
+    /** Show the localised hint line (the demo choreography reuses the miss-hint slot). */
+    showHintLine(): void {
+        const hint = this.currentProblem ? localisedHint(this.currentProblem) : undefined;
+        if (!hint) return;
+        MathBoard.fitInto(
+            this.hintText, hint,
+            MathBoard.HINT_MAX_SIZE, MathBoard.HINT_MIN_SIZE, MathBoard.HINT_MAX_H,
+        );
+        this.scene.tweens.add({ targets: this.hintText, alpha: 1, duration: 300 });
     }
 
     /**

@@ -5,6 +5,7 @@ import { EventBus, GameEvents } from '../utils/EventBus';
 import { DopamineFX } from '../ui/fx/DopamineFX';
 import { ThemeManager } from '../ui/theme/ThemeManager';
 import { TextManager } from '../systems/TextManager';
+import { LearnerStateManager } from '../systems/LearnerStateManager';
 import type { MathProblem } from '../utils/Types';
 
 /**
@@ -33,6 +34,11 @@ export class MathChallengeScene extends Phaser.Scene {
     private wrongAttempts = 0;
     private presentedAt = 0;
     private firstResponseMs = 0;
+    // Worked-example mode: the owl demonstrates, the child only watches.
+    private isDemo = false;
+    // Freebie: the first-ever try at a newly introduced skill. A win counts
+    // normally; a miss is never recorded against the learner.
+    private isFreebie = false;
 
     // NPC header elements
     private headerContainer!: Phaser.GameObjects.Container;
@@ -48,6 +54,8 @@ export class MathChallengeScene extends Phaser.Scene {
         npcGreeting?: string;
         currentProblemIndex?: number;
         problemCount?: number;
+        demo?: boolean;
+        freebie?: boolean;
     }): void {
         if (!data.problem) {
             console.warn('MathChallengeScene: no problem provided, closing.');
@@ -60,6 +68,8 @@ export class MathChallengeScene extends Phaser.Scene {
         this.wrongAttempts = 0;
         this.presentedAt = Date.now();
         this.firstResponseMs = 0;
+        this.isDemo = data.demo === true;
+        this.isFreebie = data.freebie === true;
 
         // Pause the game scene and let the challenge own the screen.
         this.scene.pause(SCENES.GAME);
@@ -91,6 +101,37 @@ export class MathChallengeScene extends Phaser.Scene {
         this.mathBoard = new MathBoard(this, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 40);
         this.mathBoard.showProblem(this.currentProblem);
 
+        if (this.isDemo) {
+            // Worked example: no input, no learner-model events. The owl walks
+            // through the problem in two beats — think aloud (hint), then the
+            // answer with its explanation — and hands over with "Your turn!".
+            this.mathBoard.lockInput();
+            this.time.delayedCall(900, () => this.mathBoard.showHintLine());
+            this.time.delayedCall(2400, () => this.mathBoard.revealAnswer());
+            this.time.delayedCall(4200, () => {
+                DopamineFX.numberFlyUp(
+                    this,
+                    GAME_WIDTH / 2,
+                    GAME_HEIGHT / 2 - 120,
+                    TextManager.getInstance().t('math.demo_your_turn'),
+                    '#ffd700',
+                    0,
+                );
+            });
+            this.time.delayedCall(5200, () => {
+                EventBus.emit(GameEvents.MATH_DEMO_COMPLETE, {
+                    problemId: this.currentProblem.id,
+                    domain: this.currentProblem.domain,
+                });
+                this.closeMathChallenge();
+            });
+            return;
+        }
+
+        // Progress pips: the wins already banked toward the next level-up in
+        // this problem's domain. The third pip is the step-up moment itself.
+        this.drawProgressPips();
+
         // Listen for answer
         EventBus.on('math-answer-selected', this.onAnswerSelected, this);
 
@@ -99,6 +140,32 @@ export class MathChallengeScene extends Phaser.Scene {
             problemId: this.currentProblem.id,
         });
         EventBus.emit(GameEvents.MATH_PROBLEM_PRESENTED, this.currentProblem);
+    }
+
+    private drawProgressPips(): void {
+        const learner = LearnerStateManager.getInstance();
+        const target = learner.getPromotionWinTarget();
+        const wins = Math.min(target, learner.getWinsAtCurrentStep(this.currentProblem.domain));
+        const tm = ThemeManager.getInstance();
+
+        const pipRadius = 7;
+        const pipSpacing = 24;
+        const rowWidth = (target - 1) * pipSpacing;
+        // Top-right corner inside the board (board is 520x280 centred at H/2+40).
+        const startX = GAME_WIDTH / 2 + 260 - 28 - rowWidth;
+        const y = GAME_HEIGHT / 2 + 40 - 140 + 20;
+
+        const pips = this.add.graphics().setDepth(420).setScrollFactor(0);
+        for (let i = 0; i < target; i++) {
+            const x = startX + i * pipSpacing;
+            if (i < wins) {
+                pips.fillStyle(tm.getColorNum('accent'), 1);
+                pips.fillCircle(x, y, pipRadius);
+            } else {
+                pips.lineStyle(2, tm.getColorNum('accent'), 0.7);
+                pips.strokeCircle(x, y, pipRadius);
+            }
+        }
     }
 
     private buildNPCHeader(
@@ -197,6 +264,7 @@ export class MathChallengeScene extends Phaser.Scene {
                     hintsUsed: this.currentProblem.hint && this.wrongAttempts > 0 ? 1 : 0,
                     responseMs: this.firstResponseMs,
                     wrongAttempts: this.wrongAttempts,
+                    freebie: this.isFreebie,
                 });
                 this.closeMathChallenge();
             });
@@ -215,6 +283,7 @@ export class MathChallengeScene extends Phaser.Scene {
                         hintsUsed: this.currentProblem.hint && this.wrongAttempts > 0 ? 1 : 0,
                         responseMs: this.firstResponseMs,
                         wrongAttempts: this.wrongAttempts,
+                        freebie: this.isFreebie,
                     });
                     this.closeMathChallenge();
                 });

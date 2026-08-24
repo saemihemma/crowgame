@@ -23,10 +23,11 @@ export class HUDScene extends Phaser.Scene {
     private abilitySlots!: AbilitySlots;
     private owlCounter!: OwlCounter;
     private touchControls!: TouchControls;
-    // Curriculum step-ups are queued and shown when the HUD is next visible,
-    // because they fire while the math overlay still owns (and hides) the HUD.
-    private pendingStepUps: MathDomain[] = [];
-    private stepUpBannerActive = false;
+    // Celebration banners (step-ups, comebacks) are queued and shown when the
+    // HUD is next visible, because they fire while the math overlay still
+    // owns (and hides) the HUD. Only ever good news — demotions never queue.
+    private pendingBanners: string[] = [];
+    private bannerActive = false;
 
     constructor() {
         super({ key: SCENES.HUD });
@@ -58,31 +59,38 @@ export class HUDScene extends Phaser.Scene {
         });
 
         EventBus.on(GameEvents.CURRICULUM_STEP_UP, this.onCurriculumStepUp, this);
+        EventBus.on(GameEvents.MATH_COMEBACK, this.onMathComeback, this);
         this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
             EventBus.off(GameEvents.CURRICULUM_STEP_UP, this.onCurriculumStepUp, this);
+            EventBus.off(GameEvents.MATH_COMEBACK, this.onMathComeback, this);
         });
     }
 
     update(): void {
         if (
-            this.pendingStepUps.length > 0 &&
-            !this.stepUpBannerActive &&
+            this.pendingBanners.length > 0 &&
+            !this.bannerActive &&
             this.scene.isVisible(SCENES.HUD)
         ) {
-            this.showStepUpBanner(this.pendingStepUps.shift()!);
+            this.showBanner(this.pendingBanners.shift()!);
         }
     }
 
     private onCurriculumStepUp = (data: { domain: MathDomain; step: number }): void => {
-        this.pendingStepUps.push(data.domain);
+        const tt = TextManager.getInstance();
+        this.pendingBanners.push(tt.t('math.step_up', tt.t(`domain.${data.domain}`)));
     };
 
-    /** Celebrate a difficulty step-up: only ever up-moves, never demotions. */
-    private showStepUpBanner(domain: MathDomain): void {
-        this.stepUpBannerActive = true;
+    /** The redemption arc: a skill missed earlier was just beaten on its
+     *  scheduled return. Celebrated harder than an ordinary win. */
+    private onMathComeback = (): void => {
+        this.pendingBanners.push(TextManager.getInstance().t('math.comeback'));
+    };
 
-        const tt = TextManager.getInstance();
-        const label = tt.t('math.step_up', tt.t(`domain.${domain}`));
+    /** Celebrate good news only: step-ups and comebacks, never demotions. */
+    private showBanner(label: string): void {
+        this.bannerActive = true;
+
         const cx = GAME_WIDTH / 2;
         const cy = 120;
 
@@ -111,7 +119,7 @@ export class HUDScene extends Phaser.Scene {
                         duration: 400,
                         onComplete: () => {
                             banner.destroy();
-                            this.stepUpBannerActive = false;
+                            this.bannerActive = false;
                         },
                     });
                 });

@@ -82,14 +82,14 @@ function createDomainHistoryMap(): LearnerDomainHistoryMap {
 
 function createCurriculumProgressMap(): DomainCurriculumProgressMap {
     return {
-        addition: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [] },
-        subtraction: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        multiplication: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        division: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        counting: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [] },
-        comparison: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        pattern_matching: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        number_sequence: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
+        addition: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
+        subtraction: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
+        multiplication: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
+        division: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
+        counting: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
+        comparison: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
+        pattern_matching: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
+        number_sequence: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
     };
 }
 
@@ -203,6 +203,15 @@ export class LearnerStateManager {
 
     getCurrentStep(domain: MathDomain): number {
         return this.getSnapshot().curriculumProgress[domain].currentStep;
+    }
+
+    /** Lifetime attempts in a domain; zero triggers the worked-example demo. */
+    getTotalAttempts(domain: MathDomain): number {
+        return this.getSnapshot().curriculumProgress[domain].totalAttempts ?? 0;
+    }
+
+    getPromotionWinTarget(): number {
+        return PROMOTION_WIN_TARGET;
     }
 
     getWinsAtCurrentStep(domain: MathDomain): number {
@@ -343,6 +352,7 @@ export class LearnerStateManager {
                 currentStep: Math.max(0, progress[domain]?.currentStep ?? 0),
                 winsAtCurrentStep: Math.max(0, progress[domain]?.winsAtCurrentStep ?? 0),
                 recentStepResults: [...(progress[domain]?.recentStepResults ?? [])].slice(-MAX_STEP_RESULTS),
+                totalAttempts: Math.max(0, progress[domain]?.totalAttempts ?? 0),
             };
         }
 
@@ -361,6 +371,7 @@ export class LearnerStateManager {
 
     private applyCurriculumProgress(attempt: LearnerAttemptSubmission): void {
         const progress = this.snapshot.curriculumProgress[attempt.domain];
+        progress.totalAttempts = (progress.totalAttempts ?? 0) + 1;
         progress.recentStepResults.push({
             step: attempt.curriculumStep,
             correct: attempt.correct,

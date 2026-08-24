@@ -22,6 +22,11 @@ var _wrong_attempts := 0
 var _presented_at := 0
 var _first_response_ms := 0
 var _done := false
+# Worked-example mode: the owl demonstrates, the child only watches.
+var _is_demo := false
+# Freebie: first-ever try at a newly taught skill. A win counts normally;
+# a miss is never recorded against the learner.
+var _is_freebie := false
 
 var _buttons: Array[Button] = []
 var _question_label: Label
@@ -38,7 +43,28 @@ func present(problem: Dictionary, opts: Dictionary = {}) -> void:
 	_done = false
 	_presented_at = Time.get_ticks_msec()
 	_first_response_ms = 0
+	_is_demo = bool(opts.get("demo", false))
+	_is_freebie = bool(opts.get("freebie", false))
 	_build_ui(opts)
+
+	if _is_demo:
+		# Worked example: no input, no learner-model events. Two beats — think
+		# aloud (hint), then the answer with its explanation — then hand over.
+		_set_buttons_enabled(false)
+		get_tree().create_timer(0.9).timeout.connect(
+			func(): _show_hint(_localised("hint")), CONNECT_ONE_SHOT)
+		get_tree().create_timer(2.4).timeout.connect(_reveal_answer, CONNECT_ONE_SHOT)
+		get_tree().create_timer(4.2).timeout.connect(func():
+			var viewport_size := get_viewport().get_visible_rect().size
+			DopamineFX.number_fly_up(self, viewport_size / 2.0 - Vector2(0, 120), TextManager.t("math.demo_your_turn"), ThemeManager.get_color_value("accent"))
+		, CONNECT_ONE_SHOT)
+		get_tree().create_timer(5.2).timeout.connect(func():
+			_done = true
+			EventBus.math_demo_complete.emit({"problemId": current_problem.get("id", ""), "domain": current_problem.get("domain", "")})
+			_close()
+		, CONNECT_ONE_SHOT)
+		return
+
 	EventBus.math_challenge_start.emit({"problemId": String(problem.get("id", ""))})
 	EventBus.math_problem_presented.emit(problem)
 
@@ -47,7 +73,7 @@ func is_active() -> bool:
 
 ## Submit an answer by option index (called by buttons and by tests).
 func submit_answer(index: int) -> void:
-	if _done:
+	if _done or _is_demo:
 		return
 	var answer: Dictionary = current_problem.get("answer", {})
 	var options: Array = answer.get("options", [])
@@ -103,6 +129,7 @@ func _result(correct: bool, first_attempt: bool) -> Dictionary:
 		"hintsUsed": 1 if has_hint else 0,
 		"responseMs": _first_response_ms,
 		"wrongAttempts": _wrong_attempts,
+		"freebie": _is_freebie,
 	}
 
 ## After the final allowed miss: highlight the correct answer, dim the rest,
@@ -163,6 +190,11 @@ func _build_ui(opts: Dictionary) -> void:
 		header.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/header_font_size", 22)))
 		vbox.add_child(header)
 
+	# Progress pips: wins already banked toward the next level-up in this
+	# problem's domain. The third pip is the step-up moment itself.
+	if not _is_demo:
+		vbox.add_child(_build_pips())
+
 	_question_label = Label.new()
 	_question_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var prompt_text := _localised("prompt")
@@ -222,6 +254,30 @@ func _build_ui(opts: Dictionary) -> void:
 func _pop_in(node: Control) -> void:
 	if is_instance_valid(node):
 		UiFx.elastic_entrance(node)
+
+## Small circles drawn in code (no glyphs — UI primitives are drawn, per the
+## i18n house rules): filled = wins banked, outlined = wins still to earn.
+func _build_pips() -> Control:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 10)
+	var target: int = LearnerStateManager.get_promotion_win_target()
+	var wins: int = mini(target, LearnerStateManager.get_wins_at_current_step(String(current_problem.get("domain", ""))))
+	var accent := ThemeManager.get_color_value("accent")
+	for i in target:
+		var pip := Panel.new()
+		pip.custom_minimum_size = Vector2(14, 14)
+		var style := StyleBoxFlat.new()
+		style.set_corner_radius_all(7)
+		if i < wins:
+			style.bg_color = accent
+		else:
+			style.bg_color = Color(0, 0, 0, 0)  # hardcode-ok: fully transparent, not a themed colour
+			style.set_border_width_all(2)
+			style.border_color = accent
+		pip.add_theme_stylebox_override("panel", style)
+		row.add_child(pip)
+	return row
 
 func _set_buttons_enabled(enabled: bool) -> void:
 	for b in _buttons:

@@ -1,7 +1,7 @@
 {
   "accepted": true,
   "kind": "browser_math_scene_smoke",
-  "reviewedAt": "2026-08-24T10:39:23.065Z",
+  "reviewedAt": "2026-08-24T11:08:17.097Z",
   "baseUrl": "http://localhost:8080/",
   "viewport": {
     "width": 1920,
@@ -9,27 +9,29 @@
   },
   "whatThisIs": "Literal browser-backed smoke for the live owl interaction, MathChallengeScene input, wrong-answer retry, and the single-problem completion flow.",
   "whatThisIsNot": "Not telemetry-backed pedagogy proof, not an empirical ELO calibration study, and not broad cross-session child replayability evidence.",
-  "clearedKeyCount": 2,
-  "firstPrompt": "2 + 2 = ?",
-  "firstProblemId": "cur_add_004",
-  "firstCorrectAnswer": 4,
-  "wrongOptionClicked": 2,
+  "clearedKeyCount": 0,
+  "firstPrompt": "3 + 3 = ?",
+  "firstProblemId": "cur_add_009",
+  "firstCorrectAnswer": 6,
+  "wrongOptionClicked": 3,
   "wrongAttemptRegistered": true,
   "singleProblemEncounter": true,
   "completionCount": 1,
   "completionHistory": [
     {
-      "problemId": "cur_add_004",
+      "problemId": "cur_add_009",
       "correct": true,
       "firstAttempt": false,
       "reward": 1,
       "hintsUsed": 1,
-      "responseMs": 1528,
-      "wrongAttempts": 1
+      "responseMs": 985,
+      "wrongAttempts": 1,
+      "freebie": true
     }
   ],
   "finalOverlayClosed": true,
   "gateChecks": {
+    "teachingDemoSeen": true,
     "wrongAttemptRegistered": true,
     "singleProblemEncounter": true,
     "completionCountReached": true,
@@ -40,6 +42,7 @@
   "consoleErrors": [],
   "pageErrors": [],
   "screenshots": [
+    "output/playwright/math-browser-smoke/math-demo.png",
     "output/playwright/math-browser-smoke/math-first.png",
     "output/playwright/math-browser-smoke/math-after-wrong.png",
     "output/playwright/math-browser-smoke/math-second.png"
@@ -76,6 +79,6 @@
       "src/utils/Types.ts",
       "tools/math_browser_smoke.mjs"
     ],
-    "value": "a7f9ac7ad6796690bf9d21b51d2b63d24a865e38f9ff0be9386575ce19c87174"
+    "value": "deb07c6a3d547117cf436b580e395caf2928652899c4bd8ea60a9846eea7d889"
   }
 }

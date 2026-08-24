@@ -10,6 +10,13 @@ export interface LevelRegistryEntry {
     music?: string;
     unlockRequirement: { level: string; minStars: number } | null;
     order: number;
+    /** The level's math identity: which domains its owls draw from and the
+     *  difficulty band they stay inside. Authored in the level spec and
+     *  mirrored into the registry so the runtime can read it. */
+    mathGating?: {
+        skills: string[];
+        difficultyBand: [number, number];
+    };
 }
 
 export interface LevelRegistry {
@@ -245,6 +252,9 @@ export interface DomainCurriculumProgress {
     currentStep: number;
     winsAtCurrentStep: number;
     recentStepResults: CurriculumStepResult[];
+    /** Lifetime attempts in this domain. Zero means the child has never met
+     *  it — the signal that triggers the worked-example teaching window. */
+    totalAttempts: number;
 }
 
 export type DomainCurriculumProgressMap = Record<MathDomain, DomainCurriculumProgress>;

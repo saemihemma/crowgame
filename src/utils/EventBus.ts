@@ -10,6 +10,8 @@ export const GameEvents = {
     MATH_PROBLEM_PRESENTED: 'math-problem-presented',
     MATH_ANSWER_SUBMITTED: 'math-answer-submitted',
     MATH_CHALLENGE_COMPLETE: 'math-challenge-complete',
+    MATH_DEMO_COMPLETE: 'math-demo-complete',
+    MATH_COMEBACK: 'math-comeback',
     CURRICULUM_STEP_UP: 'curriculum-step-up',
 
     // Player

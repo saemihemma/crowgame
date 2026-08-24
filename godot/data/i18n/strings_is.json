@@ -261,5 +261,8 @@
   "math.prompt.word.berries_find": "Þú hefur {a} ber. Þú finnur {b} í viðbót. Hvað eru berin mörg?",
   "math.prompt.word.berries_find.one": "Þú hefur {a} ber. Þú finnur {b} í viðbót. Hvað eru berin mörg?",
   "math.prompt.word.berries_eat": "Þú hefur {a} ber. Þú borðar {b}. Hversu mörg eru eftir?",
-  "math.prompt.word.berries_eat.one": "Þú hefur {a} ber. Þú borðar {b}. Hversu mörg eru eftir?"
+  "math.prompt.word.berries_eat.one": "Þú hefur {a} ber. Þú borðar {b}. Hversu mörg eru eftir?",
+  "math.demo_watch": "Fylgstu vel med, eg syni ther!",
+  "math.demo_your_turn": "Þú átt leik!",
+  "math.comeback": "Þú lærðir það!"
 }

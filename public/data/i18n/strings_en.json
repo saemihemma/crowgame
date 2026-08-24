@@ -261,5 +261,8 @@
   "math.prompt.word.berries_find": "You have {a} berries. You find {b} more. How many berries?",
   "math.prompt.word.berries_find.one": "You have {a} berry. You find {b} more. How many berries?",
   "math.prompt.word.berries_eat": "You have {a} berries. You eat {b}. How many are left?",
-  "math.prompt.word.berries_eat.one": "You have {a} berry. You eat {b}. How many are left?"
+  "math.prompt.word.berries_eat.one": "You have {a} berry. You eat {b}. How many are left?",
+  "math.demo_watch": "Watch closely, I will show you!",
+  "math.demo_your_turn": "Your turn!",
+  "math.comeback": "You learned it!"
 }

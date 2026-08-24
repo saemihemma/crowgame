@@ -77,9 +77,18 @@ export class ELOUpdateManager {
         firstAttempt: boolean;
         hintsUsed?: number;
         responseMs?: number;
+        freebie?: boolean;
     }): void => {
         if (!this.currentDomain || this.currentProblemELO === null) {
             console.warn('[ELOUpdateManager] Missing problem context, skipping learner update');
+            return;
+        }
+
+        // The freebie is the first-ever try at a newly taught skill: a win
+        // counts normally, a miss is never held against the learner.
+        if (data.freebie === true && !data.correct) {
+            console.log('[ELOUpdateManager] Freebie miss: nothing recorded');
+            this.clearContext();
             return;
         }
 
@@ -109,8 +118,21 @@ export class ELOUpdateManager {
 
         const learnerState = LearnerStateManager.getInstance();
         const stepBefore = learnerState.getCurrentStep(attempt.domain);
+        // Comeback: this attempt answers a review item born from a miss. If
+        // the child gets it right now, the miss becomes a redemption story —
+        // celebrated harder than an ordinary win.
+        const isComeback = attempt.correct &&
+            attempt.reviewItemId !== null &&
+            learnerState.getSnapshot().reviewItems.some(item =>
+                item.id === attempt.reviewItemId && item.lastOutcome === 'wrong');
         learnerState.recordAttempt(attempt);
         const stepAfter = learnerState.getCurrentStep(attempt.domain);
+        if (isComeback) {
+            EventBus.emit(GameEvents.MATH_COMEBACK, {
+                domain: attempt.domain,
+                skills: attempt.skills,
+            });
+        }
         if (stepAfter > stepBefore) {
             EventBus.emit(GameEvents.CURRICULUM_STEP_UP, {
                 domain: attempt.domain,
