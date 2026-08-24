@@ -1,7 +1,7 @@
 # Crow Math System Architecture
 
 Status: Current
-Authority: Runtime code and data, especially `BootScene`, `MathProblemManager`, `ELOManager`, `ELOAwareStrategy`, `LearnerStateManager`, `ELOUpdateManager`, `SaveManager`, and `LearnerSyncService`.
+Authority: Runtime code and data, especially `data_manager.gd`, `math_problem_manager.gd`, `elo_manager.gd`, `elo_aware_strategy.gd`, `learner_state_manager.gd`, `elo_update_manager.gd` and `save_manager.gd`. The executable specification for these numbers is `math-kernel/**`, locked by `godot/tests/fixtures/**`.
 Last verified against code: 2026-03-31
 
 ## Purpose
@@ -25,7 +25,7 @@ For offline math authoring, batch materialization, and review outputs, read [doc
 
 ```mermaid
 flowchart LR
-    Boot["BootScene math init"] --> Pools["MathProblemManager loads concrete pools"]
+    Boot["boot.gd math init"] --> Pools["MathProblemManager loads concrete pools"]
     Boot --> Mastery["ELOManager restores mastery"]
     Boot --> Learner["LearnerStateManager restores confidence, steps, review, unlocks"]
     Boot --> Sync["LearnerSyncService caches snapshot and optional sync"]
@@ -35,7 +35,7 @@ flowchart LR
     Learner --> Select
     Mastery --> Select
 
-    Select --> Challenge["MathChallengeScene and MathBoard"]
+    Select --> Challenge["math_challenge.gd overlay"]
     Challenge --> Update["ELOUpdateManager handles completion"]
 
     Update --> MasteryWrite["ELOManager updates mastery"]
@@ -83,7 +83,7 @@ Boot-time math initialization happens in [godot/scripts/autoload/data_manager.gd
    - due review items
    - local kid-safe ceilings such as operand caps
 4. `MathProblemManager` suppresses recently seen arithmetic facts by replay key, not just exact problem IDs, so wording variants of the same fact do not bounce back immediately.
-5. `MathChallengeScene` presents the selected problem.
+5. `math_challenge.gd` presents the selected problem.
 6. `MathBoard` renders the answer UI.
 
 Current answer UI:

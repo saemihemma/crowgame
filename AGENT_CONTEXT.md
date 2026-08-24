@@ -38,8 +38,10 @@ Maths and learner:
 Profile, save, sync:
 - `godot/scripts/autoload/profile_manager.gd`
 - `godot/scripts/autoload/save_manager.gd`
-- `godot/scripts/systems/learner_sync_service.gd`
-- `godot/scripts/systems/cloud_sync.gd`
+- `godot/scripts/systems/cloud_sync.gd` — **the live cloud transport**
+- `godot/scripts/systems/learner_sync_service.gd` — the local snapshot cache and
+  pending-attempt queue. Its own remote paths are the retired pre-contract shape
+  and are inert; do not extend them.
 
 Content:
 - `godot/data/levels/specs/*.spec.json` (authored) →

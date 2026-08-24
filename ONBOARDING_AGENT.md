@@ -33,6 +33,11 @@ godot/**        THE GAME.       Godot 4.3 / GDScript. Players run this.
 server/**       THE API.        Node 22 + TS + Postgres. Cloud save, auth, errors.
 math-kernel/**  THE SPEC.       TS reference for ELO/learner/selection. Never ships.
 tools/**        THE FACTORY.    Offline curriculum authoring + validation. Never ships.
+
+src/  public/  vite/  admin.html   DEAD. Pending deletion. Nothing references
+                                   them, nothing builds them. If a search leads
+                                   you here, you are in the retired Phaser game.
+archived/**                        History. Not runtime, not current, do not cite.
 ```
 
 `math-kernel/` earns its keep two ways: it generates
@@ -73,12 +78,12 @@ Game:
 - `godot/data/npcs/npc_registry.json` contains 1 NPC entry (the owl)
 - `godot/data/enemies/enemy_registry.json` contains 1 enemy type (the cockroach)
 - `godot/data/audio/audio_manifest.json` currently exposes 5 music tracks and 15 live SFX entries.
-- **51** `.gd` scripts, **24** `.tscn` scenes
+- **51** `.gd` scripts under `godot/scripts/`, **24** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
-- `godot/data/audio/sound_events.json`: **16** semantic sound events
+- `godot/data/audio/sound_events.json`: **15** semantic sound events
 - `godot/data/i18n/strings_en.json`: **93** keys, matched key-for-key by
   `strings_is.json`
-- **17** Tier-1 autoloads, listed in `godot/project.godot`
+- **18** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
 Maths content — `DataManager` loads 4 math pools totaling 3000 problems:
 - `curriculum`: 2885

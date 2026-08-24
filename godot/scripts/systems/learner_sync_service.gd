@@ -1,5 +1,17 @@
 extends Node
-## LearnerSyncService — Godot port of src/systems/LearnerSyncService.ts. Autoload.
+## LearnerSyncService — the local snapshot cache and pending-attempt queue.
+##
+## IMPORTANT: its remote paths are NOT the live transport.
+##
+## The `{api_base}/learner/{childId}/...` requests below are the PRE-CONTRACT
+## shape. docs/API_CONTRACT.md declares that shape void — childId was never a
+## usable authorization subject — and no server route implements it. They are
+## inert: get_api_base() returns null outside a debug build.
+##
+## The live transport is cloud_sync.gd, which talks to the same-origin /api/v1
+## with a device cookie. What is still load-bearing HERE is the local side: the
+## snapshot cache and the pending-attempt queue, which cloud_sync.gd drains via
+## take_pending_attempts() / confirm_attempts().
 ##
 ## Local snapshot cache + pending-attempt queue with optional hosted sync.
 ## Storage keys are identical to the web build:

@@ -1,5 +1,5 @@
-Status: Supportive
-Authority: Documentation hardening review artifact for the 2026-03-31 release-prep pass. Runtime truth still lives in `src/**`, `public/data/**`, `admin.html`, manifests, and referenced assets.
+Status: Historical
+Authority: None. Archived review artifact, kept as history. Its claims about runtime truth were accurate on its own date and are not accurate now.
 Last verified against code: 2026-03-31
 
 # Documentation Hardening Review 2026-03-31

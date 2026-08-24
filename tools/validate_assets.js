@@ -13,7 +13,7 @@ const colors = {
 };
 
 const ROOT = path.join(__dirname, '..');
-const BOOT_SCENE_PATH = path.join(ROOT, 'src', 'scenes', 'BootScene.ts');
+const GODOT_ROOT = path.join(ROOT, 'godot');
 const AUDIO_MANIFEST_PATH = path.join(ROOT, 'godot', 'data', 'audio', 'audio_manifest.json');
 const COMPILED_LEVELS_DIR = path.join(ROOT, 'godot', 'data', 'levels', 'compiled');
 const LIVE_ASSET_ROOT = path.join(ROOT, 'godot', 'assets');
@@ -122,13 +122,56 @@ function printGroup(title, entries, missing) {
     }
 }
 
-function extractBootVisualAssets() {
-    const bootSource = readText(BOOT_SCENE_PATH);
-    const matches = [
-        ...bootSource.matchAll(/this\.load\.(?:image|spritesheet)\(\s*'[^']+'\s*,\s*'([^']+)'/g),
+/**
+ * Every visual asset the game actually references.
+ *
+ * The Phaser original declared these in one place (a BootScene full of
+ * `this.load.image(...)` calls), so this used to be a single-file scrape. Godot
+ * has no such chokepoint: a texture is referenced from a `.gd` constant, a
+ * `.tscn` ext_resource, a `.tres`, or a data registry. So scan all four for
+ * `res://assets/...` and bare `assets/...` paths.
+ *
+ * Scanning more places than the old version is the point — a single-file scrape
+ * would now silently miss most of the real references and report live assets as
+ * unreferenced.
+ */
+function extractReferencedVisualAssets() {
+    const sources = [
+        ...collectFiles(path.join(GODOT_ROOT, 'scripts'), ['.gd']),
+        ...collectFiles(path.join(GODOT_ROOT, 'scenes'), ['.tscn']),
+        ...collectFiles(path.join(GODOT_ROOT, 'resources'), ['.tres', '.tscn']),
+        ...collectFiles(path.join(GODOT_ROOT, 'data'), ['.json']),
     ];
 
-    return [...new Set(matches.map(match => normalizeToLiveAssetPath(match[1])))].sort();
+    const found = new Set();
+    for (const file of sources) {
+        // Strip GDScript comments first. A path inside a doc comment is an
+        // example, not a reference — level_loader.gd documents the Tiled path
+        // shape as "../../assets/tilesets/x.png", and counting that as live made
+        // validation demand a file that was never supposed to exist.
+        const text = path.extname(file) === '.gd'
+            ? readText(file).split('\n').filter(line => !line.trim().startsWith('#')).join('\n')
+            : readText(file);
+        for (const match of text.matchAll(/(?:res:\/\/)?(assets\/[A-Za-z0-9_\-./]+\.(?:png|jpg|jpeg|svg|webp))/g)) {
+            found.add(normalizeToLiveAssetPath(match[1]));
+        }
+    }
+    return [...found].sort();
+}
+
+/** Recursively list files under dir with one of the given extensions. */
+function collectFiles(dir, extensions) {
+    if (!fs.existsSync(dir)) return [];
+    const out = [];
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            out.push(...collectFiles(full, extensions));
+        } else if (extensions.includes(path.extname(entry.name).toLowerCase())) {
+            out.push(full);
+        }
+    }
+    return out;
 }
 
 function extractManifestAudioAssets() {
@@ -198,7 +241,7 @@ function main() {
         process.exit(1);
     }
 
-    const bootVisuals = extractBootVisualAssets();
+    const bootVisuals = extractReferencedVisualAssets();
     const audioAssets = extractManifestAudioAssets();
     const compiledLevelAssets = extractCompiledLevelAssets();
     const referencedAssets = [
@@ -211,7 +254,7 @@ function main() {
     const missingAssets = [];
 
     console.log(`\n${colors.green}OK${colors.reset} audio_manifest.json loaded`);
-    console.log(`${colors.green}OK${colors.reset} BootScene asset paths extracted from source`);
+    console.log(`${colors.green}OK${colors.reset} referenced asset paths extracted from godot sources`);
     console.log(`${colors.green}OK${colors.reset} compiled level tileset image paths extracted from JSON`);
 
     printGroup('Sound Effects', audioAssets.sfx, missingAssets);

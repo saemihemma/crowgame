@@ -54,8 +54,11 @@ function loadJson(relativePath) {
     return JSON.parse(readText(relativePath));
 }
 
+// `_comment` keys are documentation inside data files — the repo uses them widely
+// and they are not entries. Counting them is how the sound-event number drifted.
 function countObjectKeys(value) {
-    return value ? Object.keys(value).length : 0;
+    if (!value) return 0;
+    return Object.keys(value).filter(key => !key.startsWith('_')).length;
 }
 
 function formatInlineCodeList(values) {
@@ -255,6 +258,37 @@ function validateOnboardingSnapshot(currentDocs) {
         : `currently exposes ${musicCount} music tracks and ${sfxCount} live SFX entries`;
     ensureDocContains('ONBOARDING_AGENT.md', audioSnapshot, 'audio manifest snapshot');
 
+    // Counts this file did NOT compute are exactly the counts that drifted: the
+    // snapshot claimed 17 autoloads after an 18th was added, and 16 sound events
+    // when one of the 16 keys is `_comment`. Asserting a number the validator can
+    // derive is cheap; trusting prose is not.
+    const autoloadCount = (readText('godot/project.godot')
+        .match(/^[A-Za-z_][A-Za-z0-9_]*="\*res:\/\//gm) || []).length;
+    ensureDocContains('ONBOARDING_AGENT.md', `**${autoloadCount}** autoloads`, 'autoload count snapshot');
+
+    const soundEventCount = countObjectKeys(loadJson('godot/data/audio/sound_events.json'));
+    ensureDocContains('ONBOARDING_AGENT.md',
+        `**${soundEventCount}** semantic sound events`, 'sound event count snapshot');
+
+    const spawnCount = countObjectKeys(loadJson('godot/data/registries/spawn_registry.json'));
+    ensureDocContains('ONBOARDING_AGENT.md',
+        `**${spawnCount}** spawnable object types`, 'spawn type count snapshot');
+
+    const stringKeyCount = countObjectKeys(loadJson('godot/data/i18n/strings_en.json'));
+    ensureDocContains('ONBOARDING_AGENT.md', `**${stringKeyCount}** keys`, 'string key count snapshot');
+
+    // Probe count is parsed from the runner, so adding a probe without updating
+    // the docs fails rather than quietly diverging.
+    const probeCount = (readText('godot/tools/run_tests.sh')
+        .match(/res:\/\/tests\/integration\/\w+\.tscn/g) || []).length;
+    ensureDocContains('ONBOARDING_AGENT.md',
+        `**${probeCount}** headless physics probes`, 'probe count snapshot');
+    ensureDocContains('README.md', `${probeCount} physics probes`, 'readme probe count');
+
+    const migrationCount = fs.readdirSync(path.join(root, 'server/migrations'))
+        .filter(f => f.endsWith('.sql')).length;
+    ensureDocContains('ONBOARDING_AGENT.md', `**${migrationCount}** migrations`, 'migration count snapshot');
+
     const forbiddenPatterns = [
         { pattern: /\bregisters \d+ scenes\b/, description: 'scene counts' },
         { pattern: /\bloads \d+ math pools totaling \d+ problems\b/, description: 'math pool counts' },
@@ -358,8 +392,8 @@ function validateStorageContracts() {
         ensureDocContains('ONBOARDING_AGENT.md', `- \`${key}\``, `onboarding state-reset key ${key}`);
     }
 
-    ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', '`LoginScene.loginSuccess()` owns the normal profile-switch rehydrate path', 'profile-switch owner note');
-    ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', '`BootScene` mirrors that same rehydrate sequence only on cold start', 'cold-start mirror note');
+    ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', '`login.gd` `_finish_login()` owns the normal profile-switch rehydrate path', 'profile-switch owner note');
+    ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', '`boot.gd` mirrors that same rehydrate sequence only on cold start', 'cold-start mirror note');
     ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', 'active profile identity always wins over any saved or remote child identity', 'identity precedence rule');
     ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', 'live mastery from `ELOManager` wins over stale mastery embedded in an older learner snapshot during initialization', 'mastery precedence rule');
     ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', 'cached local snapshot is the fallback when remote fetch fails', 'cached snapshot fallback');

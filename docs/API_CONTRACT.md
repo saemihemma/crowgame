@@ -25,7 +25,7 @@ The API base is the literal string `/api/v1`. Not a configurable URL.
 
 `crow_learner_api_base` — today a client-writable key that any script on the
 origin can set, with an input field for it in the old admin page — is demoted to
-a debug-only override, readable only under `OS.has_feature("debug")`. It is not a
+a debug-only override, readable only under `OS.is_debug_build()`. It is not a
 configuration input in a shipped build.
 
 This is forced by how deploys work. Promotion to prod pushes the *byte-identical*
@@ -151,6 +151,8 @@ substrate for any future server-authoritative reducer.
 | Method | Path | Auth | Purpose |
 | --- | --- | --- | --- |
 | `GET` | `/api/v1/health` | none | liveness + migration state |
+| `GET` | `/api/v1/auth/session` | none | is this device enrolled? |
+| `POST` | `/api/v1/auth/signout` | device | revoke this device's tokens |
 | `POST` | `/api/v1/errors` | **none** | client error ingestion |
 | `POST` | `/api/v1/auth/request-link` | none | email a magic link |
 | `GET` | `/api/v1/auth/consume` | link token | top-level nav; sets device cookie |

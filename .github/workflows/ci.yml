@@ -18,10 +18,16 @@ name: CI
 on:
   push:
     branches: [main, release]
-    paths-ignore: ['output/web/**', '**/*.md']
+    # Markdown is NOT ignored: doc validation is the check most likely to be
+    # needed by a docs-only change, and ignoring .md turned it off for exactly
+    # that case. Only the committed build artifact is ignored.
+    paths-ignore: ['output/web/**']
   pull_request:
     branches: [main, release]
-    paths-ignore: ['output/web/**', '**/*.md']
+    # Markdown is NOT ignored: doc validation is the check most likely to be
+    # needed by a docs-only change, and ignoring .md turned it off for exactly
+    # that case. Only the committed build artifact is ignored.
+    paths-ignore: ['output/web/**']
   workflow_dispatch:
 
 jobs:

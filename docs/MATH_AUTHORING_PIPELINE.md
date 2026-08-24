@@ -1,7 +1,7 @@
 # Crow Math Authoring Pipeline
 
 Status: Current
-Authority: Current workflow guide for offline math authoring, materialization, and review. Runtime truth still lives in `godot/data/math/**` plus the live selection code in `src/math/**` and `src/systems/**`.
+Authority: Current workflow guide for offline math authoring, materialization, and review. Runtime truth still lives in `godot/data/math/**` plus the live selection code in `godot/scripts/math/**` and `godot/scripts/systems/**`. The offline pipeline itself runs on `math-kernel/**`, which never ships.
 Last verified against code: 2026-03-31
 
 ## Purpose

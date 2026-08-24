@@ -1,7 +1,7 @@
 # Asset Specifications
 
 Status: Supportive
-Authority: Live asset contract plus workflow guidance. Runtime truth still depends on BootScene, manifests, and registries.
+Authority: Live asset contract plus workflow guidance. Runtime truth depends on `godot/scripts/**` references, manifests, and registries.
 Last verified against code: 2026-03-22
 
 ## Purpose
@@ -72,13 +72,13 @@ godot --path godot   # play it
 
 `validate:assets` verifies:
 - the current audio manifest entries
-- BootScene visual assets extracted from source
+- referenced visual assets extracted from the Godot sources
 - compiled level tileset image references
 - suspicious unreferenced leftovers that should be archived instead of staying live
 
 `npm run validate` already includes `validate:assets`. Use `npm run validate:assets` when you only want the asset subset during iteration.
 
 Manual checks:
-- confirm BootScene loads the asset without warnings
+- confirm the game loads the asset without warnings
 - confirm the asset is actually visible or audible in runtime
 - confirm the path came from a live manifest or code reference, not an archived folder

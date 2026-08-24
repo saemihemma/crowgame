@@ -1,5 +1,5 @@
-Status: Supportive
-Authority: Review artifact for the 2026-03-23 grounding pass, not the long-term source of truth for rendering architecture.
+Status: Historical
+Authority: None. Archived review artifact, kept as history. Its claims about runtime truth were accurate on its own date and are not accurate now.
 Last verified against code: 2026-03-23
 
 # Grounding Review - 2026-03-23

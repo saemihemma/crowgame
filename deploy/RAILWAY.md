@@ -27,7 +27,8 @@ One repo, two Railway services, in **one** Railway project:
 | `crow-web-prod` | branch `release` | what players get | `no-cache` | yes |
 | `crow-api-prod` | branch `release` | API. **No public domain** | n/a | n/a |
 
-Plus one Postgres per environment. Six services, two environments, one project.
+Plus one Postgres and one retention cron service per environment (see §2c).
+Eight services, two environments, one project.
 
 The API is deliberately **not** publicly routable: the web service reverse-proxies
 `/api/*` to it over Railway's private network. That is what lets the client use the
@@ -83,7 +84,7 @@ Railway service wiring is not config-as-code in this project.
 ### 1. Create the project and the staging service
 
 1. **New Project → Deploy from GitHub repo →** select the `crowgame` repo.
-2. Rename the created service to **`crow-staging`**.
+2. Rename the created service to **`crow-web-staging`**.
 3. **Settings → Build:**
    - Root Directory: *(leave blank — repo root)*
    - Builder: `Dockerfile`
@@ -101,7 +102,7 @@ Railway service wiring is not config-as-code in this project.
 ### 2. Create the prod service
 
 1. In the **same project**: **New → GitHub Repo →** the same `crowgame` repo.
-2. Rename it to **`crow-prod`**.
+2. Rename it to **`crow-web-prod`**.
 3. **Settings → Build:** identical to staging (Dockerfile path
    `deploy/web/Dockerfile`, blank root directory).
 4. **Settings → Source:** Branch = **`release`**, auto-deploy **on**.
@@ -120,8 +121,13 @@ For each environment (`staging`, then `prod`):
 1. **New → Database → PostgreSQL.** Railway sets `DATABASE_URL` for you.
 2. **New → GitHub Repo →** the same repo. Name it `crow-api-<env>`.
 3. **Settings → Build:** Dockerfile Path = `deploy/api/Dockerfile`, Root
-   Directory blank. Confirm afterwards that the build log actually used that
-   Dockerfile — a root `railway.json` can otherwise win.
+   Directory blank.
+
+   > **Check the build log before moving on.** A root `railway.json` exists and
+   > pins `deploy/web/Dockerfile`. If it wins, this service silently builds and
+   > runs the *web* image — a Caddy serving static files, which passes a
+   > superficial health check and serves no API at all. Confirm the log names
+   > `deploy/api/Dockerfile`.
 4. **Settings → Source:** branch `main` for staging, `release` for prod.
 5. **Settings → Networking:** do **not** generate a public domain. Private only.
 6. **Variables:**
@@ -163,7 +169,7 @@ this is a cron service rather than a database job.
 
 ### 3. Create the release branch
 
-The `release` branch must exist before `crow-prod` can deploy:
+The `release` branch must exist before `crow-web-prod` can deploy:
 
 ```bash
 git fetch origin main
@@ -175,7 +181,7 @@ git push origin origin/main:refs/heads/release
 ### Normal flow
 
 ```
-push to main ──▶ CI: godot tests + web export ──▶ crow-staging deploys
+push to main ──▶ CI: godot tests + web export ──▶ crow-web-staging deploys
                                                         │
                                           verify on the actual iPad
                                                         │
@@ -183,7 +189,7 @@ push to main ──▶ CI: godot tests + web export ──▶ crow-staging deplo
                                           promote: main ──▶ release
                                                         │
                                                         ▼
-                                                  crow-prod deploys
+                                              crow-web-prod deploys
 ```
 
 ### Promote staging to prod
@@ -224,7 +230,7 @@ progress, an untested backup is not a backup.
 
 Fastest code rollback — no git, no rebuild:
 
-> Railway → `crow-prod` → **Deployments** → pick the last good deployment →
+> Railway → `crow-web-prod` → **Deployments** → pick the last good deployment →
 > **Redeploy**.
 
 To make the rollback stick across the next promotion, move the branch too:
@@ -273,8 +279,8 @@ aggregates are kept forever and are tiny.
 
 - **No volumes.** Postgres is the only stateful thing; nothing is written to a
   service's local disk.
-- **No cloud save yet.** Phase 1 is error ingestion only. Auth and save sync are
-  Phase 2 in `docs/API_CONTRACT.md`.
+- **No third-party analytics, ads, or tracking.** The only thing sent from a
+  client is a save, an attempt batch, or an error report.
 - **No more than one API replica.** The rate limiter is in-memory, which is
   correct for a single instance. Scaling out means moving it to Postgres or Redis
   first — noted rather than pre-built.

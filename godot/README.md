@@ -14,7 +14,7 @@ parity tests here assert against.
 
 ## Status — feature complete (slices 1–8)
 - **Pixel-perfect 960×540** viewport (canvas_items/keep, Nearest filter, gravity 800).
-- **Data + autoloads + EventBus**: every JSON loaded (3000 math problems); managers ported
+- **Data + autoloads + EventBus**: every JSON loaded; managers ported
   (Save/Profile/Text/Level/Leveling/Theme/Audio) over a `user://` localStorage-equivalent.
 - **Adaptive math/learner engine** (highest-fidelity risk): ELOManager, ProblemPoolManager,
   ProblemReplayKey, LearnerStateManager, ELOAwareStrategy, OwlSelection, ELOUpdateManager —
@@ -23,10 +23,11 @@ parity tests here assert against.
   (coyote/jump-buffer/variable-jump/drag/maxSpeed/terminal), verified against a TS reference.
 - **Gameplay**: tilemap dual pipeline (runtime loader + editable level scenes), coins, lives,
   hazards, doors, camera, enemies (cockroach patrol), laser projectile, abilities framework.
-- **Owl flow**: NPC components → MathChallenge overlay → 2 problems (600ms retry lockout on a
+- **Owl flow**: NPC components → MathChallenge overlay → a short problem set (600ms retry lockout on a
   first wrong answer) → ELO/learner update → save → optional hosted sync.
-- **LearnerSyncService**: snapshot cache + pending-attempt queue with identical storage keys;
-  local-only by default, hosted sync via `crow_learner_api_base` when configured.
+- **Cloud save** (`cloud_sync.gd`): debounced save upload, batched attempts, and
+  adopt-server-state on conflict, over the same-origin API. Local-only when no API
+  is reachable, which is a supported state rather than an error.
 - **UI**: HUD (lives/coins/owls/ability chips, milestone bursts), touch controls (mobile),
   Login (PIN dots), MainMenu (build stamp), LevelSelect, Pause, completion screen.
 - **Feel**: crow walk animation, NPC name prompt + idle bob, jump dust, enemy death burst,
@@ -42,7 +43,7 @@ parity tests here assert against.
 # Play in the Godot editor: open this folder as a project, F5.
 godot --path .
 
-# Headless test suite (34 unit tests + 4 physics integration probes)
+# Headless test suite (65 unit tests + 6 physics integration probes)
 bash tools/run_tests.sh
 
 # Regenerate golden parity fixtures from the TS source (when math/movement changes)
@@ -57,12 +58,17 @@ godot --headless --path . --script res://tools/import_level.gd
 ```
 
 ## Layout
-- `scripts/autoload/` — EventBus, Persistence, Data/Save/Profile/Text/Level/Leveling/Theme/Audio.
+- `scripts/boot.gd` — cold-start wiring; `scripts/autoload/` — EventBus,
+  Persistence, Config, SceneRouter, Data/Save/Profile/Text/Level/Leveling/Theme/Audio.
 - `scripts/math/` — ELOManager, ProblemPoolManager, ProblemReplayKey, ELOAwareStrategy,
   MathProblemManager, OwlSelection.
-- `scripts/systems/` — LearnerStateManager, ELOUpdateManager, LevelLoader.
+- `scripts/systems/` — LearnerStateManager, ELOUpdateManager, LevelLoader,
+  LearnerSyncService, CloudSync.
 - `scripts/entities/` — player, enemy, projectile, coin/hazard/door, npc + components.
-- `scripts/ui/` — hud, touch_controls, math_challenge, fx/dopamine_fx.
+- `scripts/ui/` — hud, touch_controls, math_challenge, cloud_panel,
+  parent_report, fx/dopamine_fx.
+- The API this talks to lives in `../server/**`; the contract is
+  `../docs/API_CONTRACT.md`.
 - `scripts/scenes/` — game, main_menu, level_select, login, pause.
 - `tests/` — zero-dependency headless harness; `tests/fixtures/` golden values; `tests/integration/` probes.
 - `data/`, `assets/` — verbatim copies of the source content.
@@ -73,8 +79,10 @@ godot --headless --path . --script res://tools/import_level.gd
 - **Experience parity (ported feel, Godot-native):** screen shake, damage flash, dopamine
   particles, dialog/menus are implemented with Godot tweens/GPUParticles2D/shaders rather than
   transliterating the original's draw calls.
-- Hosted learner sync defaults to local-only (the TS default); set the
-  `crow_learner_api_base` persistence key to enable a backend.
+- Cloud sync is off until a device is enrolled, and then talks only to
+  a same-origin `/api/v1`, proxied per environment. `crow_learner_api_base` is a
+  debug-only override and is NOT a way to point a shipped build at a backend —
+  see `../docs/API_CONTRACT.md`.
 - Web build is single-threaded for static-host/mobile compatibility.
 - Deliberately not carried over: the old `admin.html` translation editor (a live
   string editor is not something to ship publicly) and the multi-threaded web

@@ -19,6 +19,7 @@ easiest way to do work that never ships, so they are stated first:
 | `server/**` | **The API.** Node 22 + TypeScript + Postgres: cloud save, family auth, error ingestion. | yes, as a Railway service |
 | `math-kernel/**` | **The reference kernel.** TypeScript implementation of ELO, learner state and problem selection. | never |
 | `tools/**` | Offline authoring and validation for the maths curriculum. | never |
+| `src/`, `public/`, `vite/`, `admin.html` | **Dead.** The retired Phaser game and its data twin, pending deletion. Nothing references or builds them. | no — ignore entirely |
 
 `math-kernel/` is not dead code and not a second game. It has two jobs: it
 generates `godot/tests/fixtures/*.json`, which the Godot parity tests assert
@@ -41,6 +42,11 @@ ships. CI fails if the committed fixtures no longer match what it produces.
 6. [deploy/RAILWAY.md](./deploy/RAILWAY.md) — staging, prod, promotion, rollback
 7. [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md) — the verification loop every
    change ships against
+8. [CONTRIBUTING.md](./CONTRIBUTING.md) — what a good change looks like here
+
+For parents: **[PRIVACY.md](./PRIVACY.md)** says in plain language what the game
+stores about a child, what leaves the device, and how to delete all of it. To
+report something privately, see [SECURITY.md](./SECURITY.md).
 
 ## Run it
 

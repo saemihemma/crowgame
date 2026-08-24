@@ -2,35 +2,58 @@
 
 Status: Current
 Authority: Contributor workflow and verification guide.
-Last verified against code: 2026-03-31
+Last verified against code: 2026-08-24
 
 ## Core Loop
 
 Use this as the default change loop:
 
-```powershell
+```bash
+# The game — this is the gate that matters most
+bash godot/tools/run_tests.sh          # hardcode guard + unit tests + physics probes
+
+# The offline toolchain and the docs
+npm run typecheck
 npm run validate
-npx tsc --noEmit
-godot --path godot   # play it
+
+godot --path godot                     # then actually play it
 ```
 
-Add these when needed:
+Add these when the change touches them:
 
-```powershell
+```bash
+# after editing a level spec
 npm run compile
+
+# after any change that ships to players
 bash godot/tools/build_web.sh
+node godot/tools/web_boot_smoke.mjs    # the EXPORT, not the source
+
+# the API — needs a Postgres
+DATABASE_URL=postgres://... npm --prefix server run migrate
+DATABASE_URL=postgres://... npm --prefix server test
+DATABASE_URL=postgres://... node godot/tools/error_pipeline_e2e.mjs
+
+# after curriculum authoring
 npm run math:materialize
 npm run math:review
-node godot/tools/web_boot_smoke.mjs
 ```
 
-`npm run validate` now covers:
+Why `web_boot_smoke.mjs` is not optional for a shipping change: the GDScript suite
+runs from source and structurally cannot see an export-config mistake. It has
+already caught a URL the engine rejects at runtime and a shadowed variable that
+broke an autoload entirely — both invisible to every other check here.
+
+`npm run validate` covers:
 - content validation
 - doc metadata presence checks
 - canonical onboarding snapshot checks
 - duplicate mutable-count checks in the current doc set
 - selected architecture-contract checks for learner, math, and UI docs
 - source-derived live asset presence checks and suspicious live-asset leftovers
+
+It does **not** cover the game itself or the API. `run_tests.sh` and
+`npm --prefix server test` are separate gates, and CI runs all three.
 
 ## Before You Edit
 
@@ -105,7 +128,7 @@ Cloud sync changes:
 Update docs in the same pass when you change:
 - runtime architecture
 - current commands
-- localStorage keys
+- client storage keys
 - scene flow
 - learner state contracts
 - archive policy
@@ -113,10 +136,16 @@ Update docs in the same pass when you change:
 Current docs:
 - [README.md](./README.md)
 - [ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md)
+- [AGENT_CONTEXT.md](./AGENT_CONTEXT.md)
+- [godot/ARCHITECTURE.md](./godot/ARCHITECTURE.md)
+- [godot/README.md](./godot/README.md)
 - [MATH_SYSTEM_ARCHITECTURE.md](./MATH_SYSTEM_ARCHITECTURE.md)
 - [docs/MATH_AUTHORING_PIPELINE.md](./docs/MATH_AUTHORING_PIPELINE.md)
-- [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)
 - [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md)
+- [docs/API_CONTRACT.md](./docs/API_CONTRACT.md)
+- [deploy/RAILWAY.md](./deploy/RAILWAY.md)
+- [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)
+- [PRIVACY.md](./PRIVACY.md)
 
 ## Restore Rule
 

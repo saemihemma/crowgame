@@ -19,7 +19,7 @@ Preferred path:
 1. generate the sprite externally
 2. review it manually
 3. place the final approved file directly in `godot/assets/**`
-4. wire it through BootScene, a manifest, or a registry
+4. wire it through a manifest or a registry
 5. test it in the game
 
 Optional helper scripts still exist:
