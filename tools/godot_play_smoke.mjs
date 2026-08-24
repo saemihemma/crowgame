@@ -49,11 +49,11 @@ const H = 540;
 
 /**
  * Coordinates derived from the layout code, not guessed:
- *   language pills  - godot/scripts/ui/language_toggle.gd (MARGIN 20, 132x44, gap 6)
+ *   language pills  - godot/scripts/ui/language_toggle.gd (MARGIN 20, 149x44, gap 6)
  *   touch controls  - godot/scripts/ui/touch_controls.gd  (PAD 16, BTN 88, GAP 12)
  */
 const HIT = {
-    localeIs: [W - 20 - 132 / 2, 20 + 44 / 2],
+    localeIs: [W - 20 - 149 / 2, 20 + 44 / 2],
     firstListRow: [W / 2, 116],
     nameField: [W / 2, 106],
     pinField: [W / 2, 249],
