@@ -1,38 +1,39 @@
 {
   "en": [
     {
-      "prompt": "1 + 3 = ?",
-      "renderedPrompt": "1 + 3 = ?",
+      "prompt": "What is 1 + 2?",
+      "renderedPrompt": "What is 1 + 2?",
       "locale": "en",
-      "problemId": "cur_add_005",
-      "correctAnswer": 4,
+      "problemId": "auth_batch_01_addition_under_10_near_doubles_low_v3eqqh",
+      "correctAnswer": 3,
       "options": [
-        2,
-        3,
+        0,
         4,
-        5
+        2,
+        3
       ],
       "wrongAttempts": 0,
       "demo": true,
       "freebie": false,
+      "golden": false,
       "optionCenters": [
         {
-          "value": 2,
+          "value": 4,
           "x": 294,
           "y": 350
         },
         {
-          "value": 3,
+          "value": 0,
           "x": 418,
           "y": 350
         },
         {
-          "value": 4,
+          "value": 3,
           "x": 542,
           "y": 350
         },
         {
-          "value": 5,
+          "value": 2,
           "x": 666,
           "y": 350
         }
@@ -45,38 +46,39 @@
       }
     },
     {
-      "prompt": "1 + 3 = ?",
-      "renderedPrompt": "1 + 3 = ?",
+      "prompt": "What is 1 + 2?",
+      "renderedPrompt": "What is 1 + 2?",
       "locale": "en",
-      "problemId": "cur_add_005",
-      "correctAnswer": 4,
+      "problemId": "auth_batch_01_addition_under_10_near_doubles_low_v3eqqh",
+      "correctAnswer": 3,
       "options": [
-        2,
-        3,
+        0,
         4,
-        5
+        2,
+        3
       ],
       "wrongAttempts": 0,
       "demo": true,
       "freebie": false,
+      "golden": false,
       "optionCenters": [
         {
-          "value": 2,
+          "value": 4,
           "x": 294,
           "y": 350
         },
         {
-          "value": 3,
+          "value": 0,
           "x": 418,
           "y": 350
         },
         {
-          "value": 4,
+          "value": 3,
           "x": 542,
           "y": 350
         },
         {
-          "value": 5,
+          "value": 2,
           "x": 666,
           "y": 350
         }
@@ -89,72 +91,29 @@
       }
     },
     {
-      "prompt": "1 + 3 = ?",
-      "renderedPrompt": "1 + 3 = ?",
+      "prompt": "Count the marks: * * * * * *",
+      "renderedPrompt": "Count the marks: * * * * * *",
       "locale": "en",
-      "problemId": "cur_add_005",
-      "correctAnswer": 4,
-      "options": [
-        2,
-        3,
-        4,
-        5
-      ],
-      "wrongAttempts": 0,
-      "demo": true,
-      "freebie": false,
-      "optionCenters": [
-        {
-          "value": 2,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 3,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 4,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 5,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "3 + 3 = ?",
-      "renderedPrompt": "3 + 3 = ?",
-      "locale": "en",
-      "problemId": "cur_add_009",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_ti8o5k",
       "correctAnswer": 6,
       "options": [
         3,
+        1,
         5,
-        6,
-        7
+        6
       ],
       "wrongAttempts": 0,
-      "demo": false,
-      "freebie": true,
+      "demo": true,
+      "freebie": false,
+      "golden": false,
       "optionCenters": [
         {
-          "value": 5,
+          "value": 6,
           "x": 294,
           "y": 350
         },
         {
-          "value": 6,
+          "value": 5,
           "x": 418,
           "y": 350
         },
@@ -164,7 +123,7 @@
           "y": 350
         },
         {
-          "value": 7,
+          "value": 1,
           "x": 666,
           "y": 350
         }
@@ -177,126 +136,39 @@
       }
     },
     {
-      "prompt": "How many are here: * * * * * * *",
-      "renderedPrompt": "How many are here: * * * * * * *",
+      "prompt": "Count the marks: * * * * * *",
+      "renderedPrompt": "Count the marks: * * * * * *",
       "locale": "en",
-      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_vw6lh",
-      "correctAnswer": 7,
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_ti8o5k",
+      "correctAnswer": 6,
       "options": [
+        3,
         1,
-        6,
-        4,
-        7
+        5,
+        6
       ],
       "wrongAttempts": 0,
       "demo": true,
       "freebie": false,
+      "golden": false,
       "optionCenters": [
-        {
-          "value": 1,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 4,
-          "x": 418,
-          "y": 350
-        },
         {
           "value": 6,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 7,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "How many are here: * * * * * * *",
-      "renderedPrompt": "How many are here: * * * * * * *",
-      "locale": "en",
-      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_vw6lh",
-      "correctAnswer": 7,
-      "options": [
-        1,
-        6,
-        4,
-        7
-      ],
-      "wrongAttempts": 0,
-      "demo": true,
-      "freebie": false,
-      "optionCenters": [
-        {
-          "value": 1,
           "x": 294,
-          "y": 350
-        },
-        {
-          "value": 4,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 6,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 7,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "Count the marks: * * * * *",
-      "renderedPrompt": "Count the marks: * * * * *",
-      "locale": "en",
-      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_s4sv9y",
-      "correctAnswer": 5,
-      "options": [
-        1,
-        2,
-        4,
-        5
-      ],
-      "wrongAttempts": 0,
-      "demo": false,
-      "freebie": true,
-      "optionCenters": [
-        {
-          "value": 1,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 4,
-          "x": 418,
           "y": 350
         },
         {
           "value": 5,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
           "x": 542,
           "y": 350
         },
         {
-          "value": 2,
+          "value": 1,
           "x": 666,
           "y": 350
         }
@@ -309,11 +181,56 @@
       }
     },
     {
-      "prompt": "3 + 0 = ?",
-      "renderedPrompt": "3 + 0 = ?",
+      "prompt": "How many stars? * * * * *",
+      "renderedPrompt": "How many stars? * * * * *",
       "locale": "en",
-      "problemId": "cur_add_019",
-      "correctAnswer": 3,
+      "problemId": "count_001",
+      "correctAnswer": 5,
+      "options": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "wrongAttempts": 0,
+      "demo": false,
+      "freebie": false,
+      "golden": false,
+      "optionCenters": [
+        {
+          "value": 6,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 5,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 4,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "0 + 2 = ?",
+      "renderedPrompt": "0 + 2 = ?",
+      "locale": "en",
+      "problemId": "cur_add_016",
+      "correctAnswer": 2,
       "options": [
         0,
         1,
@@ -323,24 +240,25 @@
       "wrongAttempts": 0,
       "demo": false,
       "freebie": false,
+      "golden": false,
       "optionCenters": [
         {
-          "value": 1,
+          "value": 3,
           "x": 294,
           "y": 350
         },
         {
-          "value": 3,
+          "value": 2,
           "x": 418,
           "y": 350
         },
         {
-          "value": 0,
+          "value": 1,
           "x": 542,
           "y": 350
         },
         {
-          "value": 2,
+          "value": 0,
           "x": 666,
           "y": 350
         }
@@ -353,23 +271,24 @@
       }
     },
     {
-      "prompt": "What comes after 7?",
-      "renderedPrompt": "What comes after 7?",
+      "prompt": "What is 2 + 2?",
+      "renderedPrompt": "What is 2 + 2?",
       "locale": "en",
-      "problemId": "ext_counting_0001",
-      "correctAnswer": 8,
+      "problemId": "ext_addition_0005",
+      "correctAnswer": 4,
       "options": [
-        8,
-        7,
-        9,
+        4,
+        3,
+        5,
         6
       ],
       "wrongAttempts": 0,
       "demo": false,
       "freebie": false,
+      "golden": false,
       "optionCenters": [
         {
-          "value": 7,
+          "value": 3,
           "x": 294,
           "y": 350
         },
@@ -379,100 +298,57 @@
           "y": 350
         },
         {
-          "value": 9,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 8,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "2 + 1 = ?",
-      "renderedPrompt": "2 + 1 = ?",
-      "locale": "en",
-      "problemId": "cur_add_003",
-      "correctAnswer": 3,
-      "options": [
-        1,
-        2,
-        3,
-        4
-      ],
-      "wrongAttempts": 0,
-      "demo": false,
-      "freebie": false,
-      "optionCenters": [
-        {
-          "value": 3,
-          "x": 294,
-          "y": 350
-        },
-        {
           "value": 4,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 1,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 2,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "What is 3 + 2?",
-      "renderedPrompt": "What is 3 + 2?",
-      "locale": "en",
-      "problemId": "auth_batch_01_addition_under_10_make_5_re3t1b",
-      "correctAnswer": 5,
-      "options": [
-        4,
-        5,
-        3,
-        2
-      ],
-      "wrongAttempts": 0,
-      "demo": false,
-      "freebie": false,
-      "optionCenters": [
-        {
-          "value": 3,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 4,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 2,
           "x": 542,
           "y": 350
         },
         {
           "value": 5,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "Count the marks: * * * * * * *",
+      "renderedPrompt": "Count the marks: * * * * * * *",
+      "locale": "en",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1sogin2",
+      "correctAnswer": 7,
+      "options": [
+        1,
+        6,
+        4,
+        7
+      ],
+      "wrongAttempts": 0,
+      "demo": false,
+      "freebie": false,
+      "golden": false,
+      "optionCenters": [
+        {
+          "value": 6,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 4,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 7,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 1,
           "x": 666,
           "y": 350
         }
@@ -487,231 +363,11 @@
   ],
   "is": [
     {
-      "prompt": "What is 3 + 2?",
-      "renderedPrompt": "Hvað er 3 + 2?",
+      "prompt": "2 + 0 = ?",
+      "renderedPrompt": "2 + 0 = ?",
       "locale": "is",
-      "problemId": "auth_batch_01_addition_under_10_make_5_re3t1b",
-      "correctAnswer": 5,
-      "options": [
-        4,
-        5,
-        3,
-        2
-      ],
-      "wrongAttempts": 0,
-      "demo": true,
-      "freebie": false,
-      "optionCenters": [
-        {
-          "value": 3,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 5,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 4,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 2,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "What is 3 + 2?",
-      "renderedPrompt": "Hvað er 3 + 2?",
-      "locale": "is",
-      "problemId": "auth_batch_01_addition_under_10_make_5_re3t1b",
-      "correctAnswer": 5,
-      "options": [
-        4,
-        5,
-        3,
-        2
-      ],
-      "wrongAttempts": 0,
-      "demo": true,
-      "freebie": false,
-      "optionCenters": [
-        {
-          "value": 3,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 5,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 4,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 2,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "2 + 1 = ?",
-      "renderedPrompt": "2 + 1 = ?",
-      "locale": "is",
-      "problemId": "cur_add_003",
-      "correctAnswer": 3,
-      "options": [
-        1,
-        2,
-        3,
-        4
-      ],
-      "wrongAttempts": 0,
-      "demo": false,
-      "freebie": true,
-      "optionCenters": [
-        {
-          "value": 4,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 3,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 2,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 1,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "Count these: * * * * * *",
-      "renderedPrompt": "Teldu þetta: * * * * * *",
-      "locale": "is",
-      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1y8ukke",
-      "correctAnswer": 6,
-      "options": [
-        3,
-        1,
-        5,
-        6
-      ],
-      "wrongAttempts": 0,
-      "demo": true,
-      "freebie": false,
-      "optionCenters": [
-        {
-          "value": 3,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 6,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 5,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 1,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "Count these: * * * * * *",
-      "renderedPrompt": "Teldu þetta: * * * * * *",
-      "locale": "is",
-      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1y8ukke",
-      "correctAnswer": 6,
-      "options": [
-        3,
-        1,
-        5,
-        6
-      ],
-      "wrongAttempts": 0,
-      "demo": true,
-      "freebie": false,
-      "optionCenters": [
-        {
-          "value": 3,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 6,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 5,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 1,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "3 + 0 = ?",
-      "renderedPrompt": "3 + 0 = ?",
-      "locale": "is",
-      "problemId": "cur_add_019",
-      "correctAnswer": 3,
+      "problemId": "cur_add_017",
+      "correctAnswer": 2,
       "options": [
         0,
         1,
@@ -719,16 +375,197 @@
         3
       ],
       "wrongAttempts": 0,
-      "demo": false,
+      "demo": true,
       "freebie": false,
+      "golden": false,
       "optionCenters": [
         {
-          "value": 2,
+          "value": 1,
           "x": 294,
           "y": 350
         },
         {
+          "value": 3,
+          "x": 418,
+          "y": 350
+        },
+        {
           "value": 0,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 2,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "2 + 0 = ?",
+      "renderedPrompt": "2 + 0 = ?",
+      "locale": "is",
+      "problemId": "cur_add_017",
+      "correctAnswer": 2,
+      "options": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wrongAttempts": 0,
+      "demo": true,
+      "freebie": false,
+      "golden": false,
+      "optionCenters": [
+        {
+          "value": 1,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 0,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 2,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "Count these: * * * * * *",
+      "renderedPrompt": "Teldu þetta: * * * * * *",
+      "locale": "is",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1y8ukke",
+      "correctAnswer": 6,
+      "options": [
+        3,
+        1,
+        5,
+        6
+      ],
+      "wrongAttempts": 0,
+      "demo": true,
+      "freebie": false,
+      "golden": false,
+      "optionCenters": [
+        {
+          "value": 1,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 5,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 6,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "Count these: * * * * * *",
+      "renderedPrompt": "Teldu þetta: * * * * * *",
+      "locale": "is",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1y8ukke",
+      "correctAnswer": 6,
+      "options": [
+        3,
+        1,
+        5,
+        6
+      ],
+      "wrongAttempts": 0,
+      "demo": true,
+      "freebie": false,
+      "golden": false,
+      "optionCenters": [
+        {
+          "value": 1,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 5,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 6,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "How many are here: * * * * * * *",
+      "renderedPrompt": "Hversu mörg eru hér: * * * * * * *",
+      "locale": "is",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_vw6lh",
+      "correctAnswer": 7,
+      "options": [
+        1,
+        6,
+        4,
+        7
+      ],
+      "wrongAttempts": 0,
+      "demo": false,
+      "freebie": true,
+      "golden": false,
+      "optionCenters": [
+        {
+          "value": 6,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 4,
           "x": 418,
           "y": 350
         },
@@ -738,7 +575,52 @@
           "y": 350
         },
         {
+          "value": 7,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "How many stars? * * * * *",
+      "renderedPrompt": "Hvað eru stjörnurnar margar? * * * * *",
+      "locale": "is",
+      "problemId": "count_001",
+      "correctAnswer": 5,
+      "options": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "wrongAttempts": 0,
+      "demo": false,
+      "freebie": false,
+      "golden": false,
+      "optionCenters": [
+        {
+          "value": 4,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 6,
+          "x": 418,
+          "y": 350
+        },
+        {
           "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 5,
           "x": 666,
           "y": 350
         }
@@ -765,24 +647,25 @@
       "wrongAttempts": 0,
       "demo": false,
       "freebie": false,
+      "golden": false,
       "optionCenters": [
         {
-          "value": 6,
+          "value": 3,
           "x": 294,
           "y": 350
         },
         {
-          "value": 3,
+          "value": 5,
           "x": 418,
           "y": 350
         },
         {
-          "value": 5,
+          "value": 4,
           "x": 542,
           "y": 350
         },
         {
-          "value": 4,
+          "value": 6,
           "x": 666,
           "y": 350
         }
@@ -795,20 +678,66 @@
       }
     },
     {
-      "prompt": "1 + 3 = ?",
-      "renderedPrompt": "1 + 3 = ?",
+      "prompt": "What comes after 7?",
+      "renderedPrompt": "Hvað kemur eftir 7?",
       "locale": "is",
-      "problemId": "cur_add_005",
-      "correctAnswer": 4,
+      "problemId": "ext_counting_0001",
+      "correctAnswer": 8,
       "options": [
-        2,
-        3,
-        4,
-        5
+        8,
+        7,
+        9,
+        6
       ],
       "wrongAttempts": 0,
       "demo": false,
       "freebie": false,
+      "golden": false,
+      "optionCenters": [
+        {
+          "value": 9,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 6,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 7,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 8,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "0 + 3 = ?",
+      "renderedPrompt": "0 + 3 = ?",
+      "locale": "is",
+      "problemId": "cur_add_018",
+      "correctAnswer": 3,
+      "options": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wrongAttempts": 0,
+      "demo": false,
+      "freebie": false,
+      "golden": false,
       "optionCenters": [
         {
           "value": 3,
@@ -816,61 +745,17 @@
           "y": 350
         },
         {
-          "value": 5,
+          "value": 0,
           "x": 418,
+          "y": 350
+        },
+        {
+          "value": 1,
+          "x": 542,
           "y": 350
         },
         {
           "value": 2,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 4,
-          "x": 666,
-          "y": 350
-        }
-      ],
-      "canvasRect": {
-        "left": 0,
-        "top": 0,
-        "width": 960,
-        "height": 540
-      }
-    },
-    {
-      "prompt": "What is 3 + 3?",
-      "renderedPrompt": "Hvað er 3 + 3?",
-      "locale": "is",
-      "problemId": "add_004",
-      "correctAnswer": 6,
-      "options": [
-        4,
-        5,
-        6,
-        7
-      ],
-      "wrongAttempts": 0,
-      "demo": false,
-      "freebie": false,
-      "optionCenters": [
-        {
-          "value": 7,
-          "x": 294,
-          "y": 350
-        },
-        {
-          "value": 6,
-          "x": 418,
-          "y": 350
-        },
-        {
-          "value": 4,
-          "x": 542,
-          "y": 350
-        },
-        {
-          "value": 5,
           "x": 666,
           "y": 350
         }
