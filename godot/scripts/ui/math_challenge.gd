@@ -27,6 +27,8 @@ var _is_demo := false
 # Freebie: first-ever try at a newly taught skill. A win counts normally;
 # a miss is never recorded against the learner.
 var _is_freebie := false
+# Golden: a seeded 1-in-N arrival with a bonus coin multiplier on a win.
+var _is_golden := false
 
 var _buttons: Array[Button] = []
 var _question_label: Label
@@ -45,20 +47,25 @@ func present(problem: Dictionary, opts: Dictionary = {}) -> void:
 	_first_response_ms = 0
 	_is_demo = bool(opts.get("demo", false))
 	_is_freebie = bool(opts.get("freebie", false))
+	_is_golden = bool(opts.get("golden", false)) and not _is_demo
 	_build_ui(opts)
+	if _is_golden:
+		AudioManager.play_event("golden")
 
 	if _is_demo:
 		# Worked example: no input, no learner-model events. Two beats — think
 		# aloud (hint), then the answer with its explanation — then hand over.
+		# Pacing comes from the shared math_tuning.json (ms, hence / 1000.0).
+		var teaching: Dictionary = DataManager.get_dict("MATH_TUNING").get("teaching", {})
 		_set_buttons_enabled(false)
-		get_tree().create_timer(0.9).timeout.connect(
+		get_tree().create_timer(float(teaching["hintMs"]) / 1000.0).timeout.connect(
 			func(): _show_hint(_localised("hint")), CONNECT_ONE_SHOT)
-		get_tree().create_timer(2.4).timeout.connect(_reveal_answer, CONNECT_ONE_SHOT)
-		get_tree().create_timer(4.2).timeout.connect(func():
+		get_tree().create_timer(float(teaching["revealMs"]) / 1000.0).timeout.connect(_reveal_answer, CONNECT_ONE_SHOT)
+		get_tree().create_timer(float(teaching["handoverMs"]) / 1000.0).timeout.connect(func():
 			var viewport_size := get_viewport().get_visible_rect().size
 			DopamineFX.number_fly_up(self, viewport_size / 2.0 - Vector2(0, 120), TextManager.t("math.demo_your_turn"), ThemeManager.get_color_value("accent"))
 		, CONNECT_ONE_SHOT)
-		get_tree().create_timer(5.2).timeout.connect(func():
+		get_tree().create_timer(float(teaching["closeMs"]) / 1000.0).timeout.connect(func():
 			_done = true
 			EventBus.math_demo_complete.emit({"problemId": current_problem.get("id", ""), "domain": current_problem.get("domain", "")})
 			_close()
@@ -122,14 +129,22 @@ func _reenable_for_retry() -> void:
 
 func _result(correct: bool, first_attempt: bool) -> Dictionary:
 	var has_hint: bool = String(current_problem.get("hint", "")) != "" and _wrong_attempts > 0
+	# Golden wins multiply the coin reward (bigger for first-try); the
+	# multipliers live in the shared math_tuning.json.
+	var reward := _coins_reward if correct else 0
+	if correct and _is_golden:
+		var g: Dictionary = DataManager.get_dict("MATH_TUNING").get("golden", {})
+		var mult := float(g.get("firstTryCoinMultiplier", 1.0)) if first_attempt else float(g.get("retryCoinMultiplier", 1.0))
+		reward = int(round(_coins_reward * mult))
 	return {
 		"problemId": current_problem.get("id", ""),
 		"correct": correct, "firstAttempt": first_attempt,
-		"reward": _coins_reward if correct else 0,
+		"reward": reward,
 		"hintsUsed": 1 if has_hint else 0,
 		"responseMs": _first_response_ms,
 		"wrongAttempts": _wrong_attempts,
 		"freebie": _is_freebie,
+		"golden": _is_golden,
 	}
 
 ## After the final allowed miss: highlight the correct answer, dim the rest,
@@ -174,7 +189,25 @@ func _build_ui(opts: Dictionary) -> void:
 	var vbox := VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_theme_constant_override("separation", 16)
-	center.add_child(vbox)
+	if _is_golden:
+		# Golden arrival: a pulsing gold frame around the board (mirrors
+		# MathChallengeScene.decorateGolden). Announcement, not reward — the
+		# coin bonus lands on the win.
+		var frame := PanelContainer.new()
+		var frame_style := StyleBoxFlat.new()
+		frame_style.bg_color = Color(0, 0, 0, 0)  # hardcode-ok: fully transparent, not a themed colour
+		frame_style.set_border_width_all(5)
+		frame_style.border_color = Color(1.0, 0.843, 0.0)  # hardcode-ok: golden means literal gold in both ports
+		frame_style.set_corner_radius_all(20)
+		frame_style.set_content_margin_all(24)
+		frame.add_theme_stylebox_override("panel", frame_style)
+		center.add_child(frame)
+		frame.add_child(vbox)
+		var tw := frame.create_tween().set_loops()
+		tw.tween_property(frame, "self_modulate:a", 0.45, 0.65).set_trans(Tween.TRANS_SINE)
+		tw.tween_property(frame, "self_modulate:a", 1.0, 0.65).set_trans(Tween.TRANS_SINE)
+	else:
+		center.add_child(vbox)
 
 	var name_str := String(opts.get("npcName", ""))
 	var greet := String(opts.get("npcGreeting", ""))

@@ -4,6 +4,7 @@ import { ThemeManager } from '../ui/theme/ThemeManager';
 import { LevelManager } from '../systems/LevelManager';
 import { NPCFactory } from '../systems/NPCFactory';
 import { MathProblemManager } from '../math/MathProblemManager';
+import { MathTuning } from '../math/MathTuning';
 import { SaveManager } from '../systems/SaveManager';
 import { LevelingManager, type LevelingConfig } from '../systems/LevelingManager';
 import { AudioManager, type AudioManifest } from '../systems/AudioManager';
@@ -58,6 +59,7 @@ export class BootScene extends Phaser.Scene {
         this.load.json('leveling', DATA_PATHS.LEVELING);
         this.load.json('combat_tuning', DATA_PATHS.COMBAT_TUNING);
         this.load.json('camera_tuning', DATA_PATHS.CAMERA_TUNING);
+        this.load.json('math_tuning', DATA_PATHS.MATH_TUNING);
 
         // --- Load theme data ---
         this.load.json('theme_forest', DATA_PATHS.THEME_FOREST);
@@ -140,6 +142,10 @@ export class BootScene extends Phaser.Scene {
 
         // Register themes
         this.registerThemes();
+
+        // Math tuning must be live before any learner/selection code runs —
+        // the shared JSON is the only source of the ladder numbers.
+        MathTuning.initialize(this.cache.json.get('math_tuning'));
 
         // Initialize LevelManager from registry
         const registryData = this.cache.json.get('level_registry') as LevelRegistry;

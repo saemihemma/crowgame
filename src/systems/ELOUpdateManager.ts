@@ -78,6 +78,7 @@ export class ELOUpdateManager {
         hintsUsed?: number;
         responseMs?: number;
         freebie?: boolean;
+        golden?: boolean;
     }): void => {
         if (!this.currentDomain || this.currentProblemELO === null) {
             console.warn('[ELOUpdateManager] Missing problem context, skipping learner update');
@@ -159,6 +160,7 @@ export class ELOUpdateManager {
         firstAttempt: boolean;
         hintsUsed?: number;
         responseMs?: number;
+        golden?: boolean;
     }): LearnerAttemptSubmission {
         const profile = ProfileManager.getInstance().getActiveProfile();
 
@@ -178,6 +180,7 @@ export class ELOUpdateManager {
             curriculumStep: this.currentCurriculumStep,
             selectionLane: this.currentSelectionLane,
             reviewItemId: this.currentReviewItemId,
+            golden: data.golden === true,
         };
     }
 

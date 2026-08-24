@@ -72,15 +72,6 @@ rewards only ever add (no streaks, no timers, nothing to protect), game
 progress never gated by math level, one big celebration per encounter,
 teaching skippable, no dark patterns.
 
-### Golden problems
-Roughly 1 in 8 owl problems arrives golden — sparkling frame, distinct chime,
-double coins on a first-try win, smaller bonus on a retry win. Purely random
-(seeded), rate and multipliers in tuning data, never tied to time or streaks.
-Variable-ratio reward is the strongest honest "one more" schedule there is.
-
-*Done when:* the golden rate lives in tuning JSON, both ports render it, and
-the admin session report counts golden hits.
-
 ### Session-end recap that leaves on the best moment
 On quitting a level or the game, one warm recap screen: owls saved, problems
 solved, any step-ups, and the session's single best moment (comeback or golden
@@ -97,17 +88,6 @@ ever reached, so a demotion never visibly shrinks one.
 
 *Done when:* badges render from summary data in both ports and the high-water
 mark persists in the save.
-
-### One shared math-tuning file for both ports
-Promotion wins, accuracy target, demotion window and threshold, lane weights,
-stretch gate, teach-window pacing, golden rate — today the ladder constants
-are duplicated in `src/systems/LearnerStateManager.ts` and
-`godot/scripts/systems/learner_state_manager.gd`. Move them to
-`data/tuning/math_tuning.json`, consumed by both ports, covered by the
-byte-identity sync guard and the golden parity fixtures.
-
-*Done when:* changing a ladder number is a one-line JSON edit and validate
-fails if the ports would diverge.
 
 ### Tune the ladder against real play, not intuition
 The admin session report tags accuracy against the 70-85% sweet spot. After a

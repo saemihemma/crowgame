@@ -7,9 +7,14 @@ import { MathProblemManager } from '../src/math/MathProblemManager';
 import { selectOwlProblem, type OwlSelectionConfig } from '../src/math/owlSelection';
 import { buildProblemReplayKey } from '../src/math/problemReplayKey';
 import { LearnerStateManager } from '../src/systems/LearnerStateManager';
+import { MathTuning } from '../src/math/MathTuning';
 import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool, SelectionLane } from '../src/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
+
+// Selector smoke and simulations drive the real ladder, so they need the
+// shared tuning JSON loaded exactly like the game does.
+MathTuning.initialize(JSON.parse(readFileSync(join(ROOT, 'public/data/tuning/math_tuning.json'), 'utf8')));
 const AUTHORING_DIR = join(ROOT, 'authoring', 'math');
 const REPORTS_DIR = join(ROOT, 'reports', 'math-batches');
 const DATA_DIR = join(ROOT, 'public', 'data', 'math');

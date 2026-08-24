@@ -40,6 +40,7 @@ export const DATA_PATHS = {
     MATH_CURRICULUM: 'data/math/problems_curriculum.json',
     COMBAT_TUNING: 'data/tuning/combat_tuning.json',
     CAMERA_TUNING: 'data/tuning/camera_tuning.json',
+    MATH_TUNING: 'data/tuning/math_tuning.json',
 } as const;
 
 // Input action names

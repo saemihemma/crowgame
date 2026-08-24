@@ -123,14 +123,17 @@ jobs:
 
       # The dev server answers a missing file with index.html, so a missing .wav
       # would be decoded as HTML and surface as a console error that fails the
-      # smoke's console gate. The 15 SFX are committed, so assert they are there
-      # rather than debugging that indirection later.
+      # smoke's console gate. The SFX are committed, so assert every file the
+      # audio manifest declares is there rather than debugging that indirection
+      # later. The expected count comes from the manifest itself, not a magic
+      # number that goes stale the next time a sound is added.
       - name: Check SFX are present
         run: |
           set -euo pipefail
+          expected=$(node -e "console.log(Object.keys(JSON.parse(require('fs').readFileSync('public/data/audio/audio_manifest.json','utf8')).sfx).length)")
           count=$(ls public/assets/audio/sfx/*.wav 2>/dev/null | wc -l)
-          echo "found $count sfx"
-          [ "$count" -eq 15 ]
+          echo "found $count sfx, manifest declares $expected"
+          [ "$count" -eq "$expected" ]
 
       - name: Run browser smoke
         env:

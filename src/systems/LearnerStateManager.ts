@@ -1,4 +1,5 @@
 import { ELOManager } from '../math/ELOManager';
+import { mathTuning } from '../math/MathTuning';
 import type {
     DomainCurriculumProgressMap,
     DomainNumberMap,
@@ -30,14 +31,10 @@ const MAX_BACKLOG_HISTORY = 8;
 const MAX_STEP_RESULTS = 10;
 const IMMEDIATE_REVIEW_MIN_GAP = 2;
 const IMMEDIATE_REVIEW_MAX_GAP = 4;
-const PROMOTION_WIN_TARGET = 3;
-const PROMOTION_ACCURACY_TARGET = 0.8;
-const PROMOTION_ACCURACY_WINDOW = 10;
-const DEMOTION_WINDOW = 5;
-const DEMOTION_WRONG_THRESHOLD = 2;
-const DEMOTION_CONFIDENCE_THRESHOLD = -25;
-const POST_DEMOTION_CONFIDENCE_FLOOR = -10;
-const PROMOTION_STEP_SCAN_LIMIT = 20;
+// Ladder and stretch-gate numbers live in data/tuning/math_tuning.json
+// (shared byte-identical with the Godot port); read them via ladder()/gate().
+const ladder = () => mathTuning().ladder;
+const stretchGate = () => mathTuning().stretchGate;
 
 const DOMAIN_PREREQUISITES: Partial<Record<MathDomain, MathDomain[]>> = {
     addition: [],
@@ -210,8 +207,17 @@ export class LearnerStateManager {
         return this.getSnapshot().curriculumProgress[domain].totalAttempts ?? 0;
     }
 
+    /**
+     * Lifetime recorded attempts across all domains — the deterministic index
+     * the golden-problem roll is seeded with (see src/math/goldenRoll.ts).
+     */
+    getLifetimeAttemptCount(): number {
+        const progress = this.getSnapshot().curriculumProgress;
+        return ALL_MATH_DOMAINS.reduce((sum, domain) => sum + (progress[domain].totalAttempts ?? 0), 0);
+    }
+
     getPromotionWinTarget(): number {
-        return PROMOTION_WIN_TARGET;
+        return ladder().promotionWinTarget;
     }
 
     getWinsAtCurrentStep(domain: MathDomain): number {
@@ -223,10 +229,11 @@ export class LearnerStateManager {
     }
 
     canUseStretchLane(domain: MathDomain): boolean {
-        const recent = this.getRecentAttempts(domain, 5);
-        if (recent.length < 5) return false;
+        const gate = stretchGate();
+        const recent = this.getRecentAttempts(domain, gate.window);
+        if (recent.length < gate.window) return false;
         const correctRate = recent.filter(attempt => attempt.correct).length / recent.length;
-        return correctRate >= 0.8 && this.getConfidenceOffset(domain) >= 0;
+        return correctRate >= gate.minAccuracy && this.getConfidenceOffset(domain) >= gate.minConfidence;
     }
 
     getDueReviewItems(domain?: MathDomain): ReviewItem[] {
@@ -278,6 +285,7 @@ export class LearnerStateManager {
             curriculumStep: attempt.curriculumStep,
             selectionLane: attempt.selectionLane,
             reviewItemId: attempt.reviewItemId,
+            golden: attempt.golden === true,
         });
         this.snapshot.recentAttempts = this.snapshot.recentAttempts.slice(-MAX_RECENT_ATTEMPTS);
 
@@ -394,15 +402,15 @@ export class LearnerStateManager {
         // Demotion is only evaluated on the wrong answer itself, so a rough patch
         // costs one step, not one step per attempt while it sits in the window.
         if (!attempt.correct) {
-            const recentDomainAttempts = this.getProjectedRecentAttempts(attempt.domain, attempt, DEMOTION_WINDOW);
+            const recentDomainAttempts = this.getProjectedRecentAttempts(attempt.domain, attempt, ladder().demotionWindow);
             const wrongCount = recentDomainAttempts.filter(entry => !entry.correct).length;
             const confidenceOffset = this.snapshot.confidenceOffsets[attempt.domain];
-            if (wrongCount >= DEMOTION_WRONG_THRESHOLD || confidenceOffset <= DEMOTION_CONFIDENCE_THRESHOLD) {
+            if (wrongCount >= ladder().demotionWrongThreshold || confidenceOffset <= ladder().demotionConfidenceThreshold) {
                 progress.currentStep = Math.max(0, progress.currentStep - 1);
                 progress.winsAtCurrentStep = 0;
                 this.snapshot.confidenceOffsets[attempt.domain] = Math.max(
                     this.snapshot.confidenceOffsets[attempt.domain],
-                    POST_DEMOTION_CONFIDENCE_FLOOR,
+                    ladder().postDemotionConfidenceFloor,
                 );
             }
             return;
@@ -411,12 +419,12 @@ export class LearnerStateManager {
         const promotionWindow = this.getProjectedRecentAttempts(
             attempt.domain,
             attempt,
-            PROMOTION_ACCURACY_WINDOW,
+            ladder().promotionAccuracyWindow,
         );
         const accuracy = this.computeFirstAttemptAccuracy(promotionWindow);
         if (
-            progress.winsAtCurrentStep >= PROMOTION_WIN_TARGET &&
-            accuracy >= PROMOTION_ACCURACY_TARGET
+            progress.winsAtCurrentStep >= ladder().promotionWinTarget &&
+            accuracy >= ladder().promotionAccuracyTarget
         ) {
             const nextStep = this.findNextStepWithContent(attempt.domain, progress.currentStep);
             if (nextStep > progress.currentStep) {
@@ -436,7 +444,7 @@ export class LearnerStateManager {
             return currentStep + 1;
         }
 
-        for (let step = currentStep + 1; step <= currentStep + PROMOTION_STEP_SCAN_LIMIT; step++) {
+        for (let step = currentStep + 1; step <= currentStep + ladder().promotionStepScanLimit; step++) {
             if (this.stepContentProvider(domain, step)) {
                 return step;
             }
@@ -470,7 +478,7 @@ export class LearnerStateManager {
             }
             if (hasReachableContent) continue;
 
-            for (let step = progress.currentStep + 1; step <= progress.currentStep + PROMOTION_STEP_SCAN_LIMIT; step++) {
+            for (let step = progress.currentStep + 1; step <= progress.currentStep + ladder().promotionStepScanLimit; step++) {
                 if (this.stepContentProvider(domain, step)) {
                     progress.currentStep = step;
                     progress.winsAtCurrentStep = 0;

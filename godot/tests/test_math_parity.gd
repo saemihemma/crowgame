@@ -67,6 +67,19 @@ func test_replay_key_parity() -> void:
 		var key := ProblemReplayKey.build(c["problem"])
 		assert_eq(key, String(c["key"]), "replay key for %s" % c["problem"]["prompt"]["text"])
 
+func test_golden_roll_parity() -> void:
+	# The seeded golden coin flip must land identically in both ports: the
+	# fixtures carry the TS draw for (childId, attemptIndex) and the verdict
+	# at the tuned rate; GoldenRoll must reproduce both exactly.
+	var rate := float((DataManager.get_dict("MATH_TUNING").get("golden", {}) as Dictionary).get("rate", 0.0))
+	assert_true((_fix.get("goldenRolls", []) as Array).size() > 0, "goldenRolls fixtures present")
+	for fx in _fix.get("goldenRolls", []):
+		var child_id := String(fx["childId"])
+		var idx := int(fx["attemptIndex"])
+		var draw := GoldenRoll.golden_draw(child_id, idx)
+		assert_true(absf(draw - float(fx["draw"])) < 1e-12, "golden draw %s:%d (got %.15f want %.15f)" % [child_id, idx, draw, float(fx["draw"])])
+		assert_eq(GoldenRoll.is_golden_encounter(child_id, idx, rate), bool(fx["goldenAtRate"]), "golden verdict %s:%d" % [child_id, idx])
+
 func test_learner_parity() -> void:
 	# The fixtures exercise the pure learner state machine. The runtime
 	# autoloads wire a pool-backed step-content provider (which reconciles

@@ -119,6 +119,9 @@ SOUNDS = {
     "level_complete": arp([523, 659, 784, 1047, 1319], 0.11, 0.6),
     "ability": chirp(760, 1640, 0.18, 0.5, "sine"),
     "milestone": arp([784, 988, 1175], 0.10, 0.6),
+    # Golden problem arrival: a fast, high shimmer distinct from the win
+    # sounds — it announces the problem, it is not the reward itself.
+    "golden": arp([1319, 1568, 1976, 2637], 0.06, 0.5),
 }
 
 if __name__ == "__main__":

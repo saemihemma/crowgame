@@ -275,19 +275,21 @@ function validateOnboardingSnapshot(currentDocs) {
 }
 
 function validateMathAndLearnerContracts() {
+    // The tuning JSON is the single source of the ladder/lane numbers; the
+    // doc pins below are derived from it so a tuning edit forces the doc to
+    // follow (and validate-content.ts keeps the Godot copy byte-identical).
+    const mathTuning = JSON.parse(fs.readFileSync(path.join(root, 'public/data/tuning/math_tuning.json'), 'utf8'));
+
     ensureSourcePattern('src/math/ELOManager.ts', /globalELO:\s*150/, 'starting global ELO');
     ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*30\)\s*return\s+16;/, 'first K-factor band');
     ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*150\)\s*return\s+12;/, 'second K-factor band');
     ensureSourcePattern('src/math/ELOManager.ts', /return\s+8;/, 'third K-factor band');
     ensureSourcePattern('src/systems/LearnerStateManager.ts', /clamp\(decayed\s*\+\s*delta,\s*-50,\s*20\)/, 'confidence clamp');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*PROMOTION_WIN_TARGET/, 'curriculum promotion gate');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*DEMOTION_WRONG_THRESHOLD/, 'curriculum demotion gate');
+    ensureSourcePattern('src/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*ladder\(\)\.promotionWinTarget/, 'curriculum promotion gate');
+    ensureSourcePattern('src/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*ladder\(\)\.demotionWrongThreshold/, 'curriculum demotion gate');
     ensureSourcePattern('src/systems/LearnerStateManager.ts', /stage:\s*'immediate'/, 'immediate review stage');
     ensureSourcePattern('src/systems/LearnerStateManager.ts', /case\s+'day_7':/, 'day_7 review stage');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /comfort:\s*0\.4/, 'comfort lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /review:\s*0\.2/, 'review lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /at_level:\s*0\.3/, 'at-level lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /stretch:\s*0\.1/, 'stretch lane weight');
+    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /mathTuning\(\)\.laneWeights/, 'lane weights read from shared tuning');
     ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /canUseStretchLane\(domain\)/, 'stretch lane gate');
     ensureSourcePattern('src/ui/components/MathBoard.ts', /problem\.answer\.mode\s*===\s*'mcq'/, 'MCQ-only UI branch');
     ensureSourcePattern('src/scenes/LoginScene.ts', /private\s+loginSuccess\(\):\s*void/, 'login success rehydrate owner');
@@ -298,6 +300,7 @@ function validateMathAndLearnerContracts() {
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `16` before 30 attempts', 'K-factor first band');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `12` before 150 attempts', 'K-factor second band');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `8` afterward', 'K-factor third band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'public/data/tuning/math_tuning.json', 'shared tuning file pointer');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'currentStep', 'curriculum step ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'winsAtCurrentStep', 'curriculum progress ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- clamped to `-50..20`', 'confidence clamp');
@@ -309,10 +312,10 @@ function validateMathAndLearnerContracts() {
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_3`', 'review stage day_3');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_7`', 'review stage day_7');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `graduated`', 'review stage graduated');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `40%` comfort', 'comfort lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `20%` review', 'review lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `30%` at level', 'at-level lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `10%` stretch', 'stretch lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.comfort * 100)}%\` comfort`, 'comfort lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.review * 100)}%\` review`, 'review lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.at_level * 100)}%\` at level`, 'at-level lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.stretch * 100)}%\` stretch`, 'stretch lane weight');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'one curriculum step easier', 'comfort lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'exact current curriculum step', 'at-level lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'strategy steps down only', 'step-down-only fallback');

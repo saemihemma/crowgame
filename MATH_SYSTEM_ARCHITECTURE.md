@@ -177,7 +177,13 @@ Live update behavior in [src/math/ELOManager.ts](./src/math/ELOManager.ts):
 
 Local problem selection is now capped by an explicit per-domain curriculum step.
 
-Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerStateManager.ts):
+Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerStateManager.ts).
+The tunable numbers below (promotion, demotion, stretch gate, lane weights,
+teaching pacing, golden economy) live in
+[public/data/tuning/math_tuning.json](./public/data/tuning/math_tuning.json),
+kept byte-identical with `godot/data/tuning/math_tuning.json` by
+`npm run validate`; both runtimes load that file at boot, so tuning a number
+is one JSON edit applied to both ports.
 
 - each domain stores:
   - `currentStep`
@@ -305,6 +311,24 @@ Local kid-safe filter:
 - `runtime-selector-smoke.json` is runtime-aligned selector evidence built from the shared owl-selection helper plus live learner-state and NPC-config rails; it is not the literal browser scene/input/retry flow by itself.
 - `runtime-browser-smoke.json` is the current browser-backed proof artifact for the real owl interaction, wrong-answer retry, and the single-problem completion-and-close path.
 - `runtime-browser-smoke.json` is still not telemetry-backed pedagogy proof and does not independently validate that the frozen ELO bands are perfect for every child.
+
+### Golden problems
+
+Roughly 1 in 8 real owl problems arrives golden: a pulsing gold frame, a
+distinct shimmer chime, and a bonus coin multiplier on the win (larger for a
+first-try win). Live behavior in [src/math/goldenRoll.ts](./src/math/goldenRoll.ts)
+and `godot/scripts/math/golden_roll.gd`:
+
+- the roll is a seeded coin flip on `(childId, lifetime attempt index)` — the
+  same save state always rolls the same result, and the `goldenRolls` fixtures
+  in the Godot parity suite hold both ports to the identical draw
+- the rate and both multipliers live under `golden` in the shared
+  `math_tuning.json`; nothing about it is tied to time, streaks, or anything a
+  child could feel pressure to protect
+- never during the teaching window (demos and freebies stay calm), and a
+  golden miss costs nothing beyond the ordinary retry flow
+- each attempt records a `golden` flag, and the admin session report counts
+  golden problems served
 
 ## Unlock Logic
 
