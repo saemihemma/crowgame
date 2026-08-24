@@ -134,7 +134,7 @@
         "y": 16
       },
       {
-        "npc_id": "owl_gauntlet",
+        "npc_id": "owl_teacher_01",
         "x": 75,
         "y": 16
       }
@@ -229,12 +229,14 @@
   ],
   "mathGating": {
     "skills": [
+      "number_sequence",
       "addition",
       "subtraction"
     ],
     "difficultyBand": [
       1,
-      4
-    ]
+      3
+    ],
+    "teachingIntent": "What comes next: sequences resting on addition and subtraction."
   }
 }

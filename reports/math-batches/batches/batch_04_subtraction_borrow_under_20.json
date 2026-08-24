@@ -108,8 +108,8 @@
   "samplePrompts": [
     "Solve: 13 - 4",
     "Solve: 13 - 5",
+    "You have 11 berries. You eat 5. How many are left?",
     "Complete: 13 - 4 = ?",
-    "What is 12 - 4?",
-    "How much is 13 - 4?"
+    "What is 12 - 4?"
   ]
 }

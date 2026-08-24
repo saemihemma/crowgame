@@ -28,35 +28,35 @@
       ],
       "perUpdate": [
         {
-          "change": 1.7141475303664744,
+          "change": 6.8565901214658975,
           "expectedScore": 0.5714631174083814,
-          "newGlobalELO": 151.19990327125655,
-          "newDomainModifier": 0.5142442591099423
+          "newGlobalELO": 154.79961308502612,
+          "newDomainModifier": 2.0569770364397693
         },
         {
-          "change": 1.7044885643332517,
-          "expectedScore": 0.5738778589166871,
-          "newGlobalELO": 152.39304526628982,
-          "newDomainModifier": 1.0255908284099178
+          "change": 6.702391388667854,
+          "expectedScore": 0.5811005382082591,
+          "newGlobalELO": 159.49128705709361,
+          "newDomainModifier": 4.067694453040126
         },
         {
-          "change": -1.2029485349962563,
-          "expectedScore": 0.3007371337490641,
-          "newGlobalELO": 151.55098129179243,
-          "newDomainModifier": 0.6647062679110409
+          "change": -5.010454995970282,
+          "expectedScore": 0.31315343724814265,
+          "newGlobalELO": 155.98396855991442,
+          "newDomainModifier": 2.5645579542490413
         },
         {
-          "change": 0.2733472663054517,
-          "expectedScore": 0.4316631834236371,
-          "newGlobalELO": 151.74232437820623,
-          "newDomainModifier": 0.7467104478026765
+          "change": 0.9499524672990214,
+          "expectedScore": 0.44062797079381116,
+          "newGlobalELO": 156.64893528702373,
+          "newDomainModifier": 2.8495436944387476
         }
       ],
       "final": {
-        "globalELO": 151.74232437820623,
+        "globalELO": 156.64893528702373,
         "problemsAttempted": 4,
         "domainModifiers": {
-          "addition": 0.7467104478026765,
+          "addition": 2.8495436944387476,
           "subtraction": 0,
           "multiplication": 0,
           "division": 0,
@@ -87,25 +87,25 @@
       ],
       "perUpdate": [
         {
-          "change": 1.5,
+          "change": 6,
           "expectedScore": 0.5,
-          "newGlobalELO": 401.05,
-          "newDomainModifier": 0.44999999999999996
+          "newGlobalELO": 404.2,
+          "newDomainModifier": 1.7999999999999998
         },
         {
-          "change": -0.7254981310901734,
-          "expectedScore": 0.24183271036339113,
-          "newGlobalELO": 400.5421513082369,
-          "newDomainModifier": 0.23235056067294796
+          "change": -2.9593670665726255,
+          "expectedScore": 0.24661392221438547,
+          "newGlobalELO": 402.12844305339917,
+          "newDomainModifier": 0.9121898800282122
         }
       ],
       "final": {
-        "globalELO": 400.5421513082369,
+        "globalELO": 402.12844305339917,
         "problemsAttempted": 62,
         "domainModifiers": {
           "addition": 0,
           "subtraction": 0,
-          "multiplication": 0.23235056067294796,
+          "multiplication": 0.9121898800282122,
           "division": 0,
           "counting": 0,
           "comparison": 0,
@@ -140,20 +140,20 @@
           "newDomainModifier": 0
         },
         {
-          "change": 1,
+          "change": 4,
           "expectedScore": 0.5,
-          "newGlobalELO": 800.7,
-          "newDomainModifier": 0.3
+          "newGlobalELO": 802.8,
+          "newDomainModifier": 1.2
         }
       ],
       "final": {
-        "globalELO": 800.7,
+        "globalELO": 802.8,
         "problemsAttempted": 252,
         "domainModifiers": {
           "addition": 0,
           "subtraction": 0,
           "multiplication": 0,
-          "division": 0.3,
+          "division": 1.2,
           "counting": 0,
           "comparison": 0,
           "pattern_matching": 0,
@@ -186,29 +186,29 @@
       ],
       "perUpdate": [
         {
-          "change": -0.012976238642205954,
+          "change": -0.05190495456882382,
           "expectedScore": 0.0032440596605514886,
-          "newGlobalELO": 104.99091663295046,
-          "newDomainModifier": -0.003892871592661786
+          "newGlobalELO": 104.96366653180182,
+          "newDomainModifier": -0.015571486370647144
         },
         {
-          "change": -0.012975272533350646,
-          "expectedScore": 0.0032438181333376615,
-          "newGlobalELO": 104.98183394217712,
-          "newDomainModifier": -0.00778545335266698
+          "change": -0.05188949854772982,
+          "expectedScore": 0.0032430936592331137,
+          "newGlobalELO": 104.9273438828184,
+          "newDomainModifier": -0.031138335934966087
         },
         {
-          "change": -0.012974306568111021,
-          "expectedScore": 0.0032435766420277554,
-          "newGlobalELO": 104.97275192757944,
-          "newDomainModifier": -0.011677745323100286
+          "change": -0.05187405171446414,
+          "expectedScore": 0.0032421282321540086,
+          "newGlobalELO": 104.89103204661828,
+          "newDomainModifier": -0.04670055144930533
         }
       ],
       "final": {
-        "globalELO": 104.97275192757944,
+        "globalELO": 104.89103204661828,
         "problemsAttempted": 3,
         "domainModifiers": {
-          "addition": -0.011677745323100286,
+          "addition": -0.04670055144930533,
           "subtraction": 0,
           "multiplication": 0,
           "division": 0,
@@ -239,23 +239,23 @@
       ],
       "perUpdate": [
         {
-          "change": 0.007265582248185076,
+          "change": 0.029062328992740305,
           "expectedScore": 0.9981836044379537,
-          "newGlobalELO": 1196.0050859075736,
-          "newDomainModifier": 0.0021796746744555226
+          "newGlobalELO": 1196.020343630295,
+          "newDomainModifier": 0.00871869869782209
         },
         {
-          "change": 0.007265278930363994,
-          "expectedScore": 0.998183680267409,
-          "newGlobalELO": 1196.0101716028248,
-          "newDomainModifier": 0.0043592583535647204
+          "change": 0.02905747621094612,
+          "expectedScore": 0.9981839077368159,
+          "newGlobalELO": 1196.0406838636427,
+          "newDomainModifier": 0.017435941561105926
         }
       ],
       "final": {
-        "globalELO": 1196.0101716028248,
+        "globalELO": 1196.0406838636427,
         "problemsAttempted": 12,
         "domainModifiers": {
-          "addition": 0.0043592583535647204,
+          "addition": 0.017435941561105926,
           "subtraction": 0,
           "multiplication": 0,
           "division": 0,
@@ -281,14 +281,14 @@
       ],
       "perUpdate": [
         {
-          "change": 2,
+          "change": 8,
           "expectedScore": 0.5,
-          "newGlobalELO": 501.4,
-          "newDomainModifier": 0.6
+          "newGlobalELO": 505.6,
+          "newDomainModifier": 2.4
         }
       ],
       "final": {
-        "globalELO": 501.4,
+        "globalELO": 505.6,
         "problemsAttempted": 6,
         "domainModifiers": {
           "addition": 0,
@@ -296,7 +296,7 @@
           "multiplication": 0,
           "division": 0,
           "counting": 0,
-          "comparison": 0.6,
+          "comparison": 2.4,
           "pattern_matching": 0,
           "number_sequence": 0
         }
@@ -325,26 +325,26 @@
       ],
       "perUpdate": [
         {
-          "change": -0.12398951001524781,
+          "change": -0.49595804006099126,
           "expectedScore": 0.030997377503811954,
-          "newGlobalELO": 599.9132073429894,
-          "newDomainModifier": -98.03719685300457
+          "newGlobalELO": 599.6528293719573,
+          "newDomainModifier": -98.1487874120183
         },
         {
-          "change": -0.12390378547498801,
-          "expectedScore": 0.030975946368747002,
-          "newGlobalELO": 599.8264746931569,
-          "newDomainModifier": -98.07436798864707
+          "change": -0.49458782385336814,
+          "expectedScore": 0.03091173899083551,
+          "newGlobalELO": 599.3066178952599,
+          "newDomainModifier": -98.29716375917431
         }
       ],
       "final": {
-        "globalELO": 599.8264746931569,
+        "globalELO": 599.3066178952599,
         "problemsAttempted": 2,
         "domainModifiers": {
           "addition": 0,
           "subtraction": 0,
           "multiplication": 0,
-          "division": -98.07436798864707,
+          "division": -98.29716375917431,
           "counting": 0,
           "comparison": 0,
           "pattern_matching": 0,
@@ -891,7 +891,7 @@
         },
         "curriculum": {
           "addition": {
-            "currentStep": 1,
+            "currentStep": 2,
             "winsAtCurrentStep": 0
           },
           "subtraction": {
@@ -1445,6 +1445,728 @@
           "number_sequence": false
         }
       }
+    }
+  ],
+  "goldenRolls": [
+    {
+      "childId": "local-child",
+      "attemptIndex": 0,
+      "draw": 0.702008631778881,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 1,
+      "draw": 0.13182034413330257,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 2,
+      "draw": 0.22167616267688572,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 3,
+      "draw": 0.8270698676351458,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 4,
+      "draw": 0.39435374503955245,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 5,
+      "draw": 0.4405951793305576,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 6,
+      "draw": 0.8648248077370226,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 7,
+      "draw": 0.7854789793491364,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 8,
+      "draw": 0.16153258178383112,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 9,
+      "draw": 0.0042882750276476145,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 10,
+      "draw": 0.20388289028778672,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 11,
+      "draw": 0.2578459638170898,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 12,
+      "draw": 0.776045301463455,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 13,
+      "draw": 0.9529568366706371,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 14,
+      "draw": 0.24413092923350632,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 15,
+      "draw": 0.359288870356977,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 16,
+      "draw": 0.2002959200181067,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 17,
+      "draw": 0.4795167353004217,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 18,
+      "draw": 0.8938084803521633,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 19,
+      "draw": 0.3925239301752299,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 20,
+      "draw": 0.1597709476482123,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 21,
+      "draw": 0.5560643943026662,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 22,
+      "draw": 0.9195665509905666,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 23,
+      "draw": 0.9188225320540369,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 24,
+      "draw": 0.7619190595578402,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 25,
+      "draw": 0.14099448337219656,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 26,
+      "draw": 0.8666683628689498,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 27,
+      "draw": 0.9199577474500984,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 28,
+      "draw": 0.4792434920091182,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 29,
+      "draw": 0.5586253488436341,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 30,
+      "draw": 0.5169249270111322,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 31,
+      "draw": 0.5394984232261777,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 32,
+      "draw": 0.3677732839714736,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 33,
+      "draw": 0.795295903692022,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 34,
+      "draw": 0.32964155566878617,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 35,
+      "draw": 0.9480769403744489,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 36,
+      "draw": 0.8029489312320948,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 37,
+      "draw": 0.2858500434085727,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 38,
+      "draw": 0.1716291941702366,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "local-child",
+      "attemptIndex": 39,
+      "draw": 0.6880124979652464,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 0,
+      "draw": 0.3652125389780849,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 1,
+      "draw": 0.869362628320232,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 2,
+      "draw": 0.08802400878630579,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 3,
+      "draw": 0.4908251545857638,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 4,
+      "draw": 0.12206416297703981,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 5,
+      "draw": 0.9386925681028515,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 6,
+      "draw": 0.45825192937627435,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 7,
+      "draw": 0.008670236449688673,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 8,
+      "draw": 0.25472333561629057,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 9,
+      "draw": 0.6627218476496637,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 10,
+      "draw": 0.5327907565515488,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 11,
+      "draw": 0.592750571668148,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 12,
+      "draw": 0.22445007390342653,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 13,
+      "draw": 0.3555233459919691,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 14,
+      "draw": 0.547139888163656,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 15,
+      "draw": 0.3813953099306673,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 16,
+      "draw": 0.2510547076817602,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 17,
+      "draw": 0.3839337881654501,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 18,
+      "draw": 0.9131097081117332,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 19,
+      "draw": 0.5734069775789976,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 20,
+      "draw": 0.37461864319629967,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 21,
+      "draw": 0.9819588891696185,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 22,
+      "draw": 0.17589071462862194,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 23,
+      "draw": 0.8241690357681364,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 24,
+      "draw": 0.1042960265185684,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 25,
+      "draw": 0.618125225417316,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 26,
+      "draw": 0.9783420921303332,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 27,
+      "draw": 0.7311560439411551,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 28,
+      "draw": 0.579392306972295,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 29,
+      "draw": 0.5434821282979101,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 30,
+      "draw": 0.848278978606686,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 31,
+      "draw": 0.7612953318748623,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 32,
+      "draw": 0.15284362947568297,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 33,
+      "draw": 0.5412183736916631,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 34,
+      "draw": 0.30928215733729303,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 35,
+      "draw": 0.3050674796104431,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 36,
+      "draw": 0.17948930291458964,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 37,
+      "draw": 0.8689740675035864,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 38,
+      "draw": 0.21000392804853618,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "c-1234",
+      "attemptIndex": 39,
+      "draw": 0.09481543605215847,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 0,
+      "draw": 0.4401070245075971,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 1,
+      "draw": 0.9618136279750615,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 2,
+      "draw": 0.3854466143529862,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 3,
+      "draw": 0.7592314302455634,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 4,
+      "draw": 0.9771591338794678,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 5,
+      "draw": 0.9998202142305672,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 6,
+      "draw": 0.9899713301565498,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 7,
+      "draw": 0.31161524076014757,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 8,
+      "draw": 0.2848598682321608,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 9,
+      "draw": 0.10065114800818264,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 10,
+      "draw": 0.6043906649574637,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 11,
+      "draw": 0.6602423426229507,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 12,
+      "draw": 0.22274932451546192,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 13,
+      "draw": 0.9972897621337324,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 14,
+      "draw": 0.33463130751624703,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 15,
+      "draw": 0.6221925884019583,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 16,
+      "draw": 0.0854643709026277,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 17,
+      "draw": 0.5186926538590342,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 18,
+      "draw": 0.9485866266768426,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 19,
+      "draw": 0.9273658769670874,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 20,
+      "draw": 0.32710341294296086,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 21,
+      "draw": 0.8303486467339098,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 22,
+      "draw": 0.08935422054491937,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 23,
+      "draw": 0.41931382031179965,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 24,
+      "draw": 0.8388563438784331,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 25,
+      "draw": 0.8748256405815482,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 26,
+      "draw": 0.7481367804575711,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 27,
+      "draw": 0.6043031353037804,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 28,
+      "draw": 0.21173149487003684,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 29,
+      "draw": 0.46999740274623036,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 30,
+      "draw": 0.5966647653840482,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 31,
+      "draw": 0.6773480153642595,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 32,
+      "draw": 0.3471075454726815,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 33,
+      "draw": 0.915498279267922,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 34,
+      "draw": 0.4954103175550699,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 35,
+      "draw": 0.43228403967805207,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 36,
+      "draw": 0.6292293493170291,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 37,
+      "draw": 0.028827564558014274,
+      "goldenAtRate": true
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 38,
+      "draw": 0.19579841662198305,
+      "goldenAtRate": false
+    },
+    {
+      "childId": "stella",
+      "attemptIndex": 39,
+      "draw": 0.07325822906568646,
+      "goldenAtRate": true
     }
   ]
 }

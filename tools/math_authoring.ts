@@ -2,17 +2,22 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from 'path';
 import { deriveCurriculumStep, deriveDifficultyTraits } from './math_curriculum';
 import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt } from './math_verifier';
-import { ELOManager } from '../src/math/ELOManager';
-import { MathProblemManager } from '../src/math/MathProblemManager';
-import { selectOwlProblem, type OwlSelectionConfig } from '../src/math/owlSelection';
-import { buildProblemReplayKey } from '../src/math/problemReplayKey';
-import { LearnerStateManager } from '../src/systems/LearnerStateManager';
-import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool, SelectionLane } from '../src/utils/Types';
+import { ELOManager } from '../math-kernel/math/ELOManager';
+import { MathProblemManager } from '../math-kernel/math/MathProblemManager';
+import { selectOwlProblem, type OwlSelectionConfig } from '../math-kernel/math/owlSelection';
+import { buildProblemReplayKey } from '../math-kernel/math/problemReplayKey';
+import { LearnerStateManager } from '../math-kernel/systems/LearnerStateManager';
+import { MathTuning } from '../math-kernel/math/MathTuning';
+import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool, SelectionLane } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
+
+// Selector smoke and simulations drive the real ladder, so they need the
+// shared tuning JSON loaded exactly like the game does.
+MathTuning.initialize(JSON.parse(readFileSync(join(ROOT, 'godot/data/tuning/math_tuning.json'), 'utf8')));
 const AUTHORING_DIR = join(ROOT, 'authoring', 'math');
 const REPORTS_DIR = join(ROOT, 'reports', 'math-batches');
-const DATA_DIR = join(ROOT, 'public', 'data', 'math');
+const DATA_DIR = join(ROOT, 'godot', 'data', 'math');
 
 type NumericRange = [number, number];
 
@@ -243,7 +248,7 @@ function loadLiveOwlMathConfig(): LiveOwlMathConfig {
             id?: string;
             components?: Array<Record<string, unknown>>;
         }>;
-    }>(join(ROOT, 'public', 'data', 'npcs', 'npc_registry.json'));
+    }>(join(ROOT, 'godot', 'data', 'npcs', 'npc_registry.json'));
 
     const owlDefinition = registry.npcs?.find(npc => npc.id === 'owl_teacher_01') ?? registry.npcs?.[0];
     const mathComponent = owlDefinition?.components?.find(component => component.type === 'math_challenge') ?? {};
@@ -253,8 +258,10 @@ function loadLiveOwlMathConfig(): LiveOwlMathConfig {
         : [];
     const difficultyRange = Array.isArray(mathComponent.difficultyRange) && mathComponent.difficultyRange.length === 2
         ? [Number(mathComponent.difficultyRange[0]), Number(mathComponent.difficultyRange[1])] as [number, number]
-        : [1, 2];
-    const domains = configuredDomains.length > 0 ? configuredDomains : ['addition', 'subtraction'];
+        : [1, 2] as [number, number];
+    const domains: MathDomain[] = configuredDomains.length > 0
+        ? configuredDomains
+        : ['addition', 'subtraction'];
 
     return {
         domains,
@@ -355,6 +362,19 @@ function toOperator(kind: ArithmeticTemplateSpec['kind']): string {
     return '\u00F7';
 }
 
+/**
+ * English plural agreement for a generated sentence.
+ *
+ * These generators emitted the plural unconditionally, which produced broken
+ * English in the pools that a child reads: "Think of 1 groups of 2.", "1 groups
+ * of 2 makes 2.", "There are 1 altogether.", "1 birds sit on a branch.", "You
+ * have 1 berries." Correcting the pool files alone was not enough -- the
+ * materializer regenerates them from here, so the fix belongs at the source.
+ */
+function plural(n: number, one: string, other: string): string {
+    return n === 1 ? one : other;
+}
+
 function formatArithmeticPrompt(variant: string, left: number, operator: string, right: number): string {
     switch (variant) {
         case 'question':
@@ -375,6 +395,17 @@ function formatArithmeticPrompt(variant: string, left: number, operator: string,
             return `${left} ${operator} ${right} =`;
         case 'quick_check':
             return `Quick check: ${left} ${operator} ${right}`;
+        // Worded prompts: every shape here must have a matching pattern in
+        // math-kernel/math/wordedArithmetic.ts so steps, traits, replay keys, and the
+        // verifier can re-derive the underlying fact from the text.
+        case 'story_find':
+            return `You have ${left} ${plural(left, 'berry', 'berries')}. You find ${right} more. How many berries?`;
+        case 'story_land':
+            return `${left} ${plural(left, 'bird sits', 'birds sit')} on a branch. ${right} more land. How many birds?`;
+        case 'story_eat':
+            return `You have ${left} ${plural(left, 'berry', 'berries')}. You eat ${right}. How many are left?`;
+        case 'story_fly':
+            return `${left} ${plural(left, 'bird sits', 'birds sit')} on a branch. ${right} fly away. How many are left?`;
         default:
             return `${left} ${operator} ${right} = ?`;
     }
@@ -434,8 +465,8 @@ function applyPromptLeadIn(text: string, leadIn?: string): string {
 
 function withFallbackVariants(kind: AuthoringTemplateKind, promptVariants: string[]): string[] {
     const fallbackByKind: Record<AuthoringTemplateKind, string[]> = {
-        addition: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check'],
-        subtraction: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check'],
+        addition: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check', 'story_find', 'story_land'],
+        subtraction: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check', 'story_eat', 'story_fly'],
         multiplication: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals'],
         division: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals'],
         counting: ['count', 'how_many', 'count_them'],
@@ -469,9 +500,21 @@ function buildOptions(correct: number, preferred: number[]): number[] {
         }
     }
 
-    return Array.from(options)
+    const finalOptions = Array.from(options)
         .sort((left, right) => left - right)
         .slice(0, 4);
+
+    // Deterministic per-problem shuffle: the old ascending order put the
+    // correct answer in a predictable slot (62% last position across the
+    // pool), which kids learn to exploit on any surface that renders data
+    // order. Seeded by the option values so regeneration stays stable.
+    const rng = createSeededRandom(stableHash(`options|${correct}|${finalOptions.join(',')}`));
+    for (let i = finalOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [finalOptions[i], finalOptions[j]] = [finalOptions[j], finalOptions[i]];
+    }
+
+    return finalOptions;
 }
 
 function buildArithmeticOptions(kind: ArithmeticTemplateSpec['kind'], left: number, right: number, correct: number): number[] {
@@ -506,7 +549,7 @@ function renderHint(strategy: string, values: Record<string, number>): string {
         case 'bridge_ten':
             return `Hop back to the nearest 10 first, then finish counting back.`;
         case 'multiply_groups':
-            return `Think of ${left} groups of ${right}.`;
+            return `Think of ${left} ${plural(left, 'group', 'groups')} of ${right}.`;
         case 'divide_groups':
             return `Share ${left} into groups of ${right}.`;
         case 'count_symbols':
@@ -539,11 +582,11 @@ function renderExplanation(strategy: string, values: Record<string, number>): st
         case 'difference_bridge_ten':
             return `Step back to 10 first, then finish. The answer is ${correct}.`;
         case 'product_result':
-            return `${left} groups of ${right} makes ${correct}.`;
+            return `${left} ${plural(left, 'group', 'groups')} of ${right} makes ${correct}.`;
         case 'quotient_result':
-            return `${left} split into groups of ${right} makes ${correct} groups.`;
+            return `${left} split into groups of ${right} makes ${correct} ${plural(correct, 'group', 'groups')}.`;
         case 'count_result':
-            return `There are ${correct} altogether.`;
+            return `There ${plural(correct, 'is', 'are')} ${correct} altogether.`;
         case 'comparison_result':
             return `${correct} is the correct choice.`;
         case 'sequence_result':
@@ -641,7 +684,19 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
                 : normalizedProgress(correct, [0, Math.max(correct, 1)]);
             const complexity = clamp((complexityOperand * 0.7) + (complexityResult * 0.3), 0, 1);
 
+            // Steps 0-2 belong to brand-new readers: keep the framing to the
+            // bare equation and the simplest question form so the words never
+            // add load on top of the math.
+            const maxOperandValue = Math.max(left, right);
+            const plainOnly = template.kind === 'addition'
+                ? maxOperandValue <= 3
+                : template.kind === 'subtraction' && maxOperandValue <= 7;
+
             for (const variant of promptVariants) {
+                if (plainOnly && variant !== 'equation' && variant !== 'question') continue;
+                // Story shapes need both quantities present to read naturally.
+                if (variant.startsWith('story_') && (left < 1 || right < 1)) continue;
+
                 const promptText = applyPromptLeadIn(formatArithmeticPrompt(variant, left, operator, right), template.promptLeadIn);
                 candidates.push({
                     values: { left, right, correct },
@@ -1492,7 +1547,11 @@ function verifyConstraintPreservingFallbacks(
     const recentWindowResult = manager.getNextProblemELOAware('addition', impossibleOptions);
     const recentWindowFallbackPreserved = recentWindowResult === null;
 
-    const managerWithPrivate = manager as MathProblemManager & { eloStrategy: unknown };
+    // Deliberate private-field poke: this simulation has to prove the owl
+    // selector keeps its safety rails even when the ELO strategy is missing.
+    // `Manager & { eloStrategy }` collapses to never because the real member is
+    // private, so route through unknown.
+    const managerWithPrivate = manager as unknown as { eloStrategy: unknown };
     const originalEloStrategy = managerWithPrivate.eloStrategy;
     managerWithPrivate.eloStrategy = null;
     manager.resetAnswered();
@@ -1624,7 +1683,7 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                 }
 
                 const currentDomainStep = LearnerStateManager.getInstance().getCurrentStep('addition');
-                const previousProblemDomain = encounterProblemIndex > 0 ? previousEncounterDomain : null;
+                const previousProblemDomain: MathDomain | null = encounterProblemIndex > 0 ? previousEncounterDomain : null;
             const problem = selectOwlProblem(manager, owlConfig, previousProblemDomain);
 
                 if (!problem) {
@@ -1654,7 +1713,9 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                     profileGrade -= 2;
                 }
 
-                const allowedStep = LearnerStateManager.getInstance().getCurrentStep(problem.domain);
+                // The live selector may serve one step above current via the
+                // gated stretch lane, so the rail is currentStep + 1.
+                const allowedStep = LearnerStateManager.getInstance().getCurrentStep(problem.domain) + 1;
                 if (problem.curriculumStep > allowedStep || problem.curriculumStep > owlConfig.maxCurriculumStep) {
                     selectorCapBreaches++;
                     profileGrade -= 1.5;
@@ -1706,9 +1767,9 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                 profileGrade -= 1;
             }
 
-            if (owlSurface.currentInteractionProblemCount === 1) {
-                profileGrade -= profile.name === 'depth_probe' ? 0.4 : 0.2;
-            }
+            // One problem per owl encounter is the deliberate baseline (a
+            // future gated NPC may raise problemCount), so interaction length
+            // is no longer graded.
 
             if ((owlSurface.owlAdditionByStep[0]?.uniqueFactCount ?? 0) < 3) {
                 profileGrade -= profile.name === 'depth_probe' ? 0.5 : 0.3;

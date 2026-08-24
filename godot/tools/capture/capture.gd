@@ -194,6 +194,11 @@ func _stage(variant: String) -> bool:
 		# domain is the only way to photograph that layout reliably.
 		return _represent_from_domain(owl, "counting")
 	if variant == "math-wrong":
+		# A teaching demo cannot be answered at all, so swap it for a live
+		# problem before pressing anything.
+		if _game.is_math_challenge_active() and _game.get_math_challenge().is_demo():
+			if not _represent_from_domain(owl, "addition"):
+				return false
 		# The board is built during interact(), so the wrong answer can be
 		# submitted straight away; the hold above is what shows its aftermath.
 		if not _game.is_math_challenge_active():

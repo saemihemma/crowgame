@@ -31,6 +31,8 @@ LearnerStateManager="*res://scripts/systems/learner_state_manager.gd"
 MathProblemManager="*res://scripts/math/math_problem_manager.gd"
 LearnerSyncService="*res://scripts/systems/learner_sync_service.gd"
 ELOUpdateManager="*res://scripts/systems/elo_update_manager.gd"
+SessionStats="*res://scripts/autoload/session_stats.gd"
+CloudSync="*res://scripts/systems/cloud_sync.gd"
 
 [display]
 
@@ -38,7 +40,7 @@ window/size/viewport_width=960
 window/size/viewport_height=540
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep"
-window/handheld/orientation=1
+window/handheld/orientation=0
 
 [rendering]
 
@@ -50,6 +52,22 @@ environment/defaults/default_clear_color=Color(0.529412, 0.807843, 0.921569, 1)
 [physics]
 
 2d/default_gravity=800.0
+
+[input_devices]
+
+; The on-screen TouchScreenButtons are always shown in a web export
+; (OS.has_feature("web")), including on desktop, where the player has a mouse
+; and Godot does not route mouse input to a TouchScreenButton by default. This
+; setting is the documented way to make those visible controls usable there.
+;
+; Honest caveat: the desktop-mouse path is NOT verified. Synthetic pointer input
+; does not reach Godot's TouchScreenButtons in headless Chromium (neither
+; Playwright mouse nor CDP touch events), so a browser test cannot confirm it
+; either way. What is verified, in tests/test_touch_controls.gd, is that a real
+; InputEventScreenTouch presses the bound action -- so the touch path a phone
+; uses is sound. Controls elsewhere keep working with this on: the language
+; pills respond to mouse clicks in the exported build.
+pointing/emulate_touch_from_mouse=true
 
 [input]
 

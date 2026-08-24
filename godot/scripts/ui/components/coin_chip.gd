@@ -111,3 +111,8 @@ func _pill(fill: Color) -> StyleBoxFlat:
 	box.border_width_bottom = 1
 	box.border_color = Color(ThemeManager.get_color_value("paper"), 0.22)
 	return box
+
+## Re-read the label through TextManager. Called when the language changes
+## mid-level: the chip's "x{0}" comes from the string table like everything else.
+func refresh_text() -> void:
+	_refresh()

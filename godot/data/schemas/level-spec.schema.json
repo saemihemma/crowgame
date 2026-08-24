@@ -22,7 +22,7 @@
             "minLength": 1
         },
         "theme": {
-            "description": "World id. Selects the UI theme AND the tileset filename that tools/level_compiler.ts emits (<theme>_tiles.png), so it must match a tileset key in public/data/tilesets/tileset_manifest.json.",
+            "description": "World id. Selects the UI theme AND the tileset filename the level compiler emits (<theme>_tiles.png), so it must match a tileset key in godot/data/tilesets/tileset_manifest.json.",
             "type": "string",
             "enum": [
                 "emberwood",
@@ -206,8 +206,18 @@
                     },
                     "minItems": 2,
                     "maxItems": 2
+                },
+                "teachingIntent": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The lesson this level exists to teach, in one sentence. Required so every gating decision names its intent."
                 }
-            }
+            },
+            "required": [
+                "skills",
+                "difficultyBand",
+                "teachingIntent"
+            ]
         }
     }
 }

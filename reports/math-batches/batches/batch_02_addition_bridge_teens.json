@@ -69,10 +69,10 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.6,
+      "grade": 9.7,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.6,
+        "steadyChildGrade": 9.7,
         "strugglingChildGrade": 9.7,
         "strongChildGrade": 9.6,
         "openingProbeStep": 6,
@@ -91,7 +91,7 @@
       },
       {
         "role": "role-game-designer",
-        "grade": 9.6,
+        "grade": 9.7,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
+    "10 birds sit on a branch. 2 more land. How many birds?",
+    "You have 10 berries. You find 4 more. How many berries?",
     "Try this: 10 + 1",
     "10 + 3 equals ?",
-    "Try this: 10 + 3",
-    "Try this: 10 + 2",
-    "Try this: 10 + 4"
+    "Try this: 10 + 3"
   ]
 }

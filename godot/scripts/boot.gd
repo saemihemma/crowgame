@@ -1,20 +1,36 @@
 extends Node2D
-## Boot scene — Godot port of src/scenes/BootScene.ts.
-##
-## Slice 1: proves the pixel-perfect 960x540 viewport renders and the project
-## boots. Later slices expand this to preload data, initialize autoloads, and
-## route to Login/MainMenu based on the active profile (BootScene.create()).
+## Boot scene. Autoloads have already initialized by the time this runs; its job
+## is to show something immediately and route to the right first screen.
 
 func _ready() -> void:
 	_build_placeholder()
 	# Autoloads have initialized (data/save/profile). Route to the menu.
 	# (Login flow is deferred; MainMenu -> Play starts the game.)
 	await get_tree().create_timer(0.4).timeout
+	# Tell the page that a child can actually play now.
+	#
+	# This is the denominator for the boot funnel: crow-errors.js reports
+	# boot_start on script load, and without a matching boot_ready an empty errors
+	# table cannot distinguish "nobody came" from "everyone's game failed to
+	# load". Reported here rather than on engine start, because an engine that
+	# started but never reached a scene is still a broken game for a player.
+	_report_boot_ready()
+
 	# Route to the active profile's menu, or the login screen.
 	if ProfileManager.get_active_user() != null:
 		SceneRouter.goto("main_menu")
 	else:
 		SceneRouter.goto("login")
+
+func _report_boot_ready() -> void:
+	if not OS.has_feature("web"):
+		return
+	# Carries whether this device already had a save, which is the signal that
+	# would reveal browser storage eviction wiping a child's progress: a cohort
+	# whose repeat launches always report no save is the eviction signature.
+	var had_save := "true" if SaveManager.has_save() else "false"
+	JavaScriptBridge.eval(
+		"window.crowBootReady && window.crowBootReady({hadExistingSave:%s})" % had_save, true)
 
 func _build_placeholder() -> void:
 	# Sky is the project's default_clear_color (#87CEEB), matching src/main.ts.

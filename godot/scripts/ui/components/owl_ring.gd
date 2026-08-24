@@ -38,6 +38,8 @@ const EXTENT := RADIUS + BEZEL * 0.5 + BEZEL_RADIUS_OFFSET + RIM
 const TRACK_MIX := 0.70
 const SEGMENT_GAP_RAD := 0.16
 const SWEEP_SECONDS := 0.4
+## brand/BRAND_SYSTEM.md §10.2: "the flame dims to 40%".
+const PAUSED_FLAME_ALPHA := 0.4
 
 ## Matches the 32x32 icon source 1:1, so pixel art lands on whole pixels.
 const ICON_SIZE := 32.0
@@ -56,6 +58,9 @@ var _filled := 0
 ## Animated 0..1 around the whole ring, so a rescue can be tweened.
 var _sweep := 0.0
 var _streak := 0
+## A miss dims the flame instead of putting it out (§10.2). The count is intact
+## underneath; this is the visual half of "paused, not lost".
+var _streak_paused := false
 
 var _icon: TextureRect
 var _progress: Label
@@ -140,8 +145,9 @@ func _set_sweep(value: float) -> void:
 	_sweep = value
 	queue_redraw()
 
-func _on_streak_changed(streak: int) -> void:
+func _on_streak_changed(streak: int, paused: bool) -> void:
 	_streak = streak
+	_streak_paused = paused
 	queue_redraw()
 
 func _refresh_text() -> void:
@@ -193,9 +199,11 @@ func _draw() -> void:
 
 	if _streak >= flame_at:
 		var hot := _streak >= hot_at
+		# 40% while paused: the flame is visibly still there, waiting to relight.
+		var dim: float = PAUSED_FLAME_ALPHA if _streak_paused else 1.0
 		var flame: Color = ThemeManager.get_color_value("notyet") if hot else ThemeManager.get_color_value("coin")
 		var dashes := 16 if hot else 12
 		for i in dashes:
 			var a := top + (float(i) / float(dashes)) * TAU
 			draw_arc(c, RADIUS + 6.0, a, a + (TAU / float(dashes)) * 0.5, 6,
-				Color(flame, 0.7 if hot else 0.45), 2.0 if hot else 1.5)
+				Color(flame, (0.7 if hot else 0.45) * dim), 2.0 if hot else 1.5)

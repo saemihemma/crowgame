@@ -1,5 +1,5 @@
 extends Node
-## ProfileManager — Godot port of src/systems/ProfileManager.ts.
+## ProfileManager — ported from the retired Phaser build; this is now the only implementation.
 ## Multi-user profiles (username + 4-digit PIN). Each profile maps to its own
 ## save key `crow_save_<username>`. Storage keys are identical to the web build.
 
@@ -90,6 +90,16 @@ func delete_profile(username: String) -> void:
 	if _active_user != null and String(_active_user).to_lower() == username.to_lower():
 		logout()
 	_save()
+
+## Set one field on a stored profile. Used to record the server-issued
+## remoteChildId next to the device-local childId — the local ids stay exactly as
+## they are, so no installed save or snapshot key changes.
+func set_profile_field(username: String, key: String, value: Variant) -> void:
+	for p in _profiles:
+		if String(p.get("username", "")) == username:
+			p[key] = value
+			_save()
+			return
 
 func has_profiles() -> bool:
 	return _profiles.size() > 0

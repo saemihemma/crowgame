@@ -15,7 +15,7 @@ class_name AnswerButton
 enum State { IDLE, RIGHT, WRONG }
 
 const CORNER := 14
-const SHAKE_PIXELS := 7.0
+const SHAKE_RADIANS := 0.075
 const SHAKE_SECONDS := 0.34
 
 var _state: int = State.IDLE
@@ -72,15 +72,17 @@ func _face(fill: Color, border: Color, width: int) -> StyleBoxFlat:
 	return box
 
 ## The wrong-answer shake. Deliberately small and quick: this is "not that one",
-## not a punishment, and a 7-year-old is going to see it often.
+## not a punishment, and a seven-year-old is going to see it often.
+##
+## Rotation, not position. These buttons are children of an HBoxContainer, and a
+## container owns its children's position and size - tweening position.x fought
+## the layout pass and left the shaken option sitting outside its own slot with a
+## hole where it used to be. Containers do not touch rotation, scale or pivot, so
+## a wobble is the shake that survives being laid out.
 func shake() -> void:
 	if UiFx.reduced_motion():
 		return
-	var home := position.x
+	pivot_offset = size / 2.0
 	var tw := create_tween()
-	for offset in [-SHAKE_PIXELS, SHAKE_PIXELS, -SHAKE_PIXELS * 0.5, SHAKE_PIXELS * 0.5, 0.0]:
-		tw.tween_property(self, "position:x", home + offset, SHAKE_SECONDS / 5.0) \
-			.set_trans(Tween.TRANS_SINE)
-
-func get_state() -> int:
-	return _state
+	for angle in [SHAKE_RADIANS, -SHAKE_RADIANS, SHAKE_RADIANS * 0.5, -SHAKE_RADIANS * 0.4, 0.0]:
+		tw.tween_property(self, "rotation", angle, SHAKE_SECONDS / 5.0).set_trans(Tween.TRANS_SINE)

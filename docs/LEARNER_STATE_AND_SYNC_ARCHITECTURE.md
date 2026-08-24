@@ -1,7 +1,9 @@
 # Learner State And Sync Architecture
 
 Status: Current
-Authority: Runtime code and data, especially `ProfileManager`, `SaveManager`, `LearnerStateManager`, `LearnerSyncService`, `admin.html`, and `docs/learner_backend_schema.sql`.
+Authority: Runtime code and data, especially `profile_manager.gd`, `save_manager.gd`,
+`learner_state_manager.gd`, `learner_sync_service.gd`, `cloud_sync.gd`, and
+`server/migrations/**`. The wire contract is `docs/API_CONTRACT.md`.
 Last verified against code: 2026-03-31
 
 ## Purpose
@@ -26,7 +28,7 @@ Read this with:
 
 ```mermaid
 flowchart LR
-    Login["LoginScene or active profile resume"] --> Profile["ProfileManager selects child identity"]
+    Login["login.gd or active profile resume"] --> Profile["profile_manager.gd selects child identity"]
     Profile --> Save["SaveManager loads crow_save_<username>"]
     Save --> ELO["ELOManager restores mastery"]
     Save --> Learner["LearnerStateManager merges saved learner state"]
@@ -43,7 +45,7 @@ flowchart LR
     Queue --> Submit["LearnerSyncService submit or sync pending attempts"]
     Submit --> Cache
 
-    Learner --> Admin["admin.html learner summary"]
+    Learner --> Report["in-engine parent report"]
 ```
 
 ## At A Glance
@@ -71,7 +73,7 @@ ELOUpdateManager updates mastery, confidence, review, and save
     ->
 LearnerSyncService queues the attempt and optionally submits it
     ->
-admin.html can inspect the resulting learner snapshot
+the in-engine parent report shows the resulting learner snapshot
 ```
 
 Ownership boundary:
@@ -83,7 +85,7 @@ Ownership boundary:
 
 Hörmann is now family-oriented even when used locally.
 
-Live identity fields in [src/systems/ProfileManager.ts](../src/systems/ProfileManager.ts):
+Live identity fields in [godot/scripts/autoload/profile_manager.gd](../godot/scripts/autoload/profile_manager.gd):
 
 - `username`
 - `pinHash`
@@ -95,7 +97,9 @@ Practical meaning:
 - a browser can hold multiple child profiles
 - each profile has its own save key
 - each profile also has stable learner keys tied to `childId`
-- `familyId` groups child profiles for future parent-account or backend use
+- `familyId` is the DEVICE-LOCAL family handle. The server issues its own
+  `remoteFamilyId`, stored alongside it; the local value is never an
+  authorization subject (see `docs/API_CONTRACT.md`)
 - live runtime usernames are globally unique in the browser profile list
 
 ## Glossary
@@ -181,7 +185,7 @@ Owns:
 
 ## Boot And Profile Lifecycle
 
-Boot flow in [src/scenes/BootScene.ts](../src/scenes/BootScene.ts):
+Boot flow in [godot/scripts/autoload/data_manager.gd](../godot/scripts/autoload/data_manager.gd):
 
 1. `ProfileManager` loads browser profiles.
 2. `SaveManager` loads the active profile save or defaults.
@@ -196,12 +200,12 @@ Boot flow in [src/scenes/BootScene.ts](../src/scenes/BootScene.ts):
 No-active-profile boot path:
 - `SaveManager` still loads through `crow_save_v1` when there is no active profile yet
 - `LearnerStateManager` initializes with placeholder local identity values until a real profile is selected
-- Boot can still cache learner state and initialize sync before routing to `LoginScene`
+- `boot.gd` can still cache learner state and initialize sync before routing to login
 - this is a continuity fallback, not the same thing as running legacy profile migration
 
 Profile switch behavior:
-- `LoginScene.loginSuccess()` owns the normal profile-switch rehydrate path after `SaveManager.switchProfile()`
-- `BootScene` mirrors that same rehydrate sequence only on cold start when an active profile already exists
+- `login.gd` `_finish_login()` owns the normal profile-switch rehydrate path after `SaveManager.switch_profile()`
+- `boot.gd` mirrors that same rehydrate sequence only on cold start when an active profile already exists
 
 Profile deletion behavior:
 - profile save is removed
@@ -290,7 +294,7 @@ The shared type also includes `error`, but the current runtime does not actively
 Configured by:
 - `crow_learner_api_base`
 
-Live methods in [src/systems/LearnerSyncService.ts](../src/systems/LearnerSyncService.ts):
+Live methods in [godot/scripts/systems/learner_sync_service.gd](../godot/scripts/systems/learner_sync_service.gd):
 
 Current client auth model:
 - none built into runtime yet
@@ -392,34 +396,60 @@ This means:
 
 ## Admin Surface
 
-[admin.html](../admin.html) is not just a translation editor anymore.
+The parent-facing surface is now in-engine, not a separate HTML page.
 
-It also:
-- reads child profiles from localStorage
-- renders learner summary cards from the cached learner snapshot or embedded save data
-- exposes the learner API base URL field
-- gives a quick sanity check for sync state, review backlog, and frustration flags
+Why the old page had to go rather than be ported: `admin.html` read browser
+`localStorage`, while the Godot build stores everything in
+`user://crow_localstorage.json` — IndexedDB on the web export. Identical key
+names, different storage engine, so it could not see this game's data at all.
+Its translation editor was deliberately not replaced: shipping a live string
+editor to the public would let anyone on a shared family device rewrite what a
+child reads.
 
-## Backend Schema Mapping
+The in-engine parent report ([../godot/scripts/ui/parent_report.gd](../godot/scripts/ui/parent_report.gd)):
+- reads child profiles from the local store, not from browser localStorage
+- renders a per-domain line from the learner snapshot embedded in each child's save
+- surfaces a plain-language note when confidence has dropped, because "the
+  questions got easier" is deliberate design and reads as a bug without it
+- exposes NO API base field. That was the old page's most dangerous control: the
+  base was client-writable, so anything on the origin could redirect a child's
+  learning records. It is now a relative same-origin path, debug-override only.
 
-The companion SQL file is [docs/learner_backend_schema.sql](./learner_backend_schema.sql).
+## Backend schema
 
-High-level mapping:
+The shipped schema is **[../server/migrations/](../server/migrations/)**, and the
+contract it serves is **[API_CONTRACT.md](./API_CONTRACT.md)**.
 
-- `parent_accounts`
-  - future parent or family owner record
-- `child_profiles`
-  - child identity and PIN-backed profile data
-- `child_domain_mastery`
-  - per-domain mastery, confidence, and unlock projection
-- `child_skill_state`
-  - active review state per child, domain, and skill
-- `attempt_events`
-  - immutable answer history
-- `review_items`
-  - active spaced-review queue
+`docs/learner_backend_schema.sql` is a **superseded draft**. It carries a banner
+saying so, and it must not be implemented. Three things in it are actively wrong:
 
-The SQL file is a backend companion artifact, not proof that a backend is already deployed.
+| Draft | Why it must not be built |
+| --- | --- |
+| `child_profiles.pin_hash` | `_hash_pin()` is `btoa(pin + ':' + username)` — reversible. The PIN is a child selector, not a credential, and building this imports a fake credential for a minor into a database. |
+| `uuid`-typed attempt and review ids | the client generates `"attempt-<ms>-<rand>"`; those inserts fail. The shipped schema uses `text`. |
+| `unique (username)` globally | rejects the second family with a child called Emma. Uniqueness is scoped to the family. |
+
+The shipped shape instead:
+
+- `families` ← `parents(email)` — the parent's email is the only PII stored
+- `children(family_id, display_name)` — no PIN, no other child data
+- `devices` + `device_tokens(token_sha256)` — the authorization subject is the
+  DEVICE, scoped to a family, never the child
+- `child_saves` — one save blob per child, arbitrated by `problems_attempted`
+- `child_save_history` — the last 20 versions, so a bad merge is recoverable
+- `attempts(child_id, attempt_id)` — append-only, idempotent, `text` ids
+- `sync_conflicts` — instrumentation for the accepted v1 merge cost
+
+Mastery is deliberately **not** a table. `learner_state_manager.gd` recomputes it
+from ELO on every read, so storing it as authoritative would invite drift. If a
+parent dashboard ever needs it server-side, it is a projection off `attempts` and
+should be labelled as one.
+
+Family isolation is enforced twice: an explicit `family_id` predicate in every
+query, and Postgres row-level security. Note the trap that was found the hard way
+— a superuser bypasses RLS unconditionally, and Railway's `DATABASE_URL` user is
+one, so the API drops to a non-superuser role per transaction. Without that, the
+policies are decorative.
 
 ## Debug Checklist
 
@@ -427,4 +457,4 @@ The SQL file is a backend companion artifact, not proof that a backend is alread
 - compare `crow_save_<username>` against `crow_learner_snapshot_<childId>`
 - inspect `crow_learner_pending_attempts_<childId>` before assuming sync dropped data
 - clear the smallest relevant key instead of calling `localStorage.clear()`
-- use [admin.html](../admin.html) to sanity-check learner summary state quickly
+- use the in-engine parent report to sanity-check learner summary state quickly

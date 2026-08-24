@@ -4,6 +4,10 @@ Status: Current
 Authority: Scene, autoload and convention reference for the Godot port.
 Last verified against code: 2026-08-23
 
+Status: Current
+Authority: Canonical conventions for the shipped game. The CI hardcode guard (`godot/tools/check_hardcoding.py`) is the enforcing authority.
+Last verified against code: 2026-08-23
+
 This project is **data-driven by mandate**: you change the game by editing JSON/data,
 not by editing code. A CI guard (`tools/check_hardcoding.py`) enforces the rules below.
 

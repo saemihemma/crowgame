@@ -45,7 +45,9 @@
     "laser": "#ff8c1a",
     "muzzle": "#ffaa00",
     "touch_panel": "#ffffff2e",
-    "touch_label": "#ffffffd9"
+    "touch_label": "#ffffffd9",
+    "overlay_shade": "#00000099",
+    "text_primary": "#ffffff"
   },
   "hud": {
     "healthIcon": "ui_scifi_battery",

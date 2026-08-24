@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
+    "You have 22 berries. You find 2 more. How many berries?",
     "Complete: 24 + 1 = ?",
     "How much is 24 + 3?",
     "How much is 24 + 1?",
-    "23 + 4 = ?",
-    "What is 23 + 1?"
+    "23 + 4 = ?"
   ]
 }

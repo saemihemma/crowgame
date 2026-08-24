@@ -1,4 +1,5 @@
-import type { MathProblem, ProblemDifficultyTraits } from '../src/utils/Types';
+import type { MathProblem, ProblemDifficultyTraits } from '../math-kernel/utils/Types';
+import { parseWordedArithmetic } from '../math-kernel/math/wordedArithmetic';
 
 type ParsedArithmeticPrompt = {
     left: number;
@@ -13,7 +14,9 @@ export function buildPromptUniquenessKey(text: string): string {
 export function parseArithmeticPromptIndependent(text: string): ParsedArithmeticPrompt | null {
     const match = text.match(/(\d+)\s*([+\-*\/\u00D7\u00F7])\s*(\d+)/);
     if (!match) {
-        return null;
+        // Worded prompts carry no operator symbol; the shared pattern table
+        // maps each authored story shape back to its underlying fact.
+        return parseWordedArithmetic(text);
     }
 
     const rawOperator = match[2];

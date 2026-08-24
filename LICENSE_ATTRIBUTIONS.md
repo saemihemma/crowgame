@@ -1,7 +1,7 @@
 # License Attributions
 
 Status: Supportive
-Authority: Licensing and provenance reference only. Runtime truth still lives in manifests, `src/**`, and referenced assets.
+Authority: Licensing and provenance reference only. Runtime truth still lives in manifests, `godot/scripts/**`, and referenced assets under `godot/assets/**`. Code and data are Apache-2.0 (see `NOTICE`); the assets described here are not.
 Last verified against code: 2026-03-22
 
 ## Purpose
@@ -66,5 +66,5 @@ When asset provenance changes:
 
 1. Update this document.
 2. Update any runtime manifest or credits file that references the asset.
-3. Run `npm.cmd run validate:assets`.
+3. Run `npm run validate:assets`.
 4. If the asset moved out of the live tree, also update [archived/README.md](./archived/README.md) or [ASSET_SPECS.md](./ASSET_SPECS.md) as needed.

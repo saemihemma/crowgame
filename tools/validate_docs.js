@@ -19,8 +19,6 @@ const REQUIRED_DOC_STATUSES = {
     'ai_generation_guide.md': 'Supportive',
     'ai_assets/_readme.md': 'Supportive',
     'LICENSE_ATTRIBUTIONS.md': 'Supportive',
-    'archived/README.md': 'Historical',
-    'archived/docs/elo-math-system-plan.md': 'Historical',
 };
 
 const STORAGE_KEYS = [
@@ -54,8 +52,11 @@ function loadJson(relativePath) {
     return JSON.parse(readText(relativePath));
 }
 
+// `_comment` keys are documentation inside data files — the repo uses them widely
+// and they are not entries. Counting them is how the sound-event number drifted.
 function countObjectKeys(value) {
-    return value ? Object.keys(value).length : 0;
+    if (!value) return 0;
+    return Object.keys(value).filter(key => !key.startsWith('_')).length;
 }
 
 function formatInlineCodeList(values) {
@@ -75,6 +76,9 @@ function formatInlineCodeList(values) {
     return `${leading}, and \`${values[values.length - 1]}\``;
 }
 
+/** Vendored, generated and archived trees are never documentation we own. */
+const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', '.godot']);
+
 function walkMarkdownFiles(directoryRelativePath) {
     const absoluteDirectory = path.join(root, directoryRelativePath);
     const results = [];
@@ -82,7 +86,7 @@ function walkMarkdownFiles(directoryRelativePath) {
     for (const entry of fs.readdirSync(absoluteDirectory, { withFileTypes: true })) {
         const relativePath = toPosix(path.join(directoryRelativePath, entry.name));
         if (entry.isDirectory()) {
-            if (relativePath === 'node_modules' || relativePath === 'dist') {
+            if (SKIP_DIRS.has(entry.name)) {
                 continue;
             }
             results.push(...walkMarkdownFiles(relativePath));
@@ -104,6 +108,7 @@ function walkTextFiles(relativeDirectory, allowedExtensions) {
     for (const entry of fs.readdirSync(absoluteDirectory, { withFileTypes: true })) {
         const relativePath = toPosix(path.join(relativeDirectory, entry.name));
         if (entry.isDirectory()) {
+            if (SKIP_DIRS.has(entry.name)) continue;
             files.push(...walkTextFiles(relativePath, allowedExtensions));
             continue;
         }
@@ -189,14 +194,11 @@ function buildDocsByStatus(markdownFiles) {
 }
 
 function extractSceneCount() {
-    const mainTs = readText('src/main.ts');
-    const sceneBlock = mainTs.match(/scene:\s*\[([\s\S]*?)\]/m);
-    if (!sceneBlock) {
-        fail('src/main.ts: could not determine scene count for onboarding snapshot');
-        return 0;
-    }
-
-    return (sceneBlock[1].match(/\b[A-Za-z]+Scene\b/g) || []).length;
+    // The shipped game is the Godot build, so the scene count comes from the
+    // Godot scene registry (the routing source of truth per godot/ARCHITECTURE.md
+    // rule 4) rather than from the retired Phaser `scene: [...]` array.
+    const registry = loadJson('godot/data/registries/scenes.json');
+    return Object.keys(registry).filter(key => !key.startsWith('_')).length;
 }
 
 function validateRequiredDocStatuses(markdownFiles) {
@@ -216,6 +218,8 @@ function validateRequiredDocStatuses(markdownFiles) {
 
     for (const doc of markdownFiles) {
         const metadata = parseMetadata(doc);
+        // Kept for when material is archived again: anything under archived/ is
+        // history, and history is never Current.
         if (doc.startsWith('archived/') && metadata.status !== 'Historical') {
             fail(`${doc}: archived docs must use Status Historical`);
         }
@@ -225,15 +229,15 @@ function validateRequiredDocStatuses(markdownFiles) {
 function validateOnboardingSnapshot(currentDocs) {
     const onboarding = readText('ONBOARDING_AGENT.md');
     const sceneCount = extractSceneCount();
-    const easyCount = loadJson('public/data/math/problems_easy.json').problems.length;
-    const datasetCount = loadJson('public/data/math/problems_dataset.json').problems.length;
-    const gapsCount = loadJson('public/data/math/problems_gaps.json').problems.length;
-    const curriculumCount = loadJson('public/data/math/problems_curriculum.json').problems.length;
+    const easyCount = loadJson('godot/data/math/problems_easy.json').problems.length;
+    const datasetCount = loadJson('godot/data/math/problems_dataset.json').problems.length;
+    const gapsCount = loadJson('godot/data/math/problems_gaps.json').problems.length;
+    const curriculumCount = loadJson('godot/data/math/problems_curriculum.json').problems.length;
     const totalProblems = easyCount + datasetCount + gapsCount + curriculumCount;
-    const levelCount = loadJson('public/data/levels/level_registry.json').levels.length;
-    const npcCount = loadJson('public/data/npcs/npc_registry.json').npcs.length;
-    const enemyCount = loadJson('public/data/enemies/enemy_registry.json').enemies.length;
-    const audioManifest = loadJson('public/data/audio/audio_manifest.json');
+    const levelCount = loadJson('godot/data/levels/level_registry.json').levels.length;
+    const npcCount = loadJson('godot/data/npcs/npc_registry.json').npcs.length;
+    const enemyCount = loadJson('godot/data/enemies/enemy_registry.json').enemies.length;
+    const audioManifest = loadJson('godot/data/audio/audio_manifest.json');
     const musicCount = countObjectKeys(audioManifest.music);
     const sfxCount = countObjectKeys(audioManifest.sfx);
 
@@ -253,6 +257,37 @@ function validateOnboardingSnapshot(currentDocs) {
         ? `currently exposes ${musicCount} music tracks and no live SFX entries`
         : `currently exposes ${musicCount} music tracks and ${sfxCount} live SFX entries`;
     ensureDocContains('ONBOARDING_AGENT.md', audioSnapshot, 'audio manifest snapshot');
+
+    // Counts this file did NOT compute are exactly the counts that drifted: the
+    // snapshot claimed 17 autoloads after an 18th was added, and 16 sound events
+    // when one of the 16 keys is `_comment`. Asserting a number the validator can
+    // derive is cheap; trusting prose is not.
+    const autoloadCount = (readText('godot/project.godot')
+        .match(/^[A-Za-z_][A-Za-z0-9_]*="\*res:\/\//gm) || []).length;
+    ensureDocContains('ONBOARDING_AGENT.md', `**${autoloadCount}** autoloads`, 'autoload count snapshot');
+
+    const soundEventCount = countObjectKeys(loadJson('godot/data/audio/sound_events.json'));
+    ensureDocContains('ONBOARDING_AGENT.md',
+        `**${soundEventCount}** semantic sound events`, 'sound event count snapshot');
+
+    const spawnCount = countObjectKeys(loadJson('godot/data/registries/spawn_registry.json'));
+    ensureDocContains('ONBOARDING_AGENT.md',
+        `**${spawnCount}** spawnable object types`, 'spawn type count snapshot');
+
+    const stringKeyCount = countObjectKeys(loadJson('godot/data/i18n/strings_en.json'));
+    ensureDocContains('ONBOARDING_AGENT.md', `**${stringKeyCount}** keys`, 'string key count snapshot');
+
+    // Probe count is parsed from the runner, so adding a probe without updating
+    // the docs fails rather than quietly diverging.
+    const probeCount = (readText('godot/tools/run_tests.sh')
+        .match(/res:\/\/tests\/integration\/\w+\.tscn/g) || []).length;
+    ensureDocContains('ONBOARDING_AGENT.md',
+        `**${probeCount}** headless physics probes`, 'probe count snapshot');
+    ensureDocContains('README.md', `${probeCount} physics probes`, 'readme probe count');
+
+    const migrationCount = fs.readdirSync(path.join(root, 'server/migrations'))
+        .filter(f => f.endsWith('.sql')).length;
+    ensureDocContains('ONBOARDING_AGENT.md', `**${migrationCount}** migrations`, 'migration count snapshot');
 
     const forbiddenPatterns = [
         { pattern: /\bregisters \d+ scenes\b/, description: 'scene counts' },
@@ -275,28 +310,55 @@ function validateOnboardingSnapshot(currentDocs) {
 }
 
 function validateMathAndLearnerContracts() {
-    ensureSourcePattern('src/math/ELOManager.ts', /globalELO:\s*150/, 'starting global ELO');
-    ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*50\)\s*return\s+4;/, 'first K-factor band');
-    ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*200\)\s*return\s+3;/, 'second K-factor band');
-    ensureSourcePattern('src/math/ELOManager.ts', /return\s+2;/, 'third K-factor band');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /clamp\(decayed\s*\+\s*delta,\s*-50,\s*20\)/, 'confidence clamp');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*PROMOTION_WIN_TARGET/, 'curriculum promotion gate');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*DEMOTION_WRONG_THRESHOLD/, 'curriculum demotion gate');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /stage:\s*'immediate'/, 'immediate review stage');
-    ensureSourcePattern('src/systems/LearnerStateManager.ts', /case\s+'day_7':/, 'day_7 review stage');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /comfort:\s*0\.5/, 'comfort lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /review:\s*laneCandidates\.review\.length\s*>\s*0\s*\?\s*0\.25\s*:\s*0/, 'review lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /at_level:\s*0\.25/, 'at-level lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /stretch:\s*0/, 'stretch lane removal');
-    ensureSourcePattern('src/ui/components/MathBoard.ts', /problem\.answer\.mode\s*===\s*'mcq'/, 'MCQ-only UI branch');
-    ensureSourcePattern('src/scenes/LoginScene.ts', /private\s+loginSuccess\(\):\s*void/, 'login success rehydrate owner');
-    ensureSourcePattern('src/scenes/BootScene.ts', /SaveManager\.getInstance\(\)\.switchProfile\(\);/, 'boot profile-switch mirror');
-    ensureSourcePattern('src/entities/npc/components/MathChallengeComponent.ts', /maxOperand:\s*20/, 'local owl max-operand ceiling');
+    // The tuning JSON is the single source of the ladder/lane numbers; the
+    // doc pins below are derived from it so a tuning edit forces the doc to
+    // follow. godot/data is now the only copy of that JSON.
+    const mathTuning = JSON.parse(fs.readFileSync(path.join(root, 'godot/data/tuning/math_tuning.json'), 'utf8'));
+
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /globalELO:\s*150/, 'starting global ELO');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*30\)\s*return\s+16;/, 'first K-factor band');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*150\)\s*return\s+12;/, 'second K-factor band');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /return\s+8;/, 'third K-factor band');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /clamp\(decayed\s*\+\s*delta,\s*-50,\s*20\)/, 'confidence clamp');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*ladder\(\)\.promotionWinTarget/, 'curriculum promotion gate');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*ladder\(\)\.demotionWrongThreshold/, 'curriculum demotion gate');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /stage:\s*'immediate'/, 'immediate review stage');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /case\s+'day_7':/, 'day_7 review stage');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /mathTuning\(\)\.laneWeights/, 'lane weights read from shared tuning');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /canUseStretchLane\(domain\)/, 'stretch lane gate');
+
+    // The downward ratchet guard. Demotion must be evaluated only on the wrong
+    // answer itself — evaluating it on every attempt is what let one miss cost
+    // several steps as it slid through the window. This one is structural, so it
+    // is pinned in the source.
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /if\s*\(!attempt\.correct\)\s*\{/, 'demotion evaluated on the miss only');
+
+    // The other two halves of that guard are now VALUES in the tuning JSON
+    // rather than source constants, so pin them there. A miss lands confidence
+    // at exactly -15, so the threshold must stay clear of it or a single miss
+    // demotes again; and the floor must lift confidence back off the gate so the
+    // next miss does not re-demote instantly.
+    const ladder = mathTuning.ladder;
+    if (ladder.demotionConfidenceThreshold >= -15) {
+        fail(`math_tuning.json: ladder.demotionConfidenceThreshold is ${ladder.demotionConfidenceThreshold};`
+            + ' a single miss sets confidence to exactly -15, so anything >= -15 demotes on one miss');
+    }
+    if (ladder.postDemotionConfidenceFloor <= ladder.demotionConfidenceThreshold) {
+        fail(`math_tuning.json: ladder.postDemotionConfidenceFloor (${ladder.postDemotionConfidenceFloor})`
+            + ` must sit above ladder.demotionConfidenceThreshold (${ladder.demotionConfidenceThreshold}),`
+            + ' or demotion leaves confidence on the gate and the next miss re-demotes');
+    }
+
+    ensureSourcePattern('godot/scripts/ui/math_challenge.gd', /var options: Array = answer\.get\("options", \[\]\)/, 'MCQ options drive the answer buttons');
+    ensureSourcePattern('godot/scripts/scenes/login.gd', /func _finish_login\(\) -> void:/, 'login success rehydrate owner');
+    ensureSourcePattern('godot/scripts/scenes/login.gd', /SaveManager\.switch_profile\(\)/, 'profile-switch on login');
+    ensureSourcePattern('godot/scripts/math/owl_selection.gd', /"maxOperand": config\.get\("maxOperand", 20\)/, 'local owl max-operand ceiling');
 
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'default starting global ELO: `150`', 'starting ELO contract');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `4` before 50 attempts', 'K-factor first band');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `3` before 200 attempts', 'K-factor second band');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `2` afterward', 'K-factor third band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `16` before 30 attempts', 'K-factor first band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `12` before 150 attempts', 'K-factor second band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `8` afterward', 'K-factor third band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'godot/data/tuning/math_tuning.json', 'shared tuning file pointer');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'currentStep', 'curriculum step ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'winsAtCurrentStep', 'curriculum progress ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- clamped to `-50..20`', 'confidence clamp');
@@ -308,10 +370,10 @@ function validateMathAndLearnerContracts() {
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_3`', 'review stage day_3');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_7`', 'review stage day_7');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `graduated`', 'review stage graduated');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `50%` comfort', 'comfort lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `25%` review', 'review lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `25%` at level', 'at-level lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `0%` harder', 'harder lane removal');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.comfort * 100)}%\` comfort`, 'comfort lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.review * 100)}%\` review`, 'review lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.at_level * 100)}%\` at level`, 'at-level lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.stretch * 100)}%\` stretch`, 'stretch lane weight');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'one curriculum step easier', 'comfort lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'exact current curriculum step', 'at-level lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'strategy steps down only', 'step-down-only fallback');
@@ -332,27 +394,33 @@ function validateMathAndLearnerContracts() {
 }
 
 function validateStorageContracts() {
-    ensureSourcePattern('src/systems/ProfileManager.ts', /PROFILES_KEY\s*=\s*'crow_profiles'/, 'profiles key');
-    ensureSourcePattern('src/systems/ProfileManager.ts', /ACTIVE_KEY\s*=\s*'crow_active_user'/, 'active user key');
-    ensureSourcePattern('src/systems/ProfileManager.ts', /FAMILY_KEY\s*=\s*'crow_family_id'/, 'family id key');
-    ensureSourcePattern('src/systems/ProfileManager.ts', /return\s+`crow_save_\$\{username\}`;/, 'profile save key template');
-    ensureSourcePattern('src/systems/ProfileManager.ts', /return\s+'crow_save_v1';/, 'legacy save fallback key');
-    ensureSourcePattern('src/systems/TextManager.ts', /STORAGE_KEY\s*=\s*'crow_translations'/, 'translation storage key');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /API_BASE_KEY\s*=\s*'crow_learner_api_base'/, 'learner API base key');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /return\s+`crow_learner_snapshot_\$\{childId\}`;/, 'learner snapshot key template');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /return\s+`crow_learner_pending_attempts_\$\{childId\}`;/, 'pending attempts key template');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /normalized\.childId\s*=\s*activeProfile\.childId;/, 'active profile childId normalization');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /normalized\.familyId\s*=\s*activeProfile\.familyId;/, 'active profile familyId normalization');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /LearnerStateManager\.getInstance\(\)\.replaceSnapshot\(snapshot\);/, 'remote snapshot replacement');
-    ensureSourcePattern('src/systems/LearnerSyncService.ts', /LearnerStateManager\.getInstance\(\)\.replaceSnapshot\(syncedSnapshot\);/, 'remote sync snapshot replacement');
+    // These assert the SHIPPED game's storage contract. The keys are identical to
+    // the ones the retired Phaser build used — that was the porting requirement —
+    // but the file that owns them is now GDScript, so the patterns are GDScript.
+    const PM = 'godot/scripts/autoload/profile_manager.gd';
+    const LSS = 'godot/scripts/systems/learner_sync_service.gd';
+
+    ensureSourcePattern(PM, /const PROFILES_KEY := "crow_profiles"/, 'profiles key');
+    ensureSourcePattern(PM, /const ACTIVE_KEY := "crow_active_user"/, 'active user key');
+    ensureSourcePattern(PM, /const FAMILY_KEY := "crow_family_id"/, 'family id key');
+    ensureSourcePattern(PM, /return "crow_save_%s" % username/, 'profile save key template');
+    ensureSourcePattern(PM, /const LEGACY_SAVE_KEY := "crow_save_v1"/, 'legacy save fallback key');
+    ensureSourcePattern('godot/scripts/autoload/text_manager.gd', /const STORAGE_KEY := "crow_translations"/, 'translation storage key');
+    ensureSourcePattern(LSS, /const API_BASE_KEY := "crow_learner_api_base"/, 'learner API base key');
+    ensureSourcePattern(LSS, /return "crow_learner_snapshot_%s" % child_id/, 'learner snapshot key template');
+    ensureSourcePattern(LSS, /return "crow_learner_pending_attempts_%s" % child_id/, 'pending attempts key template');
+    ensureSourcePattern(LSS, /normalized\["childId"\] = profile\["childId"\]/, 'active profile childId normalization');
+    ensureSourcePattern(LSS, /normalized\["familyId"\] = profile\["familyId"\]/, 'active profile familyId normalization');
+    ensureSourcePattern(LSS, /LearnerStateManager\.replace_snapshot\(snapshot\)/, 'remote snapshot replacement');
+    ensureSourcePattern(LSS, /LearnerStateManager\.replace_snapshot\(synced\)/, 'remote sync snapshot replacement');
 
     for (const key of STORAGE_KEYS) {
         ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', `- \`${key}\``, `learner-storage key ${key}`);
         ensureDocContains('ONBOARDING_AGENT.md', `- \`${key}\``, `onboarding state-reset key ${key}`);
     }
 
-    ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', '`LoginScene.loginSuccess()` owns the normal profile-switch rehydrate path', 'profile-switch owner note');
-    ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', '`BootScene` mirrors that same rehydrate sequence only on cold start', 'cold-start mirror note');
+    ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', '`login.gd` `_finish_login()` owns the normal profile-switch rehydrate path', 'profile-switch owner note');
+    ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', '`boot.gd` mirrors that same rehydrate sequence only on cold start', 'cold-start mirror note');
     ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', 'active profile identity always wins over any saved or remote child identity', 'identity precedence rule');
     ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', 'live mastery from `ELOManager` wins over stale mastery embedded in an older learner snapshot during initialization', 'mastery precedence rule');
     ensureDocContains('docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md', 'cached local snapshot is the fallback when remote fetch fails', 'cached snapshot fallback');
@@ -362,16 +430,8 @@ function validateStorageContracts() {
 
 function validateDocWordingAndTaxonomy() {
     ensureDocContains('DEVELOPMENT_GUIDE.md', '- [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)', 'self-listed current doc');
-    ensureDocContains('ASSET_SPECS.md', 'Boot-time asset loading in [src/scenes/BootScene.ts](./src/scenes/BootScene.ts) currently expects:', 'BootScene asset contract lead-in');
+    ensureDocContains('ASSET_SPECS.md', 'Boot-time asset loading in [godot/scripts/autoload/data_manager.gd](./godot/scripts/autoload/data_manager.gd) currently expects:', 'asset contract lead-in');
     ensureDocContains('ASSET_SPECS.md', 'suspicious unreferenced leftovers that should be archived instead of staying live', 'asset validation cleanup scope note');
-    ensureDocContains('archived/README.md', 'level-copy-legacy', 'clear archive folder naming');
-    ensureDocContains('archived/README.md', 'scratch-images', 'clear archive scratch-image naming');
-    ensureDocContains('archived/README.md', 'npcs-copy-legacy', 'clear archive NPC copy naming');
-    ensureDocContains('archived/README.md', 'crow2-experiments', 'clear archive crow experiment naming');
-    ensureDocContains('archived/README.md', 'coin-experiments', 'clear archive coin experiment naming');
-    ensureDocContains('archived/README.md', 'door-legacy', 'clear archive door naming');
-    ensureDocContains('archived/README.md', 'archived/tools/**', 'clear archived tools naming');
-    ensureDocContains('archived/README.md', 'level1-source', 'clear archived level1 source naming');
 }
 
 function validateLiveSourceReferences() {
@@ -381,9 +441,9 @@ function validateLiveSourceReferences() {
     ];
 
     const liveSourceFiles = [
-        ...walkTextFiles('src', new Set(['.ts', '.tsx'])),
-        ...walkTextFiles('public/data', new Set(['.json'])),
-        'admin.html',
+        ...walkTextFiles('godot/scripts', new Set(['.gd'])),
+        ...walkTextFiles('godot/data', new Set(['.json'])),
+        ...walkTextFiles('math-kernel', new Set(['.ts'])),
     ];
 
     for (const file of liveSourceFiles) {
@@ -397,7 +457,7 @@ function validateMathAuthoringReportContracts() {
     const owlSurface = loadJson('reports/math-batches/owl-surface-summary.json');
     const runtimeSelectorSmoke = loadJson('reports/math-batches/runtime-selector-smoke.json');
     const reviewSummary = loadJson('reports/math-batches/review-summary.json');
-    const npcRegistry = loadJson('public/data/npcs/npc_registry.json');
+    const npcRegistry = loadJson('godot/data/npcs/npc_registry.json');
     const owlDefinition = npcRegistry.npcs?.find(npc => npc.id === 'owl_teacher_01') ?? npcRegistry.npcs?.[0];
     const mathComponent = owlDefinition?.components?.find(component => component.type === 'math_challenge');
     const configuredProblemCount = Number(mathComponent?.problemCount ?? 1);
@@ -422,7 +482,7 @@ function validateMathAuthoringReportContracts() {
 
     ensureDocContains('README.md', `fresh opening owl path currently starts with ${formattedOpeningDomains}`, 'fresh owl opening-domain boundary');
     ensureDocContains('ONBOARDING_AGENT.md', `opening unlocked domains currently ${formattedOpeningDomains}`, 'fresh owl opening-domain boundary');
-    ensureDocContains('ONBOARDING_AGENT.md', `Current shipped owl interaction length is \`${configuredProblemCount}\` problems per owl encounter`, 'owl encounter-length boundary');
+    ensureDocContains('ONBOARDING_AGENT.md', `Current shipped owl interaction length is \`${configuredProblemCount}\` problem${configuredProblemCount === 1 ? '' : 's'} per owl encounter`, 'owl encounter-length boundary');
     ensureDocContains('docs/MATH_AUTHORING_PIPELINE.md', '`openingUnlockedInventory*` is the unlocked-domain inventory before current-step clamping.', 'owl report inventory semantics');
     ensureDocContains('docs/MATH_AUTHORING_PIPELINE.md', '`freshReachable*` is the real fresh-profile day-one reachable subset after current-step clamping.', 'owl report fresh-reachable semantics');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '`openingUnlockedInventory*` in that report means unlocked-domain inventory before current-step clamping.', 'math architecture inventory semantics');

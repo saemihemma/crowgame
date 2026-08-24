@@ -1,7 +1,7 @@
 # Asset Specifications
 
 Status: Supportive
-Authority: Live asset contract plus workflow guidance. Runtime truth still depends on BootScene, manifests, and registries.
+Authority: Live asset contract plus workflow guidance. Runtime truth depends on `godot/scripts/**` references, manifests, and registries.
 Last verified against code: 2026-03-22
 
 ## Purpose
@@ -10,47 +10,29 @@ This document explains the live asset surface and the difference between runtime
 
 ## Current Runtime Asset Contract
 
-Boot-time asset loading in [src/scenes/BootScene.ts](./src/scenes/BootScene.ts) currently expects:
+Boot-time asset loading in [godot/scripts/autoload/data_manager.gd](./godot/scripts/autoload/data_manager.gd) currently expects:
 
-Sprites and images (tilesets now come from the manifest below, not from
-hardcoded `BootScene` paths):
+Sprites and images:
 - `assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png`
 - `assets/sprites/characters/crow2/crow3/crow-walk-64px-fixed.png`
 - `assets/sprites/characters/npcs/owl.png`
 - `assets/sprites/characters/npcs/cockroach.png`
 - `assets/sprites/ui/coin/coinsprite.png`
 - `assets/sprites/objects/door/door-36.png`
-
-
-Tilesets are no longer listed here. They are declared in the tileset manifest and
-loaded from it.
-
-Tileset manifest:
-- [public/data/tilesets/tileset_manifest.json](./public/data/tilesets/tileset_manifest.json) is the live tileset manifest
-- `BootScene` loads every entry it lists, via a nested load during `preload`, so
-  a tileset needs no code to be added, replaced or removed
-- the manifest `key` is both the Phaser texture key and the tileset name a
-  compiled map carries; `GameScene.loadTiledLevel()` resolves the two by calling
-  `map.addTilesetImage(name, name, ...)`, so they cannot drift apart
-- geometry is fixed by `tools/level_compiler.ts`: a `128x128` sheet of `32x32`
-  tiles, of which only indices 0, 1 and 2 are ever placed
-- entries marked `"source": "generated"` come from `tools/gen_tilesets.mjs`;
-  `node tools/gen_tilesets.mjs --check` fails if the manifest is stale
-- replacing a generated tileset with real art: overwrite the PNG, copy it to
-  `godot/assets/tilesets/`, and flip that entry to `"source": "authored"`
-- full instructions and the per-world quality grades are in
-  [brand/ASSET_MANIFEST.md](./brand/ASSET_MANIFEST.md)
+- `assets/tilesets/forest_tiles.png`
+- `assets/tilesets/level1_tiles.png`
+- `assets/tilesets/spike_hazards.png`
 
 Audio manifest:
-- [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) is the live audio manifest
+- [godot/data/audio/audio_manifest.json](./godot/data/audio/audio_manifest.json) is the live audio manifest
 - mutable manifest counts live only in the dated snapshot block in [ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md) so current docs do not drift independently
 
 Generated or companion runtime data consumed alongside assets:
-- `public/data/levels/level_registry.json`
-- `public/data/levels/compiled/*.json`
-- `public/data/tuning/*.json`
-- `public/data/themes/*.json`
-- `public/data/i18n/strings_en.json`
+- `godot/data/levels/level_registry.json`
+- `godot/data/levels/compiled/*.json`
+- `godot/data/tuning/*.json`
+- `godot/data/themes/*.json`
+- `godot/data/i18n/strings_en.json`
 
 Asset work often fails because one of these companion data files still points at old paths or old keys.
 
@@ -69,7 +51,7 @@ Staging:
 Archived:
 - `archived/**` contains historical plans, dead code, and non-runtime asset copies
 - do not point runtime manifests at archived material
-- obvious backups and scratch artifacts should be moved there instead of being left under `public/assets/**`
+- obvious backups and scratch artifacts should be moved there instead of being left under `godot/assets/**`
 
 ## Current Notes
 
@@ -82,22 +64,21 @@ Archived:
 When asset wiring changes:
 
 ```powershell
-npm.cmd run validate
-npm.cmd run validate:assets
-npx.cmd tsc --noEmit
-npm.cmd run dev
+npm run validate
+npm run validate:assets
+npx tsc --noEmit
+godot --path godot   # play it
 ```
 
 `validate:assets` verifies:
 - the current audio manifest entries
-- the tileset manifest entries
-- BootScene visual assets extracted from source
+- referenced visual assets extracted from the Godot sources
 - compiled level tileset image references
 - suspicious unreferenced leftovers that should be archived instead of staying live
 
-`npm.cmd run validate` already includes `validate:assets`. Use `npm.cmd run validate:assets` when you only want the asset subset during iteration.
+`npm run validate` already includes `validate:assets`. Use `npm run validate:assets` when you only want the asset subset during iteration.
 
 Manual checks:
-- confirm BootScene loads the asset without warnings
+- confirm the game loads the asset without warnings
 - confirm the asset is actually visible or audible in runtime
 - confirm the path came from a live manifest or code reference, not an archived folder

@@ -20,21 +20,21 @@ Current non-use:
 
 ## Practical Rule
 
-If the game should actually use an asset, put the final approved file in `public/assets/**` and wire it through a live runtime reference.
+If the game should actually use an asset, put the final approved file in `godot/assets/**` and wire it through a live runtime reference.
 
 ## Current Workflow
 
 Sprites:
 - generate externally
 - review manually
-- place the final approved sprite directly in `public/assets/**`
-- if helpful, manual helper commands can read source material from `ai_assets/**`, but the final live asset still belongs in `public/assets/**`
+- place the final approved sprite directly in `godot/assets/**`
+- if helpful, manual helper commands can read source material from `ai_assets/**`, but the final live asset still belongs in `godot/assets/**`
 
 Audio:
 - stage raw files here if helpful
 - prepare final runtime files yourself
-- move approved output to `public/assets/audio/**`
-- update `public/data/audio/audio_manifest.json` if needed
+- move approved output to `godot/assets/audio/**`
+- update `godot/data/audio/audio_manifest.json` if needed
 
 ## Archive Reminder
 

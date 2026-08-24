@@ -1,6 +1,6 @@
 extends RefCounted
 class_name ProblemReplayKey
-## Godot port of src/math/problemReplayKey.ts. Pure, static helpers.
+## Godot port of math-kernel/math/problemReplayKey.ts. Pure, static helpers.
 ## Builds an anti-repeat key that treats commutative facts (a+b == b+a,
 ## a×b == b×a) as identical, and normalizes counting/comparison/sequence prompts.
 

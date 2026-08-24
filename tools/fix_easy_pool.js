@@ -7,7 +7,7 @@ const path = require('path');
  * Usage: node tools/fix_easy_pool.js
  */
 
-const EASY_POOL_PATH = path.join(__dirname, '..', 'public', 'data', 'math', 'problems_easy.json');
+const EASY_POOL_PATH = path.join(__dirname, '..', 'godot', 'data', 'math', 'problems_easy.json');
 
 // Mapping from problem IDs to new difficulty values
 const DIFFICULTY_MAPPING = {

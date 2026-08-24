@@ -1,7 +1,7 @@
 # Hörmann Math System Architecture
 
 Status: Current
-Authority: Runtime code and data, especially `BootScene`, `MathProblemManager`, `ELOManager`, `ELOAwareStrategy`, `LearnerStateManager`, `ELOUpdateManager`, `SaveManager`, and `LearnerSyncService`.
+Authority: Runtime code and data, especially `data_manager.gd`, `math_problem_manager.gd`, `elo_manager.gd`, `elo_aware_strategy.gd`, `learner_state_manager.gd`, `elo_update_manager.gd` and `save_manager.gd`. The executable specification for these numbers is `math-kernel/**`, locked by `godot/tests/fixtures/**`.
 Last verified against code: 2026-03-31
 
 ## Purpose
@@ -25,7 +25,7 @@ For offline math authoring, batch materialization, and review outputs, read [doc
 
 ```mermaid
 flowchart LR
-    Boot["BootScene math init"] --> Pools["MathProblemManager loads concrete pools"]
+    Boot["boot.gd math init"] --> Pools["MathProblemManager loads concrete pools"]
     Boot --> Mastery["ELOManager restores mastery"]
     Boot --> Learner["LearnerStateManager restores confidence, steps, review, unlocks"]
     Boot --> Sync["LearnerSyncService caches snapshot and optional sync"]
@@ -35,7 +35,7 @@ flowchart LR
     Learner --> Select
     Mastery --> Select
 
-    Select --> Challenge["MathChallengeScene and MathBoard"]
+    Select --> Challenge["math_challenge.gd overlay"]
     Challenge --> Update["ELOUpdateManager handles completion"]
 
     Update --> MasteryWrite["ELOManager updates mastery"]
@@ -55,11 +55,12 @@ Hörmann is tuned for early elementary learners and aims for:
 - stable unlocking of new domains only after the current domain is truly steady
 
 Current target band:
-- roughly `88-92%` first-attempt accuracy over recent history
+- roughly `70-85%` first-attempt accuracy over recent history — high enough to
+  feel like winning, low enough that the problems are still doing work
 
 ## Runtime Composition
 
-Boot-time math initialization happens in [src/scenes/BootScene.ts](./src/scenes/BootScene.ts):
+Boot-time math initialization happens in [godot/scripts/autoload/data_manager.gd](./godot/scripts/autoload/data_manager.gd):
 
 - `MathProblemManager` loads 4 pools:
   - `easy`
@@ -83,17 +84,74 @@ Boot-time math initialization happens in [src/scenes/BootScene.ts](./src/scenes/
    - due review items
    - local kid-safe ceilings such as operand caps
 4. `MathProblemManager` suppresses recently seen arithmetic facts by replay key, not just exact problem IDs, so wording variants of the same fact do not bounce back immediately.
-5. `MathChallengeScene` presents the selected problem.
+5. `math_challenge.gd` presents the selected problem.
 6. `MathBoard` renders the answer UI.
 
 Current answer UI:
 - MCQ only
+- option order is shuffled twice: deterministically at generation time (the
+  old ascending order put the correct answer in a predictable slot) and again
+  at render time in `MathBoard`, which also covers the hand-authored pools
+- long prompts (framed questions and word problems) scale the question font
+  down and word-wrap so the text always fits the board
+- a second miss reveals the correct answer with the authored explanation
+  before the overlay closes, so a failed challenge ends in teaching
+- a curriculum step-up fires `CURRICULUM_STEP_UP`, and the HUD celebrates it
+  once it is visible again; demotions are never signaled
+
+Prompt wording:
+- addition and subtraction include word-problem variants ("You have 3 berries.
+  You find 2 more.") from curriculum step 3 upward; steps 0-2 stay on the bare
+  equation and simplest question form so reading load never gates the math
+- every worded shape has a parse pattern in
+  [src/math/wordedArithmetic.ts](./src/math/wordedArithmetic.ts); steps,
+  difficulty traits, replay keys, and the verifier all re-derive the fact from
+  that shared table, so wording variants of one fact share a replay key
 
 The shared type system still supports other answer modes, but the live UI does not render them.
-The shipped owl interaction is currently two problems per encounter, so total repo inventory and per-session lived variety are still not the same thing.
+The shipped owl interaction is one problem per encounter — answer it and the owl is saved. `problemCount` stays per-NPC config in `npc_registry.json`, so a future gated variant (e.g. a padlock owl) can demand more without code changes.
+
+Per-level math identity:
+- each level's `mathGating` (authored in the level spec, mirrored into
+  `level_registry.json`) names the domains its owls draw from, a difficulty
+  band, and a required `teachingIntent` — the lesson the level exists to
+  teach; the owl component intersects skills and band with its own NPC config
+- the level's skill order is its emphasis: the intersection keeps the LEVEL's
+  order, and the first listed skill is the headline that gets the primary
+  selection share
+- the designed chain: 01 counting (+addition), 02 subtraction (+addition),
+  03 comparison (+counting), 04 pattern matching (+counting),
+  05 number sequences (+addition, subtraction), 99 open practice — each
+  headline's prerequisite domain is the level's own on-theme fallback until
+  the headline unlocks, and `npm run validate` fails if the chain stops
+  covering every servable domain, gates a skill the owl cannot serve, or
+  points a band at fewer than 30 authored problems
+- the curriculum ladder still owns how hard within that band; the level owns
+  which math — an empty intersection falls back to the NPC config so a
+  mis-authored level never bricks
+
+The teaching window:
+- when a level's gating includes a domain the child has never attempted
+  (`totalAttempts` of 0 in `curriculumProgress`), the owl opens with a
+  worked-example demo: the problem appears, the localised hint plays as
+  "thinking aloud", then the answer lights up with its explanation — no input
+  accepted, no learner-model events emitted
+- the demo hands over to a freebie problem in the same domain: a win records
+  normally, a miss records nothing at all, so first contact with new math can
+  never hurt
+
+The comeback arc:
+- a correct answer on a review item whose last outcome was wrong fires
+  `MATH_COMEBACK`, celebrated on the HUD harder than an ordinary win —
+  a miss becomes the setup for the best moment available
+
+Progress pips:
+- the overlay shows one pip per first-try at-level win already banked toward
+  the next promotion; the final pip is the step-up celebration itself
+- pips only ever render as earned-or-not; they are never shown draining
 The live owl path is addition-first, and the fresh opening mix currently reaches `addition` plus `counting` to create softer "lucky easy ones" without jumping into later arithmetic too early.
 Pattern matching is part of the broader owl-safe set, but it does not start unlocked on a fresh learner profile.
-When an encounter reaches its follow-up question, the runtime now prefers an alternate unlocked owl-safe domain before falling back to the full owl-safe set, so the second prompt is less likely to be "more addition again" unless the learner has no safe alternative unlocked.
+When an NPC asks more than one problem, follow-up questions prefer an alternate unlocked owl-safe domain before falling back to the full owl-safe set — dormant at the one-problem baseline, live again for any multi-problem NPC.
 
 ## Learner Model
 
@@ -108,7 +166,7 @@ Long-term skill estimate is still ELO-based:
 - effective mastery for a domain:
   - `globalELO + domainModifier`
 
-Live update behavior in [src/math/ELOManager.ts](./src/math/ELOManager.ts):
+Live update behavior in [godot/scripts/math/elo_manager.gd](./godot/scripts/math/elo_manager.gd):
 
 - expected score uses standard ELO expectation
 - actual score:
@@ -116,12 +174,12 @@ Live update behavior in [src/math/ELOManager.ts](./src/math/ELOManager.ts):
   - `0.5` for corrected retry
   - `0.0` for wrong
 - K-factor:
-  - `4` before 50 attempts
-  - `3` before 200 attempts
-  - `2` afterward
+  - `16` before 30 attempts
+  - `12` before 150 attempts
+  - `8` afterward
 - delta cap:
   - `+8` max upward per answer
-  - `-12` max downward per answer
+  - `-8` max downward per answer
 - update split:
   - `70%` to global ELO
   - `30%` to the active domain modifier
@@ -130,19 +188,39 @@ Live update behavior in [src/math/ELOManager.ts](./src/math/ELOManager.ts):
 
 Local problem selection is now capped by an explicit per-domain curriculum step.
 
-Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerStateManager.ts):
+Live behavior in [godot/scripts/systems/learner_state_manager.gd](./godot/scripts/systems/learner_state_manager.gd),
+mirrored by the reference kernel in
+[math-kernel/systems/LearnerStateManager.ts](./math-kernel/systems/LearnerStateManager.ts).
+The tunable numbers below (promotion, demotion, stretch gate, lane weights,
+teaching pacing, golden economy) live in
+[godot/data/tuning/math_tuning.json](./godot/data/tuning/math_tuning.json) —
+now the only copy — and both the shipped game and the kernel load that file, so
+tuning a number is one JSON edit that applies to the runtime and the parity
+oracle at once:
 
 - each domain stores:
   - `currentStep`
   - `winsAtCurrentStep`
   - recent step results
-- selection is never allowed above the current step
+- selection is capped at one step above the current step, and that stretch
+  step is only reachable while the learner is hot (see selection policy)
 - promotion:
-  - `+1` step after `5` first-try correct answers at the current step
-  - and at least `90%` first-attempt accuracy across the last `10` attempts in that domain
+  - after `3` first-try correct answers at the current step
+  - and at least `80%` first-attempt accuracy across the last `10` attempts in that domain
+  - the ladder advances to the next step with at least `3` authored problems,
+    skipping empty or near-empty steps; it never promotes onto a rung the
+    learner cannot practice
+  - a first-try correct answer on a stretch problem promotes directly to that step
 - demotion:
+  - evaluated only on a wrong answer, never re-triggered by later correct answers
+    still inside the window
   - `-1` step after `2` wrong answers in the last `5` attempts for that domain
-  - or when confidence for that domain drops to `-15` or below
+  - or when confidence for that domain drops to `-25` or below
+  - after a demotion, confidence is softened to at most `-10` so one bad patch
+    cannot cascade into multiple demotions
+- starting steps are reconciled against the problem pools at boot: a domain
+  whose authored content starts above the stored step is raised to the first
+  step that has problems
 
 This is the primary local safety rail for young learners. ELO no longer authorizes harder local problems by itself.
 
@@ -150,7 +228,7 @@ This is the primary local safety rail for young learners. ELO no longer authoriz
 
 Confidence is session-local and moves faster than mastery.
 
-Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerStateManager.ts):
+Live behavior in [godot/scripts/systems/learner_state_manager.gd](./godot/scripts/systems/learner_state_manager.gd):
 
 - stored per domain as `confidenceOffsets`
 - clamped to `-50..20`
@@ -196,12 +274,12 @@ Rules:
 
 ## Problem Selection Policy
 
-Live local weighting in [src/math/selection/ELOAwareStrategy.ts](./src/math/selection/ELOAwareStrategy.ts):
+Live local weighting in [godot/scripts/math/elo_aware_strategy.gd](./godot/scripts/math/elo_aware_strategy.gd):
 
-- `50%` comfort
-- `25%` review
-- `25%` at level
-- `0%` harder
+- `40%` comfort
+- `20%` review
+- `30%` at level
+- `10%` stretch
 
 Lane behavior:
 
@@ -211,12 +289,15 @@ Lane behavior:
   - due review items matched against review-friendly problems `1-2` steps easier than current
 - at level:
   - exact current curriculum step
-- harder:
-  - disabled for the local kid-focused path
+- stretch:
+  - one curriculum step harder than current
+  - only offered while the learner is hot: at least 5 recent attempts in the
+    domain, correct-answer rate `>= 80%` across the last 5, and
+    non-negative confidence
+  - a first-try correct stretch answer promotes the learner to that step
 
-If no review items are due:
-- the review share rolls into comfort when comfort exists
-- otherwise it rolls into the current step
+Empty lanes drop out and their weight is renormalized across the remaining
+non-empty lanes, so the shares above are relative, not exact odds.
 
 If the requested bands are empty:
 - strategy steps down only
@@ -235,14 +316,48 @@ Local kid-safe filter:
 - this keeps two-digit addition and subtraction out of the live local owl loop until a denser later ladder exists
 - Bridge Pack A now gives local owl play dense middle-band coverage for addition steps `10-19` and subtraction steps `6-13`.
 - Subtraction step `5` remains intentionally tiny because the current derivation only yields a narrow `10 - 0` / `10 - 10` style prompt shape there.
-- The repo now ships `3000` total runtime problems, but the current owl-safe local subset is smaller; use `reports/math-batches/owl-surface-summary.json` when you need the owl-safe inventory and fresh-profile subset instead of the full inventory headline.
+- The repo now ships `3150` total runtime problems, but the current owl-safe local subset is smaller; use `reports/math-batches/owl-surface-summary.json` when you need the owl-safe inventory and fresh-profile subset instead of the full inventory headline.
 - `openingUnlockedInventory*` in that report means unlocked-domain inventory before current-step clamping.
 - `freshReachable*` in that report means the real fresh-profile day-one reachable subset after current-step clamping.
 - The owl-safe surface is not arithmetic-only anymore: early fresh encounters can mix addition with counting, while pattern matching joins later and subtraction still waits for addition stability.
 - The component-level fallback and the internal ELO fallback now preserve the same operand, step, and difficulty caps instead of silently widening when the recent-window logic resets.
 - `runtime-selector-smoke.json` is runtime-aligned selector evidence built from the shared owl-selection helper plus live learner-state and NPC-config rails; it is not the literal browser scene/input/retry flow by itself.
-- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the real owl interaction, wrong-answer retry, second-problem follow-up, and overlay close path.
+- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the real owl interaction, wrong-answer retry, and the single-problem completion-and-close path.
 - `runtime-browser-smoke.json` is still not telemetry-backed pedagogy proof and does not independently validate that the frozen ELO bands are perfect for every child.
+
+### Golden problems
+
+Roughly 1 in 8 real owl problems arrives golden: a pulsing gold frame, a
+distinct shimmer chime, and a bonus coin multiplier on the win (larger for a
+first-try win). Live behavior in [src/math/goldenRoll.ts](./src/math/goldenRoll.ts)
+and `godot/scripts/math/golden_roll.gd`:
+
+- the roll is a seeded coin flip on `(childId, lifetime attempt index)` — the
+  same save state always rolls the same result, and the `goldenRolls` fixtures
+  in the Godot parity suite hold both ports to the identical draw
+- the rate and both multipliers live under `golden` in the shared
+  `math_tuning.json`; nothing about it is tied to time, streaks, or anything a
+  child could feel pressure to protect
+- never during the teaching window (demos and freebies stay calm), and a
+  golden miss costs nothing beyond the ordinary retry flow
+- each attempt records a `golden` flag, and the admin session report counts
+  golden problems served
+
+### Session recap and trophy shelf
+
+Two menu surfaces close the loop (peak-end rule: a session is remembered by
+its peak and its ending):
+
+- `SessionStats` (web singleton, Godot autoload) counts owls saved, problems
+  solved, step-ups, comebacks, and golden wins during play; the main menu
+  consumes it once and shows a recap that ends on the best moment
+  (comeback beats golden beats step-up). Only positive counts exist — a
+  session with nothing to celebrate shows no recap at all.
+- `curriculumProgress` carries a `highestStep` high-water mark per domain
+  (raised on every step rise, never lowered), and both main menus render a
+  code-drawn badge per attempted domain — sprout / leaf / flower / star from
+  `trophies.tierSteps` in the shared tuning file. A demotion never shrinks a
+  badge.
 
 ## Unlock Logic
 
@@ -265,7 +380,7 @@ A prerequisite domain only counts as stable when:
 
 ## Runtime Update Flow
 
-The live update path is centralized in [src/systems/ELOUpdateManager.ts](./src/systems/ELOUpdateManager.ts):
+The live update path is centralized in [godot/scripts/systems/elo_update_manager.gd](./godot/scripts/systems/elo_update_manager.gd):
 
 1. `MATH_PROBLEM_PRESENTED`
    - caches domain, problem ELO, skill list, selection lane, and review item id
@@ -296,7 +411,7 @@ This gives Hörmann:
 
 ## Parent And Admin Visibility
 
-[admin.html](./admin.html) now exposes a learner summary panel that reads local learner snapshots and shows:
+The in-engine parent report ([godot/scripts/ui/parent_report.gd](./godot/scripts/ui/parent_report.gd)) reads local learner snapshots and shows:
 
 - first-attempt accuracy
 - summary cards with up to four visible domain rows per child, including mastery and confidence

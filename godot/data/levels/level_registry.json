@@ -7,10 +7,25 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
-            "theme": "emberwood",
             "music": "level_01_music",
             "unlockRequirement": null,
-            "order": 1
+            "order": 1,
+            "mathGating": {
+                "skills": [
+                    "addition",
+                    "subtraction",
+                    "counting",
+                    "comparison",
+                    "pattern_matching",
+                    "number_sequence"
+                ],
+                "difficultyBand": [
+                    1,
+                    3
+                ],
+                "teachingIntent": "Open practice: every unlocked skill, at the ladder's own pace."
+            },
+            "theme": "emberwood"
         },
         {
             "key": "level_01",
@@ -19,10 +34,21 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
-            "theme": "emberwood",
             "music": "level_01_music",
             "unlockRequirement": null,
-            "order": 2
+            "order": 2,
+            "mathGating": {
+                "skills": [
+                    "counting",
+                    "addition"
+                ],
+                "difficultyBand": [
+                    1,
+                    2
+                ],
+                "teachingIntent": "First numbers: count what you see, then add small amounts."
+            },
+            "theme": "emberwood"
         },
         {
             "key": "level_02",
@@ -31,13 +57,24 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
-            "theme": "prism_hollow",
             "music": "level_02_music",
             "unlockRequirement": {
                 "level": "level_01",
                 "minStars": 0
             },
-            "order": 3
+            "order": 3,
+            "mathGating": {
+                "skills": [
+                    "subtraction",
+                    "addition"
+                ],
+                "difficultyBand": [
+                    1,
+                    3
+                ],
+                "teachingIntent": "Taking away: things vanish in the dark - subtraction on a steady addition base."
+            },
+            "theme": "prism_hollow"
         },
         {
             "key": "level_03",
@@ -46,13 +83,24 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
-            "theme": "sugarstorm",
             "music": "level_03_music",
             "unlockRequirement": {
                 "level": "level_02",
                 "minStars": 0
             },
-            "order": 4
+            "order": 4,
+            "mathGating": {
+                "skills": [
+                    "comparison",
+                    "counting"
+                ],
+                "difficultyBand": [
+                    1,
+                    3
+                ],
+                "teachingIntent": "More or less: compare what you just learned to count."
+            },
+            "theme": "sugarstorm"
         },
         {
             "key": "level_04",
@@ -61,13 +109,24 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
-            "theme": "geyserworks",
             "music": "level_04_music",
             "unlockRequirement": {
                 "level": "level_03",
                 "minStars": 0
             },
-            "order": 5
+            "order": 5,
+            "mathGating": {
+                "skills": [
+                    "pattern_matching",
+                    "counting"
+                ],
+                "difficultyBand": [
+                    1,
+                    3
+                ],
+                "teachingIntent": "Patterns: bridges are built of repeating planks - see the repeating shape."
+            },
+            "theme": "geyserworks"
         },
         {
             "key": "level_05",
@@ -76,13 +135,25 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
-            "theme": "aurora_spire",
             "music": "level_05_music",
             "unlockRequirement": {
                 "level": "level_04",
                 "minStars": 0
             },
-            "order": 6
+            "order": 6,
+            "mathGating": {
+                "skills": [
+                    "number_sequence",
+                    "addition",
+                    "subtraction"
+                ],
+                "difficultyBand": [
+                    1,
+                    3
+                ],
+                "teachingIntent": "What comes next: sequences resting on addition and subtraction."
+            },
+            "theme": "aurora_spire"
         }
     ]
 }

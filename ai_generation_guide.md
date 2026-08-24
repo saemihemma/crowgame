@@ -18,8 +18,8 @@ Preferred path:
 
 1. generate the sprite externally
 2. review it manually
-3. place the final approved file directly in `public/assets/**`
-4. wire it through BootScene, a manifest, or a registry
+3. place the final approved file directly in `godot/assets/**`
+4. wire it through a manifest or a registry
 5. test it in the game
 
 Optional helper scripts still exist:
@@ -30,14 +30,14 @@ Treat those as manual helpers, not as a guaranteed production pipeline. They can
 
 ### Audio
 
-Current runtime truth is [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json).
+Current runtime truth is [godot/data/audio/audio_manifest.json](./godot/data/audio/audio_manifest.json).
 
 Use this path:
 
 1. generate raw audio externally
 2. optionally stage raw files in `ai_assets/audio/`
 3. prepare final runtime files yourself
-4. place the final approved files in `public/assets/audio/**`
+4. place the final approved files in `godot/assets/audio/**`
 5. update the audio manifest if needed
 6. test in game
 
@@ -69,9 +69,9 @@ Audio:
 ## Verification
 
 ```powershell
-npm.cmd run validate
-npx.cmd tsc --noEmit
-npm.cmd run dev
+npm run validate
+npx tsc --noEmit
+godot --path godot   # play it
 ```
 
 Manual checks matter more than automation for asset quality.

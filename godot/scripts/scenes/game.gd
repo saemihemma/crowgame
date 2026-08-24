@@ -26,10 +26,13 @@ var _camera: Camera2D
 
 var coin_count := 0
 var coins_at_level_start := 0
-## Consecutive first-attempt-correct answers. Session state, so it lives here
+## Consecutive correct answers within the level. Session state, so it lives here
 ## with coins and lives rather than in the HUD (which only draws it) or in the
 ## challenge overlay (which is rebuilt for every problem and would forget).
 var streak := 0
+## A wrong answer sets this; the next correct answer clears it. See §10.2 - the
+## count itself survives a miss.
+var streak_paused := false
 var lives := MAX_LIVES
 var transitioning := false
 var respawning := false
@@ -46,7 +49,9 @@ func _ready() -> void:
 	coins_at_level_start = coin_count
 	_setup_fx_layer()
 	EventBus.owl_saved.connect(_on_owl_saved)
-	EventBus.math_challenge_complete.connect(_on_challenge_complete)
+	# Per attempt, not per problem: a miss has to dim the flame the moment it
+	# happens, and a retry that lands has to relight it.
+	EventBus.math_answer_submitted.connect(_on_answer_submitted)
 	add_child(HUD_SCENE.instantiate())
 	add_child(TOUCH_SCENE.instantiate())
 	var key := level_key
@@ -98,7 +103,8 @@ func _load_level(key: String) -> void:
 
 	lives = MAX_LIVES
 	streak = 0
-	EventBus.streak_changed.emit(streak)
+	streak_paused = false
+	EventBus.streak_changed.emit(streak, streak_paused)
 	transitioning = false
 	respawning = false
 	# Persist where the player is (GameScene.ts does this on create) so the
@@ -245,18 +251,32 @@ func award_enemy_coins(amount: int) -> void:
 	EventBus.coins_changed.emit(coin_count)
 
 # ─── Owl saved (the emotional payoff for doing the math) ──
-## Streak accounting. Only a clean first-attempt answer extends it: counting a
-## retry would mean the flame never goes out, and a reward that cannot be lost
-## stops being a reward (§10.2).
-func _on_challenge_complete(result: Dictionary) -> void:
-	var clean := bool(result.get("correct", false)) and bool(result.get("firstAttempt", false))
-	var previous := streak
-	streak = streak + 1 if clean else 0
-	if streak == previous:
+## Streak accounting, per brand/BRAND_SYSTEM.md §10.2.
+##
+## **A wrong answer pauses the streak; it never resets it.** The count survives a
+## miss and the flame dims to 40% until the next correct answer relights it. Only
+## leaving the level clears it.
+##
+## This was implemented backwards at first - wrong answers zeroed the count, on
+## the reasoning that a streak which cannot be lost is not a reward. That is a
+## fine rule for an adult game and the wrong one here: it puts a punishment on
+## the single most confidence-sensitive moment a child has, which is the one
+## thing this product cannot afford. The doc had already made that call, in those
+## words, and children replaying a level to protect a streak are children doing
+## more maths - which is the entire mechanic.
+func _on_answer_submitted(payload: Dictionary) -> void:
+	if bool(payload.get("isCorrect", false)):
+		streak += 1
+		streak_paused = false
+		EventBus.streak_changed.emit(streak, streak_paused)
+		if streak >= int(Config.fx("streak/flame", 3)):
+			_streak_toast()
 		return
-	EventBus.streak_changed.emit(streak)
-	if clean and streak >= int(Config.fx("streak/flame", 3)):
-		_streak_toast()
+
+	if streak_paused:
+		return  # already dimmed; a second miss changes nothing
+	streak_paused = true
+	EventBus.streak_changed.emit(streak, streak_paused)
 
 ## The top centre of the HUD is kept empty precisely so this reads as an event
 ## rather than as another readout. It appears, it says one thing, it leaves.

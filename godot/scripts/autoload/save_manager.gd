@@ -1,5 +1,5 @@
 extends Node
-## SaveManager — Godot port of src/systems/SaveManager.ts.
+## SaveManager — ported from the retired Phaser build; this is now the only implementation.
 ## Profile-aware persistence over Persistence (user://). Same SaveData shape,
 ## same auto-save-on-event behaviour. ELO/learner hooks plug in at slice 3 and
 ## are read defensively until then.
@@ -78,6 +78,36 @@ func clear() -> void:
 		Persistence.remove_item("crow_learner_snapshot_%s" % cid)
 		Persistence.remove_item("crow_learner_pending_attempts_%s" % cid)
 	_data = _create_default_save()
+
+## The cloud-save arbiter. Read from eloStats, which is where ELOManager's state
+## is embedded on save() — the same number the server compares.
+func get_problems_attempted() -> int:
+	var elo: Variant = _data.get("eloStats", {})
+	if elo is Dictionary:
+		return int((elo as Dictionary).get("problemsAttempted", 0))
+	return 0
+
+func get_save_version() -> int:
+	return SAVE_VERSION
+
+## Replace local state with a save the server says is authoritative.
+##
+## Runs the same migrate_save() path as a disk load, because a save that has been
+## sitting in the cloud can be older than this build. Then rehydrates the
+## in-memory systems: a save blob on its own changes nothing a player can see
+## until ELO and learner state are restored from it.
+func adopt_remote_save(remote: Variant) -> void:
+	if not (remote is Dictionary) or (remote as Dictionary).is_empty():
+		return
+	_data = migrate_save(remote as Dictionary)
+	Persistence.set_item(_get_save_key(), JSON.stringify(_data))
+	# initialize() is the real rehydrate entry point — the same one ELOManager
+	# uses at boot when it reads save.eloStats. There is no load_stats().
+	if _data.has("eloStats"):
+		ELOManager.initialize(_data["eloStats"])
+	if _data.has("learnerState"):
+		LearnerStateManager.replace_snapshot(_data["learnerState"])
+	EventBus.save_adopted.emit()
 
 func has_save() -> bool:
 	return Persistence.has_item(_get_save_key())

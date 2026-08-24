@@ -5446,6 +5446,149 @@
           "promptLeadIn": "Final mixed fact:"
         }
       ]
+    },
+    {
+      "id": "batch_19_subtraction_teens_upper",
+      "title": "Subtraction upper teens to 20",
+      "theme": "fill the operand 17-20 hole so the teens ladder reaches its true top step",
+      "targetCount": 150,
+      "templates": [
+        {
+          "id": "upper_17_18_no_borrow",
+          "kind": "subtraction",
+          "family": "teens_upper_no_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 36,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            17,
+            18
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "upper_17_18_borrow",
+          "kind": "subtraction",
+          "family": "teens_upper_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 12,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            17,
+            18
+          ],
+          "rightRange": [
+            8,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "upper_19_no_borrow",
+          "kind": "subtraction",
+          "family": "teens_upper_no_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 44,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            19,
+            19
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "upper_20_borrow",
+          "kind": "subtraction",
+          "family": "teens_upper_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 30,
+          "skill": "subtraction_with_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            20,
+            20
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "upper_teens_minus_teens",
+          "kind": "subtraction",
+          "family": "teens_minus_teens",
+          "bandId": "sub_under_20_borrow",
+          "count": 28,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "leftRange": [
+            14,
+            20
+          ],
+          "rightRange": [
+            10,
+            13
+          ],
+          "requireBorrow": false
+        }
+      ]
     }
   ]
 }

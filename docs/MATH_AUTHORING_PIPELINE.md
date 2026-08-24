@@ -1,7 +1,7 @@
 # Hörmann Math Authoring Pipeline
 
 Status: Current
-Authority: Current workflow guide for offline math authoring, materialization, and review. Runtime truth still lives in `public/data/math/**` plus the live selection code in `src/math/**` and `src/systems/**`.
+Authority: Current workflow guide for offline math authoring, materialization, and review. Runtime truth still lives in `godot/data/math/**` plus the live selection code in `godot/scripts/math/**` and `godot/scripts/systems/**`. The offline pipeline itself runs on `math-kernel/**`, which never ships.
 Last verified against code: 2026-03-31
 
 ## Purpose
@@ -15,7 +15,7 @@ What this is not:
 - not the runtime selection architecture doc
 - not the learner save and sync doc
 - not a live generator design
-- not permission to hand-edit `public/data/math/problems_curriculum.json` directly
+- not permission to hand-edit `godot/data/math/problems_curriculum.json` directly
 
 Use [MATH_SYSTEM_ARCHITECTURE.md](../MATH_SYSTEM_ARCHITECTURE.md) for runtime behavior and [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./LEARNER_STATE_AND_SYNC_ARCHITECTURE.md) for persistence and sync.
 
@@ -28,12 +28,12 @@ flowchart LR
     Batches["batches.json"] --> Materialize
     Schemas["authoring schemas"] --> Materialize
 
-    Materialize --> Runtime["public/data/math/problems_curriculum.json"]
+    Materialize --> Runtime["godot/data/math/problems_curriculum.json"]
     Materialize --> Reports["reports/math-batches/*.json"]
 
-    Runtime --> Validate["npm.cmd run validate"]
-    Runtime --> Browser["npm.cmd run math:browser-smoke"]
-    Reports --> Review["npm.cmd run math:review"]
+    Runtime --> Validate["npm run validate"]
+    Runtime --> Browser["node godot/tools/web_boot_smoke.mjs"]
+    Reports --> Review["npm run math:review"]
     Reports --> Accept["Lead-producer acceptance artifact"]
     Browser --> Accept
     Review --> Accept
@@ -50,7 +50,7 @@ The authoring layer is offline-only:
 - `authoring/math/schemas/*.json`
 
 Materialization writes back into the live runtime pool:
-- `public/data/math/problems_curriculum.json`
+- `godot/data/math/problems_curriculum.json`
 
 Review outputs live in:
 - `reports/math-batches/review-summary.json`
@@ -70,17 +70,17 @@ How to read the owl reports:
 Use these when touching math authoring:
 
 ```powershell
-npm.cmd run math:materialize
-npm.cmd run math:review
-npm.cmd run math:browser-smoke
-npm.cmd run validate
+npm run math:materialize
+npm run math:review
+node godot/tools/web_boot_smoke.mjs
+npm run validate
 ```
 
 `math:materialize`:
 - loads the seed curriculum plus the offline batch specs
 - protects exact prompt text already present in the seed plus the legacy runtime pools
 - materializes the concrete curriculum output
-- rewrites `public/data/math/problems_curriculum.json`
+- rewrites `godot/data/math/problems_curriculum.json`
 - rewrites batch review reports
 
 `math:review`:
@@ -150,7 +150,7 @@ The current repo-encoded review loop mirrors the lead-producer plan:
 5. Browser-backed owl smoke
    - literal `MathChallengeScene` input path
    - wrong-answer retry timing
-   - second-problem follow-up path
+   - single-problem completion-and-close path
    - overlay close and completion payload verification
    - still not pedagogy proof on its own
 
@@ -191,9 +191,9 @@ What this does not prove:
 - not semantic dedupe of every arithmetic fact phrased in different words
 - not future hosted-backend calibration or liveops tuning
 - not broad browser coverage beyond the specific owl smoke path checked in `runtime-browser-smoke.json`
-- not that the full `3000` total inventory is a `3000`-moment owl curriculum
+- not that the full `3150` total inventory is a `3150`-moment owl curriculum
 - not that `openingUnlockedInventory*` equals the fresh-profile day-one surface; use `freshReachable*` for that
-- not perfect child-perceived replay variety proof on its own, even though the shipped owl opening now mixes addition with counting and serves `2` problems per encounter
+- not perfect child-perceived replay variety proof on its own, even though the shipped owl opening now mixes addition with counting and serves `1` problem per encounter
 - not a substitute for manual play with a real child; the report can prove rail safety and coverage, but it cannot tell you whether a specific six-year-old will find the follow-up mix delightful or tiring
 
 ## Guardrails

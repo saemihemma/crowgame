@@ -30,7 +30,7 @@
                     ],
                     "difficultyRange": [
                         1,
-                        2
+                        3
                     ],
                     "problemCount": 1
                 }
@@ -39,8 +39,7 @@
                 "rewardType": "stars",
                 "rewardAmount": 1,
                 "chainLinks": 1
-            },
-            "note": "Default owl. One answer breaks the chain. Use this unless a level wants something specific."
+            }
         },
         {
             "id": "owl_gentle_01",

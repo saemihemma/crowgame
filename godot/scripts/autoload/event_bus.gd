@@ -12,6 +12,9 @@ signal math_challenge_start(payload: Dictionary)
 signal math_problem_presented(problem: Dictionary)
 signal math_answer_submitted(payload: Dictionary)
 signal math_challenge_complete(payload: Dictionary)
+signal curriculum_step_up(payload: Dictionary)
+signal math_demo_complete(payload: Dictionary)
+signal math_comeback(payload: Dictionary)
 
 # Player
 signal player_died()
@@ -28,7 +31,10 @@ signal owl_saved()
 ## owl ring before the first rescue.
 signal level_owls(count: int)
 ## Consecutive correct answers within the current level.
-signal streak_changed(streak: int)
+## `paused` carries the wrong-answer state: brand/BRAND_SYSTEM.md §10.2 says a
+## wrong answer dims the flame rather than resetting the count, so the two facts
+## have to travel together.
+signal streak_changed(streak: int, paused: bool)
 signal level_complete(payload: Dictionary)
 signal save_game()
 
@@ -41,3 +47,7 @@ signal npc_interact(payload: Dictionary)
 signal dialog_start(payload: Dictionary)
 signal dialog_end(payload: Dictionary)
 signal dialog_advance(payload: Dictionary)
+
+## Emitted when a save from the cloud replaced local state, so UI showing coins,
+## levels or progress can refresh instead of displaying stale numbers.
+signal save_adopted()

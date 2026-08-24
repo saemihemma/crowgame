@@ -29,6 +29,12 @@ func _ready() -> void:
 	EventBus.coins_changed.connect(_on_coins_changed)
 	EventBus.ability_granted.connect(_on_ability_granted)
 	EventBus.ability_revoked.connect(_on_ability_revoked)
+	EventBus.curriculum_step_up.connect(_on_curriculum_step_up)
+	EventBus.math_comeback.connect(_on_math_comeback)
+	# The coin chip renders "x{0}" through TextManager, so a mid-level language
+	# switch has to reach it. The pods restyle themselves on theme_changed - each
+	# component connects it - so there is nothing to do for a world change here.
+	TextManager.locale_changed.connect(func(_code: String) -> void: _on_locale_changed())
 
 ## The safe area is wider on touch, to clear rounded corners and gesture bars.
 func _margin() -> float:
@@ -110,3 +116,25 @@ func _on_coins_changed(c: int) -> void:
 	var at := _coin_chip.global_position + Vector2(_coin_chip.size.x * 0.5, 16)
 	DopamineFX.burst(self, at, ThemeManager.get_color_value("coin"), 20)
 	DopamineFX.number_fly_up(self, at + Vector2(0, -12), TextManager.t("hud.coins_milestone", [c]))
+
+## A curriculum step was cleared. The banner lands in the empty top centre, which
+## is what the three-pod layout keeps free so an event reads as an event.
+func _on_curriculum_step_up(payload: Dictionary) -> void:
+	var domain := String(payload.get("domain", ""))
+	_show_celebration_banner(TextManager.t("math.step_up", [TextManager.t("domain." + domain)]))
+
+## The redemption arc: a skill missed earlier was just beaten on its
+## scheduled return. Celebrated harder than an ordinary win.
+func _on_math_comeback(_payload: Dictionary) -> void:
+	_show_celebration_banner(TextManager.t("math.comeback"))
+
+func _show_celebration_banner(banner: String) -> void:
+	var center := Vector2(get_viewport().get_visible_rect().size.x / 2.0, 120.0)
+	AudioManager.play_event("milestone")
+	DopamineFX.burst(self, center, ThemeManager.get_color_value("coin"), 24)
+	DopamineFX.number_fly_up(self, center, banner, ThemeManager.get_color_value("coin"))
+
+## Only the coin chip carries text; the hearts and the ring are shapes.
+func _on_locale_changed() -> void:
+	if is_instance_valid(_coin_chip):
+		_coin_chip.refresh_text()

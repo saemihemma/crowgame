@@ -2,55 +2,58 @@
 
 Status: Current
 Authority: Contributor workflow and verification guide.
-Last verified against code: 2026-03-31
+Last verified against code: 2026-08-24
 
 ## Core Loop
 
 Use this as the default change loop:
 
-```powershell
-npm.cmd run validate
-npx.cmd tsc --noEmit
-npm.cmd run dev
+```bash
+# The game — this is the gate that matters most
+bash godot/tools/run_tests.sh          # hardcode guard + unit tests + physics probes
+
+# The offline toolchain and the docs
+npm run typecheck
+npm run validate
+
+godot --path godot                     # then actually play it
 ```
 
-Add these when needed:
+Add these when the change touches them:
 
-```powershell
-npm.cmd run compile
-npm.cmd run build
-npm.cmd run math:materialize
-npm.cmd run math:review
-npm.cmd run math:browser-smoke
-npm.cmd run themes:screenshots
-npm.cmd run i18n:screenshots
-npm.cmd run tilesets
-npm.cmd run device:audit
+```bash
+# after editing a level spec
+npm run compile
+
+# after any change that ships to players
+bash godot/tools/build_web.sh
+node godot/tools/web_boot_smoke.mjs    # the EXPORT, not the source
+
+# the API — needs a Postgres
+DATABASE_URL=postgres://... npm --prefix server run migrate
+DATABASE_URL=postgres://... npm --prefix server test
+DATABASE_URL=postgres://... node godot/tools/error_pipeline_e2e.mjs
+
+# after curriculum authoring
+npm run math:materialize
+npm run math:review
 ```
 
-`device:audit` is the gate for anything touching layout, controls or type size.
-It opens iPad and iPhone landscape with real touch emulation and measures the
-B1-B10 gates in `brand/PRODUCTION_PLAN.md` from the live scene graph. It exits
-non-zero, and today it should: six known failures are the Phase 1 backlog.
+Why `web_boot_smoke.mjs` is not optional for a shipping change: the GDScript suite
+runs from source and structurally cannot see an export-config mistake. It has
+already caught a URL the engine rejects at runtime and a shadowed variable that
+broke an autoload entirely — both invisible to every other check here.
 
-**Both runtimes.** The Godot port is current, so shared behaviour is not done
-until `bash godot/tools/run_tests.sh` is green too (61 tests, and Godot 4.3
-headless runs in a container - see `.github/workflows/ci.yml` for the install).
-
-Both screenshot harnesses need a dev server already running and a browser on
-`CHROME_PATH`. `themes:screenshots` is the gate for anything visual: it walks
-every level in the registry, captures gameplay and the maths board in each, and
-checks the captured pixels against that level's theme token file. It exits
-non-zero on an off-palette screen, a console error, or a screen that never
-rendered. Output lands in `output/playwright/themes/`, report included.
-
-`npm.cmd run validate` now covers:
+`npm run validate` covers:
 - content validation
 - doc metadata presence checks
 - canonical onboarding snapshot checks
 - duplicate mutable-count checks in the current doc set
 - selected architecture-contract checks for learner, math, and UI docs
 - source-derived live asset presence checks and suspicious live-asset leftovers
+
+It does **not** cover the game itself or the API. `run_tests.sh` and
+`npm --prefix server test` are separate gates, and CI runs all three.
 
 ## Before You Edit
 
@@ -63,25 +66,25 @@ rendered. Output lands in `output/playwright/themes/`, report included.
 ## Content Rules
 
 Levels:
-- edit `public/data/levels/specs/*.spec.json`
-- run `npm.cmd run compile`
-- do not hand-edit `public/data/levels/compiled/*.json` unless debugging compiler output
+- edit `godot/data/levels/specs/*.spec.json`
+- run `npm run compile`
+- do not hand-edit `godot/data/levels/compiled/*.json` unless debugging compiler output
 
 Math:
 - treat `MathProblemManager`, `ELOManager`, `LearnerStateManager`, `ELOUpdateManager`, and `LearnerSyncService` as one system
 - do not change selection rules in one file without checking the companion state and docs
-- author offline math growth in `authoring/math/**`, then rerun `npm.cmd run math:materialize`
-- do not hand-edit `public/data/math/problems_curriculum.json`; treat it as a materialized output
+- author offline math growth in `authoring/math/**`, then rerun `npm run math:materialize`
+- do not hand-edit `godot/data/math/problems_curriculum.json`; treat it as a materialized output
 
 Persistence:
 - profile data, save data, learner snapshot cache, and pending sync queue are separate layers
 - clear the smallest relevant localStorage key when debugging
 
 Assets:
-- place live assets in `public/assets/**`
+- place live assets in `godot/assets/**`
 - do not use archived copy folders as sources of truth
 - treat `ai_assets/` as staging only
-- run `npm.cmd run validate:assets` for the asset-only subset when iterating on audio or art
+- run `npm run validate:assets` for the asset-only subset when iterating on audio or art
 
 Rendering:
 - desktop is currently optimized for integer pixel scaling first
@@ -95,43 +98,69 @@ Gameplay changes:
 - load a level
 - verify player movement, HUD, pause, and level completion still work
 
-Visual, theme, or art changes:
-- run `npm.cmd run themes:screenshots` and look at the PNGs, not just the exit code
-- a new asset in the wrong palette fails the conformance check; a new asset that
-  is merely ugly does not, so the images still need a human
-- brand rules live in `brand/BRAND_SYSTEM.md`; per-world detail in
-  `brand/LEVEL_ART_BIBLE.md`; what to generate and where it goes in
-  `brand/ASSET_MANIFEST.md`
-- after a palette edit, run `python3 brand/tokens/verify_palettes.py`
-- tilesets are declared in `public/data/tilesets/tileset_manifest.json` and
-  loaded from it, so adding or replacing one needs no code. The five world
-  sheets are generated placeholders: `npm.cmd run tilesets` rebuilds them and
-  `npm.cmd run tilesets:check` fails if the manifest is stale
-
 Math changes:
 - trigger a math challenge
 - answer one correct first try
 - answer one wrong then corrected retry
 - confirm learner summary or save state changes as expected
-- if you changed owl flow, selection rails, or MathChallengeScene interaction timing, run `npm.cmd run math:browser-smoke`
+- if you changed owl flow or selection rails, rebuild and run `node godot/tools/web_boot_smoke.mjs`
 
 Profile or save changes:
 - create or log into a profile
 - reload the page
 - confirm the expected profile, save data, and learner state persist
 
-Admin changes:
-- open `admin.html`
-- check translation table behavior
-- check learner summary rendering
-- verify learner API URL save and reload behavior if touched
+Grown-up surface changes (parent report, cloud panel):
+- open them from the main menu with at least one child profile present
+- check the report renders per-domain lines rather than raw identifiers
+- switch locale and confirm no key leaks through untranslated
+- for cloud save, exercise the real flow: request a link, enroll, play, then load
+  on a second device and confirm the progress arrives
+
+Cloud sync changes:
+- confirm the local save still works with the API unreachable — local-only is the
+  intended degraded state, not an error
+- confirm a stale device's save is rejected and it adopts the authoritative one
+- confirm its attempts still landed anyway
+
+## Adding a Locale
+
+The engine is generic — EN and IS are not special-cased — but a third language is
+a real job, not an afternoon. This is here rather than in `roadmap.md` because it
+is a cost estimate, not open work: nothing is blocked on it and no third language
+is planned.
+
+What it takes:
+
+1. A bundle in all four locations (`public/data/i18n/` and `godot/data/i18n/`,
+   `strings_<code>.json` each). **264 keys**, of which 175 are math phrasing
+   templates — short and formulaic, but a genuine translation job.
+2. `LOCALES` in `src/systems/TextManager.ts`; `LOCALE_FILES` and
+   `LOCALE_ENDONYMS` in `godot/scripts/autoload/text_manager.gd`.
+3. An endonym — the language's name in its own language, never translated.
+4. **A drawn flag in both ports.** `FlagIcon` has a case per locale and falls
+   back to the US flag for anything unknown, so a new language would silently
+   show the wrong flag. They are vector geometry, not emoji, for reasons the
+   files themselves explain.
+5. **A plural rule** in `PLURAL_RULES` (`tools/math_phrasing_catalog.mjs`) and in
+   both runtimes' `pluralKey`/`_plural_key`. English inflects at 1; Icelandic at
+   1, 21, 31 and so on. Six keys carry a `.one` sibling that the new locale needs
+   too.
+6. A pass of the fit budget in `tools/validate_i18n.mjs`.
+
+**The selector is the hard part.** It is a segmented control sized for exactly
+two pills, and the width is already measured against the tightest heading on each
+port (x 636 on the web main menu, x 620 on the Godot login). A third pill does
+not fit that row, and the fit budget will not catch it — the endonyms are
+measured at runtime by the component itself. Three or more languages needs a
+different pattern, not a wider row.
 
 ## Documentation Update Rule
 
 Update docs in the same pass when you change:
 - runtime architecture
 - current commands
-- localStorage keys
+- client storage keys
 - scene flow
 - learner state contracts
 - archive policy
@@ -139,10 +168,16 @@ Update docs in the same pass when you change:
 Current docs:
 - [README.md](./README.md)
 - [ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md)
+- [AGENT_CONTEXT.md](./AGENT_CONTEXT.md)
+- [godot/ARCHITECTURE.md](./godot/ARCHITECTURE.md)
+- [godot/README.md](./godot/README.md)
 - [MATH_SYSTEM_ARCHITECTURE.md](./MATH_SYSTEM_ARCHITECTURE.md)
 - [docs/MATH_AUTHORING_PIPELINE.md](./docs/MATH_AUTHORING_PIPELINE.md)
-- [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)
 - [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md)
+- [docs/API_CONTRACT.md](./docs/API_CONTRACT.md)
+- [deploy/RAILWAY.md](./deploy/RAILWAY.md)
+- [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)
+- [PRIVACY.md](./PRIVACY.md)
 
 ## Restore Rule
 

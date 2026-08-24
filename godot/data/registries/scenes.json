@@ -4,5 +4,7 @@
   "login": "res://scenes/Login.tscn",
   "main_menu": "res://scenes/MainMenu.tscn",
   "level_select": "res://scenes/LevelSelect.tscn",
-  "game": "res://scenes/Game.tscn"
+  "game": "res://scenes/Game.tscn",
+  "cloud_panel": "res://scenes/CloudPanel.tscn",
+  "parent_report": "res://scenes/ParentReport.tscn"
 }

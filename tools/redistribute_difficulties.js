@@ -7,7 +7,7 @@ const path = require('path');
  * Usage: node tools/redistribute_difficulties.js
  */
 
-const DATASET_PATH = path.join(__dirname, '..', 'public', 'data', 'math', 'problems_dataset.json');
+const DATASET_PATH = path.join(__dirname, '..', 'godot', 'data', 'math', 'problems_dataset.json');
 
 // Mapping from problem IDs to new difficulty values (from plan)
 const DIFFICULTY_MAPPING = {

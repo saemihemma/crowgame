@@ -258,6 +258,11 @@ func _try_create() -> void:
 
 func _finish_login() -> void:
 	SaveManager.switch_profile()
+	# Map this device's local childId to the server child and pull the cloud save
+	# if this device is enrolled. A no-op otherwise, and never blocking: the local
+	# save is already loaded and playable by this point.
+	if OS.has_feature("web") and CloudSync.is_enrolled():
+		CloudSync.bind_active_profile()
 	var save := SaveManager.get_data()
 	ELOManager.initialize(save.get("eloStats", null))
 	LearnerStateManager.initialize(ProfileManager.get_active_profile(), save.get("learnerState", null), ELOManager.get_stats())

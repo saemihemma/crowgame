@@ -1,4 +1,4 @@
-import type { MathProblem, ProblemDifficultyTraits } from '../src/utils/Types';
+import type { MathProblem, ProblemDifficultyTraits } from '../math-kernel/utils/Types';
 import { evaluateArithmeticPrompt, parseArithmeticPromptIndependent } from './math_verifier';
 
 type ParsedArithmetic = {

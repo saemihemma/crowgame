@@ -115,11 +115,13 @@
   ],
   "mathGating": {
     "skills": [
-      "addition"
+      "comparison",
+      "counting"
     ],
     "difficultyBand": [
       1,
-      2
-    ]
+      3
+    ],
+    "teachingIntent": "More or less: compare what you just learned to count."
   }
 }

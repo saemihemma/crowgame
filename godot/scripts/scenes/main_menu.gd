@@ -11,14 +11,18 @@ extends Control
 ## 1. The backdrop is the world you last played, so the menu is a place rather
 ##    than a page - and it changes as you get further in.
 ## 2. Exactly one primary action. PLAY is coin-yellow and breathes; everything
-##    else is quieter. A child should never have to choose which button is the
-##    button.
+##    else is quieter. The grown-up rows - cloud save, the parent report - are
+##    ghosts, which is the same judgement main already made in prose: they are
+##    settings, not the child's path through the menu.
 ## 3. Continue says *where* you are and *how many owls you have brought home*.
 ##    Progress is the reason anyone comes back, and it was invisible.
 
+const CLOUD_PANEL := preload("res://scenes/CloudPanel.tscn")
+const PARENT_REPORT := preload("res://scenes/ParentReport.tscn")
+
 const TITLE_SIZE := 92
 const SUBTITLE_SIZE := 26
-const COLUMN_SEPARATION := 18
+const COLUMN_SEPARATION := 14
 
 func _ready() -> void:
 	BrandTheme.apply(self)
@@ -28,7 +32,6 @@ func _ready() -> void:
 	var center := CenterContainer.new()
 	center.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(center)
-
 	var col := VBoxContainer.new()
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
 	col.add_theme_constant_override("separation", COLUMN_SEPARATION)
@@ -36,23 +39,186 @@ func _ready() -> void:
 
 	_build_wordmark(col)
 
-	var first: BrandButton = null
-	first = _add(col, TextManager.t("menu.play"), BrandButton.Role.PRIMARY, _on_play)
-
+	var first := _add(col, TextManager.t("menu.play"), BrandButton.Role.PRIMARY, _on_play)
 	if SaveManager.has_save():
-		var resume := _add(col, _continue_label(), BrandButton.Role.SECONDARY, _on_continue)
-		if first == null:
-			first = resume
-
+		_add(col, _continue_label(), BrandButton.Role.SECONDARY, _on_continue)
 	if ProfileManager.get_active_user() != null:
 		_add(col, TextManager.t("menu.switch_user"), BrandButton.Role.GHOST, _on_switch_user)
-
-	if first != null:
-		first.grab_focus.call_deferred()
-
+	# Cloud save is a grown-up's setting, so it lives behind its own panel rather
+	# than in the child's path through the menu. Web-only: there is no cookie jar
+	# or same-origin proxy on a desktop build.
+	if OS.has_feature("web"):
+		_add(col, TextManager.t("cloud_title"), BrandButton.Role.GHOST, _on_cloud)
+	if ProfileManager.has_profiles():
+		_add(col, TextManager.t("report_open"), BrandButton.Role.GHOST, _on_parent_report)
+	first.grab_focus.call_deferred()
 	# Language selector, top-right, out of the way of the centred column.
 	add_child(LanguageToggle.build(_on_locale_changed))
 	_add_build_stamp()
+
+	# Trophy shelf: one badge per domain the child has actually met, grown
+	# from the highest step ever reached. Badges only ever grow.
+	_build_trophy_shelf()
+
+	# Session-end recap (peak-end rule): arriving here from play with
+	# something to celebrate shows one warm recap that ends on the best
+	# moment. Consuming resets the counters, so it shows exactly once.
+	var recap: Dictionary = SessionStats.consume()
+	if not recap.is_empty():
+		_show_recap(recap)
+
+## Code-drawn badge row along the bottom (TrophyBadge). Tier thresholds come
+## from the shared math_tuning.json (`trophies.tierSteps`).
+func _build_trophy_shelf() -> void:
+	var tier_steps: Array = (DataManager.get_dict("MATH_TUNING").get("trophies", {}) as Dictionary).get("tierSteps", [])
+	if tier_steps.is_empty():
+		return
+	var earned: Array = []
+	for domain in MathDomains.ALL:
+		if LearnerStateManager.get_total_attempts(String(domain)) <= 0:
+			continue
+		var highest: int = LearnerStateManager.get_highest_step(String(domain))
+		var tier := -1
+		for i in tier_steps.size():
+			if highest >= int(tier_steps[i]):
+				tier = i
+		if tier >= 0:
+			earned.append({"domain": domain, "tier": tier})
+	if earned.is_empty():
+		return
+
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 28)
+	row.anchor_left = 0.0
+	row.anchor_right = 1.0
+	row.anchor_top = 1.0
+	row.anchor_bottom = 1.0
+	row.offset_top = -84
+	row.offset_bottom = -12
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(row)
+	for badge in earned:
+		var cell := VBoxContainer.new()
+		cell.alignment = BoxContainer.ALIGNMENT_CENTER
+		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cell.add_child(TrophyBadge.new(int(badge["tier"])))
+		var label := Label.new()
+		label.text = TextManager.t("domain." + String(badge["domain"]))
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.add_theme_font_size_override("font_size", 13)
+		label.add_theme_color_override("font_color", ThemeManager.get_color_value("text_dim"))
+		cell.add_child(label)
+		row.add_child(cell)
+
+## One warm recap over the menu: counts first, the session's single best
+## moment last (comeback beats golden beats step-up), and an "Onward!"
+## button. Only positive stats are ever rendered.
+func _show_recap(recap: Dictionary) -> void:
+	var dim := ColorRect.new()
+	dim.color = ThemeManager.get_color_value("scrim")
+	dim.anchor_right = 1.0
+	dim.anchor_bottom = 1.0
+	dim.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(dim)
+
+	var center := CenterContainer.new()
+	center.anchor_right = 1.0
+	center.anchor_bottom = 1.0
+	dim.add_child(center)
+
+	var panel := PanelContainer.new()
+	center.add_child(panel)
+	var col := VBoxContainer.new()
+	col.alignment = BoxContainer.ALIGNMENT_CENTER
+	col.add_theme_constant_override("separation", 14)
+	panel.add_child(col)
+
+	var title := Label.new()
+	title.text = TextManager.t("recap.title")
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 40)
+	title.add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
+	col.add_child(title)
+
+	var lines: Array[String] = []
+	if int(recap["owlsSaved"]) > 0:
+		lines.append(TextManager.t("recap.owls", [recap["owlsSaved"]]))
+	if int(recap["problemsSolved"]) > 0:
+		lines.append(TextManager.t("recap.problems", [recap["problemsSolved"]]))
+	if int(recap["stepUps"]) > 0:
+		lines.append(TextManager.t("recap.stepups", [recap["stepUps"]]))
+	# Peak-end: the best moment is the last thing on screen before the
+	# button. Comeback is the strongest story we can tell about a miss.
+	if int(recap["comebacks"]) > 0:
+		lines.append(TextManager.t("recap.best_comeback"))
+	elif int(recap["goldenWins"]) > 0:
+		lines.append(TextManager.t("recap.best_golden"))
+	for line in lines:
+		var l := Label.new()
+		l.text = line
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.add_theme_font_size_override("font_size", 22)
+		col.add_child(l)
+
+	var btn := BrandButton.make(TextManager.t("recap.continue"), BrandButton.Role.PRIMARY, func():
+		dim.queue_free()
+		if _first_button != null and is_instance_valid(_first_button):
+			_first_button.grab_focus()
+	)
+	btn.custom_minimum_size.x = 260
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	col.add_child(btn)
+	btn.grab_focus()
+
+	AudioManager.play_event("milestone")
+	UiFx.elastic_entrance.call_deferred(panel)
+
+func _on_cloud() -> void:
+	add_child(CLOUD_PANEL.instantiate())
+
+func _on_parent_report() -> void:
+	add_child(PARENT_REPORT.instantiate())
+
+func _on_locale_changed() -> void:
+	SceneRouter.goto("main_menu")
+
+## Tiny build stamp (bottom-right) so phone refreshes visibly confirm a new
+## build during fast iteration. Written by tools/build_web.sh.
+func _add_build_stamp() -> void:
+	if not FileAccess.file_exists("res://build_info.json"):
+		return
+	var f := FileAccess.open("res://build_info.json", FileAccess.READ)
+	var info: Variant = JSON.parse_string(f.get_as_text())
+	f.close()
+	if not (info is Dictionary):
+		return
+	var l := Label.new()
+	l.text = "build %s · %s" % [String(info.get("commit", "?")), String(info.get("builtAt", ""))]  # hardcode-ok
+	l.add_theme_font_size_override("font_size", 12)
+	l.add_theme_color_override("font_color", ThemeManager.get_color_value("text_dim"))
+	l.anchor_left = 1.0
+	l.anchor_top = 1.0
+	l.anchor_right = 1.0
+	l.anchor_bottom = 1.0
+	l.offset_left = -260
+	l.offset_top = -24
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	add_child(l)
+
+## The first action on the screen. The recap panel hands focus back to it when
+## it closes, so it is remembered rather than re-derived from child order - the
+## wordmark now contributes three children before any button exists.
+var _first_button: BrandButton = null
+
+func _add(parent: Node, text: String, role: int, cb: Callable) -> BrandButton:
+	var b := BrandButton.make(text, role, cb)
+	b.custom_minimum_size.x = 340
+	b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	parent.add_child(b)
+	if _first_button == null:
+		_first_button = b
+	return b
 
 ## Title plus the core promise from brand/BRAND_SYSTEM.md §1. The subtitle used
 ## to read "A Math Adventure", which describes the genre to an adult; the promise
@@ -82,17 +248,10 @@ func _build_wordmark(col: VBoxContainer) -> void:
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.add_theme_font_size_override("font_size", SUBTITLE_SIZE)
 	subtitle.add_theme_color_override("font_color", ThemeManager.get_color_value("owl"))
-	subtitle.add_theme_color_override("font_shadow_color", ThemeManager.get_color_value("ink"))
-	subtitle.add_theme_constant_override("shadow_offset_x", 2)
-	subtitle.add_theme_constant_override("shadow_offset_y", 2)
 	col.add_child(subtitle)
 
 ## Hörmann himself, perched on the ridge line. He was not on his own title
 ## screen - the game was named after a character the first screen never showed.
-##
-## Right of the centred column and low, so he shares the frame with the wordmark
-## instead of competing with it, and scaled 2x because a 64px sprite on a 960px
-## screen reads as a speck.
 const HERO_SPRITE := "res://assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png"
 const HERO_SCALE := 2.0
 const HERO_BOB_PIXELS := 5.0
@@ -106,8 +265,6 @@ func _add_hero() -> void:
 	hero.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	hero.custom_minimum_size = Vector2(64.0 * HERO_SCALE, 64.0 * HERO_SCALE)
 	hero.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	# Anchored to the bottom-right corner so he keeps his footing on the ridge at
-	# any viewport width rather than drifting into the middle of the sky.
 	hero.anchor_left = 1.0
 	hero.anchor_right = 1.0
 	hero.anchor_top = 1.0
@@ -129,20 +286,12 @@ func _add_hero() -> void:
 	tw.tween_property(hero, "position:y", base, HERO_BOB_SECONDS * 0.5) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-func _add(parent: Node, text: String, role: int, cb: Callable) -> BrandButton:
-	var b := BrandButton.make(text, role, cb)
-	b.custom_minimum_size.x = 340
-	b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	parent.add_child(b)
-	return b
-
-## "Emberwood · 4 owls home" rather than a bare "CONTINUE". The one number a
+## "Emberwood Run · 4 owls home" rather than a bare "CONTINUE". The one number a
 ## returning player wants is how many owls they have.
 func _continue_label() -> String:
 	var save := SaveManager.get_data()
-	var key := resolve_continue_key(save)
-	var owls := int(save.get("owlsSaved", 0))
-	return TextManager.t("menu.continue_detail", [_world_name(key), owls])
+	return TextManager.t("menu.continue_detail", [
+		_world_name(resolve_continue_key(save)), int(save.get("owlsSaved", 0))])
 
 func _world_name(key: String) -> String:
 	var name_key := "level.%s.name" % key
@@ -150,32 +299,6 @@ func _world_name(key: String) -> String:
 		return TextManager.t(name_key)
 	var entry: Variant = LevelManager.get_level(key)
 	return String(entry.get("name", key)) if entry != null else key
-
-func _on_locale_changed() -> void:
-	SceneRouter.goto("main_menu")
-
-## Tiny build stamp (bottom-right) so phone refreshes visibly confirm a new
-## build during fast iteration. Written by tools/build_web.sh.
-func _add_build_stamp() -> void:
-	if not FileAccess.file_exists("res://build_info.json"):
-		return
-	var f := FileAccess.open("res://build_info.json", FileAccess.READ)
-	var info: Variant = JSON.parse_string(f.get_as_text())
-	f.close()
-	if not (info is Dictionary):
-		return
-	var l := Label.new()
-	l.text = "build %s · %s" % [String(info.get("commit", "?")), String(info.get("builtAt", ""))]  # hardcode-ok
-	l.add_theme_font_size_override("font_size", 12)
-	l.add_theme_color_override("font_color", ThemeManager.get_color_value("text_dim"))
-	l.anchor_left = 1.0
-	l.anchor_top = 1.0
-	l.anchor_right = 1.0
-	l.anchor_bottom = 1.0
-	l.offset_left = -260
-	l.offset_top = -24
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	add_child(l)
 
 func _on_play() -> void:
 	SceneRouter.goto("level_select")

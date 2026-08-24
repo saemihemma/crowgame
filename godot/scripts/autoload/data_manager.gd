@@ -1,5 +1,5 @@
 extends Node
-## DataManager — loads the verbatim public/data/** JSON (copied into res://data)
+## DataManager — loads the game JSON from res://data (godot/data/**, the only copy)
 ## via FileAccess + JSON.parse_string and caches it. Godot port of the data
 ## preload phase of BootScene.preload(). JSON stays the source of truth; later
 ## slices hydrate typed Resource registries (Tier 3) on top of these dicts.
@@ -24,6 +24,7 @@ const PATHS := {
 	"NPC_TUNING": "tuning/npc_tuning.json",
 	"UI_TUNING": "tuning/ui_tuning.json",
 	"FX_TUNING": "tuning/fx_tuning.json",
+	"MATH_TUNING": "tuning/math_tuning.json",
 	"THEME_FOREST": "themes/theme_forest.json",
 	"THEME_SCIFI": "themes/theme_scifi.json",
 	"THEME_EMBERWOOD": "themes/theme_emberwood.json",

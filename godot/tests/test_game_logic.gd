@@ -97,53 +97,75 @@ func test_transition_sets_flag() -> void:
 
 # ─── Streak (§10.2) ────────────────────────────────────────
 # The streak is what makes a run of clean answers feel like something, and it is
-# the input to both the owl ring's flame and the top-centre toast. Its whole
-# value comes from being losable, so the reset paths matter as much as the
-# increment.
+# the input to both the owl ring's flame and the top-centre toast.
+#
+# The rule these enforce is the doc's, not intuition's: **a wrong answer pauses
+# the streak, it never resets it.** The count survives a miss and the flame dims
+# to 40% until the next correct answer relights it; only leaving the level clears
+# it. The first version of this file asserted the opposite - that a wrong answer
+# breaks the streak - on the reasoning that a reward which cannot be lost is not
+# a reward. That is right for an adult game and wrong for this one: it puts a
+# punishment on the most confidence-sensitive moment a seven-year-old has.
 
-func _complete(g: Node2D, correct: bool, first_attempt: bool) -> void:
-	EventBus.math_challenge_complete.emit({"correct": correct, "firstAttempt": first_attempt})
+func _answer(correct: bool) -> void:
+	EventBus.math_answer_submitted.emit({"problemId": "p", "selectedAnswer": 1, "isCorrect": correct})
 
-func test_clean_answers_extend_the_streak() -> void:
+func test_correct_answers_extend_the_streak() -> void:
 	var g := _make_game()
-	var seen: Array[int] = []
-	var cb := func(s: int): seen.append(s)
+	var seen: Array = []
+	var cb := func(s: int, paused: bool): seen.append([s, paused])
 	EventBus.streak_changed.connect(cb)
-	_complete(g, true, true)
-	_complete(g, true, true)
-	_complete(g, true, true)
-	assert_eq(g.streak, 3, "three clean answers make a streak of three")
-	assert_eq(seen, [1, 2, 3] as Array[int], "each step is announced once, in order")
+	_answer(true)
+	_answer(true)
+	_answer(true)
+	assert_eq(g.streak, 3, "three correct answers make a streak of three")
+	assert_eq(seen, [[1, false], [2, false], [3, false]], "each step announced once, in order")
 	EventBus.streak_changed.disconnect(cb)
 	g.free()
 
-func test_a_wrong_answer_breaks_the_streak() -> void:
+## The rule the doc is emphatic about. A child who misses one keeps their run.
+func test_a_wrong_answer_pauses_but_does_not_reset() -> void:
 	var g := _make_game()
-	_complete(g, true, true)
-	_complete(g, true, true)
-	_complete(g, false, false)
-	assert_eq(g.streak, 0, "a failed challenge resets the streak")
+	_answer(true)
+	_answer(true)
+	_answer(false)
+	assert_eq(g.streak, 2, "the count survives a miss")
+	assert_true(g.streak_paused, "the flame is dimmed, not out")
 	g.free()
 
-## A retry is a fine way to learn and a bad way to keep a streak. If second-try
-## answers counted, the flame would never go out and would stop meaning anything.
-func test_a_retry_does_not_extend_the_streak() -> void:
+## Relighting is the whole point of pausing: the next win picks up where the run
+## left off rather than starting again from one.
+func test_the_next_correct_answer_relights_and_continues() -> void:
 	var g := _make_game()
-	_complete(g, true, true)
-	_complete(g, true, false)
-	assert_eq(g.streak, 0, "correct on the second attempt resets rather than extends")
+	_answer(true)
+	_answer(true)
+	_answer(false)
+	_answer(true)
+	assert_eq(g.streak, 3, "the run continues from where it paused")
+	assert_true(not g.streak_paused, "the flame is lit again")
 	g.free()
 
-## Nothing changed, so nothing should be announced — otherwise the toast fires
-## again on every failed challenge after the first.
-func test_no_signal_when_the_streak_is_already_zero() -> void:
+## Only leaving the level clears it.
+func test_loading_a_level_clears_the_streak() -> void:
 	var g := _make_game()
+	_answer(true)
+	_answer(true)
+	g._load_level("level_01")
+	assert_eq(g.streak, 0, "a fresh level starts a fresh run")
+	assert_true(not g.streak_paused, "and an unpaused one")
+	g.free()
+
+## A second miss changes nothing that is already true, and re-announcing it would
+## re-fire anything listening for the transition.
+func test_a_second_miss_announces_nothing_new() -> void:
+	var g := _make_game()
+	_answer(true)
+	_answer(false)
 	var count := [0]
-	var cb := func(_s: int): count[0] += 1
-	_complete(g, false, false)
+	var cb := func(_s: int, _p: bool): count[0] += 1
 	EventBus.streak_changed.connect(cb)
-	_complete(g, false, false)
-	_complete(g, false, false)
-	assert_eq(count[0], 0, "a streak that stays at zero emits nothing")
+	_answer(false)
+	_answer(false)
+	assert_eq(count[0], 0, "an already-paused streak stays quiet")
 	EventBus.streak_changed.disconnect(cb)
 	g.free()

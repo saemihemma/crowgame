@@ -1,3 +1,25 @@
+-- ============================================================================
+-- SUPERSEDED. DO NOT IMPLEMENT THIS FILE.
+--
+-- The real schema is server/migrations/**, and the wire contract it serves is
+-- docs/API_CONTRACT.md. This draft is kept only as design history.
+--
+-- Three things in here are actively wrong and must not be built:
+--
+--   1. child_profiles.pin_hash — the client's _hash_pin() is
+--      btoa(pin + ':' + username), reversible by inspection. The 4-digit PIN is a
+--      "which kid am I" selector on a shared device, not a credential. Building
+--      this column would import a fake credential for a minor into a database.
+--   2. uuid-typed attempt and review ids — the client generates
+--      "attempt-<ms>-<rand>", so those inserts would fail. The shipped schema
+--      uses text.
+--   3. unique (username) globally — this rejects the second family with a child
+--      called Emma. Uniqueness is scoped to the family.
+--
+-- Also: mastery is a projection, not truth. learner_state_manager.gd recomputes
+-- it from ELO on every read, so storing it as authoritative invites drift.
+-- ============================================================================
+
 -- Learner backend schema for Crow.
 -- Status: Design companion artifact, not a shipped backend implementation.
 -- Authority: Backend schema companion to docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md.
