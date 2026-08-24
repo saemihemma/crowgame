@@ -43,7 +43,12 @@ func _find(node: Node, type: String) -> Node:
 	return null
 
 
-func _assert_scrollable(route: String) -> void:
+## `axis` is the direction the list is meant to grow in. The invariant is not
+## "lists are vertical" - level select is a horizontal row of world cards now -
+## but that a growing list lives in a scroller, that the scroller fits on screen,
+## and that it moves on exactly one axis. A list that scrolls both ways is a
+## place a child gets lost in.
+func _assert_scrollable(route: String, axis := VERTICAL) -> void:
 	var root := _mount(route)
 	if root == null:
 		return
@@ -55,40 +60,54 @@ func _assert_scrollable(route: String) -> void:
 		var view := _viewport_size()
 		var rect: Rect2 = (scroll as Control).get_global_rect()
 		assert_true(rect.size.y > 0.0, "%s scroll viewport has height" % route)
+		assert_true(rect.size.x > 0.0, "%s scroll viewport has width" % route)
 		assert_true(
 			rect.position.y >= -1.0 and rect.end.y <= view.y + 1.0,
 			"%s scroll viewport fits the %dpx-tall screen (got %.0f..%.0f)"
 				% [route, int(view.y), rect.position.y, rect.end.y],
 		)
-		# A vertical list must not also scroll sideways.
-		assert_eq(
-			(scroll as ScrollContainer).horizontal_scroll_mode,
-			ScrollContainer.SCROLL_MODE_DISABLED,
-			"%s disables horizontal scrolling" % route,
+		assert_true(
+			rect.position.x >= -1.0 and rect.end.x <= view.x + 1.0,
+			"%s scroll viewport fits the %dpx-wide screen (got %.0f..%.0f)"
+				% [route, int(view.x), rect.position.x, rect.end.x],
 		)
+		# Exactly one axis moves: the other is pinned.
+		var container := scroll as ScrollContainer
+		if axis == VERTICAL:
+			assert_eq(container.horizontal_scroll_mode, ScrollContainer.SCROLL_MODE_DISABLED,
+				"%s scrolls vertically only" % route)
+			assert_true(container.vertical_scroll_mode != ScrollContainer.SCROLL_MODE_DISABLED,
+				"%s can actually scroll vertically" % route)
+		else:
+			assert_eq(container.vertical_scroll_mode, ScrollContainer.SCROLL_MODE_DISABLED,
+				"%s scrolls horizontally only" % route)
+			assert_true(container.horizontal_scroll_mode != ScrollContainer.SCROLL_MODE_DISABLED,
+				"%s can actually scroll horizontally" % route)
 
 	root.queue_free()
 
 
+## Level select is a horizontal row of world cards: six do not fit across 960px
+## and more worlds are coming, so the sideways scroller is what keeps a seventh
+## reachable.
 func test_level_select_list_scrolls() -> void:
-	_assert_scrollable("level_select")
+	_assert_scrollable("level_select", HORIZONTAL)
 
 
 func test_login_profile_list_scrolls() -> void:
 	_assert_scrollable("login")
 
 
-## The registry can grow past what fits flat; that must not make levels
-## unreachable. Six 56px rows plus separation already needs ~400px, and the
-## screen only has ~440 once the title and back button are accounted for.
-func test_level_count_can_exceed_a_flat_screen() -> void:
+## The registry already needs more width than the screen has, which is what makes
+## the scroller load-bearing rather than precautionary.
+##
+## This used to assert `true` in both branches of an if/else - it reported which
+## case it was in and could not fail either way. Now it states the fact.
+func test_level_row_exceeds_a_flat_screen() -> void:
 	var levels: Array = LevelManager.get_levels()
 	assert_true(levels.size() >= 1, "level registry is not empty")
-	var row := 56.0 + 12.0
-	var flat_height := float(levels.size()) * row
-	if flat_height <= VIEWPORT_H - 120.0:
-		# Still fits flat today; the ScrollContainer assertions above are what
-		# keep it safe as levels are added.
-		assert_true(true, "level list currently fits flat (%.0fpx)" % flat_height)
-	else:
-		assert_true(true, "level list already exceeds a flat screen (%.0fpx)" % flat_height)
+	var card := WorldCard.SIZE.x + 20.0
+	var row_width := float(levels.size()) * card
+	assert_true(row_width > VIEWPORT_W,
+		"the %d world cards need %.0fpx across a %.0fpx screen, so the row must scroll"
+			% [levels.size(), row_width, VIEWPORT_W])

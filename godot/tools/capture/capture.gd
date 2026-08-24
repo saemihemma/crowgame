@@ -25,6 +25,13 @@ extends Node
 
 const GAME_SCENE := preload("res://scenes/Game.tscn")
 
+## Screens reachable by name through SceneRouter. Passing one of these as the
+## "level" captures that screen instead of a level, so the menus are in the same
+## review loop as the game. They were not, which is how the first screen anyone
+## sees stayed a flat blue page with a grey slab on it while the in-game HUD got
+## three rebuilds.
+const SCREENS := ["login", "main_menu", "level_select"]
+
 ## Frames to let a level settle before capturing: spawns, tweens and the first
 ## camera lerp all need to have happened or every shot is of a half-built scene.
 const SETTLE_FRAMES := 45
@@ -40,7 +47,10 @@ const DEFAULT_VARIANTS := "play"
 var _jobs: Array[Dictionary] = []
 var _index := 0
 var _frames := 0
-var _game: Node2D = null
+## Typed as Node, not Node2D: the screens are Controls, and the assignment used
+## to fail silently and leave this null - which the frame loop then read as
+## "nothing loaded yet" and waited on forever.
+var _game: Node = null
 var _shots := 0
 ## Set once per job when its scripted interaction has been kicked off, so the
 ## step does not re-fire on every physics frame while we wait for it to land.
@@ -87,14 +97,34 @@ func _load_next() -> void:
 		get_tree().quit(0)
 		return
 
-	_game = GAME_SCENE.instantiate()
-	_game.level_key = String(_jobs[_index]["level"])
+	var key := String(_jobs[_index]["level"])
+	if SCREENS.has(key):
+		var path := SceneRouter.path_of(key)
+		if path == "" or not ResourceLoader.exists(path):
+			printerr("[capture] unknown screen '%s'" % key)
+			_index += 1
+			_load_next()
+			return
+		_game = load(path).instantiate()
+		if _game == null:
+			printerr("[capture] could not instantiate screen '%s'" % key)
+			_index += 1
+			_load_next()
+			return
+	else:
+		_game = GAME_SCENE.instantiate()
+		_game.level_key = key
 	add_child(_game)
 	_frames = 0
 	_staged = false
 
 func _physics_process(_delta: float) -> void:
+	# Never wait on a null scene: a failed instantiate used to stall the harness
+	# indefinitely rather than reporting the job it could not photograph.
 	if _game == null:
+		printerr("[capture] no scene loaded for job %d; skipping" % _index)
+		_index += 1
+		_load_next()
 		return
 	_frames += 1
 	if _frames < SETTLE_FRAMES:
@@ -103,6 +133,9 @@ func _physics_process(_delta: float) -> void:
 	# Variants that need a scripted interaction get it once, then wait for the
 	# result to settle before the shot is taken.
 	var variant := String(_jobs[_index]["variant"])
+	# A screen has no owl to interact with; only "play" makes sense there.
+	if SCREENS.has(String(_jobs[_index]["level"])):
+		variant = "play"
 	if variant != "play" and not _staged:
 		if not _stage(variant):
 			printerr("[capture] %s: could not stage '%s'; skipping" % [_jobs[_index]["level"], variant])

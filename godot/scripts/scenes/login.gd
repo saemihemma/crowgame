@@ -19,6 +19,11 @@ var _name_edit: LineEdit
 var _status: Label
 
 func _ready() -> void:
+	# Painted world behind the sign-in, not the project's flat clear colour. This
+	# is the first screen anyone ever sees and it was a blue page with a grey
+	# rectangle on it (brand/BRAND_SYSTEM.md §5.4).
+	add_child(ScreenBackdrop.new())
+
 	# The profile list scrolls: laid out flat, a family with four or more
 	# children pushes "+ New User" off the bottom of the 540-tall viewport and
 	# a fifth can never be added -- the same defect the web build shipped.
@@ -28,11 +33,18 @@ func _ready() -> void:
 	_scroll.offset_top = LIST_TOP_MARGIN
 	_scroll.offset_bottom = -LIST_BOTTOM_MARGIN
 	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	# Keeps a focused field on screen once the PIN step makes the column taller
+	# than the viewport.
+	_scroll.follow_focus = true
 	add_child(_scroll)
 
 	_col = VBoxContainer.new()
-	_col.alignment = BoxContainer.ALIGNMENT_BEGIN
+	# Centred, not top-aligned: with one or two players the list is short, and
+	# pinned to the top it left three quarters of the screen empty under it.
+	# The scroller still takes over the moment the column outgrows the viewport.
+	_col.alignment = BoxContainer.ALIGNMENT_CENTER
 	_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_col.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_col.add_theme_constant_override("separation", 14)
 	_scroll.add_child(_col)
 	# Language selector sits outside `_col`, so it survives the sub-state swaps
@@ -49,33 +61,47 @@ func _clear() -> void:
 	for c in _col.get_children():
 		c.queue_free()
 
+## Headings carry their own contrast: they now sit on a painted sky rather than
+## a flat fill, so plain white text would borrow its legibility from whichever
+## world is behind it (§8.6b).
 func _title(text: String, size := 40) -> void:
 	var t := Label.new()
 	t.text = text
 	t.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	t.add_theme_font_size_override("font_size", size)
+	t.add_theme_color_override("font_color", ThemeManager.get_color_value("paper"))
+	t.add_theme_color_override("font_shadow_color", ThemeManager.get_color_value("ink"))
+	t.add_theme_constant_override("shadow_offset_x", 2)
+	t.add_theme_constant_override("shadow_offset_y", 3)
 	_col.add_child(t)
 
 func _show_profile_list() -> void:
 	_clear()
-	_title(TextManager.t("login.subtitle"))
-	for p in ProfileManager.get_profiles():
-		var b := Button.new()
-		b.text = String(p.get("username", ""))
-		b.custom_minimum_size = Vector2(280, 56)
-		b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		b.add_theme_font_size_override("font_size", 28)
+	_title(TextManager.t("login.subtitle"), 46)
+	# Each player is a paper card; adding one is the quieter ghost action. When
+	# every entry was an identical grey slab, "+ New User" looked exactly as
+	# important as the child's own name, which is backwards on a screen a family
+	# uses every day.
+	var profiles := ProfileManager.get_profiles()
+	var first: BrandButton = null
+	for p in profiles:
 		var uname := String(p.get("username", ""))
-		b.pressed.connect(func(): _show_pin_entry(uname))
-		UiFx.attach_focus_highlight(b)
+		var b := BrandButton.make(uname, BrandButton.Role.SECONDARY,
+			func(): _show_pin_entry(uname))
+		b.custom_minimum_size.x = 320
+		b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		_col.add_child(b)
-	var nb := Button.new()
-	nb.text = TextManager.t("login.new_user")
-	nb.custom_minimum_size = Vector2(280, 56)
+		if first == null:
+			first = b
+
+	var role: int = BrandButton.Role.GHOST if profiles.size() > 0 else BrandButton.Role.PRIMARY
+	var nb := BrandButton.make(TextManager.t("login.new_user"), role, _show_new_player)
+	nb.custom_minimum_size.x = 320
 	nb.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	nb.pressed.connect(_show_new_player)
-	UiFx.attach_focus_highlight(nb)
 	_col.add_child(nb)
+	if first == null:
+		first = nb
+	first.grab_focus.call_deferred()
 
 func _show_pin_entry(username: String) -> void:
 	_selected_user = username
@@ -86,8 +112,8 @@ func _show_pin_entry(username: String) -> void:
 	_col.add_child(_pin_edit)
 	_status = _make_status()
 	_col.add_child(_status)
-	_action_button(TextManager.t("login.play"), func(): _try_login(username, _pin_edit.text))
-	_action_button(TextManager.t("login.back"), _show_profile_list)
+	_action_button(TextManager.t("login.play"), func(): _try_login(username, _pin_edit.text), BrandButton.Role.PRIMARY)
+	_action_button(TextManager.t("login.back"), _show_profile_list, BrandButton.Role.GHOST)
 	_pin_edit.grab_focus()
 
 func _show_new_player() -> void:
@@ -104,8 +130,8 @@ func _show_new_player() -> void:
 	_col.add_child(_pin_edit)
 	_status = _make_status()
 	_col.add_child(_status)
-	_action_button(TextManager.t("login.create"), _try_create)
-	_action_button(TextManager.t("login.back"), _show_profile_list)
+	_action_button(TextManager.t("login.create"), _try_create, BrandButton.Role.PRIMARY)
+	_action_button(TextManager.t("login.back"), _show_profile_list, BrandButton.Role.GHOST)
 	_name_edit.grab_focus()
 
 var _pin_dots: HBoxContainer
@@ -154,7 +180,7 @@ func _make_pin_dots() -> HBoxContainer:
 
 
 func _pin_dot_style(filled: bool) -> StyleBoxFlat:
-	var colour := ThemeManager.get_color_value("text_light")
+	var colour := ThemeManager.get_color_value("paper")
 	var box := StyleBoxFlat.new()
 	# Corner radius at half the box size turns the square into a circle.
 	var radius := int(PIN_DOT_SIZE / 2.0)
@@ -168,16 +194,17 @@ func _pin_dot_style(filled: bool) -> StyleBoxFlat:
 func _make_status() -> Label:
 	var l := Label.new()
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.add_theme_color_override("font_color", ThemeManager.get_color_value("text_error"))
+	l.add_theme_color_override("font_color", ThemeManager.get_color_value("notyet"))
+	l.add_theme_color_override("font_shadow_color", ThemeManager.get_color_value("ink"))
+	l.add_theme_constant_override("shadow_offset_x", 2)
+	l.add_theme_constant_override("shadow_offset_y", 2)
+	l.add_theme_font_size_override("font_size", 22)
 	return l
 
-func _action_button(text: String, cb: Callable) -> void:
-	var b := Button.new()
-	b.text = text
-	b.custom_minimum_size = Vector2(280, 52)
+func _action_button(text: String, cb: Callable, role: int = BrandButton.Role.SECONDARY) -> void:
+	var b := BrandButton.make(text, role, cb)
+	b.custom_minimum_size.x = 320
 	b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	b.pressed.connect(cb)
-	UiFx.attach_focus_highlight(b)
 	_col.add_child(b)
 
 func _try_login(username: String, pin: String) -> void:

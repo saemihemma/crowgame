@@ -64,3 +64,14 @@ func get_color(key: String) -> String:
 func get_color_value(key: String) -> Color:
 	var hex := get_color(key)
 	return Color.html(hex) if hex != "" else Color.WHITE
+
+## A colour from a theme that is NOT the active one.
+##
+## Level select shows every world at once, each painted in its own palette, so it
+## needs to read five themes on one screen. Doing that by switching the active
+## theme five times would fire theme_changed at every component in the tree and
+## leave whichever world was last drawn as the live one.
+func get_color_value_of(theme_id: String, key: String) -> Color:
+	var palette: Dictionary = _themes.get(theme_id, {}).get("palette", {})
+	var hex := String(palette.get(key, ""))
+	return Color.html(hex) if hex != "" else get_color_value(key)

@@ -23,11 +23,19 @@ func test_is_mirrors_en_keys() -> void:
 func test_locale_switch_and_fallback() -> void:
 	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
 	var prev: String = tm.get_locale()
+	# Asserts the switch works, not what the buttons say. Pinning the exact copy
+	# here meant every wording change broke a test about locale plumbing - and
+	# the copy that was pinned ("> SPILA") was placeholder ASCII no one wanted to
+	# keep. The Icelandic wording that genuinely must not drift is pinned in
+	# test_icelandic_corrections instead.
 	tm.set_locale("is")
-	assert_eq(tm.t("menu.play"), "> SPILA", "IS value served when locale=is")
+	var is_play: String = tm.t("menu.play")
+	assert_true(is_play != "" and is_play != "menu.play", "IS value served when locale=is")
 	assert_eq(tm.t("login.hi", ["Ada"]), "Hæ, Ada!", "IS substitution works")
 	tm.set_locale("en")
-	assert_eq(tm.t("menu.play"), "> PLAY", "EN value served when locale=en")
+	var en_play: String = tm.t("menu.play")
+	assert_true(en_play != "" and en_play != "menu.play", "EN value served when locale=en")
+	assert_true(en_play != is_play, "the two locales serve different values for the same key")
 	# Unknown locale falls back to English.
 	tm.set_locale("zz")
 	assert_eq(tm.get_locale(), "en", "unknown locale -> en")

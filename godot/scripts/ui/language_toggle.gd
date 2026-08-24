@@ -70,20 +70,28 @@ static func _select(locale: String, on_change: Callable) -> void:
 
 
 static func _apply_style(pill: Button, selected: bool) -> void:
-	var accent := ThemeManager.get_color_value("accent")
-	var light := ThemeManager.get_color_value("text_light")
+	var coin := ThemeManager.get_color_value("coin")
+	var ink := ThemeManager.get_color_value("ink")
+	var paper := ThemeManager.get_color_value("paper")
 
 	# Selected reads as filled, unselected as outline. Fill-versus-outline is a
 	# shape difference, so the state survives for a colour-blind player too.
+	#
+	# The unselected pill carries an ink scrim rather than being transparent:
+	# these now sit on a painted sky, and a pale label on bare backdrop was
+	# borrowing its contrast from whichever world happened to be behind it
+	# (brand/BRAND_SYSTEM.md §8.6b).
 	for state in ["normal", "hover", "pressed", "focus"]:
 		var box := StyleBoxFlat.new()
 		box.set_corner_radius_all(CORNER_RADIUS)
-		box.bg_color = accent if selected else Color(light, 0.0)
-		box.border_color = Color(light, 0.5 if selected else 0.3)
-		box.set_border_width_all(2)
+		box.bg_color = coin if selected else Color(ink, 0.42)
+		box.border_color = ink if selected else Color(paper, 0.55)
+		box.set_border_width_all(3 if state == "focus" else 2)
+		if state == "focus":
+			box.border_color = ThemeManager.get_color_value("focus")
 		pill.add_theme_stylebox_override(state, box)
 
-	var label_colour := ThemeManager.get_color_value("boardBorder") if selected else light
+	var label_colour := ink if selected else paper
 	pill.add_theme_color_override("font_color", label_colour)
 	pill.add_theme_color_override("font_hover_color", label_colour)
 	pill.add_theme_color_override("font_pressed_color", label_colour)
@@ -101,7 +109,7 @@ static func _make_tick() -> Line2D:
 		Vector2(left + 14.0, mid_y - 6.0),
 	])
 	tick.width = TICK_WIDTH
-	tick.default_color = ThemeManager.get_color_value("boardBorder")
+	tick.default_color = ThemeManager.get_color_value("ink")
 	tick.joint_mode = Line2D.LINE_JOINT_ROUND
 	tick.begin_cap_mode = Line2D.LINE_CAP_ROUND
 	tick.end_cap_mode = Line2D.LINE_CAP_ROUND

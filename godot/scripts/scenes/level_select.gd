@@ -1,81 +1,99 @@
 extends Control
-## LevelSelect — Godot port of LevelSelectScene. Lists registry levels; a level
-## is unlocked when it has no unlockRequirement or its required level is
+## LevelSelect — choosing where to go next.
+##
+## What this replaced: a vertical stack of six identical grey slabs, three of
+## them greyed out with "  (Locked)" appended in English. It answered "which
+## levels exist" and nothing else.
+##
+## Now the worlds are cards painted in their own palettes, scrolled sideways.
+## Horizontal because that is the axis a thumb sweeps on a tablet held in
+## landscape, and because a row of places reads as a journey while a column of
+## rows reads as a settings list.
+##
+## A level is unlocked when it has no unlockRequirement or its required level is
 ## completed. Selecting one sets the current level and starts the game.
 
-const TITLE_TOP := 16.0
-const TITLE_H := 64.0
-const LIST_BOTTOM_MARGIN := 16.0
-
-var _scroll: ScrollContainer
-
+const TITLE_TOP := 18.0
+const TITLE_H := 58.0
+const CARD_SEPARATION := 20
+const ROW_SIDE_PADDING := 28
 
 func _ready() -> void:
-	# Title outside the scroller so it stays put while the list moves.
+	add_child(ScreenBackdrop.new())
+
 	var title := Label.new()
 	title.text = TextManager.t("level_select.title")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 56)
+	title.add_theme_font_size_override("font_size", 46)
+	title.add_theme_color_override("font_color", ThemeManager.get_color_value("paper"))
+	title.add_theme_color_override("font_shadow_color", ThemeManager.get_color_value("ink"))
+	title.add_theme_constant_override("shadow_offset_x", 3)
+	title.add_theme_constant_override("shadow_offset_y", 3)
 	title.anchor_right = 1.0
 	title.offset_top = TITLE_TOP
 	title.offset_bottom = TITLE_TOP + TITLE_H
 	add_child(title)
 
-	# The list scrolls. Laid out flat it outgrows the 540-tall viewport: six
-	# levels already need ~526px including the title and back button, so a
-	# seventh would be unreachable -- the exact defect the web build shipped.
-	_scroll = ScrollContainer.new()
-	_scroll.anchor_right = 1.0
-	_scroll.anchor_bottom = 1.0
-	_scroll.offset_top = TITLE_TOP + TITLE_H + 8
-	_scroll.offset_bottom = -LIST_BOTTOM_MARGIN
-	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	add_child(_scroll)
+	# The row scrolls sideways. Six worlds do not fit across 960px and more are
+	# coming, so the scroller is what keeps a seventh reachable.
+	var scroll := ScrollContainer.new()
+	scroll.anchor_right = 1.0
+	scroll.anchor_bottom = 1.0
+	scroll.offset_top = TITLE_TOP + TITLE_H + 6
+	scroll.offset_bottom = -(BrandButton.MIN_HEIGHT + 28.0)  # clear of Back, bottom-left
+	scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	# The row is swiped, not dragged by a bar. A default grey scrollbar across the
+	# bottom of a painted screen reads as chrome from a different application.
+	scroll.get_h_scroll_bar().modulate.a = 0.0
+	add_child(scroll)
 
-	var col := VBoxContainer.new()
-	col.alignment = BoxContainer.ALIGNMENT_BEGIN
-	col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	col.add_theme_constant_override("separation", 12)
-	_scroll.add_child(col)
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", CARD_SEPARATION)
+	row.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	scroll.add_child(row)
+
+	# Breathing room at both ends so the first and last card are not flush
+	# against the screen edge when the row is scrolled to a stop.
+	row.add_child(_spacer())
 
 	var completed: Array = SaveManager.get_data().get("completedLevels", [])
+	var first: WorldCard = null
 	for level in LevelManager.get_levels():
 		var key := String(level.get("key", ""))
 		var unlocked := _is_unlocked(level, completed)
-		var b := Button.new()
-		b.text = _level_label(level, key, unlocked)
-		b.disabled = not unlocked
-		b.custom_minimum_size = Vector2(360, 56)
-		b.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-		b.add_theme_font_size_override("font_size", 26)
-		b.pressed.connect(func(): _play(key))
-		UiFx.attach_focus_highlight(b)
-		col.add_child(b)
-		if col.get_child_count() == 2:  # first level button (after title)
-			b.grab_focus()
+		var card := WorldCard.make(key, level, unlocked, completed.has(key), _play.bind(key))
+		row.add_child(card)
+		if unlocked and first == null:
+			first = card
+
+	row.add_child(_spacer())
+
+	if first != null:
+		first.grab_focus.call_deferred()
 
 	# Back sits outside the scroller: it must never scroll out of reach.
-	var back := Button.new()
-	back.text = TextManager.t("level_select.back")
-	back.custom_minimum_size = Vector2(220, 44)
-	back.anchor_top = 0.0
-	back.offset_left = 16
-	back.offset_top = TITLE_TOP + 8
-	back.offset_right = 16 + 220
-	back.offset_bottom = TITLE_TOP + 8 + 44
-	back.pressed.connect(func(): SceneRouter.goto("main_menu"))
-	UiFx.attach_focus_highlight(back)
+	var back := BrandButton.make(TextManager.t("level_select.back"), BrandButton.Role.GHOST,
+		func(): SceneRouter.goto("main_menu"))
+	# Bottom-left, not top-left: at the top it sat on the title and covered the
+	# corner of the first world card.
+	# Sized from BrandButton.MIN_HEIGHT rather than a guess: the button enforces
+	# the 88px touch floor (Gate B3), so laying it out as 56 tall pushed its
+	# bottom edge off the screen.
+	back.custom_minimum_size = Vector2(150, BrandButton.MIN_HEIGHT)
+	back.anchor_top = 1.0
+	back.anchor_bottom = 1.0
+	back.offset_left = 20
+	back.offset_top = -(BrandButton.MIN_HEIGHT + 18.0)
+	back.offset_right = 20 + 150
+	back.offset_bottom = -18
 	add_child(back)
 
-## Level names are translated when a `level.<key>.name` key exists, and fall
-## back to the registry name so a newly authored level still shows something.
-## The locked suffix used to be the literal English "  (locked)".
-func _level_label(level: Dictionary, key: String, unlocked: bool) -> String:
-	var name_key := "level.%s.name" % key
-	var display := TextManager.t(name_key) if TextManager.has(name_key) else String(level.get("name", key))
-	if unlocked:
-		return display
-	return "%s  (%s)" % [display, TextManager.t("level_select.locked")]
+func _spacer() -> Control:
+	var pad := Control.new()
+	pad.custom_minimum_size = Vector2(ROW_SIDE_PADDING, 0)
+	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return pad
 
 func _is_unlocked(level: Dictionary, completed: Array) -> bool:
 	var req = level.get("unlockRequirement", null)
