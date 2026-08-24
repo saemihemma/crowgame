@@ -1,7 +1,7 @@
 import { join, resolve } from 'path';
 
 export const ROOT = resolve(join(__dirname, '..'));
-export const DATA_DIR = join(ROOT, 'public', 'data');
+export const DATA_DIR = join(ROOT, 'godot', 'data');
 export const SPECS_DIR = join(DATA_DIR, 'levels', 'specs');
 export const OUTPUT_DIR = join(DATA_DIR, 'levels', 'compiled');
 

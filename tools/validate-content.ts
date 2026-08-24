@@ -15,7 +15,7 @@ import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArith
 import type { MathProblem } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
-const DATA_DIR = join(ROOT, 'public', 'data');
+const DATA_DIR = join(ROOT, 'godot', 'data');
 const SCHEMA_DIR = join(DATA_DIR, 'schemas');
 const AUTHORING_DIR = join(ROOT, 'authoring', 'math');
 const REPORTS_DIR = join(ROOT, 'reports', 'math-batches');
@@ -75,7 +75,7 @@ function validateCrossReferences(): void {
             continue;
         }
 
-        const mapPath = join(ROOT, 'public', level.mapFile);
+        const mapPath = join(ROOT, 'godot', level.mapFile);
         if (!existsSync(mapPath)) {
             console.error(`  FAIL: Level registry entry ${level.key} points to missing map: ${level.mapFile}`);
             errors++;

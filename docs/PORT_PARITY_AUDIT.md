@@ -7,10 +7,10 @@ Last verified against code: 2026-08-24
 
 ## Why this exists
 
-`src/`, `public/`, `vite/` and `admin.html` are still physically present but dead:
-nothing references them and nothing builds them. Before they are deleted, this
-records where each of the 45 Phaser-only TypeScript files went, so the deletion is
-a checked action rather than a hopeful one.
+`src/`, `public/`, `vite/`, `admin.html` and `archived/` have been **deleted** from
+the working tree (git history keeps them). This records where each of the 45
+Phaser-only TypeScript files went, so the deletion was a checked action rather
+than a hopeful one.
 
 The 10 files that were **not** Phaser-only moved to `math-kernel/**` and are very
 much alive — they generate the golden fixtures and drive the curriculum pipeline.
@@ -80,16 +80,26 @@ devices, family auth, server-side error visibility, an in-engine parent report, 
 Icelandic locale in lockstep with English, a CI-enforced no-hardcoding mandate,
 and a browser harness that tests the exported build rather than the source.
 
-## Verification
+## Verification, and one thing this audit got wrong
 
-At the time of writing, with `src/` still present:
+After deletion: `npm run validate`, `npm run typecheck`, `run_tests.sh` (65 tests
++ 6 probes), the 31 server tests and the browser boot smoke all pass.
 
-- nothing under `godot/**` or `server/**` imports from the repo-root `src/`
-  (`server/test/*` imports `../src/lib/*`, which is the API's own `server/src`)
-- no npm script references `src/`, `vite/`, or `admin.html`
-- `tsconfig.json` covers `math-kernel` and `tools` only
-- `npm run validate`, `npm run typecheck`, `run_tests.sh` and the two browser
-  harnesses all pass without those trees being read
+But the pre-deletion version of this file claimed every gate already passed
+"without those trees being read", and that was **wrong**. Deleting them exposed
+ten tool files still reading the old paths:
 
-The deletion is therefore a no-op for every gate in the repo. This file is the
-receipt; once the trees are gone it stays as history rather than being updated.
+- Eight built the path with `join(ROOT, 'public', 'data', ...)` rather than the
+  string `"public/data"`, so the earlier repointing pass — which searched for the
+  string form — missed all of them. `validate-content.ts` was reading
+  `public/data/schemas/math-problem.schema.json` on every run.
+- `process_audio.js` still wrote into `public/assets/`.
+- `validate_docs.js` asserted the content of `archived/README.md`.
+
+None of it was caught before, precisely because the files still existed. That is
+the failure mode worth remembering from this audit: a check that passes because a
+dead file is still on disk is not evidence, and grepping for one spelling of a
+path is not a search. Deleting the tree was the only thing that could tell the
+difference.
+
+This file stays as history rather than being updated further.

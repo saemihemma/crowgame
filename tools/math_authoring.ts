@@ -12,7 +12,7 @@ import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool
 const ROOT = resolve(join(__dirname, '..'));
 const AUTHORING_DIR = join(ROOT, 'authoring', 'math');
 const REPORTS_DIR = join(ROOT, 'reports', 'math-batches');
-const DATA_DIR = join(ROOT, 'public', 'data', 'math');
+const DATA_DIR = join(ROOT, 'godot', 'data', 'math');
 
 type NumericRange = [number, number];
 
@@ -243,7 +243,7 @@ function loadLiveOwlMathConfig(): LiveOwlMathConfig {
             id?: string;
             components?: Array<Record<string, unknown>>;
         }>;
-    }>(join(ROOT, 'public', 'data', 'npcs', 'npc_registry.json'));
+    }>(join(ROOT, 'godot', 'data', 'npcs', 'npc_registry.json'));
 
     const owlDefinition = registry.npcs?.find(npc => npc.id === 'owl_teacher_01') ?? registry.npcs?.[0];
     const mathComponent = owlDefinition?.components?.find(component => component.type === 'math_challenge') ?? {};

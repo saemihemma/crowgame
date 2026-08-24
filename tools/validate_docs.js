@@ -19,8 +19,6 @@ const REQUIRED_DOC_STATUSES = {
     'ai_generation_guide.md': 'Supportive',
     'ai_assets/_readme.md': 'Supportive',
     'LICENSE_ATTRIBUTIONS.md': 'Supportive',
-    'archived/README.md': 'Historical',
-    'archived/docs/elo-math-system-plan.md': 'Historical',
 };
 
 const STORAGE_KEYS = [
@@ -220,6 +218,8 @@ function validateRequiredDocStatuses(markdownFiles) {
 
     for (const doc of markdownFiles) {
         const metadata = parseMetadata(doc);
+        // Kept for when material is archived again: anything under archived/ is
+        // history, and history is never Current.
         if (doc.startsWith('archived/') && metadata.status !== 'Historical') {
             fail(`${doc}: archived docs must use Status Historical`);
         }
@@ -405,14 +405,6 @@ function validateDocWordingAndTaxonomy() {
     ensureDocContains('DEVELOPMENT_GUIDE.md', '- [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)', 'self-listed current doc');
     ensureDocContains('ASSET_SPECS.md', 'Boot-time asset loading in [godot/scripts/autoload/data_manager.gd](./godot/scripts/autoload/data_manager.gd) currently expects:', 'asset contract lead-in');
     ensureDocContains('ASSET_SPECS.md', 'suspicious unreferenced leftovers that should be archived instead of staying live', 'asset validation cleanup scope note');
-    ensureDocContains('archived/README.md', 'level-copy-legacy', 'clear archive folder naming');
-    ensureDocContains('archived/README.md', 'scratch-images', 'clear archive scratch-image naming');
-    ensureDocContains('archived/README.md', 'npcs-copy-legacy', 'clear archive NPC copy naming');
-    ensureDocContains('archived/README.md', 'crow2-experiments', 'clear archive crow experiment naming');
-    ensureDocContains('archived/README.md', 'coin-experiments', 'clear archive coin experiment naming');
-    ensureDocContains('archived/README.md', 'door-legacy', 'clear archive door naming');
-    ensureDocContains('archived/README.md', 'archived/tools/**', 'clear archived tools naming');
-    ensureDocContains('archived/README.md', 'level1-source', 'clear archived level1 source naming');
 }
 
 function validateLiveSourceReferences() {

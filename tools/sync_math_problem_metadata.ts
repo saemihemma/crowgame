@@ -6,10 +6,10 @@ import type { MathProblem } from '../math-kernel/utils/Types';
 const ROOT = resolve(join(__dirname, '..'));
 
 const TARGET_FILES = [
-    join(ROOT, 'public', 'data', 'math', 'problems_easy.json'),
-    join(ROOT, 'public', 'data', 'math', 'problems_dataset.json'),
-    join(ROOT, 'public', 'data', 'math', 'problems_gaps.json'),
-    join(ROOT, 'public', 'data', 'math', 'problems_curriculum.json'),
+    join(ROOT, 'godot', 'data', 'math', 'problems_easy.json'),
+    join(ROOT, 'godot', 'data', 'math', 'problems_dataset.json'),
+    join(ROOT, 'godot', 'data', 'math', 'problems_gaps.json'),
+    join(ROOT, 'godot', 'data', 'math', 'problems_curriculum.json'),
     join(ROOT, 'authoring', 'math', 'seed', 'problems_curriculum_seed.json'),
 ];
 
