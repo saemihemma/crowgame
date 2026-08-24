@@ -22,6 +22,20 @@ import { chromium } from 'playwright-core';
 import { mkdir, writeFile, readFile } from 'fs/promises';
 import { PNG } from 'pngjs';
 
+/**
+ * Device profiles. Landscape only - portrait is out of scope
+ * (brand/PRODUCTION_PLAN.md section 6). Sizes are CSS pixels, which is what a
+ * page actually gets, not physical pixels.
+ */
+const DEVICES = [
+    { id: 'ipad',    label: 'iPad landscape',       width: 1180, height: 820, dpr: 2, touch: true },
+    { id: 'phone',   label: 'iPhone 15 landscape',  width: 852,  height: 393, dpr: 3, touch: true },
+    { id: 'desktop', label: 'Desktop 1080p',        width: 1920, height: 1080, dpr: 1, touch: false },
+];
+
+/** The profile the per-world palette shots come from. */
+const PRIMARY_DEVICE = 'ipad';
+
 const OUT = 'output/playwright/themes';
 const URL = process.env.CROW_DEV_URL ?? 'http://localhost:8080/';
 const CHROME = process.env.CHROME_PATH ?? '/opt/pw-browsers/chromium';

@@ -64,20 +64,24 @@ export class OwlRing {
 
         const tm = ThemeManager.getInstance();
         this.progressText = scene.add.text(0, OwlRing.RADIUS + 12, '', {
-            fontSize: '15px',
+            fontSize: '17px',
             fontFamily: tm.getTheme().hud.font || 'monospace',
             color: tm.getColor('owl'),
             stroke: tm.getColor('ink'),
             strokeThickness: 5,
-        }).setOrigin(0.5, 0);
+        }).setOrigin(0.5, 0)
+          // The ring itself carries "how close am I"; these two lines only
+          // confirm it in words, so they sit under the essential-text floor by
+          // design. See the B7 tiers in tools/device_audit.mjs.
+          .setData('redundant', true);
 
         this.totalText = scene.add.text(0, OwlRing.RADIUS + 36, '', {
-            fontSize: '11px',
+            fontSize: '16px',
             fontFamily: tm.getTheme().hud.font || 'monospace',
             color: tm.getColor('paper'),
             stroke: tm.getColor('ink'),
             strokeThickness: 4,
-        }).setOrigin(0.5, 0).setAlpha(0.75);
+        }).setOrigin(0.5, 0).setAlpha(0.75).setData('redundant', true);
 
         this.container.add([this.progressText, this.totalText]);
 

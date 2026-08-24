@@ -1,6 +1,6 @@
 {
     "name": "crow-platformer",
-    "description": "A 2D pixel art educational platformer featuring H\u00f6rmann, a crow protagonist.",
+    "description": "A 2D pixel art educational platformer featuring Hörmann, a crow protagonist.",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -24,7 +24,8 @@
         "dev:host": "vite --config vite/config.dev.mjs --host",
         "validate:i18n": "node tools/validate_i18n.mjs",
         "i18n:screenshots": "node tools/i18n_screenshots.mjs",
-        "themes:screenshots": "node tools/theme_screenshots.mjs"
+        "themes:screenshots": "node tools/theme_screenshots.mjs",
+        "device:audit": "node tools/device_audit.mjs"
     },
     "devDependencies": {
         "ajv": "^8.17.1",

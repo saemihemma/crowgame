@@ -25,7 +25,17 @@ npm.cmd run math:browser-smoke
 npm.cmd run themes:screenshots
 npm.cmd run i18n:screenshots
 npm.cmd run tilesets
+npm.cmd run device:audit
 ```
+
+`device:audit` is the gate for anything touching layout, controls or type size.
+It opens iPad and iPhone landscape with real touch emulation and measures the
+B1-B10 gates in `brand/PRODUCTION_PLAN.md` from the live scene graph. It exits
+non-zero, and today it should: six known failures are the Phase 1 backlog.
+
+**Both runtimes.** The Godot port is current, so shared behaviour is not done
+until `bash godot/tools/run_tests.sh` is green too (61 tests, and Godot 4.3
+headless runs in a container - see `.github/workflows/ci.yml` for the install).
 
 Both screenshot harnesses need a dev server already running and a browser on
 `CHROME_PATH`. `themes:screenshots` is the gate for anything visual: it walks

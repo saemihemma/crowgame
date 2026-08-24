@@ -17,7 +17,7 @@ until its rows pass, measured, on a device profile — not on a desktop browser.
 
 | # | Gate | Measured how |
 | --- | --- | --- |
-| B1 | **No letterbox above 8%** on iPad and iPhone, either orientation | canvas area ÷ viewport area, per device profile |
+| B1 | **No letterbox above 8%** on iPad and iPhone **in landscape** | canvas area ÷ viewport area, per device profile |
 | B2 | **Sustained 60fps** on a 4× CPU-throttled profile at 1024×768 | Playwright CDP performance trace, p95 frame time ≤ 16.7ms |
 | B3 | **Every touch target ≥ 64px**, primary action ≥ 80px, ≥ 12px apart | measured from the live scene graph, not from source |
 | B4 | **Nothing interactive within 32px** of a safe-area edge | same |
@@ -30,6 +30,8 @@ until its rows pass, measured, on a device profile — not on a desktop browser.
 
 Gates B1, B3, B4, B5 and B10 are **currently unmeasurable** — the harness has
 never opened a device viewport. Phase 0 exists to fix that.
+
+**Every gate is measured twice**, once per runtime. See §2a.
 
 ---
 
@@ -55,11 +57,42 @@ the maths window themed by colour only.
 | Screen flow | Login, main menu, level select, pause and completion are all pre-brand-system |
 | Onboarding | No first-run teaching of any mechanic |
 | Performance | Never measured, on any profile |
-| Godot port | Has none of the last five commits |
+| Godot port | Has none of the last five commits, and its own suite says so: `owl_probe` reports "2 problems solved" against a web build where one answer breaks the chain |
 
-**The single biggest problem is B1.** A child picks up an iPad, holds it the way
-children hold iPads, and three-fifths of the screen is black. No amount of art,
-juice or HUD polish survives that, which is why it is Phase 1 and not Phase 5.
+**The single biggest problem is B1.** Even in landscape — the shipping
+orientation — 18–19% of a tablet screen is black bars. That is the difference
+between a game that looks made for the device and one that looks ported to it.
+
+---
+
+## 2a. Two runtimes, settled
+
+**The Godot port is current and shipping.** Every phase lands twice, and a phase
+is not done until both runtimes pass its gates.
+
+This is affordable because the port is verifiable here: Godot 4.3 headless runs
+in this container and `bash godot/tools/run_tests.sh` passes **61/61** with a
+frame-budget probe (8.3ms average against a 12ms budget). Parity is a test
+result, not a hope.
+
+The divergence to close first, in the order the web port built it:
+
+| Web change | Godot state |
+| --- | --- |
+| Five world themes + per-level selection | absent — `theme_manager.gd` registers `forest` and `scifi` only |
+| Themed sky gradient | absent |
+| Five world tilesets + tileset manifest | PNGs copied across; nothing loads them |
+| Scene shutdown wiring | needs its own audit — GDScript lifecycle differs |
+| Feel pass: squash, anticipation, hitstop, look-ahead, coin bob | absent |
+| Wrong-answer choreography in amber, 900ms | absent |
+| Dynamic maths-board layout | absent |
+| Three-pod HUD + owl ring | absent |
+| Streak | absent |
+| One-answer owl roster | absent — `owl_probe` still solves 2 problems |
+
+**Rule from here:** no web-side change to shared behaviour is accepted until the
+Godot side lands with it and `run_tests.sh` is green. The divergence above is a
+one-time debt to clear in Phase 0b; after that it never accumulates again.
 
 ---
 
@@ -96,9 +129,38 @@ is a tablet. Phase 0 is what makes that rule enforceable.
 
 Ordered by what unblocks what, not by what is most fun.
 
-### Phase 0 — Make the loop able to see
+### Phase 0 — Make the loop able to see — **in progress**
 
 Nothing else can be judged until this exists.
+
+**Landed:** `npm run device:audit` (`tools/device_audit.mjs`) opens iPad
+landscape, iPhone landscape and desktop with real touch emulation and device
+pixel ratios, and measures B1, B3, B4, B5, B7 and B10 **from the live scene
+graph** — never from source, because source says what was intended.
+
+Baseline on today's build, which is the acceptance criterion (the harness must
+report the failures that should fail):
+
+| Gate | iPad | iPhone | Desktop |
+| --- | --- | --- | --- |
+| B1 letterbox | **19.1%** | **18.0%** | 0.0% |
+| B3 touch targets | pass (5) | pass (5) | n/a |
+| B4 safe area | **1 inside 32px** | **1 inside 32px** | n/a |
+| B10 reach | pass | pass | n/a |
+| B5 time to input | 2.7s | 2.0s | 2.0s |
+| B7 text | **JUMP / ZAP / PECK @18px** | same | pass |
+
+Six failures, all three of them real Phase 1 problems, each caught twice.
+
+B7 is measured in **two tiers**, because the bible's rule is "nothing a child
+must read": a 16px hard floor for everything, and 24px for anything not marked
+`setData('redundant', true)`. The owl ring's own numbers are marked — the ring
+carries the meaning, the numbers only confirm it. The audit caught them at 15px
+and 11px, which was a straight violation of a rule this document wrote.
+
+**Still to land in Phase 0:** the unvisited screens (login, menu, level select,
+pause, completion), the unreached states (damage, streak 3 and 5, an ability
+granted), B2's throttled frame trace and B9's reduced-motion run.
 
 - Device matrix in `theme_screenshots.mjs`: iPad landscape/portrait, iPhone
   landscape/portrait, desktop. Playwright `hasTouch`, `deviceScaleFactor`,
@@ -120,10 +182,10 @@ today's build fails the ones it should fail.
 The award blocker. Concept first, because the answer is a design decision, not
 a config flag.
 
-- **Concept:** how the game occupies an iPad in portrait. Three real options
-  worth drawing — a taller camera with more vertical world; a fixed-height
-  design with horizontal extension; portrait as a distinct composition with the
-  HUD moved into the reclaimed space. They are not the same game.
+- **Concept:** how the game fills a landscape tablet. Portrait is out of scope,
+  so the question narrows to what the extra *width* carries at 3:2 and 19.5:9 —
+  more world ahead of the player, or a wider safe frame with the HUD moved
+  outboard. Draw both; they read very differently at speed.
 - **Concept:** the control scheme. Fewer, larger, icon-only, one-thumb
   reachable, with the pressed state visible to a child who cannot see their own
   thumb. Gestures where they genuinely beat a button. Haptics on every state
@@ -131,9 +193,14 @@ a config flag.
 - Implement scaling, then controls.
 - **Gate:** B1, B3, B4, B5, B10 pass on all four device profiles.
 
-*Watch out:* changing the camera's vertical extent changes what every level
-looks like, and `level_compiler.ts` derives map height from the spec. This is
-the most likely phase to invalidate existing content — decide it before Phase 5.
+*Watch out:* changing the camera's horizontal extent changes how much of a level
+is visible at once, which changes jump readability and enemy warning time.
+`level_compiler.ts` derives map size from the spec, so this is still the phase
+most likely to invalidate content — settle it before Phase 5.
+
+*Also:* a landscape-only game must handle being held in portrait. A rotate
+prompt is part of this phase, not an afterthought, and it is the first thing a
+child sees if they pick the tablet up the wrong way.
 
 ### Phase 2 — The screen flow
 
@@ -145,17 +212,28 @@ different visual language from the game they wrap.
   reading anything.
 - **Gate:** B6, B7, B8 across all five screens in all five worlds.
 
-### Phase 3 — Art production
+### Phase 3 — Art production — **the user draws it**
 
-The 91 files in `ASSET_MANIFEST.md`, in its priority order. The manifest already
-carries sizes, destinations, wiring targets and the geometry contract.
+The art is **not mine to make**. My job in this phase is that the contract an
+artist works against is correct, complete and impossible to misread — and the
+one time I got that wrong it would have cost a hundred wasted tiles (the manifest
+claimed a 320×320 sheet with a nine-tile order; the compiler places three tiles
+on a 128×128 sheet).
 
-Order within the phase: tilesets (replace the placeholders), parallax, hero
-animation set and scarf, the four Muddle species, chain links, maths-window
-nine-slice, themed UI sprites.
+So this phase is, for me:
+
+- Keep `ASSET_MANIFEST.md` exact: sizes, destinations, wiring target, seam
+  constraints, and the non-figurative rule for organic materials.
+- Make every drop-in path work with **no code change** — the tileset manifest
+  already does this; the maths-board nine-slice does not yet and needs
+  `MathBoard.drawBoardBackground()` to accept a texture with a `Graphics`
+  fallback.
+- Provide a **preview harness**: drop a PNG in, see it in all five worlds in the
+  running game, without hand-wiring.
+- Verify each delivered asset against the contract and against B8.
 
 - **Gate:** every `tileset_manifest.json` entry reads `"source": "authored"`;
-  B8 holds; `tools/gen_tilesets.mjs` can be deleted.
+  B8 holds in both runtimes; `tools/gen_tilesets.mjs` is deleted.
 
 ### Phase 4 — Audio
 
@@ -181,20 +259,25 @@ nine-slice, themed UI sprites.
 - Frame budget: particle caps, tween counts, draw calls on the throttled profile.
 - **Gate:** B2 and B9 pass with the full art load in.
 
-### Phase 7 — The Godot decision
+### Phase 0b — Close the Godot divergence
 
-The port has none of the last five commits and cannot be exercised from this
-container. It is drifting further every phase.
+Promoted out of Phase 7, because the port is current (§2a) and every phase after
+this one costs double if the backlog is still open when it starts.
 
-This is **a decision, not a task**: either the port is current and every phase
-lands twice, or it is declared non-current in `README.md` and the parity tests
-retire with it. Deciding late is the expensive option.
+Port the table in §2a in that order, running `run_tests.sh` after each. Extend
+the suite where the web side gained behaviour the port cannot currently assert —
+the owl roster, the streak, the wrong-answer timing.
+
+- **Gate:** `run_tests.sh` green, `owl_probe` solving one problem, and the five
+  worlds visibly themed in the Godot build.
 
 ---
 
 ## 5. What blocks what
 
 - Phase 0 blocks everything. Every later gate is measured by it.
+- Phase 0b should finish before Phase 1, or Phase 1 lands on a port that is
+  already ten changes behind and the merge gets worse.
 - Phase 1 blocks Phase 5: the camera's vertical extent decides level geometry.
 - Phase 1 blocks Phase 2: screen layout depends on the aspect-ratio answer.
 - Phase 3 is independent of 1 and 2 and can run in parallel, one file per PR.
@@ -203,14 +286,18 @@ retire with it. Deciding late is the expensive option.
 
 ---
 
-## 6. Open decisions
+## 6. Decisions
 
-These are the user's, and three of them gate work:
+**Settled 2026-08-24:**
 
-1. **Portrait, landscape, or both?** Both is the award answer and roughly doubles
-   Phase 1 and 2. Landscape-only with a rotate prompt is defensible for a
-   platformer and much cheaper. **Gates Phase 1.**
-2. **Godot: current or retired?** **Gates Phase 7, taxes every phase until answered.**
-3. **Who draws the art?** The manifest is written for a human tile artist.
-   Generated placeholders got to ~6/10 and will not get much further.
-4. Is the five-level progression the shipping scope, or a vertical slice?
+1. **Landscape only.** Portrait is out of scope; a rotate prompt is in scope, in
+   Phase 1. B1 is measured in landscape only.
+2. **The Godot port is current and needed.** Every phase lands twice; §2a is the
+   standing rule and Phase 0b clears the existing debt.
+3. **The user draws the art.** Phase 3 is contract, tooling and verification on
+   my side — no generated art beyond the placeholders already in.
+
+**Still open:**
+
+4. Is the five-level progression the shipping scope, or a vertical slice for a
+   larger game? It changes how much Phase 5 invests in each world.
