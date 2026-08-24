@@ -375,6 +375,17 @@ function formatArithmeticPrompt(variant: string, left: number, operator: string,
             return `${left} ${operator} ${right} =`;
         case 'quick_check':
             return `Quick check: ${left} ${operator} ${right}`;
+        // Worded prompts: every shape here must have a matching pattern in
+        // src/math/wordedArithmetic.ts so steps, traits, replay keys, and the
+        // verifier can re-derive the underlying fact from the text.
+        case 'story_find':
+            return `You have ${left} berries. You find ${right} more. How many berries?`;
+        case 'story_land':
+            return `${left} birds sit on a branch. ${right} more land. How many birds?`;
+        case 'story_eat':
+            return `You have ${left} berries. You eat ${right}. How many are left?`;
+        case 'story_fly':
+            return `${left} birds sit on a branch. ${right} fly away. How many are left?`;
         default:
             return `${left} ${operator} ${right} = ?`;
     }
@@ -434,8 +445,8 @@ function applyPromptLeadIn(text: string, leadIn?: string): string {
 
 function withFallbackVariants(kind: AuthoringTemplateKind, promptVariants: string[]): string[] {
     const fallbackByKind: Record<AuthoringTemplateKind, string[]> = {
-        addition: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check'],
-        subtraction: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check'],
+        addition: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check', 'story_find', 'story_land'],
+        subtraction: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check', 'story_eat', 'story_fly'],
         multiplication: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals'],
         division: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals'],
         counting: ['count', 'how_many', 'count_them'],
@@ -469,9 +480,21 @@ function buildOptions(correct: number, preferred: number[]): number[] {
         }
     }
 
-    return Array.from(options)
+    const finalOptions = Array.from(options)
         .sort((left, right) => left - right)
         .slice(0, 4);
+
+    // Deterministic per-problem shuffle: the old ascending order put the
+    // correct answer in a predictable slot (62% last position across the
+    // pool), which kids learn to exploit on any surface that renders data
+    // order. Seeded by the option values so regeneration stays stable.
+    const rng = createSeededRandom(stableHash(`options|${correct}|${finalOptions.join(',')}`));
+    for (let i = finalOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [finalOptions[i], finalOptions[j]] = [finalOptions[j], finalOptions[i]];
+    }
+
+    return finalOptions;
 }
 
 function buildArithmeticOptions(kind: ArithmeticTemplateSpec['kind'], left: number, right: number, correct: number): number[] {
@@ -641,7 +664,19 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
                 : normalizedProgress(correct, [0, Math.max(correct, 1)]);
             const complexity = clamp((complexityOperand * 0.7) + (complexityResult * 0.3), 0, 1);
 
+            // Steps 0-2 belong to brand-new readers: keep the framing to the
+            // bare equation and the simplest question form so the words never
+            // add load on top of the math.
+            const maxOperandValue = Math.max(left, right);
+            const plainOnly = template.kind === 'addition'
+                ? maxOperandValue <= 3
+                : template.kind === 'subtraction' && maxOperandValue <= 7;
+
             for (const variant of promptVariants) {
+                if (plainOnly && variant !== 'equation' && variant !== 'question') continue;
+                // Story shapes need both quantities present to read naturally.
+                if (variant.startsWith('story_') && (left < 1 || right < 1)) continue;
+
                 const promptText = applyPromptLeadIn(formatArithmeticPrompt(variant, left, operator, right), template.promptLeadIn);
                 candidates.push({
                     values: { left, right, correct },
@@ -1654,7 +1689,9 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                     profileGrade -= 2;
                 }
 
-                const allowedStep = LearnerStateManager.getInstance().getCurrentStep(problem.domain);
+                // The live selector may serve one step above current via the
+                // gated stretch lane, so the rail is currentStep + 1.
+                const allowedStep = LearnerStateManager.getInstance().getCurrentStep(problem.domain) + 1;
                 if (problem.curriculumStep > allowedStep || problem.curriculumStep > owlConfig.maxCurriculumStep) {
                     selectorCapBreaches++;
                     profileGrade -= 1.5;
@@ -1706,9 +1743,9 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                 profileGrade -= 1;
             }
 
-            if (owlSurface.currentInteractionProblemCount === 1) {
-                profileGrade -= profile.name === 'depth_probe' ? 0.4 : 0.2;
-            }
+            // One problem per owl encounter is the deliberate baseline (a
+            // future gated NPC may raise problemCount), so interaction length
+            // is no longer graded.
 
             if ((owlSurface.owlAdditionByStep[0]?.uniqueFactCount ?? 0) < 3) {
                 profileGrade -= profile.name === 'depth_probe' ? 0.5 : 0.3;

@@ -69,5 +69,14 @@
   "level.level_02.name": "Kristalshellir",
   "level.level_03.name": "Sólríkt engi",
   "level.level_04.name": "Mosabrú",
-  "level.level_05.name": "Trjátoppaslóð"
+  "level.level_05.name": "Trjátoppaslóð",
+  "math.step_up": "Næsta stig! {0}",
+  "domain.addition": "Samlagning",
+  "domain.subtraction": "Frádráttur",
+  "domain.multiplication": "Margföldun",
+  "domain.division": "Deiling",
+  "domain.counting": "Talning",
+  "domain.comparison": "Samanburður",
+  "domain.pattern_matching": "Mynstur",
+  "domain.number_sequence": "Talnarunur"
 }

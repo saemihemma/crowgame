@@ -1,4 +1,5 @@
 import type { MathProblem } from '../utils/Types';
+import { parseWordedArithmetic } from './wordedArithmetic';
 
 type ParsedArithmetic = {
     left: number;
@@ -12,7 +13,11 @@ function normalizeText(text: string): string {
 
 function parseArithmetic(text: string): ParsedArithmetic | null {
     const match = normalizeText(text).match(/(\d+)\s*([+\-×÷])\s*(\d+)/);
-    if (!match) return null;
+    if (!match) {
+        // Word problems carry no operator symbol; they map to the same
+        // underlying fact so wording variants share one replay key.
+        return parseWordedArithmetic(text);
+    }
 
     return {
         left: Number(match[1]),

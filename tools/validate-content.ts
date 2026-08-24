@@ -509,6 +509,46 @@ if (existsSync(mathDir)) {
 
 validateMathAuthoringFiles();
 
+// Godot data parity: the Godot port ships its own copy of the math pools and
+// serves them to the deployed export. A drifted copy means the live game and
+// the web game answer from different inventories — the exact bug that let the
+// deployment fall a full content generation behind.
+function validateGodotMathDataSync(): void {
+    const godotMathDir = join(__dirname, '..', 'godot', 'data', 'math');
+    if (!existsSync(mathDir) || !existsSync(godotMathDir)) return;
+    for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+        const godotPath = join(godotMathDir, file);
+        if (!existsSync(godotPath)) {
+            console.error(`  FAIL: godot/data/math/${file} is missing; copy it from public/data/math.`);
+            errors++;
+            continue;
+        }
+        const webContent = readFileSync(join(mathDir, file), 'utf-8');
+        const godotContent = readFileSync(godotPath, 'utf-8');
+        if (webContent !== godotContent) {
+            console.error(`  FAIL: godot/data/math/${file} differs from public/data/math/${file}. Copy the regenerated pool over so the deployed Godot export serves the same problems.`);
+            errors++;
+        } else {
+            validated++;
+        }
+    }
+
+    // The NPC registry carries the owl's math config (domains, difficulty
+    // band, problemCount) — a drifted copy means the two ports run different
+    // encounters. This is how the Godot owl kept an old difficulty band.
+    const webRegistry = join(DATA_DIR, 'npcs', 'npc_registry.json');
+    const godotRegistry = join(__dirname, '..', 'godot', 'data', 'npcs', 'npc_registry.json');
+    if (existsSync(webRegistry) && existsSync(godotRegistry)) {
+        if (readFileSync(webRegistry, 'utf-8') !== readFileSync(godotRegistry, 'utf-8')) {
+            console.error('  FAIL: godot/data/npcs/npc_registry.json differs from public/data/npcs/npc_registry.json. Sync them so both ports run the same owl config.');
+            errors++;
+        } else {
+            validated++;
+        }
+    }
+}
+validateGodotMathDataSync();
+
 // Cross-reference validation
 validateCrossReferences();
 validateCompiledLevels();

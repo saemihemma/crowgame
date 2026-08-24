@@ -212,8 +212,7 @@ async function runSmoke() {
         // and variable enough by problem type -- that a single click 700ms later
         // was simply swallowed. Because problem selection is non-deterministic,
         // that made this smoke pass or fail by draw. Retry the correct answer
-        // until the completion actually registers; the assertion below (a
-        // distinct second problem must follow) is unchanged.
+        // until the completion actually registers.
         {
             const RETRY_INTERVAL_MS = 750;
             const RETRY_TIMEOUT_MS = 15_000;
@@ -233,43 +232,25 @@ async function runSmoke() {
             }
         }
 
-        stage = 'wait_for_second_problem';
-        lastStage = stage;
-        await page.waitForFunction(
-            firstProblemId => {
-                const smoke = window.__crowMathSmoke;
-                const state = smoke?.getMathState?.();
-                const completions = smoke?.getCompletionHistory?.() ?? [];
-                return completions.length >= 1 && Boolean(state) && state.problemId !== firstProblemId;
-            },
-            firstState.problemId,
-            { timeout: 8_000 },
-        );
-
-        const secondState = await getMathState(page);
-        if (!secondState || secondState.problemId === firstState.problemId) {
-            throw new Error('Did not reach a distinct second math problem');
-        }
-        await page.waitForTimeout(600);
-        stage = 'screenshot_second_problem';
-        lastStage = stage;
-        await saveScreenshot(page, 'math-second');
-
-        stage = 'click_second_correct_answer';
-        lastStage = stage;
-        await clickOption(page, secondState.correctAnswer);
-        stage = 'wait_for_overlay_close_after_second';
+        // Baseline owl asks exactly one problem: after the correct answer the
+        // overlay closes and the encounter is over. A future gated NPC can
+        // raise problemCount, at which point this smoke needs a follow-up leg.
+        stage = 'wait_for_overlay_close_after_first';
         lastStage = stage;
         await page.waitForFunction(
             () => {
                 const smoke = window.__crowMathSmoke;
                 const completions = smoke?.getCompletionHistory?.() ?? [];
                 const state = smoke?.getMathState?.();
-                return completions.length >= 2 && !state;
+                return completions.length >= 1 && !state;
             },
             undefined,
             { timeout: 8_000 },
         );
+
+        stage = 'screenshot_after_encounter';
+        lastStage = stage;
+        await saveScreenshot(page, 'math-second');
 
         const completions = await getCompletions(page);
         const finalState = await getMathState(page);
@@ -278,8 +259,8 @@ async function runSmoke() {
 
         const gateChecks = {
             wrongAttemptRegistered: (afterWrongState?.wrongAttempts ?? 0) >= 1,
-            secondProblemReached: secondState.problemId !== firstState.problemId,
-            completionCountReached: completions.length >= 2,
+            singleProblemEncounter: completions.length === 1,
+            completionCountReached: completions.length >= 1,
             finalOverlayClosed: finalState === null,
             consoleClean: consoleErrors.length === 0,
             pageClean: pageErrors.length === 0,
@@ -292,7 +273,7 @@ async function runSmoke() {
             reviewedAt: new Date().toISOString(),
             baseUrl: BASE_URL,
             viewport: VIEWPORT,
-            whatThisIs: 'Literal browser-backed smoke for the live owl interaction, MathChallengeScene input, wrong-answer retry, second-problem follow-up, and completion flow.',
+            whatThisIs: 'Literal browser-backed smoke for the live owl interaction, MathChallengeScene input, wrong-answer retry, and the single-problem completion flow.',
             whatThisIsNot: 'Not telemetry-backed pedagogy proof, not an empirical ELO calibration study, and not broad cross-session child replayability evidence.',
             clearedKeyCount: clearedKeys.length,
             firstPrompt: firstState.prompt,
@@ -300,8 +281,7 @@ async function runSmoke() {
             firstCorrectAnswer: firstState.correctAnswer,
             wrongOptionClicked: wrongOption,
             wrongAttemptRegistered: gateChecks.wrongAttemptRegistered,
-            secondPrompt: secondState.prompt,
-            secondProblemId: secondState.problemId,
+            singleProblemEncounter: gateChecks.singleProblemEncounter,
             completionCount: completions.length,
             completionHistory: completions,
             finalOverlayClosed: gateChecks.finalOverlayClosed,

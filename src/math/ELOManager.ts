@@ -8,9 +8,13 @@
  * - Global ELO: Overall math ability (100-1200 range)
  * - Domain Modifiers: Per-domain adjustments (-100 to +100)
  * - Effective ELO = Global ELO + Domain Modifier
- * - K-Factor: Very slow (4 → 3 → 2) for gentle progression with lots of repetition
+ * - K-Factor: 16 → 12 → 8 so mastery visibly tracks real performance
  * - 70/30 Split: 70% of rating change goes to global, 30% to domain modifier
- * - Delta Cap: +8 / -12 so one answer never swings mastery too far
+ * - Delta Cap: +8 / -8 so one answer never swings mastery too far
+ *
+ * Note: difficulty selection is driven by the curriculum step ladder in
+ * LearnerStateManager, not by this rating. ELO is the long-term mastery
+ * signal used for review anchoring, summaries, and sync.
  */
 
 import { PlayerELOStats, ELOUpdateResult, MathDomain } from '../utils/Types';
@@ -72,13 +76,14 @@ export class ELOManager {
 
     /**
      * Get K-factor based on player experience.
-     * Very slow progression for young kids — lots of repetition before advancing.
-     * ~50-80 correct answers to move up one difficulty tier.
+     * Higher while calibrating a new learner, then settles. With the old
+     * 4/3/2 values the ±8 delta caps could never bind and mastery barely
+     * moved over a whole session.
      */
     private getKFactor(problemsAttempted: number): number {
-        if (problemsAttempted < 50) return 4;    // Gentle calibration
-        if (problemsAttempted < 200) return 3;   // Slow adjustment
-        return 2;                                 // Very stable
+        if (problemsAttempted < 30) return 16;   // Calibration
+        if (problemsAttempted < 150) return 12;  // Adjustment
+        return 8;                                // Stable
     }
 
     /**
@@ -93,7 +98,7 @@ export class ELOManager {
         const expected = this.calculateExpectedScore(effectiveELO, problemELO);
         const K = this.getKFactor(this.playerStats.problemsAttempted);
         const rawChange = K * (actualScore - expected);
-        const totalChange = Math.max(-12, Math.min(8, rawChange));
+        const totalChange = Math.max(-8, Math.min(8, rawChange));
 
         // Split change: 70% global, 30% domain modifier
         const globalChange = totalChange * 0.7;

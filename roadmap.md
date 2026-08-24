@@ -137,6 +137,66 @@ mid-row. Snapping may read better for young players; it may also feel fighty.
 
 ## P3 — Content and localisation
 
+### Visual and richer worded prompts
+Addition and subtraction now carry two word-problem shapes each (berries,
+birds), gated to steps 3+. Still open: more story families and objects so the
+wording doesn't wear out, worded shapes for comparison and sequences, and
+visual prompts via the unused `prompt.assets` field (picture-group addition in
+the spirit of counting's dot strings). Every new worded shape needs a matching
+pattern in `src/math/wordedArithmetic.ts` — that table is what keeps steps,
+traits, and replay keys honest.
+
+### Misconception tags are authored but nothing consumes them
+Every problem carries `misconceptionTags` (off-by-one, counting-back errors,
+…) and MCQ distractors are constructed, yet the runtime never looks at *which*
+wrong option a child picked. Mapping distractor → misconception in
+`ELOUpdateManager` would let review items target the actual confusion instead
+of just the skill, and let hints speak to the specific error.
+
+### Response time is recorded but unused as a learning signal
+`responseMs` is now honest time-to-first-answer, but nothing distinguishes
+fluent-correct from slow-correct. At fact-practice steps, fluency (fast and
+right) is the real mastery bar — consider a soft fluency component in the
+promotion gate, and retune the frustration `responseTimeSpike` threshold in
+`LearnerStateManager.buildSummary` against real session data.
+
+### Within-lane selection is uniform random and problem ELO never learns
+`ELOAwareStrategy` picks uniformly inside the chosen lane; the effective
+selection ELO it computes is unused. Weighting lane candidates toward the
+learner's edge would sharpen targeting inside a step. Relatedly,
+`ProblemPoolManager.updateProblemRating` records per-problem success rates but
+never adjusts `eloRating` — either calibrate item difficulty from that
+telemetry or rename the method to what it does.
+
+### Review backlog has no decay or cap policy
+`day_1`/`day_3`/`day_7` review items assume steady play. A child who skips a
+week comes back to a stacked, all-due backlog that crowds the 20-25% review
+lane for a long stretch. Decide a cap per domain and a staleness policy in
+`LearnerStateManager.applyReviewUpdate` / `getDueReviewItems`.
+
+### Difficulty scalar and curriculum step are two separate scales
+`difficulty` comes from authoring band ELO targets, `curriculumStep` from the
+structural derivation in `tools/math_curriculum.ts`; the owl's difficulty band
+filter sits on the first while the ladder climbs the second, which is how
+comparison got stalled before the band was widened. Unify: derive `difficulty`
+from the derived step (one source of truth), or drop the difficulty filter
+from the adaptive path once step data is fully trusted.
+
+### A gated "padlock owl" variant that asks for more than one answer
+The baseline owl asks exactly one problem. `problemCount` is already per-NPC
+config in `npc_registry.json` and both ports' components loop until it is met,
+so the remaining work is content and design, not plumbing: a visually distinct
+NPC variant, a registry entry with `problemCount` 2-3 and a bigger reward, and
+a decision about where it appears (level gates? bonus areas?). The
+multi-problem UI (progress header, alternate-domain follow-ups) stays dormant
+at the baseline but keeps working for any NPC that raises the count.
+
+### Multiplication and division need a fate decision
+650 authored problems sit in domains the owl never serves — not in its
+`problemTypes`, and with almost no content below step 3 (division's lowest
+band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
+the rotation for older kids, or park them explicitly in Settled.
+
 ### Four string keys are referenced by neither port
 `hud.level`, `hud.level_up`, `login.delete`, `login.delete_confirm`. Either wire
 them up or remove them from all four bundle files. Note that profile deletion

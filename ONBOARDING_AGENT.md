@@ -110,17 +110,17 @@ Snapshot as of 2026-03-24:
   - `HUDScene`
   - `MathChallengeScene`
   - `PauseScene`
-- [src/scenes/BootScene.ts](./src/scenes/BootScene.ts) loads 4 math pools totaling 3000 problems:
+- [src/scenes/BootScene.ts](./src/scenes/BootScene.ts) loads 4 math pools totaling 3150 problems:
   - `easy`: 15
   - `dataset`: 40
   - `gaps`: 60
-  - `curriculum`: 2885
+  - `curriculum`: 3035
 - [public/data/levels/level_registry.json](./public/data/levels/level_registry.json) contains 6 levels, including `level_99`.
 - [public/data/npcs/npc_registry.json](./public/data/npcs/npc_registry.json) contains 1 NPC entry.
 - [public/data/enemies/enemy_registry.json](./public/data/enemies/enemy_registry.json) contains 1 enemy type.
 - [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) currently exposes 5 music tracks and 15 live SFX entries.
 - Math UI is currently MCQ-only in [src/ui/components/MathBoard.ts](./src/ui/components/MathBoard.ts).
-- The shipped owl path is a smaller local-safe subset of that inventory, not the whole `3000`; use `reports/math-batches/owl-surface-summary.json` for the owl-safe inventory and fresh-profile subset, not just the full runtime headline.
+- The shipped owl path is a smaller local-safe subset of that inventory, not the whole `3150`; use `reports/math-batches/owl-surface-summary.json` for the owl-safe inventory and fresh-profile subset, not just the full runtime headline.
 
 This is the only canonical numeric snapshot block in the current docs. Refresh it whenever scene count, level count, pool count, or live manifest counts change.
 
@@ -145,7 +145,7 @@ This is the only canonical numeric snapshot block in the current docs. Refresh i
    - `ELOAwareStrategy` only serves easier, review, or current-step problems for the owl path
    - the local owl path currently caps `maxOperand` at `20`
    - opening unlocked domains currently `addition` plus `counting`; the fresh opening owl path is addition-first, and `pattern_matching` is owl-safe overall but unlocks later via the normal domain-stability rules
-   - the shipped owl path serves `2` problems per encounter
+   - the shipped owl path serves `1` problem per encounter
 4. Boot routes to:
    - `LoginScene` if there is no active profile
    - `MainMenuScene` if there is an active profile
@@ -178,12 +178,12 @@ Math authoring report boundaries:
 - It is not empirical proof that the frozen ELO bands are perfect for every child.
 - Use `reports/math-batches/runtime-selector-smoke.json` for the current runtime-aligned owl selector smoke, not just the batch proxy reviews.
 - Use `reports/math-batches/runtime-browser-smoke.json` for the literal browser-backed owl/math scene smoke.
-- Use `reports/math-batches/owl-surface-summary.json` when you need the current owl-safe subset, not the full-repo `3000` inventory count.
+- Use `reports/math-batches/owl-surface-summary.json` when you need the current owl-safe subset, not the full-repo `3150` inventory count.
 - `openingUnlockedInventory*` means unlocked-domain inventory before current-step clamping.
 - `freshReachable*` means the real fresh-profile day-one reachable subset after current-step clamping.
-- Current shipped owl interaction length is `2` problems per owl encounter, and the follow-up problem now prefers an alternate unlocked domain before falling back to the full owl-safe set.
+- Current shipped owl interaction length is `1` problem per owl encounter (`problemCount` is per-NPC config, so a future gated NPC can ask more); when an NPC asks several, follow-ups prefer an alternate unlocked domain.
 - That selector smoke is selection-layer evidence built from the shared owl helper plus live learner-state and NPC config; it is not full browser or scene-flow proof by itself.
-- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the live owl interaction, wrong-answer retry, second-problem follow-up, and overlay close path.
+- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the live owl interaction, wrong-answer retry, and the single-problem completion-and-close path.
 - `runtime-browser-smoke.json` is not telemetry-backed pedagogy proof and not an independent calibration study for the frozen ELO bands.
 
 ## Live Vs Generated Vs Archived

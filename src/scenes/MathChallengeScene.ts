@@ -32,6 +32,7 @@ export class MathChallengeScene extends Phaser.Scene {
     private coinsReward = 1;
     private wrongAttempts = 0;
     private presentedAt = 0;
+    private firstResponseMs = 0;
 
     // NPC header elements
     private headerContainer!: Phaser.GameObjects.Container;
@@ -58,6 +59,7 @@ export class MathChallengeScene extends Phaser.Scene {
         this.coinsReward = data.coinsReward ?? 1;
         this.wrongAttempts = 0;
         this.presentedAt = Date.now();
+        this.firstResponseMs = 0;
 
         // Pause the game scene and let the challenge own the screen.
         this.scene.pause(SCENES.GAME);
@@ -175,6 +177,12 @@ export class MathChallengeScene extends Phaser.Scene {
         selectedAnswer: number;
         isCorrect: boolean;
     }): void => {
+        // Time-to-first-answer, captured at the tap so the celebration and
+        // teaching delays below never inflate the telemetry.
+        if (this.firstResponseMs === 0) {
+            this.firstResponseMs = Date.now() - this.presentedAt;
+        }
+
         EventBus.emit(GameEvents.MATH_ANSWER_SUBMITTED, result);
 
         if (result.isCorrect) {
@@ -187,7 +195,7 @@ export class MathChallengeScene extends Phaser.Scene {
                     firstAttempt,
                     reward: this.coinsReward,
                     hintsUsed: this.currentProblem.hint && this.wrongAttempts > 0 ? 1 : 0,
-                    responseMs: Date.now() - this.presentedAt,
+                    responseMs: this.firstResponseMs,
                     wrongAttempts: this.wrongAttempts,
                 });
                 this.closeMathChallenge();
@@ -195,15 +203,17 @@ export class MathChallengeScene extends Phaser.Scene {
         } else {
             this.wrongAttempts++;
             if (this.wrongAttempts >= 2) {
-                // Second failure — dismiss the overlay
-                this.time.delayedCall(800, () => {
+                // Second miss: teach before dismissing — show the correct
+                // answer with its explanation, and give time to absorb it.
+                this.mathBoard.revealAnswer();
+                this.time.delayedCall(3000, () => {
                     EventBus.emit(GameEvents.MATH_CHALLENGE_COMPLETE, {
                         problemId: result.problemId,
                         correct: false,
                         firstAttempt: false,
                         reward: 0,
                         hintsUsed: this.currentProblem.hint && this.wrongAttempts > 0 ? 1 : 0,
-                        responseMs: Date.now() - this.presentedAt,
+                        responseMs: this.firstResponseMs,
                         wrongAttempts: this.wrongAttempts,
                     });
                     this.closeMathChallenge();

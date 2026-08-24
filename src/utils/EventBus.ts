@@ -10,6 +10,7 @@ export const GameEvents = {
     MATH_PROBLEM_PRESENTED: 'math-problem-presented',
     MATH_ANSWER_SUBMITTED: 'math-answer-submitted',
     MATH_CHALLENGE_COMPLETE: 'math-challenge-complete',
+    CURRICULUM_STEP_UP: 'curriculum-step-up',
 
     // Player
     PLAYER_DIED: 'player-died',
