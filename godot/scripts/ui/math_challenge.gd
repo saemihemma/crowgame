@@ -9,12 +9,27 @@ extends CanvasLayer
 signal closed
 
 # Timings come from data/tuning/ui_tuning.json (Config.ui("math_challenge/...")).
-@onready var CORRECT_DELAY: float = Config.ui("math_challenge/correct_delay", 1.5)
+# Answer-feedback pacing comes from data/tuning/math_tuning.json, beside every
+# other tunable math-experience number, rather than from ui_tuning.json. The
+# retry lockout in particular was 600ms, which is shorter than the feedback it is
+# meant to cover: the wrong-answer tint, the hint fading in and the retry chime
+# all outlast it, so the board re-enabled underneath its own animation.
+@onready var CORRECT_DELAY: float = _feedback_ms("correctCloseMs", 1500.0) / 1000.0
 @onready var FAIL_DELAY: float = Config.ui("math_challenge/fail_delay", 0.8)
-@onready var RETRY_LOCKOUT: float = Config.ui("math_challenge/retry_lockout", 0.6)
+@onready var RETRY_LOCKOUT: float = _feedback_ms("retryLockoutMs", 900.0) / 1000.0
 # After the final miss the correct answer is revealed with its explanation;
 # hold long enough for a young reader to absorb it (MathChallengeScene.ts: 3s).
-@onready var TEACH_DELAY: float = Config.ui("math_challenge/teach_delay", 3.0)
+@onready var TEACH_DELAY: float = _feedback_ms("revealCloseMs", 3000.0) / 1000.0
+
+
+static func _feedback_ms(key: String, fallback: float) -> float:
+	var tuning: Dictionary = DataManager.get_dict("MATH_TUNING")
+	var feedback: Variant = tuning.get("feedback", {})
+	if feedback is Dictionary:
+		return float((feedback as Dictionary).get(key, fallback))
+	return fallback
+
+
 
 var current_problem: Dictionary = {}
 var _coins_reward := 1
@@ -125,7 +140,10 @@ func submit_answer(index: int) -> void:
 		else:
 			# First wrong: show the authored hint and pause briefly before the
 			# retry (MathBoard re-enables after 600ms — anti-spam pacing).
-			_show_hint(String(current_problem.get("hint", "")))
+			# Through _localised(), not the raw field: an Icelandic player was
+			# getting the English hint at exactly the moment they needed help
+			# most. The reveal path below had been localised; this one was missed.
+			_show_hint(_localised("hint"))
 			_set_buttons_enabled(false)
 			get_tree().create_timer(RETRY_LOCKOUT).timeout.connect(
 				_reenable_for_retry, CONNECT_ONE_SHOT)
@@ -323,9 +341,25 @@ func _build_pips() -> Control:
 		row.add_child(pip)
 	return row
 
+## Disabled options have to LOOK disabled.
+##
+## Godot greys a disabled Button through its theme, but these carry a StyleBoxFlat
+## override per state, so the disabled look never showed: the options stayed fully
+## lit and tappable-looking while input was held, and a child who tapped again got
+## silence with no reason for it.
+##
+## `self_modulate`, NOT `modulate`. UiFx.attach_focus_highlight tweens `modulate`
+## on focus and back to Color.WHITE on blur, so dimming through the same property
+## left the focused option lit while its three neighbours faded -- caught by
+## test_answer_feedback.gd as "3 dimmed, 1 still lit". The two properties
+## multiply, so on separate ones they compose instead of fighting.
+const LOCKED_ALPHA := 0.45
+
+
 func _set_buttons_enabled(enabled: bool) -> void:
 	for b in _buttons:
 		b.disabled = not enabled
+		b.self_modulate = Color(1, 1, 1, 1.0 if enabled else LOCKED_ALPHA) # hardcode-ok
 
 func _close() -> void:
 	closed.emit()

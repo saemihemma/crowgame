@@ -42,19 +42,6 @@ there.
 
 ## P1 — Correctness and reachability
 
-### `output/web/` is a hand-built artifact on the deploy path
-`railway.json` -> `deploy/web/Dockerfile` copies the committed `output/web`
-straight into Caddy, so **whatever is in that directory is the live game**. It is
-produced by running `bash godot/tools/build_web.sh` locally and committing a
-23MB pack plus a 35MB wasm. Nothing checks that it matches `godot/**`, so the
-deployment silently drifted behind the source for an entire feature's worth of
-work.
-
-*Done when:* either CI rebuilds and commits (or publishes) the export when
-`godot/**` changes, or `npm run validate` fails when `output/web/index.pck` is
-older than the newest file under `godot/`. A staleness check is the cheap
-version and would have caught this.
-
 ### Confirm the intended level unlock chain
 On a fresh save only two of six levels are selectable (`level_99` and
 `level_01`); 3–6 show as locked. That is consistent with
@@ -104,15 +91,6 @@ TouchScreenButton, which is a harness limitation and not evidence either way.
 says whether the crow moves. If it does not, the fallback is to hide the controls
 unless `DisplayServer.is_touchscreen_available()`, so desktop players are not
 shown dead buttons.
-
-### The post-wrong-answer input lockout is long and inconsistent
-After a wrong answer the math board ignores input for roughly three to four
-seconds while the retry feedback plays, and the duration varies by problem type.
-The option buttons stay fully lit and tappable-looking throughout, so a child who
-retries immediately gets silence. This is what made the browser smoke flaky.
-
-*Done when:* the lockout has one deliberate duration, and the options visibly
-show they are not accepting input while it runs.
 
 ### Level select does not snap to rows
 `ScrollList` has momentum, clamping and a peeking next row, but a flick can rest
@@ -264,6 +242,18 @@ tone.
 Closed decisions, kept here so they are not re-litigated. **This is not a list
 of completed tasks.** Do not add finished work here.
 
+- **The committed Godot export is checked by CONTENT, never by timestamp.** git
+  does not preserve mtimes, so "is the pack older than godot/**" is noise in a
+  fresh clone. `godot/tools/build_web.sh` records a sha256 of its inputs into
+  `output/web/build_fingerprint.json` and `npm run validate` recomputes it.
+  Content addressing (`index.<buildId>.pck`) busts caches and does NOT catch
+  staleness: an export built from old sources still gets a valid name.
+- **Answer-feedback pacing lives in `data/tuning/math_tuning.json`.** It was
+  hardcoded in one port and in `ui_tuning.json` in the other, so the two
+  disagreed about how long a child waits after a miss.
+- **A held control must look held.** The options dim to 0.45 while input is
+  locked out. Use `self_modulate`, not `modulate` -- the focus highlight owns
+  `modulate` and will otherwise leave the focused option lit.
 - **The `crow_*` localStorage keys keep the old name** (`crow_profiles`,
   `crow_save_<user>`, `crow_locale`, `crow_active_user`, `crow_family_id`, the
   learner-sync keys). Renaming them would orphan every existing player's
