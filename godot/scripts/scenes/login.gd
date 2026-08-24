@@ -4,12 +4,17 @@ extends Control
 ## ELO/learner managers, then routes to the main menu. Uses the tested
 ## ProfileManager for all profile/PIN logic.
 
-const LIST_TOP_MARGIN := 24.0
-const LIST_BOTTOM_MARGIN := 16.0
+## Clears the language chips in the top-right corner. Kept as tight as that
+## allows: the create-a-player step is the tallest sub-state and every pixel
+## spent here pushed its last button off the bottom of a 540-tall screen.
+const LIST_TOP_MARGIN := 60.0
+const LIST_BOTTOM_MARGIN := 10.0
 
 const PIN_DOT_COUNT := 4
 const PIN_DOT_SIZE := 22.0
-const PIN_DOT_GAP := 12
+const PIN_DOT_GAP := 14
+const PIN_FIELD_WIDTH := 240.0
+const PIN_FIELD_HEIGHT := 60.0
 
 var _selected_user := ""
 var _scroll: ScrollContainer
@@ -22,6 +27,7 @@ func _ready() -> void:
 	# Painted world behind the sign-in, not the project's flat clear colour. This
 	# is the first screen anyone ever sees and it was a blue page with a grey
 	# rectangle on it (brand/BRAND_SYSTEM.md §5.4).
+	BrandTheme.apply(self)
 	add_child(ScreenBackdrop.new())
 
 	# The profile list scrolls: laid out flat, a family with four or more
@@ -45,7 +51,7 @@ func _ready() -> void:
 	_col.alignment = BoxContainer.ALIGNMENT_CENTER
 	_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_col.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_col.add_theme_constant_override("separation", 14)
+	_col.add_theme_constant_override("separation", 10)
 	_scroll.add_child(_col)
 	# Language selector sits outside `_col`, so it survives the sub-state swaps
 	# and is reachable *before* the PIN screen -- this is where a parent sets the
@@ -118,7 +124,7 @@ func _show_pin_entry(username: String) -> void:
 
 func _show_new_player() -> void:
 	_clear()
-	_title(TextManager.t("login.create_title"), 32)
+	_title(TextManager.t("login.create_title"), 34)
 	_name_edit = LineEdit.new()
 	_name_edit.placeholder_text = TextManager.t("login.name_placeholder")
 	_name_edit.max_length = 12
@@ -136,16 +142,40 @@ func _show_new_player() -> void:
 
 var _pin_dots: HBoxContainer
 
+## The PIN field and its dots are one object.
+##
+## They used to be two stacked children: an empty paper box with nothing in it
+## (the LineEdit is `secret`, so it never shows a character) and a separate row
+## of dots above it. A child saw a blank box and a row of circles and had to
+## guess which one they were filling in.
+##
+## Now the input sits behind the dots at the same size and is invisible - its
+## text, caret and background are all transparent - so the dots *are* the field.
+## Tapping anywhere on it focuses the real LineEdit underneath.
 func _make_pin_edit() -> LineEdit:
+	var frame := Control.new()
+	frame.custom_minimum_size = Vector2(PIN_FIELD_WIDTH, PIN_FIELD_HEIGHT)
+	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_col.add_child(frame)
+
 	var e := LineEdit.new()
-	e.max_length = 4
+	e.max_length = PIN_DOT_COUNT
 	e.secret = true
 	e.alignment = HORIZONTAL_ALIGNMENT_CENTER
-	e.custom_minimum_size = Vector2(160, 48)
-	e.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	# Kid-friendly PIN dots (LoginScene.ts shows filled/empty circles per digit).
+	e.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# Invisible, not hidden: a hidden LineEdit cannot take focus or a tap.
+	# Color.TRANSPARENT rather than a literal: this is the absence of a colour,
+	# not a palette choice, so it does not belong in the theme data the hardcode
+	# guard is protecting.
+	e.add_theme_color_override("font_color", Color.TRANSPARENT)
+	e.add_theme_color_override("caret_color", Color.TRANSPARENT)
+	frame.add_child(e)
+
 	_pin_dots = _make_pin_dots()
-	_col.add_child(_pin_dots)
+	_pin_dots.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_pin_dots.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_child(_pin_dots)
+
 	e.text_changed.connect(_update_pin_dots)
 	_update_pin_dots("")
 	return e
@@ -169,18 +199,22 @@ func _update_pin_dots(text: String) -> void:
 func _make_pin_dots() -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_theme_constant_override("separation", PIN_DOT_GAP)
 	for _i in PIN_DOT_COUNT:
 		var dot := Panel.new()
 		dot.custom_minimum_size = Vector2(PIN_DOT_SIZE, PIN_DOT_SIZE)
+		# Shrink-centre, or the row stretches each dot to the full height of the
+		# field it now sits inside and the circles render as tall ovals.
+		dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		dot.add_theme_stylebox_override("panel", _pin_dot_style(false))
 		row.add_child(dot)
 	return row
 
 
 func _pin_dot_style(filled: bool) -> StyleBoxFlat:
-	var colour := ThemeManager.get_color_value("paper")
+	# Ink, not paper: the dots moved inside the paper field, where a paper dot on
+	# a paper card is an invisible dot.
+	var colour := ThemeManager.get_color_value("ink")
 	var box := StyleBoxFlat.new()
 	# Corner radius at half the box size turns the square into a circle.
 	var radius := int(PIN_DOT_SIZE / 2.0)

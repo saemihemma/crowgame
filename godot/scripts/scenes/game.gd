@@ -411,8 +411,15 @@ func transition_to_level(target_level: String) -> void:
 	# Swap to the next level (deferred so we're outside the Area2D callback).
 	call_deferred("_swap_level", target_level)
 
-## Full-screen celebration when all levels are completed (GameScene.ts
-## showCompletionScreen, rebuilt with Godot UI + FX).
+## Full-screen celebration when all levels are completed.
+##
+## What this replaced: a flat `primary` green fill, a 64px "Congratulations!",
+## one 26px line reading "Owls saved: 19   Coins: 110", and two grey slabs. The
+## single biggest reward moment in the game was a receipt on a coloured page.
+##
+## The numbers a child earned are now the largest thing on the screen and they
+## roll up rather than appearing, because this screen exists to make the run feel
+## like it was worth something (§10).
 func _show_completion_screen() -> void:
 	var layer := CanvasLayer.new()
 	layer.name = "Completion"
@@ -420,52 +427,82 @@ func _show_completion_screen() -> void:
 	add_child(layer)
 	AudioManager.play_event("level_complete")
 
-	var bg := ColorRect.new()
-	bg.color = ThemeManager.get_color_value("primary")
-	bg.anchor_right = 1.0
-	bg.anchor_bottom = 1.0
-	layer.add_child(bg)
+	var root := Control.new()
+	BrandTheme.apply(root)
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(root)
+	root.add_child(ScreenBackdrop.new())
+
+	# Scrim over the backdrop: the medals and the title need a floor that does
+	# not change with whichever world the run ended in.
+	var scrim := ColorRect.new()
+	scrim.color = Color(ThemeManager.get_color_value("ink"), 0.35)
+	scrim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	scrim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(scrim)
 
 	var center := CenterContainer.new()
-	center.anchor_right = 1.0
-	center.anchor_bottom = 1.0
-	bg.add_child(center)
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(center)
 	var col := VBoxContainer.new()
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
-	col.add_theme_constant_override("separation", 24)
+	col.add_theme_constant_override("separation", 18)
 	center.add_child(col)
 
 	var title := Label.new()
 	title.text = TextManager.t("game.congratulations_title")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 64)
-	title.add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
+	title.add_theme_font_size_override("font_size", 62)
+	title.add_theme_color_override("font_color", ThemeManager.get_color_value("coin"))
+	title.add_theme_color_override("font_shadow_color", ThemeManager.get_color_value("ink"))
+	title.add_theme_constant_override("shadow_offset_x", 4)
+	title.add_theme_constant_override("shadow_offset_y", 5)
 	col.add_child(title)
 
-	var stats := Label.new()
-	var save := SaveManager.get_data()
-	stats.text = TextManager.t("game.completion_stats", [int(save.get("owlsSaved", 0)), coin_count])
-	stats.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	stats.add_theme_font_size_override("font_size", 26)
-	col.add_child(stats)
+	col.add_child(_completion_medals())
 
-	var again := Button.new()
-	again.text = TextManager.t("game.play_again")
-	again.custom_minimum_size = Vector2(280, 64)
-	again.add_theme_font_size_override("font_size", 28)
-	again.pressed.connect(func(): SceneRouter.goto("level_select"))
+	var again := BrandButton.make(TextManager.t("game.play_again"), BrandButton.Role.PRIMARY,
+		func(): SceneRouter.goto("level_select"))
+	again.custom_minimum_size.x = 320
+	again.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	col.add_child(again)
-	var menu := Button.new()
-	menu.text = TextManager.t("game.back_to_menu")
-	menu.custom_minimum_size = Vector2(280, 56)
-	menu.pressed.connect(func(): SceneRouter.goto("main_menu"))
+
+	var menu := BrandButton.make(TextManager.t("game.back_to_menu"), BrandButton.Role.GHOST,
+		func(): SceneRouter.goto("main_menu"))
+	menu.custom_minimum_size.x = 320
+	menu.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	col.add_child(menu)
-	again.grab_focus()
+	again.grab_focus.call_deferred()
 
 	# Celebration bursts, staggered like the TS version.
 	for i in int(Config.fx("completion_burst_count", 3)):
 		get_tree().create_timer(0.3 + i * 0.3).timeout.connect(
-			_completion_burst.bind(bg, Vector2(480 + (i - 1) * 150, 160)), CONNECT_ONE_SHOT)
+			_completion_burst.bind(root, Vector2(480 + (i - 1) * 150, 160)), CONNECT_ONE_SHOT)
+
+## Owls and coins as two counted-up medals rather than one line of small text.
+func _completion_medals() -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 22)
+	var save := SaveManager.get_data()
+	row.add_child(StatMedal.make(_owl_icon(), int(save.get("owlsSaved", 0)),
+		TextManager.t("game.stat_owls"), "owl"))
+	row.add_child(StatMedal.make(_coin_icon(), coin_count,
+		TextManager.t("game.stat_coins"), "coin"))
+	return row
+
+func _owl_icon() -> Texture2D:
+	return OwlRing.new()._load_icon()
+
+func _coin_icon() -> Texture2D:
+	var path := "res://assets/sprites/ui/coin/coinsprite-runtime-32.png"
+	if not ResourceLoader.exists(path):
+		return null
+	# Frame 0 of the 3x3 spin sheet; the whole sheet in one box is gold noise.
+	var frame := AtlasTexture.new()
+	frame.atlas = load(path)
+	frame.region = Rect2(0, 0, 32, 32)
+	return frame
 
 func _completion_burst(parent: Node, pos: Vector2) -> void:
 	if is_instance_valid(parent):

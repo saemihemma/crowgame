@@ -22,6 +22,8 @@ extends Node
 ##   math-wrong  the board mid-way through the wrong-answer beat
 ##   math-count  the board showing a counting problem, whose tokens are drawn
 ##               objects rather than a row of asterisks
+##   pause       the pause overlay over a live level
+##   complete    the run-complete celebration
 
 const GAME_SCENE := preload("res://scenes/Game.tscn")
 
@@ -31,6 +33,10 @@ const GAME_SCENE := preload("res://scenes/Game.tscn")
 ## sees stayed a flat blue page with a grey slab on it while the in-game HUD got
 ## three rebuilds.
 const SCREENS := ["login", "main_menu", "level_select"]
+## Screens with sub-states worth photographing on their own. The login text
+## fields only exist inside the create-a-player step, which is exactly why they
+## sat as unstyled engine defaults for so long - no shot ever contained them.
+const SCREEN_SUBSTATES := {"login-new": {"screen": "login", "method": "_show_new_player"}}
 
 ## Frames to let a level settle before capturing: spawns, tweens and the first
 ## camera lerp all need to have happened or every shot is of a half-built scene.
@@ -57,6 +63,10 @@ var _shots := 0
 var _staged := false
 
 func _ready() -> void:
+	# The pause overlay pauses the whole tree, which would stop this node's own
+	# frame loop and hang the harness. Capture keeps stepping regardless of the
+	# game's pause state - it is a camera, not a participant.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	var levels := _resolve_levels()
 	var variants := _resolve_variants()
 	if levels.is_empty() or variants.is_empty():
@@ -98,6 +108,15 @@ func _load_next() -> void:
 		return
 
 	var key := String(_jobs[_index]["level"])
+	if SCREEN_SUBSTATES.has(key):
+		var spec: Dictionary = SCREEN_SUBSTATES[key]
+		_game = load(SceneRouter.path_of(String(spec["screen"]))).instantiate()
+		add_child(_game)
+		if _game.has_method(String(spec["method"])):
+			_game.call_deferred(String(spec["method"]))
+		_frames = 0
+		_staged = false
+		return
 	if SCREENS.has(key):
 		var path := SceneRouter.path_of(key)
 		if path == "" or not ResourceLoader.exists(path):
@@ -134,7 +153,8 @@ func _physics_process(_delta: float) -> void:
 	# result to settle before the shot is taken.
 	var variant := String(_jobs[_index]["variant"])
 	# A screen has no owl to interact with; only "play" makes sense there.
-	if SCREENS.has(String(_jobs[_index]["level"])):
+	var job_key := String(_jobs[_index]["level"])
+	if SCREENS.has(job_key) or SCREEN_SUBSTATES.has(job_key):
 		variant = "play"
 	if variant != "play" and not _staged:
 		if not _stage(variant):
@@ -159,6 +179,10 @@ func _hold_frames(variant: String) -> int:
 ## Drive the game into the state this variant is meant to photograph. Returns
 ## false if the level cannot reach it (a level with no owl has no maths board).
 func _stage(variant: String) -> bool:
+	# Screens that do not need an owl are staged before one is looked for: a
+	# level with no NPC still has a pause menu and can still be completed.
+	if variant == "pause" or variant == "complete":
+		return _stage_overlay(variant)
 	var owl := _find_owl()
 	if owl == null:
 		return false
@@ -197,6 +221,14 @@ func _represent_from_domain(owl: Node2D, domain: String) -> bool:
 	})
 	return true
 
+func _stage_overlay(variant: String) -> bool:
+	var method := "_toggle_pause" if variant == "pause" else "_show_completion_screen"
+	if not _game.has_method(method):
+		printerr("[capture] Game has no %s()" % method)
+		return false
+	_game.call(method)
+	return true
+
 func _wrong_index(problem: Dictionary) -> int:
 	var answer: Dictionary = problem.get("answer", {})
 	var options: Array = answer.get("options", [])
@@ -228,6 +260,8 @@ func _capture_and_advance() -> void:
 		_shots += 1
 		print("[capture] %s-%s  %dx%d" % [job["level"], job["variant"], image.get_width(), image.get_height()])
 
+	# Leave no game paused behind: the next job gets a fresh, running tree.
+	get_tree().paused = false
 	_index += 1
 	_load_next()
 	set_physics_process(true)

@@ -21,6 +21,7 @@ const SUBTITLE_SIZE := 26
 const COLUMN_SEPARATION := 18
 
 func _ready() -> void:
+	BrandTheme.apply(self)
 	add_child(ScreenBackdrop.new())
 	_add_hero()
 

@@ -50,7 +50,6 @@
   "touch.zap": "ZAP",
   "game.oops": "Oops!",
   "game.completion_stats": "Owls saved: {0}   Coins: {1}",
-  "pause.theme": "Theme: {0}",
   "login.hi": "Hi, {0}!",
   "login.pick_pin": "Pick a 4-digit PIN",
   "login.play": "Let's go",
@@ -72,5 +71,7 @@
   "math.verdict_not_yet": "Not yet, try again",
   "math.verdict_answer": "The answer was {0}",
   "menu.continue_detail": "{0} · {1} owls home",
-  "level_select.owl_count": "x{0}"
+  "level_select.owl_count": "x{0}",
+  "game.stat_owls": "Owls home",
+  "game.stat_coins": "Coins"
 }

@@ -1,0 +1,88 @@
+extends RefCounted
+class_name BrandTheme
+## The project's Theme resource, built from the active palette.
+##
+## This codebase is a port, and it arrived styling every control with per-node
+## add_theme_*_override calls - which is how the framework it came from works,
+## not how Godot does. The visible cost was anything nobody remembered to style:
+## the login name field and PIN box were plain grey engine defaults sitting on a
+## painted sky.
+##
+## A Theme assigned at a screen's root is the floor every Control inherits.
+## Node-level overrides still win, so components that genuinely need their own
+## look (BrandButton's three roles, AnswerButton's answer states) are unaffected;
+## everything else is on-brand without being told.
+##
+## Rebuilt when the world changes, cached between times: constructing styleboxes
+## per screen is exactly the kind of work Godot expects to happen once.
+##
+## brand/BRAND_SYSTEM.md §6 (Fixed Nine), §7 (typography).
+
+const FIELD_CORNER := 12
+const FIELD_PAD := 14
+const FIELD_MIN_HEIGHT := 56
+
+static var _cached: Theme = null
+static var _cached_for := ""
+
+## The theme for the active world, building it if the world has changed.
+static func get_theme() -> Theme:
+	var id := ThemeManager.get_theme_id()
+	if _cached != null and _cached_for == id:
+		return _cached
+	_cached = _build()
+	_cached_for = id
+	return _cached
+
+## Assign to a screen root. Children inherit unless they override.
+static func apply(root: Control) -> void:
+	root.theme = get_theme()
+
+static func _build() -> Theme:
+	var theme := Theme.new()
+	var ink := ThemeManager.get_color_value("ink")
+	var paper := ThemeManager.get_color_value("paper")
+	var focus := ThemeManager.get_color_value("focus")
+
+	# Labels default to paper with an ink shadow. These screens sit on painted
+	# skies now, and unshadowed light text borrows its contrast from whichever
+	# world happens to be behind it (§8.6b).
+	theme.set_color("font_color", "Label", paper)
+	theme.set_color("font_shadow_color", "Label", ink)
+	theme.set_constant("shadow_offset_x", "Label", 2)
+	theme.set_constant("shadow_offset_y", "Label", 2)
+	theme.set_font_size("font_size", "Label", 22)
+
+	# Text fields: paper card, ink text, same shape language as an answer option.
+	var field := _field(paper, ink)
+	theme.set_stylebox("normal", "LineEdit", field)
+	theme.set_stylebox("focus", "LineEdit", _field(paper, focus, 4))
+	theme.set_stylebox("read_only", "LineEdit", _field(paper.darkened(0.15), ink))
+	theme.set_color("font_color", "LineEdit", ink)
+	theme.set_color("font_placeholder_color", "LineEdit", Color(ink, 0.5))
+	theme.set_color("caret_color", "LineEdit", ink)
+	theme.set_color("selection_color", "LineEdit", Color(ThemeManager.get_color_value("coin"), 0.6))
+	theme.set_font_size("font_size", "LineEdit", 26)
+	theme.set_constant("minimum_character_width", "LineEdit", 8)
+
+	# Panels default to the ink card used by the pause menu and the medals.
+	var panel := StyleBoxFlat.new()
+	panel.bg_color = Color(ink, 0.86)
+	panel.set_corner_radius_all(20)
+	panel.set_border_width_all(3)
+	panel.border_color = Color(paper, 0.45)
+	theme.set_stylebox("panel", "PanelContainer", panel)
+
+	return theme
+
+static func _field(fill: Color, border: Color, width := 3) -> StyleBoxFlat:
+	var box := StyleBoxFlat.new()
+	box.bg_color = fill
+	box.set_corner_radius_all(FIELD_CORNER)
+	box.set_border_width_all(width)
+	box.border_color = border
+	box.content_margin_left = FIELD_PAD
+	box.content_margin_right = FIELD_PAD
+	box.content_margin_top = FIELD_PAD * 0.5
+	box.content_margin_bottom = FIELD_PAD * 0.5
+	return box

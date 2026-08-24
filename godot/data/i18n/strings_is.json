@@ -50,7 +50,6 @@
   "npc.professor_hoot": "Prófessor Úhú",
   "pause.quit": "Hætta",
   "pause.resume": "Halda áfram",
-  "pause.theme": "Þema: {0}",
   "pause.title": "HLÉ",
   "touch.jump": "STÖKK",
   "touch.peck": "GOGGA",
@@ -72,5 +71,7 @@
   "math.verdict_not_yet": "Ekki alveg, reyndu aftur",
   "math.verdict_answer": "Svarið var {0}",
   "menu.continue_detail": "{0} · {1} uglur heima",
-  "level_select.owl_count": "x{0}"
+  "level_select.owl_count": "x{0}",
+  "game.stat_owls": "Uglur heima",
+  "game.stat_coins": "Peningar"
 }

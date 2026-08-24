@@ -19,6 +19,7 @@ const CARD_SEPARATION := 20
 const ROW_SIDE_PADDING := 28
 
 func _ready() -> void:
+	BrandTheme.apply(self)
 	add_child(ScreenBackdrop.new())
 
 	var title := Label.new()
