@@ -138,15 +138,16 @@ func _selection_config() -> Dictionary:
 	# config is the superset it may draw from. An empty intersection falls
 	# back to the NPC config so a mis-authored level never bricks. The band
 	# is the intersection of the NPC's and the level's; the curriculum ladder
-	# still owns how hard within it.
+	# still owns how hard within it. The LEVEL's skill order survives the
+	# intersection: its first skill is the headline with the 70% primary share.
 	var level: Variant = LevelManager.get_current_level()
 	if level is Dictionary and level.get("mathGating", null) is Dictionary:
 		var gating: Dictionary = level["mathGating"]
 		var gated_skills: Array = gating.get("skills", [])
 		if not gated_skills.is_empty():
 			var gated: Array = []
-			for d in configured:
-				if gated_skills.has(d):
+			for d in gated_skills:
+				if configured.has(d):
 					gated.append(d)
 			if not gated.is_empty():
 				configured = gated

@@ -81,16 +81,6 @@ one week per change.
 *Done when:* two consecutive weekly reports sit inside the sweet spot with at
 least one step-up per early session and frustration flags under 10%.
 
-### The per-level math mixes need a design pass
-`mathGating` in the level specs is now live, but the authored mixes were never
-play-reviewed: levels 03 and 04 gate to addition only, and no level introduces
-comparison, patterns, or sequences as its headline skill. Decide the skill
-story across the six levels — which level teaches what, in what order — and
-re-author the specs to match.
-
-*Done when:* each level's gating names its teaching intent in the spec and a
-kid can meet every unlocked domain somewhere in the level chain.
-
 ## P2 — Experience decisions that need making
 
 ### The on-screen controls are unverified for desktop-web mouse

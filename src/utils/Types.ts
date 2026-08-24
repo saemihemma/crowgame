@@ -14,8 +14,12 @@ export interface LevelRegistryEntry {
      *  difficulty band they stay inside. Authored in the level spec and
      *  mirrored into the registry so the runtime can read it. */
     mathGating?: {
+        /** Emphasis order: the first skill is the level's headline and gets
+         *  the primary selection share in the owl component. */
         skills: string[];
         difficultyBand: [number, number];
+        /** The lesson this level exists to teach, in one sentence. */
+        teachingIntent?: string;
     };
 }
 
@@ -55,6 +59,7 @@ export interface LevelSpec {
     mathGating?: {
         skills: string[];
         difficultyBand: [number, number];
+        teachingIntent?: string;
     };
 }
 

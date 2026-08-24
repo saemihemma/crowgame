@@ -198,9 +198,11 @@ export class MathChallengeComponent implements NPCComponent {
         // The level's gating decides which math this place teaches; the NPC
         // config is the superset it may draw from. An empty intersection
         // falls back to the NPC config so a mis-authored level never bricks.
+        // The LEVEL's skill order survives the intersection: the first listed
+        // skill is the level's headline and gets the 70% primary share.
         const gating = this.getLevelGating();
         if (gating) {
-            const gated = configuredDomains.filter(domain => gating.skills.includes(domain));
+            const gated = gating.skills.filter(skill => configuredDomains.includes(skill));
             if (gated.length > 0) {
                 configuredDomains = gated;
             }
