@@ -152,7 +152,11 @@ func _draw() -> void:
 	var c := Vector2(EXTENT, EXTENT)
 	var ink := ThemeManager.get_color_value("ink")
 	var owl := ThemeManager.get_color_value("owl")
-	var lit: Color = ThemeManager.get_color_value("coin") if _streak >= 3 else owl
+	# Thresholds come from fx_tuning so the ring catching fire and the toast
+	# announcing it are the same moment, not two nearby ones.
+	var flame_at := int(Config.fx("streak/flame", 3))
+	var hot_at := int(Config.fx("streak/hot", 5))
+	var lit: Color = ThemeManager.get_color_value("coin") if _streak >= flame_at else owl
 
 	# Disc behind the icon, so the owl sits on its own ground rather than on
 	# whatever tile happens to be behind it.
@@ -186,8 +190,8 @@ func _draw() -> void:
 			break
 		draw_arc(c, RADIUS, from, to, 32, lit, STROKE)
 
-	if _streak >= 3:
-		var hot := _streak >= 5
+	if _streak >= flame_at:
+		var hot := _streak >= hot_at
 		var flame: Color = ThemeManager.get_color_value("notyet") if hot else ThemeManager.get_color_value("coin")
 		var dashes := 16 if hot else 12
 		for i in dashes:

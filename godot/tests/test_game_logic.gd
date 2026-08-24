@@ -94,3 +94,56 @@ func test_transition_sets_flag() -> void:
 	assert_eq(completed[0], "level_01", "level_complete emitted for current level")
 	EventBus.level_complete.disconnect(lcb)
 	g.free()
+
+# ─── Streak (§10.2) ────────────────────────────────────────
+# The streak is what makes a run of clean answers feel like something, and it is
+# the input to both the owl ring's flame and the top-centre toast. Its whole
+# value comes from being losable, so the reset paths matter as much as the
+# increment.
+
+func _complete(g: Node2D, correct: bool, first_attempt: bool) -> void:
+	EventBus.math_challenge_complete.emit({"correct": correct, "firstAttempt": first_attempt})
+
+func test_clean_answers_extend_the_streak() -> void:
+	var g := _make_game()
+	var seen: Array[int] = []
+	var cb := func(s: int): seen.append(s)
+	EventBus.streak_changed.connect(cb)
+	_complete(g, true, true)
+	_complete(g, true, true)
+	_complete(g, true, true)
+	assert_eq(g.streak, 3, "three clean answers make a streak of three")
+	assert_eq(seen, [1, 2, 3] as Array[int], "each step is announced once, in order")
+	EventBus.streak_changed.disconnect(cb)
+	g.free()
+
+func test_a_wrong_answer_breaks_the_streak() -> void:
+	var g := _make_game()
+	_complete(g, true, true)
+	_complete(g, true, true)
+	_complete(g, false, false)
+	assert_eq(g.streak, 0, "a failed challenge resets the streak")
+	g.free()
+
+## A retry is a fine way to learn and a bad way to keep a streak. If second-try
+## answers counted, the flame would never go out and would stop meaning anything.
+func test_a_retry_does_not_extend_the_streak() -> void:
+	var g := _make_game()
+	_complete(g, true, true)
+	_complete(g, true, false)
+	assert_eq(g.streak, 0, "correct on the second attempt resets rather than extends")
+	g.free()
+
+## Nothing changed, so nothing should be announced — otherwise the toast fires
+## again on every failed challenge after the first.
+func test_no_signal_when_the_streak_is_already_zero() -> void:
+	var g := _make_game()
+	var count := [0]
+	var cb := func(_s: int): count[0] += 1
+	_complete(g, false, false)
+	EventBus.streak_changed.connect(cb)
+	_complete(g, false, false)
+	_complete(g, false, false)
+	assert_eq(count[0], 0, "a streak that stays at zero emits nothing")
+	EventBus.streak_changed.disconnect(cb)
+	g.free()
