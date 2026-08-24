@@ -112,6 +112,30 @@ async function main() {
     await assertPortFree(API_PORT);
     await assertPortFree(EDGE_PORT);
 
+    // Apply migrations FIRST, and here rather than in the workflow.
+    //
+    // /health reports migrationsApplied by counting schema_migrations, so against
+    // a database that has never been migrated it errors and health never goes
+    // green — the harness then reports "the API never became healthy", which
+    // describes the symptom and hides the cause.
+    //
+    // This passed locally for a long time purely because a previous run of the
+    // server test suite had already migrated the dev database, and failed the
+    // first time CI gave it a genuinely empty one. An end-to-end harness that
+    // depends on ambient database state is not end-to-end; it owns its schema.
+    await new Promise((resolve, reject) => {
+        const migrate = spawn('npm', ['run', 'migrate'], {
+            cwd: join(ROOT, 'server'),
+            env: { ...process.env },
+            stdio: ['ignore', 'ignore', 'inherit'],
+        });
+        migrate.once('error', reject);
+        migrate.once('exit', code => code === 0
+            ? resolve()
+            : reject(new Error(`server migrations failed with exit code ${code}`)));
+    });
+    log('migrations applied');
+
     // detached, so the whole process GROUP can be killed on the way out.
     // `npx tsx` spawns a child node process plus an esbuild service; signalling
     // npx alone leaves both alive, and they then hold the port and make the NEXT
