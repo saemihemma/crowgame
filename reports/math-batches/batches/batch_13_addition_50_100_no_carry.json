@@ -72,8 +72,8 @@
       "grade": 9.9,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 10,
-        "strugglingChildGrade": 9.7,
+        "steadyChildGrade": 9.9,
+        "strugglingChildGrade": 9.9,
         "strongChildGrade": 10,
         "openingProbeStep": 5,
         "middleProbeStep": 28,
@@ -91,12 +91,12 @@
       },
       {
         "role": "role-game-designer",
-        "grade": 10,
+        "grade": 9.9,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
         "role": "role-qa-engineer",
-        "grade": 9.7,
+        "grade": 9.9,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],
@@ -107,9 +107,9 @@
   },
   "samplePrompts": [
     "53 + 1 =",
+    "52 birds sit on a branch. 2 more land. How many birds?",
     "Quick check: 51 + 2",
     "Complete: 53 + 1 = ?",
-    "Quick check: 51 + 3",
-    "What is 51 + 3?"
+    "Quick check: 51 + 3"
   ]
 }

@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
+    "You have 24 berries. You eat 2. How many are left?",
     "Complete: 24 - 3 = ?",
     "Complete: 22 - 1 = ?",
     "Complete: 23 - 1 = ?",
-    "24 - 2 =",
-    "Complete: 22 - 2 = ?"
+    "24 - 2 ="
   ]
 }

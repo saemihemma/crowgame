@@ -1,6 +1,6 @@
 extends Node
 ## Headless integration probe (Slice 6): drives the full owl encounter end to
-## end — interact -> 2 owl-selected problems -> answer correctly -> challenge
+## end — interact -> the owl-selected problem(s) -> answer correctly -> challenge
 ## complete -> ELO/learner update -> owl_saved -> owl flies away. Answers via the
 ## overlay's submit_answer() (the buttons' code path).
 ##
@@ -62,7 +62,7 @@ func _finish(ok: bool, msg: String) -> void:
 		ok = false
 		msg = "ELO did not increase (%.2f -> %.2f)" % [_elo_before, elo_after]
 	if ok:
-		print("[pass] owl_probe: 2 problems solved, owl_saved, owl flew away, ELO %.2f -> %.2f" % [_elo_before, elo_after])
+		print("[pass] owl_probe: %d problem(s) solved, owl_saved, owl flew away, ELO %.2f -> %.2f" % [_completes, _elo_before, elo_after])
 	else:
 		print("[FAIL] owl_probe: %s" % msg)
 	get_tree().quit(0 if ok else 1)

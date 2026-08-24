@@ -2,7 +2,7 @@
   "batchId": "batch_16_subtraction_50_100_borrow",
   "title": "Subtraction 50-100 with borrow plus lighter-domain variance",
   "accepted": true,
-  "averageGrade": 9.8,
+  "averageGrade": 9.7,
   "criticalIssues": [],
   "templateReview": {
     "category": {
@@ -69,10 +69,10 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.9,
+      "grade": 9.8,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.9,
+        "steadyChildGrade": 9.7,
         "strugglingChildGrade": 9.9,
         "strongChildGrade": 9.9,
         "openingProbeStep": 3,
@@ -91,7 +91,7 @@
       },
       {
         "role": "role-game-designer",
-        "grade": 9.9,
+        "grade": 9.7,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {

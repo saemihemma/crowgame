@@ -36,6 +36,17 @@ export class ELOUpdateManager {
     init(): void {
         EventBus.on(GameEvents.MATH_PROBLEM_PRESENTED, this.onProblemPresented, this);
         EventBus.on(GameEvents.MATH_CHALLENGE_COMPLETE, this.onChallengeComplete, this);
+
+        // Let the curriculum ladder see which steps actually have problems,
+        // so promotion can skip authored holes in the step data. A rung needs
+        // at least 3 problems to be practicable — promotion requires 3 fresh
+        // at-level wins, so a 1-2 problem step would stall the ladder.
+        LearnerStateManager.getInstance().setStepContentProvider((domain, step) => {
+            const poolManager = MathProblemManager.getInstance().getPoolManager();
+            if (!poolManager) return true;
+            return poolManager.getProblemsInCurriculumStepRange(domain, step, step, []).length >= 3;
+        });
+
         console.log('[ELOUpdateManager] Initialized');
     }
 
@@ -96,7 +107,16 @@ export class ELOUpdateManager {
 
         const attempt = this.buildAttempt(data);
 
-        LearnerStateManager.getInstance().recordAttempt(attempt);
+        const learnerState = LearnerStateManager.getInstance();
+        const stepBefore = learnerState.getCurrentStep(attempt.domain);
+        learnerState.recordAttempt(attempt);
+        const stepAfter = learnerState.getCurrentStep(attempt.domain);
+        if (stepAfter > stepBefore) {
+            EventBus.emit(GameEvents.CURRICULUM_STEP_UP, {
+                domain: attempt.domain,
+                step: stepAfter,
+            });
+        }
         SaveManager.getInstance().recordMathAttempt({
             skills: attempt.skills,
             correct: attempt.correct,

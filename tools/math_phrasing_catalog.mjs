@@ -75,6 +75,16 @@
  * someone adds a problem with 21 in it.
  */
 export const PLURAL_PARAM = {
+    // The word problems inflect their subject noun with the first number, in
+    // both languages: "1 bird sits" / "1 fugl situr", and Icelandic does it again
+    // at 21, 31 and so on. The SECOND number needs no form of its own -- the
+    // Icelandic wording puts it in an impersonal construction ("Þeim fjölgar um
+    // {b}", where "fjölgar" does not inflect) or as a plain object, so one
+    // dimension is enough.
+    'math.prompt.word.birds_land': 'a',
+    'math.prompt.word.birds_fly': 'a',
+    'math.prompt.word.berries_find': 'a',
+    'math.prompt.word.berries_eat': 'a',
     'math.hint.groups': 'a',
     'math.hint.groups_makes': 'a',
     'math.expl.mul': 'a',
@@ -267,6 +277,18 @@ export const TEMPLATES = {
     'math.prompt.cmp.find_smaller': 'Find the smaller number: {a} or {b}',
     'math.prompt.cmp.is_bigger': 'Which is bigger: {a} or {b}?',
     'math.prompt.cmp.is_smaller': 'Which is smaller: {a} or {b}?',
+
+    // ── prompts: word problems ────────────────────────────────────────────
+    // A narrative wrapper round the same arithmetic. Two numbers each, and in
+    // English the subject noun inflects with the first one.
+    'math.prompt.word.birds_land': '{a} birds sit on a branch. {b} more land. How many birds?',
+    'math.prompt.word.birds_land.one': '{a} bird sits on a branch. {b} more land. How many birds?',
+    'math.prompt.word.birds_fly': '{a} birds sit on a branch. {b} fly away. How many are left?',
+    'math.prompt.word.birds_fly.one': '{a} bird sits on a branch. {b} fly away. How many are left?',
+    'math.prompt.word.berries_find': 'You have {a} berries. You find {b} more. How many berries?',
+    'math.prompt.word.berries_find.one': 'You have {a} berry. You find {b} more. How many berries?',
+    'math.prompt.word.berries_eat': 'You have {a} berries. You eat {b}. How many are left?',
+    'math.prompt.word.berries_eat.one': 'You have {a} berry. You eat {b}. How many are left?',
 
     // ── prompts: sequences and patterns ───────────────────────────────────
     'math.prompt.seq.next_number_pattern': 'What comes next in the number pattern: {seq}',
@@ -620,6 +642,12 @@ export const SEMANTICS = {
     'math.prompt.seq.keep_repeat': sequence,
     'math.prompt.seq.what_number_next': sequence,
     'math.prompt.seq.what_next': sequence,
+    // Word problems: the narrative names which way the arithmetic runs.
+    'math.prompt.word.birds_land': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
+    'math.prompt.word.berries_find': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
+    'math.prompt.word.birds_fly': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
+    'math.prompt.word.berries_eat': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
+
     'math.prompt.seq.after': (p, problem) => isAnswer(p.a + 1, problem, `after ${p.a}`),
     'math.prompt.seq.before': (p, problem) => isAnswer(p.a - 1, problem, `before ${p.a}`),
 
@@ -806,6 +834,10 @@ export const SEMANTICS = {
  * happens to pass today.
  */
 const SAME_ORDER = new Set([
+    "math.prompt.word.birds_land",
+    "math.prompt.word.birds_fly",
+    "math.prompt.word.berries_find",
+    "math.prompt.word.berries_eat",
         "math.hint.count_on",
         "math.expl.add",
         "math.hint.count_back",

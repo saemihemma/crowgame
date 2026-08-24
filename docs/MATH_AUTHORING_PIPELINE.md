@@ -150,7 +150,7 @@ The current repo-encoded review loop mirrors the lead-producer plan:
 5. Browser-backed owl smoke
    - literal `MathChallengeScene` input path
    - wrong-answer retry timing
-   - second-problem follow-up path
+   - single-problem completion-and-close path
    - overlay close and completion payload verification
    - still not pedagogy proof on its own
 
@@ -191,9 +191,9 @@ What this does not prove:
 - not semantic dedupe of every arithmetic fact phrased in different words
 - not future hosted-backend calibration or liveops tuning
 - not broad browser coverage beyond the specific owl smoke path checked in `runtime-browser-smoke.json`
-- not that the full `3000` total inventory is a `3000`-moment owl curriculum
+- not that the full `3150` total inventory is a `3150`-moment owl curriculum
 - not that `openingUnlockedInventory*` equals the fresh-profile day-one surface; use `freshReachable*` for that
-- not perfect child-perceived replay variety proof on its own, even though the shipped owl opening now mixes addition with counting and serves `2` problems per encounter
+- not perfect child-perceived replay variety proof on its own, even though the shipped owl opening now mixes addition with counting and serves `1` problem per encounter
 - not a substitute for manual play with a real child; the report can prove rail safety and coverage, but it cannot tell you whether a specific six-year-old will find the follow-up mix delightful or tiring
 
 ## Guardrails

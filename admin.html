@@ -635,6 +635,54 @@
         return flags;
     }
 
+    // The trailing burst of attempts with no gap over 30 minutes — a good
+    // stand-in for "the last time this child actually sat down and played".
+    function getLastSessionAttempts(snapshot) {
+        const attempts = snapshot && Array.isArray(snapshot.recentAttempts) ? snapshot.recentAttempts : [];
+        if (!attempts.length) return [];
+        const sorted = attempts.slice().sort(function (a, b) { return a.answeredAt - b.answeredAt; });
+        const SESSION_GAP_MS = 30 * 60 * 1000;
+        let start = 0;
+        for (let i = 1; i < sorted.length; i++) {
+            if (sorted[i].answeredAt - sorted[i - 1].answeredAt > SESSION_GAP_MS) start = i;
+        }
+        return sorted.slice(start);
+    }
+
+    // Sweet spot target: 70-85% first-try accuracy. Above it the problems are
+    // probably too easy, below it too hard.
+    function describeAccuracy(accuracy) {
+        if (accuracy > 0.85) return formatPercent(accuracy) + " first-try (too easy?)";
+        if (accuracy < 0.70) return formatPercent(accuracy) + " first-try (too hard?)";
+        return formatPercent(accuracy) + " first-try (sweet spot)";
+    }
+
+    function renderSessionReport(card, snapshot) {
+        const attempts = getLastSessionAttempts(snapshot);
+        if (!attempts.length) {
+            card.appendChild(createMetric("Last session", "no attempts recorded yet"));
+            return;
+        }
+
+        const firstTry = attempts.filter(function (a) { return a.correct && a.firstAttempt; }).length;
+        const accuracy = firstTry / attempts.length;
+        const avgSeconds = attempts.reduce(function (sum, a) { return sum + (a.responseMs || 0); }, 0) / attempts.length / 1000;
+        const laneCounts = {};
+        attempts.forEach(function (a) {
+            const lane = a.selectionLane || "comfort";
+            laneCounts[lane] = (laneCounts[lane] || 0) + 1;
+        });
+        const laneText = Object.keys(laneCounts).sort().map(function (lane) {
+            return lane + " " + laneCounts[lane];
+        }).join(" | ");
+        const when = new Date(attempts[attempts.length - 1].answeredAt);
+
+        card.appendChild(createMetric("Last session (" + when.toLocaleDateString() + ")", attempts.length + " problems"));
+        card.appendChild(createMetric("Session accuracy", describeAccuracy(accuracy)));
+        card.appendChild(createMetric("Avg time to answer", avgSeconds.toFixed(1) + " s"));
+        card.appendChild(createMetric("Lane mix", laneText));
+    }
+
     function renderLearnerSummary() {
         learnerSummaryEl.innerHTML = "";
         const profiles = readJson(PROFILES_KEY, []);
@@ -681,7 +729,9 @@
 
                 const right = document.createElement("span");
                 right.textContent =
-                    "ELO " + Math.round(domain.masteryELO) +
+                    "Step " + domain.currentStep +
+                    " (" + domain.winsAtCurrentStep + " wins)" +
+                    " | ELO " + Math.round(domain.masteryELO) +
                     " | Conf " + (domain.confidenceOffset >= 0 ? "+" : "") + Math.round(domain.confidenceOffset) +
                     " | " + formatPercent(domain.firstAttemptAccuracy) +
                     " | Review " + domain.activeReviewCount;
@@ -701,6 +751,8 @@
                 });
                 card.appendChild(list);
             }
+
+            renderSessionReport(card, snapshot);
 
             const skillsNote = document.createElement("div");
             skillsNote.className = "skills-note";

@@ -66,26 +66,6 @@ than the English).
 *Done when:* a native-speaking teacher has read the 32 `math.expl.*` strings
 aloud to a child in the target age band and either kept them or replaced them.
 
-### Nothing renders a problem's explanation
-All 2908 explanations sit in the pools unread. Neither runtime displays them:
-the web build reads `prompt.text` and `hint` only (`src/ui/components/MathBoard.ts`),
-and the Godot port reads `prompt.text` only. `src/math/problemPhrasing.ts` exports
-`localisedExplanation()` and every explanation already has a verified Icelandic
-phrasing, so the content and the translation are ready for a surface that does
-not exist.
-
-*Done when:* either a post-answer surface shows the explanation, or the field is
-deleted from the pools and the 32 `math.expl.*` keys come out of all four bundles.
-
-### The Godot port never shows hints
-`godot/scripts/ui/math_challenge.gd` reads `hint` only to count it for telemetry
-(`hintsUsed`), never to display it. The web build shows it below the board after a
-wrong answer. So a child on the Godot build gets no help after getting something
-wrong, and the 86 `math.hint.*` translations are web-only.
-
-*Done when:* the Godot math panel shows the hint after a wrong attempt, rendered
-through `TextManager.tp()` with the same English fallback as the web build.
-
 ### Confirm the intended level unlock chain
 On a fresh save only two of six levels are selectable (`level_99` and
 `level_01`); 3–6 show as locked. That is consistent with
@@ -144,6 +124,66 @@ mid-row. Snapping may read better for young players; it may also feel fighty.
 *Done when:* tried both ways on a device and one is chosen.
 
 ## P3 — Content and localisation
+
+### Visual and richer worded prompts
+Addition and subtraction now carry two word-problem shapes each (berries,
+birds), gated to steps 3+. Still open: more story families and objects so the
+wording doesn't wear out, worded shapes for comparison and sequences, and
+visual prompts via the unused `prompt.assets` field (picture-group addition in
+the spirit of counting's dot strings). Every new worded shape needs a matching
+pattern in `src/math/wordedArithmetic.ts` — that table is what keeps steps,
+traits, and replay keys honest.
+
+### Misconception tags are authored but nothing consumes them
+Every problem carries `misconceptionTags` (off-by-one, counting-back errors,
+…) and MCQ distractors are constructed, yet the runtime never looks at *which*
+wrong option a child picked. Mapping distractor → misconception in
+`ELOUpdateManager` would let review items target the actual confusion instead
+of just the skill, and let hints speak to the specific error.
+
+### Response time is recorded but unused as a learning signal
+`responseMs` is now honest time-to-first-answer, but nothing distinguishes
+fluent-correct from slow-correct. At fact-practice steps, fluency (fast and
+right) is the real mastery bar — consider a soft fluency component in the
+promotion gate, and retune the frustration `responseTimeSpike` threshold in
+`LearnerStateManager.buildSummary` against real session data.
+
+### Within-lane selection is uniform random and problem ELO never learns
+`ELOAwareStrategy` picks uniformly inside the chosen lane; the effective
+selection ELO it computes is unused. Weighting lane candidates toward the
+learner's edge would sharpen targeting inside a step. Relatedly,
+`ProblemPoolManager.updateProblemRating` records per-problem success rates but
+never adjusts `eloRating` — either calibrate item difficulty from that
+telemetry or rename the method to what it does.
+
+### Review backlog has no decay or cap policy
+`day_1`/`day_3`/`day_7` review items assume steady play. A child who skips a
+week comes back to a stacked, all-due backlog that crowds the 20-25% review
+lane for a long stretch. Decide a cap per domain and a staleness policy in
+`LearnerStateManager.applyReviewUpdate` / `getDueReviewItems`.
+
+### Difficulty scalar and curriculum step are two separate scales
+`difficulty` comes from authoring band ELO targets, `curriculumStep` from the
+structural derivation in `tools/math_curriculum.ts`; the owl's difficulty band
+filter sits on the first while the ladder climbs the second, which is how
+comparison got stalled before the band was widened. Unify: derive `difficulty`
+from the derived step (one source of truth), or drop the difficulty filter
+from the adaptive path once step data is fully trusted.
+
+### A gated "padlock owl" variant that asks for more than one answer
+The baseline owl asks exactly one problem. `problemCount` is already per-NPC
+config in `npc_registry.json` and both ports' components loop until it is met,
+so the remaining work is content and design, not plumbing: a visually distinct
+NPC variant, a registry entry with `problemCount` 2-3 and a bigger reward, and
+a decision about where it appears (level gates? bonus areas?). The
+multi-problem UI (progress header, alternate-domain follow-ups) stays dormant
+at the baseline but keeps working for any NPC that raises the count.
+
+### Multiplication and division need a fate decision
+650 authored problems sit in domains the owl never serves — not in its
+`problemTypes`, and with almost no content below step 3 (division's lowest
+band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
+the rotation for older kids, or park them explicitly in Settled.
 
 ### Four string keys are referenced by neither port
 `hud.level`, `hud.level_up`, `login.delete`, `login.delete_confirm`. Either wire

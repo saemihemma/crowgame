@@ -5,7 +5,7 @@ import { EventBus } from '../../utils/EventBus';
 import { GAME_WIDTH, GAME_HEIGHT } from '../../utils/Constants';
 import { TextManager } from '../../systems/TextManager';
 import type { MathProblem, MCQAnswer } from '../../utils/Types';
-import { localisedHint, localisedPrompt } from '../../math/problemPhrasing';
+import { localisedExplanation, localisedHint, localisedPrompt } from '../../math/problemPhrasing';
 
 /**
  * Themed math question board UI component.
@@ -18,30 +18,32 @@ export class MathBoard {
     private boardBg!: Phaser.GameObjects.Graphics;
     private questionText!: Phaser.GameObjects.Text;
     private optionButtons: Phaser.GameObjects.Container[] = [];
+    private optionValues: number[] = [];
     private hintText!: Phaser.GameObjects.Text;
     private navigator: UINavigator;
     private currentProblem: MathProblem | null = null;
     private answered = false;
+    private revealed = false;
 
     private readonly boardW = 520;
     private readonly boardH = 280;
 
     /**
-     * The question's box, and why it needs one.
+     * The question's box.
      *
-     * The question used to render at a fixed 56px with no word wrap inside a
-     * 520px board. Measured against the pools, 2050 of the 3000 English prompts
-     * overflow that: "What comes next in the repeat pattern: 22, 16, 19, 15, 22,
-     * 16, 19, ?" is 68 characters, which is about 2400px of monospace at 56px --
-     * two and a half times the whole 960px canvas. It spilled straight out of the
-     * board and off the screen, in English, before any of this was translated.
+     * A font size picked from the prompt's character count is a guess, and it was
+     * guessing against measured data: 2050 of the 3000 English prompts overflow a
+     * fixed 56px in a 520px board, the longest by about 2400px -- two and a half
+     * times the whole canvas. Icelandic is not what breaks this (its longest
+     * prompt is one character longer) but it does mean a guess is not good enough,
+     * because the same character count is a different width in another language.
      *
-     * Icelandic is not what breaks this; the longest Icelandic prompt is one
-     * character longer than the longest English one. But it does mean the fix
-     * cannot be put off, so the question now wraps and shrinks to fit.
+     * So the size is measured instead: wrap, measure the rendered height, and step
+     * down until it fits. tools/validate_i18n.mjs proves every prompt and hint in
+     * both locales fits at the floor, which is what makes the floor unreachable.
      *
-     * The band runs from the text's top edge down to the option buttons, which
-     * sit at local y 40 with height 60, so their top edge is at 10.
+     * The band runs from the text's top edge to the option buttons, which sit at
+     * local y 40 with height 60, so their top edge is at 10.
      */
     private static readonly QUESTION_MAX_SIZE = 56;
     private static readonly QUESTION_MIN_SIZE = 20;
@@ -51,17 +53,15 @@ export class MathBoard {
     /**
      * The hint's box, which used to be inside the board and could not work there.
      *
-     * The hint was anchored bottom-up at local y 110, giving it 40px of clearance
-     * above the option buttons (which end at 10). A two-line hint at 24px is 58px
-     * and a three-line one is 86px, so it drew straight over the answers -- and
-     * that was already true in English: "You have 8, take away 5. Think: 5 + 3 =
-     * 8, so 3 are left!" is 57 characters. Covering the buttons at the exact
-     * moment a child has answered wrong and is reaching for another one is about
-     * the worst place to put helper text.
+     * The hint was anchored bottom-up at local y 110, leaving 40px of clearance
+     * above the option buttons. A two-line hint at 24px is 58px and a three-line
+     * one is 86px, so it drew straight over the answers -- and that was already
+     * true in English: "You have 8, take away 5. Think: 5 + 3 = 8, so 3 are left!"
+     * is 57 characters. Covering the buttons at the moment a child has answered
+     * wrong and is reaching for another one is about the worst place for it.
      *
      * The board is 280 tall and centred at y 310 on a 540 canvas, so it ends at
-     * 450 and the 90px below it is empty. The hint now lives there, growing
-     * downward, where it cannot collide with anything.
+     * 450 and the 90px below it is empty. The hint lives there now.
      */
     private static readonly HINT_MAX_SIZE = 24;
     private static readonly HINT_MIN_SIZE = 16;
@@ -88,7 +88,7 @@ export class MathBoard {
         this.drawBoardBackground(this.boardW, this.boardH);
         this.container.add(this.boardBg);
 
-        // Question text. Word-wrapped and auto-sized -- see fitQuestion().
+        // Question text. Word-wrapped and auto-sized -- see fitInto().
         this.questionText = this.scene.add.text(0, -this.boardH / 2 + 44, '', {
             fontSize: `${MathBoard.QUESTION_MAX_SIZE}px`,
             fontFamily: tm.getTheme().hud.font || 'monospace',
@@ -130,8 +130,9 @@ export class MathBoard {
     showProblem(problem: MathProblem): void {
         this.currentProblem = problem;
         this.answered = false;
+        this.revealed = false;
 
-        // Set question text
+        // Set the question in the active locale, measured to fit its band.
         MathBoard.fitInto(
             this.questionText, localisedPrompt(problem),
             MathBoard.QUESTION_MAX_SIZE, MathBoard.QUESTION_MIN_SIZE, MathBoard.QUESTION_MAX_H,
@@ -141,6 +142,7 @@ export class MathBoard {
         // Clear old option buttons
         this.optionButtons.forEach(b => b.destroy(true));
         this.optionButtons = [];
+        this.optionValues = [];
 
         // Clear navigator for new problem
         this.navigator.disable();
@@ -149,7 +151,14 @@ export class MathBoard {
         // Create MCQ option buttons
         if (problem.answer.mode === 'mcq') {
             const mcqAnswer = problem.answer as MCQAnswer;
-            const options = mcqAnswer.options;
+            // Shuffle a copy so the correct answer's on-screen position is
+            // random. The authored data heavily favors the last slot, which
+            // kids learn to exploit.
+            const options = [...mcqAnswer.options];
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
             const btnW = 100;
             const btnH = 60;
             const gap = 24;
@@ -170,6 +179,7 @@ export class MathBoard {
                 );
                 this.container.add(btn);
                 this.optionButtons.push(btn);
+                this.optionValues.push(optVal);
 
                 // Register with keyboard navigator (world coordinates)
                 const zone = btn.getAt(2) as Phaser.GameObjects.Zone;
@@ -198,7 +208,7 @@ export class MathBoard {
      * Wrapping alone is not enough: a 68-character prompt wrapped at 460px is
      * four lines at 56px, which is 269px of text in a 96px band -- straight
      * through the answer buttons. So step the size down until the wrapped block
-     * fits, and let Phaser re-measure at each step by re-applying the text.
+     * fits, re-applying the text each time so Phaser re-measures.
      *
      * The floor is deliberate rather than a fallback to something tiny. Below it
      * the text stops being readable for a five-year-old, and a rare visible
@@ -409,7 +419,7 @@ export class MathBoard {
             0,
         );
 
-        // Show hint text if available
+        // Show hint text if available, in the active locale.
         const hint = this.currentProblem ? localisedHint(this.currentProblem) : undefined;
         if (hint) {
             MathBoard.fitInto(
@@ -423,11 +433,58 @@ export class MathBoard {
             });
         }
 
-        // Allow retry after a brief delay
+        // Allow retry after a brief delay (unless the answer was revealed)
         this.scene.time.delayedCall(600, () => {
+            if (this.revealed) return;
             this.answered = false;
             this.navigator.enable();
         });
+    }
+
+    /**
+     * After the final allowed miss: highlight the correct answer, dim the
+     * rest, and show the authored explanation so the miss ends in learning.
+     */
+    revealAnswer(): void {
+        if (!this.currentProblem || this.currentProblem.answer.mode !== 'mcq') return;
+        this.revealed = true;
+        this.answered = true;
+        this.navigator.disable();
+
+        const correct = (this.currentProblem.answer as MCQAnswer).correct;
+        this.optionButtons.forEach((btn, i) => {
+            const bg = btn.getAt(0) as Phaser.GameObjects.Graphics;
+            if (!bg) return;
+            if (this.optionValues[i] === correct) {
+                bg.clear();
+                bg.fillStyle(0x44cc44, 1);
+                bg.fillRoundedRect(-50, -30, 100, 60, 8);
+                bg.lineStyle(4, 0xffffff, 0.6);
+                bg.strokeRoundedRect(-50, -30, 100, 60, 8);
+                this.scene.tweens.add({
+                    targets: btn,
+                    scaleX: 1.2,
+                    scaleY: 1.2,
+                    duration: 250,
+                    ease: 'Back.easeOut',
+                });
+            } else {
+                btn.setAlpha(0.35);
+            }
+        });
+
+        // The teaching moment after the final miss, in the active locale.
+        const explanation = localisedExplanation(this.currentProblem)
+            ?? localisedHint(this.currentProblem)
+            ?? '';
+        if (explanation) {
+            MathBoard.fitInto(
+                this.hintText, explanation,
+                MathBoard.HINT_MAX_SIZE, MathBoard.HINT_MIN_SIZE, MathBoard.HINT_MAX_H,
+            );
+            this.hintText.setAlpha(0);
+            this.scene.tweens.add({ targets: this.hintText, alpha: 1, duration: 300 });
+        }
     }
 
     /** Dismiss the board with an exit animation */

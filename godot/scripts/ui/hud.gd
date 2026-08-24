@@ -24,6 +24,7 @@ func _ready() -> void:
 	EventBus.player_hurt.connect(_shake_lives)
 	EventBus.ability_granted.connect(_on_ability_granted)
 	EventBus.ability_revoked.connect(_on_ability_revoked)
+	EventBus.curriculum_step_up.connect(_on_curriculum_step_up)
 	ThemeManager.theme_changed.connect(func(_id): _apply_theme())
 	_apply_theme()
 
@@ -70,6 +71,16 @@ func _on_coins_changed(c: int) -> void:
 		AudioManager.play_event("milestone")
 		DopamineFX.burst(self, _coin_label.global_position + Vector2(80, 12), ThemeManager.get_color_value("coin"), 20)
 		DopamineFX.number_fly_up(self, _coin_label.global_position + Vector2(110, 0), TextManager.t("hud.coins_milestone", [c]))
+
+## Celebrate a curriculum step-up (HUDScene.ts showStepUpBanner). Up-moves
+## only — demotions are deliberately never signaled to the child.
+func _on_curriculum_step_up(payload: Dictionary) -> void:
+	var domain := String(payload.get("domain", ""))
+	var banner := TextManager.t("math.step_up", [TextManager.t("domain." + domain)])
+	var center := Vector2(get_viewport().get_visible_rect().size.x / 2.0, 120.0)
+	AudioManager.play_event("milestone")
+	DopamineFX.burst(self, center, ThemeManager.get_color_value("accent"), 24)
+	DopamineFX.number_fly_up(self, center, banner, ThemeManager.get_color_value("accent"))
 
 ## HealthBar.ts shakes the bar on hurt.
 func _shake_lives() -> void:

@@ -276,27 +276,28 @@ function validateOnboardingSnapshot(currentDocs) {
 
 function validateMathAndLearnerContracts() {
     ensureSourcePattern('src/math/ELOManager.ts', /globalELO:\s*150/, 'starting global ELO');
-    ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*50\)\s*return\s+4;/, 'first K-factor band');
-    ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*200\)\s*return\s+3;/, 'second K-factor band');
-    ensureSourcePattern('src/math/ELOManager.ts', /return\s+2;/, 'third K-factor band');
+    ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*30\)\s*return\s+16;/, 'first K-factor band');
+    ensureSourcePattern('src/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*150\)\s*return\s+12;/, 'second K-factor band');
+    ensureSourcePattern('src/math/ELOManager.ts', /return\s+8;/, 'third K-factor band');
     ensureSourcePattern('src/systems/LearnerStateManager.ts', /clamp\(decayed\s*\+\s*delta,\s*-50,\s*20\)/, 'confidence clamp');
     ensureSourcePattern('src/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*PROMOTION_WIN_TARGET/, 'curriculum promotion gate');
     ensureSourcePattern('src/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*DEMOTION_WRONG_THRESHOLD/, 'curriculum demotion gate');
     ensureSourcePattern('src/systems/LearnerStateManager.ts', /stage:\s*'immediate'/, 'immediate review stage');
     ensureSourcePattern('src/systems/LearnerStateManager.ts', /case\s+'day_7':/, 'day_7 review stage');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /comfort:\s*0\.5/, 'comfort lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /review:\s*laneCandidates\.review\.length\s*>\s*0\s*\?\s*0\.25\s*:\s*0/, 'review lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /at_level:\s*0\.25/, 'at-level lane weight');
-    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /stretch:\s*0/, 'stretch lane removal');
+    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /comfort:\s*0\.4/, 'comfort lane weight');
+    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /review:\s*0\.2/, 'review lane weight');
+    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /at_level:\s*0\.3/, 'at-level lane weight');
+    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /stretch:\s*0\.1/, 'stretch lane weight');
+    ensureSourcePattern('src/math/selection/ELOAwareStrategy.ts', /canUseStretchLane\(domain\)/, 'stretch lane gate');
     ensureSourcePattern('src/ui/components/MathBoard.ts', /problem\.answer\.mode\s*===\s*'mcq'/, 'MCQ-only UI branch');
     ensureSourcePattern('src/scenes/LoginScene.ts', /private\s+loginSuccess\(\):\s*void/, 'login success rehydrate owner');
     ensureSourcePattern('src/scenes/BootScene.ts', /SaveManager\.getInstance\(\)\.switchProfile\(\);/, 'boot profile-switch mirror');
     ensureSourcePattern('src/entities/npc/components/MathChallengeComponent.ts', /maxOperand:\s*20/, 'local owl max-operand ceiling');
 
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'default starting global ELO: `150`', 'starting ELO contract');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `4` before 50 attempts', 'K-factor first band');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `3` before 200 attempts', 'K-factor second band');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `2` afterward', 'K-factor third band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `16` before 30 attempts', 'K-factor first band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `12` before 150 attempts', 'K-factor second band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `8` afterward', 'K-factor third band');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'currentStep', 'curriculum step ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'winsAtCurrentStep', 'curriculum progress ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- clamped to `-50..20`', 'confidence clamp');
@@ -308,10 +309,10 @@ function validateMathAndLearnerContracts() {
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_3`', 'review stage day_3');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_7`', 'review stage day_7');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `graduated`', 'review stage graduated');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `50%` comfort', 'comfort lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `25%` review', 'review lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `25%` at level', 'at-level lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `0%` harder', 'harder lane removal');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `40%` comfort', 'comfort lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `20%` review', 'review lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `30%` at level', 'at-level lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `10%` stretch', 'stretch lane weight');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'one curriculum step easier', 'comfort lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'exact current curriculum step', 'at-level lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'strategy steps down only', 'step-down-only fallback');
@@ -422,7 +423,7 @@ function validateMathAuthoringReportContracts() {
 
     ensureDocContains('README.md', `fresh opening owl path currently starts with ${formattedOpeningDomains}`, 'fresh owl opening-domain boundary');
     ensureDocContains('ONBOARDING_AGENT.md', `opening unlocked domains currently ${formattedOpeningDomains}`, 'fresh owl opening-domain boundary');
-    ensureDocContains('ONBOARDING_AGENT.md', `Current shipped owl interaction length is \`${configuredProblemCount}\` problems per owl encounter`, 'owl encounter-length boundary');
+    ensureDocContains('ONBOARDING_AGENT.md', `Current shipped owl interaction length is \`${configuredProblemCount}\` problem${configuredProblemCount === 1 ? '' : 's'} per owl encounter`, 'owl encounter-length boundary');
     ensureDocContains('docs/MATH_AUTHORING_PIPELINE.md', '`openingUnlockedInventory*` is the unlocked-domain inventory before current-step clamping.', 'owl report inventory semantics');
     ensureDocContains('docs/MATH_AUTHORING_PIPELINE.md', '`freshReachable*` is the real fresh-profile day-one reachable subset after current-step clamping.', 'owl report fresh-reachable semantics');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '`openingUnlockedInventory*` in that report means unlocked-domain inventory before current-step clamping.', 'math architecture inventory semantics');

@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
+    "53 birds sit on a branch. 3 fly away. How many are left?",
     "Complete: 54 - 2 = ?",
     "Try this: 54 - 4",
     "Answer: 53 - 3",
-    "Try this: 54 - 3",
-    "Answer: 53 - 2"
+    "Try this: 54 - 3"
   ]
 }

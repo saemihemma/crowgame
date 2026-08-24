@@ -4,12 +4,12 @@
     "independentReview": false,
     "note": "This is a deterministic repository-side review stack. It proves mechanical consistency and local-safe runtime rail coverage, not telemetry-backed pedagogy or independent ELO calibration."
   },
-  "generatedProblemCount": 2700,
-  "acceptedBatchCount": 18,
-  "averageAcceptedGrade": 9.86,
+  "generatedProblemCount": 2850,
+  "acceptedBatchCount": 19,
+  "averageAcceptedGrade": 9.85,
   "domainTotals": {
     "addition": 1000,
-    "subtraction": 850,
+    "subtraction": 1000,
     "multiplication": 400,
     "division": 250,
     "counting": 125,
@@ -30,65 +30,65 @@
       "addition",
       "counting"
     ],
-    "owlEligibleProblemCount": 757,
-    "owlEligibleUniquePromptCount": 757,
-    "owlEligibleUniqueFactCount": 261,
+    "owlEligibleProblemCount": 1474,
+    "owlEligibleUniquePromptCount": 1474,
+    "owlEligibleUniqueFactCount": 595,
     "domainCounts": {
-      "addition": 371,
-      "counting": 55,
-      "pattern_matching": 43,
-      "subtraction": 223,
-      "comparison": 25,
-      "number_sequence": 40
+      "addition": 448,
+      "counting": 125,
+      "pattern_matching": 125,
+      "subtraction": 526,
+      "comparison": 125,
+      "number_sequence": 125
     },
-    "openingUnlockedInventoryProblemCount": 426,
-    "openingUnlockedInventoryUniquePromptCount": 426,
-    "openingUnlockedInventoryUniqueFactCount": 103,
-    "freshReachableProblemCount": 80,
-    "freshReachableUniquePromptCount": 80,
-    "freshReachableUniqueFactCount": 17,
+    "openingUnlockedInventoryProblemCount": 573,
+    "openingUnlockedInventoryUniquePromptCount": 573,
+    "openingUnlockedInventoryUniqueFactCount": 143,
+    "freshReachableProblemCount": 53,
+    "freshReachableUniquePromptCount": 53,
+    "freshReachableUniqueFactCount": 19,
     "freshReachableDomainCounts": {
-      "addition": 62,
-      "counting": 18
+      "addition": 24,
+      "counting": 29
     },
-    "freshReachableAdditionFactCount": 10,
-    "freshReachableCountingFactCount": 7,
-    "currentInteractionProblemCount": 2,
+    "freshReachableAdditionFactCount": 11,
+    "freshReachableCountingFactCount": 8,
+    "currentInteractionProblemCount": 1,
     "owlAdditionByStep": [
       {
         "step": 0,
-        "rowCount": 13,
-        "uniquePromptCount": 13,
+        "rowCount": 5,
+        "uniquePromptCount": 5,
         "uniqueFactCount": 3
       },
       {
         "step": 1,
-        "rowCount": 18,
-        "uniquePromptCount": 18,
+        "rowCount": 7,
+        "uniquePromptCount": 7,
         "uniqueFactCount": 3
       },
       {
         "step": 2,
-        "rowCount": 31,
-        "uniquePromptCount": 31,
-        "uniqueFactCount": 4
-      },
-      {
-        "step": 3,
-        "rowCount": 33,
-        "uniquePromptCount": 33,
+        "rowCount": 12,
+        "uniquePromptCount": 12,
         "uniqueFactCount": 5
       },
       {
+        "step": 3,
+        "rowCount": 53,
+        "uniquePromptCount": 53,
+        "uniqueFactCount": 9
+      },
+      {
         "step": 4,
-        "rowCount": 29,
-        "uniquePromptCount": 29,
+        "rowCount": 34,
+        "uniquePromptCount": 34,
         "uniqueFactCount": 5
       },
       {
         "step": 5,
-        "rowCount": 28,
-        "uniquePromptCount": 28,
+        "rowCount": 32,
+        "uniquePromptCount": 32,
         "uniqueFactCount": 5
       }
     ]
@@ -98,7 +98,7 @@
       "batchId": "batch_01_addition_under_10",
       "title": "Addition under 10",
       "accepted": true,
-      "averageGrade": 9.9,
+      "averageGrade": 9.8,
       "criticalIssues": [],
       "templateReview": {
         "category": {
@@ -165,11 +165,11 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.8,
+          "grade": 9.7,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.9,
-            "strugglingChildGrade": 9.9,
+            "steadyChildGrade": 9.7,
+            "strugglingChildGrade": 9.7,
             "strongChildGrade": 9.7,
             "openingProbeStep": 0,
             "middleProbeStep": 4,
@@ -187,12 +187,12 @@
           },
           {
             "role": "role-game-designer",
-            "grade": 9.9,
+            "grade": 9.7,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.9,
+            "grade": 9.7,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -204,9 +204,9 @@
       "samplePrompts": [
         "Complete: 0 + 6 = ?",
         "0 + 5 = ?",
-        "Complete: 0 + 1 = ?",
         "Complete: 0 + 5 = ?",
-        "0 + 7 ="
+        "0 + 7 =",
+        "0 + 9 = ?"
       ]
     },
     {
@@ -280,10 +280,10 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.6,
+          "grade": 9.7,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.6,
+            "steadyChildGrade": 9.7,
             "strugglingChildGrade": 9.7,
             "strongChildGrade": 9.6,
             "openingProbeStep": 6,
@@ -302,7 +302,7 @@
           },
           {
             "role": "role-game-designer",
-            "grade": 9.6,
+            "grade": 9.7,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
@@ -317,11 +317,11 @@
         }
       },
       "samplePrompts": [
+        "10 birds sit on a branch. 2 more land. How many birds?",
+        "You have 10 berries. You find 4 more. How many berries?",
         "Try this: 10 + 1",
         "10 + 3 equals ?",
-        "Try this: 10 + 3",
-        "Try this: 10 + 2",
-        "Try this: 10 + 4"
+        "Try this: 10 + 3"
       ]
     },
     {
@@ -399,7 +399,7 @@
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
             "steadyChildGrade": 10,
-            "strugglingChildGrade": 10,
+            "strugglingChildGrade": 9.9,
             "strongChildGrade": 10,
             "openingProbeStep": 0,
             "middleProbeStep": 3,
@@ -422,7 +422,7 @@
           },
           {
             "role": "role-qa-engineer",
-            "grade": 10,
+            "grade": 9.9,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -432,11 +432,11 @@
         }
       },
       "samplePrompts": [
-        "Complete: 4 - 0 = ?",
         "6 - 0 = ?",
-        "Solve: 2 - 0",
         "Complete: 8 - 0 = ?",
-        "How much is 3 - 0?"
+        "Complete: 10 - 0 = ?",
+        "4 - 0 = ?",
+        "Try this: 9 - 0"
       ]
     },
     {
@@ -549,9 +549,9 @@
       "samplePrompts": [
         "Solve: 13 - 4",
         "Solve: 13 - 5",
+        "You have 11 berries. You eat 5. How many are left?",
         "Complete: 13 - 4 = ?",
-        "What is 12 - 4?",
-        "How much is 13 - 4?"
+        "What is 12 - 4?"
       ]
     },
     {
@@ -892,11 +892,11 @@
         }
       },
       "samplePrompts": [
+        "You have 22 berries. You find 2 more. How many berries?",
         "Complete: 24 + 1 = ?",
         "How much is 24 + 3?",
         "How much is 24 + 1?",
-        "23 + 4 = ?",
-        "What is 23 + 1?"
+        "23 + 4 = ?"
       ]
     },
     {
@@ -1122,11 +1122,11 @@
         }
       },
       "samplePrompts": [
+        "You have 24 berries. You eat 2. How many are left?",
         "Complete: 24 - 3 = ?",
         "Complete: 22 - 1 = ?",
         "Complete: 23 - 1 = ?",
-        "24 - 2 =",
-        "Complete: 22 - 2 = ?"
+        "24 - 2 ="
       ]
     },
     {
@@ -1240,8 +1240,8 @@
         "Answer: 23 - 9",
         "Complete: 22 - 6 = ?",
         "21 - 7 equals ?",
-        "What is 24 - 8?",
-        "What is 24 - 6?"
+        "You have 24 berries. You eat 6. How many are left?",
+        "What is 24 - 8?"
       ]
     },
     {
@@ -1548,8 +1548,8 @@
           "grade": 9.9,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 10,
-            "strugglingChildGrade": 9.7,
+            "steadyChildGrade": 9.9,
+            "strugglingChildGrade": 9.9,
             "strongChildGrade": 10,
             "openingProbeStep": 5,
             "middleProbeStep": 28,
@@ -1567,12 +1567,12 @@
           },
           {
             "role": "role-game-designer",
-            "grade": 10,
+            "grade": 9.9,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.7,
+            "grade": 9.9,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -1583,10 +1583,10 @@
       },
       "samplePrompts": [
         "53 + 1 =",
+        "52 birds sit on a branch. 2 more land. How many birds?",
         "Quick check: 51 + 2",
         "Complete: 53 + 1 = ?",
-        "Quick check: 51 + 3",
-        "What is 51 + 3?"
+        "Quick check: 51 + 3"
       ]
     },
     {
@@ -1660,11 +1660,11 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 10,
+          "grade": 9.9,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
             "steadyChildGrade": 10,
-            "strugglingChildGrade": 9.9,
+            "strugglingChildGrade": 9.7,
             "strongChildGrade": 10,
             "openingProbeStep": 4,
             "middleProbeStep": 28,
@@ -1687,7 +1687,7 @@
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.9,
+            "grade": 9.7,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -1700,8 +1700,8 @@
         "Answer: 54 + 8",
         "Answer: 54 + 9",
         "Quick check: 51 + 9",
-        "Answer: 54 + 6",
-        "Answer: 54 + 7"
+        "You have 54 berries. You find 8 more. How many berries?",
+        "You have 52 berries. You find 8 more. How many berries?"
       ]
     },
     {
@@ -1812,18 +1812,18 @@
         }
       },
       "samplePrompts": [
+        "53 birds sit on a branch. 3 fly away. How many are left?",
         "Complete: 54 - 2 = ?",
         "Try this: 54 - 4",
         "Answer: 53 - 3",
-        "Try this: 54 - 3",
-        "Answer: 53 - 2"
+        "Try this: 54 - 3"
       ]
     },
     {
       "batchId": "batch_16_subtraction_50_100_borrow",
       "title": "Subtraction 50-100 with borrow plus lighter-domain variance",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.7,
       "criticalIssues": [],
       "templateReview": {
         "category": {
@@ -1890,10 +1890,10 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.9,
+          "grade": 9.8,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.9,
+            "steadyChildGrade": 9.7,
             "strugglingChildGrade": 9.9,
             "strongChildGrade": 9.9,
             "openingProbeStep": 3,
@@ -1912,7 +1912,7 @@
           },
           {
             "role": "role-game-designer",
-            "grade": 9.9,
+            "grade": 9.7,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
@@ -2163,11 +2163,126 @@
         "Answer: 48 ÷ 6",
         "72 ÷ 6 = ?"
       ]
+    },
+    {
+      "batchId": "batch_19_subtraction_teens_upper",
+      "title": "Subtraction upper teens to 20",
+      "accepted": true,
+      "averageGrade": 9.8,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.6,
+          "summary": "Template coverage is stable: 5 templates, 3 families, steps 9-16.",
+          "metrics": {
+            "templateCount": 5,
+            "familyCount": 3,
+            "minStep": 9,
+            "maxStep": 16,
+            "promptVariantCount": 15,
+            "averageProblemsPerTemplate": 30
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.6,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.7,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 150,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 9.9,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 9.9,
+            "strugglingChildGrade": 9.7,
+            "strongChildGrade": 10,
+            "openingProbeStep": 9,
+            "middleProbeStep": 12,
+            "upperProbeStep": 16,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.9,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 9.7,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "17 - 5 =",
+        "18 - 6 =",
+        "17 - 2 =",
+        "You have 18 berries. You eat 1. How many are left?",
+        "18 - 4 equals ?"
+      ]
     }
   ],
   "runtimeSelectorSmoke": {
     "accepted": true,
-    "averageGrade": 9.9,
+    "averageGrade": 10,
     "summary": "Runtime-aligned owl selector smoke covered the opening path plus a deeper progression probe, with 0 operand-cap breaches, 0 selector-cap breaches, 0 early subtraction unlocks, 0 missed depth unlocks, and 0 exhaustion events.",
     "metrics": {
       "capBreaches": 0,
@@ -2178,32 +2293,32 @@
       "recentWindowFallbackPreserved": true,
       "uninitializedFallbackPreserved": true,
       "currentStepFallbackPreserved": true,
-      "maxOperandSeen": 8,
-      "maxCurriculumStepSeen": 7,
-      "followUpSelections": 124,
-      "alternateFollowUpSelections": 124,
+      "maxOperandSeen": 19,
+      "maxCurriculumStepSeen": 19,
+      "followUpSelections": 0,
+      "alternateFollowUpSelections": 0,
       "followUpAlternateRate": 1,
-      "steadyFirstSubtractionUnlockAttempt": 38,
+      "steadyFirstSubtractionUnlockAttempt": -1,
       "strugglingFirstSubtractionUnlockAttempt": -1,
-      "depthProbeFirstSubtractionUnlockAttempt": 39,
-      "steadyFirstSubtractionSelectionAttempt": 40,
+      "depthProbeFirstSubtractionUnlockAttempt": 25,
+      "steadyFirstSubtractionSelectionAttempt": -1,
       "strugglingFirstSubtractionSelectionAttempt": -1,
-      "depthProbeFirstSubtractionSelectionAttempt": 57,
-      "owlEligibleProblemCount": 757,
-      "owlEligibleUniquePromptCount": 757,
-      "owlEligibleUniqueFactCount": 261,
-      "openingUnlockedInventoryProblemCount": 426,
-      "openingUnlockedInventoryUniquePromptCount": 426,
-      "openingUnlockedInventoryUniqueFactCount": 103,
-      "freshReachableProblemCount": 80,
-      "freshReachableUniquePromptCount": 80,
-      "freshReachableUniqueFactCount": 17,
-      "freshReachableAdditionFactCount": 10,
-      "freshReachableCountingFactCount": 7,
+      "depthProbeFirstSubtractionSelectionAttempt": 36,
+      "owlEligibleProblemCount": 1474,
+      "owlEligibleUniquePromptCount": 1474,
+      "owlEligibleUniqueFactCount": 595,
+      "openingUnlockedInventoryProblemCount": 573,
+      "openingUnlockedInventoryUniquePromptCount": 573,
+      "openingUnlockedInventoryUniqueFactCount": 143,
+      "freshReachableProblemCount": 53,
+      "freshReachableUniquePromptCount": 53,
+      "freshReachableUniqueFactCount": 19,
+      "freshReachableAdditionFactCount": 11,
+      "freshReachableCountingFactCount": 8,
       "openingAdditionStep0Facts": 3,
       "openingAdditionStep1Facts": 3,
-      "openingAdditionStep2Facts": 4,
-      "interactionProblemCount": 2,
+      "openingAdditionStep2Facts": 5,
+      "interactionProblemCount": 1,
       "owlDomains": "addition,counting,pattern_matching,subtraction,comparison,number_sequence",
       "openingUnlockedDomains": "addition,counting"
     },
@@ -2220,7 +2335,7 @@
       },
       {
         "role": "Lead Producer",
-        "grade": 9.7,
+        "grade": 10,
         "rationale": "Depth probe checks actual unlock timing and deeper local-safe selector coverage, not just the opening few facts."
       }
     ],
@@ -2231,7 +2346,7 @@
     "caveats": [
       "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
       "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 757 local-safe rows overall, while a fresh profile currently reaches 80 step-capped rows across addition, counting and 2 problems per owl interaction."
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1474 local-safe rows overall, while a fresh profile currently reaches 53 step-capped rows across addition, counting and 1 problems per owl interaction."
     ]
   }
 }
