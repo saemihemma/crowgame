@@ -37,3 +37,10 @@ output/web/*.br
 
 # Boot-smoke report is a CI check result, not a gated artifact.
 reports/web/
+
+# Playwright run artifacts. The smoke harnesses WRITE these as diagnostics and
+# nothing reads them back — godot_play_smoke.mjs calls itself "a liveness gate
+# rather than a content check", so they are not baselines. Tracking them meant
+# every local smoke run dirtied the working tree, and 28 of them were outputs of
+# tools that no longer exist. CI uploads what it needs as job artifacts.
+output/playwright/
