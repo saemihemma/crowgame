@@ -42,16 +42,18 @@ there.
 
 ## P1 — Correctness and reachability
 
-### The web build has no CI
-`.github/workflows/ci.yml` runs the Godot suite only, and its path filter is
-`godot/**`. Nothing guards the web build on a pull request: `npm run validate`
-(TypeScript, content, docs, assets, the i18n guard) and
-`npm run math:browser-smoke` are all manual today.
+### `output/web/` is a hand-built artifact on the deploy path
+`railway.json` -> `deploy/web/Dockerfile` copies the committed `output/web`
+straight into Caddy, so **whatever is in that directory is the live game**. It is
+produced by running `bash godot/tools/build_web.sh` locally and committing a
+23MB pack plus a 35MB wasm. Nothing checks that it matches `godot/**`, so the
+deployment silently drifted behind the source for an entire feature's worth of
+work.
 
-*Done when:* a workflow runs `npx tsc --noEmit` and `npm run validate` on pull
-requests touching `src/**`, `public/**`, `tools/**` or `admin.html`. The browser
-smoke needs a dev server and a Chromium, so decide separately whether it belongs
-in CI or stays a local gate.
+*Done when:* either CI rebuilds and commits (or publishes) the export when
+`godot/**` changes, or `npm run validate` fails when `output/web/index.pck` is
+older than the newest file under `godot/`. A staleness check is the cheap
+version and would have caught this.
 
 ### Confirm the intended level unlock chain
 On a fresh save only two of six levels are selectable (`level_99` and
@@ -117,16 +119,6 @@ budget in `tools/validate_i18n.mjs`.
 Three or more needs a different pattern, and the fit budget will not catch that.
 
 ## P4 — Build and tooling
-
-### The committed web export carries the old game name
-`output/web/index.pck` is a Godot binary with `Crow` compiled in.
-`godot/project.godot` is already renamed, so a re-export fixes it. Players never
-see it — the browser tab title comes from the export's `index.html`, which is
-correct — so this is cosmetic and internal.
-
-*Note for whoever picks this up:* Godot 4.3 headless runs fine in a container
-(`godot --headless --path godot res://tests/TestRunner.tscn` passes 61/61). The
-missing piece is the export templates, not the engine.
 
 ### Web SFX are generated, not authored
 `tools/gen_sfx.py` synthesizes all 15 effects procedurally and writes them to
