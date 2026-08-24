@@ -1,5 +1,10 @@
 # HUD art slots
 
+Status: Supportive
+Authority: What art files this directory accepts and what each one replaces.
+The fallbacks it describes are drawn in `godot/scripts/ui/hud.gd`.
+Last verified against code: 2026-08-24
+
 Drop a file here and the game uses it on the next run. No wiring.
 
 | File | Size | Used by | Falls back to |
