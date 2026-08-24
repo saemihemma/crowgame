@@ -255,6 +255,9 @@ export interface DomainCurriculumProgress {
     /** Lifetime attempts in this domain. Zero means the child has never met
      *  it — the signal that triggers the worked-example teaching window. */
     totalAttempts: number;
+    /** High-water mark: the highest step ever reached. Only ever rises, so
+     *  the trophy shelf never visibly shrinks after a demotion. */
+    highestStep: number;
 }
 
 export type DomainCurriculumProgressMap = Record<MathDomain, DomainCurriculumProgress>;

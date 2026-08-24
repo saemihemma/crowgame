@@ -1,7 +1,7 @@
 {
   "accepted": true,
   "kind": "browser_math_scene_smoke",
-  "reviewedAt": "2026-08-24T13:35:07.509Z",
+  "reviewedAt": "2026-08-24T15:18:25.317Z",
   "baseUrl": "http://localhost:8080/",
   "viewport": {
     "width": 1920,
@@ -10,21 +10,21 @@
   "whatThisIs": "Literal browser-backed smoke for the live owl interaction, MathChallengeScene input, wrong-answer retry, and the single-problem completion flow.",
   "whatThisIsNot": "Not telemetry-backed pedagogy proof, not an empirical ELO calibration study, and not broad cross-session child replayability evidence.",
   "clearedKeyCount": 0,
-  "firstPrompt": "1 + 3 = ?",
-  "firstProblemId": "cur_add_005",
-  "firstCorrectAnswer": 4,
-  "wrongOptionClicked": 2,
+  "firstPrompt": "2 + 1 = ?",
+  "firstProblemId": "cur_add_003",
+  "firstCorrectAnswer": 3,
+  "wrongOptionClicked": 1,
   "wrongAttemptRegistered": true,
   "singleProblemEncounter": true,
   "completionCount": 1,
   "completionHistory": [
     {
-      "problemId": "cur_add_005",
+      "problemId": "cur_add_003",
       "correct": true,
       "firstAttempt": false,
       "reward": 1,
       "hintsUsed": 1,
-      "responseMs": 1040,
+      "responseMs": 1363,
       "wrongAttempts": 1,
       "freebie": true,
       "golden": false
@@ -82,6 +82,6 @@
       "src/utils/Types.ts",
       "tools/math_browser_smoke.mjs"
     ],
-    "value": "d50e89b28c46e2a835a7e472062a165749f5c6be2d80171618fb111616275f1e"
+    "value": "9cfaaadee60ee96bddd4c47d5b75b2d3d9fafacc77309aa77bb47275fb83c4b3"
   }
 }

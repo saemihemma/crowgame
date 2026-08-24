@@ -113,6 +113,7 @@ func reconcile_curriculum_floors() -> void:
 			if bool(_step_content_provider.call(domain, step)):
 				progress["currentStep"] = step
 				progress["winsAtCurrentStep"] = 0
+				progress["highestStep"] = maxi(int(progress.get("highestStep", 0)), step)
 				break
 
 func get_snapshot() -> Dictionary:
@@ -146,6 +147,11 @@ func get_current_step(domain: String) -> int:
 
 func get_wins_at_current_step(domain: String) -> int:
 	return int(get_snapshot()["curriculumProgress"][domain]["winsAtCurrentStep"])
+
+## Trophy-shelf source: the highest step ever reached in a domain.
+func get_highest_step(domain: String) -> int:
+	var progress: Dictionary = get_snapshot()["curriculumProgress"][domain]
+	return maxi(int(progress.get("highestStep", 0)), int(progress["currentStep"]))
 
 ## Lifetime attempts in a domain; zero triggers the worked-example demo.
 func get_total_attempts(domain: String) -> int:
@@ -270,6 +276,7 @@ func _apply_curriculum_progress(attempt: Dictionary) -> void:
 	if step > int(progress["currentStep"]) and attempt["correct"] and attempt["firstAttempt"]:
 		progress["currentStep"] = step
 		progress["winsAtCurrentStep"] = 0
+		progress["highestStep"] = maxi(int(progress.get("highestStep", 0)), int(progress["currentStep"]))
 
 	if step == int(progress["currentStep"]) and attempt["correct"] and attempt["firstAttempt"]:
 		progress["winsAtCurrentStep"] = int(progress["winsAtCurrentStep"]) + 1
@@ -298,6 +305,7 @@ func _apply_curriculum_progress(attempt: Dictionary) -> void:
 		var next_step := _find_next_step_with_content(domain, int(progress["currentStep"]))
 		if next_step > int(progress["currentStep"]):
 			progress["currentStep"] = next_step
+			progress["highestStep"] = maxi(int(progress.get("highestStep", 0)), next_step)
 			progress["winsAtCurrentStep"] = 0
 
 ## Curriculum step data has authored holes; promotion skips over steps the
@@ -573,14 +581,14 @@ func _create_domain_history_map() -> Dictionary:
 
 func _create_curriculum_progress_map() -> Dictionary:
 	return {
-		"addition": {"currentStep": 2, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
-		"subtraction": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
-		"multiplication": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
-		"division": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
-		"counting": {"currentStep": 2, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
-		"comparison": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
-		"pattern_matching": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
-		"number_sequence": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
+		"addition": {"currentStep": 2, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0, "highestStep": 2},
+		"subtraction": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0, "highestStep": 0},
+		"multiplication": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0, "highestStep": 0},
+		"division": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0, "highestStep": 0},
+		"counting": {"currentStep": 2, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0, "highestStep": 2},
+		"comparison": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0, "highestStep": 0},
+		"pattern_matching": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0, "highestStep": 0},
+		"number_sequence": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0, "highestStep": 0},
 	}
 
 func _merge_number_map(base: Dictionary, over: Dictionary) -> Dictionary:
@@ -612,6 +620,8 @@ func _merge_curriculum_progress(progress: Variant) -> Dictionary:
 			"winsAtCurrentStep": maxi(0, int(p.get("winsAtCurrentStep", 0))),
 			"recentStepResults": _slice_tail(p.get("recentStepResults", []), MAX_STEP_RESULTS),
 			"totalAttempts": maxi(0, int(p.get("totalAttempts", 0))),
+			# Older saves have no highestStep: seed it from the stored step.
+			"highestStep": maxi(maxi(0, int(p.get("currentStep", 0))), int(p.get("highestStep", 0))),
 		}
 	return merged
 
