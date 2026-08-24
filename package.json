@@ -24,7 +24,8 @@
         "validate:i18n": "node tools/validate_i18n.mjs",
         "i18n:screenshots": "node tools/i18n_screenshots.mjs",
         "godot:play-smoke": "node tools/godot_play_smoke.mjs",
-        "locale:play-check": "node tools/locale_play_check.mjs"
+        "locale:play-check": "node tools/locale_play_check.mjs",
+        "locale:pause-check": "node tools/pause_settings_check.mjs"
     },
     "devDependencies": {
         "ajv": "^8.17.1",

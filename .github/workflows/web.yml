@@ -140,6 +140,15 @@ jobs:
           CROW_DEV_URL: http://localhost:8080/
         run: npm run math:browser-smoke
 
+      # Drives the Pause settings and proves the live surfaces re-render: the
+      # touch labels change language with the scene never restarting. Watched
+      # failing when the TouchControls subscription is removed, and it refuses to
+      # pass vacuously if the touch emulation did not apply.
+      - name: Pause settings and live locale re-render
+        env:
+          CROW_DEV_URL: http://localhost:8080/
+        run: npm run locale:pause-check
+
       # Plays a real level in English and in Icelandic and reads the rendered
       # question back out of the game. Everything else compares `prompt.text`,
       # which is canonical English in every locale by design -- so before this

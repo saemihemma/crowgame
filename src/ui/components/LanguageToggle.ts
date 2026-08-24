@@ -47,7 +47,7 @@ interface Segment {
  *    alone. The tick is vector geometry, not a font glyph, so it cannot become
  *    the missing-glyph box that the PIN dots used to be.
  *
- * The flag is there for the child who cannot read yet: at five, "🇮🇸" is
+ * The flag is there for the child who cannot read yet: at five, a flag is
  * recognisable a beat before "Íslenska" is. It sits beside the endonym rather
  * than replacing it, because a flag names a country and not a language -- the
  * word is what actually identifies the choice, and it is also what a player who
