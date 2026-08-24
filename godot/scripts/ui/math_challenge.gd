@@ -112,7 +112,9 @@ func _build_ui(opts: Dictionary) -> void:
 		header.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		var pc := int(opts.get("problemCount", 1))
 		var idx := int(opts.get("currentProblemIndex", 1))
-		var progress := "\nProblem %d of %d" % [idx, pc] if pc > 1 else ""
+		# Was the hardcoded English "Problem %d of %d". The hardcode guard missed
+		# it because it is a format string assigned to a var, not `.text = "..."`.
+		var progress := "\n" + TextManager.t("math.progress", [idx, pc]) if pc > 1 else ""
 		header.text = "%s\n\"%s\"%s" % [name_str, greet, progress]
 		header.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/header_font_size", 22)))
 		vbox.add_child(header)

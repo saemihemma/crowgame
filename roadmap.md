@@ -42,6 +42,29 @@ there.
 
 ## P1 — Correctness and reachability
 
+### The maths questions themselves are still English
+Icelandic is complete for every menu, label and greeting, but the problems a
+child actually reads are not. 2331 of 3000 prompts contain English words --
+"Quick check: 1 + 2", "What is 3 + 4?", "Complete: 5 - 2 = ?". A child playing in
+Icelandic gets an Icelandic shell around English questions, which for a five- to
+seven-year-old is the part that matters most.
+
+It is far more tractable than the raw count suggests: there are 206 distinct
+phrasings and **the top 20 cover 87%** of them. The work is translating a
+templated phrase list, not 2331 strings.
+
+*The blocker is a schema decision, not the translation.* Prompts live at
+`prompt.text` in `public/data/math/*.json` (mirrored under `godot/data/math/`),
+and those pools are covered by `tools/validate-content.ts`, `tools/math_verifier.ts`,
+duplicate-prompt checks and the golden fixtures the Godot parity tests share.
+Options: a per-locale sibling field (`prompt.text_is`), a parallel pool per
+locale, or generating prompts from a template id plus operands at runtime. The
+last is the only one that does not double the content and keeps the arithmetic
+checks meaningful.
+
+*Done when:* a locale decision is recorded in `MATH_SYSTEM_ARCHITECTURE.md` and
+the top-20 phrasings render in Icelandic in the exported build.
+
 ### `output/web/` is a hand-built artifact on the deploy path
 `railway.json` -> `deploy/web/Dockerfile` copies the committed `output/web`
 straight into Caddy, so **whatever is in that directory is the live game**. It is
@@ -65,6 +88,20 @@ stated whether a child is meant to unlock strictly one at a time.
 registry matches it.
 
 ## P2 — Experience decisions that need making
+
+### The on-screen controls are unverified for desktop-web mouse
+`godot/scripts/ui/touch_controls.gd` shows the d-pad whenever
+`OS.has_feature("web")` is true, which includes desktop browsers where the
+player has a mouse. `pointing/emulate_touch_from_mouse` is enabled as the
+documented fix, but it could not be confirmed: synthetic pointer input does not
+reach Godot's TouchScreenButtons in headless Chromium, by Playwright mouse or by
+CDP touch events. The touch path itself is covered by
+`godot/tests/test_touch_controls.gd`.
+
+*Done when:* someone clicks the d-pad with a real mouse in a desktop browser and
+says whether the crow moves. If it does not, the fallback is to hide the controls
+unless `DisplayServer.is_touchscreen_available()`, so desktop players are not
+shown dead buttons.
 
 ### The post-wrong-answer input lockout is long and inconsistent
 After a wrong answer the math board ignores input for roughly three to four
