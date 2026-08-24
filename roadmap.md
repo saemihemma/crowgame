@@ -179,22 +179,16 @@ the fallback, the same way `HealthBar` already falls back for its icons.
 frame survives a two-line prompt without distortion, and replacing one is a PNG
 swap plus insets in the theme file.
 
-### Streak tiers may be unreachable in short levels
-`StreakManager` awards x2 at streak 3 and x3 at streak 5, from
-`brand/BRAND_SYSTEM.md` §10.2. Those numbers were specified without checking
-them against the content: an owl serves `problemCount: 2` problems, so the
-maximum streak in a level is `owls x 2`.
+### Chains have no art
+`behaviorConfig.chainLinks` is live and drives encounter length, but nothing
+draws it. A child cannot tell a one-link owl from a three-link one until they are
+already in the encounter, which defeats the point of having variants — the count
+is supposed to be readable from across the screen so they can choose to come back
+later. `brand/BRAND_SYSTEM.md` §3.4a and `brand/ASSET_MANIFEST.md` P3 carry the
+spec.
 
-That makes x2 reachable everywhere with two or more owls, and x3 reachable only
-in a three-owl level — `level_01` has two owls, caps at 4, and can never see it.
-Verified with `window.__crowMathSmoke.getStreak()`.
-
-Whether that is correct (a top tier that is genuinely rare) or a mistake (a
-reward the tutorial world advertises and cannot deliver) is a balance decision,
-not a UI one.
-
-*Done when:* the tiers are chosen against the real owl counts and problem
-counts, or `problemCount` changes and the tiers are re-derived.
+*Done when:* the link count is visible on the owl before interacting, and a link
+bursts on each correct answer.
 
 ### The HUD has states no screenshot has ever seen
 `tools/theme_screenshots.mjs` now rescues an owl, so the filled ring is covered.

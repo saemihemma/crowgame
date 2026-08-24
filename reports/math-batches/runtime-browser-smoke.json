@@ -1,7 +1,7 @@
 {
   "accepted": true,
   "kind": "browser_math_scene_smoke",
-  "reviewedAt": "2026-08-24T11:09:07.179Z",
+  "reviewedAt": "2026-08-24T13:35:44.154Z",
   "baseUrl": "http://localhost:8080/",
   "viewport": {
     "width": 1920,
@@ -10,31 +10,31 @@
   "whatThisIs": "Literal browser-backed smoke for the live owl interaction, MathChallengeScene input, wrong-answer retry, second-problem follow-up, and completion flow.",
   "whatThisIsNot": "Not telemetry-backed pedagogy proof, not an empirical ELO calibration study, and not broad cross-session child replayability evidence.",
   "clearedKeyCount": 0,
-  "firstPrompt": "Complete: 2 + 2 = ?",
-  "firstProblemId": "auth_batch_01_addition_under_10_doubles_1_5_1rovep8",
-  "firstCorrectAnswer": 4,
-  "wrongOptionClicked": 1,
+  "firstPrompt": "2 + 0 = ?",
+  "firstProblemId": "cur_add_017",
+  "firstCorrectAnswer": 2,
+  "wrongOptionClicked": 0,
   "wrongAttemptRegistered": true,
-  "secondPrompt": "Count these: * * * * * *",
-  "secondProblemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1y8ukke",
+  "secondPrompt": "How many are here: * * * * * *",
+  "secondProblemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_sjzj0n",
   "completionCount": 2,
   "completionHistory": [
     {
-      "problemId": "auth_batch_01_addition_under_10_doubles_1_5_1rovep8",
+      "problemId": "cur_add_017",
       "correct": true,
       "firstAttempt": false,
       "reward": 0,
       "hintsUsed": 1,
-      "responseMs": 5976,
+      "responseMs": 5016,
       "wrongAttempts": 1
     },
     {
-      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1y8ukke",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_sjzj0n",
       "correct": true,
       "firstAttempt": true,
       "reward": 1,
       "hintsUsed": 0,
-      "responseMs": 2834,
+      "responseMs": 2534,
       "wrongAttempts": 0
     }
   ],
@@ -84,6 +84,6 @@
       "src/utils/Types.ts",
       "tools/math_browser_smoke.mjs"
     ],
-    "value": "ea425f4daf43e48ac286e78c60747374e48290a84d88c89487210ba193d12de2"
+    "value": "a717019dc9bb9fb270d745ffb075fdd166d7d4308069f010e395260a6643be1a"
   }
 }

@@ -12300,7 +12300,7 @@
         },
         {
           "id": 2,
-          "name": "owl_teacher_01",
+          "name": "owl_twin_chain",
           "type": "npc",
           "x": 320,
           "y": 512,
@@ -12310,7 +12310,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_twin_chain"
             }
           ]
         },
@@ -12332,7 +12332,7 @@
         },
         {
           "id": 4,
-          "name": "owl_teacher_01",
+          "name": "owl_gentle_01",
           "type": "npc",
           "x": 960,
           "y": 512,
@@ -12342,7 +12342,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_gentle_01"
             }
           ]
         },
@@ -12364,7 +12364,7 @@
         },
         {
           "id": 6,
-          "name": "owl_teacher_01",
+          "name": "owl_tough_01",
           "type": "npc",
           "x": 1600,
           "y": 512,
@@ -12374,7 +12374,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_tough_01"
             }
           ]
         },
@@ -12396,7 +12396,7 @@
         },
         {
           "id": 8,
-          "name": "owl_teacher_01",
+          "name": "owl_triple_chain",
           "type": "npc",
           "x": 2240,
           "y": 512,
@@ -12406,7 +12406,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_triple_chain"
             }
           ]
         },
@@ -12428,7 +12428,7 @@
         },
         {
           "id": 10,
-          "name": "owl_teacher_01",
+          "name": "owl_twin_chain",
           "type": "npc",
           "x": 2880,
           "y": 512,
@@ -12438,7 +12438,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_twin_chain"
             }
           ]
         },
@@ -12460,7 +12460,7 @@
         },
         {
           "id": 12,
-          "name": "owl_teacher_01",
+          "name": "owl_gentle_01",
           "type": "npc",
           "x": 3520,
           "y": 512,
@@ -12470,7 +12470,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_gentle_01"
             }
           ]
         },
@@ -12492,7 +12492,7 @@
         },
         {
           "id": 14,
-          "name": "owl_teacher_01",
+          "name": "owl_tough_01",
           "type": "npc",
           "x": 4160,
           "y": 512,
@@ -12502,7 +12502,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_tough_01"
             }
           ]
         },
@@ -12524,7 +12524,7 @@
         },
         {
           "id": 16,
-          "name": "owl_teacher_01",
+          "name": "owl_triple_chain",
           "type": "npc",
           "x": 4800,
           "y": 512,
@@ -12534,7 +12534,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_triple_chain"
             }
           ]
         },
@@ -12556,7 +12556,7 @@
         },
         {
           "id": 18,
-          "name": "owl_teacher_01",
+          "name": "owl_twin_chain",
           "type": "npc",
           "x": 5440,
           "y": 512,
@@ -12566,7 +12566,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_twin_chain"
             }
           ]
         },
@@ -12588,7 +12588,7 @@
         },
         {
           "id": 20,
-          "name": "owl_teacher_01",
+          "name": "owl_gentle_01",
           "type": "npc",
           "x": 6080,
           "y": 512,
@@ -12598,7 +12598,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_gentle_01"
             }
           ]
         },

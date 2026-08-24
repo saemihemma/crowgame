@@ -206,6 +206,7 @@ than scenery does, because the player is looking straight at them.
 | Coin skin x5 | `32x32` | 6 spin | `public/assets/sprites/ui/coin/<world>_coin.png` | `BootScene` |
 | Door x5 | `88x96` | 6 open | `public/assets/sprites/objects/door/<world>_door.png` | `theme.door.sprite` |
 | Owl station x5 | `64x64` | 2 idle | `public/assets/sprites/objects/owl_station/<world>.png` | level spec props |
+| Chain link x5 | `32x32` | 1 idle + 4 burst | `public/assets/sprites/objects/chain/<world>_link.png` | `behaviorConfig.chainLinks` |
 | Hazard x4 | `32x32` | 4 idle loop | `public/assets/tilesets/<world>_hazards.png` | level spec `hazards` |
 
 Hazards are **two-tone**: a dark base in `hazard_base` and a bright tip in
@@ -220,6 +221,11 @@ ships no hazard by design.
 | Sugarstorm | `#FF3B6B` | `#3A0620` | *none by design* |
 | Geyserworks | `#FF3B0F` | `#160F12` | Steam vent + slag pool |
 | Aurora Spire | `#FF6B8A` | `#4A1030` | Wind shear band |
+
+Chain links are drawn across the owl's perch, one per remaining answer, and burst
+in the world's `enemy_pop` colour as each is broken. The count comes from the
+registry, so a three-link owl reads as *more* before a child commits to it. See
+BRAND_SYSTEM §3.4a.
 
 Coins keep the shipped `32x32` silhouette and the gold `#FFC93C` in every world -
 only the material treatment changes. A child must never have to re-learn what a

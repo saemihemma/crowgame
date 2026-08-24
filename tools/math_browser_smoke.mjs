@@ -147,7 +147,12 @@ async function runSmoke() {
 
         stage = 'start_level';
         lastStage = stage;
-        await page.evaluate(() => window.__crowMathSmoke?.startLevel('level_01'));
+        // The practice arena, not the tutorial. Its first owl is deliberately a
+        // multi-link one (owl_twin_chain), which is what keeps this smoke's
+        // second-problem gate meaningful: the default owl now breaks its chain
+        // on a single answer, so driving level_01 would never reach a second
+        // problem and the gate would fail on a correct game.
+        await page.evaluate(() => window.__crowMathSmoke?.startLevel('level_99'));
         stage = 'wait_for_game_scene';
         lastStage = stage;
         await page.waitForFunction(

@@ -83,6 +83,21 @@ function validateCrossReferences(): void {
         }
     }
 
+    // chainLinks is surfaced for art and the HUD, but it is not a second source
+    // of truth: it must equal the math_challenge component's problemCount.
+    for (const npc of npcReg.npcs as Array<Record<string, unknown>>) {
+        const components = (npc.components ?? []) as Array<Record<string, unknown>>;
+        const math = components.find(c => c.type === 'math_challenge');
+        if (!math) {
+            continue;
+        }
+        const links = (npc.behaviorConfig as Record<string, unknown> | undefined)?.chainLinks;
+        if (links !== undefined && links !== math.problemCount) {
+            console.error(`  FAIL: NPC ${String(npc.id)} chainLinks ${String(links)} != problemCount ${String(math.problemCount)}`);
+            errors++;
+        }
+    }
+
     // Validate level specs reference valid NPCs
     const specsDir = join(DATA_DIR, 'levels', 'specs');
     if (existsSync(specsDir)) {

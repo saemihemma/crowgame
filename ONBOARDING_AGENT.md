@@ -116,7 +116,7 @@ Snapshot as of 2026-03-24:
   - `gaps`: 60
   - `curriculum`: 2885
 - [public/data/levels/level_registry.json](./public/data/levels/level_registry.json) contains 6 levels, including `level_99`.
-- [public/data/npcs/npc_registry.json](./public/data/npcs/npc_registry.json) contains 1 NPC entry.
+- [public/data/npcs/npc_registry.json](./public/data/npcs/npc_registry.json) contains 6 NPC entry definitions.
 - [public/data/enemies/enemy_registry.json](./public/data/enemies/enemy_registry.json) contains 1 enemy type.
 - [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) currently exposes 5 music tracks and 15 live SFX entries.
 - Math UI is currently MCQ-only in [src/ui/components/MathBoard.ts](./src/ui/components/MathBoard.ts).
@@ -181,7 +181,7 @@ Math authoring report boundaries:
 - Use `reports/math-batches/owl-surface-summary.json` when you need the current owl-safe subset, not the full-repo `3000` inventory count.
 - `openingUnlockedInventory*` means unlocked-domain inventory before current-step clamping.
 - `freshReachable*` means the real fresh-profile day-one reachable subset after current-step clamping.
-- Current shipped owl interaction length is `2` problems per owl encounter, and the follow-up problem now prefers an alternate unlocked domain before falling back to the full owl-safe set.
+- Current shipped owl interaction length is `1` problems per owl encounter for the default owl (`owl_teacher_01`), which is what every level in the progression places. Longer encounters are opt-in per NPC: the registry also carries `owl_twin_chain` (2) and `owl_triple_chain` / `owl_gauntlet` (3), and `behaviorConfig.chainLinks` mirrors that count for art and HUD use — `npm run validate` fails if the two disagree. Where an encounter does run long, the follow-up problem prefers an alternate unlocked domain before falling back to the full owl-safe set.
 - That selector smoke is selection-layer evidence built from the shared owl helper plus live learner-state and NPC config; it is not full browser or scene-flow proof by itself.
 - `runtime-browser-smoke.json` is the current browser-backed proof artifact for the live owl interaction, wrong-answer retry, second-problem follow-up, and overlay close path.
 - `runtime-browser-smoke.json` is not telemetry-backed pedagogy proof and not an independent calibration study for the frozen ELO bands.

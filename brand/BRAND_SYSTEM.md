@@ -193,6 +193,42 @@ of the Muddle: symmetrical, round, soft-edged, big calm eyes, no teeth.
 - Owls are **never** drawn caged, bound, or distressed. They are drawn
   **stuck** — wedged in a crack, tangled in vines, sat on a ledge too high.
   Rescue, not liberation from cruelty.
+
+### 3.4a Chains
+
+An owl is held by **chain links**, and **one correct answer breaks one link**.
+
+**The default owl has one link.** A child runs, meets an owl, answers one
+question, the chain snaps, and they are running again. Quick maths and action,
+every time — that is the resting rhythm of the game, and anything slower is the
+exception rather than the norm.
+
+Longer encounters are opt-in, per NPC, from `public/data/npcs/npc_registry.json`:
+
+| Registry id | Links | Band | Where it belongs |
+| --- | --- | --- | --- |
+| `owl_teacher_01` | 1 | 1–2 | the default; use it unless a level wants otherwise |
+| `owl_gentle_01` | 1 | 1–1 | a world's opening beat, or after a run of misses |
+| `owl_tough_01` | 1 | 3–4 | a spike in difficulty that costs no extra time |
+| `owl_twin_chain` | 2 | 1–3 | costs time rather than difficulty |
+| `owl_triple_chain` | 3 | 1–3 | a set piece — it stops the run for a while |
+| `owl_gauntlet` | 3 | 3–5 | reserve for a world's final owl |
+
+`behaviorConfig.chainLinks` mirrors the math component's `problemCount` so art
+and the HUD can read the number without reaching into the component config. It
+is **not** a second source of truth — `npm run validate` fails if the two
+disagree.
+
+**Drawing the chains.** One link per remaining answer, drawn across the owl's
+perch rather than around the owl itself — the owl is stuck, not imprisoned
+(§3.4). A link bursts on each correct answer with the world's `enemy_pop`
+colour, and the last one takes the whole perch with it. A three-link owl must
+read as *more* at a glance, before the child commits to the encounter, so they
+can choose to come back later.
+
+**A consequence worth knowing:** the streak (§10.2) counts answers, not owls, so
+with one-link owls a streak of 3 means three owls rescued in a row — which is
+what makes the tiers reachable at all. See `roadmap.md`.
 - On rescue the owl does one full loop-the-loop, hoots once, and flies off the
   top of the screen. Same animation in every world. That repetition is the point
    — it becomes the sound of success.
