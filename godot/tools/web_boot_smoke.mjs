@@ -47,7 +47,35 @@ async function main() {
         process.exit(1);
     }
 
-    const server = spawn('python3', ['-m', 'http.server', String(PORT)], { cwd: WEB_DIR, stdio: 'ignore' });
+    // Serve the export, and answer /api/* the way production does.
+    //
+    // In a real deploy Caddy always proxies /api/* to the API service, so the
+    // client's session probe gets a JSON answer. A bare static server would 404
+    // it, the browser would log that 404 as a console error, and this smoke would
+    // fail for a reason that does not exist in production. Stubbing the one
+    // endpoint the boot path touches models the real edge.
+    const server = spawn(process.execPath, ['-e', `
+        const http = require('http'), fs = require('fs'), path = require('path');
+        const MIME = { '.html':'text/html', '.js':'text/javascript', '.wasm':'application/wasm',
+            '.pck':'application/octet-stream', '.png':'image/png', '.json':'application/json',
+            '.svg':'image/svg+xml', '.wav':'audio/wav', '.mp3':'audio/mpeg' };
+        http.createServer((req, res) => {
+            if (req.url.startsWith('/api/v1/auth/session')) {
+                res.writeHead(200, {'content-type':'application/json'});
+                return res.end('{"enrolled":false}');
+            }
+            if (req.url.startsWith('/api/')) {
+                res.writeHead(200, {'content-type':'application/json'});
+                return res.end('{}');
+            }
+            const p = path.join(${JSON.stringify(WEB_DIR)}, req.url === '/' ? 'index.html' : decodeURIComponent(req.url.split('?')[0]));
+            fs.readFile(p, (err, body) => {
+                if (err) { res.writeHead(404).end('not found'); return; }
+                res.writeHead(200, {'content-type': MIME[path.extname(p)] || 'application/octet-stream'});
+                res.end(body);
+            });
+        }).listen(${PORT}, '127.0.0.1');
+    `], { stdio: 'ignore' });
     const consoleErrors = [];
     const failedRequests = [];
     let browser;

@@ -60,5 +60,21 @@
   "touch.peck": "GOGGA",
   "touch.zap": "SKJÓTA",
   "boot.loading": "Hleð…",
-  "game.owl_saved": "Uglu bjargað!"
+  "game.owl_saved": "Uglu bjargað!",
+  "cloud_title": "Vistun í netinu",
+  "cloud_off": "Framvinda er aðeins vistuð á þessu tæki",
+  "cloud_on": "Framvinda er vistuð í netinu",
+  "cloud_enable": "Kveiktu á netvistun",
+  "cloud_email_prompt": "Netfang hjá fullorðnum",
+  "cloud_email_send": "Sendu mér hlekk",
+  "cloud_email_sent": "Athugaðu netpóstinn og opnaðu hlekkinn á þessu tæki",
+  "cloud_email_invalid": "Þetta lítur ekki út eins og netfang",
+  "cloud_pair_show": "Bæta við öðru tæki",
+  "cloud_pair_code": "Skrifaðu þennan kóða á hitt tækið: {0}",
+  "cloud_pair_enter": "Ég er með kóða",
+  "cloud_pair_prompt": "Kóði úr hinu tækinu",
+  "cloud_pair_bad": "Kóðinn virkaði ekki. Fáðu nýjan.",
+  "cloud_synced": "Framvinda vistuð",
+  "cloud_offline": "Vistað á þessu tæki, samstillist síðar",
+  "menu.back": "Til baka"
 }

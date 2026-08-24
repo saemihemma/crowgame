@@ -60,5 +60,21 @@
   "hud.owls_label": "Owls {0}",
   "boot.loading": "Loading…",
   "touch.peck": "PECK",
-  "game.owl_saved": "Owl saved!"
+  "game.owl_saved": "Owl saved!",
+  "cloud_title": "Cloud save",
+  "cloud_off": "Progress is saved on this device only",
+  "cloud_on": "Progress is saved to the cloud",
+  "cloud_enable": "Turn on cloud save",
+  "cloud_email_prompt": "A grown-up's email address",
+  "cloud_email_send": "Send me a link",
+  "cloud_email_sent": "Check your email and open the link on this device",
+  "cloud_email_invalid": "That does not look like an email address",
+  "cloud_pair_show": "Add another device",
+  "cloud_pair_code": "Type this code on the other device: {0}",
+  "cloud_pair_enter": "I have a code",
+  "cloud_pair_prompt": "Code from your other device",
+  "cloud_pair_bad": "That code did not work. Ask for a new one.",
+  "cloud_synced": "Progress saved",
+  "cloud_offline": "Saved on this device, will sync later",
+  "menu.back": "Back"
 }

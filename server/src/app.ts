@@ -1,8 +1,11 @@
 import Fastify, { type FastifyInstance } from 'fastify';
 import rateLimit from '@fastify/rate-limit';
+import cookie from '@fastify/cookie';
 import { config } from './config.js';
 import { registerErrorRoutes } from './routes/errors.js';
 import { registerHealthRoutes } from './routes/health.js';
+import { registerAuthRoutes } from './routes/auth.js';
+import { registerFamilyRoutes } from './routes/family.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
     const app = Fastify({
@@ -10,7 +13,9 @@ export async function buildApp(): Promise<FastifyInstance> {
         // network, so the client IP is only available via the forwarded header.
         // Without this, rate limiting would bucket every player together.
         trustProxy: true,
-        bodyLimit: config.errors.maxBodyBytes,
+        // The largest single body is a save blob plus an attempt batch; per-route
+        // bodyLimit narrows it back down for everything else.
+        bodyLimit: config.save.maxBlobBytes + 256 * 1024,
         logger: {
             level: process.env['LOG_LEVEL'] ?? 'info',
             redact: ['req.headers.cookie', 'req.headers.authorization'],
@@ -26,8 +31,13 @@ export async function buildApp(): Promise<FastifyInstance> {
         timeWindow: '1 minute',
     });
 
+    // Device auth is a cookie, so cookie parsing must be registered first.
+    await app.register(cookie, {});
+
     await registerHealthRoutes(app);
     await registerErrorRoutes(app);
+    await registerAuthRoutes(app);
+    await registerFamilyRoutes(app);
 
     app.setNotFoundHandler((_request, reply) => reply.code(404).send({ error: 'not found' }));
 

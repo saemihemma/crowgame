@@ -91,7 +91,19 @@ func _mark_pending(local_snapshot: Dictionary) -> Dictionary:
 	return {"snapshot": pending, "appliedAttemptIds": [], "latestSyncCursor": pending.get("latestSyncCursor")}
 
 ## Returns the configured API base (trailing slash stripped) or null.
+## The learner API base.
+##
+## In a shipped build this is NOT configurable. It used to be read from
+## client-writable storage (crow_learner_api_base), which meant any script on the
+## origin could redirect a child's learning records to a server of its choosing.
+## The real base is the relative path CloudSync uses ("/api/v1"), proxied
+## same-origin per environment — see docs/API_CONTRACT.md.
+##
+## The override survives only in debug builds, for pointing a local editor run at
+## a local API.
 func get_api_base() -> Variant:
+	if not OS.is_debug_build():
+		return null
 	var raw: Variant = Persistence.get_item(API_BASE_KEY)
 	if raw == null:
 		return null
@@ -125,6 +137,18 @@ func _remove_queued_attempts(child_id: String, applied_ids: Array) -> void:
 		if not applied_ids.has(attempt.get("attemptId", "")):
 			kept.append(attempt)
 	_save_queued_attempts(child_id, kept)
+
+## Public queue accessors for CloudSync. The queue, its storage key and its
+## semantics are unchanged: every attempt is enqueued on completion, and only ids
+## the server confirms applied are ever removed.
+func take_pending_attempts(child_id: String, limit: int) -> Array:
+	var queued := get_queued_attempts(child_id)
+	return queued.slice(0, mini(limit, queued.size()))
+
+func confirm_attempts(child_id: String, applied_ids: Array) -> void:
+	if applied_ids.is_empty():
+		return
+	_remove_queued_attempts(child_id, applied_ids)
 
 func get_queued_attempts(child_id: String) -> Array:
 	var raw: Variant = Persistence.get_item(_pending_key(child_id))

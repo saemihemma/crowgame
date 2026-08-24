@@ -51,6 +51,41 @@ export const config = {
         /** Per-IP budget for the one anonymous write endpoint. */
         ratePerMinutePerIp: int('CROW_ERROR_RATE_PER_MIN', 20),
     },
+
+    auth: {
+        /** Magic links are short-lived; a parent clicks them within a minute or two. */
+        linkTtlSeconds: int('CROW_LINK_TTL_SECONDS', 15 * 60),
+        /** Pairing codes are typed by hand on a second device. */
+        pairingTtlSeconds: int('CROW_PAIRING_TTL_SECONDS', 10 * 60),
+        /** Device cookies are long-lived on purpose: a family should not have to
+         *  re-enroll a child's tablet every month. */
+        deviceTokenDays: int('CROW_DEVICE_TOKEN_DAYS', 400),
+        cookieName: str('CROW_COOKIE_NAME', 'crow_device'),
+        /** Secure cookies over plain HTTP would simply not be stored, which
+         *  breaks local development; everything deployed is HTTPS. */
+        cookieSecure: str('CROW_COOKIE_SECURE', 'true') !== 'false',
+        /** Where /auth/consume sends the browser after setting the cookie. */
+        postLoginRedirect: str('CROW_POST_LOGIN_REDIRECT', '/'),
+        requestsPerHourPerIp: int('CROW_LINK_RATE_PER_HOUR', 10),
+    },
+
+    save: {
+        maxBlobBytes: int('CROW_SAVE_MAX_BYTES', 512 * 1024),
+        maxAttemptsPerBatch: int('CROW_ATTEMPTS_MAX_BATCH', 100),
+        /** Retained versions per child, so a bad merge is recoverable. */
+        historyDepth: int('CROW_SAVE_HISTORY_DEPTH', 20),
+        writesPerMinutePerDevice: int('CROW_SAVE_WRITES_PER_MIN', 6),
+    },
+
+    mail: {
+        driver: str('CROW_MAIL_DRIVER', 'log'),
+        endpoint: str('CROW_MAIL_ENDPOINT', ''),
+        apiKey: str('CROW_MAIL_API_KEY', ''),
+        from: str('CROW_MAIL_FROM', 'Crow <no-reply@example.invalid>'),
+    },
+
+    /** Absolute base used to build the magic link, e.g. https://crow.example.com */
+    publicBaseUrl: str('CROW_PUBLIC_BASE_URL', ''),
 } as const;
 
 export function assertDatabaseConfigured(): void {

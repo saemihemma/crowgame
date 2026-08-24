@@ -1,4 +1,6 @@
 extends Control
+
+const CLOUD_PANEL := preload("res://scenes/CloudPanel.tscn")
 ## MainMenu — Godot port of MainMenuScene. Title + Play (and Continue if a save
 ## exists). Keyboard/touch friendly. Login flow is deferred; Play starts the game.
 
@@ -24,7 +26,15 @@ func _ready() -> void:
 		_add_button(col, TextManager.t("menu.continue"), _on_continue)
 	if ProfileManager.get_active_user() != null:
 		_add_button(col, TextManager.t("menu.switch_user"), _on_switch_user)
+	# Cloud save is a grown-up's setting, so it lives behind its own panel rather
+	# than in the child's path through the menu. Web-only: there is no cookie jar
+	# or same-origin proxy on a desktop build.
+	if OS.has_feature("web"):
+		_add_button(col, TextManager.t("cloud_title"), _on_cloud)
 	_add_build_stamp()
+
+func _on_cloud() -> void:
+	add_child(CLOUD_PANEL.instantiate())
 
 ## Tiny build stamp (bottom-right) so phone refreshes visibly confirm a new
 ## build during fast iteration. Written by tools/build_web.sh.

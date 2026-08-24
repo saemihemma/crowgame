@@ -91,6 +91,16 @@ func delete_profile(username: String) -> void:
 		logout()
 	_save()
 
+## Set one field on a stored profile. Used to record the server-issued
+## remoteChildId next to the device-local childId — the local ids stay exactly as
+## they are, so no installed save or snapshot key changes.
+func set_profile_field(username: String, key: String, value: Variant) -> void:
+	for p in _profiles:
+		if String(p.get("username", "")) == username:
+			p[key] = value
+			_save()
+			return
+
 func has_profiles() -> bool:
 	return _profiles.size() > 0
 
