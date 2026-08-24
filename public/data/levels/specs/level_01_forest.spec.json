@@ -82,7 +82,8 @@
         { "x": 106, "y": 16, "target_level": "level_02" }
     ],
     "mathGating": {
-        "skills": ["addition", "counting"],
-        "difficultyBand": [1, 2]
+        "skills": ["counting", "addition"],
+        "difficultyBand": [1, 2],
+        "teachingIntent": "First numbers: count what you see, then add small amounts."
     }
 }

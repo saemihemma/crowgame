@@ -578,6 +578,96 @@ function validateGodotMathDataSync(): void {
 }
 validateGodotMathDataSync();
 
+// The per-level math mixes are a designed curriculum: every level's gating
+// names a teaching intent, its skill order sets the owl's emphasis, and the
+// chain as a whole must cover every skill the owl can serve. These guards
+// keep the design from rotting as specs, registries, or pools change.
+function validateLevelMathGating(): void {
+    const LIVE_DOMAINS = ['addition', 'subtraction', 'counting', 'comparison', 'pattern_matching', 'number_sequence'];
+    const MIN_PROBLEMS_IN_BAND = 30;
+
+    const specsDir = join(DATA_DIR, 'levels', 'specs');
+    if (!existsSync(specsDir)) return;
+
+    type Gating = { skills: string[]; difficultyBand: [number, number]; teachingIntent?: string };
+    const specGating = new Map<string, Gating>();
+    for (const file of readdirSync(specsDir).filter(f => f.endsWith('.spec.json'))) {
+        const spec = JSON.parse(readFileSync(join(specsDir, file), 'utf-8')) as { id: string; mathGating?: Gating };
+        if (!spec.mathGating) {
+            console.error(`  FAIL: ${file} has no mathGating — every level must name its math identity.`);
+            errors++;
+            continue;
+        }
+        if (!spec.mathGating.teachingIntent || spec.mathGating.teachingIntent.trim() === '') {
+            console.error(`  FAIL: ${file} mathGating has no teachingIntent — every gating decision must name the lesson it teaches.`);
+            errors++;
+        }
+        specGating.set(spec.id, spec.mathGating);
+    }
+
+    // The registries are mirrors of the specs, in both ports, byte for byte.
+    const webLevelReg = join(DATA_DIR, 'levels', 'level_registry.json');
+    const godotLevelReg = join(__dirname, '..', 'godot', 'data', 'levels', 'level_registry.json');
+    if (existsSync(webLevelReg) && existsSync(godotLevelReg) &&
+        readFileSync(webLevelReg, 'utf-8') !== readFileSync(godotLevelReg, 'utf-8')) {
+        console.error('  FAIL: godot/data/levels/level_registry.json differs from public/data/levels/level_registry.json.');
+        errors++;
+    }
+    const registry = JSON.parse(readFileSync(webLevelReg, 'utf-8')) as { levels: Array<{ id: string; mathGating?: Gating }> };
+    for (const entry of registry.levels) {
+        const fromSpec = specGating.get(entry.id);
+        if (!fromSpec) continue;
+        if (JSON.stringify(entry.mathGating) !== JSON.stringify(fromSpec)) {
+            console.error(`  FAIL: level_registry mathGating for ${entry.id} differs from its spec. The spec is the author; re-mirror it.`);
+            errors++;
+        }
+    }
+
+    // Every gated skill must be one the owl can actually serve: inside the
+    // NPC superset, and with enough authored problems inside the band.
+    const npcRegistry = JSON.parse(readFileSync(join(DATA_DIR, 'npcs', 'npc_registry.json'), 'utf-8')) as {
+        npcs: Array<{ components: Array<{ type: string; problemTypes?: string[] }> }>;
+    };
+    const owlDomains = new Set(
+        npcRegistry.npcs.flatMap(npc => npc.components).find(c => c.type === 'math_challenge')?.problemTypes ?? [],
+    );
+    const byDomain = new Map<string, MathProblem[]>();
+    for (const file of readdirSync(join(DATA_DIR, 'math')).filter(f => f.endsWith('.json'))) {
+        const pool = JSON.parse(readFileSync(join(DATA_DIR, 'math', file), 'utf-8')) as { problems?: MathProblem[] };
+        for (const problem of pool.problems ?? []) {
+            const list = byDomain.get(problem.domain) ?? [];
+            list.push(problem);
+            byDomain.set(problem.domain, list);
+        }
+    }
+
+    const covered = new Set<string>();
+    for (const [levelId, gating] of specGating) {
+        for (const skill of gating.skills) {
+            covered.add(skill);
+            if (!owlDomains.has(skill)) {
+                console.error(`  FAIL: ${levelId} gates to "${skill}" but the owl's problemTypes cannot serve it.`);
+                errors++;
+                continue;
+            }
+            const [lo, hi] = gating.difficultyBand;
+            const inBand = (byDomain.get(skill) ?? []).filter(p => p.difficulty >= lo && p.difficulty <= hi).length;
+            if (inBand < MIN_PROBLEMS_IN_BAND) {
+                console.error(`  FAIL: ${levelId} gates "${skill}" to band [${lo}, ${hi}] but only ${inBand} problems live there (need ${MIN_PROBLEMS_IN_BAND}).`);
+                errors++;
+            }
+        }
+    }
+    const missing = LIVE_DOMAINS.filter(domain => !covered.has(domain));
+    if (missing.length > 0) {
+        console.error(`  FAIL: no level in the chain teaches: ${missing.join(', ')} — every servable domain needs a home.`);
+        errors++;
+    } else {
+        validated++;
+    }
+}
+validateLevelMathGating();
+
 // Cross-reference validation
 validateCrossReferences();
 validateCompiledLevels();

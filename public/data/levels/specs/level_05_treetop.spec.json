@@ -63,7 +63,8 @@
         { "x": 88, "y": 16, "target_level": "__complete__" }
     ],
     "mathGating": {
-        "skills": ["addition", "subtraction"],
-        "difficultyBand": [1, 4]
+        "skills": ["number_sequence", "addition", "subtraction"],
+        "difficultyBand": [1, 3],
+        "teachingIntent": "What comes next: sequences resting on addition and subtraction."
     }
 }
