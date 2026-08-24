@@ -1,31 +1,66 @@
 extends CanvasLayer
-## HUD — Godot port of HUDScene (HealthBar/CoinCounter/OwlCounter).
-## Driven entirely by EventBus signals so it stays decoupled from gameplay.
-## Built in code for now; SkinPack theming arrives in slice 8.
+## HUD — three pods, per brand/BRAND_SYSTEM.md §8.2.
+##
+## Life on the left, the owl ring on the right, a coin chip that fades when
+## nothing is happening, and a deliberately empty top centre — which is what
+## makes a streak toast read as an event rather than as more HUD.
+##
+## What this replaced: three stacked labels reading "Lives: *** / Coins 20 /
+## Owls 4", which gave the entire goal of the game the same visual authority as
+## a debug readout, at a 16px margin inside the 32px touch safe area.
 
-var _lives_label: Label
-var _coin_label: Label
-var _owl_label: Label
+const MARGIN := 24.0
+const TOUCH_MARGIN := 32.0
+## Vertical breathing room between the two halves of the left pod.
+const POD_GAP := 14.0
 
+## Only used to detect a milestone crossing; the chip owns the displayed value.
 var _coins := 0
-var _owls := 0
-var _lives := 3
+
+var _hearts: HeartRow
+var _coin_chip: CoinChip
+var _owl_ring: OwlRing
 
 func _ready() -> void:
 	layer = 5
 	_build()
 	_build_ability_row()
 	_coins = int(SaveManager.get_data().get("coins", 0))
-	_owls = int(SaveManager.get_data().get("owlsSaved", 0))
-	_refresh()
 	EventBus.coins_changed.connect(_on_coins_changed)
-	EventBus.owl_saved.connect(func(): _owls += 1; _refresh())
-	EventBus.lives_changed.connect(func(l): _lives = l; _refresh())
-	EventBus.player_hurt.connect(_shake_lives)
 	EventBus.ability_granted.connect(_on_ability_granted)
 	EventBus.ability_revoked.connect(_on_ability_revoked)
-	ThemeManager.theme_changed.connect(func(_id): _apply_theme())
-	_apply_theme()
+
+## The safe area is wider on touch, to clear rounded corners and gesture bars.
+func _margin() -> float:
+	return TOUCH_MARGIN if DisplayServer.is_touchscreen_available() else MARGIN
+
+func _build() -> void:
+	var m := _margin()
+
+	# LEFT POD — life.
+	_hearts = HeartRow.new()
+	_hearts.position = Vector2(m, m)
+	add_child(_hearts)
+
+	# Coin chip under the hearts. Idle-fades on its own. The gap is derived from
+	# the heart row rather than guessed, so changing the heart size cannot leave
+	# the two pod halves crowding or drifting apart.
+	_coin_chip = CoinChip.new()
+	_coin_chip.position = Vector2(m, m + HeartRow.HEART + POD_GAP)
+	add_child(_coin_chip)
+
+	# RIGHT POD — the owl ring: the goal anchor, and the biggest thing on the
+	# HUD. Anchored right so it holds the corner at any viewport width. Offsets
+	# rather than position: an anchored Control derives its rect from offsets,
+	# and OwlRing.EXTENT (not RADIUS) is the real outer edge of its ink.
+	_owl_ring = OwlRing.new()
+	_owl_ring.anchor_left = 1.0
+	_owl_ring.anchor_right = 1.0
+	_owl_ring.offset_left = -m - OwlRing.EXTENT * 2.0
+	_owl_ring.offset_right = -m
+	_owl_ring.offset_top = m
+	_owl_ring.offset_bottom = m + OwlRing.EXTENT * 2.0
+	add_child(_owl_ring)
 
 # ─── AbilitySlots (top-right, AbilitySlots.ts) ─────────────
 var _ability_row: HBoxContainer
@@ -34,10 +69,14 @@ var _ability_chips: Dictionary = {}  # abilityId -> Label
 func _build_ability_row() -> void:
 	_ability_row = HBoxContainer.new()
 	_ability_row.add_theme_constant_override("separation", 8)
+	# Bottom right: the top right belongs to the owl ring, and two chips there
+	# would compete with it.
 	_ability_row.anchor_left = 1.0
 	_ability_row.anchor_right = 1.0
+	_ability_row.anchor_top = 1.0
+	_ability_row.anchor_bottom = 1.0
 	_ability_row.offset_left = -176
-	_ability_row.offset_top = 16
+	_ability_row.offset_top = -96
 	_ability_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_ability_row)
 
@@ -61,60 +100,13 @@ func _on_ability_revoked(payload: Dictionary) -> void:
 		_ability_chips[id].queue_free()
 		_ability_chips.erase(id)
 
+## The chip renders its own count; the HUD only owns the milestone celebration.
 func _on_coins_changed(c: int) -> void:
 	var crossed_milestone := c > _coins and (Config.ui("hud/coin_milestones", [10, 25, 50, 100]) as Array).has(c)
 	_coins = c
-	_refresh()
-	if crossed_milestone:
-		# CoinCounter.ts milestone burst at 10/25/50/100.
-		AudioManager.play_event("milestone")
-		DopamineFX.burst(self, _coin_label.global_position + Vector2(80, 12), ThemeManager.get_color_value("coin"), 20)
-		DopamineFX.number_fly_up(self, _coin_label.global_position + Vector2(110, 0), TextManager.t("hud.coins_milestone", [c]))
-
-## HealthBar.ts shakes the bar on hurt.
-func _shake_lives() -> void:
-	if _lives_label == null:
+	if not crossed_milestone:
 		return
-	var origin := _lives_label.position
-	var tw := _lives_label.create_tween()
-	for i in 4:
-		tw.tween_property(_lives_label, "position:x", origin.x + (4 if i % 2 == 0 else -4), 0.04)
-	tw.tween_property(_lives_label, "position:x", origin.x, 0.04)
-
-func _apply_theme() -> void:
-	# Tier-3: HUD accents follow the active skin's palette (restyle on swap).
-	var accent := ThemeManager.get_color_value("accent")
-	_coin_label.add_theme_color_override("font_color", accent)
-	_owl_label.add_theme_color_override("font_color", accent)
-
-func _build() -> void:
-	var root := MarginContainer.new()
-	root.anchor_right = 1.0
-	root.anchor_bottom = 1.0
-	root.add_theme_constant_override("margin_left", 16)
-	root.add_theme_constant_override("margin_top", 12)
-	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(root)
-	var col := VBoxContainer.new()
-	col.add_theme_constant_override("separation", 6)
-	root.add_child(col)
-	_lives_label = _make_label()
-	_coin_label = _make_label()
-	_owl_label = _make_label()
-	col.add_child(_lives_label)
-	col.add_child(_coin_label)
-	col.add_child(_owl_label)
-
-func _make_label() -> Label:
-	var l := Label.new()
-	l.add_theme_font_size_override("font_size", 22)
-	l.add_theme_color_override("font_color", Color.WHITE)
-	l.add_theme_color_override("font_shadow_color", Color.BLACK)
-	l.add_theme_constant_override("shadow_offset_x", 2)
-	l.add_theme_constant_override("shadow_offset_y", 2)
-	return l
-
-func _refresh() -> void:
-	_lives_label.text = TextManager.t("hud.lives", ["*".repeat(maxi(0, _lives))])
-	_coin_label.text = TextManager.t("hud.coins_label", [_coins])
-	_owl_label.text = TextManager.t("hud.owls_label", [_owls])
+	AudioManager.play_event("milestone")
+	var at := _coin_chip.global_position + Vector2(_coin_chip.size.x * 0.5, 16)
+	DopamineFX.burst(self, at, ThemeManager.get_color_value("coin"), 20)
+	DopamineFX.number_fly_up(self, at + Vector2(0, -12), TextManager.t("hud.coins_milestone", [c]))

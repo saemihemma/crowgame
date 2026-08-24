@@ -24,6 +24,11 @@ signal ability_revoked(payload: Dictionary)
 signal coins_changed(coins: int)
 signal stars_changed(stars: int)
 signal owl_saved()
+## How many owls this level holds, emitted on load so the HUD can segment the
+## owl ring before the first rescue.
+signal level_owls(count: int)
+## Consecutive correct answers within the current level.
+signal streak_changed(streak: int)
 signal level_complete(payload: Dictionary)
 signal save_game()
 

@@ -35,6 +35,7 @@ var spawn_point := Vector2.ZERO
 var _shake_time := 0.0
 var _shake_strength := 0.0
 var _flash: ColorRect
+var _sky: TextureRect
 
 func _ready() -> void:
 	coin_count = int(SaveManager.get_data().get("coins", 0))
@@ -49,7 +50,26 @@ func _ready() -> void:
 	if key == "":
 		key = "level_01"
 	LevelManager.set_current_level(key)
+	_apply_level_theme(key)
 	_load_level(key)
+
+## Dress the level in its own world theme before anything reads a colour.
+##
+## Runs before _load_level so the sky, the HUD and every themed component build
+## from the right palette on their first frame rather than being re-tinted after.
+func _apply_level_theme(key: String) -> void:
+	var entry = LevelManager.get_level(key)
+	if entry == null:
+		return
+	var theme_id := String(entry.get("theme", ""))
+	if theme_id == "":
+		return
+	if not ThemeManager.has_theme(theme_id):
+		push_warning("[Game] level '%s' wants unknown theme '%s'; keeping current." % [key, theme_id])
+		return
+	if ThemeManager.get_theme_id() != theme_id:
+		ThemeManager.set_theme(theme_id)
+
 
 func _load_level(key: String) -> void:
 	var entry = LevelManager.get_level(key)
@@ -63,6 +83,8 @@ func _load_level(key: String) -> void:
 	var f := FileAccess.open(map_path, FileAccess.READ)
 	var level: Dictionary = JSON.parse_string(f.get_as_text())
 	f.close()
+
+	_paint_sky()
 
 	_world = Node2D.new()
 	_world.name = "World"
@@ -82,11 +104,76 @@ func _load_level(key: String) -> void:
 		AudioManager.play_music(music)
 	EventBus.coins_changed.emit(coin_count)
 	EventBus.lives_changed.emit(lives)
+	# Deferred by a frame: the HUD is a sibling added in _ready, so on the very
+	# first level it is still building its nodes when we get here and would miss
+	# a same-frame emit. The ring would then sit on its placeholder count.
+	_emit_owl_count.call_deferred()
+
+## How many owls this level asks the player to free. The owl ring draws one
+## segment per owl, so this is what turns the ring from decoration into a
+## progress bar - and it has to come from the level, not a constant, because
+## level_03 has three owls and level_99 has one.
+func _emit_owl_count() -> void:
+	var registry: Dictionary = DataManager.get_dict("NPC_REGISTRY")
+	var by_id := {}
+	for entry in registry.get("npcs", []):
+		by_id[String(entry.get("id", ""))] = entry
+	var owls := 0
+	for s in _parsed.get("spawns", []):
+		if String(s.get("type", "")) != "npc":
+			continue
+		var id := String(s.get("props", {}).get("npc_id", ""))
+		var definition: Dictionary = by_id.get(id, {})
+		# Only challengers count. A signpost NPC is not a goal.
+		if String(definition.get("behavior", "")) == "math_challenger":
+			owls += 1
+	EventBus.level_owls.emit(owls)
 
 ## Data-driven spawning: player_spawn is special (player + camera); every other
 ## object type is looked up in spawn_registry.json -> scene, which self-configures
 ## from the Tiled object via setup_from_spawn(spawn). New object type = new scene
 ## + one registry entry, no code here.
+## Two-stop sky gradient from the active theme.
+##
+## The sky is the largest region of every frame, so a hardcoded colour makes
+## every world look like world 1 - which is exactly what the first capture of
+## this build showed. brand/BRAND_SYSTEM.md section 5.4 owns the layer stack;
+## this is the `sky` layer, scroll factor 0.
+func _paint_sky() -> void:
+	if _sky != null:
+		_sky.queue_free()
+
+	var top := ThemeManager.get_color_value("sky_top")
+	var bottom := ThemeManager.get_color_value("sky_bottom")
+
+	var gradient := Gradient.new()
+	gradient.set_color(0, top)
+	gradient.set_color(1, bottom)
+
+	var texture := GradientTexture2D.new()
+	texture.gradient = gradient
+	texture.fill_from = Vector2(0, 0)
+	texture.fill_to = Vector2(0, 1)
+	texture.width = 8      # the gradient is vertical, so width can be tiny
+	texture.height = 256
+
+	_sky = TextureRect.new()
+	_sky.name = "Sky"
+	_sky.texture = texture
+	_sky.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_sky.stretch_mode = TextureRect.STRETCH_SCALE
+	_sky.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_sky.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	# Its own CanvasLayer below everything, so it neither scrolls with the world
+	# nor needs every other node to declare a z_index.
+	var layer := CanvasLayer.new()
+	layer.name = "SkyLayer"
+	layer.layer = -100
+	layer.add_child(_sky)
+	add_child(layer)
+
+
 func _spawn_entities() -> void:
 	var registry := DataManager.get_dict("SPAWN_REGISTRY")
 	for s in _parsed.get("spawns", []):

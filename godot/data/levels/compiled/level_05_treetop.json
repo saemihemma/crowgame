@@ -5732,7 +5732,7 @@
         },
         {
           "id": 4,
-          "name": "owl_teacher_01",
+          "name": "owl_gauntlet",
           "type": "npc",
           "x": 2400,
           "y": 512,
@@ -5742,7 +5742,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_gauntlet"
             }
           ]
         },
@@ -5996,12 +5996,12 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "name": "forest_tiles",
+      "name": "aurora_spire_tiles",
       "tilewidth": 32,
       "tileheight": 32,
       "tilecount": 16,
       "columns": 4,
-      "image": "../../assets/tilesets/forest_tiles.png",
+      "image": "../../assets/tilesets/aurora_spire_tiles.png",
       "imagewidth": 128,
       "imageheight": 128,
       "tiles": [

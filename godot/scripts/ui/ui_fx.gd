@@ -27,3 +27,23 @@ static func elastic_entrance(node: Control, duration := 0.3) -> void:
 	var tw := node.create_tween().set_parallel(true)
 	tw.tween_property(node, "scale", Vector2.ONE, duration).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.tween_property(node, "modulate:a", 1.0, duration * 0.6)
+
+## Single accessor for the reduced-motion preference so Gate B9 has one place
+## to land when the settings screen ships (Phase 6). Everything decorative in
+## the HUD asks here before it animates.
+static func reduced_motion() -> bool:
+	return bool(Config.ui("a11y/reduced_motion", false))
+
+## Confirmation pop for a HUD icon that just changed meaning (an owl freed, a
+## coin milestone). Overshoot then settle - §9 says rewards arrive fast and
+## leave faster, so the return is longer than the punch but both are under a
+## fifth of a second.
+static func icon_pop(node: Control, strength := 0.18) -> void:
+	if not is_instance_valid(node):
+		return
+	if reduced_motion():
+		return
+	node.pivot_offset = node.size / 2.0
+	var tw := node.create_tween()
+	tw.tween_property(node, "scale", Vector2.ONE * (1.0 + strength), 0.09).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(node, "scale", Vector2.ONE, 0.16).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
