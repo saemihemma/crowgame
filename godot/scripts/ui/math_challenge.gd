@@ -394,7 +394,8 @@ func _on_locale_changed() -> void:
 ## that drives plural agreement. Anything unresolvable falls back to the English,
 ## so a child sees their own language or they see English, never a raw key.
 ##
-## Mirrors src/math/problemPhrasing.ts in the web build.
+## Was mirrored by src/math/problemPhrasing.ts in the retired web build; this is
+## now the only implementation.
 func _localised(field: String) -> String:
 	var english := ""
 	if field == "prompt":

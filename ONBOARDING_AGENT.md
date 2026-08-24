@@ -34,10 +34,9 @@ server/**       THE API.        Node 22 + TS + Postgres. Cloud save, auth, error
 math-kernel/**  THE SPEC.       TS reference for ELO/learner/selection. Never ships.
 tools/**        THE FACTORY.    Offline curriculum authoring + validation. Never ships.
 
-src/  public/  vite/  admin.html   DEAD. Pending deletion. Nothing references
-                                   them, nothing builds them. If a search leads
-                                   you here, you are in the retired Phaser game.
-archived/**                        History. Not runtime, not current, do not cite.
+The retired Phaser tree (src/, public/, vite/, admin.html) and archived/** are
+DELETED, not merely unused. If a doc or comment still points at them, that
+reference is stale — the Godot tree is the only implementation.
 ```
 
 `math-kernel/` earns its keep two ways: it generates

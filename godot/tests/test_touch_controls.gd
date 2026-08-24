@@ -89,7 +89,7 @@ func test_every_touch_button_has_a_hit_shape_covering_its_panel() -> void:
 ## So the press is verified where the event path is real instead of synthetic:
 ## tools/godot_play_smoke.mjs taps the exported build with genuine DOM touch
 ## events in a browser context created with hasTouch. That is the same technique
-## that verifies the web port's touch labels in tools/pause_settings_check.mjs.
+## that verified the web port's touch labels; that port and its checker are gone.
 ##
 ## What stays here is what a headless tree can actually answer: the controls
 ## exist, they are bound to the right actions, and their hit shapes are big
