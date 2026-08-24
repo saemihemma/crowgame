@@ -74,7 +74,12 @@ func _rebuild() -> void:
 		_status.text = TextManager.t("cloud_on")
 		_add_button(TextManager.t("cloud_pair_show"), _on_show_pairing_code)
 	else:
-		_status.text = TextManager.t("cloud_off")
+		# The cheapest protection against a browser discarding a child's progress
+		# is a home-screen install, which is not subject to Safari's seven-day
+		# eviction of script-writable storage. Free, and it works before any
+		# account exists.
+		_status.text = "%s\n\n%s" % [
+			TextManager.t("cloud_off"), TextManager.t("cloud_home_screen")]
 		_email_field = _add_field(TextManager.t("cloud_email_prompt"))
 		_add_button(TextManager.t("cloud_email_send"), _on_send_link)
 		_code_field = _add_field(TextManager.t("cloud_pair_prompt"))
@@ -110,10 +115,18 @@ func _on_send_link() -> void:
 	if not email.contains("@") or not email.contains("."):
 		_status.text = TextManager.t("cloud_email_invalid")
 		return
-	var ok: bool = await CloudSync.request_login_link(email)
-	# Same message either way. Whether the address is already known is not
-	# something to reveal, and the parent's next step is identical.
-	_status.text = TextManager.t("cloud_email_sent") if ok else TextManager.t("cloud_offline")
+	# The message never reveals whether the address is already known — that is
+	# identical for both. But it DOES distinguish "no mail provider configured",
+	# because telling a parent to check an inbox that will never receive anything
+	# is worse than telling them the feature is not ready.
+	var delivery: String = await CloudSync.request_login_link(email)
+	match delivery:
+		"configured":
+			_status.text = TextManager.t("cloud_email_sent")
+		"unavailable":
+			_status.text = TextManager.t("cloud_delivery_unavailable")
+		_:
+			_status.text = TextManager.t("cloud_offline")
 
 func _on_show_pairing_code() -> void:
 	var code: String = await CloudSync.request_pairing_code()

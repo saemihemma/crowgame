@@ -87,6 +87,25 @@ Both are available from the moment anything is stored, not as a later addition:
 
 Ask us and we will do it for you, or use the cloud panel in the game.
 
+## Protecting your child's progress (please read this one)
+
+Browsers throw away stored data. **Safari deletes a website's saved data after
+about seven days of not visiting it** — so a child who plays for a fortnight, then
+takes a two-week holiday, can come back to a brand-new game with their name and
+progress gone.
+
+Two things prevent that, and the first is free:
+
+1. **Add Crow to the Home Screen.** In Safari, tap the Share button and choose
+   "Add to Home Screen". Opened from that icon, the game is treated as an
+   installed app and is not subject to the seven-day rule. It also opens
+   fullscreen with no browser chrome, which is nicer for a child anyway.
+2. **Turn on cloud save** (Cloud save, from the main menu). Progress is then kept
+   on our server too, and follows your child to another device.
+
+If you do neither, the game still works — but the only copy of your child's
+progress is in that browser, and browsers forget.
+
 ## If you would rather use nothing at all
 
 Do not turn on cloud save. The game is fully playable, forever, with nothing ever

@@ -54,7 +54,7 @@ report something privately, see [SECURITY.md](./SECURITY.md).
 # The game, in the Godot editor (Godot 4.3)
 godot --path godot
 
-# The full gate: hardcode guard + 65 unit tests + 6 physics probes
+# The full gate: hardcode guard + 69 unit tests + 6 physics probes
 bash godot/tools/run_tests.sh
 
 # The web build players get

@@ -91,5 +91,7 @@
   "domain_counting": "Counting",
   "domain_comparison": "Bigger or smaller",
   "domain_pattern_matching": "Patterns",
-  "domain_number_sequence": "Number order"
+  "domain_number_sequence": "Number order",
+  "cloud_home_screen": "Tip: add Crow to your Home Screen (Share -> Add to Home Screen). Progress is kept safer there.",
+  "cloud_delivery_unavailable": "Cloud save is not switched on yet on our side. Add Crow to your Home Screen for now — that keeps progress safer."
 }

@@ -58,9 +58,15 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
                 // something to leak, and the parent can retry.
             }
 
-            // Always the same answer, whether or not the address is known.
-            // Anything else turns this endpoint into an account-existence oracle.
-            return reply.code(202).send({ sent: true });
+            // The same answer whether or not the address is known — anything else
+            // turns this into an account-existence oracle. But `delivery` is a
+            // server-config fact, identical for every caller, and withholding it
+            // meant a parent was told "check your email" when no provider was
+            // configured and no email would ever arrive.
+            return reply.code(202).send({
+                sent: mailer.delivers,
+                delivery: mailer.delivers ? 'configured' : 'unavailable',
+            });
         },
     );
 

@@ -81,7 +81,7 @@ Game:
 - **51** `.gd` scripts under `godot/scripts/`, **24** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **15** semantic sound events
-- `godot/data/i18n/strings_en.json`: **93** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **95** keys, matched key-for-key by
   `strings_is.json`
 - **18** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
@@ -123,7 +123,7 @@ Reference kernel:
 - **2** fixture files under `godot/tests/fixtures/**`
 
 Tests, all in:
-- **65** GDScript unit tests, **6** headless physics probes
+- **69** GDScript unit tests, **6** headless physics probes
 - **31** server tests
 - **2** browser harnesses: `web_boot_smoke.mjs` (the export boots) and
   `error_pipeline_e2e.mjs` (browser → API → Postgres)

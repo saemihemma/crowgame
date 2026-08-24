@@ -91,5 +91,7 @@
   "domain_counting": "Talning",
   "domain_comparison": "Stærra eða smærra",
   "domain_pattern_matching": "Mynstur",
-  "domain_number_sequence": "Talnaröð"
+  "domain_number_sequence": "Talnaröð",
+  "cloud_home_screen": "Ábending: settu Crow á heimaskjáinn (Deila -> Setja á heimaskjá). Framvindan er varðveitt betur þar.",
+  "cloud_delivery_unavailable": "Netvistun er ekki komin í gang hjá okkur enn. Settu Crow á heimaskjáinn í bili — það varðveitir framvinduna betur."
 }

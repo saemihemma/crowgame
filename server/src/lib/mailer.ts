@@ -14,9 +14,20 @@ import { config } from '../config.js';
 
 export interface Mailer {
     sendLoginLink(to: string, link: string): Promise<void>;
+    /**
+     * Whether mail actually leaves the building. False for the log driver.
+     *
+     * Exposed so the API can tell the client that enrollment is unavailable
+     * rather than returning a cheerful 202 that makes a parent believe cloud save
+     * is now protecting their child's progress when no email was ever sent.
+     * Reveals nothing about any address: it is the same answer for everyone.
+     */
+    readonly delivers: boolean;
 }
 
 class LogMailer implements Mailer {
+    readonly delivers = false;
+
     async sendLoginLink(to: string, link: string): Promise<void> {
         // Deliberately logged at warn: if this appears in production logs, the
         // mailer is misconfigured and parents are not receiving their links.
@@ -25,6 +36,8 @@ class LogMailer implements Mailer {
 }
 
 class HttpMailer implements Mailer {
+    readonly delivers = true;
+
     constructor(
         private readonly endpoint: string,
         private readonly apiKey: string,

@@ -71,9 +71,19 @@ func _refresh_session() -> void:
 
 ## Ask the server to email a sign-in link. The link must be opened on THIS
 ## device, because clicking it is the top-level navigation that sets the cookie.
-func request_login_link(email: String) -> bool:
+##
+## Returns the server's `delivery` state: "configured" when mail actually goes
+## out, "unavailable" when no provider is set up. That distinction matters because
+## the endpoint deliberately answers the same way for known and unknown addresses
+## — so without it, a parent trying to protect their child's progress would be
+## told "check your email" when nothing was ever sent.
+func request_login_link(email: String) -> String:
 	var res := await _request(HTTPClient.METHOD_POST, "/auth/request-link", {"email": email})
-	return res["ok"]
+	if not res["ok"]:
+		return "error"
+	if res["json"] is Dictionary:
+		return String((res["json"] as Dictionary).get("delivery", "configured"))
+	return "configured"
 
 ## Ask for a code to type into a second device.
 func request_pairing_code() -> String:

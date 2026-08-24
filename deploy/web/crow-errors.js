@@ -150,32 +150,89 @@
         if (document.visibilityState === 'hidden' && queue.length > 0) flush();
     });
 
-    /**
-     * Public hook for the engine boot path and for GDScript.
-     *
-     * The Godot shell calls displayFailureNotice() when startGame() rejects;
-     * that is the single most valuable signal here, because it means the player
-     * saw a broken screen. Godot's own index.html defines that function, so we
-     * wrap whatever is there once the shell has defined it.
-     */
+    /** Public hook, callable from GDScript via JavaScriptBridge. */
     window.crowReportError = function (kind, message, source, stack, level) {
         report(kind, message, source, stack, level);
     };
 
-    window.addEventListener('DOMContentLoaded', function () {
+    /**
+     * Boot funnel.
+     *
+     * Without this, "nobody played" and "everybody's game failed to load" look
+     * identical: an empty errors table. Two info-level events on the existing
+     * endpoint give a denominator.
+     */
+    function beacon(kind, extra) {
         try {
-            if (typeof window.displayFailureNotice === 'function' && !window.displayFailureNotice.__crowWrapped) {
-                var original = window.displayFailureNotice;
-                var wrapped = function (err) {
-                    report('engine_boot', (err && (err.message || String(err))) || 'engine failed to start',
-                        undefined, err && err.stack, 'fatal');
-                    // Flush immediately: the session is over for this player.
-                    flush();
-                    return original.apply(this, arguments);
+            var payload = { release: release, events: [{
+                kind: kind,
+                level: 'info',
+                message: kind,
+                occurredAt: new Date().toISOString(),
+                context: Object.assign(coarseContext(), extra || {}),
+            }] };
+            var request = new XMLHttpRequest();
+            request.open('POST', ENDPOINT, true);
+            request.setRequestHeader('Content-Type', 'application/json');
+            request.send(JSON.stringify(payload));
+        } catch (ignored) { /* a beacon must never break a boot */ }
+    }
+
+    beacon('boot_start');
+
+    /**
+     * Catch an engine boot failure.
+     *
+     * The previous version wrapped window.displayFailureNotice. That was dead
+     * code: the shell declares displayFailureNotice inside its own IIFE and never
+     * puts it on window, and because the shell passes it directly as the
+     * startGame() rejection handler, a boot failure fires neither an `error`
+     * event nor an `unhandledrejection`. So a child seeing the dark-red failure
+     * box produced no report at all.
+     *
+     * Patching Engine.prototype.startGame catches it at the only point both the
+     * shell and this script can see. Engine is defined by the engine script,
+     * which loads after this one, so poll briefly for it.
+     */
+    var patchAttempts = 0;
+    function patchEngine() {
+        patchAttempts += 1;
+        try {
+            if (typeof window.Engine === 'function' && window.Engine.prototype
+                && typeof window.Engine.prototype.startGame === 'function'
+                && !window.Engine.prototype.startGame.__crowWrapped) {
+                var original = window.Engine.prototype.startGame;
+                var wrapped = function () {
+                    var promise = original.apply(this, arguments);
+                    if (promise && typeof promise.then === 'function') {
+                        promise.then(function () {
+                            beacon('boot_engine_started');
+                        }, function (err) {
+                            report('engine_boot',
+                                (err && (err.message || String(err))) || 'engine failed to start',
+                                undefined, err && err.stack, 'fatal');
+                            flush();
+                        });
+                    }
+                    return promise;
                 };
                 wrapped.__crowWrapped = true;
-                window.displayFailureNotice = wrapped;
+                window.Engine.prototype.startGame = wrapped;
+                return;
             }
-        } catch (ignored) { /* the shell shape changed; the global handlers still cover us */ }
-    });
+        } catch (ignored) { /* fall through to retry */ }
+        // ~5s of polling at 100ms. If Engine never appears, the wasm/js failed to
+        // load at all, which the `error` listener above already reports.
+        if (patchAttempts < 50) window.setTimeout(patchEngine, 100);
+    }
+    patchEngine();
+
+    /**
+     * Called from GDScript once the first real scene is up, so `boot_ready`
+     * counts a child who can actually play — not just an engine that started.
+     */
+    window.crowBootReady = function (extra) {
+        beacon('boot_ready', extra);
+    };
+
 })();

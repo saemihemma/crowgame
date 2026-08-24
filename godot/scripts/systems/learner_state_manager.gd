@@ -209,6 +209,21 @@ func _apply_curriculum_progress(attempt: Dictionary) -> void:
 	if step == int(progress["currentStep"]) and attempt["correct"] and attempt["firstAttempt"]:
 		progress["winsAtCurrentStep"] = int(progress["winsAtCurrentStep"]) + 1
 
+	# NOTE: this counts misses in EVERY lane, deliberately, for now.
+	#
+	# Filtering to at_level misses only was tried and reverted. It does fix a real
+	# ratchet (only 25% of problems are at-level, so 5 at-level wins take ~20
+	# attempts while the 5-attempt window slides across all of them, and a missed
+	# skill is re-served for review inside that window). But the measured effect in
+	# the runtime selector simulation was +1 curriculum step in addition and
+	# subtraction NEVER unlocking: the unlock gate needs >=90% first-attempt
+	# accuracy over 20 attempts, and a child held at a higher step answers less
+	# accurately. Trading a whole domain for one step of depth is a pedagogy
+	# decision, not a cleanup.
+	#
+	# Note also that this arm is not the binding constraint anyway: a single miss of
+	# any lane sets confidence to exactly -15.0, and the condition below demotes on
+	# confidence <= -15.0. See docs/PREMORTEM_PUBLIC_LAUNCH.md, Story 3.
 	var recent_domain := _get_projected_recent_attempts(domain, attempt, DEMOTION_WINDOW)
 	var wrong_count := 0
 	for entry in recent_domain:

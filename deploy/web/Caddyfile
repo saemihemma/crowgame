@@ -25,6 +25,14 @@
 :{$PORT:8080} {
 	root * /srv
 
+	# Caddy 2 writes NO access log unless asked. Without this there is not even a
+	# request count to fall back on when the question is "did anyone actually
+	# open it", which is the first question after a public launch.
+	log {
+		output stdout
+		format console
+	}
+
 	# The API is same-origin at /api/*, which is what lets the client use a
 	# relative base ("/api/v1") instead of a configured URL. Consequences worth
 	# spelling out: no CORS, the device cookie is first-party, and staging vs prod

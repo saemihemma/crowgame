@@ -177,16 +177,38 @@ async function main() {
         // window.onerror path is what carries it (not a direct function call).
         await page.evaluate(m => { setTimeout(() => { throw new Error(m); }, 0); }, marker);
 
-        // The reporter batches for ~2 s before sending, so poll rather than
-        // guessing a sleep long enough to cover a slow machine.
-        const deadline = Date.now() + 30_000;
-        while (Date.now() < deadline && !apiCalls.includes(202)) {
-            await page.waitForTimeout(500);
+        // Poll for the ROW, not for "any 202".
+        //
+        // The boot funnel beacons also POST to this endpoint and answer 202
+        // immediately, so waiting on a status code exits before the thrown error
+        // has even been batched — the harness would then assert on an empty table
+        // and blame the client. Waiting for the specific marker is the only
+        // signal that means what it says.
+        const deadline = Date.now() + 40_000;
+        let stored = 0;
+        while (Date.now() < deadline && stored === 0) {
+            const probe = await db.query(
+                'select count(*)::int as n from error_events where message = $1', [marker]);
+            stored = probe.rows[0].n;
+            if (stored === 0) await page.waitForTimeout(500);
         }
-        if (!apiCalls.includes(202)) {
-            fail(`no accepted /api/v1/errors call observed (statuses: ${JSON.stringify(apiCalls)})`);
+        if (stored === 0) {
+            fail(`the thrown error never reached the database (ingest statuses: ${JSON.stringify(apiCalls)})`);
         }
         log(`ingest responses: ${JSON.stringify(apiCalls)}`);
+
+        // The boot funnel must actually have fired. Without these two events an
+        // empty errors table cannot distinguish "nobody played" from "every
+        // launch failed", which is the single most dangerous blind spot for a
+        // public launch.
+        const funnel = await db.query(
+            `select kind, count(*)::int as n from error_events
+              where kind in ('boot_start', 'boot_engine_started', 'boot_ready')
+              group by kind order by kind`);
+        const kinds = funnel.rows.map(r => r.kind);
+        log(`boot funnel   : ${JSON.stringify(funnel.rows)}`);
+        if (!kinds.includes('boot_start')) fail('no boot_start beacon was recorded');
+        if (!kinds.includes('boot_ready')) fail('no boot_ready beacon was recorded — the denominator is missing');
 
         const events = await db.query(
             'select fingerprint, level, kind, release, context from error_events where message = $1', [marker]);

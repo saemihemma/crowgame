@@ -374,6 +374,19 @@ export class LearnerStateManager {
         }
 
         const recentDomainAttempts = this.getProjectedRecentAttempts(attempt.domain, attempt, DEMOTION_WINDOW);
+        // NOTE: this counts misses in EVERY lane, deliberately, for now.
+        //
+        // Filtering to at_level misses only was tried and reverted. It does fix a
+        // real ratchet (only 25% of problems are at-level, so 5 at-level wins take
+        // ~20 attempts while the 5-attempt window slides across all of them, and a
+        // missed skill is re-served for review inside that window). But the
+        // measured effect in the runtime selector simulation was +1 curriculum
+        // step in addition and subtraction NEVER unlocking: the unlock gate needs
+        // >=90% first-attempt accuracy over 20 attempts, and a child held at a
+        // higher step answers less accurately. Trading a whole domain for one step
+        // of depth is a pedagogy decision, not a cleanup.
+        //
+        // See docs/PREMORTEM_PUBLIC_LAUNCH.md, Story 3.
         const wrongCount = recentDomainAttempts.filter(entry => !entry.correct).length;
         const confidenceOffset = this.snapshot.confidenceOffsets[attempt.domain];
         if (wrongCount >= DEMOTION_WRONG_THRESHOLD || confidenceOffset <= -15) {
