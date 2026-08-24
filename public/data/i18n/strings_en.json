@@ -264,5 +264,7 @@
   "math.prompt.word.berries_eat.one": "You have {a} berry. You eat {b}. How many are left?",
   "math.demo_watch": "Watch closely, I will show you!",
   "math.demo_your_turn": "Your turn!",
-  "math.comeback": "You learned it!"
+  "math.comeback": "You learned it!",
+  "theme.forest": "Forest",
+  "theme.scifi": "Sci-Fi"
 }
