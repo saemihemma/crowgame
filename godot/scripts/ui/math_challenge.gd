@@ -120,9 +120,9 @@ func _reveal_answer() -> void:
 			_buttons[i].grab_focus()
 		else:
 			_buttons[i].modulate.a = 0.35
-	var explanation := String(current_problem.get("explanation", ""))
+	var explanation := _localised("explanation")
 	if explanation == "":
-		explanation = String(current_problem.get("hint", ""))
+		explanation = _localised("hint")
 	_show_hint(explanation)
 
 func _show_hint(text: String) -> void:
@@ -165,7 +165,7 @@ func _build_ui(opts: Dictionary) -> void:
 
 	_question_label = Label.new()
 	_question_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var prompt_text := String(current_problem.get("prompt", {}).get("text", ""))
+	var prompt_text := _localised("prompt")
 	_question_label.text = prompt_text
 	# Long prompts (framed questions and word problems) scale down and wrap so
 	# the text always fits (mirrors MathBoard.ts adaptive sizing).
@@ -230,3 +230,37 @@ func _set_buttons_enabled(enabled: bool) -> void:
 func _close() -> void:
 	closed.emit()
 	queue_free()
+
+
+## One of the problem's three sentences, in the active locale.
+##
+## The pools keep prompt.text, hint and explanation in canonical English because
+## tools/math_verifier.ts parses the operands out of prompt.text, the replay key
+## tests it with literal English prefixes, and the golden fixtures compare it byte
+## for byte. Localisation is an overlay: an optional `phrasing` sibling naming an
+## i18n key, its numeric parameters and, where the wording inflects, the parameter
+## that drives plural agreement. Anything unresolvable falls back to the English,
+## so a child sees their own language or they see English, never a raw key.
+##
+## Mirrors src/math/problemPhrasing.ts in the web build.
+func _localised(field: String) -> String:
+	var english := ""
+	if field == "prompt":
+		english = String(current_problem.get("prompt", {}).get("text", ""))
+	else:
+		english = String(current_problem.get(field, ""))
+
+	var phrasing: Variant = current_problem.get("phrasing", null)
+	if not (phrasing is Dictionary):
+		return english
+	var ref: Variant = (phrasing as Dictionary).get(field, null)
+	if not (ref is Dictionary) or not (ref as Dictionary).has("key"):
+		return english
+
+	var entry := ref as Dictionary
+	var rendered := TextManager.tp(
+		String(entry["key"]),
+		entry.get("params", {}),
+		String(entry.get("plural", "")),
+	)
+	return english if rendered.is_empty() else rendered

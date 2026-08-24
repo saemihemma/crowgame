@@ -1,0 +1,552 @@
+{
+  "en": [
+    {
+      "prompt": "1 + 2 = ?",
+      "renderedPrompt": "1 + 2 = ?",
+      "locale": "en",
+      "problemId": "cur_add_002",
+      "correctAnswer": 3,
+      "options": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 2,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 4,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 1,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "2 + 0 = ?",
+      "renderedPrompt": "2 + 0 = ?",
+      "locale": "en",
+      "problemId": "cur_add_017",
+      "correctAnswer": 2,
+      "options": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 2,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 0,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 1,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "How many are here: * * * * *",
+      "renderedPrompt": "How many are here: * * * * *",
+      "locale": "en",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1pw8f4t",
+      "correctAnswer": 5,
+      "options": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 2,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 5,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 1,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 4,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "Count these: * * * * * *",
+      "renderedPrompt": "Count these: * * * * * *",
+      "locale": "en",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_1y8ukke",
+      "correctAnswer": 6,
+      "options": [
+        3,
+        1,
+        5,
+        6
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 6,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 1,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 5,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "What is 2 + 2?",
+      "renderedPrompt": "What is 2 + 2?",
+      "locale": "en",
+      "problemId": "ext_addition_0005",
+      "correctAnswer": 4,
+      "options": [
+        4,
+        3,
+        5,
+        6
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 5,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 6,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 4,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "You have 1 berry. You find 5 more. How many berries?",
+      "renderedPrompt": "You have 1 berry. You find 5 more. How many berries?",
+      "locale": "en",
+      "problemId": "auth_batch_01_addition_under_10_make_6_7_1k169dt",
+      "correctAnswer": 6,
+      "options": [
+        7,
+        5,
+        6,
+        3
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 5,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 7,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 6,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    }
+  ],
+  "is": [
+    {
+      "prompt": "How many stars? * * * * *",
+      "renderedPrompt": "Hvað eru stjörnurnar margar? * * * * *",
+      "locale": "is",
+      "problemId": "count_001",
+      "correctAnswer": 5,
+      "options": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 4,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 6,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 5,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "How many stars? * * * * *",
+      "renderedPrompt": "Hvað eru stjörnurnar margar? * * * * *",
+      "locale": "is",
+      "problemId": "count_001",
+      "correctAnswer": 5,
+      "options": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 4,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 6,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 5,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "2 + 1 = ?",
+      "renderedPrompt": "2 + 1 = ?",
+      "locale": "is",
+      "problemId": "cur_add_003",
+      "correctAnswer": 3,
+      "options": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 2,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 4,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 1,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "2 + 2 = ?",
+      "renderedPrompt": "2 + 2 = ?",
+      "locale": "is",
+      "problemId": "cur_add_004",
+      "correctAnswer": 4,
+      "options": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 4,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 5,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 2,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "0 + 2 = ?",
+      "renderedPrompt": "0 + 2 = ?",
+      "locale": "is",
+      "problemId": "cur_add_016",
+      "correctAnswer": 2,
+      "options": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 2,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 0,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 1,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "How much is 2 + 3?",
+      "renderedPrompt": "Hvað verður 2 + 3?",
+      "locale": "is",
+      "problemId": "add_001",
+      "correctAnswer": 5,
+      "options": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 6,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 4,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 5,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 7,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    },
+    {
+      "prompt": "You have 1 berry. You find 5 more. How many berries?",
+      "renderedPrompt": "Þú hefur 1 ber. Þú finnur 5 í viðbót. Hvað eru berin mörg?",
+      "locale": "is",
+      "problemId": "auth_batch_01_addition_under_10_make_6_7_1k169dt",
+      "correctAnswer": 6,
+      "options": [
+        7,
+        5,
+        6,
+        3
+      ],
+      "wrongAttempts": 0,
+      "optionCenters": [
+        {
+          "value": 5,
+          "x": 294,
+          "y": 350
+        },
+        {
+          "value": 6,
+          "x": 418,
+          "y": 350
+        },
+        {
+          "value": 7,
+          "x": 542,
+          "y": 350
+        },
+        {
+          "value": 3,
+          "x": 666,
+          "y": 350
+        }
+      ],
+      "canvasRect": {
+        "left": 0,
+        "top": 0,
+        "width": 960,
+        "height": 540
+      }
+    }
+  ]
+}

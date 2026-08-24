@@ -84,6 +84,79 @@ export class TextManager {
     }
 
     /**
+     * Resolve a key with NAMED parameters: `t()` substitutes `{0}`, `{1}`, this
+     * substitutes `{a}`, `{op}`, `{sum}`.
+     *
+     * The math pools need names rather than positions. A prompt template is
+     * "What is {a} {op} {b}?" and its Icelandic counterpart may put the operands
+     * in a different order; with positional args the two locales would silently
+     * disagree about which number goes where. Names make the mapping explicit and
+     * checkable, which is what tools/validate_i18n.mjs checks.
+     *
+     * A parameter may itself be a `{ key, params }` reference, which is rendered
+     * first. That is how a prefixed prompt composes: "Mixed fact: {inner}" where
+     * `inner` is the phrasing for "What is 3 × 4?".
+     *
+     * Returns null when the key resolves to nothing, so the caller can fall back
+     * to the canonical English in the problem data rather than render a raw key
+     * at a child.
+     */
+    tp(key: string, params: Record<string, unknown> = {}, plural?: string): string | null {
+        const resolved = this.pluralKey(key, params, plural);
+        const template =
+            this.overrides[this.locale][resolved] ??
+            this.bundles[this.locale][resolved] ??
+            this.bundles[DEFAULT_LOCALE][resolved] ??
+            // A locale that has no `.one` form for this key falls back to the
+            // base key rather than to English, so it keeps its own wording.
+            this.overrides[this.locale][key] ??
+            this.bundles[this.locale][key] ??
+            this.bundles[DEFAULT_LOCALE][key];
+        if (template === undefined) return null;
+        return this.substitute(template, params);
+    }
+
+    /**
+     * Pick the `.one` variant of a key when the number driving it takes the
+     * singular in the ACTIVE locale.
+     *
+     * The rule differs per language and that is the whole reason it lives here
+     * rather than in the data: English inflects at 1, Icelandic at 1 and at
+     * anything else ending in 1 except 11 -- so 21 is "1 hópur" territory but
+     * plain "21 groups" in English. The data names which parameter drives the
+     * agreement (`plural`); each locale decides what to do with its value.
+     */
+    private pluralKey(key: string, params: Record<string, unknown>, plural?: string): string {
+        if (!plural) return key;
+        const value = params[plural];
+        if (typeof value !== 'number') return key;
+        const isOne = this.locale === 'is'
+            ? (value % 10 === 1 && value % 100 !== 11)
+            : value === 1;
+        return isOne ? `${key}.one` : key;
+    }
+
+    private substitute(template: string, params: Record<string, unknown>): string {
+        return template.replace(/\{([a-z][a-z0-9]*)\}/g, (whole, name: string) => {
+            const value = params[name];
+            if (value === undefined || value === null) return whole;
+            if (typeof value === 'object') {
+                const ref = value as { key?: unknown; params?: unknown };
+                if (typeof ref.key !== 'string') return whole;
+                const nested = this.tp(
+                    ref.key,
+                    (ref.params ?? {}) as Record<string, unknown>,
+                    typeof (value as { plural?: unknown }).plural === 'string'
+                        ? (value as { plural: string }).plural
+                        : undefined,
+                );
+                return nested ?? whole;
+            }
+            return String(value);
+        });
+    }
+
+    /**
      * Whether a key exists in any bundle. Lets callers fall back to data that
      * is not translated yet (level names come from the level registry).
      */

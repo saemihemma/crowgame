@@ -33,6 +33,23 @@
       "difficultyTraits": {
         "maxOperand": 3,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 2,
+            "op": "+",
+            "b": 3
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_fingers_then",
+          "params": {
+            "a": 2,
+            "b": 3
+          }
+        }
       }
     },
     {
@@ -68,6 +85,23 @@
       "difficultyTraits": {
         "maxOperand": 5,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 4,
+            "op": "+",
+            "b": 5
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_up_more",
+          "params": {
+            "a": 4,
+            "b": 5
+          }
+        }
       }
     },
     {
@@ -103,6 +137,20 @@
       "difficultyTraits": {
         "maxOperand": 6,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 1,
+            "op": "+",
+            "b": 6
+          }
+        },
+        "hint": {
+          "key": "math.hint.one_plus_six",
+          "params": {}
+        }
       }
     },
     {
@@ -138,6 +186,20 @@
       "difficultyTraits": {
         "maxOperand": 4,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.solve",
+          "params": {
+            "a": 3,
+            "op": "+",
+            "b": 4
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_carefully",
+          "params": {}
+        }
       }
     },
     {
@@ -173,6 +235,22 @@
       "difficultyTraits": {
         "maxOperand": 2,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 2,
+            "op": "+",
+            "b": 2
+          }
+        },
+        "hint": {
+          "key": "math.hint.double_is",
+          "params": {
+            "a": 2
+          }
+        }
       }
     },
     {
@@ -208,6 +286,23 @@
       "difficultyTraits": {
         "maxOperand": 5,
         "requiresBorrow": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 5,
+            "op": "-",
+            "b": 2
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_more",
+          "params": {
+            "a": 5,
+            "b": 2
+          }
+        }
       }
     },
     {
@@ -243,6 +338,22 @@
       "difficultyTraits": {
         "maxOperand": 8,
         "requiresBorrow": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 8,
+            "op": "-",
+            "b": 3
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 8
+          }
+        }
       }
     },
     {
@@ -278,6 +389,23 @@
       "difficultyTraits": {
         "maxOperand": 9,
         "requiresBorrow": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 9,
+            "op": "-",
+            "b": 4
+          }
+        },
+        "hint": {
+          "key": "math.hint.take_from",
+          "params": {
+            "b": 4,
+            "a": 9
+          }
+        }
       }
     },
     {
@@ -313,6 +441,25 @@
       "difficultyTraits": {
         "maxOperand": 7,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 7,
+            "op": "+",
+            "b": 5
+          }
+        },
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 7,
+            "b": 3,
+            "sum": 10,
+            "c": 2
+          }
+        }
       }
     },
     {
@@ -348,6 +495,17 @@
       "difficultyTraits": {
         "maxOperand": 8,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 8,
+            "b": 2,
+            "sum": 10,
+            "c": 4
+          }
+        }
       }
     },
     {
@@ -383,6 +541,17 @@
       "difficultyTraits": {
         "maxOperand": 9,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 9,
+            "b": 1,
+            "sum": 10,
+            "c": 6
+          }
+        }
       }
     },
     {
@@ -418,6 +587,17 @@
       "difficultyTraits": {
         "maxOperand": 8,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 6,
+            "b": 4,
+            "sum": 10,
+            "c": 4
+          }
+        }
       }
     },
     {
@@ -453,6 +633,17 @@
       "difficultyTraits": {
         "maxOperand": 12,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_take_away",
+          "params": {
+            "a": 12,
+            "b": 2,
+            "mid": 10,
+            "c": 3
+          }
+        }
       }
     },
     {
@@ -488,6 +679,14 @@
       "difficultyTraits": {
         "maxOperand": 14,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 14
+          }
+        }
       }
     },
     {
@@ -523,6 +722,17 @@
       "difficultyTraits": {
         "maxOperand": 15,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_take_away",
+          "params": {
+            "a": 15,
+            "b": 5,
+            "mid": 10,
+            "c": 2
+          }
+        }
       }
     },
     {
@@ -558,6 +768,20 @@
       "difficultyTraits": {
         "maxOperand": 23,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.add_tens_ones",
+          "params": {
+            "a": 20,
+            "b": 10,
+            "sum": 30,
+            "c": 3,
+            "d": 5,
+            "sum2": 8,
+            "total": 38
+          }
+        }
       }
     },
     {
@@ -593,6 +817,20 @@
       "difficultyTraits": {
         "maxOperand": 34,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.tens_and_ones_add",
+          "params": {
+            "a": 30,
+            "b": 20,
+            "sum": 50,
+            "c": 4,
+            "d": 2,
+            "sum2": 6,
+            "total": 56
+          }
+        }
       }
     },
     {
@@ -628,6 +866,20 @@
       "difficultyTraits": {
         "maxOperand": 45,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.tens_and_ones_add",
+          "params": {
+            "a": 40,
+            "b": 30,
+            "sum": 70,
+            "c": 5,
+            "d": 1,
+            "sum2": 6,
+            "total": 76
+          }
+        }
       }
     },
     {
@@ -663,6 +915,18 @@
       "difficultyTraits": {
         "maxOperand": 48,
         "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 48,
+            "b": 20,
+            "mid": 28,
+            "c": 3,
+            "diff": 25
+          }
+        }
       }
     },
     {
@@ -698,6 +962,20 @@
       "difficultyTraits": {
         "maxOperand": 56,
         "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.tens_and_ones_sub",
+          "params": {
+            "a": 50,
+            "b": 30,
+            "diff": 20,
+            "c": 6,
+            "d": 4,
+            "diff2": 2,
+            "total": 22
+          }
+        }
       }
     },
     {
@@ -733,6 +1011,20 @@
       "difficultyTraits": {
         "maxOperand": 67,
         "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.tens_and_ones_sub",
+          "params": {
+            "a": 60,
+            "b": 40,
+            "diff": 20,
+            "c": 7,
+            "d": 2,
+            "diff2": 5,
+            "total": 25
+          }
+        }
       }
     },
     {
@@ -767,6 +1059,16 @@
       "curriculumStep": 3,
       "difficultyTraits": {
         "maxOperand": 3
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.groups_makes",
+          "params": {
+            "a": 2,
+            "b": 3
+          },
+          "plural": "a"
+        }
       }
     },
     {
@@ -801,6 +1103,15 @@
       "curriculumStep": 6,
       "difficultyTraits": {
         "maxOperand": 5
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_run_x",
+          "params": {
+            "step": 2,
+            "run": "2, 4, 6, 8, 10"
+          }
+        }
       }
     },
     {
@@ -835,6 +1146,15 @@
       "curriculumStep": 6,
       "difficultyTraits": {
         "maxOperand": 5
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_run_x",
+          "params": {
+            "step": 5,
+            "run": "5, 10"
+          }
+        }
       }
     },
     {
@@ -937,6 +1257,15 @@
       "curriculumStep": 11,
       "difficultyTraits": {
         "maxOperand": 5
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_run_x",
+          "params": {
+            "step": 3,
+            "run": "3, 6, 9, 12, 15"
+          }
+        }
       }
     },
     {
@@ -1005,6 +1334,15 @@
       "curriculumStep": 3,
       "difficultyTraits": {
         "maxOperand": 6
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.how_many_fit",
+          "params": {
+            "b": 2,
+            "a": 6
+          }
+        }
       }
     },
     {
@@ -1039,6 +1377,15 @@
       "curriculumStep": 6,
       "difficultyTraits": {
         "maxOperand": 10
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.split_equal",
+          "params": {
+            "a": 10,
+            "b": 2
+          }
+        }
       }
     },
     {
@@ -1073,6 +1420,15 @@
       "curriculumStep": 10,
       "difficultyTraits": {
         "maxOperand": 12
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.how_many_make",
+          "params": {
+            "b": 3,
+            "a": 12
+          }
+        }
       }
     },
     {
@@ -1107,6 +1463,15 @@
       "curriculumStep": 11,
       "difficultyTraits": {
         "maxOperand": 15
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_until",
+          "params": {
+            "step": 3,
+            "target": 15
+          }
+        }
       }
     },
     {
@@ -1138,7 +1503,28 @@
       "explanation": "After 7 comes 8",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 2
+      "curriculumStep": 2,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.after",
+          "params": {
+            "a": 7
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_up_from",
+          "params": {
+            "a": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.after",
+          "params": {
+            "a": 7,
+            "b": 8
+          }
+        }
+      }
     },
     {
       "id": "ext_counting_0002",
@@ -1169,7 +1555,28 @@
       "explanation": "Before 10 comes 9",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 3
+      "curriculumStep": 3,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.before",
+          "params": {
+            "a": 10
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards_from",
+          "params": {
+            "a": 10
+          }
+        },
+        "explanation": {
+          "key": "math.expl.before",
+          "params": {
+            "a": 10,
+            "b": 9
+          }
+        }
+      }
     },
     {
       "id": "ext_comparison_0001",
@@ -1200,7 +1607,27 @@
       "explanation": "8 is bigger than 5",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 1
+      "curriculumStep": 1,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.cmp.is_bigger",
+          "params": {
+            "a": 5,
+            "b": 8
+          }
+        },
+        "hint": {
+          "key": "math.hint.comes_later",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.bigger",
+          "params": {
+            "a": 8,
+            "b": 5
+          }
+        }
+      }
     },
     {
       "id": "ext_comparison_0002",
@@ -1231,7 +1658,27 @@
       "explanation": "3 is smaller than 7",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 2
+      "curriculumStep": 2,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.cmp.is_smaller",
+          "params": {
+            "a": 3,
+            "b": 7
+          }
+        },
+        "hint": {
+          "key": "math.hint.which_first",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.smaller",
+          "params": {
+            "a": 3,
+            "b": 7
+          }
+        }
+      }
     },
     {
       "id": "ext_pattern_0001",
@@ -1262,7 +1709,22 @@
       "explanation": "The pattern is counting by 2s: 2, 4, 6, 8, 10",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 4
+      "curriculumStep": 4,
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by",
+          "params": {
+            "step": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_count_by",
+          "params": {
+            "step": 2,
+            "run": "2, 4, 6, 8, 10"
+          }
+        }
+      }
     },
     {
       "id": "ext_pattern_0002",
@@ -1293,7 +1755,22 @@
       "explanation": "The pattern is counting by 5s: 5, 10, 15, 20, 25",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 6
+      "curriculumStep": 6,
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by",
+          "params": {
+            "step": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_count_by",
+          "params": {
+            "step": 5,
+            "run": "5, 10, 15, 20, 25"
+          }
+        }
+      }
     },
     {
       "id": "ext_sequence_0001",
@@ -1324,7 +1801,19 @@
       "explanation": "The sequence is: 1, 2, 3, 4, 5",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 1
+      "curriculumStep": 1,
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.what_next_counting",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.sequence_is",
+          "params": {
+            "run": "1, 2, 3, 4, 5"
+          }
+        }
+      }
     },
     {
       "id": "ext_sequence_0002",
@@ -1355,7 +1844,19 @@
       "explanation": "The sequence is counting backwards: 10, 9, 8, 7, 6",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 2
+      "curriculumStep": 2,
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.sequence_backwards",
+          "params": {
+            "run": "10, 9, 8, 7, 6"
+          }
+        }
+      }
     }
   ]
 }

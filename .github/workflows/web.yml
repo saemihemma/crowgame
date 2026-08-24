@@ -137,6 +137,17 @@ jobs:
           CROW_DEV_URL: http://localhost:8080/
         run: npm run math:browser-smoke
 
+      # Plays a real level in English and in Icelandic and reads the rendered
+      # question back out of the game. Everything else compares `prompt.text`,
+      # which is canonical English in every locale by design -- so before this
+      # existed, a build that showed a child nothing but English passed the whole
+      # suite. It also rejects a vacuous pass, where every sampled prompt happened
+      # to be wordless arithmetic and no translated string was ever rendered.
+      - name: Check both locales render
+        env:
+          CROW_DEV_URL: http://localhost:8080/
+        run: npm run locale:play-check
+
       - name: Upload smoke artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -145,4 +156,5 @@ jobs:
           path: |
             reports/math-batches/runtime-browser-smoke.json
             output/playwright/math-browser-smoke/
+            output/playwright/locale-play/
           if-no-files-found: warn

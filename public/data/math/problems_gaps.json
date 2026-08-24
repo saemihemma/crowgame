@@ -33,6 +33,25 @@
       "difficultyTraits": {
         "maxOperand": 6,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 6,
+            "op": "+",
+            "b": 5
+          }
+        },
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 6,
+            "b": 4,
+            "sum": 10,
+            "c": 1
+          }
+        }
       }
     },
     {
@@ -68,6 +87,25 @@
       "difficultyTraits": {
         "maxOperand": 7,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 5,
+            "op": "+",
+            "b": 7
+          }
+        },
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 5,
+            "b": 5,
+            "sum": 10,
+            "c": 2
+          }
+        }
       }
     },
     {
@@ -103,6 +141,15 @@
       "difficultyTraits": {
         "maxOperand": 11,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_from_run",
+          "params": {
+            "a": 11,
+            "run": "10, 9, 8, 7"
+          }
+        }
       }
     },
     {
@@ -138,6 +185,18 @@
       "difficultyTraits": {
         "maxOperand": 13,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 13,
+            "b": 3,
+            "mid": 10,
+            "c": 3,
+            "diff": 7
+          }
+        }
       }
     },
     {
@@ -173,6 +232,18 @@
       "difficultyTraits": {
         "maxOperand": 12,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 12,
+            "b": 2,
+            "mid": 10,
+            "c": 5,
+            "diff": 5
+          }
+        }
       }
     },
     {
@@ -208,6 +279,14 @@
       "difficultyTraits": {
         "maxOperand": 13,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_carefully",
+          "params": {
+            "a": 13
+          }
+        }
       }
     },
     {
@@ -243,6 +322,17 @@
       "difficultyTraits": {
         "maxOperand": 9,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 6,
+            "b": 4,
+            "sum": 10,
+            "c": 5
+          }
+        }
       }
     },
     {
@@ -278,6 +368,17 @@
       "difficultyTraits": {
         "maxOperand": 8,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 7,
+            "b": 3,
+            "sum": 10,
+            "c": 5
+          }
+        }
       }
     },
     {
@@ -313,6 +414,17 @@
       "difficultyTraits": {
         "maxOperand": 9,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 8,
+            "b": 2,
+            "sum": 10,
+            "c": 7
+          }
+        }
       }
     },
     {
@@ -348,6 +460,18 @@
       "difficultyTraits": {
         "maxOperand": 16,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 16,
+            "b": 6,
+            "mid": 10,
+            "c": 1,
+            "diff": 9
+          }
+        }
       }
     },
     {
@@ -383,6 +507,14 @@
       "difficultyTraits": {
         "maxOperand": 17,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 17
+          }
+        }
       }
     },
     {
@@ -417,6 +549,15 @@
       "curriculumStep": 7,
       "difficultyTraits": {
         "maxOperand": 6
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_run_x",
+          "params": {
+            "step": 2,
+            "run": "2, 4, 6, 8, 10, 12"
+          }
+        }
       }
     },
     {
@@ -451,6 +592,16 @@
       "curriculumStep": 8,
       "difficultyTraits": {
         "maxOperand": 7
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.groups_makes",
+          "params": {
+            "a": 2,
+            "b": 7
+          },
+          "plural": "a"
+        }
       }
     },
     {
@@ -486,6 +637,17 @@
       "difficultyTraits": {
         "maxOperand": 13,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 13,
+            "b": 7,
+            "sum": 20,
+            "c": 2
+          }
+        }
       }
     },
     {
@@ -521,6 +683,17 @@
       "difficultyTraits": {
         "maxOperand": 14,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 14,
+            "b": 6,
+            "sum": 20,
+            "c": 2
+          }
+        }
       }
     },
     {
@@ -556,6 +729,17 @@
       "difficultyTraits": {
         "maxOperand": 16,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 16,
+            "b": 4,
+            "sum": 20,
+            "c": 3
+          }
+        }
       }
     },
     {
@@ -591,6 +775,17 @@
       "difficultyTraits": {
         "maxOperand": 17,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 17,
+            "b": 3,
+            "sum": 20,
+            "c": 5
+          }
+        }
       }
     },
     {
@@ -626,6 +821,18 @@
       "difficultyTraits": {
         "maxOperand": 22,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 22,
+            "b": 2,
+            "mid": 20,
+            "c": 6,
+            "diff": 14
+          }
+        }
       }
     },
     {
@@ -661,6 +868,18 @@
       "difficultyTraits": {
         "maxOperand": 21,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 21,
+            "b": 1,
+            "mid": 20,
+            "c": 6,
+            "diff": 14
+          }
+        }
       }
     },
     {
@@ -696,6 +915,18 @@
       "difficultyTraits": {
         "maxOperand": 23,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 23,
+            "b": 3,
+            "mid": 20,
+            "c": 6,
+            "diff": 14
+          }
+        }
       }
     },
     {
@@ -731,6 +962,17 @@
       "difficultyTraits": {
         "maxOperand": 15,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 15,
+            "b": 5,
+            "sum": 20,
+            "c": 4
+          }
+        }
       }
     },
     {
@@ -766,6 +1008,17 @@
       "difficultyTraits": {
         "maxOperand": 18,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 18,
+            "b": 2,
+            "sum": 20,
+            "c": 6
+          }
+        }
       }
     },
     {
@@ -801,6 +1054,17 @@
       "difficultyTraits": {
         "maxOperand": 19,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 19,
+            "b": 1,
+            "sum": 20,
+            "c": 6
+          }
+        }
       }
     },
     {
@@ -836,6 +1100,18 @@
       "difficultyTraits": {
         "maxOperand": 24,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 24,
+            "b": 4,
+            "mid": 20,
+            "c": 5,
+            "diff": 15
+          }
+        }
       }
     },
     {
@@ -871,6 +1147,18 @@
       "difficultyTraits": {
         "maxOperand": 25,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 25,
+            "b": 5,
+            "mid": 20,
+            "c": 3,
+            "diff": 17
+          }
+        }
       }
     },
     {
@@ -905,6 +1193,15 @@
       "curriculumStep": 9,
       "difficultyTraits": {
         "maxOperand": 6
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_run_x",
+          "params": {
+            "step": 3,
+            "run": "3, 6, 9, 12, 15, 18"
+          }
+        }
       }
     },
     {
@@ -974,6 +1271,17 @@
       "difficultyTraits": {
         "maxOperand": 21,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 20,
+            "b": 18,
+            "sum": 38,
+            "c": 1
+          }
+        }
       }
     },
     {
@@ -1009,6 +1317,17 @@
       "difficultyTraits": {
         "maxOperand": 24,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 24,
+            "b": 16,
+            "sum": 40,
+            "c": 1
+          }
+        }
       }
     },
     {
@@ -1044,6 +1363,17 @@
       "difficultyTraits": {
         "maxOperand": 28,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 28,
+            "b": 12,
+            "sum": 40,
+            "c": 4
+          }
+        }
       }
     },
     {
@@ -1079,6 +1409,17 @@
       "difficultyTraits": {
         "maxOperand": 22,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 19,
+            "b": 21,
+            "sum": 40,
+            "c": 1
+          }
+        }
       }
     },
     {
@@ -1114,6 +1455,18 @@
       "difficultyTraits": {
         "maxOperand": 35,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 35,
+            "b": 15,
+            "mid": 20,
+            "c": 3,
+            "diff": 17
+          }
+        }
       }
     },
     {
@@ -1149,6 +1502,18 @@
       "difficultyTraits": {
         "maxOperand": 42,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 42,
+            "b": 12,
+            "mid": 30,
+            "c": 5,
+            "diff": 25
+          }
+        }
       }
     },
     {
@@ -1184,6 +1549,18 @@
       "difficultyTraits": {
         "maxOperand": 38,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 38,
+            "b": 18,
+            "mid": 20,
+            "c": 1,
+            "diff": 19
+          }
+        }
       }
     },
     {
@@ -1252,6 +1629,15 @@
       "curriculumStep": 11,
       "difficultyTraits": {
         "maxOperand": 7
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_run_x",
+          "params": {
+            "step": 4,
+            "run": "4, 8, 12, 16, 20, 24, 28"
+          }
+        }
       }
     },
     {
@@ -1286,6 +1672,15 @@
       "curriculumStep": 10,
       "difficultyTraits": {
         "maxOperand": 24
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.how_many_fit",
+          "params": {
+            "b": 6,
+            "a": 24
+          }
+        }
       }
     },
     {
@@ -1321,6 +1716,17 @@
       "difficultyTraits": {
         "maxOperand": 37,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 30,
+            "b": 28,
+            "sum": 58,
+            "c": 7
+          }
+        }
       }
     },
     {
@@ -1356,6 +1762,17 @@
       "difficultyTraits": {
         "maxOperand": 46,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_subtract",
+          "params": {
+            "a": 46,
+            "b": 40,
+            "sum": 86,
+            "c": 1
+          }
+        }
       }
     },
     {
@@ -1391,6 +1808,17 @@
       "difficultyTraits": {
         "maxOperand": 58,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 58,
+            "b": 22,
+            "sum": 80,
+            "c": 5
+          }
+        }
       }
     },
     {
@@ -1426,6 +1854,18 @@
       "difficultyTraits": {
         "maxOperand": 52,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 52,
+            "b": 22,
+            "mid": 30,
+            "c": 6,
+            "diff": 24
+          }
+        }
       }
     },
     {
@@ -1461,6 +1901,18 @@
       "difficultyTraits": {
         "maxOperand": 64,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 64,
+            "b": 34,
+            "mid": 30,
+            "c": 3,
+            "diff": 27
+          }
+        }
       }
     },
     {
@@ -1495,6 +1947,15 @@
       "curriculumStep": 11,
       "difficultyTraits": {
         "maxOperand": 6
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_run_x",
+          "params": {
+            "step": 5,
+            "run": "5, 10, 15, 20, 25, 30"
+          }
+        }
       }
     },
     {
@@ -1529,6 +1990,17 @@
       "curriculumStep": 12,
       "difficultyTraits": {
         "maxOperand": 7
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_mul",
+          "params": {
+            "a": 5,
+            "b": 6,
+            "product": 30,
+            "c": 5
+          }
+        }
       }
     },
     {
@@ -1563,6 +2035,15 @@
       "curriculumStep": 11,
       "difficultyTraits": {
         "maxOperand": 30
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.how_many_make",
+          "params": {
+            "b": 6,
+            "a": 30
+          }
+        }
       }
     },
     {
@@ -1597,6 +2078,15 @@
       "curriculumStep": 12,
       "difficultyTraits": {
         "maxOperand": 35
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_until",
+          "params": {
+            "step": 7,
+            "target": 35
+          }
+        }
       }
     },
     {
@@ -1632,6 +2122,17 @@
       "difficultyTraits": {
         "maxOperand": 48,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 48,
+            "b": 32,
+            "sum": 80,
+            "c": 5
+          }
+        }
       }
     },
     {
@@ -1667,6 +2168,17 @@
       "difficultyTraits": {
         "maxOperand": 59,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 59,
+            "b": 31,
+            "sum": 90,
+            "c": 4
+          }
+        }
       }
     },
     {
@@ -1702,6 +2214,18 @@
       "difficultyTraits": {
         "maxOperand": 73,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 73,
+            "b": 43,
+            "mid": 30,
+            "c": 5,
+            "diff": 25
+          }
+        }
       }
     },
     {
@@ -1737,6 +2261,18 @@
       "difficultyTraits": {
         "maxOperand": 85,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 85,
+            "b": 45,
+            "mid": 40,
+            "c": 2,
+            "diff": 38
+          }
+        }
       }
     },
     {
@@ -1805,6 +2341,17 @@
       "curriculumStep": 12,
       "difficultyTraits": {
         "maxOperand": 7
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_mul",
+          "params": {
+            "a": 6,
+            "b": 6,
+            "product": 36,
+            "c": 6
+          }
+        }
       }
     },
     {
@@ -1839,6 +2386,15 @@
       "curriculumStep": 11,
       "difficultyTraits": {
         "maxOperand": 36
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.how_many_fit",
+          "params": {
+            "b": 6,
+            "a": 36
+          }
+        }
       }
     },
     {
@@ -1873,6 +2429,15 @@
       "curriculumStep": 12,
       "difficultyTraits": {
         "maxOperand": 42
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_until",
+          "params": {
+            "step": 6,
+            "target": 42
+          }
+        }
       }
     },
     {
@@ -1908,6 +2473,17 @@
       "difficultyTraits": {
         "maxOperand": 67,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 67,
+            "b": 53,
+            "sum": 120,
+            "c": 5
+          }
+        }
       }
     },
     {
@@ -1943,6 +2519,17 @@
       "difficultyTraits": {
         "maxOperand": 79,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.bridge_add",
+          "params": {
+            "a": 79,
+            "b": 21,
+            "sum": 100,
+            "c": 25
+          }
+        }
       }
     },
     {
@@ -1978,6 +2565,18 @@
       "difficultyTraits": {
         "maxOperand": 92,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 92,
+            "b": 52,
+            "mid": 40,
+            "c": 6,
+            "diff": 34
+          }
+        }
       }
     },
     {
@@ -2013,6 +2612,18 @@
       "difficultyTraits": {
         "maxOperand": 83,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.two_step_sub_x",
+          "params": {
+            "a": 83,
+            "b": 63,
+            "mid": 20,
+            "c": 4,
+            "diff": 16
+          }
+        }
       }
     },
     {
@@ -2047,6 +2658,15 @@
       "curriculumStep": 13,
       "difficultyTraits": {
         "maxOperand": 7
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_by_run_x",
+          "params": {
+            "step": 7,
+            "run": "7, 14, 21, 28, 35, 42"
+          }
+        }
       }
     },
     {

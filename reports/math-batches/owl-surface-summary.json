@@ -13,7 +13,7 @@
   ],
   "owlEligibleProblemCount": 1474,
   "owlEligibleUniquePromptCount": 1474,
-  "owlEligibleUniqueFactCount": 590,
+  "owlEligibleUniqueFactCount": 595,
   "domainCounts": {
     "addition": 448,
     "counting": 125,
@@ -24,15 +24,15 @@
   },
   "openingUnlockedInventoryProblemCount": 573,
   "openingUnlockedInventoryUniquePromptCount": 573,
-  "openingUnlockedInventoryUniqueFactCount": 138,
-  "freshReachableProblemCount": 52,
-  "freshReachableUniquePromptCount": 52,
-  "freshReachableUniqueFactCount": 18,
+  "openingUnlockedInventoryUniqueFactCount": 143,
+  "freshReachableProblemCount": 53,
+  "freshReachableUniquePromptCount": 53,
+  "freshReachableUniqueFactCount": 19,
   "freshReachableDomainCounts": {
-    "addition": 23,
+    "addition": 24,
     "counting": 29
   },
-  "freshReachableAdditionFactCount": 10,
+  "freshReachableAdditionFactCount": 11,
   "freshReachableCountingFactCount": 8,
   "currentInteractionProblemCount": 1,
   "owlAdditionByStep": [
@@ -50,26 +50,26 @@
     },
     {
       "step": 2,
-      "rowCount": 11,
-      "uniquePromptCount": 11,
-      "uniqueFactCount": 4
-    },
-    {
-      "step": 3,
-      "rowCount": 49,
-      "uniquePromptCount": 49,
+      "rowCount": 12,
+      "uniquePromptCount": 12,
       "uniqueFactCount": 5
     },
     {
+      "step": 3,
+      "rowCount": 53,
+      "uniquePromptCount": 53,
+      "uniqueFactCount": 9
+    },
+    {
       "step": 4,
-      "rowCount": 37,
-      "uniquePromptCount": 37,
+      "rowCount": 34,
+      "uniquePromptCount": 34,
       "uniqueFactCount": 5
     },
     {
       "step": 5,
-      "rowCount": 33,
-      "uniquePromptCount": 33,
+      "rowCount": 32,
+      "uniquePromptCount": 32,
       "uniqueFactCount": 5
     }
   ]

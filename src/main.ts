@@ -9,6 +9,7 @@ import { MathChallengeScene } from './scenes/MathChallengeScene';
 import { PauseScene } from './scenes/PauseScene';
 import { GAME_WIDTH, GAME_HEIGHT, DEFAULT_GRAVITY, SCENES } from './utils/Constants';
 import { EventBus, GameEvents } from './utils/EventBus';
+import { TextManager } from './systems/TextManager';
 
 const prefersDesktopIntegerScaling = (): boolean =>
     window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -104,8 +105,11 @@ if (import.meta.env.DEV) {
         __crowMathSmoke?: {
             startLevel: (levelKey?: string) => boolean;
             triggerFirstOwlInteraction: () => boolean;
+            getLocale: () => string;
             getMathState: () => {
                 prompt: string;
+                renderedPrompt: string | null;
+                locale: string;
                 problemId: string;
                 correctAnswer: number;
                 options: number[];
@@ -146,6 +150,8 @@ if (import.meta.env.DEV) {
     };
 
     debugWindow.__crowMathSmoke = {
+        // The active locale, readable before a problem is on screen.
+        getLocale: () => TextManager.getInstance().getLocale(),
         startLevel: (levelKey = 'level_01') => {
             stopSceneIfActive(SCENES.MATH_CHALLENGE);
             stopSceneIfActive(SCENES.PAUSE);
@@ -176,6 +182,7 @@ if (import.meta.env.DEV) {
                 mathBoard?: {
                     container?: Phaser.GameObjects.Container;
                     optionButtons?: Phaser.GameObjects.Container[];
+                    getRenderedQuestion?: () => string;
                 };
                 currentProblem?: {
                     id: string;
@@ -211,7 +218,15 @@ if (import.meta.env.DEV) {
                 : null;
 
             return {
+                // The canonical English, which the smoke's independent arithmetic
+                // check parses operands out of. Never localised.
                 prompt: scene.currentProblem.prompt.text,
+                // What is actually on the board right now, in the active locale.
+                // Without this a harness cannot tell a localised build from an
+                // English one -- the canvas is WebGL, so there is no text to read
+                // back, and the smoke passed identically either way.
+                renderedPrompt: scene.mathBoard?.getRenderedQuestion?.() ?? null,
+                locale: TextManager.getInstance().getLocale(),
                 problemId: scene.currentProblem.id,
                 correctAnswer: scene.currentProblem.answer.correct,
                 options: [...(scene.currentProblem.answer.options ?? [])],

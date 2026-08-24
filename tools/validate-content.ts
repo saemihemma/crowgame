@@ -274,7 +274,21 @@ function validateMaterializedCurriculum(): MaterializationResult | null {
     const materialized = materializeMathBatches();
     const current = loadJson(currentPath);
 
-    if (JSON.stringify(current) !== JSON.stringify(materialized.curriculumPool)) {
+    /**
+     * Compare without the phrasing overlay.
+     *
+     * `phrasing` is derived on top of a materialized pool by
+     * tools/derive_math_phrasing.mjs, so the materializer does not and should not
+     * produce it. Comparing it here would report permanent drift on a pool that
+     * is exactly right. The overlay has its own gates in tools/validate_i18n.mjs:
+     * every entry must round-trip through its English template, agree with the
+     * problem's own answer, and be present wherever there is English to
+     * translate.
+     */
+    const withoutPhrasing = (pool: unknown) => JSON.stringify(pool, (key, value) =>
+        (key === 'phrasing' ? undefined : value));
+
+    if (withoutPhrasing(current) !== withoutPhrasing(materialized.curriculumPool)) {
         console.error('  FAIL: Materialized curriculum drift detected. Run npm.cmd run math:materialize.');
         errors++;
     }

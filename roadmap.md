@@ -42,29 +42,6 @@ there.
 
 ## P1 — Correctness and reachability
 
-### The maths questions themselves are still English
-Icelandic is complete for every menu, label and greeting, but the problems a
-child actually reads are not. 2331 of 3000 prompts contain English words --
-"Quick check: 1 + 2", "What is 3 + 4?", "Complete: 5 - 2 = ?". A child playing in
-Icelandic gets an Icelandic shell around English questions, which for a five- to
-seven-year-old is the part that matters most.
-
-It is far more tractable than the raw count suggests: there are 206 distinct
-phrasings and **the top 20 cover 87%** of them. The work is translating a
-templated phrase list, not 2331 strings.
-
-*The blocker is a schema decision, not the translation.* Prompts live at
-`prompt.text` in `public/data/math/*.json` (mirrored under `godot/data/math/`),
-and those pools are covered by `tools/validate-content.ts`, `tools/math_verifier.ts`,
-duplicate-prompt checks and the golden fixtures the Godot parity tests share.
-Options: a per-locale sibling field (`prompt.text_is`), a parallel pool per
-locale, or generating prompts from a template id plus operands at runtime. The
-last is the only one that does not double the content and keeps the arithmetic
-checks meaningful.
-
-*Done when:* a locale decision is recorded in `MATH_SYSTEM_ARCHITECTURE.md` and
-the top-20 phrasings render in Icelandic in the exported build.
-
 ### `output/web/` is a hand-built artifact on the deploy path
 `railway.json` -> `deploy/web/Dockerfile` copies the committed `output/web`
 straight into Caddy, so **whatever is in that directory is the live game**. It is
@@ -77,6 +54,17 @@ work.
 `godot/**` changes, or `npm run validate` fails when `output/web/index.pck` is
 older than the newest file under `godot/`. A staleness check is the cheap
 version and would have caught this.
+
+### `math.expl.sub` loses the English's concrete register
+The English explanations deliberately use a five-year-old's words -- "8 take away
+5 leaves 3" -- while the Icelandic says "8 mínus 5 gerir 3", which is the
+arithmetic register. It is correct and it is what an Icelandic worksheet says,
+but it is a shade more formal than the English it translates. The same applies to
+`math.expl.add` ("plús" for "plus" is fine, but "gerir" for "makes" is flatter
+than the English).
+
+*Done when:* a native-speaking teacher has read the 32 `math.expl.*` strings
+aloud to a child in the target age band and either kept them or replaced them.
 
 ### Confirm the intended level unlock chain
 On a fresh save only two of six levels are selectable (`level_99` and
@@ -206,11 +194,15 @@ appears to be unimplemented in both ports, which is what the last two are for.
 `level_99` (practice) plus five real ones. More content is the main lever on how
 long a child stays with the game.
 
-### A third locale is now cheap
+### A third locale is now cheap, but no longer trivial
 The engine is generic. Adding one means: a bundle in all four locations,
 `LOCALES` in `src/systems/TextManager.ts`, `LOCALE_FILES` and `LOCALE_ENDONYMS`
 in `godot/scripts/autoload/text_manager.gd`, an endonym, and a pass of the fit
 budget in `tools/validate_i18n.mjs`.
+
+*It is 239 keys now, not 71.* 168 of them are math phrasing templates. They are
+short and formulaic, but a new locale is a real translation job rather than an
+afternoon.
 
 *Watch out:* the selector is a segmented control sized for exactly two options.
 Three or more needs a different pattern, and the fit budget will not catch that.
@@ -249,3 +241,36 @@ of completed tasks.** Do not add finished work here.
   language, and English has no single one.
 - **The dated review documents under `docs/` still say "Crow".** They are
   historical records; rewriting them would be revisionist.
+- **`prompt.text`, `hint` and `explanation` stay canonical English.** Four
+  things read them and would break if they became Icelandic:
+  `tools/math_verifier.ts` recomputes every answer by parsing operands out of
+  `prompt.text` and is the only independent arithmetic check;
+  `src/math/problemReplayKey.ts` builds the anti-repeat key from it with literal
+  tests like `startsWith('count these:')`; `buildPromptUniquenessKey` dedupes the
+  pools on it; and the golden fixtures shared with the Godot parity tests compare
+  it byte for byte. Localisation is a render-time overlay through the optional
+  `phrasing` sibling, never a data rewrite.
+- **Math phrasing parameters carry no natural language.** Numbers, the operator
+  symbol, a glyph run, a comma-joined number list. Every word lives in a template
+  in the bundles, so it inherits the glyph allowlist, lockstep, placeholder
+  parity and fit budget. A prefixed prompt nests one template inside another
+  rather than pre-rendering its inner text.
+- **A phrasing derivation must agree with the problem's own answer.** Round-
+  tripping a derivation through its own template proves nothing on its own --
+  the matchers are generated from the templates, so two deliberate corruptions
+  round-tripped 3000/3000 clean. The gate that works is arithmetic agreement with
+  `answer.correct`, plus the measured operand-order invariant for the 62
+  templates where `{a}`/`{b}` are the prompt's operands. See
+  `tools/math_phrasing_catalog.mjs`.
+- **Icelandic explanations say "gerir", not "er"/"eru".** Icelandic verb
+  agreement follows the numeral -- "2 plús 3 eru 5" but "4 mínus 3 er 1" -- and
+  the result is a parameter, so any agreeing verb is wrong for some values.
+  "gerir" is invariant, idiomatic in teaching, and a literal rendering of the
+  English "makes". Where a phrasing cannot avoid the verb, the sentence drops it
+  instead ("Bara {diff} eftir!") rather than guess.
+- **Plural agreement is a per-locale rule applied at render time.** A phrasing
+  that inflects names the parameter that drives it (`plural`) and carries a
+  `.one` sibling in every bundle; each runtime resolves the category itself.
+  English inflects at 1, Icelandic at 1, 21, 31 and so on, so the resolved
+  category is deliberately NOT stored in the pools -- baking English's rule into a
+  locale-neutral field works only until a problem contains 21.

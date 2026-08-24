@@ -5,6 +5,7 @@ import { EventBus } from '../../utils/EventBus';
 import { GAME_WIDTH, GAME_HEIGHT } from '../../utils/Constants';
 import { TextManager } from '../../systems/TextManager';
 import type { MathProblem, MCQAnswer } from '../../utils/Types';
+import { localisedExplanation, localisedHint, localisedPrompt } from '../../math/problemPhrasing';
 
 /**
  * Themed math question board UI component.
@@ -27,6 +28,45 @@ export class MathBoard {
     private readonly boardW = 520;
     private readonly boardH = 280;
 
+    /**
+     * The question's box.
+     *
+     * A font size picked from the prompt's character count is a guess, and it was
+     * guessing against measured data: 2050 of the 3000 English prompts overflow a
+     * fixed 56px in a 520px board, the longest by about 2400px -- two and a half
+     * times the whole canvas. Icelandic is not what breaks this (its longest
+     * prompt is one character longer) but it does mean a guess is not good enough,
+     * because the same character count is a different width in another language.
+     *
+     * So the size is measured instead: wrap, measure the rendered height, and step
+     * down until it fits. tools/validate_i18n.mjs proves every prompt and hint in
+     * both locales fits at the floor, which is what makes the floor unreachable.
+     *
+     * The band runs from the text's top edge to the option buttons, which sit at
+     * local y 40 with height 60, so their top edge is at 10.
+     */
+    private static readonly QUESTION_MAX_SIZE = 56;
+    private static readonly QUESTION_MIN_SIZE = 20;
+    private static readonly QUESTION_MAX_W = 460;
+    private static readonly QUESTION_MAX_H = 96;
+
+    /**
+     * The hint's box, which used to be inside the board and could not work there.
+     *
+     * The hint was anchored bottom-up at local y 110, leaving 40px of clearance
+     * above the option buttons. A two-line hint at 24px is 58px and a three-line
+     * one is 86px, so it drew straight over the answers -- and that was already
+     * true in English: "You have 8, take away 5. Think: 5 + 3 = 8, so 3 are left!"
+     * is 57 characters. Covering the buttons at the moment a child has answered
+     * wrong and is reaching for another one is about the worst place for it.
+     *
+     * The board is 280 tall and centred at y 310 on a 540 canvas, so it ends at
+     * 450 and the 90px below it is empty. The hint lives there now.
+     */
+    private static readonly HINT_MAX_SIZE = 24;
+    private static readonly HINT_MIN_SIZE = 16;
+    private static readonly HINT_MAX_H = 72;
+
     constructor(scene: Phaser.Scene, cx?: number, cy?: number) {
         this.scene = scene;
         const x = cx ?? GAME_WIDTH / 2;
@@ -48,27 +88,28 @@ export class MathBoard {
         this.drawBoardBackground(this.boardW, this.boardH);
         this.container.add(this.boardBg);
 
-        // Question text (larger font for readability)
-        this.questionText = this.scene.add.text(0, -this.boardH / 2 + 50, '', {
-            fontSize: '56px',
+        // Question text. Word-wrapped and auto-sized -- see fitInto().
+        this.questionText = this.scene.add.text(0, -this.boardH / 2 + 44, '', {
+            fontSize: `${MathBoard.QUESTION_MAX_SIZE}px`,
             fontFamily: tm.getTheme().hud.font || 'monospace',
             color: tm.getColor('textColor'),
             stroke: tm.getColor('textShadow'),
             strokeThickness: 5,
             align: 'center',
+            wordWrap: { width: MathBoard.QUESTION_MAX_W },
         }).setOrigin(0.5, 0);
         this.container.add(this.questionText);
 
-        // Hint text (hidden initially, larger for readability)
-        this.hintText = this.scene.add.text(0, this.boardH / 2 - 30, '', {
-            fontSize: '24px',
+        // Hint text: below the board, hidden until a wrong answer. Auto-sized.
+        this.hintText = this.scene.add.text(0, this.boardH / 2 + 16, '', {
+            fontSize: `${MathBoard.HINT_MAX_SIZE}px`,
             fontFamily: 'monospace',
             color: tm.getColor('accent'),
             stroke: '#000000',
             strokeThickness: 3,
             align: 'center',
-            wordWrap: { width: this.boardW - 60 },
-        }).setOrigin(0.5, 1).setAlpha(0);
+            wordWrap: { width: MathBoard.QUESTION_MAX_W },
+        }).setOrigin(0.5, 0).setAlpha(0);
         this.container.add(this.hintText);
     }
 
@@ -91,14 +132,11 @@ export class MathBoard {
         this.answered = false;
         this.revealed = false;
 
-        // Set question text, scaling down for long prompts (framed questions
-        // and word problems) so the text always fits inside the board.
-        const promptLength = problem.prompt.text.length;
-        const fontSize = promptLength <= 14 ? 56 : promptLength <= 30 ? 36 : 26;
-        this.questionText
-            .setFontSize(fontSize)
-            .setWordWrapWidth(this.boardW - 50)
-            .setText(problem.prompt.text);
+        // Set the question in the active locale, measured to fit its band.
+        MathBoard.fitInto(
+            this.questionText, localisedPrompt(problem),
+            MathBoard.QUESTION_MAX_SIZE, MathBoard.QUESTION_MIN_SIZE, MathBoard.QUESTION_MAX_H,
+        );
         this.hintText.setText('').setAlpha(0);
 
         // Clear old option buttons
@@ -162,6 +200,47 @@ export class MathBoard {
 
         // Enable keyboard navigation after entrance animation
         this.scene.time.delayedCall(450, () => this.navigator.enable());
+    }
+
+    /**
+     * Set text at the largest size that fits its box.
+     *
+     * Wrapping alone is not enough: a 68-character prompt wrapped at 460px is
+     * four lines at 56px, which is 269px of text in a 96px band -- straight
+     * through the answer buttons. So step the size down until the wrapped block
+     * fits, re-applying the text each time so Phaser re-measures.
+     *
+     * The floor is deliberate rather than a fallback to something tiny. Below it
+     * the text stops being readable for a five-year-old, and a rare visible
+     * overflow is a better failure than silently shrinking a maths question to
+     * nothing. tools/validate_i18n.mjs checks that every string in both locales
+     * fits at its floor, so hitting it should not happen.
+     */
+    private static fitInto(
+        target: Phaser.GameObjects.Text,
+        text: string,
+        maxSize: number,
+        minSize: number,
+        maxH: number,
+    ): void {
+        for (let size = maxSize; size >= minSize; size -= 2) {
+            target.setFontSize(size);
+            target.setWordWrapWidth(MathBoard.QUESTION_MAX_W);
+            target.setText(text);
+            if (target.height <= maxH) return;
+        }
+    }
+
+    /**
+     * The question exactly as it is on screen, in the active locale.
+     *
+     * Exposed for the browser harnesses. The board draws to a WebGL canvas, so
+     * nothing outside the game can read the text back -- which meant a smoke run
+     * against an Icelandic build and an English one produced identical results,
+     * and localisation was untestable end to end.
+     */
+    getRenderedQuestion(): string {
+        return this.questionText.text;
     }
 
     private createOptionButton(
@@ -340,9 +419,13 @@ export class MathBoard {
             0,
         );
 
-        // Show hint text if available
-        if (this.currentProblem?.hint) {
-            this.hintText.setText(this.currentProblem.hint);
+        // Show hint text if available, in the active locale.
+        const hint = this.currentProblem ? localisedHint(this.currentProblem) : undefined;
+        if (hint) {
+            MathBoard.fitInto(
+                this.hintText, hint,
+                MathBoard.HINT_MAX_SIZE, MathBoard.HINT_MIN_SIZE, MathBoard.HINT_MAX_H,
+            );
             this.scene.tweens.add({
                 targets: this.hintText,
                 alpha: 1,
@@ -390,9 +473,16 @@ export class MathBoard {
             }
         });
 
-        const explanation = this.currentProblem.explanation || this.currentProblem.hint || '';
+        // The teaching moment after the final miss, in the active locale.
+        const explanation = localisedExplanation(this.currentProblem)
+            ?? localisedHint(this.currentProblem)
+            ?? '';
         if (explanation) {
-            this.hintText.setText(explanation).setAlpha(0);
+            MathBoard.fitInto(
+                this.hintText, explanation,
+                MathBoard.HINT_MAX_SIZE, MathBoard.HINT_MIN_SIZE, MathBoard.HINT_MAX_H,
+            );
+            this.hintText.setAlpha(0);
             this.scene.tweens.add({ targets: this.hintText, alpha: 1, duration: 300 });
         }
     }
