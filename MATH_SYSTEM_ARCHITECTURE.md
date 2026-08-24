@@ -330,6 +330,22 @@ and `godot/scripts/math/golden_roll.gd`:
 - each attempt records a `golden` flag, and the admin session report counts
   golden problems served
 
+### Session recap and trophy shelf
+
+Two menu surfaces close the loop (peak-end rule: a session is remembered by
+its peak and its ending):
+
+- `SessionStats` (web singleton, Godot autoload) counts owls saved, problems
+  solved, step-ups, comebacks, and golden wins during play; the main menu
+  consumes it once and shows a recap that ends on the best moment
+  (comeback beats golden beats step-up). Only positive counts exist — a
+  session with nothing to celebrate shows no recap at all.
+- `curriculumProgress` carries a `highestStep` high-water mark per domain
+  (raised on every step rise, never lowered), and both main menus render a
+  code-drawn badge per attempted domain — sprout / leaf / flower / star from
+  `trophies.tierSteps` in the shared tuning file. A demotion never shrinks a
+  badge.
+
 ## Unlock Logic
 
 Domain unlocking is computed from recent stability, not just raw ELO.

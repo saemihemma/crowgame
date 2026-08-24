@@ -79,14 +79,14 @@ function createDomainHistoryMap(): LearnerDomainHistoryMap {
 
 function createCurriculumProgressMap(): DomainCurriculumProgressMap {
     return {
-        addition: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
-        subtraction: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
-        multiplication: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
-        division: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
-        counting: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
-        comparison: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
-        pattern_matching: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
-        number_sequence: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0 },
+        addition: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 2 },
+        subtraction: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        multiplication: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        division: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        counting: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 2 },
+        comparison: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        pattern_matching: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        number_sequence: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
     };
 }
 
@@ -203,6 +203,12 @@ export class LearnerStateManager {
     }
 
     /** Lifetime attempts in a domain; zero triggers the worked-example demo. */
+    /** Trophy-shelf source: the highest step ever reached in a domain. */
+    getHighestStep(domain: MathDomain): number {
+        const progress = this.getSnapshot().curriculumProgress[domain];
+        return Math.max(progress.highestStep ?? 0, progress.currentStep);
+    }
+
     getTotalAttempts(domain: MathDomain): number {
         return this.getSnapshot().curriculumProgress[domain].totalAttempts ?? 0;
     }
@@ -361,6 +367,11 @@ export class LearnerStateManager {
                 winsAtCurrentStep: Math.max(0, progress[domain]?.winsAtCurrentStep ?? 0),
                 recentStepResults: [...(progress[domain]?.recentStepResults ?? [])].slice(-MAX_STEP_RESULTS),
                 totalAttempts: Math.max(0, progress[domain]?.totalAttempts ?? 0),
+                // Older saves have no highestStep: seed it from the stored step.
+                highestStep: Math.max(
+                    Math.max(0, progress[domain]?.currentStep ?? 0),
+                    progress[domain]?.highestStep ?? 0,
+                ),
             };
         }
 
@@ -393,6 +404,7 @@ export class LearnerStateManager {
         if (attempt.curriculumStep > progress.currentStep && attempt.correct && attempt.firstAttempt) {
             progress.currentStep = attempt.curriculumStep;
             progress.winsAtCurrentStep = 0;
+            progress.highestStep = Math.max(progress.highestStep ?? 0, progress.currentStep);
         }
 
         if (attempt.curriculumStep === progress.currentStep && attempt.correct && attempt.firstAttempt) {
@@ -430,6 +442,7 @@ export class LearnerStateManager {
             if (nextStep > progress.currentStep) {
                 progress.currentStep = nextStep;
                 progress.winsAtCurrentStep = 0;
+                progress.highestStep = Math.max(progress.highestStep ?? 0, progress.currentStep);
             }
         }
     }
@@ -482,6 +495,7 @@ export class LearnerStateManager {
                 if (this.stepContentProvider(domain, step)) {
                     progress.currentStep = step;
                     progress.winsAtCurrentStep = 0;
+                    progress.highestStep = Math.max(progress.highestStep ?? 0, progress.currentStep);
                     break;
                 }
             }

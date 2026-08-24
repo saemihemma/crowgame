@@ -266,5 +266,13 @@
   "math.demo_your_turn": "Þú átt leik!",
   "math.comeback": "Þú lærðir það!",
   "theme.forest": "Skógur",
-  "theme.scifi": "Framtíð"
+  "theme.scifi": "Framtíð",
+  "recap.title": "Vel flogið!",
+  "recap.owls": "Uglum bjargað: {0}",
+  "recap.problems": "Dæmi leyst: {0}",
+  "recap.stepups": "Ný þrep: {0}",
+  "recap.best_comeback": "Besta stundin: þú lærðir það!",
+  "recap.best_golden": "Besta stundin: gylltur sigur!",
+  "recap.continue": "Áfram!",
+  "trophy.title": "Merkin mín"
 }

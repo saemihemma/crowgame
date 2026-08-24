@@ -47,6 +47,10 @@ export interface MathTuningData {
         firstTryCoinMultiplier: number;
         retryCoinMultiplier: number;
     };
+    trophies: {
+        /** highestStep thresholds for the badge tiers sprout/leaf/flower/star. */
+        tierSteps: number[];
+    };
 }
 
 let activeTuning: MathTuningData | null = null;
