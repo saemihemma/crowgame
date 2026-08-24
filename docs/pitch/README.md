@@ -6,7 +6,7 @@ Last verified against code: 2026-08-24
 
 ## What Is Here
 
-- [hormann-pitch-deck.html](./hormann-pitch-deck.html) — 16 slides, one self-contained file.
+- [hormann-pitch-deck.html](./hormann-pitch-deck.html) — 17 slides, one self-contained file.
   All art, screenshots and styling are inlined as data URIs. No network access,
   no build step, no dependencies.
 
@@ -24,7 +24,7 @@ landscape 16:9 page.
 
 The print stylesheet strips all animation and forces every reveal to its final
 state, so the PDF matches the last frame of the screen version. Expect exactly
-16 pages at `960x540` pt.
+17 pages at `960x540` pt.
 
 ## Regenerating The Screenshots
 
@@ -40,6 +40,14 @@ counts, and those drift.
 
 ## Placeholders
 
-Two values on the ask slide are intentionally unset and marked in cyan:
-`[amount]` and `[runway]`. Everything else in the deck is either sourced or
-taken from the repository.
+Fields still to fill are marked in cyan: the founder's name and the three hiring
+statuses on the team slide, the pilot status on the traction slide, and the
+per-pupil / per-month price on the model slide. Everything else is either
+sourced on the final slide or taken from the repository.
+
+## Numbers That Must Stay Consistent
+
+The ask slide and the arithmetic slide are coupled. The arithmetic prices a
+four-person team at ~12.6m ISK a month (1.75m salary +33% employer cost, +35%
+contractors); the ask funds one hire with the founder deferred. Change the
+headcount on one and the other stops adding up.
