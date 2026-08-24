@@ -44,37 +44,40 @@ deploy is a seconds-long file copy, not a game build.
 The two services differ **only** by environment variables. Do not fork the
 Dockerfile or the Caddyfile per environment.
 
-### Why the cache values differ
+### The payload, and why a repeat launch is free
 
-`output/web` filenames are fixed (`index.wasm`, `index.pck`) — Godot does not
-content-hash them. That constrains the cache policy:
+`build_web.sh` renames the payload to `index.<content-id>.{wasm,pck,js}` and
+rewrites the engine config in `index.html` to match. The id is a hash of the wasm
+and pck together, so the filename *is* the content.
 
-- **staging `no-store`** — nothing is cached, so a phone refresh always shows the
-  newest build. This is the fast-iteration behaviour and it is worth the bytes on
-  a device you are actively testing on.
-- **prod `no-cache`** — the browser stores the payload and revalidates it with an
-  ETag on each launch. `no-cache` does *not* mean "do not cache"; it means "cache,
-  but check first". A repeat launch costs two small conditional requests and two
-  `304 Not Modified` responses instead of re-downloading the build.
+That makes the cache policy simple and, more importantly, correct:
 
-Measured payload, as of this writing:
+| Path | Policy | Why |
+| --- | --- | --- |
+| `index.html` | `no-store` | ~5 KB, and the only file that knows which payload belongs to this build |
+| `index.<id>.*` | `public, max-age=31536000, immutable` | the name is the content, so it can never be stale |
+
+Measured payload:
 
 | File | Raw | gzip |
 | --- | --- | --- |
-| `index.wasm` | 33.7 MB | 7.6 MB |
-| `index.pck` | 18.7 MB | 14.9 MB |
-| `index.js` + worklet | 0.3 MB | 0.1 MB |
-| **total** | **52.7 MB** | **~22.6 MB** |
+| `index.<id>.wasm` | 33.7 MB | 7.6 MB |
+| `index.<id>.pck` | 11.7 MB | 8.0 MB |
+| `index.<id>.js` + worklet | 0.3 MB | 0.1 MB |
+| **total** | **45.8 MB** | **~15.7 MB** |
 
-So prod on `no-store` would mean ~22.6 MB per launch per player. That is the
-single largest avoidable cost in the whole deployment, and on an iPad over
-cellular it is also the worst part of the experience.
+So a first launch transfers about **15.7 MB**, and a returning player transfers
+**nothing at all** for the payload — no bytes, no conditional request, no `304`.
+Only the 5 KB shell is re-fetched.
 
-**Upgrade path (not done yet):** content-hash the payload filenames at build time
-and rewrite the `GODOT_CONFIG` block in `index.html` to match. Then prod can serve
-`Cache-Control: public, max-age=31536000, immutable` and a repeat launch costs
-zero requests for the payload. That is a build-script change, tracked separately;
-`no-cache` is the correct policy until it lands.
+For context on how that was reached: the payload was ~25.8 MB gzipped before two
+changes. Excluding unreferenced source art from the export took the pck from
+22.1 MB to 18.7 MB raw, and re-encoding the five music tracks from 193 kbps to
+96 kbps took another 7.1 MB out of it. Neither is visible or audible on a tablet
+speaker; both are reversible from git history.
+
+`CROW_ASSET_CACHE` still exists for the handful of files that are *not*
+content-addressed (icons), and so staging can force `no-store` while iterating.
 
 ## One-time setup
 
@@ -249,23 +252,26 @@ deployment pointer, not shared development history.
 curl -s https://<domain>/index.html | grep -o 'index\.pck'   # sanity: shell served
 # The in-game build stamp (MainMenu, bottom corner) carries the commit.
 
-# 2. Is the cache policy the one this environment should have?
-curl -sI https://<domain>/index.pck | grep -i cache-control
-#   staging -> no-store
-#   prod    -> no-cache
+# 2. Is the payload immutable, and the shell not?
+curl -sI "https://<domain>/$(curl -s https://<domain>/build_id.txt | tr -d '\n' | sed 's/^/index./;s/$/.pck/')" | grep -i cache-control
+#   expect: public, max-age=31536000, immutable
+curl -sI https://<domain>/index.html | grep -i cache-control
+#   expect: no-store
+#   the hashed payload -> immutable in both environments (the name is the content)
+#   index.html         -> no-store in both
 
-# 3. Does a repeat launch actually revalidate instead of re-downloading? (prod)
-curl -sI https://<domain>/index.pck | grep -i etag
-curl -sI -H 'If-None-Match: "<etag from above>"' https://<domain>/index.pck | head -1
-#   expect: HTTP/2 304
+# 3. Which build is live?
+curl -s https://<domain>/build_id.txt
+curl -s https://<domain>/build_info.json    # commit + build time
 ```
 
 ## Cost notes
 
-Railway bills egress. With prod on `no-cache`, a returning player transfers
-roughly a few hundred bytes per launch instead of ~22.6 MB. A single player
-launching the game twice a day for a month is the difference between ~1.4 GB and
-a rounding error. This is the reason the prod value is not `no-store`.
+Railway bills egress. With a content-addressed payload served `immutable`, a
+returning player transfers ~5 KB per launch instead of ~15.7 MB. A player
+launching twice a day for a month is the difference between roughly 950 MB and
+300 KB. Across a class or a family group that is the difference between egress
+being a line item and being invisible.
 
 The web service is small (Caddy + ~53 MB of static files) and stateless. The API
 is IO-light: a couple of statements per request, a small connection pool.

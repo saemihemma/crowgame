@@ -5,22 +5,23 @@
 
 # Crow web build (static Godot HTML5 export).
 #
-# Cache policy is environment-driven, because staging and prod want opposite
-# things. Set CROW_ASSET_CACHE per Railway service (see deploy/RAILWAY.md):
+# The payload is content-addressed: build_web.sh renames it to
+# index.<content-id>.{wasm,pck,js} and rewrites the engine config to match. That
+# changes what the cache policy can be:
 #
-#   staging : no-store                      -> always the freshest build on a
-#                                              phone refresh; iteration speed
-#                                              matters more than bytes.
-#   prod    : no-cache                      -> the browser keeps the ~27 MB of
-#                                              wasm/pck and revalidates with an
-#                                              ETag, so a repeat launch costs a
-#                                              few hundred bytes and a 304
-#                                              instead of the whole payload.
+#   index.html          -> no-store. It is the only file that knows which payload
+#                          belongs to this build, and it is ~5 KB.
+#   index.<id>.*        -> immutable, one year. The name IS the content, so a
+#                          returning player transfers ZERO bytes for ~19 MB, and
+#                          a new build simply has different names. No
+#                          revalidation, no 304, no round trip.
 #
-# "no-cache" is NOT "don't cache" — it means "cache, but revalidate every time".
-# That is what we want while the export filenames are stable and unhashed: it is
-# always correct on a new deploy and still avoids re-downloading an unchanged
-# build. (Upgrade path: content-hashed filenames + immutable, see RAILWAY.md.)
+# This is why hashing was worth doing: the previous best policy was "no-cache",
+# which still cost two conditional requests per launch because a fixed filename
+# cannot tell a browser whether what it holds is current.
+#
+# CROW_ASSET_CACHE remains overridable per environment for the unhashed extras
+# (icons), and so staging can force no-store while iterating.
 :{$PORT:8080} {
 	root * /srv
 
@@ -50,9 +51,14 @@
 	@shell path /index.html /
 	header @shell Cache-Control "no-store"
 
-	# The heavy, stable payload.
-	@payload path *.wasm *.pck *.js *.worklet.js *.png *.svg *.wav *.mp3
-	# (matched only for non-/api requests, which the handle block above consumes)
+	# The content-addressed payload: safe to keep forever, because a different
+	# build has different filenames.
+	@immutable path_regexp ^/index\.[0-9a-f]+\.(wasm|pck|js|audio\.worklet\.js)$
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	# Everything else that is heavy but NOT content-addressed (icons, any loose
+	# media) stays environment-driven.
+	@payload path *.png *.svg *.wav *.mp3
 	header @payload Cache-Control "{$CROW_ASSET_CACHE:no-store}"
 
 	# Keep staging out of search results. Prod leaves this unset.

@@ -14,7 +14,7 @@
  *
  * Usage: node godot/tools/web_boot_smoke.mjs [--port 8061]
  */
-import { existsSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
 import { spawn } from 'child_process';
 import { mkdir, writeFile } from 'fs/promises';
 import { resolve, dirname } from 'path';
@@ -42,7 +42,9 @@ function resolveChromium() {
 const IPAD = { width: 1180, height: 820 };
 
 async function main() {
-    if (!existsSync(resolve(WEB_DIR, 'index.wasm'))) {
+    // The payload is content-addressed (index.<id>.wasm), so this looks for the
+    // pattern rather than a fixed name.
+    if (!readdirSync(WEB_DIR).some(f => /^index\.[0-9a-f]+\.wasm$/.test(f))) {
         console.error(`FAIL: no export found at ${WEB_DIR}. Run: bash godot/tools/build_web.sh`);
         process.exit(1);
     }

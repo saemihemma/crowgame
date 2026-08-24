@@ -17,7 +17,7 @@
  * Usage:
  *   DATABASE_URL=postgres://... node godot/tools/error_pipeline_e2e.mjs
  */
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
 import { createServer as createProbe } from 'node:net';
@@ -104,7 +104,9 @@ function assertPortFree(port) {
 
 async function main() {
     if (!process.env.DATABASE_URL) fail('DATABASE_URL is required for the e2e error pipeline test');
-    if (!existsSync(join(WEB_DIR, 'index.wasm'))) fail('no export found; run: bash godot/tools/build_web.sh');
+    // Payload names carry a content id (index.<id>.wasm), so match the pattern.
+    if (!readdirSync(WEB_DIR).some(f => /^index\.[0-9a-f]+\.wasm$/.test(f)))
+        fail('no export found; run: bash godot/tools/build_web.sh');
     if (!existsSync(join(WEB_DIR, 'crow-errors.js'))) fail('crow-errors.js missing from the export');
 
     await assertPortFree(API_PORT);

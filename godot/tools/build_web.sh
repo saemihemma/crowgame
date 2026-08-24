@@ -26,8 +26,49 @@ printf '{"builtAt":"%s","commit":"%s"}\n' "$(date -u +%Y-%m-%dT%H:%MZ)" "$COMMIT
 "$GODOT" --headless --path "$HERE" --import >/dev/null 2>&1 || true
 "$GODOT" --headless --path "$HERE" --export-release "Web" "$OUT/index.html"
 
+# ── content-addressed payload ────────────────────────────────────────────────
+#
+# Godot exports fixed filenames (index.wasm, index.pck), which forces the cache
+# policy to be "revalidate every launch": the browser has to ask whether the file
+# it holds is still current, because the name alone cannot say. Stamping a
+# content hash into the names removes that question, so the payload can be served
+# `immutable` and a returning player transfers ZERO bytes for it.
+#
+# One id derived from both files rather than a hash per file, because Godot's
+# loader builds every path from a single `executable` name: it asks for
+# <executable>.wasm, <executable>.pck and <executable>.audio.worklet.js. One id
+# keeps that contract intact.
+stamp_build_id() {
+	local id
+	id="$(cat "$OUT/index.wasm" "$OUT/index.pck" | sha256sum | cut -c1-12)"
+	echo "content id: $id"
+
+	for ext in wasm pck js audio.worklet.js; do
+		[ -f "$OUT/index.$ext" ] || continue
+		mv "$OUT/index.$ext" "$OUT/index.$id.$ext"
+	done
+
+	# Rewrite the shell: the engine config's `executable`, the fileSizes keys it
+	# checks against, and the <script src> that bootstraps it.
+	python3 - "$OUT/index.html" "$id" <<'REWRITE'
+import re, sys
+path, build_id = sys.argv[1], sys.argv[2]
+html = open(path).read()
+html = html.replace('"executable":"index"', f'"executable":"index.{build_id}"')
+html = re.sub(r'"index\.(pck|wasm)"', lambda m: f'"index.{build_id}.{m.group(1)}"', html)
+html = html.replace('src="index.js"', f'src="index.{build_id}.js"')
+open(path, 'w').write(html)
+REWRITE
+
+	# index.html itself must never be cached: it is the only thing that knows
+	# which hashed payload belongs to this build.
+	printf '%s\n' "$id" > "$OUT/build_id.txt"
+}
+
 # The client error reporter is not a Godot resource, so the export does not
 # emit it. Copy it in beside the shell that references it from <head>.
+stamp_build_id
+
 cp "$ROOT/deploy/web/crow-errors.js" "$OUT/crow-errors.js"
 
 # build_info.json is inside the pck for main_menu.gd, but crow-errors.js fetches
@@ -40,6 +81,13 @@ cp "$HERE/build_info.json" "$OUT/build_info.json"
 # and those are generated inside the Docker image build instead. Committing ~23 MB
 # of .gz alongside the ~53 MB payload would double what every clone carries, for
 # bytes that the image can regenerate in a second.
+
+# Remove any payload from a previous build id: they are immutable and would
+# otherwise accumulate in the deployed image forever.
+find "$OUT" -maxdepth 1 -name 'index.*.wasm' -o -maxdepth 1 -name 'index.*.pck' \
+	-o -maxdepth 1 -name 'index.*.js' | while read -r stale; do
+	case "$stale" in *"$(cat "$OUT/build_id.txt" 2>/dev/null)"*) ;; *) rm -f "$stale" ;; esac
+done
 
 echo "Web build written to $OUT/"
 echo "Play locally:  (cd $OUT && python3 -m http.server 8060)  then open http://<this-machine-ip>:8060"
