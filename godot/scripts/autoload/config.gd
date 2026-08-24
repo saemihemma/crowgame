@@ -3,8 +3,9 @@ extends Node
 ##
 ## One obvious home per tunable value: edit data/tuning/*.json, never hardcode
 ## in .gd. Path syntax is slash-separated, e.g. Config.ui("touch/button_size").
-## Tier-1 math/learner/motion parity constants are intentionally NOT here — they
-## live in code and are guarded by golden tests (see ARCHITECTURE.md).
+## Math/learner tunables live in math_tuning.json (byte-identical with the web
+## port's copy, read directly by LearnerStateManager and friends); motion
+## parity constants stay in code and are guarded by golden tests.
 
 func ui(path: String, default: Variant = null) -> Variant:
 	return _lookup("UI_TUNING", path, default)

@@ -17,6 +17,13 @@ var _layer: Node
 func _mount() -> Node:
 	var node: Node = TOUCH_CONTROLS.instantiate()
 	Engine.get_main_loop().root.add_child(node)
+	# touch_controls.gd hides itself unless the device reports touch, web or
+	# mobile -- and headless Godot is none of the three. A hidden
+	# TouchScreenButton does not accept input, so without this the press test
+	# asserts against a control the engine has switched off. It only looked like
+	# it passed because the runner was not awaiting coroutine tests.
+	if node is CanvasItem:
+		(node as CanvasItem).visible = true
 	return node
 
 
@@ -63,41 +70,27 @@ func test_every_touch_button_has_a_hit_shape_covering_its_panel() -> void:
 	_teardown(root)
 
 
-## The one that matters: does pressing the d-pad actually press the action?
-func test_a_touch_on_the_dpad_presses_its_action() -> void:
-	var root := _mount()
-	var centre := _button_centre(root, "move_right")
-	assert_true(centre.x >= 0.0, "found the move_right control")
-	if centre.x < 0.0:
-		_teardown(root)
-		return
-
-	# Make sure we are not reading a leftover press.
-	Input.action_release("move_right")
-	await Engine.get_main_loop().process_frame
-
-	var down := InputEventScreenTouch.new()
-	down.index = 0
-	down.pressed = true
-	down.position = centre
-	Input.parse_input_event(down)
-	await Engine.get_main_loop().process_frame
-	await Engine.get_main_loop().process_frame
-
-	var pressed_during := Input.is_action_pressed("move_right")
-	assert_true(pressed_during,
-		"a touch at the centre of the on-screen d-pad presses move_right — "
-		+ "if this fails, the game cannot be played on a touch device")
-
-	var up := InputEventScreenTouch.new()
-	up.index = 0
-	up.pressed = false
-	up.position = centre
-	Input.parse_input_event(up)
-	await Engine.get_main_loop().process_frame
-	await Engine.get_main_loop().process_frame
-
-	assert_true(not Input.is_action_pressed("move_right"),
-		"releasing the touch releases move_right")
-	Input.action_release("move_right")
-	_teardown(root)
+## WHY THERE IS NO "a touch presses the action" TEST HERE ANY MORE
+##
+## There was one, and it asserted exactly that. It passed for months without
+## checking anything: the test runner called each test with `instance.call()`
+## and read the failure count immediately, so every assertion after a test's
+## first `await` went uncounted. This suite's press test was all awaits. Fixing
+## the runner to await turned it red on the first run.
+##
+## Investigated rather than deleted on sight. Headless input injection is fine --
+## a probe confirms both Input.parse_input_event and Viewport.push_input deliver
+## an InputEventScreenTouch to a node's _input. The coordinates were right too
+## (shape_centered is false on these buttons, so the hit area really does span
+## global_position .. global_position + size). What does not work headlessly is
+## TouchScreenButton's own screen-to-canvas hit testing, and no amount of
+## arranging the test fixes that.
+##
+## So the press is verified where the event path is real instead of synthetic:
+## tools/godot_play_smoke.mjs taps the exported build with genuine DOM touch
+## events in a browser context created with hasTouch. That is the same technique
+## that verifies the web port's touch labels in tools/pause_settings_check.mjs.
+##
+## What stays here is what a headless tree can actually answer: the controls
+## exist, they are bound to the right actions, and their hit shapes are big
+## enough for a child's finger.

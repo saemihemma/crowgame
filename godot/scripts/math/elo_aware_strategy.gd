@@ -33,13 +33,9 @@ func select(domain: String, exclude_ids: Array, constraints: Dictionary = {}) ->
 	}
 
 	# Relative shares, not exact odds: empty lanes are dropped below and
-	# _pick_lane renormalizes over what remains.
-	var lane_weights := {
-		"comfort": 0.4,
-		"review": 0.2,
-		"at_level": 0.3,
-		"stretch": 0.1,
-	}
+	# _pick_lane renormalizes over what remains. The shares live in
+	# data/tuning/math_tuning.json, shared byte-identical with the web port.
+	var lane_weights: Dictionary = DataManager.get_dict("MATH_TUNING").get("laneWeights", {})
 
 	var available: Array = []
 	for lane in ["comfort", "review", "at_level", "stretch"]:

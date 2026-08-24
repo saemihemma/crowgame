@@ -70,6 +70,44 @@
                                 }
                             }
                         ]
+                    },
+                    "phrasing": {
+                        "description": "Localisable phrasing for prompt/hint/explanation. Purely additive: prompt.text, hint and explanation stay canonical English and remain what the arithmetic verifier, the replay key and the golden fixtures read. A renderer uses phrasing when the key resolves in the active locale and falls back to the English text otherwise, so a missing entry degrades to English rather than breaking. Derived and verified by tools/derive_math_phrasing.mjs against tools/math_phrasing_catalog.mjs.",
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "prompt": { "$ref": "#/$defs/phrasingRef" },
+                            "hint": { "$ref": "#/$defs/phrasingRef" },
+                            "explanation": { "$ref": "#/$defs/phrasingRef" }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "$defs": {
+        "phrasingRef": {
+            "type": "object",
+            "required": ["key", "params"],
+            "additionalProperties": false,
+            "properties": {
+                "plural": {
+                    "description": "Name of the parameter that drives plural agreement, when the phrasing has one. The resolved category is deliberately NOT stored: each locale applies its own rule at render time, because they differ (English inflects at 1; Icelandic at 1, 21, 31, ...).",
+                    "type": "string"
+                },
+                "key": {
+                    "description": "A key in the i18n bundles, e.g. math.prompt.arith.what_is.",
+                    "type": "string",
+                    "pattern": "^math\\.(prompt|hint|expl)\\."
+                },
+                "params": {
+                    "description": "Named substitutions. Values carry no natural language: numbers, the operator symbol, a glyph run, or a comma-joined number list. A `math.prompt.wrap.*` key takes an `inner` that is either a plain string with no words in it or a nested phrasing reference.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "oneOf": [
+                            { "type": ["number", "string"] },
+                            { "$ref": "#/$defs/phrasingRef" }
+                        ]
                     }
                 }
             }

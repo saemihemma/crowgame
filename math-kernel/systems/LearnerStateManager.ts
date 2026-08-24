@@ -1,4 +1,5 @@
 import { ELOManager } from '../math/ELOManager';
+import { mathTuning } from '../math/MathTuning';
 import type {
     DomainCurriculumProgressMap,
     DomainNumberMap,
@@ -30,14 +31,10 @@ const MAX_BACKLOG_HISTORY = 8;
 const MAX_STEP_RESULTS = 10;
 const IMMEDIATE_REVIEW_MIN_GAP = 2;
 const IMMEDIATE_REVIEW_MAX_GAP = 4;
-const PROMOTION_WIN_TARGET = 3;
-const PROMOTION_ACCURACY_TARGET = 0.8;
-const PROMOTION_ACCURACY_WINDOW = 10;
-const DEMOTION_WINDOW = 5;
-const DEMOTION_WRONG_THRESHOLD = 2;
-const DEMOTION_CONFIDENCE_THRESHOLD = -25;
-const POST_DEMOTION_CONFIDENCE_FLOOR = -10;
-const PROMOTION_STEP_SCAN_LIMIT = 20;
+// Ladder and stretch-gate numbers live in data/tuning/math_tuning.json
+// (shared byte-identical with the Godot port); read them via ladder()/gate().
+const ladder = () => mathTuning().ladder;
+const stretchGate = () => mathTuning().stretchGate;
 
 const DOMAIN_PREREQUISITES: Partial<Record<MathDomain, MathDomain[]>> = {
     addition: [],
@@ -82,14 +79,14 @@ function createDomainHistoryMap(): LearnerDomainHistoryMap {
 
 function createCurriculumProgressMap(): DomainCurriculumProgressMap {
     return {
-        addition: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [] },
-        subtraction: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        multiplication: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        division: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        counting: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [] },
-        comparison: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        pattern_matching: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
-        number_sequence: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [] },
+        addition: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 2 },
+        subtraction: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        multiplication: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        division: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        counting: { currentStep: 2, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 2 },
+        comparison: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        pattern_matching: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
+        number_sequence: { currentStep: 0, winsAtCurrentStep: 0, recentStepResults: [], totalAttempts: 0, highestStep: 0 },
     };
 }
 
@@ -205,6 +202,30 @@ export class LearnerStateManager {
         return this.getSnapshot().curriculumProgress[domain].currentStep;
     }
 
+    /** Lifetime attempts in a domain; zero triggers the worked-example demo. */
+    /** Trophy-shelf source: the highest step ever reached in a domain. */
+    getHighestStep(domain: MathDomain): number {
+        const progress = this.getSnapshot().curriculumProgress[domain];
+        return Math.max(progress.highestStep ?? 0, progress.currentStep);
+    }
+
+    getTotalAttempts(domain: MathDomain): number {
+        return this.getSnapshot().curriculumProgress[domain].totalAttempts ?? 0;
+    }
+
+    /**
+     * Lifetime recorded attempts across all domains — the deterministic index
+     * the golden-problem roll is seeded with (see math-kernel/math/goldenRoll.ts).
+     */
+    getLifetimeAttemptCount(): number {
+        const progress = this.getSnapshot().curriculumProgress;
+        return ALL_MATH_DOMAINS.reduce((sum, domain) => sum + (progress[domain].totalAttempts ?? 0), 0);
+    }
+
+    getPromotionWinTarget(): number {
+        return ladder().promotionWinTarget;
+    }
+
     getWinsAtCurrentStep(domain: MathDomain): number {
         return this.getSnapshot().curriculumProgress[domain].winsAtCurrentStep;
     }
@@ -214,10 +235,11 @@ export class LearnerStateManager {
     }
 
     canUseStretchLane(domain: MathDomain): boolean {
-        const recent = this.getRecentAttempts(domain, 5);
-        if (recent.length < 5) return false;
+        const gate = stretchGate();
+        const recent = this.getRecentAttempts(domain, gate.window);
+        if (recent.length < gate.window) return false;
         const correctRate = recent.filter(attempt => attempt.correct).length / recent.length;
-        return correctRate >= 0.8 && this.getConfidenceOffset(domain) >= 0;
+        return correctRate >= gate.minAccuracy && this.getConfidenceOffset(domain) >= gate.minConfidence;
     }
 
     getDueReviewItems(domain?: MathDomain): ReviewItem[] {
@@ -269,6 +291,7 @@ export class LearnerStateManager {
             curriculumStep: attempt.curriculumStep,
             selectionLane: attempt.selectionLane,
             reviewItemId: attempt.reviewItemId,
+            golden: attempt.golden === true,
         });
         this.snapshot.recentAttempts = this.snapshot.recentAttempts.slice(-MAX_RECENT_ATTEMPTS);
 
@@ -343,6 +366,12 @@ export class LearnerStateManager {
                 currentStep: Math.max(0, progress[domain]?.currentStep ?? 0),
                 winsAtCurrentStep: Math.max(0, progress[domain]?.winsAtCurrentStep ?? 0),
                 recentStepResults: [...(progress[domain]?.recentStepResults ?? [])].slice(-MAX_STEP_RESULTS),
+                totalAttempts: Math.max(0, progress[domain]?.totalAttempts ?? 0),
+                // Older saves have no highestStep: seed it from the stored step.
+                highestStep: Math.max(
+                    Math.max(0, progress[domain]?.currentStep ?? 0),
+                    progress[domain]?.highestStep ?? 0,
+                ),
             };
         }
 
@@ -361,6 +390,7 @@ export class LearnerStateManager {
 
     private applyCurriculumProgress(attempt: LearnerAttemptSubmission): void {
         const progress = this.snapshot.curriculumProgress[attempt.domain];
+        progress.totalAttempts = (progress.totalAttempts ?? 0) + 1;
         progress.recentStepResults.push({
             step: attempt.curriculumStep,
             correct: attempt.correct,
@@ -374,6 +404,7 @@ export class LearnerStateManager {
         if (attempt.curriculumStep > progress.currentStep && attempt.correct && attempt.firstAttempt) {
             progress.currentStep = attempt.curriculumStep;
             progress.winsAtCurrentStep = 0;
+            progress.highestStep = Math.max(progress.highestStep ?? 0, progress.currentStep);
         }
 
         if (attempt.curriculumStep === progress.currentStep && attempt.correct && attempt.firstAttempt) {
@@ -383,15 +414,15 @@ export class LearnerStateManager {
         // Demotion is only evaluated on the wrong answer itself, so a rough patch
         // costs one step, not one step per attempt while it sits in the window.
         if (!attempt.correct) {
-            const recentDomainAttempts = this.getProjectedRecentAttempts(attempt.domain, attempt, DEMOTION_WINDOW);
+            const recentDomainAttempts = this.getProjectedRecentAttempts(attempt.domain, attempt, ladder().demotionWindow);
             const wrongCount = recentDomainAttempts.filter(entry => !entry.correct).length;
             const confidenceOffset = this.snapshot.confidenceOffsets[attempt.domain];
-            if (wrongCount >= DEMOTION_WRONG_THRESHOLD || confidenceOffset <= DEMOTION_CONFIDENCE_THRESHOLD) {
+            if (wrongCount >= ladder().demotionWrongThreshold || confidenceOffset <= ladder().demotionConfidenceThreshold) {
                 progress.currentStep = Math.max(0, progress.currentStep - 1);
                 progress.winsAtCurrentStep = 0;
                 this.snapshot.confidenceOffsets[attempt.domain] = Math.max(
                     this.snapshot.confidenceOffsets[attempt.domain],
-                    POST_DEMOTION_CONFIDENCE_FLOOR,
+                    ladder().postDemotionConfidenceFloor,
                 );
             }
             return;
@@ -400,17 +431,18 @@ export class LearnerStateManager {
         const promotionWindow = this.getProjectedRecentAttempts(
             attempt.domain,
             attempt,
-            PROMOTION_ACCURACY_WINDOW,
+            ladder().promotionAccuracyWindow,
         );
         const accuracy = this.computeFirstAttemptAccuracy(promotionWindow);
         if (
-            progress.winsAtCurrentStep >= PROMOTION_WIN_TARGET &&
-            accuracy >= PROMOTION_ACCURACY_TARGET
+            progress.winsAtCurrentStep >= ladder().promotionWinTarget &&
+            accuracy >= ladder().promotionAccuracyTarget
         ) {
             const nextStep = this.findNextStepWithContent(attempt.domain, progress.currentStep);
             if (nextStep > progress.currentStep) {
                 progress.currentStep = nextStep;
                 progress.winsAtCurrentStep = 0;
+                progress.highestStep = Math.max(progress.highestStep ?? 0, progress.currentStep);
             }
         }
     }
@@ -425,7 +457,7 @@ export class LearnerStateManager {
             return currentStep + 1;
         }
 
-        for (let step = currentStep + 1; step <= currentStep + PROMOTION_STEP_SCAN_LIMIT; step++) {
+        for (let step = currentStep + 1; step <= currentStep + ladder().promotionStepScanLimit; step++) {
             if (this.stepContentProvider(domain, step)) {
                 return step;
             }
@@ -459,10 +491,11 @@ export class LearnerStateManager {
             }
             if (hasReachableContent) continue;
 
-            for (let step = progress.currentStep + 1; step <= progress.currentStep + PROMOTION_STEP_SCAN_LIMIT; step++) {
+            for (let step = progress.currentStep + 1; step <= progress.currentStep + ladder().promotionStepScanLimit; step++) {
                 if (this.stepContentProvider(domain, step)) {
                     progress.currentStep = step;
                     progress.winsAtCurrentStep = 0;
+                    progress.highestStep = Math.max(progress.highestStep ?? 0, progress.currentStep);
                     break;
                 }
             }

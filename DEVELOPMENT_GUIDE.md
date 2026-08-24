@@ -123,6 +123,38 @@ Cloud sync changes:
 - confirm a stale device's save is rejected and it adopts the authoritative one
 - confirm its attempts still landed anyway
 
+## Adding a Locale
+
+The engine is generic — EN and IS are not special-cased — but a third language is
+a real job, not an afternoon. This is here rather than in `roadmap.md` because it
+is a cost estimate, not open work: nothing is blocked on it and no third language
+is planned.
+
+What it takes:
+
+1. A bundle in all four locations (`public/data/i18n/` and `godot/data/i18n/`,
+   `strings_<code>.json` each). **264 keys**, of which 175 are math phrasing
+   templates — short and formulaic, but a genuine translation job.
+2. `LOCALES` in `src/systems/TextManager.ts`; `LOCALE_FILES` and
+   `LOCALE_ENDONYMS` in `godot/scripts/autoload/text_manager.gd`.
+3. An endonym — the language's name in its own language, never translated.
+4. **A drawn flag in both ports.** `FlagIcon` has a case per locale and falls
+   back to the US flag for anything unknown, so a new language would silently
+   show the wrong flag. They are vector geometry, not emoji, for reasons the
+   files themselves explain.
+5. **A plural rule** in `PLURAL_RULES` (`tools/math_phrasing_catalog.mjs`) and in
+   both runtimes' `pluralKey`/`_plural_key`. English inflects at 1; Icelandic at
+   1, 21, 31 and so on. Six keys carry a `.one` sibling that the new locale needs
+   too.
+6. A pass of the fit budget in `tools/validate_i18n.mjs`.
+
+**The selector is the hard part.** It is a segmented control sized for exactly
+two pills, and the width is already measured against the tightest heading on each
+port (x 636 on the web main menu, x 620 on the Godot login). A third pill does
+not fit that row, and the fit budget will not catch it — the endonyms are
+measured at runtime by the component itself. Three or more languages needs a
+different pattern, not a wider row.
+
 ## Documentation Update Rule
 
 Update docs in the same pass when you change:

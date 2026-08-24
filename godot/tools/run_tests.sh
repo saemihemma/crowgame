@@ -21,7 +21,18 @@ GODOT="${GODOT:-godot}"
 # (152.99, 152.63, 152.95, 152.72). Every assertion still passed, because they
 # were all directional — which is precisely the kind of test that stops catching
 # regressions without ever going red.
-USER_DATA="${XDG_DATA_HOME:-$HOME/.local/share}/godot/app_userdata/Crow"
+# The directory is named after application/config/name, so DERIVE it rather than
+# hardcoding: when the project was renamed Crow -> Hörmann, this path still said
+# "Crow", reset_store silently deleted a file that did not exist, and the probes
+# quietly stopped being hermetic again (coin counts 5->6 across runs). A rename
+# must not be able to disable isolation.
+APP_NAME="$(sed -n 's/^config\/name="\(.*\)"$/\1/p' "$HERE/project.godot" | head -1)"
+if [ -z "$APP_NAME" ]; then
+	echo "FATAL: could not read application/config/name from $HERE/project.godot;" >&2
+	echo "       refusing to run non-hermetic probes against an unknown user dir." >&2
+	exit 1
+fi
+USER_DATA="${XDG_DATA_HOME:-$HOME/.local/share}/godot/app_userdata/$APP_NAME"
 reset_store() {
 	rm -f "$USER_DATA/crow_localstorage.json"
 }

@@ -7,9 +7,14 @@ import { MathProblemManager } from '../math-kernel/math/MathProblemManager';
 import { selectOwlProblem, type OwlSelectionConfig } from '../math-kernel/math/owlSelection';
 import { buildProblemReplayKey } from '../math-kernel/math/problemReplayKey';
 import { LearnerStateManager } from '../math-kernel/systems/LearnerStateManager';
+import { MathTuning } from '../math-kernel/math/MathTuning';
 import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool, SelectionLane } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
+
+// Selector smoke and simulations drive the real ladder, so they need the
+// shared tuning JSON loaded exactly like the game does.
+MathTuning.initialize(JSON.parse(readFileSync(join(ROOT, 'godot/data/tuning/math_tuning.json'), 'utf8')));
 const AUTHORING_DIR = join(ROOT, 'authoring', 'math');
 const REPORTS_DIR = join(ROOT, 'reports', 'math-batches');
 const DATA_DIR = join(ROOT, 'godot', 'data', 'math');
@@ -357,6 +362,19 @@ function toOperator(kind: ArithmeticTemplateSpec['kind']): string {
     return '\u00F7';
 }
 
+/**
+ * English plural agreement for a generated sentence.
+ *
+ * These generators emitted the plural unconditionally, which produced broken
+ * English in the pools that a child reads: "Think of 1 groups of 2.", "1 groups
+ * of 2 makes 2.", "There are 1 altogether.", "1 birds sit on a branch.", "You
+ * have 1 berries." Correcting the pool files alone was not enough -- the
+ * materializer regenerates them from here, so the fix belongs at the source.
+ */
+function plural(n: number, one: string, other: string): string {
+    return n === 1 ? one : other;
+}
+
 function formatArithmeticPrompt(variant: string, left: number, operator: string, right: number): string {
     switch (variant) {
         case 'question':
@@ -381,13 +399,13 @@ function formatArithmeticPrompt(variant: string, left: number, operator: string,
         // math-kernel/math/wordedArithmetic.ts so steps, traits, replay keys, and the
         // verifier can re-derive the underlying fact from the text.
         case 'story_find':
-            return `You have ${left} berries. You find ${right} more. How many berries?`;
+            return `You have ${left} ${plural(left, 'berry', 'berries')}. You find ${right} more. How many berries?`;
         case 'story_land':
-            return `${left} birds sit on a branch. ${right} more land. How many birds?`;
+            return `${left} ${plural(left, 'bird sits', 'birds sit')} on a branch. ${right} more land. How many birds?`;
         case 'story_eat':
-            return `You have ${left} berries. You eat ${right}. How many are left?`;
+            return `You have ${left} ${plural(left, 'berry', 'berries')}. You eat ${right}. How many are left?`;
         case 'story_fly':
-            return `${left} birds sit on a branch. ${right} fly away. How many are left?`;
+            return `${left} ${plural(left, 'bird sits', 'birds sit')} on a branch. ${right} fly away. How many are left?`;
         default:
             return `${left} ${operator} ${right} = ?`;
     }
@@ -531,7 +549,7 @@ function renderHint(strategy: string, values: Record<string, number>): string {
         case 'bridge_ten':
             return `Hop back to the nearest 10 first, then finish counting back.`;
         case 'multiply_groups':
-            return `Think of ${left} groups of ${right}.`;
+            return `Think of ${left} ${plural(left, 'group', 'groups')} of ${right}.`;
         case 'divide_groups':
             return `Share ${left} into groups of ${right}.`;
         case 'count_symbols':
@@ -564,11 +582,11 @@ function renderExplanation(strategy: string, values: Record<string, number>): st
         case 'difference_bridge_ten':
             return `Step back to 10 first, then finish. The answer is ${correct}.`;
         case 'product_result':
-            return `${left} groups of ${right} makes ${correct}.`;
+            return `${left} ${plural(left, 'group', 'groups')} of ${right} makes ${correct}.`;
         case 'quotient_result':
-            return `${left} split into groups of ${right} makes ${correct} groups.`;
+            return `${left} split into groups of ${right} makes ${correct} ${plural(correct, 'group', 'groups')}.`;
         case 'count_result':
-            return `There are ${correct} altogether.`;
+            return `There ${plural(correct, 'is', 'are')} ${correct} altogether.`;
         case 'comparison_result':
             return `${correct} is the correct choice.`;
         case 'sequence_result':

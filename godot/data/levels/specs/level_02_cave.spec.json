@@ -1,98 +1,397 @@
 {
-    "id": "level_02",
-    "name": "Crystal Cave",
-    "theme": "forest",
-    "difficulty": 2,
-    "music": "cave_theme",
-    "criticalPath": {
-        "length": "long",
-        "motifs": ["staircase_up", "gap_jump", "platform_hop", "narrow_ledge", "descent"]
+  "id": "level_02",
+  "name": "Crystal Cave",
+  "theme": "forest",
+  "difficulty": 2,
+  "music": "cave_theme",
+  "criticalPath": {
+    "length": "long",
+    "motifs": [
+      "staircase_up",
+      "gap_jump",
+      "platform_hop",
+      "narrow_ledge",
+      "descent"
+    ]
+  },
+  "platforms": [
+    {
+      "type": "ground",
+      "x": 0,
+      "width": 10,
+      "y": 16
     },
-    "platforms": [
-        { "type": "ground", "x": 0, "width": 10, "y": 16 },
-        { "type": "platform", "x": 5, "width": 3, "y": 13 },
-        { "type": "platform", "x": 10, "width": 4, "y": 11 },
-
-        { "type": "ground", "x": 15, "width": 8, "y": 16, "gap_before": 2 },
-        { "type": "platform", "x": 17, "width": 3, "y": 13 },
-        { "type": "platform", "x": 21, "width": 2, "y": 10 },
-
-        { "type": "ground", "x": 25, "width": 10, "y": 16, "gap_before": 2 },
-        { "type": "platform", "x": 28, "width": 3, "y": 12 },
-        { "type": "platform", "x": 32, "width": 3, "y": 9 },
-
-        { "type": "ground", "x": 38, "width": 12, "y": 16, "gap_before": 3 },
-        { "type": "platform", "x": 41, "width": 3, "y": 13 },
-        { "type": "platform", "x": 45, "width": 2, "y": 10 },
-        { "type": "platform", "x": 48, "width": 2, "y": 8 },
-
-        { "type": "ground", "x": 53, "width": 10, "y": 16, "gap_before": 3 },
-        { "type": "platform", "x": 55, "width": 4, "y": 12 },
-        { "type": "platform", "x": 60, "width": 3, "y": 9 },
-
-        { "type": "ground", "x": 66, "width": 12, "y": 16, "gap_before": 3 },
-        { "type": "platform", "x": 69, "width": 3, "y": 13 },
-        { "type": "platform", "x": 73, "width": 3, "y": 10 },
-        { "type": "platform", "x": 76, "width": 2, "y": 7 },
-
-        { "type": "ground", "x": 81, "width": 14, "y": 16, "gap_before": 3 },
-        { "type": "platform", "x": 84, "width": 4, "y": 12 },
-        { "type": "platform", "x": 89, "width": 3, "y": 9 },
-        { "type": "platform", "x": 93, "width": 2, "y": 12 },
-
-        { "type": "ground", "x": 98, "width": 10, "y": 16, "gap_before": 3 }
-    ],
-    "spawns": {
-        "player": { "x": 2, "y": 14 },
-        "npcs": [
-            { "npc_id": "owl_teacher_01", "x": 18, "y": 16 },
-            { "npc_id": "owl_teacher_01", "x": 70, "y": 16 }
-        ],
-        "collectibles": [
-            { "type": "coin", "x": 6, "y": 11 },
-            { "type": "coin", "x": 7, "y": 11 },
-            { "type": "coin", "x": 11, "y": 9 },
-            { "type": "coin", "x": 12, "y": 9 },
-            { "type": "coin", "x": 22, "y": 8 },
-            { "type": "coin", "x": 29, "y": 10 },
-            { "type": "coin", "x": 30, "y": 10 },
-            { "type": "coin", "x": 33, "y": 7 },
-            { "type": "coin", "x": 42, "y": 11 },
-            { "type": "coin", "x": 46, "y": 8 },
-            { "type": "coin", "x": 48, "y": 6 },
-            { "type": "coin", "x": 56, "y": 10 },
-            { "type": "coin", "x": 57, "y": 10 },
-            { "type": "coin", "x": 61, "y": 7 },
-            { "type": "coin", "x": 70, "y": 11 },
-            { "type": "coin", "x": 74, "y": 8 },
-            { "type": "coin", "x": 76, "y": 5 },
-            { "type": "coin", "x": 85, "y": 10 },
-            { "type": "coin", "x": 86, "y": 10 },
-            { "type": "coin", "x": 90, "y": 7 },
-            { "type": "coin", "x": 100, "y": 14 },
-            { "type": "coin", "x": 101, "y": 14 }
-        ]
+    {
+      "type": "platform",
+      "x": 5,
+      "width": 3,
+      "y": 13
     },
-    "hazards": [
-        { "type": "spikes", "x": 13, "y": 19, "width": 2, "height": 1 },
-        { "type": "spikes", "x": 23, "y": 19, "width": 2, "height": 1 },
-        { "type": "spikes", "x": 35, "y": 19, "width": 3, "height": 1 },
-        { "type": "spikes", "x": 50, "y": 19, "width": 3, "height": 1 },
-        { "type": "spikes", "x": 63, "y": 19, "width": 3, "height": 1 },
-        { "type": "spikes", "x": 78, "y": 19, "width": 3, "height": 1 },
-        { "type": "spikes", "x": 95, "y": 19, "width": 3, "height": 1 }
-    ],
-    "enemies": [
-        { "enemy_id": "cockroach_basic", "x": 16, "y": 15 },
-        { "enemy_id": "cockroach_basic", "x": 42, "y": 15 },
-        { "enemy_id": "cockroach_basic", "x": 85, "y": 15 },
-        { "enemy_id": "cockroach_basic", "x": 56, "y": 15 }
-    ],
-    "exits": [
-        { "x": 106, "y": 16, "target_level": "level_03" }
-    ],
-    "mathGating": {
-        "skills": ["addition", "subtraction"],
-        "difficultyBand": [1, 3]
+    {
+      "type": "platform",
+      "x": 10,
+      "width": 4,
+      "y": 11
+    },
+    {
+      "type": "ground",
+      "x": 15,
+      "width": 8,
+      "y": 16,
+      "gap_before": 2
+    },
+    {
+      "type": "platform",
+      "x": 17,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 21,
+      "width": 2,
+      "y": 10
+    },
+    {
+      "type": "ground",
+      "x": 25,
+      "width": 10,
+      "y": 16,
+      "gap_before": 2
+    },
+    {
+      "type": "platform",
+      "x": 28,
+      "width": 3,
+      "y": 12
+    },
+    {
+      "type": "platform",
+      "x": 32,
+      "width": 3,
+      "y": 9
+    },
+    {
+      "type": "ground",
+      "x": 38,
+      "width": 12,
+      "y": 16,
+      "gap_before": 3
+    },
+    {
+      "type": "platform",
+      "x": 41,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 45,
+      "width": 2,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 48,
+      "width": 2,
+      "y": 8
+    },
+    {
+      "type": "ground",
+      "x": 53,
+      "width": 10,
+      "y": 16,
+      "gap_before": 3
+    },
+    {
+      "type": "platform",
+      "x": 55,
+      "width": 4,
+      "y": 12
+    },
+    {
+      "type": "platform",
+      "x": 60,
+      "width": 3,
+      "y": 9
+    },
+    {
+      "type": "ground",
+      "x": 66,
+      "width": 12,
+      "y": 16,
+      "gap_before": 3
+    },
+    {
+      "type": "platform",
+      "x": 69,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 73,
+      "width": 3,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 76,
+      "width": 2,
+      "y": 7
+    },
+    {
+      "type": "ground",
+      "x": 81,
+      "width": 14,
+      "y": 16,
+      "gap_before": 3
+    },
+    {
+      "type": "platform",
+      "x": 84,
+      "width": 4,
+      "y": 12
+    },
+    {
+      "type": "platform",
+      "x": 89,
+      "width": 3,
+      "y": 9
+    },
+    {
+      "type": "platform",
+      "x": 93,
+      "width": 2,
+      "y": 12
+    },
+    {
+      "type": "ground",
+      "x": 98,
+      "width": 10,
+      "y": 16,
+      "gap_before": 3
     }
+  ],
+  "spawns": {
+    "player": {
+      "x": 2,
+      "y": 14
+    },
+    "npcs": [
+      {
+        "npc_id": "owl_teacher_01",
+        "x": 18,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_teacher_01",
+        "x": 70,
+        "y": 16
+      }
+    ],
+    "collectibles": [
+      {
+        "type": "coin",
+        "x": 6,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 7,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 11,
+        "y": 9
+      },
+      {
+        "type": "coin",
+        "x": 12,
+        "y": 9
+      },
+      {
+        "type": "coin",
+        "x": 22,
+        "y": 8
+      },
+      {
+        "type": "coin",
+        "x": 29,
+        "y": 10
+      },
+      {
+        "type": "coin",
+        "x": 30,
+        "y": 10
+      },
+      {
+        "type": "coin",
+        "x": 33,
+        "y": 7
+      },
+      {
+        "type": "coin",
+        "x": 42,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 46,
+        "y": 8
+      },
+      {
+        "type": "coin",
+        "x": 48,
+        "y": 6
+      },
+      {
+        "type": "coin",
+        "x": 56,
+        "y": 10
+      },
+      {
+        "type": "coin",
+        "x": 57,
+        "y": 10
+      },
+      {
+        "type": "coin",
+        "x": 61,
+        "y": 7
+      },
+      {
+        "type": "coin",
+        "x": 70,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 74,
+        "y": 8
+      },
+      {
+        "type": "coin",
+        "x": 76,
+        "y": 5
+      },
+      {
+        "type": "coin",
+        "x": 85,
+        "y": 10
+      },
+      {
+        "type": "coin",
+        "x": 86,
+        "y": 10
+      },
+      {
+        "type": "coin",
+        "x": 90,
+        "y": 7
+      },
+      {
+        "type": "coin",
+        "x": 100,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 101,
+        "y": 14
+      }
+    ]
+  },
+  "hazards": [
+    {
+      "type": "spikes",
+      "x": 13,
+      "y": 19,
+      "width": 2,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 23,
+      "y": 19,
+      "width": 2,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 35,
+      "y": 19,
+      "width": 3,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 50,
+      "y": 19,
+      "width": 3,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 63,
+      "y": 19,
+      "width": 3,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 78,
+      "y": 19,
+      "width": 3,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 95,
+      "y": 19,
+      "width": 3,
+      "height": 1
+    }
+  ],
+  "enemies": [
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 16,
+      "y": 15
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 42,
+      "y": 15
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 85,
+      "y": 15
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 56,
+      "y": 15
+    }
+  ],
+  "exits": [
+    {
+      "x": 106,
+      "y": 16,
+      "target_level": "level_03"
+    }
+  ],
+  "mathGating": {
+    "skills": [
+      "subtraction",
+      "addition"
+    ],
+    "difficultyBand": [
+      1,
+      3
+    ],
+    "teachingIntent": "Taking away: things vanish in the dark - subtraction on a steady addition base."
+  }
 }

@@ -1,0 +1,18 @@
+{
+  "HUDScene": [
+    "x0",
+    "x0",
+    "<",
+    ">",
+    "JUMP",
+    "ZAP",
+    "PECK"
+  ],
+  "PauseScene": [
+    "PAUSED",
+    "Resume",
+    "Sound: On",
+    "English",
+    "Quit"
+  ]
+}

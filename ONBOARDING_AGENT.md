@@ -77,13 +77,13 @@ Game:
   (the maths practice arena)
 - `godot/data/npcs/npc_registry.json` contains 1 NPC entry (the owl)
 - `godot/data/enemies/enemy_registry.json` contains 1 enemy type (the cockroach)
-- `godot/data/audio/audio_manifest.json` currently exposes 5 music tracks and 15 live SFX entries.
+- `godot/data/audio/audio_manifest.json` currently exposes 5 music tracks and 16 live SFX entries.
 - **51** `.gd` scripts under `godot/scripts/`, **24** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
-- `godot/data/audio/sound_events.json`: **15** semantic sound events
-- `godot/data/i18n/strings_en.json`: **113** keys, matched key-for-key by
+- `godot/data/audio/sound_events.json`: **16** semantic sound events
+- `godot/data/i18n/strings_en.json`: **286** keys, matched key-for-key by
   `strings_is.json`
-- **18** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
+- **19** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
 Maths content — `DataManager` loads 4 math pools totaling 3150 problems:
 - `curriculum`: 3035

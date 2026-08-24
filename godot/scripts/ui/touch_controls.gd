@@ -9,6 +9,12 @@ extends CanvasLayer
 @onready var GAP: int = int(Config.ui("touch/gap", 12))
 @onready var PAD: int = int(Config.ui("touch/pad", 16))
 
+## action -> its Label, so a locale change can retitle the buttons without
+## rebuilding them. Rebuilding would mean destroying live TouchScreenButtons,
+## which drops a press the player is holding at that moment; the web port gets
+## away with a full rebuild because its buttons are not the input path.
+var _labels: Dictionary = {}
+
 func _ready() -> void:
 	layer = 8
 	var vw := float(ProjectSettings.get_setting("display/window/size/viewport_width"))
@@ -25,6 +31,18 @@ func _ready() -> void:
 	# Hide on non-touch desktop to avoid clutter (keyboard still works).
 	if not (DisplayServer.is_touchscreen_available() or OS.has_feature("web") or OS.has_feature("mobile")):
 		visible = false
+	# JUMP/STÖKK, PECK/GOGGA and ZAP/SKOT differ between locales, so without
+	# this the d-pad keeps the old language until the level reloads.
+	TextManager.locale_changed.connect(func(_code: String) -> void: _refresh_labels())
+
+## The three localised button labels. The arrows are notation, not words.
+func _refresh_labels() -> void:
+	var keys := {"jump": "touch.jump", "interact": "touch.peck", "shoot": "touch.zap"}
+	for action: String in keys:
+		var lbl: Variant = _labels.get(action, null)
+		if lbl is Label:
+			(lbl as Label).text = TextManager.t(String(keys[action]))
+
 
 func _add_button(action: String, label: String, pos: Vector2) -> void:
 	var b := TouchScreenButton.new()
@@ -44,6 +62,7 @@ func _add_button(action: String, label: String, pos: Vector2) -> void:
 	lbl.add_theme_color_override("font_color", ThemeManager.get_color_value("touch_label"))
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	b.add_child(lbl)
+	_labels[action] = lbl
 	# Square press shape covering the panel.
 	var shape := RectangleShape2D.new()
 	shape.size = Vector2(BTN, BTN)

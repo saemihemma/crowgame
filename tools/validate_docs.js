@@ -310,26 +310,45 @@ function validateOnboardingSnapshot(currentDocs) {
 }
 
 function validateMathAndLearnerContracts() {
+    // The tuning JSON is the single source of the ladder/lane numbers; the
+    // doc pins below are derived from it so a tuning edit forces the doc to
+    // follow. godot/data is now the only copy of that JSON.
+    const mathTuning = JSON.parse(fs.readFileSync(path.join(root, 'godot/data/tuning/math_tuning.json'), 'utf8'));
+
     ensureSourcePattern('math-kernel/math/ELOManager.ts', /globalELO:\s*150/, 'starting global ELO');
     ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*30\)\s*return\s+16;/, 'first K-factor band');
     ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*150\)\s*return\s+12;/, 'second K-factor band');
     ensureSourcePattern('math-kernel/math/ELOManager.ts', /return\s+8;/, 'third K-factor band');
     ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /clamp\(decayed\s*\+\s*delta,\s*-50,\s*20\)/, 'confidence clamp');
-    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*PROMOTION_WIN_TARGET/, 'curriculum promotion gate');
-    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*DEMOTION_WRONG_THRESHOLD/, 'curriculum demotion gate');
-    // Demotion is evaluated only on the wrong answer itself, and a single miss no
-    // longer reaches the line. Both are load-bearing for whether a child can climb
-    // at all, so pin them in the oracle rather than only in the GDScript tests.
-    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /if\s*\(!attempt\.correct\)\s*\{/, 'demotion evaluated on the miss only');
-    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /DEMOTION_CONFIDENCE_THRESHOLD\s*=\s*-25/, 'demotion confidence threshold');
-    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /POST_DEMOTION_CONFIDENCE_FLOOR\s*=\s*-10/, 'post-demotion confidence floor');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*ladder\(\)\.promotionWinTarget/, 'curriculum promotion gate');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*ladder\(\)\.demotionWrongThreshold/, 'curriculum demotion gate');
     ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /stage:\s*'immediate'/, 'immediate review stage');
     ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /case\s+'day_7':/, 'day_7 review stage');
-    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /comfort:\s*0\.4/, 'comfort lane weight');
-    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /review:\s*0\.2/, 'review lane weight');
-    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /at_level:\s*0\.3/, 'at-level lane weight');
-    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /stretch:\s*0\.1/, 'stretch lane weight');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /mathTuning\(\)\.laneWeights/, 'lane weights read from shared tuning');
     ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /canUseStretchLane\(domain\)/, 'stretch lane gate');
+
+    // The downward ratchet guard. Demotion must be evaluated only on the wrong
+    // answer itself — evaluating it on every attempt is what let one miss cost
+    // several steps as it slid through the window. This one is structural, so it
+    // is pinned in the source.
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /if\s*\(!attempt\.correct\)\s*\{/, 'demotion evaluated on the miss only');
+
+    // The other two halves of that guard are now VALUES in the tuning JSON
+    // rather than source constants, so pin them there. A miss lands confidence
+    // at exactly -15, so the threshold must stay clear of it or a single miss
+    // demotes again; and the floor must lift confidence back off the gate so the
+    // next miss does not re-demote instantly.
+    const ladder = mathTuning.ladder;
+    if (ladder.demotionConfidenceThreshold >= -15) {
+        fail(`math_tuning.json: ladder.demotionConfidenceThreshold is ${ladder.demotionConfidenceThreshold};`
+            + ' a single miss sets confidence to exactly -15, so anything >= -15 demotes on one miss');
+    }
+    if (ladder.postDemotionConfidenceFloor <= ladder.demotionConfidenceThreshold) {
+        fail(`math_tuning.json: ladder.postDemotionConfidenceFloor (${ladder.postDemotionConfidenceFloor})`
+            + ` must sit above ladder.demotionConfidenceThreshold (${ladder.demotionConfidenceThreshold}),`
+            + ' or demotion leaves confidence on the gate and the next miss re-demotes');
+    }
+
     ensureSourcePattern('godot/scripts/ui/math_challenge.gd', /var options: Array = answer\.get\("options", \[\]\)/, 'MCQ options drive the answer buttons');
     ensureSourcePattern('godot/scripts/scenes/login.gd', /func _finish_login\(\) -> void:/, 'login success rehydrate owner');
     ensureSourcePattern('godot/scripts/scenes/login.gd', /SaveManager\.switch_profile\(\)/, 'profile-switch on login');
@@ -339,6 +358,7 @@ function validateMathAndLearnerContracts() {
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `16` before 30 attempts', 'K-factor first band');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `12` before 150 attempts', 'K-factor second band');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `8` afterward', 'K-factor third band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'godot/data/tuning/math_tuning.json', 'shared tuning file pointer');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'currentStep', 'curriculum step ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'winsAtCurrentStep', 'curriculum progress ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- clamped to `-50..20`', 'confidence clamp');
@@ -350,10 +370,10 @@ function validateMathAndLearnerContracts() {
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_3`', 'review stage day_3');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_7`', 'review stage day_7');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `graduated`', 'review stage graduated');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `40%` comfort', 'comfort lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `20%` review', 'review lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `30%` at level', 'at-level lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `10%` stretch', 'stretch lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.comfort * 100)}%\` comfort`, 'comfort lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.review * 100)}%\` review`, 'review lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.at_level * 100)}%\` at level`, 'at-level lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', `- \`${Math.round(mathTuning.laneWeights.stretch * 100)}%\` stretch`, 'stretch lane weight');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'one curriculum step easier', 'comfort lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'exact current curriculum step', 'at-level lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'strategy steps down only', 'step-down-only fallback');

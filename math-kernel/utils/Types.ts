@@ -10,6 +10,17 @@ export interface LevelRegistryEntry {
     music?: string;
     unlockRequirement: { level: string; minStars: number } | null;
     order: number;
+    /** The level's math identity: which domains its owls draw from and the
+     *  difficulty band they stay inside. Authored in the level spec and
+     *  mirrored into the registry so the runtime can read it. */
+    mathGating?: {
+        /** Emphasis order: the first skill is the level's headline and gets
+         *  the primary selection share in the owl component. */
+        skills: string[];
+        difficultyBand: [number, number];
+        /** The lesson this level exists to teach, in one sentence. */
+        teachingIntent?: string;
+    };
 }
 
 export interface LevelRegistry {
@@ -48,6 +59,7 @@ export interface LevelSpec {
     mathGating?: {
         skills: string[];
         difficultyBand: [number, number];
+        teachingIntent?: string;
     };
 }
 
@@ -131,6 +143,42 @@ export interface ProblemGenerator {
     evaluator: string;
 }
 
+/**
+ * A reference into the i18n bundles for one localisable sentence.
+ *
+ * `params` carries no natural language -- numbers, the operator symbol, a glyph
+ * run ("o o o"), a comma-joined number list. A `math.prompt.wrap.*` key takes an
+ * `inner` that is either a wordless string ("12 - 5 =") or a nested reference,
+ * which is how a prefixed prompt ("Borrow and solve: How much is 18 - 9?")
+ * composes out of two templates instead of needing one per combination.
+ */
+export interface PhrasingRef {
+    key: string;
+    params: Record<string, number | string | PhrasingRef>;
+    /**
+     * Name of the parameter that drives plural agreement, when the phrasing has
+     * one. The category itself is NOT stored: each locale applies its own rule
+     * at render time, because they differ -- English inflects at 1, Icelandic at
+     * 1, 21, 31 and so on.
+     */
+    plural?: string;
+}
+
+/**
+ * Localised phrasing for a problem's three sentences.
+ *
+ * Additive and optional by design. `prompt.text`, `hint` and `explanation` stay
+ * canonical English because tools/math_verifier.ts, math-kernel/math/problemReplayKey.ts
+ * and the golden fixtures all read them. A renderer prefers the phrasing when its
+ * key resolves and falls back to the English text otherwise, so an absent or
+ * unresolvable entry degrades to today's behaviour.
+ */
+export interface ProblemPhrasing {
+    prompt?: PhrasingRef;
+    hint?: PhrasingRef;
+    explanation?: PhrasingRef;
+}
+
 export interface MathProblem {
     id: string;
     domain: MathDomain;
@@ -145,6 +193,7 @@ export interface MathProblem {
     explanation?: string;
     misconceptionTags?: string[];
     generator?: ProblemGenerator | null;
+    phrasing?: ProblemPhrasing;
 }
 
 export interface MathProblemPool {
@@ -208,6 +257,12 @@ export interface DomainCurriculumProgress {
     currentStep: number;
     winsAtCurrentStep: number;
     recentStepResults: CurriculumStepResult[];
+    /** Lifetime attempts in this domain. Zero means the child has never met
+     *  it — the signal that triggers the worked-example teaching window. */
+    totalAttempts: number;
+    /** High-water mark: the highest step ever reached. Only ever rises, so
+     *  the trophy shelf never visibly shrinks after a demotion. */
+    highestStep: number;
 }
 
 export type DomainCurriculumProgressMap = Record<MathDomain, DomainCurriculumProgress>;
@@ -240,6 +295,7 @@ export interface LearnerAttemptRecord {
     curriculumStep: number;
     selectionLane: SelectionLane;
     reviewItemId: string | null;
+    golden?: boolean;
 }
 
 export interface LearnerDomainHistory {
@@ -310,6 +366,7 @@ export interface LearnerAttemptSubmission {
     curriculumStep: number;
     selectionLane: SelectionLane;
     reviewItemId: string | null;
+    golden?: boolean;
 }
 
 export interface LearnerSyncResult {

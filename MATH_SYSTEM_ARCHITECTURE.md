@@ -110,6 +110,45 @@ Prompt wording:
 
 The shared type system still supports other answer modes, but the live UI does not render them.
 The shipped owl interaction is one problem per encounter — answer it and the owl is saved. `problemCount` stays per-NPC config in `npc_registry.json`, so a future gated variant (e.g. a padlock owl) can demand more without code changes.
+
+Per-level math identity:
+- each level's `mathGating` (authored in the level spec, mirrored into
+  `level_registry.json`) names the domains its owls draw from, a difficulty
+  band, and a required `teachingIntent` — the lesson the level exists to
+  teach; the owl component intersects skills and band with its own NPC config
+- the level's skill order is its emphasis: the intersection keeps the LEVEL's
+  order, and the first listed skill is the headline that gets the primary
+  selection share
+- the designed chain: 01 counting (+addition), 02 subtraction (+addition),
+  03 comparison (+counting), 04 pattern matching (+counting),
+  05 number sequences (+addition, subtraction), 99 open practice — each
+  headline's prerequisite domain is the level's own on-theme fallback until
+  the headline unlocks, and `npm run validate` fails if the chain stops
+  covering every servable domain, gates a skill the owl cannot serve, or
+  points a band at fewer than 30 authored problems
+- the curriculum ladder still owns how hard within that band; the level owns
+  which math — an empty intersection falls back to the NPC config so a
+  mis-authored level never bricks
+
+The teaching window:
+- when a level's gating includes a domain the child has never attempted
+  (`totalAttempts` of 0 in `curriculumProgress`), the owl opens with a
+  worked-example demo: the problem appears, the localised hint plays as
+  "thinking aloud", then the answer lights up with its explanation — no input
+  accepted, no learner-model events emitted
+- the demo hands over to a freebie problem in the same domain: a win records
+  normally, a miss records nothing at all, so first contact with new math can
+  never hurt
+
+The comeback arc:
+- a correct answer on a review item whose last outcome was wrong fires
+  `MATH_COMEBACK`, celebrated on the HUD harder than an ordinary win —
+  a miss becomes the setup for the best moment available
+
+Progress pips:
+- the overlay shows one pip per first-try at-level win already banked toward
+  the next promotion; the final pip is the step-up celebration itself
+- pips only ever render as earned-or-not; they are never shown draining
 The live owl path is addition-first, and the fresh opening mix currently reaches `addition` plus `counting` to create softer "lucky easy ones" without jumping into later arithmetic too early.
 Pattern matching is part of the broader owl-safe set, but it does not start unlocked on a fresh learner profile.
 When an NPC asks more than one problem, follow-up questions prefer an alternate unlocked owl-safe domain before falling back to the full owl-safe set — dormant at the one-problem baseline, live again for any multi-problem NPC.
@@ -149,7 +188,15 @@ Live update behavior in [godot/scripts/math/elo_manager.gd](./godot/scripts/math
 
 Local problem selection is now capped by an explicit per-domain curriculum step.
 
-Live behavior in [godot/scripts/systems/learner_state_manager.gd](./godot/scripts/systems/learner_state_manager.gd):
+Live behavior in [godot/scripts/systems/learner_state_manager.gd](./godot/scripts/systems/learner_state_manager.gd),
+mirrored by the reference kernel in
+[math-kernel/systems/LearnerStateManager.ts](./math-kernel/systems/LearnerStateManager.ts).
+The tunable numbers below (promotion, demotion, stretch gate, lane weights,
+teaching pacing, golden economy) live in
+[godot/data/tuning/math_tuning.json](./godot/data/tuning/math_tuning.json) —
+now the only copy — and both the shipped game and the kernel load that file, so
+tuning a number is one JSON edit that applies to the runtime and the parity
+oracle at once:
 
 - each domain stores:
   - `currentStep`
@@ -277,6 +324,40 @@ Local kid-safe filter:
 - `runtime-selector-smoke.json` is runtime-aligned selector evidence built from the shared owl-selection helper plus live learner-state and NPC-config rails; it is not the literal browser scene/input/retry flow by itself.
 - `runtime-browser-smoke.json` is the current browser-backed proof artifact for the real owl interaction, wrong-answer retry, and the single-problem completion-and-close path.
 - `runtime-browser-smoke.json` is still not telemetry-backed pedagogy proof and does not independently validate that the frozen ELO bands are perfect for every child.
+
+### Golden problems
+
+Roughly 1 in 8 real owl problems arrives golden: a pulsing gold frame, a
+distinct shimmer chime, and a bonus coin multiplier on the win (larger for a
+first-try win). Live behavior in [src/math/goldenRoll.ts](./src/math/goldenRoll.ts)
+and `godot/scripts/math/golden_roll.gd`:
+
+- the roll is a seeded coin flip on `(childId, lifetime attempt index)` — the
+  same save state always rolls the same result, and the `goldenRolls` fixtures
+  in the Godot parity suite hold both ports to the identical draw
+- the rate and both multipliers live under `golden` in the shared
+  `math_tuning.json`; nothing about it is tied to time, streaks, or anything a
+  child could feel pressure to protect
+- never during the teaching window (demos and freebies stay calm), and a
+  golden miss costs nothing beyond the ordinary retry flow
+- each attempt records a `golden` flag, and the admin session report counts
+  golden problems served
+
+### Session recap and trophy shelf
+
+Two menu surfaces close the loop (peak-end rule: a session is remembered by
+its peak and its ending):
+
+- `SessionStats` (web singleton, Godot autoload) counts owls saved, problems
+  solved, step-ups, comebacks, and golden wins during play; the main menu
+  consumes it once and shows a recap that ends on the best moment
+  (comeback beats golden beats step-up). Only positive counts exist — a
+  session with nothing to celebrate shows no recap at all.
+- `curriculumProgress` carries a `highestStep` high-water mark per domain
+  (raised on every step rise, never lowered), and both main menus render a
+  code-drawn badge per attempted domain — sprout / leaf / flower / star from
+  `trophies.tierSteps` in the shared tuning file. A demotion never shrinks a
+  badge.
 
 ## Unlock Logic
 

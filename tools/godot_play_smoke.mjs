@@ -20,12 +20,20 @@
  * is a liveness gate rather than a content check -- the screenshots it writes
  * are for a human or an agent to read.
  *
- * Gameplay input is driven by KEYBOARD here on purpose. Synthetic pointer input
- * (Playwright mouse, and CDP touch events) does not reach Godot's
- * TouchScreenButtons in headless Chromium, so asserting on the on-screen d-pad
- * produced a confident false alarm -- it reported the controls dead when
- * godot/tests/test_touch_controls.gd proves a real touch presses the action.
- * The touch path is covered there, at the source, where it can be trusted.
+ * Gameplay input is driven by KEYBOARD for the walk assertion, because that is
+ * the least fragile way to prove the world responds at all.
+ *
+ * The d-pad gets its own assertion, and it has to live here. It used to be
+ * covered by godot/tests/test_touch_controls.gd, which turned out to assert
+ * nothing: the runner was not awaiting coroutine tests, so every assertion after
+ * that test's first `await` went uncounted. Headless Godot cannot host it either
+ * -- input injection reaches nodes fine, but TouchScreenButton's screen-to-canvas
+ * hit testing does not work without a real window.
+ *
+ * So the browser context is created with `hasTouch`, and the tap below is a
+ * genuine DOM touch event, which is exactly what the HTML5 export listens for.
+ * That is the difference from the earlier attempt: Playwright's *mouse* does not
+ * reach a TouchScreenButton, and a real touch does.
  *
  * Usage:
  *   (cd output/web && python3 -m http.server 8060) &
@@ -49,11 +57,11 @@ const H = 540;
 
 /**
  * Coordinates derived from the layout code, not guessed:
- *   language pills  - godot/scripts/ui/language_toggle.gd (MARGIN 20, 132x44, gap 6)
+ *   language pills  - godot/scripts/ui/language_toggle.gd (MARGIN 20, 149x44, gap 6)
  *   touch controls  - godot/scripts/ui/touch_controls.gd  (PAD 16, BTN 88, GAP 12)
  */
 const HIT = {
-    localeIs: [W - 20 - 132 / 2, 20 + 44 / 2],
+    localeIs: [W - 20 - 149 / 2, 20 + 44 / 2],
     firstListRow: [W / 2, 116],
     nameField: [W / 2, 106],
     pinField: [W / 2, 249],
@@ -118,6 +126,10 @@ const ctx = await chromium.launchPersistentContext(USER_DIR, {
         '--no-sandbox',
     ],
     viewport: { width: W, height: H },
+    // Required, not incidental: the d-pad assertion below needs real DOM touch
+    // events, and touch_controls.gd also hides itself unless the device reports
+    // touch, web or mobile.
+    hasTouch: true,
 });
 
 const page = ctx.pages()[0] ?? await ctx.newPage();
@@ -187,11 +199,31 @@ try {
     if (difference(levels, gameStart) > 0.02) ok('a level starts');
     else fail('selecting a level did not start it');
 
+    // How long to hold a direction, shared by the touch and keyboard checks so
+    // their measurements are comparable.
+    const WALK_MS = 3000;
+
+    // ── the d-pad: evidence, but no gate yet ────────────────────────────────
+    // Held CDP touches on the d-pad DO move the world -- measured twice at 0.998
+    // change, the same magnitude as the keyboard walk below, which is real
+    // positive evidence that the touch path works in the exported build. Real
+    // DOM touch events are confirmed to reach the canvas (a listener sees
+    // touchstart at the tapped point), so this is the engine responding, not the
+    // harness pretending.
+    //
+    // There is deliberately no assertion. A repeatable one does not exist yet:
+    // a sequence of held touches contaminates itself -- once the crow reaches
+    // the owl the encounter overlay opens and captures input, after which every
+    // later probe reads as dead, including a keyboard control. Shipping a gate
+    // that passes or fails on ordering would be worse than shipping none.
+    //
+    // The old headless test that claimed to cover this asserted nothing at all;
+    // see godot/tests/test_touch_controls.gd for that story.
+
     // A level is never a still image -- coins spin, the crow idles -- so a raw
     // before/after diff proves nothing. Measure the ambient noise over the same
     // span with no input first, then require the input-driven change to clear it
     // by a wide margin.
-    const WALK_MS = 3000;
 
     await page.waitForTimeout(WALK_MS);
     const idle = await grab('08-idle-noise-floor');

@@ -24,6 +24,7 @@ const PATHS := {
 	"NPC_TUNING": "tuning/npc_tuning.json",
 	"UI_TUNING": "tuning/ui_tuning.json",
 	"FX_TUNING": "tuning/fx_tuning.json",
+	"MATH_TUNING": "tuning/math_tuning.json",
 	"THEME_FOREST": "themes/theme_forest.json",
 	"THEME_SCIFI": "themes/theme_scifi.json",
 	"AUDIO_MANIFEST": "audio/audio_manifest.json",

@@ -42,29 +42,6 @@ there.
 
 ## P1 — Correctness and reachability
 
-### The maths questions themselves are still English
-Icelandic is complete for every menu, label and greeting, but the problems a
-child actually reads are not. 2331 of 3000 prompts contain English words --
-"Quick check: 1 + 2", "What is 3 + 4?", "Complete: 5 - 2 = ?". A child playing in
-Icelandic gets an Icelandic shell around English questions, which for a five- to
-seven-year-old is the part that matters most.
-
-It is far more tractable than the raw count suggests: there are 206 distinct
-phrasings and **the top 20 cover 87%** of them. The work is translating a
-templated phrase list, not 2331 strings.
-
-*The blocker is a schema decision, not the translation.* Prompts live at
-`prompt.text` in `public/data/math/*.json` (mirrored under `godot/data/math/`),
-and those pools are covered by `tools/validate-content.ts`, `tools/math_verifier.ts`,
-duplicate-prompt checks and the golden fixtures the Godot parity tests share.
-Options: a per-locale sibling field (`prompt.text_is`), a parallel pool per
-locale, or generating prompts from a template id plus operands at runtime. The
-last is the only one that does not double the content and keeps the arithmetic
-checks meaningful.
-
-*Done when:* a locale decision is recorded in `MATH_SYSTEM_ARCHITECTURE.md` and
-the top-20 phrasings render in Icelandic in the exported build.
-
 ### `output/web/` is a hand-built artifact on the deploy path
 `railway.json` -> `deploy/web/Dockerfile` copies the committed `output/web`
 straight into Caddy, so **whatever is in that directory is the live game**. It is
@@ -87,16 +64,41 @@ stated whether a child is meant to unlock strictly one at a time.
 *Done when:* the intended progression is written down in `PROJECT.md` and the
 registry matches it.
 
+## P1.5 — The math experience loop
+
+The loop being built: teach → try → win → celebrate → miss → comeback →
+level up → new world → one more. Kid-safe rules bound everything here:
+rewards only ever add (no streaks, no timers, nothing to protect), game
+progress never gated by math level, one big celebration per encounter,
+teaching skippable, no dark patterns.
+
+### Tune the ladder against real play, not intuition
+The admin session report tags accuracy against the 70-85% sweet spot. After a
+week of family play: above 85% raise the at-level/stretch share, below 70%
+raise comfort, low comeback rate shorten the review gap. One knob at a time,
+one week per change.
+
+*Done when:* two consecutive weekly reports sit inside the sweet spot with at
+least one step-up per early session and frustration flags under 10%.
+
 ## P2 — Experience decisions that need making
 
-### The on-screen controls are unverified for desktop-web mouse
-`godot/scripts/ui/touch_controls.gd` shows the d-pad whenever
-`OS.has_feature("web")` is true, which includes desktop browsers where the
-player has a mouse. `pointing/emulate_touch_from_mouse` is enabled as the
-documented fix, but it could not be confirmed: synthetic pointer input does not
-reach Godot's TouchScreenButtons in headless Chromium, by Playwright mouse or by
-CDP touch events. The touch path itself is covered by
-`godot/tests/test_touch_controls.gd`.
+### The on-screen controls have no automated gate
+Touch has positive evidence and no gate; mouse has neither.
+
+*Touch:* held CDP touches on the d-pad move the world in the exported build,
+measured twice at 0.998 change — the same magnitude as a keyboard walk — and real
+DOM touch events are confirmed to reach the canvas. So it works. What does not
+exist is a repeatable assertion: a sequence of held touches contaminates itself,
+because once the crow reaches the owl the encounter overlay opens and captures
+input, after which every later probe reads as dead including a keyboard control.
+A gate needs a fresh level per probe, or a level with no owl near the spawn.
+
+*Mouse:* untested. `godot/scripts/ui/touch_controls.gd` shows the d-pad whenever
+`OS.has_feature("web")` is true, which includes desktop browsers where the player
+has a mouse, and `pointing/emulate_touch_from_mouse` is enabled as the documented
+fix but has never been confirmed — Playwright's synthetic mouse does not reach a
+TouchScreenButton, which is a harness limitation and not evidence either way.
 
 *Done when:* someone clicks the d-pad with a real mouse in a desktop browser and
 says whether the crow moves. If it does not, the fallback is to hide the controls
@@ -111,23 +113,6 @@ retries immediately gets silence. This is what made the browser smoke flaky.
 
 *Done when:* the lockout has one deliberate duration, and the options visibly
 show they are not accepting input while it runs.
-
-### Mid-game language switching
-The selector is on Login and Main Menu only. Switching inside a level would
-require live re-rendering of `HUDScene`, `TouchControls`, `DialogBox` and any
-open `MathChallengeScene` overlay — a scene restart is only safe outside
-gameplay.
-
-*Done when:* either a settings surface exists that is safe to restart from, or
-the locale-change path re-renders live scenes and `GameEvents.LOCALE_CHANGED`
-has listeners that prove it.
-
-### `pause.theme` promises a theme switcher that does not exist
-The key sits in all four string bundles and `ThemeManager` supports swapping
-between `forest` and `scifi`, but no control was ever built.
-
-*Done when:* Pause offers the switch, or the key is deleted from all four
-bundles.
 
 ### Level select does not snap to rows
 `ScrollList` has momentum, clamping and a peeking next row, but a flick can rest
@@ -197,28 +182,76 @@ at the baseline but keeps working for any NPC that raises the count.
 band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
 the rotation for older kids, or park them explicitly in Settled.
 
-### Four string keys are referenced by neither port
-`hud.level`, `hud.level_up`, `login.delete`, `login.delete_confirm`. Either wire
-them up or remove them from all four bundle files. Note that profile deletion
-appears to be unimplemented in both ports, which is what the last two are for.
+### Nothing ever chooses a theme
+`ThemeManager`'s own docstring says "Each world/level can specify a theme", and
+that was never wired. Boot sets `forest` and nothing else ever calls `setTheme`
+— the only other caller was a toggle in the Pause menu, which has been removed
+because a theme is a property of a place, not a setting. So `theme_scifi.json`
+ships and is unreachable in both ports.
+
+*Done when:* either level specs carry a `theme` that the level loader applies (the
+intended design, and the reason the sci-fi art exists), or `theme_scifi.json` and
+the second-theme support come out together.
+
+### A sound setting exists but a volume one does not
+Pause offers sound on/off, which is what a parent in a waiting room reaches for.
+The underlying API in both ports has separate master, music and SFX volumes and
+nothing exposes them, so "quieter" is not reachable — only "silent".
+
+*Done when:* someone decides whether a child's game needs more than a mute. If it
+does, note the Pause panel is sized for four rows and a slider is a different
+control from a button.
+
+### The trophy shelf has no heading
+`trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with
+the shelf but nothing ever drew it — the new dead-key guard caught it on its
+first merge. The key is deleted rather than wired up, because adding a heading
+changes the main menu's layout and that belongs to whoever designed the shelf.
+
+*Done when:* either a heading is drawn above the badge row and the key comes
+back with it, or the shelf is deliberately headingless and this entry goes.
+Note the main menu is already tight: the language selector's width is measured
+against the title ending at x 636.
+
+### `DialogBox` and `DialogComponent` are dead code carrying English
+Nothing calls `showGreeting`, `showSuccess` or `showFailure`, so the dialogue
+never reaches the screen — the owl goes straight to the math overlay, whose
+greeting comes from `math.greeting_*`. But `DialogComponent.buildLines()` holds
+hardcoded English ("Hoo-hoo! Hello there, little crow!"), the owl's
+`npc_registry.json` entry still configures a `dialog` component, and `DialogBox`
+is one of the seven `THEME_CHANGED` subscribers. It reads exactly like an
+untranslated surface and is not one, which cost a reviewer real time.
+
+*Done when:* either the dialogue path is wired up and its lines move into the
+bundles, or `DialogBox`, `DialogComponent` and the registry's `dialog` entry are
+deleted together. Note the web build has no hardcoded-string guard at all — the
+Godot port's `check_hardcoding.py` has no web counterpart, which is why this sat
+unnoticed.
 
 ### Only six levels exist
 `level_99` (practice) plus five real ones. More content is the main lever on how
 long a child stays with the game.
 
-### A third locale is now cheap
-The engine is generic. Adding one means: a bundle in all four locations,
-`LOCALES` in `src/systems/TextManager.ts`, `LOCALE_FILES` and `LOCALE_ENDONYMS`
-in `godot/scripts/autoload/text_manager.gd`, an endonym, and a pass of the fit
-budget in `tools/validate_i18n.mjs`.
-
-*Watch out:* the selector is a segmented control sized for exactly two options.
-Three or more needs a different pattern, and the fit budget will not catch that.
-
 ## P4 — Build and tooling
 
+### Code-drawn UI stand-ins need a real art pass
+Several load-bearing math-experience surfaces render with primitives drawn in
+code because no authored art exists for them: the trophy-shelf badges
+(sprout / leaf / flower / star) on both main menus, the progress pips in the
+math overlay, the golden-problem frame, the recap panel (plain themed
+rectangles), and the celebration bursts (engine particles). They are
+deliberately glyph-free and work, but they read as placeholders next to the
+character art. This is the standing contingency for any pixel-art / UI-asset
+pass: replace these surfaces first, in both ports, without touching the
+tuning-driven logic that decides when they appear (`math_tuning.json`
+`trophies.tierSteps` and `golden.rate`).
+
+*Done when:* an artist has supplied sprite versions — or explicitly blessed
+the drawn primitives as the shipped look — for badges, pips, the golden
+frame, and the recap panel, wired in both `src/` and `godot/`.
+
 ### Web SFX are generated, not authored
-`tools/gen_sfx.py` synthesizes all 15 effects procedurally and writes them to
+`tools/gen_sfx.py` synthesizes all 16 effects procedurally and writes them to
 both runtimes. They are committed and they work, but they are placeholders in
 tone.
 
@@ -245,7 +278,55 @@ of completed tasks.** Do not add finished work here.
   `Aðalvalmynd` would leave the two locales saying different things.
 - **Language names are never translated.** `English` / `Íslenska` are endonyms
   so a player stranded in a language they cannot read can still get out.
-- **No flags in the language selector.** A flag names a country, not a
-  language, and English has no single one.
+- **Flags in the selector, beside the endonym, drawn not emoji.** A flag names
+  a country and not a language, and English has no single one -- so the flag is
+  an extra affordance for a child who cannot read yet, never the identifier. The
+  word stays, and stays untranslated. 🇺🇸 was chosen for English over 🇬🇧 as the
+  owner's call.
+  They are vector geometry (`src/ui/components/FlagIcon.ts`,
+  `godot/scripts/ui/flag_icon.gd`), not emoji, for the same reason the PIN dots
+  and the tick are: a flag emoji is a regional-indicator pair far outside
+  Latin-1, Windows ships no flag glyphs so Chrome there renders it as the
+  letters "US"/"IS", and the Godot export's bundled font has no emoji at all --
+  which is exactly the tofu this whole localisation pass started from.
 - **The dated review documents under `docs/` still say "Crow".** They are
   historical records; rewriting them would be revisionist.
+- **`prompt.text`, `hint` and `explanation` stay canonical English.** Four
+  things read them and would break if they became Icelandic:
+  `tools/math_verifier.ts` recomputes every answer by parsing operands out of
+  `prompt.text` and is the only independent arithmetic check;
+  `src/math/problemReplayKey.ts` builds the anti-repeat key from it with literal
+  tests like `startsWith('count these:')`; `buildPromptUniquenessKey` dedupes the
+  pools on it; and the golden fixtures shared with the Godot parity tests compare
+  it byte for byte. Localisation is a render-time overlay through the optional
+  `phrasing` sibling, never a data rewrite.
+- **Math phrasing parameters carry no natural language.** Numbers, the operator
+  symbol, a glyph run, a comma-joined number list. Every word lives in a template
+  in the bundles, so it inherits the glyph allowlist, lockstep, placeholder
+  parity and fit budget. A prefixed prompt nests one template inside another
+  rather than pre-rendering its inner text.
+- **A phrasing derivation must agree with the problem's own answer.** Round-
+  tripping a derivation through its own template proves nothing on its own --
+  the matchers are generated from the templates, so two deliberate corruptions
+  round-tripped 3000/3000 clean. The gate that works is arithmetic agreement with
+  `answer.correct`, plus the measured operand-order invariant for the 62
+  templates where `{a}`/`{b}` are the prompt's operands. See
+  `tools/math_phrasing_catalog.mjs`.
+- **Icelandic explanations say "gerir", not "er"/"eru".** Icelandic verb
+  agreement follows the numeral -- "2 plús 3 eru 5" but "4 mínus 3 er 1" -- and
+  the result is a parameter, so any agreeing verb is wrong for some values.
+  "gerir" is invariant, idiomatic in teaching, and a literal rendering of the
+  English "makes". Where a phrasing cannot avoid the verb, the sentence drops it
+  instead ("Bara {diff} eftir!") rather than guess.
+- **A fit-budget entry whose placeholder takes a WORD must name its fillers.**
+  `pause.theme` and `math.step_up` are filled with a theme name and a domain
+  name, and the budget's `88` stand-in reported a comfortable fit for strings
+  twice the measured width. Boxes like these carry a `fill` list in
+  `tools/validate_i18n.mjs` so the widest real substitution is what gets
+  measured.
+- **Plural agreement is a per-locale rule applied at render time.** A phrasing
+  that inflects names the parameter that drives it (`plural`) and carries a
+  `.one` sibling in every bundle; each runtime resolves the category itself.
+  English inflects at 1, Icelandic at 1, 21, 31 and so on, so the resolved
+  category is deliberately NOT stored in the pools -- baking English's rule into a
+  locale-neutral field works only until a problem contains 21.

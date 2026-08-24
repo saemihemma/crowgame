@@ -44,6 +44,11 @@ func _on_challenge_complete(data: Dictionary) -> void:
 	if _domain == null or _problem_elo == null:
 		return
 	var correct: bool = data.get("correct", false)
+	# The freebie is the first-ever try at a newly taught skill: a win counts
+	# normally, a miss is never held against the learner.
+	if bool(data.get("freebie", false)) and not correct:
+		_clear_context()
+		return
 	var first_attempt: bool = data.get("firstAttempt", false)
 	var actual_score := (1.0 if first_attempt else 0.5) if correct else 0.0
 
@@ -55,8 +60,18 @@ func _on_challenge_complete(data: Dictionary) -> void:
 
 	var attempt := _build_attempt(data)
 	var step_before: int = LearnerStateManager.get_current_step(String(_domain))
+	# Comeback: this attempt answers a review item born from a miss. Getting
+	# it right now is the redemption story, celebrated harder than a win.
+	var is_comeback := false
+	if correct and attempt.get("reviewItemId", null) != null:
+		for item in LearnerStateManager.get_snapshot()["reviewItems"]:
+			if item["id"] == attempt["reviewItemId"] and item.get("lastOutcome", "") == "wrong":
+				is_comeback = true
+				break
 	LearnerStateManager.record_attempt(attempt)
 	var step_after: int = LearnerStateManager.get_current_step(String(_domain))
+	if is_comeback:
+		EventBus.math_comeback.emit({"domain": _domain, "skills": attempt["skills"]})
 	if step_after > step_before:
 		EventBus.curriculum_step_up.emit({"domain": _domain, "step": step_after})
 	SaveManager.record_math_attempt({
@@ -85,6 +100,7 @@ func _build_attempt(data: Dictionary) -> Dictionary:
 		"answeredAt": int(Time.get_unix_time_from_system() * 1000.0),
 		"problemELO": _problem_elo, "curriculumStep": _curriculum_step,
 		"selectionLane": _selection_lane, "reviewItemId": _review_item_id,
+		"golden": bool(data.get("golden", false)),
 	}
 
 func _clear_context() -> void:

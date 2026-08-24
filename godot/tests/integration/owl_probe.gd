@@ -7,7 +7,7 @@ extends Node
 ## Run: godot --headless --path godot res://tests/integration/OwlProbe.tscn
 
 const GAME_SCENE := preload("res://scenes/Game.tscn")
-const MAX_FRAMES := 420
+const MAX_FRAMES := 900  # a fresh learner meets the teaching demo (~5.2s) before the freebie problem
 
 var _game: Node2D
 var _frames := 0

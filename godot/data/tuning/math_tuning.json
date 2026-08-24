@@ -1,0 +1,37 @@
+{
+  "ladder": {
+    "promotionWinTarget": 3,
+    "promotionAccuracyTarget": 0.8,
+    "promotionAccuracyWindow": 10,
+    "demotionWindow": 5,
+    "demotionWrongThreshold": 2,
+    "demotionConfidenceThreshold": -25,
+    "postDemotionConfidenceFloor": -10,
+    "promotionStepScanLimit": 20
+  },
+  "stretchGate": {
+    "window": 5,
+    "minAccuracy": 0.8,
+    "minConfidence": 0
+  },
+  "laneWeights": {
+    "comfort": 0.4,
+    "review": 0.2,
+    "at_level": 0.3,
+    "stretch": 0.1
+  },
+  "teaching": {
+    "hintMs": 900,
+    "revealMs": 2400,
+    "handoverMs": 4200,
+    "closeMs": 5200
+  },
+  "golden": {
+    "rate": 0.125,
+    "firstTryCoinMultiplier": 2,
+    "retryCoinMultiplier": 1.5
+  },
+  "trophies": {
+    "tierSteps": [0, 4, 7, 10]
+  }
+}

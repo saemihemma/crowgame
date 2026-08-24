@@ -13,6 +13,8 @@ signal math_problem_presented(problem: Dictionary)
 signal math_answer_submitted(payload: Dictionary)
 signal math_challenge_complete(payload: Dictionary)
 signal curriculum_step_up(payload: Dictionary)
+signal math_demo_complete(payload: Dictionary)
+signal math_comeback(payload: Dictionary)
 
 # Player
 signal player_died()

@@ -22,6 +22,13 @@ var _wrong_attempts := 0
 var _presented_at := 0
 var _first_response_ms := 0
 var _done := false
+# Worked-example mode: the owl demonstrates, the child only watches.
+var _is_demo := false
+# Freebie: first-ever try at a newly taught skill. A win counts normally;
+# a miss is never recorded against the learner.
+var _is_freebie := false
+# Golden: a seeded 1-in-N arrival with a bonus coin multiplier on a win.
+var _is_golden := false
 
 var _buttons: Array[Button] = []
 var _question_label: Label
@@ -31,6 +38,17 @@ var _hint_label: Label
 # submit_answer() still takes an index into answer.options (test contract).
 var _display_order: Array[int] = []
 
+func _ready() -> void:
+	# Connected on the node, not per-present, and torn down with the node --
+	# queue_free() drops the connection, so handlers cannot stack across
+	# successive owl encounters.
+	TextManager.locale_changed.connect(_on_locale_changed_signal)
+
+
+func _on_locale_changed_signal(_code: String) -> void:
+	_on_locale_changed()
+
+
 func present(problem: Dictionary, opts: Dictionary = {}) -> void:
 	current_problem = problem
 	_coins_reward = int(opts.get("coinsReward", 1))
@@ -38,7 +56,33 @@ func present(problem: Dictionary, opts: Dictionary = {}) -> void:
 	_done = false
 	_presented_at = Time.get_ticks_msec()
 	_first_response_ms = 0
+	_is_demo = bool(opts.get("demo", false))
+	_is_freebie = bool(opts.get("freebie", false))
+	_is_golden = bool(opts.get("golden", false)) and not _is_demo
 	_build_ui(opts)
+	if _is_golden:
+		AudioManager.play_event("golden")
+
+	if _is_demo:
+		# Worked example: no input, no learner-model events. Two beats — think
+		# aloud (hint), then the answer with its explanation — then hand over.
+		# Pacing comes from the shared math_tuning.json (ms, hence / 1000.0).
+		var teaching: Dictionary = DataManager.get_dict("MATH_TUNING").get("teaching", {})
+		_set_buttons_enabled(false)
+		get_tree().create_timer(float(teaching["hintMs"]) / 1000.0).timeout.connect(
+			func(): _show_hint(_localised("hint")), CONNECT_ONE_SHOT)
+		get_tree().create_timer(float(teaching["revealMs"]) / 1000.0).timeout.connect(_reveal_answer, CONNECT_ONE_SHOT)
+		get_tree().create_timer(float(teaching["handoverMs"]) / 1000.0).timeout.connect(func():
+			var viewport_size := get_viewport().get_visible_rect().size
+			DopamineFX.number_fly_up(self, viewport_size / 2.0 - Vector2(0, 120), TextManager.t("math.demo_your_turn"), ThemeManager.get_color_value("accent"))
+		, CONNECT_ONE_SHOT)
+		get_tree().create_timer(float(teaching["closeMs"]) / 1000.0).timeout.connect(func():
+			_done = true
+			EventBus.math_demo_complete.emit({"problemId": current_problem.get("id", ""), "domain": current_problem.get("domain", "")})
+			_close()
+		, CONNECT_ONE_SHOT)
+		return
+
 	EventBus.math_challenge_start.emit({"problemId": String(problem.get("id", ""))})
 	EventBus.math_problem_presented.emit(problem)
 
@@ -47,7 +91,7 @@ func is_active() -> bool:
 
 ## Submit an answer by option index (called by buttons and by tests).
 func submit_answer(index: int) -> void:
-	if _done:
+	if _done or _is_demo:
 		return
 	var answer: Dictionary = current_problem.get("answer", {})
 	var options: Array = answer.get("options", [])
@@ -96,13 +140,22 @@ func _reenable_for_retry() -> void:
 
 func _result(correct: bool, first_attempt: bool) -> Dictionary:
 	var has_hint: bool = String(current_problem.get("hint", "")) != "" and _wrong_attempts > 0
+	# Golden wins multiply the coin reward (bigger for first-try); the
+	# multipliers live in the shared math_tuning.json.
+	var reward := _coins_reward if correct else 0
+	if correct and _is_golden:
+		var g: Dictionary = DataManager.get_dict("MATH_TUNING").get("golden", {})
+		var mult := float(g.get("firstTryCoinMultiplier", 1.0)) if first_attempt else float(g.get("retryCoinMultiplier", 1.0))
+		reward = int(round(_coins_reward * mult))
 	return {
 		"problemId": current_problem.get("id", ""),
 		"correct": correct, "firstAttempt": first_attempt,
-		"reward": _coins_reward if correct else 0,
+		"reward": reward,
 		"hintsUsed": 1 if has_hint else 0,
 		"responseMs": _first_response_ms,
 		"wrongAttempts": _wrong_attempts,
+		"freebie": _is_freebie,
+		"golden": _is_golden,
 	}
 
 ## After the final allowed miss: highlight the correct answer, dim the rest,
@@ -120,9 +173,9 @@ func _reveal_answer() -> void:
 			_buttons[i].grab_focus()
 		else:
 			_buttons[i].modulate.a = 0.35
-	var explanation := String(current_problem.get("explanation", ""))
+	var explanation := _localised("explanation")
 	if explanation == "":
-		explanation = String(current_problem.get("hint", ""))
+		explanation = _localised("hint")
 	_show_hint(explanation)
 
 func _show_hint(text: String) -> void:
@@ -147,7 +200,25 @@ func _build_ui(opts: Dictionary) -> void:
 	var vbox := VBoxContainer.new()
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_theme_constant_override("separation", 16)
-	center.add_child(vbox)
+	if _is_golden:
+		# Golden arrival: a pulsing gold frame around the board (mirrors
+		# MathChallengeScene.decorateGolden). Announcement, not reward — the
+		# coin bonus lands on the win.
+		var frame := PanelContainer.new()
+		var frame_style := StyleBoxFlat.new()
+		frame_style.bg_color = Color(0, 0, 0, 0)  # hardcode-ok: fully transparent, not a themed colour
+		frame_style.set_border_width_all(5)
+		frame_style.border_color = Color(1.0, 0.843, 0.0)  # hardcode-ok: golden means literal gold in both ports
+		frame_style.set_corner_radius_all(20)
+		frame_style.set_content_margin_all(24)
+		frame.add_theme_stylebox_override("panel", frame_style)
+		center.add_child(frame)
+		frame.add_child(vbox)
+		var tw := frame.create_tween().set_loops()
+		tw.tween_property(frame, "self_modulate:a", 0.45, 0.65).set_trans(Tween.TRANS_SINE)
+		tw.tween_property(frame, "self_modulate:a", 1.0, 0.65).set_trans(Tween.TRANS_SINE)
+	else:
+		center.add_child(vbox)
 
 	var name_str := String(opts.get("npcName", ""))
 	var greet := String(opts.get("npcGreeting", ""))
@@ -163,9 +234,14 @@ func _build_ui(opts: Dictionary) -> void:
 		header.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/header_font_size", 22)))
 		vbox.add_child(header)
 
+	# Progress pips: wins already banked toward the next level-up in this
+	# problem's domain. The third pip is the step-up moment itself.
+	if not _is_demo:
+		vbox.add_child(_build_pips())
+
 	_question_label = Label.new()
 	_question_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var prompt_text := String(current_problem.get("prompt", {}).get("text", ""))
+	var prompt_text := _localised("prompt")
 	_question_label.text = prompt_text
 	# Long prompts (framed questions and word problems) scale down and wrap so
 	# the text always fits (mirrors MathBoard.ts adaptive sizing).
@@ -223,6 +299,30 @@ func _pop_in(node: Control) -> void:
 	if is_instance_valid(node):
 		UiFx.elastic_entrance(node)
 
+## Small circles drawn in code (no glyphs — UI primitives are drawn, per the
+## i18n house rules): filled = wins banked, outlined = wins still to earn.
+func _build_pips() -> Control:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 10)
+	var target: int = LearnerStateManager.get_promotion_win_target()
+	var wins: int = mini(target, LearnerStateManager.get_wins_at_current_step(String(current_problem.get("domain", ""))))
+	var accent := ThemeManager.get_color_value("accent")
+	for i in target:
+		var pip := Panel.new()
+		pip.custom_minimum_size = Vector2(14, 14)
+		var style := StyleBoxFlat.new()
+		style.set_corner_radius_all(7)
+		if i < wins:
+			style.bg_color = accent
+		else:
+			style.bg_color = Color(0, 0, 0, 0)  # hardcode-ok: fully transparent, not a themed colour
+			style.set_border_width_all(2)
+			style.border_color = accent
+		pip.add_theme_stylebox_override("panel", style)
+		row.add_child(pip)
+	return row
+
 func _set_buttons_enabled(enabled: bool) -> void:
 	for b in _buttons:
 		b.disabled = not enabled
@@ -230,3 +330,55 @@ func _set_buttons_enabled(enabled: bool) -> void:
 func _close() -> void:
 	closed.emit()
 	queue_free()
+
+
+## Retitle an open overlay when the locale changes.
+##
+## Re-renders from `current_problem` and never asks for a new one -- swapping the
+## problem under a child mid-answer because they changed language would be a
+## genuinely bad bug. Mirrors MathBoard.onLocaleChanged in the web build.
+func _on_locale_changed() -> void:
+	if current_problem.is_empty():
+		return
+	if _question_label != null:
+		_question_label.text = _localised("prompt")
+	if _hint_label != null and _hint_label.visible:
+		var text := _localised("explanation")
+		if text.is_empty():
+			text = _localised("hint")
+		if not text.is_empty():
+			_hint_label.text = text
+
+
+## One of the problem's three sentences, in the active locale.
+##
+## The pools keep prompt.text, hint and explanation in canonical English because
+## tools/math_verifier.ts parses the operands out of prompt.text, the replay key
+## tests it with literal English prefixes, and the golden fixtures compare it byte
+## for byte. Localisation is an overlay: an optional `phrasing` sibling naming an
+## i18n key, its numeric parameters and, where the wording inflects, the parameter
+## that drives plural agreement. Anything unresolvable falls back to the English,
+## so a child sees their own language or they see English, never a raw key.
+##
+## Mirrors src/math/problemPhrasing.ts in the web build.
+func _localised(field: String) -> String:
+	var english := ""
+	if field == "prompt":
+		english = String(current_problem.get("prompt", {}).get("text", ""))
+	else:
+		english = String(current_problem.get(field, ""))
+
+	var phrasing: Variant = current_problem.get("phrasing", null)
+	if not (phrasing is Dictionary):
+		return english
+	var ref: Variant = (phrasing as Dictionary).get(field, null)
+	if not (ref is Dictionary) or not (ref as Dictionary).has("key"):
+		return english
+
+	var entry := ref as Dictionary
+	var rendered := TextManager.tp(
+		String(entry["key"]),
+		entry.get("params", {}),
+		String(entry.get("plural", "")),
+	)
+	return english if rendered.is_empty() else rendered
