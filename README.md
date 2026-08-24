@@ -105,6 +105,11 @@ Active child lifecycle:
 
 For the full learner identity, save, cache, and hosted-sync lifecycle, use [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md).
 
+## Presentation Docs
+
+- [docs/BRAND_GUIDELINE.md](./docs/BRAND_GUIDELINE.md): palette, type, motion and voice rules, derived from the shipped art and theme JSON
+- [docs/pitch/README.md](./docs/pitch/README.md): the investor deck and how to export it
+
 ## Workflow Docs
 
 - [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md): canonical verification loop and contributor workflow
