@@ -1,5 +1,5 @@
 import { ThemeManager, THEME_CHANGED } from './theme/ThemeManager';
-import { EventBus } from '../utils/EventBus';
+import { EventBus, GameEvents } from '../utils/EventBus';
 import { GAME_WIDTH, GAME_HEIGHT } from '../utils/Constants';
 import { TextManager } from '../systems/TextManager';
 
@@ -56,6 +56,12 @@ export class TouchControls {
         this.buildButtons();
 
         EventBus.on(THEME_CHANGED, this.onThemeChanged, this);
+        // Same handler, second trigger. buildButtons() re-reads touch.jump /
+        // touch.zap / touch.peck from the bundle on its way through, so a locale
+        // change needs nothing a theme change did not already need. Those three
+        // labels differ between locales (JUMP/STÖKK, PECK/GOGGA, ZAP/SKOT), so
+        // without this the d-pad keeps the old language until the level reloads.
+        EventBus.on(GameEvents.LOCALE_CHANGED, this.onThemeChanged, this);
     }
 
     private buildButtons(): void {
@@ -295,6 +301,7 @@ export class TouchControls {
 
     destroy(): void {
         EventBus.off(THEME_CHANGED, this.onThemeChanged, this);
+        EventBus.off(GameEvents.LOCALE_CHANGED, this.onThemeChanged, this);
         this.container.destroy(true);
     }
 }

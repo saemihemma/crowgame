@@ -212,3 +212,70 @@ func test_plural_keys_have_singular_forms() -> void:
 	for key: Variant in plural_keys.keys():
 		assert_true(en.has("%s.one" % key), "EN has singular form for '%s'" % key)
 		assert_true(is_.has("%s.one" % key), "IS has singular form for '%s'" % key)
+
+## ── live re-render on a locale change ─────────────────────────────────────
+## TextManager.locale_changed was emitted and had zero listeners: dead plumbing
+## that read as if mid-game switching worked. The Pause menu now switches
+## language in place, which only works if the live surfaces are actually
+## subscribed.
+##
+## An earlier version of these two tests PASSED with the HUD's connection
+## deleted -- one because any other subscriber satisfied "someone is listening",
+## the other because "the text changed" can be true for reasons that have nothing
+## to do with the locale. Both now name the HUD and name the words.
+
+func test_hud_itself_subscribes_to_locale_changed() -> void:
+	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
+	var hud: Node = preload("res://scenes/Hud.tscn").instantiate()
+	Engine.get_main_loop().root.add_child(hud)
+	await Engine.get_main_loop().process_frame
+
+	var mine := 0
+	for conn: Dictionary in tm.locale_changed.get_connections():
+		var callable: Callable = conn["callable"]
+		if callable.get_object() == hud:
+			mine += 1
+	assert_true(mine > 0,
+		"the HUD instance is itself a locale_changed subscriber — counting all "
+		+ "subscribers instead would pass on somebody else's connection")
+
+	hud.queue_free()
+	await Engine.get_main_loop().process_frame
+
+
+## The three counters are what actually differ between locales, so assert the
+## words rather than that something moved.
+func test_hud_counters_follow_the_locale_without_a_reload() -> void:
+	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
+	var prev: String = tm.get_locale()
+	var hud: Node = preload("res://scenes/Hud.tscn").instantiate()
+	Engine.get_main_loop().root.add_child(hud)
+	await Engine.get_main_loop().process_frame
+
+	tm.set_locale("en")
+	await Engine.get_main_loop().process_frame
+	var english := _hud_text(hud)
+	assert_true(english.contains("Coins") and english.contains("Owls"),
+		"the HUD renders its English counters (got '%s')" % english)
+
+	tm.set_locale("is")
+	await Engine.get_main_loop().process_frame
+	var icelandic := _hud_text(hud)
+	assert_true(icelandic.contains("Mynt") and icelandic.contains("Uglur"),
+		"the HUD counters became Icelandic in place, with no reload (got '%s')" % icelandic)
+	assert_true(not icelandic.contains("Coins"),
+		"no English counter survives the switch (got '%s')" % icelandic)
+
+	tm.set_locale(prev)
+	hud.queue_free()
+	await Engine.get_main_loop().process_frame
+
+
+func _hud_text(node: Node) -> String:
+	var parts: Array[String] = []
+	for child in node.find_children("*", "Label", true, false):
+		var l := child as Label
+		if l.text != "":
+			parts.append(l.text)
+	parts.sort()
+	return " | ".join(parts)

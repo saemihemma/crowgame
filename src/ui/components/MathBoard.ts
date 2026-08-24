@@ -1,7 +1,7 @@
 import { ThemeManager, THEME_CHANGED } from '../theme/ThemeManager';
 import { DopamineFX } from '../fx/DopamineFX';
 import { UINavigator } from '../UINavigator';
-import { EventBus } from '../../utils/EventBus';
+import { EventBus, GameEvents } from '../../utils/EventBus';
 import { GAME_WIDTH, GAME_HEIGHT } from '../../utils/Constants';
 import { TextManager } from '../../systems/TextManager';
 import type { MathProblem, MCQAnswer } from '../../utils/Types';
@@ -79,6 +79,7 @@ export class MathBoard {
         this.buildBoard();
 
         EventBus.on(THEME_CHANGED, this.onThemeChanged, this);
+        EventBus.on(GameEvents.LOCALE_CHANGED, this.onLocaleChanged, this);
     }
 
     private buildBoard(): void {
@@ -517,6 +518,43 @@ export class MathBoard {
         });
     }
 
+    /**
+     * Re-render the question and hint in the new locale.
+     *
+     * This cannot reuse onThemeChanged the way TouchControls does: that handler
+     * repaints colours and redraws the board, but never touches the text. So the
+     * board would have kept its old-language question.
+     *
+     * Two things it must not do. It re-renders from `this.currentProblem` and
+     * never asks for a new one -- swapping the problem under a child mid-answer
+     * because they changed language would be a genuinely bad bug. And it goes
+     * through fitInto() rather than setText(), because the size was measured for
+     * the previous string and the new one is a different width; a raw setText
+     * would leave a long Icelandic prompt overflowing the board.
+     */
+    private onLocaleChanged = (): void => {
+        if (!this.currentProblem) return;
+
+        MathBoard.fitInto(
+            this.questionText, localisedPrompt(this.currentProblem),
+            MathBoard.QUESTION_MAX_SIZE, MathBoard.QUESTION_MIN_SIZE, MathBoard.QUESTION_MAX_H,
+        );
+
+        // Only re-render the hint if one is already showing; otherwise this
+        // would reveal it early.
+        if (this.hintText.alpha > 0) {
+            const hint = this.revealed
+                ? (localisedExplanation(this.currentProblem) ?? localisedHint(this.currentProblem))
+                : localisedHint(this.currentProblem);
+            if (hint) {
+                MathBoard.fitInto(
+                    this.hintText, hint,
+                    MathBoard.HINT_MAX_SIZE, MathBoard.HINT_MIN_SIZE, MathBoard.HINT_MAX_H,
+                );
+            }
+        }
+    };
+
     private onThemeChanged = (): void => {
         this.drawBoardBackground(this.boardW, this.boardH);
 
@@ -528,6 +566,7 @@ export class MathBoard {
     destroy(): void {
         this.navigator.destroy();
         EventBus.off(THEME_CHANGED, this.onThemeChanged, this);
+        EventBus.off(GameEvents.LOCALE_CHANGED, this.onLocaleChanged, this);
         this.container.destroy(true);
     }
 }

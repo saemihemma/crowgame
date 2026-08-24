@@ -38,6 +38,17 @@ var _hint_label: Label
 # submit_answer() still takes an index into answer.options (test contract).
 var _display_order: Array[int] = []
 
+func _ready() -> void:
+	# Connected on the node, not per-present, and torn down with the node --
+	# queue_free() drops the connection, so handlers cannot stack across
+	# successive owl encounters.
+	TextManager.locale_changed.connect(_on_locale_changed_signal)
+
+
+func _on_locale_changed_signal(_code: String) -> void:
+	_on_locale_changed()
+
+
 func present(problem: Dictionary, opts: Dictionary = {}) -> void:
 	current_problem = problem
 	_coins_reward = int(opts.get("coinsReward", 1))
@@ -319,6 +330,24 @@ func _set_buttons_enabled(enabled: bool) -> void:
 func _close() -> void:
 	closed.emit()
 	queue_free()
+
+
+## Retitle an open overlay when the locale changes.
+##
+## Re-renders from `current_problem` and never asks for a new one -- swapping the
+## problem under a child mid-answer because they changed language would be a
+## genuinely bad bug. Mirrors MathBoard.onLocaleChanged in the web build.
+func _on_locale_changed() -> void:
+	if current_problem.is_empty():
+		return
+	if _question_label != null:
+		_question_label.text = _localised("prompt")
+	if _hint_label != null and _hint_label.visible:
+		var text := _localised("explanation")
+		if text.is_empty():
+			text = _localised("hint")
+		if not text.is_empty():
+			_hint_label.text = text
 
 
 ## One of the problem's three sentences, in the active locale.

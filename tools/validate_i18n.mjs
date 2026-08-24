@@ -221,6 +221,64 @@ for (const dir of otherDirs) {
     }
 }
 
+// ── 2b. no dead keys ───────────────────────────────────────────────────────
+/**
+ * Every key in the bundles must be reachable from code or from the pools.
+ *
+ * A bundle key nothing renders is a translation cost with no player benefit, and
+ * it rots: `hud.level`, `hud.level_up`, `login.delete` and `login.delete_confirm`
+ * sat translated in four files for the whole localisation pass without ever
+ * appearing on screen.
+ *
+ * THE TRAP THIS CHECK HAS TO AVOID
+ * -------------------------------
+ * A naive "does the source mention this string" sweep DELETES LIVE STRINGS. Four
+ * families of key are assembled at runtime and never appear as literals:
+ *
+ *   domain.*        HUDScene.ts:81   t(`domain.${data.domain}`)
+ *                   hud.gd:80        TextManager.t("domain." + domain)
+ *   level.*         LevelSelectScene.ts:226  `level.${level.key}.name`
+ *                   level_select.gd:74       "level.%s.name" % key
+ *   theme.*         pause.gd:37      "theme.%s" % id
+ *   math.prompt.*   from each problem's `phrasing` reference, via tp()
+ *   math.hint.*
+ *   math.expl.*
+ *
+ * The eight `domain.*` maths terms look dead and are not. So the prefixes are
+ * declared here, with the call site that justifies each one -- if you add a new
+ * dynamically-built family, add it here or this check will tell you to delete
+ * strings the game is using.
+ */
+const DYNAMIC_PREFIXES = [
+    { prefix: 'domain.', built: 'HUDScene.ts / hud.gd, from a problem domain' },
+    { prefix: 'level.', built: 'LevelSelectScene.ts / level_select.gd, from a level key' },
+    { prefix: 'theme.', built: 'pause.gd, from the active theme id' },
+    { prefix: 'math.prompt.', built: "each problem's phrasing reference" },
+    { prefix: 'math.hint.', built: "each problem's phrasing reference" },
+    { prefix: 'math.expl.', built: "each problem's phrasing reference" },
+];
+
+{
+    const sources = RENDERED_CODE
+        .flatMap(dir => walk(join(ROOT, dir)))
+        .map(path => readFileSync(path, 'utf8'))
+        .join('\n');
+
+    const dead = Object.keys(bundles[primaryDir][FALLBACK_LOCALE]).filter(key => {
+        if (DYNAMIC_PREFIXES.some(d => key.startsWith(d.prefix))) return false;
+        return !sources.includes(key);
+    });
+
+    for (const key of dead) {
+        fail(
+            `[${key}] is in the bundles but nothing renders it. Either wire it up, or `
+            + `delete it from all ${BUNDLE_DIRS.length * LOCALES.length} bundle files. `
+            + `If it is built at runtime rather than written as a literal, add its prefix `
+            + `to DYNAMIC_PREFIXES in tools/validate_i18n.mjs`,
+        );
+    }
+}
+
 // ── 3. lockstep + placeholder parity ───────────────────────────────────────
 const reference = bundles[primaryDir][FALLBACK_LOCALE];
 

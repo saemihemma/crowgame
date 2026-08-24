@@ -78,4 +78,15 @@ export class ThemeManager {
     getActiveThemeId(): string {
         return this.activeTheme?.id ?? '';
     }
+
+    /**
+     * Every registered theme id, in registration order.
+     *
+     * Exposed so the Pause control can cycle whatever exists rather than
+     * hardcoding `['forest', 'scifi']` -- a third theme should appear in the
+     * cycle by being registered, not by editing a scene.
+     */
+    getThemeIds(): string[] {
+        return [...this.themes.keys()];
+    }
 }

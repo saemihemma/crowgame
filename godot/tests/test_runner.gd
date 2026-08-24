@@ -15,7 +15,7 @@ func _ready() -> void:
 	# (e.g. the Game scene) to the tree, which fails while root is "busy".
 	await get_tree().process_frame
 	await get_tree().process_frame
-	_run()
+	await _run()
 
 func _run() -> void:
 	var total_pass := 0
@@ -38,7 +38,17 @@ func _run() -> void:
 			if instance.has_method("_reset"):
 				instance.call("_reset")
 			var before: int = instance.failures().size()
-			instance.call(mname)
+			# AWAITED, deliberately. `instance.call(mname)` alone returns at the
+			# test's first `await`, so the failure count below was read before the
+			# rest of the test had run -- every assertion after a frame boundary
+			# went uncounted and the test passed vacuously. Five tests across
+			# three suites were affected, including the one asserting that a real
+			# touch presses the d-pad action, which is load-bearing evidence.
+			#
+			# Awaiting a non-coroutine is harmless in Godot 4: the value comes
+			# straight back.
+			@warning_ignore("redundant_await")
+			await instance.call(mname)
 			var after: int = instance.failures().size()
 			if after > before:
 				total_fail += 1

@@ -23,11 +23,72 @@ func _ready() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 56)
 	col.add_child(title)
-	_button(col, TextManager.t("pause.resume"), _resume)
+	_title = title
+	_resume_btn = _button(col, TextManager.t("pause.resume"), _resume)
 	_theme_btn = _button(col, _theme_label(), _toggle_theme)
-	_button(col, TextManager.t("pause.quit"), _quit)
+	_language_btn = _button(col, TextManager.endonym(TextManager.get_locale()), _cycle_locale)
+	_add_flag(_language_btn)
+	_quit_btn = _button(col, TextManager.t("pause.quit"), _quit)
 
+var _title: Label
+var _resume_btn: Button
 var _theme_btn: Button
+var _language_btn: Button
+var _quit_btn: Button
+var _language_flag: FlagIcon
+
+const FLAG_BOX := Vector2(26.0, 18.0)
+
+
+## The language row is a flag plus the endonym, not a worded label.
+##
+## "Tungumál: Íslenska" does not fit a 240px button at 28px, and the flag carries
+## the meaning anyway -- it is the same flag-plus-endonym pairing the player
+## already met on the login screen and the main menu. The endonym is never
+## translated, so someone lost in the wrong language can still get out.
+func _add_flag(button: Button) -> void:
+	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_language_flag = FlagIcon.make(TextManager.get_locale(), FLAG_BOX)
+	_language_flag.position = Vector2(16.0, (64.0 - FLAG_BOX.y) * 0.5)
+	button.add_child(_language_flag)
+	var box := StyleBoxEmpty.new()
+	box.content_margin_left = 16.0 + FLAG_BOX.x + 10.0
+	for state in ["normal", "hover", "pressed", "focus"]:
+		var existing: StyleBox = button.get_theme_stylebox(state)
+		if existing is StyleBoxFlat:
+			var flat := (existing as StyleBoxFlat).duplicate() as StyleBoxFlat
+			flat.content_margin_left = box.content_margin_left
+			button.add_theme_stylebox_override(state, flat)
+
+
+## Switch language without restarting anything.
+##
+## Everything behind this panel re-renders itself -- the HUD and the touch
+## controls both connect TextManager.locale_changed, and an open math overlay
+## retitles from its current problem. The panel's own rows are the one thing that
+## has to be repainted here, because this is the surface doing the switching.
+## Mirrors PauseScene.cycleLocale() in the web build.
+func _cycle_locale() -> void:
+	var codes: Array = TextManager.available_locales()
+	if codes.size() < 2:
+		return
+	var here := codes.find(TextManager.get_locale())
+	var next := String(codes[(here + 1) % codes.size()])
+	TextManager.set_locale(next)
+
+	if is_instance_valid(_title):
+		_title.text = TextManager.t("pause.title")
+	if is_instance_valid(_resume_btn):
+		_resume_btn.text = TextManager.t("pause.resume")
+	if is_instance_valid(_quit_btn):
+		_quit_btn.text = TextManager.t("pause.quit")
+	if is_instance_valid(_theme_btn):
+		_theme_btn.text = _theme_label()
+	if is_instance_valid(_language_btn):
+		_language_btn.text = TextManager.endonym(next)
+	if is_instance_valid(_language_flag):
+		_language_flag.locale = next
+		_language_flag.queue_redraw()
 
 func _theme_label() -> String:
 	# The theme id is a data key ("forest"/"scifi"), not something to show a
@@ -39,7 +100,7 @@ func _theme_label() -> String:
 	return TextManager.t("pause.theme", [name])
 
 func _toggle_theme() -> void:
-	# Tier-3 demo: hot-swap the skin at runtime; HUD restyles via theme_changed.
+	# Hot-swap the skin at runtime; the HUD restyles via theme_changed.
 	ThemeManager.set_theme("scifi" if ThemeManager.get_theme_id() == "forest" else "forest")
 	if is_instance_valid(_theme_btn):
 		_theme_btn.text = _theme_label()

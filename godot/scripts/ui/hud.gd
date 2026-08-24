@@ -27,6 +27,10 @@ func _ready() -> void:
 	EventBus.curriculum_step_up.connect(_on_curriculum_step_up)
 	EventBus.math_comeback.connect(_on_math_comeback)
 	ThemeManager.theme_changed.connect(func(_id): _apply_theme())
+	# hud.lives / hud.coins_label / hud.owls_label all differ between locales
+	# ("Lives:" vs "Líf:", "Coins" vs "Mynt", "Owls" vs "Uglur"), and _refresh()
+	# already re-reads all three, so a locale change needs nothing new.
+	TextManager.locale_changed.connect(func(_code: String) -> void: _refresh())
 	_apply_theme()
 
 # ─── AbilitySlots (top-right, AbilitySlots.ts) ─────────────

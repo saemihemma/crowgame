@@ -83,14 +83,22 @@ least one step-up per early session and frustration flags under 10%.
 
 ## P2 — Experience decisions that need making
 
-### The on-screen controls are unverified for desktop-web mouse
-`godot/scripts/ui/touch_controls.gd` shows the d-pad whenever
-`OS.has_feature("web")` is true, which includes desktop browsers where the
-player has a mouse. `pointing/emulate_touch_from_mouse` is enabled as the
-documented fix, but it could not be confirmed: synthetic pointer input does not
-reach Godot's TouchScreenButtons in headless Chromium, by Playwright mouse or by
-CDP touch events. The touch path itself is covered by
-`godot/tests/test_touch_controls.gd`.
+### The on-screen controls have no automated gate
+Touch has positive evidence and no gate; mouse has neither.
+
+*Touch:* held CDP touches on the d-pad move the world in the exported build,
+measured twice at 0.998 change — the same magnitude as a keyboard walk — and real
+DOM touch events are confirmed to reach the canvas. So it works. What does not
+exist is a repeatable assertion: a sequence of held touches contaminates itself,
+because once the crow reaches the owl the encounter overlay opens and captures
+input, after which every later probe reads as dead including a keyboard control.
+A gate needs a fresh level per probe, or a level with no owl near the spawn.
+
+*Mouse:* untested. `godot/scripts/ui/touch_controls.gd` shows the d-pad whenever
+`OS.has_feature("web")` is true, which includes desktop browsers where the player
+has a mouse, and `pointing/emulate_touch_from_mouse` is enabled as the documented
+fix but has never been confirmed — Playwright's synthetic mouse does not reach a
+TouchScreenButton, which is a harness limitation and not evidence either way.
 
 *Done when:* someone clicks the d-pad with a real mouse in a desktop browser and
 says whether the crow moves. If it does not, the fallback is to hide the controls
@@ -105,25 +113,6 @@ retries immediately gets silence. This is what made the browser smoke flaky.
 
 *Done when:* the lockout has one deliberate duration, and the options visibly
 show they are not accepting input while it runs.
-
-### Mid-game language switching
-The selector is on Login and Main Menu only. Switching inside a level would
-require live re-rendering of `HUDScene`, `TouchControls`, `DialogBox` and any
-open `MathChallengeScene` overlay — a scene restart is only safe outside
-gameplay.
-
-*Done when:* either a settings surface exists that is safe to restart from, or
-the locale-change path re-renders live scenes and `GameEvents.LOCALE_CHANGED`
-has listeners that prove it.
-
-### The theme switcher exists in Godot but not on the web
-`godot/scripts/scenes/pause.gd` has a working toggle between `forest` and
-`scifi`; `src/scenes/PauseScene.ts` has no control at all, though the web
-`ThemeManager` supports the same swap. So the two ports disagree about what
-Pause offers.
-
-*Done when:* the web Pause offers the same toggle, or the Godot one is removed
-and `pause.theme` plus the two `theme.*` names come out of all four bundles.
 
 ### Level select does not snap to rows
 `ScrollList` has momentum, clamping and a peeking next row, but a flick can rest
@@ -193,41 +182,35 @@ at the baseline but keeps working for any NPC that raises the count.
 band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
 the rotation for older kids, or park them explicitly in Settled.
 
-### Four string keys are referenced by neither port
-`hud.level`, `hud.level_up`, `login.delete`, `login.delete_confirm`. Either wire
-them up or remove them from all four bundle files. Profile deletion is
-unimplemented in both ports, which is what the last two are for.
+### The trophy shelf has no heading
+`trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with
+the shelf but nothing ever drew it — the new dead-key guard caught it on its
+first merge. The key is deleted rather than wired up, because adding a heading
+changes the main menu's layout and that belongs to whoever designed the shelf.
 
-*Watch out:* a naive "is this key mentioned in the source" sweep gets this wrong.
-The eight `domain.*` keys look unreferenced and are not -- both runtimes build
-them dynamically (`` t(`domain.${data.domain}`) ``), as do `level.*` and
-`theme.*`. Any dead-key check has to account for that or it will delete live
-strings.
+*Done when:* either a heading is drawn above the badge row and the key comes
+back with it, or the shelf is deliberately headingless and this entry goes.
+Note the main menu is already tight: the language selector's width is measured
+against the title ending at x 636.
+
+### `DialogBox` and `DialogComponent` are dead code carrying English
+Nothing calls `showGreeting`, `showSuccess` or `showFailure`, so the dialogue
+never reaches the screen — the owl goes straight to the math overlay, whose
+greeting comes from `math.greeting_*`. But `DialogComponent.buildLines()` holds
+hardcoded English ("Hoo-hoo! Hello there, little crow!"), the owl's
+`npc_registry.json` entry still configures a `dialog` component, and `DialogBox`
+is one of the seven `THEME_CHANGED` subscribers. It reads exactly like an
+untranslated surface and is not one, which cost a reviewer real time.
+
+*Done when:* either the dialogue path is wired up and its lines move into the
+bundles, or `DialogBox`, `DialogComponent` and the registry's `dialog` entry are
+deleted together. Note the web build has no hardcoded-string guard at all — the
+Godot port's `check_hardcoding.py` has no web counterpart, which is why this sat
+unnoticed.
 
 ### Only six levels exist
 `level_99` (practice) plus five real ones. More content is the main lever on how
 long a child stays with the game.
-
-### A third locale is now cheap, but no longer trivial
-The engine is generic. Adding one means: a bundle in all four locations,
-`LOCALES` in `src/systems/TextManager.ts`, `LOCALE_FILES` and `LOCALE_ENDONYMS`
-in `godot/scripts/autoload/text_manager.gd`, an endonym, and a pass of the fit
-budget in `tools/validate_i18n.mjs`.
-
-*It is 268 keys now, not 71.* 175 of them are math phrasing templates. They are
-short and formulaic, but a new locale is a real translation job rather than an
-afternoon.
-
-*It also needs a drawn flag.* `FlagIcon` has a case per locale in both ports and
-falls back to the US flag for anything unknown, so a third language would show
-the wrong flag until someone draws its own. Anything with a Nordic cross is a
-few lines; anything else is real work.
-
-*Watch out:* the selector is a segmented control sized for exactly two options,
-and the width is already measured against the tightest heading on each port
-(x 636 on the web main menu, x 620 on the Godot login). A third pill does not
-fit on that row. The fit budget will not catch it -- the endonyms are measured at
-runtime by the component itself.
 
 ## P4 — Build and tooling
 

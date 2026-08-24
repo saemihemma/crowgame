@@ -9,8 +9,6 @@
   "hud.coins_label": "Mynt {0}",
   "hud.coins_milestone": "{0} myntir!",
   "hud.coins_plus": "+{0}",
-  "hud.level": "Stig {0}",
-  "hud.level_up": "Stig {0}!",
   "hud.lives": "Líf: {0}",
   "hud.owls": "x{0}",
   "hud.owls_label": "Uglur {0}",
@@ -23,8 +21,6 @@
   "login.confirm_pin": "Staðfestu PIN",
   "login.create": "Búa til",
   "login.create_title": "Búðu til persónu",
-  "login.delete": "Eyða",
-  "login.delete_confirm": "Haltu inni til að eyða",
   "login.enter_pin": "Sláðu inn PIN",
   "login.go": "ÁFRAM!",
   "login.hi": "Hæ, {0}!",
@@ -273,6 +269,5 @@
   "recap.stepups": "Ný þrep: {0}",
   "recap.best_comeback": "Besta stundin: þú lærðir það!",
   "recap.best_golden": "Besta stundin: gylltur sigur!",
-  "recap.continue": "Áfram!",
-  "trophy.title": "Merkin mín"
+  "recap.continue": "Áfram!"
 }

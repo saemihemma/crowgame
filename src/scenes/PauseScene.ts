@@ -3,7 +3,8 @@ import { SCENES, GAME_WIDTH, GAME_HEIGHT } from '../utils/Constants';
 import { ThemeManager } from '../ui/theme/ThemeManager';
 import { DopamineFX } from '../ui/fx/DopamineFX';
 import { UINavigator } from '../ui/UINavigator';
-import { TextManager } from '../systems/TextManager';
+import { TextManager, LOCALE_ENDONYMS, type Locale } from '../systems/TextManager';
+import { drawFlag } from '../ui/components/FlagIcon';
 
 /**
  * Pause overlay scene.
@@ -11,6 +12,13 @@ import { TextManager } from '../systems/TextManager';
 export class PauseScene extends Phaser.Scene {
     private dimOverlay!: Phaser.GameObjects.Rectangle;
     private container!: Phaser.GameObjects.Container;
+    private titleText!: Phaser.GameObjects.Text;
+    private resumeButton?: { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone };
+    private quitButton?: { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone };
+    private themeButton?: { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone };
+    private languageButton?: { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone };
+    private languageFlag?: Phaser.GameObjects.Graphics;
+    private languageRowY = 0;
 
     constructor() {
         super({ key: SCENES.PAUSE });
@@ -36,7 +44,10 @@ export class PauseScene extends Phaser.Scene {
         this.container = this.add.container(cx, cy).setDepth(210).setScrollFactor(0);
 
         const panelW = 320;
-        const panelH = 240;
+        // Grown from 240 for the two settings rows below. Four 48px buttons plus
+        // the title do not fit 240: the last one would land at y 126 against a
+        // panel edge at 120.
+        const panelH = 320;
         const panelBg = this.add.graphics();
         panelBg.fillStyle(tm.getColorNum('boardBg'), 0.95);
         panelBg.fillRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 16);
@@ -44,23 +55,44 @@ export class PauseScene extends Phaser.Scene {
         panelBg.strokeRoundedRect(-panelW / 2, -panelH / 2, panelW, panelH, 16);
         this.container.add(panelBg);
 
-        const title = this.add.text(0, -panelH / 2 + 32, tt.t('pause.title'), {
+        this.titleText = this.add.text(0, -panelH / 2 + 32, tt.t('pause.title'), {
             fontSize: '32px', fontFamily: 'monospace',
             color: tm.getColor('accent'),
             stroke: '#000000', strokeThickness: 4,
         }).setOrigin(0.5, 0.5);
-        this.container.add(title);
+        this.container.add(this.titleText);
 
-        const resumeZone = this.createButton(0, -16, tt.t('pause.resume'), () => this.resume());
-        const quitZone = this.createButton(0, 56, tt.t('pause.quit'), () => this.quitToMenu());
+        // Pause is the settings surface. It is the only one reachable mid-level,
+        // which is what made mid-game language switching possible at all: the
+        // live surfaces behind it (HUD, touch controls, an open math board) now
+        // re-render in place on LOCALE_CHANGED rather than needing a restart.
+        const ROW_Y = [-60, -4, 52, 108];
+
+        const resume = this.createButton(0, ROW_Y[0], tt.t('pause.resume'), () => this.resume());
+        this.themeButton = this.createButton(0, ROW_Y[1], this.themeLabel(), () => this.cycleTheme());
+        const language = this.createButton(0, ROW_Y[2], '', () => this.cycleLocale());
+        const quit = this.createButton(0, ROW_Y[3], tt.t('pause.quit'), () => this.quitToMenu());
+
+        this.resumeButton = resume;
+        this.quitButton = quit;
+        this.languageButton = language;
+        this.languageFlag = this.add.graphics();
+        this.container.add(this.languageFlag);
+        this.paintLanguageRow(ROW_Y[2]);
+        this.languageRowY = ROW_Y[2];
 
         const nav = new UINavigator(this, 'vertical');
-        nav.addButton({ x: cx, y: cy - 16, width: 200, height: 48,
-            onActivate: () => this.resume() });
-        nav.addButton({ x: cx, y: cy + 56, width: 200, height: 48,
-            onActivate: () => this.quitToMenu() });
-        resumeZone.on('pointerover', () => nav.setFocus(0));
-        quitZone.on('pointerover', () => nav.setFocus(1));
+        const actions = [
+            () => this.resume(),
+            () => this.cycleTheme(),
+            () => this.cycleLocale(),
+            () => this.quitToMenu(),
+        ];
+        const zones = [resume.zone, this.themeButton.zone, language.zone, quit.zone];
+        actions.forEach((onActivate, i) => {
+            nav.addButton({ x: cx, y: cy + ROW_Y[i], width: 200, height: 48, onActivate });
+            zones[i].on('pointerover', () => nav.setFocus(i));
+        });
         this.time.delayedCall(350, () => nav.enable());
 
         DopamineFX.elasticEntrance(this, this.container, 300);
@@ -68,7 +100,9 @@ export class PauseScene extends Phaser.Scene {
         this.input.keyboard?.on('keydown-ESC', () => this.resume());
     }
 
-    private createButton(x: number, y: number, label: string, onClick: () => void): Phaser.GameObjects.Zone {
+    private createButton(
+        x: number, y: number, label: string, onClick: () => void,
+    ): { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone } {
         const tm = ThemeManager.getInstance();
         const btnW = 200;
         const btnH = 48;
@@ -92,7 +126,70 @@ export class PauseScene extends Phaser.Scene {
         zone.on('pointerout', () => text.setScale(1));
         zone.on('pointerdown', onClick);
 
-        return zone;
+        return { text, zone };
+    }
+
+    /** "Theme: Skógur" -- the name, never the raw `forest`/`scifi` data key. */
+    private themeLabel(): string {
+        const tt = TextManager.getInstance();
+        const id = ThemeManager.getInstance().getActiveThemeId();
+        const key = `theme.${id}`;
+        return tt.t('pause.theme', tt.has(key) ? tt.t(key) : id);
+    }
+
+    /**
+     * The language row is a flag plus the endonym, not a worded label.
+     *
+     * "Tungumál: Íslenska" is 18 characters, about 272px of monospace at 24px, in
+     * a 200px button. The flag carries the meaning instead -- and it is the same
+     * flag-plus-endonym pairing the player already met on the login screen and
+     * the main menu, so there is nothing new to learn. The endonym is never
+     * translated, so someone lost in the wrong language can still get out.
+     */
+    private paintLanguageRow(y: number): void {
+        if (!this.languageButton || !this.languageFlag) return;
+        const locale = TextManager.getInstance().getLocale();
+
+        const FLAG_W = 22;
+        const FLAG_H = 15;
+        const GAP = 9;
+        this.languageButton.text.setText(LOCALE_ENDONYMS[locale]);
+        const labelW = this.languageButton.text.width;
+        const totalW = FLAG_W + GAP + labelW;
+
+        this.languageButton.text.setPosition(-totalW / 2 + FLAG_W + GAP + labelW / 2, y);
+        this.languageFlag.clear();
+        drawFlag(this.languageFlag, locale, -totalW / 2, y - FLAG_H / 2, FLAG_W, FLAG_H);
+    }
+
+    private cycleTheme(): void {
+        const tm = ThemeManager.getInstance();
+        const ids = tm.getThemeIds();
+        if (ids.length < 2) return;
+        const next = ids[(ids.indexOf(tm.getActiveThemeId()) + 1) % ids.length];
+        tm.setTheme(next);
+        this.themeButton?.text.setText(this.themeLabel());
+    }
+
+    /**
+     * Switch language without restarting anything.
+     *
+     * Everything on screen behind this panel re-renders itself: the HUD, the
+     * touch controls, and an open math board all subscribe to LOCALE_CHANGED. The
+     * panel's own four labels are the one thing that has to be repainted here,
+     * because it is the surface doing the switching.
+     */
+    private cycleLocale(): void {
+        const tt = TextManager.getInstance();
+        const codes = tt.availableLocales();
+        const next = codes[(codes.indexOf(tt.getLocale()) + 1) % codes.length] as Locale;
+        tt.setLocale(next);
+
+        this.titleText?.setText(tt.t('pause.title'));
+        this.resumeButton?.text.setText(tt.t('pause.resume'));
+        this.quitButton?.text.setText(tt.t('pause.quit'));
+        this.themeButton?.text.setText(this.themeLabel());
+        this.paintLanguageRow(this.languageRowY);
     }
 
     private resume(): void {
