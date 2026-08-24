@@ -66,5 +66,16 @@
     "field_height": 64,
     "button_width": 420,
     "button_height": 72
+  },
+  "parent_report": {
+    "layer": 21,
+    "margin": 48,
+    "width": 860,
+    "separation": 12,
+    "title_font_size": 40,
+    "child_font_size": 30,
+    "body_font_size": 22,
+    "button_width": 320,
+    "button_height": 64
   }
 }

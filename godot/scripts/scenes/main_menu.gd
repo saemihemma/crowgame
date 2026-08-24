@@ -1,6 +1,7 @@
 extends Control
 
 const CLOUD_PANEL := preload("res://scenes/CloudPanel.tscn")
+const PARENT_REPORT := preload("res://scenes/ParentReport.tscn")
 ## MainMenu — Godot port of MainMenuScene. Title + Play (and Continue if a save
 ## exists). Keyboard/touch friendly. Login flow is deferred; Play starts the game.
 
@@ -31,10 +32,15 @@ func _ready() -> void:
 	# or same-origin proxy on a desktop build.
 	if OS.has_feature("web"):
 		_add_button(col, TextManager.t("cloud_title"), _on_cloud)
+	if ProfileManager.has_profiles():
+		_add_button(col, TextManager.t("report_open"), _on_parent_report)
 	_add_build_stamp()
 
 func _on_cloud() -> void:
 	add_child(CLOUD_PANEL.instantiate())
+
+func _on_parent_report() -> void:
+	add_child(PARENT_REPORT.instantiate())
 
 ## Tiny build stamp (bottom-right) so phone refreshes visibly confirm a new
 ## build during fast iteration. Written by tools/build_web.sh.

@@ -76,5 +76,20 @@
   "cloud_pair_bad": "Kóðinn virkaði ekki. Fáðu nýjan.",
   "cloud_synced": "Framvinda vistuð",
   "cloud_offline": "Vistað á þessu tæki, samstillist síðar",
-  "menu.back": "Til baka"
+  "menu.back": "Til baka",
+  "report_title": "Hvernig gengur barninu",
+  "report_what_this_is": "Crow stillir spurningarnar að hverju barni. Villur lækka erfiðleikann hraðar en rétt svör hækka hann, svo erfitt skeið á að gera næstu spurningu auðveldari, ekki erfiðari.",
+  "report_no_children": "Engin barnasnið á þessu tæki enn.",
+  "report_not_played_yet": "Engin æfing skráð enn.",
+  "report_domain_line": "{0} — þrep {1}, {2}% rétt í fyrstu tilraun, {3} til upprifjunar",
+  "report_confidence_low": "Fannst þetta erfitt nýlega, svo spurningarnar hafa verið gerðar auðveldari í smá tíma.",
+  "report_open": "Hvernig gengur barninu?",
+  "domain_addition": "Samlagning",
+  "domain_subtraction": "Frádráttur",
+  "domain_multiplication": "Margföldun",
+  "domain_division": "Deiling",
+  "domain_counting": "Talning",
+  "domain_comparison": "Stærra eða smærra",
+  "domain_pattern_matching": "Mynstur",
+  "domain_number_sequence": "Talnaröð"
 }
