@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
-import { SCENES, GAME_WIDTH } from '../utils/Constants';
+import { SCENES, GAME_WIDTH, GAME_HEIGHT } from '../utils/Constants';
 import { HealthBar } from '../ui/components/HealthBar';
 import { CoinCounter } from '../ui/components/CoinCounter';
 import { AbilitySlots } from '../ui/components/AbilitySlots';
-import { OwlCounter } from '../ui/components/OwlCounter';
+import { OwlRing } from '../ui/components/OwlRing';
 import { TouchControls } from '../ui/TouchControls';
 import { SaveManager } from '../systems/SaveManager';
 import type { InputManager } from '../systems/InputManager';
@@ -13,11 +13,25 @@ import type { InputManager } from '../systems/InputManager';
  * Contains: HealthBar, CoinCounter, OwlCounter, and TouchControls.
  * XP bar is hidden — owls saved is more motivating for kids.
  */
+/**
+ * Parallel scene that renders the HUD layer on top of GameScene.
+ *
+ * Three pods, per brand/BRAND_SYSTEM.md §8.2: life on the left, the owl ring on
+ * the right, and a coin chip that fades when nothing is happening. Top-centre is
+ * deliberately empty — it is what makes a streak toast read as an event.
+ *
+ * The previous layout stacked health, coins and owls as three left-aligned rows
+ * of equal weight at 16px, which put the entire goal of the game (owls saved) at
+ * the same visual authority as a debug readout, and inside the 24px safe area.
+ */
 export class HUDScene extends Phaser.Scene {
+    /** Safe area. 24 on desktop; touch builds want 32 to clear gesture bars. */
+    private static readonly MARGIN = 24;
+
     private healthBar!: HealthBar;
     private coinCounter!: CoinCounter;
     private abilitySlots!: AbilitySlots;
-    private owlCounter!: OwlCounter;
+    private owlRing!: OwlRing;
     private touchControls!: TouchControls;
 
     constructor() {
@@ -27,24 +41,26 @@ export class HUDScene extends Phaser.Scene {
     create(data: { inputManager?: InputManager }): void {
         this.events.once('shutdown', this.shutdown, this);
 
-        // Health bar: top-left
-        this.healthBar = new HealthBar(this, 16, 16);
-
-        // Coin counter: below health
-        this.coinCounter = new CoinCounter(this, 16, 56);
-
-        // Owl counter: below coins (where XP bar used to be)
-        this.owlCounter = new OwlCounter(this, 16, 88);
-
-        // Set initial owl count from save data
+        const m = HUDScene.MARGIN;
         const save = SaveManager.getInstance().getData();
+
+        // LEFT POD — life.
+        this.healthBar = new HealthBar(this, m, m);
+
+        // Coin chip, under the hearts. Idle-fades on its own.
+        this.coinCounter = new CoinCounter(this, m, m + 48);
         this.coinCounter.setCount(save.coins);
-        this.owlCounter.setCount(save.owlsSaved);
 
-        // Ability slots: top-right area
-        this.abilitySlots = new AbilitySlots(this, GAME_WIDTH - 160, 16);
+        // RIGHT POD — the owl ring. The goal anchor, and the biggest thing on
+        // the HUD. Centred on its own radius so the ring's right edge lands on
+        // the safe-area margin.
+        this.owlRing = new OwlRing(this, GAME_WIDTH - m - 28, m + 28);
+        this.owlRing.setSessionTotal(save.owlsSaved);
 
-        // Touch controls: wire to InputManager if provided
+        // Abilities move to the bottom right: the top right now belongs to the
+        // ring, and two 64px slots there would compete with it.
+        this.abilitySlots = new AbilitySlots(this, GAME_WIDTH - m - 140, GAME_HEIGHT - m - 64);
+
         this.touchControls = new TouchControls(this, (state) => {
             if (data.inputManager) {
                 data.inputManager.setTouchState(state);
@@ -58,7 +74,7 @@ export class HUDScene extends Phaser.Scene {
         this.healthBar?.destroy();
         this.coinCounter?.destroy();
         this.abilitySlots?.destroy();
-        this.owlCounter?.destroy();
+        this.owlRing?.destroy();
         this.touchControls?.destroy();
     }
 }

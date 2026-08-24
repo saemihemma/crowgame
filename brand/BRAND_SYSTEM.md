@@ -620,6 +620,32 @@ to this document.
 | **Modal** | scrim `#1A1420` at 0.72, panel centred, 260ms `Back.easeOut` |
 | **Focus ring** | 3px `focus` white, 4px offset, 1.4s pulse — keyboard and gamepad navigation |
 
+### 8.6b The HUD carries its own contrast
+
+**A HUD element may never borrow its legibility from the world behind it.**
+
+This rule exists because the concept for the owl ring was mocked over a
+gameplay screenshot, which quietly let the scene supply the darkness the ring
+needed. Implemented against a real Emberwood dawn, the ring became the *least*
+visible thing on screen — the exact inverse of a goal anchor — and the coin chip
+was unreadable text on peach.
+
+The fix is two-sided, and both sides are required:
+
+- **An `ink` fill or bezel**, so the element separates from a bright world
+  (Emberwood's dawn, Sugarstorm's cream boardwalk).
+- **A 1px `paper` rim at 0.22**, so it still separates from a near-black one
+  (Prism Hollow, Geyserworks, Sugarstorm's night sky), where an `ink` fill is
+  the same colour as the world and the element dissolves.
+
+Applies to the owl ring, the coin chip, the hearts (whose outline is a true
+2px dilation of the silhouette, not a shifted copy — a shifted copy leaves a
+notch on the un-offset corner), toasts, and anything else added to the HUD.
+
+**Test it in Emberwood and Sugarstorm before calling it done.** Those two are
+the brightest and the darkest worlds; an element that reads in both reads
+everywhere.
+
 ### 8.7 The scrim rule
 
 Both existing themes hardcode `scrim: "#0000009e"` — pure black at 62%. Replace
@@ -736,6 +762,13 @@ is safe because **it only ever adds**.
 | 4 | chime +3, scarf trails continuously |
 | **5** | **T2:** world-coloured aurora sweeps the screen, `ON FIRE!` toast, coins ×3 |
 | 7+ | each answer showers 5 bonus coins from the top of the screen |
+
+**Check the tiers against the content.** An owl serves `problemCount` problems,
+so the maximum streak in a level is `owls x problemCount` — with the shipped
+values (2 problems, 2-3 owls) that is 4 to 6. x2 at streak 3 is reachable
+everywhere; x3 at streak 5 needs a three-owl level, and the two-owl tutorial
+world can never reach it. Tracked in `roadmap.md`; do not treat these two
+numbers as settled.
 
 Reset **only on leaving the level**, never on a wrong answer. A wrong answer
 *pauses* the streak — the flame dims to 40% and relights on the next correct

@@ -1,0 +1,69 @@
+name: Web CI
+
+# Regression gate for the Phaser build. The Godot suite has its own workflow
+# (ci.yml) with its own path filter, so a web-only change never pays for a
+# Godot download and vice versa.
+#
+# Everything here is fast and headless. Deliberately NOT in CI:
+# `npm run math:browser-smoke` and `npm run themes:screenshots`. Both need a dev
+# server and a Chromium, and both write artefacts that are committed as evidence
+# (a fingerprint report, 18 PNGs), so running them here would either fight the
+# working tree or need a commit-back step. roadmap.md carries that open question.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'tools/**'
+      - 'brand/**'
+      - 'admin.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'vite/**'
+      - '.github/workflows/web-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'tools/**'
+      - 'brand/**'
+      - 'admin.html'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig.json'
+      - 'vite/**'
+      - '.github/workflows/web-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  web-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: TypeScript
+        run: npx tsc --noEmit
+
+      - name: Content, docs, assets, i18n
+        run: npm run validate
+
+      - name: Tileset manifest is current
+        run: npm run tilesets:check
+
+      - name: Colour law
+        working-directory: brand/tokens
+        run: python3 verify_palettes.py
+
+      - name: Production build
+        run: npm run build

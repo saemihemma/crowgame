@@ -3,6 +3,7 @@ import { SCENES, GAME_WIDTH, GAME_HEIGHT, TILE_SIZE } from '../utils/Constants';
 import { Player } from '../entities/Player';
 import { InputManager } from '../systems/InputManager';
 import { LevelManager } from '../systems/LevelManager';
+import { StreakManager } from '../systems/StreakManager';
 import { NPCFactory } from '../systems/NPCFactory';
 import { SaveManager } from '../systems/SaveManager';
 import { AudioManager } from '../systems/AudioManager';
@@ -87,6 +88,9 @@ export class GameScene extends Phaser.Scene {
 
         // Dress the level in its own world theme before anything reads a colour.
         this.applyLevelTheme(levelKey);
+
+        // Leaving a level is the only thing that clears a streak.
+        StreakManager.getInstance().resetForLevel();
 
         // Setup input
         this.inputManager = new InputManager(this);
@@ -223,6 +227,13 @@ export class GameScene extends Phaser.Scene {
         if (!this.scene.isActive(SCENES.HUD)) {
             this.scene.launch(SCENES.HUD, { inputManager: this.inputManager });
         }
+
+        // Tell the ring how many segments this level is worth. Deferred by a
+        // frame because HUDScene.create() has not run yet at this point, so the
+        // ring is not listening.
+        this.time.delayedCall(0, () => {
+            EventBus.emit(GameEvents.LEVEL_OWLS, this.activeNPCs.length);
+        });
 
         // Start level music based on registry (music field is the manifest key directly)
         const levelEntry = LevelManager.getInstance().getLevel(this.currentLevelKey);

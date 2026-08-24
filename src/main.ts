@@ -9,6 +9,7 @@ import { MathChallengeScene } from './scenes/MathChallengeScene';
 import { PauseScene } from './scenes/PauseScene';
 import { GAME_WIDTH, GAME_HEIGHT, DEFAULT_GRAVITY, SCENES } from './utils/Constants';
 import { EventBus, GameEvents } from './utils/EventBus';
+import { StreakManager } from './systems/StreakManager';
 
 const prefersDesktopIntegerScaling = (): boolean =>
     window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -113,6 +114,7 @@ if (import.meta.env.DEV) {
                 optionCenters: Array<{ value: number; x: number; y: number }>;
                 canvasRect: { left: number; top: number; width: number; height: number } | null;
             } | null;
+            getStreak: () => { streak: number; best: number; multiplier: number; pitchSteps: number };
             getLastCompletion: () => Record<string, unknown> | null;
             getCompletionHistory: () => Array<Record<string, unknown>>;
             clearLastCompletion: () => void;
@@ -218,6 +220,15 @@ if (import.meta.env.DEV) {
                 wrongAttempts: scene.wrongAttempts ?? 0,
                 optionCenters,
                 canvasRect,
+            };
+        },
+        getStreak: () => {
+            const streaks = StreakManager.getInstance();
+            return {
+                streak: streaks.getStreak(),
+                best: streaks.getBest(),
+                multiplier: streaks.getMultiplier(),
+                pitchSteps: streaks.getPitchSteps(),
             };
         },
         getLastCompletion: () => lastMathCompletion ? { ...lastMathCompletion } : null,

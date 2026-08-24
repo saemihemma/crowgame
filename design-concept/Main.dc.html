@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap');
+    body { margin: 0; background: #12101A; }
+    a { color: #FFC93C; } a:hover { color: #FFE9A8; }
+    .num { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 700; }
+    .anno { font-family: "Space Grotesk", system-ui, sans-serif; font-size: 11px; letter-spacing: .02em; color: #8C86A0; }
+    .anno b { color: #FFF8E7; font-weight: 700; }
+    .rule { position: absolute; background: #FFC93C; opacity: .55; }
+  </style>
+</helmet>
+
+<div style="position: relative; width: 960px; height: 700px; background: #12101A;">
+
+  <!-- the live 960x540 frame -->
+  <div style="position: absolute; left: 0; top: 0; width: 960px; height: 540px; overflow: hidden;">
+    <img src="plate-emberwood.png" style="width: 960px; height: 540px; display: block; image-rendering: pixelated;" alt="">
+
+    <!-- LEFT POD - life. 24,24. Hearts 28x28, 8px gap. -->
+    <div style="position: absolute; left: 24px; top: 24px; display: flex; gap: 8px; align-items: center;">
+      <svg width="28" height="28" viewBox="0 0 14 14" shape-rendering="crispEdges"><path d="M2 1h3v1h1V1h3v1h1v1h1v3h-1v1h-1v1h-1v1h-1v1H6v1H5V9H4V8H3V7H2V6H1V3h1V2h1z" fill="#FF4D4D" stroke="#1A1420"/></svg>
+      <svg width="28" height="28" viewBox="0 0 14 14" shape-rendering="crispEdges"><path d="M2 1h3v1h1V1h3v1h1v1h1v3h-1v1h-1v1h-1v1h-1v1H6v1H5V9H4V8H3V7H2V6H1V3h1V2h1z" fill="#FF4D4D" stroke="#1A1420"/></svg>
+      <svg width="28" height="28" viewBox="0 0 14 14" shape-rendering="crispEdges" style="opacity:.28"><path d="M2 1h3v1h1V1h3v1h1v1h1v3h-1v1h-1v1h-1v1h-1v1H6v1H5V9H4V8H3V7H2V6H1V3h1V2h1z" fill="none" stroke="#1A1420" stroke-width="1.2"/></svg>
+    </div>
+
+    <!-- COIN CHIP - 24,72. Idle-faded to 0.35. -->
+    <div style="position: absolute; left: 24px; top: 72px; display: flex; gap: 8px; align-items: center; height: 32px; padding: 0 12px 0 6px; border-radius: 16px; background: #1A1420AA; opacity: .35;">
+      <svg width="20" height="20" viewBox="0 0 10 10" shape-rendering="crispEdges"><circle cx="5" cy="5" r="4" fill="#FFC93C" stroke="#1A1420"/><path d="M4 3h2v1H5v2h1v1H4z" fill="#1A1420" opacity=".45"/></svg>
+      <span class="num" style="font-size: 15px; color: #FFF8E7;">128</span>
+    </div>
+
+    <!-- RIGHT POD - the owl ring. Right edge at 936. 56px ring. -->
+    <div style="position: absolute; right: 24px; top: 24px; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+      <div style="position: relative; width: 56px; height: 56px;">
+        <svg width="56" height="56" viewBox="0 0 56 56" style="position:absolute; inset:0; transform: rotate(-90deg);">
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#1A1420" stroke-width="7" opacity=".55"/>
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#FFE9A8" stroke-width="6" opacity=".16"
+                  stroke-dasharray="44.4 8" stroke-linecap="butt"/>
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#FFE9A8" stroke-width="6"
+                  stroke-dasharray="44.4 112.7" stroke-linecap="butt"/>
+        </svg>
+        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
+          <svg width="26" height="26" viewBox="0 0 13 13" shape-rendering="crispEdges">
+            <path d="M3 2h1V1h1v1h3V1h1v1h1v7H9v1H4V9H3z" fill="#FFE9A8" stroke="#1A1420"/>
+            <circle cx="5" cy="5" r="1" fill="#1A1420"/><circle cx="8" cy="5" r="1" fill="#1A1420"/>
+            <path d="M6 6h1v1H6z" fill="#E08A2E"/>
+          </svg>
+        </div>
+      </div>
+      <span class="num" style="font-size: 13px; color: #FFE9A8; text-shadow: 0 1px 0 #1A1420;">1 / 3</span>
+      <span class="num" style="font-size: 10px; color: #FFF8E7; opacity: .5;">14 SAVED</span>
+    </div>
+
+    <!-- ABILITY SLOTS - bottom right, above touch controls. 64x64. -->
+    <div style="position: absolute; right: 24px; bottom: 24px; display: flex; gap: 12px;">
+      <div style="width: 64px; height: 64px; border-radius: 10px; border: 2px solid #1A1420; background: #1A142088; display:flex; align-items:center; justify-content:center; box-shadow: 0 0 0 2px #FFC93C55, 0 0 18px #FFC93C40;">
+        <svg width="30" height="30" viewBox="0 0 15 15"><path d="M8 1 3 8h4l-1 6 6-8H8z" fill="#FFC93C" stroke="#1A1420" stroke-width="1"/></svg>
+      </div>
+      <div style="width: 64px; height: 64px; border-radius: 10px; border: 2px solid #1A1420; background: #1A142066; display:flex; align-items:center; justify-content:center; opacity:.4;">
+        <svg width="30" height="30" viewBox="0 0 15 15"><circle cx="7.5" cy="7.5" r="5" fill="none" stroke="#FFF8E7" stroke-width="1.4" stroke-dasharray="2 2"/></svg>
+      </div>
+    </div>
+
+    <!-- TOP CENTRE stays empty: reserved for the level banner and streak toasts. -->
+    <div style="position: absolute; left: 300px; top: 24px; width: 360px; height: 44px; border: 1px dashed #FFC93C55; border-radius: 8px; display:flex; align-items:center; justify-content:center;">
+      <span class="anno" style="color:#FFC93C99;">RESERVED — level banner / streak toast</span>
+    </div>
+  </div>
+
+  <!-- measurement rules -->
+  <div class="rule" style="left: 0; top: 24px; width: 24px; height: 1px;"></div>
+  <div class="rule" style="left: 24px; top: 0; width: 1px; height: 24px;"></div>
+
+  <!-- annotations -->
+  <div style="position: absolute; left: 0; top: 556px; width: 960px; display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 20px; padding: 0 24px; box-sizing: border-box;">
+    <div class="anno"><b>LIFE — 24,24</b><br>3 hearts, 28×28, 8px gap, 1px <span style="color:#1A1420;background:#FFF8E7;padding:0 3px;">#1A1420</span> outline. Loss: shatter into 4 shards, 120ms hitstop, edge pulse. Empty slot keeps its outline so the count is readable at a glance.</div>
+    <div class="anno"><b>COINS — 24,72</b><br>32px pill, 20px icon, monospace numerals. Fades to <b>0.35</b> after 3s without a coin; snaps to 1.0 and pops on collect. Idle-fade is how the HUD stays out of the way.</div>
+    <div class="anno"><b>OWLS — right 24, top 24</b><br>56px ring, 6px stroke, 3 segments, <b>#FFE9A8</b>. Each rescue sweeps one segment over 400ms then pops the ring to 1.15. <b>This is the goal anchor</b> — biggest, brightest thing on the HUD.</div>
+    <div class="anno"><b>ABILITIES — bottom right</b><br>64×64, 10px radius. Charged: accent rim + glow. Empty: 40% and a dashed hole. Moved off the top-right so the ring owns that corner.</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

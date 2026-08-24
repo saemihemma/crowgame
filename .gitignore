@@ -30,3 +30,7 @@ dist-ssr
 # Godot export build artifacts (web build itself is tracked under output/web)
 /output/*.zip
 /output/linux/
+
+# Seeded design canvas: ~2MB of vendored editor payload, regenerable from the
+# .dc.html working files beside it. The published artifact is the deliverable.
+design-concept/*-concept.html

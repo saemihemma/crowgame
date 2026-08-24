@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap');
+    body { margin: 0; background: #12101A; }
+    a { color: #FFC93C; } a:hover { color: #FFE9A8; }
+    .num { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 700; }
+    .anno { font-family: "Space Grotesk", system-ui, sans-serif; font-size: 11px; color: #8C86A0; line-height: 1.5; }
+    .anno b { color: #FFF8E7; }
+    .cap { font-family: "Space Grotesk", system-ui, sans-serif; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: #6F6A82; }
+    .cell { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  </style>
+</helmet>
+
+<div style="width: 1180px; height: 620px; background: #12101A; padding: 32px; box-sizing: border-box; font-family: 'Space Grotesk', system-ui, sans-serif;">
+
+  <div style="color:#FFF8E7; font-size: 20px; font-weight: 700;">Streak — the owl ring under load</div>
+  <div class="anno" style="max-width: 760px; margin-top: 6px;">Consecutive correct answers inside one level. It only ever <b>adds</b>: a wrong answer dims the flame to 40% and pauses it, it never resets. Reset happens on leaving the level, nothing else. Shown at 3× so the 6px stroke is legible.</div>
+
+  <div style="display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 24px; margin-top: 36px;">
+
+    <div class="cell">
+      <span class="cap">Streak 0</span>
+      <svg width="168" height="168" viewBox="0 0 56 56">
+        <circle cx="28" cy="28" r="25" fill="none" stroke="#1A1420" stroke-width="7" opacity=".55"/>
+        <circle cx="28" cy="28" r="25" fill="none" stroke="#FFE9A8" stroke-width="6" opacity=".16" stroke-dasharray="44.4 8"/>
+      </svg>
+      <div class="anno" style="text-align:center;">Base chime.<br>No flame.</div>
+    </div>
+
+    <div class="cell">
+      <span class="cap">Streak 1</span>
+      <svg width="168" height="168" viewBox="0 0 56 56" style="transform: rotate(-90deg);">
+        <circle cx="28" cy="28" r="25" fill="none" stroke="#1A1420" stroke-width="7" opacity=".55"/>
+        <circle cx="28" cy="28" r="25" fill="none" stroke="#FFE9A8" stroke-width="6" opacity=".16" stroke-dasharray="44.4 8"/>
+        <circle cx="28" cy="28" r="25" fill="none" stroke="#FFE9A8" stroke-width="6" stroke-dasharray="44.4 112.7"/>
+      </svg>
+      <div class="anno" style="text-align:center;">One segment swept.<br>Chime <b>+1 semitone</b>.</div>
+    </div>
+
+    <div class="cell">
+      <span class="cap" style="color:#FFC93C;">Streak 3 — T2</span>
+      <svg width="168" height="168" viewBox="0 0 56 56">
+        <circle cx="28" cy="28" r="31" fill="none" stroke="#FFC93C" stroke-width="1.5" opacity=".45" stroke-dasharray="3 4"/>
+        <g transform="rotate(-90 28 28)">
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#1A1420" stroke-width="7" opacity=".55"/>
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#FFE9A8" stroke-width="6" opacity=".16" stroke-dasharray="44.4 8"/>
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#FFC93C" stroke-width="6" stroke-dasharray="96.8 60.3"/>
+        </g>
+        <path d="M28 3c2 4-1 5 1 8 2-2 2-4 2-4 3 4 2 8-3 9-4-1-5-5-3-8 1 2 3 1 3-5z" fill="#FFC93C" stroke="#1A1420" stroke-width=".7"/>
+      </svg>
+      <div class="anno" style="text-align:center;"><b style="color:#FFC93C;">×2 COINS</b> toast.<br>Flame ring ignites.<br>Chime +2.</div>
+    </div>
+
+    <div class="cell">
+      <span class="cap" style="color:#FF8A3C;">Streak 5 — T2</span>
+      <svg width="168" height="168" viewBox="0 0 56 56">
+        <circle cx="28" cy="28" r="34" fill="none" stroke="#FF8A3C" stroke-width="1" opacity=".3"/>
+        <circle cx="28" cy="28" r="31" fill="none" stroke="#FF8A3C" stroke-width="2" opacity=".7" stroke-dasharray="2 3"/>
+        <g transform="rotate(-90 28 28)">
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#1A1420" stroke-width="7" opacity=".55"/>
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#FF8A3C" stroke-width="6" stroke-dasharray="149 8"/>
+        </g>
+        <path d="M28 0c2.5 5-1.2 6.2 1.2 10 2.5-2.5 2.5-5 2.5-5 3.7 5 2.5 10-3.7 11.2-5-1.2-6.2-6.2-3.7-10 1.2 2.5 3.7 1.2 3.7-6.2z" fill="#FF8A3C" stroke="#1A1420" stroke-width=".7"/>
+      </svg>
+      <div class="anno" style="text-align:center;"><b style="color:#FF8A3C;">ON FIRE!</b><br>World-coloured aurora sweep.<br>Coins ×3. Chime +4.</div>
+    </div>
+
+    <div class="cell">
+      <span class="cap" style="color:#E08A2E;">After a miss</span>
+      <svg width="168" height="168" viewBox="0 0 56 56">
+        <circle cx="28" cy="28" r="31" fill="none" stroke="#FFC93C" stroke-width="1.5" opacity=".18" stroke-dasharray="3 4"/>
+        <g transform="rotate(-90 28 28)">
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#1A1420" stroke-width="7" opacity=".55"/>
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#FFE9A8" stroke-width="6" opacity=".16" stroke-dasharray="44.4 8"/>
+          <circle cx="28" cy="28" r="25" fill="none" stroke="#FFC93C" stroke-width="6" stroke-dasharray="96.8 60.3" opacity=".4"/>
+        </g>
+        <path d="M28 3c2 4-1 5 1 8 2-2 2-4 2-4 3 4 2 8-3 9-4-1-5-5-3-8 1 2 3 1 3-5z" fill="#FFC93C" stroke="#1A1420" stroke-width=".7" opacity=".4"/>
+      </svg>
+      <div class="anno" style="text-align:center;">Flame dims to <b>40%</b>.<br>Streak <b>held, not lost</b>.<br>Relights on the next correct.</div>
+    </div>
+
+  </div>
+
+  <div style="margin-top: 34px; display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 28px;">
+    <div class="anno"><b>Why it can only add.</b> A streak that resets on a wrong answer turns the most confidence-sensitive moment in the game into a punishment. Dimming instead of resetting keeps the chase without the sting — and a child replaying a level to protect a streak is a child doing more maths.</div>
+    <div class="anno"><b>The chime is the tell.</b> Correct-answer pitch rises one semitone per step, capped at +5. One parameter, and it is the thing children actually chase. Never let it descend.</div>
+    <div class="anno"><b>Budget.</b> Streak 3 and 5 are <b>T2</b> events (≤900ms, shake ≤0.004, ≤32 particles). Never fire two T2+ inside 600ms — queue the second. BRAND_SYSTEM §10.1.</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

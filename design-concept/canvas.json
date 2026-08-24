@@ -1,0 +1,13 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",        "x": 0,    "y": 0,    "w": 960,  "h": 700, "title": "HUD — three pods" },
+    { "file": "Streak.dc.html",      "x": 1100, "y": 0,    "w": 1180, "h": 620, "title": "Streak states" },
+    { "file": "MathWindow.dc.html",  "x": 0,    "y": 840,  "w": 1760, "h": 700, "title": "Maths window per world" },
+    { "file": "WrongAnswer.dc.html", "x": 0,    "y": 1680, "w": 1660, "h": 560, "title": "Wrong answer — 900ms" }
+  ],
+  "annotations": [
+    { "id": "brief", "x": -420, "y": 0, "w": 340, "text": "Concept UI — Hörmann\n\nEverything here is pixel-exact at the game's real 960×540 and uses only values from brand/BRAND_SYSTEM.md and the live theme token files.\n\nThe HUD artboard is drawn over a real gameplay capture with the current HUD switched off, so it can be compared directly against a screenshot of the implementation." },
+    { "id": "gap", "x": -420, "y": 300, "w": 340, "text": "Read this as the target, not the plan.\n\nThe point of a concept is that the implementation fails against it. Where Phaser cannot reach this, the gap gets written down rather than quietly designed away." }
+  ],
+  "launch": { "view": "canvas" }
+}

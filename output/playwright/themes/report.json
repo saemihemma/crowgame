@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-08-24T10:36:11.226Z",
+  "capturedAt": "2026-08-24T11:06:30.724Z",
   "baseUrl": "http://localhost:8080/",
   "conformanceFloor": 0.85,
   "tolerance": 64,
@@ -10,145 +10,193 @@
       "level": "level_99",
       "theme": "emberwood",
       "shot": "1-play",
-      "sampled": 103045,
-      "onPalette": 100130,
-      "share": 0.9717113882284438
+      "sampled": 102184,
+      "onPalette": 98777,
+      "share": 0.966658185234479
     },
     {
       "level": "level_99",
       "theme": "emberwood",
       "shot": "2-math-board",
-      "sampled": 48793,
-      "onPalette": 48769,
-      "share": 0.9995081261656386
+      "sampled": 51951,
+      "onPalette": 51935,
+      "share": 0.9996920174780082
     },
     {
       "level": "level_99",
       "theme": "emberwood",
       "shot": "3-math-wrong",
-      "sampled": 48111,
-      "onPalette": 48097,
-      "share": 0.9997090062563655
+      "sampled": 51270,
+      "onPalette": 51259,
+      "share": 0.9997854495806514
+    },
+    {
+      "level": "level_99",
+      "theme": "emberwood",
+      "shot": "4-owl-saved",
+      "sampled": 102273,
+      "onPalette": 98874,
+      "share": 0.9667654219588748
     },
     {
       "level": "level_01",
       "theme": "emberwood",
       "shot": "1-play",
-      "sampled": 104975,
-      "onPalette": 102342,
-      "share": 0.9749178375803763
+      "sampled": 104116,
+      "onPalette": 100964,
+      "share": 0.9697260747627646
     },
     {
       "level": "level_01",
       "theme": "emberwood",
       "shot": "2-math-board",
-      "sampled": 53349,
-      "onPalette": 53333,
-      "share": 0.9997000880991209
+      "sampled": 53148,
+      "onPalette": 53132,
+      "share": 0.9996989538646798
     },
     {
       "level": "level_01",
       "theme": "emberwood",
       "shot": "3-math-wrong",
-      "sampled": 52652,
-      "onPalette": 52642,
-      "share": 0.9998100736914077
+      "sampled": 52452,
+      "onPalette": 52434,
+      "share": 0.9996568291008923
+    },
+    {
+      "level": "level_01",
+      "theme": "emberwood",
+      "shot": "4-owl-saved",
+      "sampled": 104376,
+      "onPalette": 101264,
+      "share": 0.9701847167931326
     },
     {
       "level": "level_02",
       "theme": "prism_hollow",
       "shot": "1-play",
-      "sampled": 114033,
-      "onPalette": 112570,
-      "share": 0.9871703805038893
+      "sampled": 113137,
+      "onPalette": 111492,
+      "share": 0.98546010588932
     },
     {
       "level": "level_02",
       "theme": "prism_hollow",
       "shot": "2-math-board",
-      "sampled": 44077,
-      "onPalette": 43126,
-      "share": 0.9784241214238718
+      "sampled": 40917,
+      "onPalette": 39958,
+      "share": 0.976562309064692
     },
     {
       "level": "level_02",
       "theme": "prism_hollow",
       "shot": "3-math-wrong",
-      "sampled": 43347,
-      "onPalette": 42462,
-      "share": 0.9795833621703924
+      "sampled": 40183,
+      "onPalette": 39261,
+      "share": 0.9770549734962546
+    },
+    {
+      "level": "level_02",
+      "theme": "prism_hollow",
+      "shot": "4-owl-saved",
+      "sampled": 113243,
+      "onPalette": 111781,
+      "share": 0.9870897097392334
     },
     {
       "level": "level_03",
       "theme": "sugarstorm",
       "shot": "1-play",
-      "sampled": 129202,
-      "onPalette": 128922,
-      "share": 0.9978328508846612
+      "sampled": 128295,
+      "onPalette": 127754,
+      "share": 0.9957831560076387
     },
     {
       "level": "level_03",
       "theme": "sugarstorm",
       "shot": "2-math-board",
-      "sampled": 78767,
-      "onPalette": 77958,
-      "share": 0.9897292013152716
+      "sampled": 80766,
+      "onPalette": 80019,
+      "share": 0.9907510586137731
     },
     {
       "level": "level_03",
       "theme": "sugarstorm",
       "shot": "3-math-wrong",
-      "sampled": 77873,
-      "onPalette": 77155,
-      "share": 0.9907798595148511
+      "sampled": 80027,
+      "onPalette": 79368,
+      "share": 0.9917652792182639
+    },
+    {
+      "level": "level_03",
+      "theme": "sugarstorm",
+      "shot": "4-owl-saved",
+      "sampled": 128421,
+      "onPalette": 128081,
+      "share": 0.9973524579313352
     },
     {
       "level": "level_04",
       "theme": "geyserworks",
       "shot": "1-play",
-      "sampled": 63536,
-      "onPalette": 63441,
-      "share": 0.9985047846889952
+      "sampled": 63678,
+      "onPalette": 63590,
+      "share": 0.9986180470492164
     },
     {
       "level": "level_04",
       "theme": "geyserworks",
       "shot": "2-math-board",
-      "sampled": 10624,
-      "onPalette": 10040,
-      "share": 0.9450301204819277
+      "sampled": 10511,
+      "onPalette": 9927,
+      "share": 0.9444391589763105
     },
     {
       "level": "level_04",
       "theme": "geyserworks",
       "shot": "3-math-wrong",
-      "sampled": 11254,
-      "onPalette": 10916,
-      "share": 0.9699662342278301
+      "sampled": 11071,
+      "onPalette": 10690,
+      "share": 0.9655857646102429
+    },
+    {
+      "level": "level_04",
+      "theme": "geyserworks",
+      "shot": "4-owl-saved",
+      "sampled": 63835,
+      "onPalette": 63755,
+      "share": 0.9987467690138638
     },
     {
       "level": "level_05",
       "theme": "aurora_spire",
       "shot": "1-play",
-      "sampled": 126091,
-      "onPalette": 125888,
-      "share": 0.9983900516293788
+      "sampled": 125206,
+      "onPalette": 124798,
+      "share": 0.9967413702218744
     },
     {
       "level": "level_05",
       "theme": "aurora_spire",
       "shot": "2-math-board",
-      "sampled": 63096,
-      "onPalette": 63082,
-      "share": 0.9997781158869025
+      "sampled": 59597,
+      "onPalette": 59584,
+      "share": 0.999781868214843
     },
     {
       "level": "level_05",
       "theme": "aurora_spire",
       "shot": "3-math-wrong",
-      "sampled": 62280,
-      "onPalette": 62250,
-      "share": 0.9995183044315993
+      "sampled": 58850,
+      "onPalette": 58795,
+      "share": 0.9990654205607477
+    },
+    {
+      "level": "level_05",
+      "theme": "aurora_spire",
+      "shot": "4-owl-saved",
+      "sampled": 125326,
+      "onPalette": 125045,
+      "share": 0.9977578475336323
     }
   ],
   "consoleErrors": [],

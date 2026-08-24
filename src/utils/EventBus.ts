@@ -20,6 +20,11 @@ export const GameEvents = {
     COINS_CHANGED: 'coins-changed',
     STARS_CHANGED: 'stars-changed',
     OWL_SAVED: 'owl-saved',
+    /** Emitted on level load with how many owls this level holds, so the HUD
+     *  can segment the owl ring before the first rescue. */
+    LEVEL_OWLS: 'level-owls',
+    /** Consecutive correct answers within the current level. */
+    STREAK_CHANGED: 'streak-changed',
     LEVEL_COMPLETE: 'level-complete',
     SAVE_GAME: 'save-game',
 

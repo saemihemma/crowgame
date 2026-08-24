@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap');
+    body { margin: 0; background: #12101A; }
+    a { color: #FFC93C; } a:hover { color: #FFE9A8; }
+    .num { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 700; }
+    .anno { font-family: "Space Grotesk", system-ui, sans-serif; font-size: 11px; color: #8C86A0; line-height: 1.55; }
+    .anno b { color: #FFF8E7; }
+    .t { font-family: ui-monospace, monospace; font-size: 13px; font-weight: 700; color: #FFC93C; }
+    .opt { width: 62px; height: 38px; border-radius: 6px; display:flex; align-items:center; justify-content:center; background:#6B4E1B; box-shadow: inset 0 0 0 2px #FFFFFF4D; }
+    .frame { width: 300px; border-radius: 10px; background: #5C3A1E; box-shadow: inset 0 0 0 2px #3D2510; padding: 18px 14px 14px; }
+  </style>
+</helmet>
+
+<div style="width: 1660px; height: 560px; background: #12101A; padding: 32px; box-sizing: border-box;">
+
+  <div style="font-family:'Space Grotesk',system-ui,sans-serif; color:#FFF8E7; font-size:20px; font-weight:700;">Wrong answer — 900ms, and it must not feel like being hurt</div>
+  <div class="anno" style="max-width: 980px; margin-top:6px;">One duration for every problem type, so the beat is learnable. <b>Amber, never red</b> — red is reserved for losing health. Nothing here costs health, coins, streak or progress: the only cost of a wrong answer is 900ms of adventure.</div>
+
+  <div style="display:flex; gap:20px; margin-top:26px; align-items:flex-start;">
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <span class="t">t = 0ms</span>
+      <div class="frame">
+        <div class="num" style="font-size:26px;color:#FFF8E7;text-align:center;">2 + 3 = ?</div>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:14px;">
+          <div class="opt" style="opacity:.45; box-shadow: inset 0 0 0 2px #E08A2E; transform: translateX(-3px);"><span class="num" style="font-size:18px;color:#FFF8E7;">4</span></div>
+          <div class="opt" style="opacity:.55;"><span class="num" style="font-size:18px;color:#FFF8E7;">5</span></div>
+          <div class="opt" style="opacity:.55;"><span class="num" style="font-size:18px;color:#FFF8E7;">6</span></div>
+        </div>
+      </div>
+      <div class="anno" style="width:300px;">Pick dims to <b>0.45</b>, gains a 2px <b>#E08A2E</b> rim, shakes 3× 4px over 120ms. Every other option drops to <b>0.55</b> — the lockout is <b>visible</b>, not guessed at.<br><br>No red. No X. No buzzer.</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <span class="t">t = 120ms</span>
+      <div class="frame">
+        <div class="num" style="font-size:26px;color:#FFF8E7;text-align:center;">2 + 3 = ?</div>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:14px;">
+          <div class="opt" style="opacity:.45; box-shadow: inset 0 0 0 2px #E08A2E;"><span class="num" style="font-size:18px;color:#FFF8E7;">4</span></div>
+          <div class="opt" style="opacity:.55;"><span class="num" style="font-size:18px;color:#FFF8E7;">5</span></div>
+          <div class="opt" style="opacity:.55;"><span class="num" style="font-size:18px;color:#FFF8E7;">6</span></div>
+        </div>
+      </div>
+      <div class="anno" style="width:300px;">A short, low, <b>curious</b> "hm" at 0.35 volume — the quietest cue in the game. The sound of a friend thinking, not a wrong-answer sting. It never resolves downward.</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <span class="t">t = 200ms</span>
+      <div class="frame">
+        <div class="num" style="font-size:26px;color:#FFF8E7;text-align:center;">2 + 3 = ?</div>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:14px;">
+          <div class="opt" style="opacity:.45; box-shadow: inset 0 0 0 2px #E08A2E;"><span class="num" style="font-size:18px;color:#FFF8E7;">4</span></div>
+          <div class="opt" style="opacity:.55;"><span class="num" style="font-size:18px;color:#FFF8E7;">5</span></div>
+          <div class="opt" style="opacity:.55;"><span class="num" style="font-size:18px;color:#FFF8E7;">6</span></div>
+        </div>
+        <div style="text-align:center; margin-top:12px; font-family:ui-monospace,monospace; font-size:12px; color:#FFC93C;">Start at 2, count 3 more.</div>
+      </div>
+      <div class="anno" style="width:300px;">Hint fades in over 200ms, in the world's <b>accent</b>. The board already reserved room for it when the problem was shown, so revealing it moves nothing.</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <span class="t">t = 400ms</span>
+      <div class="frame">
+        <div class="num" style="font-size:26px;color:#FFF8E7;text-align:center;">2 + 3 = ?</div>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:14px;">
+          <div class="opt" style="opacity:.45; box-shadow: inset 0 0 0 2px #E08A2E;"><span class="num" style="font-size:18px;color:#FFF8E7;">4</span></div>
+          <div class="opt" style="opacity:.55;"><span class="num" style="font-size:18px;color:#FFF8E7;">5</span></div>
+          <div class="opt" style="box-shadow: inset 0 0 0 2px #FFFFFF; opacity:1;"><span class="num" style="font-size:18px;color:#FFF8E7;">6</span></div>
+        </div>
+        <div style="text-align:center; margin-top:12px; font-family:ui-monospace,monospace; font-size:12px; color:#FFC93C;">Start at 2, count 3 more.</div>
+      </div>
+      <div class="anno" style="width:300px;"><b>First miss only.</b> The correct option breathes a <b>#FFFFFF</b> rim, 0.7→1.0 over 900ms — the game's universal "press here" signal. <b>Not amber</b>: amber already means "the one you picked was not it".</div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <span class="t">t = 900ms</span>
+      <div class="frame">
+        <div class="num" style="font-size:26px;color:#FFF8E7;text-align:center;">2 + 3 = ?</div>
+        <div style="display:flex; gap:10px; justify-content:center; margin-top:14px;">
+          <div class="opt"><span class="num" style="font-size:18px;color:#FFF8E7;">4</span></div>
+          <div class="opt"><span class="num" style="font-size:18px;color:#FFF8E7;">5</span></div>
+          <div class="opt" style="box-shadow: inset 0 0 0 2px #FFFFFF;"><span class="num" style="font-size:18px;color:#FFF8E7;">6</span></div>
+        </div>
+        <div style="text-align:center; margin-top:12px; font-family:ui-monospace,monospace; font-size:12px; color:#FFC93C;">Start at 2, count 3 more.</div>
+      </div>
+      <div class="anno" style="width:300px;">Everything back to <b>1.0</b> over 140ms. Input re-enabled. The hint stays. The breathe stays until they answer.</div>
+    </div>
+
+  </div>
+
+  <div style="margin-top: 26px; display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 40px; max-width: 1180px;">
+    <div class="anno"><b>Never, on a wrong answer:</b> health loss · coin loss · streak reset · red · a downward sound · a shrinking bar · a countdown · the word "wrong" · progress moving backwards in any visible way.</div>
+    <div class="anno"><b>Why the beat is fixed.</b> A duration that varies by problem type cannot be learned, and a child who cannot predict the pause reads it as the game having stopped. One number, every type, every world.</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

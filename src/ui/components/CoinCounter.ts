@@ -8,8 +8,15 @@ import { TextManager } from '../../systems/TextManager';
  * Listens to COINS_CHANGED events via EventBus.
  */
 export class CoinCounter {
+    /** Resting opacity once the count has been still for IDLE_AFTER_MS. */
+    private static readonly IDLE_ALPHA = 0.35;
+    private static readonly IDLE_AFTER_MS = 3000;
+
     private scene: Phaser.Scene;
     private container: Phaser.GameObjects.Container;
+    /** Cleared and restarted on every coin, so the chip only fades when idle. */
+    private idleTimer: Phaser.Time.TimerEvent | null = null;
+    private pill!: Phaser.GameObjects.Graphics;
     private icon: Phaser.GameObjects.Image | null = null;
     private countText: Phaser.GameObjects.Text;
     private currentCount = 0;
@@ -17,6 +24,13 @@ export class CoinCounter {
     constructor(scene: Phaser.Scene, x: number, y: number) {
         this.scene = scene;
         this.container = scene.add.container(x, y).setScrollFactor(0).setDepth(200);
+
+        // Pill backing. Without it the chip is bare text over the world, which
+        // is unreadable on a bright sky at the idle alpha - the first build of
+        // this HUD shipped exactly that. Redrawn to fit whenever the count
+        // changes width, so it hugs "x0" and "x1284" alike.
+        this.pill = scene.add.graphics();
+        this.container.add(this.pill);
 
         // Build icon
         this.buildIcon();
@@ -36,6 +50,13 @@ export class CoinCounter {
         // Listen for events
         EventBus.on(GameEvents.COINS_CHANGED, this.onCoinsChanged, this);
         EventBus.on(THEME_CHANGED, this.onThemeChanged, this);
+
+        // Idle-fade. The coin count matters for a second after it changes and
+        // not at all in between, so it gets out of the way on its own rather
+        // than needing a settings toggle. brand/BRAND_SYSTEM.md §8.2.
+        this.container.setAlpha(CoinCounter.IDLE_ALPHA);
+        EventBus.on(GameEvents.COINS_CHANGED, this.wake, this);
+        scene.events.once('shutdown', () => this.idleTimer?.remove());
     }
 
     private buildIcon(): void {
@@ -75,6 +96,7 @@ export class CoinCounter {
         this.currentCount = count;
         const tt = TextManager.getInstance();
         this.countText.setText(tt.t('hud.coins', count));
+        this.drawPill();
 
         // Icon bounce
         if (this.icon) {
@@ -155,6 +177,42 @@ export class CoinCounter {
         });
     }
 
+    /**
+     * Redraw the pill to fit the current label.
+     *
+     * Ink fill AND a paper rim, because neither alone works in every world. The
+     * fill is what separates the chip from Emberwood's peach dawn; the rim is
+     * what separates it from Sugarstorm's near-black carnival sky, where an ink
+     * fill is the same colour as the world and the chip reads as bare text —
+     * which is exactly what shipped in the first build of this HUD.
+     */
+    private drawPill(): void {
+        if (!this.pill) {
+            return;
+        }
+        const tm = ThemeManager.getInstance();
+        const w = Math.max(76, this.countText.x + this.countText.width + 16);
+        this.pill.clear();
+        this.pill.fillStyle(tm.getColorNum('ink'), 0.72);
+        this.pill.fillRoundedRect(-8, -6, w, 34, 17);
+        this.pill.lineStyle(1, tm.getColorNum('paper'), 0.22);
+        this.pill.strokeRoundedRect(-8, -6, w, 34, 17);
+    }
+
+    /** Snap to full opacity on a coin, then fade back once things go quiet. */
+    private wake(): void {
+        this.idleTimer?.remove();
+        this.container.setAlpha(1);
+        this.idleTimer = this.scene.time.delayedCall(CoinCounter.IDLE_AFTER_MS, () => {
+            this.scene.tweens.add({
+                targets: this.container,
+                alpha: CoinCounter.IDLE_ALPHA,
+                duration: 400,
+                ease: 'Sine.easeInOut',
+            });
+        });
+    }
+
     private onThemeChanged = (): void => {
         this.buildIcon();
         const tm = ThemeManager.getInstance();
@@ -166,6 +224,7 @@ export class CoinCounter {
         this.currentCount = value;
         const tt = TextManager.getInstance();
         this.countText.setText(tt.t('hud.coins', value));
+        this.drawPill();
     }
 
     destroy(): void {

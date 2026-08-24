@@ -5,6 +5,7 @@ import { EventBus, GameEvents } from '../utils/EventBus';
 import { DopamineFX } from '../ui/fx/DopamineFX';
 import { ThemeManager } from '../ui/theme/ThemeManager';
 import { TextManager } from '../systems/TextManager';
+import { StreakManager } from '../systems/StreakManager';
 import type { MathProblem } from '../utils/Types';
 
 /**
@@ -196,8 +197,19 @@ export class MathChallengeScene extends Phaser.Scene {
     }): void => {
         EventBus.emit(GameEvents.MATH_ANSWER_SUBMITTED, result);
 
+        const streaks = StreakManager.getInstance();
+
         if (result.isCorrect) {
             const firstAttempt = this.wrongAttempts === 0;
+            const { streak, crossedTier } = streaks.recordCorrect();
+
+            // Streak 3 and 5 are T2 events: one toast, one colour wash, nothing
+            // stacked. brand/BRAND_SYSTEM.md §10.1 forbids two T2+ inside 600ms,
+            // which is why the tier toast rides the existing celebration rather
+            // than firing its own burst.
+            if (crossedTier !== null) {
+                this.showStreakToast(streak, crossedTier);
+            }
             // Celebration with longer delay for dopamine absorption (1.5s for 6-year-olds)
             this.time.delayedCall(1500, () => {
                 EventBus.emit(GameEvents.MATH_CHALLENGE_COMPLETE, {
@@ -212,6 +224,8 @@ export class MathChallengeScene extends Phaser.Scene {
                 this.closeMathChallenge();
             });
         } else {
+            // Deliberately does NOT clear the streak - a wrong answer pauses it.
+            streaks.recordWrong();
             this.wrongAttempts++;
             if (this.wrongAttempts >= 2) {
                 // Second failure — dismiss the overlay
@@ -231,6 +245,49 @@ export class MathChallengeScene extends Phaser.Scene {
             // First wrong answer: MathBoard handles retry internally (re-enables after 600ms)
         }
     };
+
+    /**
+     * Streak tier toast, in the top-centre band the HUD keeps empty.
+     *
+     * That empty band is exactly what makes this read as an event rather than
+     * as another HUD element. brand/BRAND_SYSTEM.md §8.2.
+     */
+    private showStreakToast(streak: number, multiplier: number): void {
+        const tm = ThemeManager.getInstance();
+        const tt = TextManager.getInstance();
+        const hot = streak >= 5;
+
+        const label = hot
+            ? tt.t('fx.streak_on_fire', multiplier)
+            : tt.t('fx.streak_multiplier', multiplier);
+
+        const toast = this.add.text(GAME_WIDTH / 2, 24, label, {
+            fontSize: hot ? '30px' : '24px',
+            fontFamily: 'monospace',
+            color: tm.getColor(hot ? 'notyet' : 'coin'),
+            stroke: tm.getColor('ink'),
+            strokeThickness: 5,
+        }).setOrigin(0.5, 0).setDepth(520).setScrollFactor(0).setAlpha(0);
+
+        this.tweens.add({
+            targets: toast,
+            y: 40,
+            alpha: 1,
+            duration: 200,
+            ease: 'Back.easeOut',
+            onComplete: () => {
+                this.time.delayedCall(1200, () => {
+                    this.tweens.add({
+                        targets: toast,
+                        y: 16,
+                        alpha: 0,
+                        duration: 200,
+                        onComplete: () => toast.destroy(),
+                    });
+                });
+            },
+        });
+    }
 
     private closeMathChallenge(): void {
         EventBus.off('math-answer-selected', this.onAnswerSelected, this);

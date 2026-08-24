@@ -67,18 +67,33 @@ export class HealthBar {
         // Use a graphics object to create a heart-shaped placeholder texture
         const key = `health_icon_placeholder_${tm.getActiveThemeId()}`;
         if (!this.scene.textures.exists(key)) {
-            const w = 40;
-            const h = 40;
+            const w = 44;
+            const h = 48;
+            // The heart shape, as pixel rows at 2x. Declared once so the ink
+            // outline can be a true dilation of it rather than a guess.
+            const rows: ReadonlyArray<readonly [number, number, number, number]> = [
+                [4, 0, 12, 8], [24, 0, 12, 8], [0, 4, 40, 16],
+                [4, 20, 32, 8], [8, 28, 24, 4], [12, 32, 16, 4], [16, 36, 8, 4],
+            ];
+
             const gfx = this.scene.add.graphics();
-            // Draw a pixel-art heart (2×)
+
+            // Outline: stamp the silhouette at four offsets, which dilates it by
+            // 2px on every side. Stamping a single shifted copy - which the first
+            // build did - leaves a notch on the un-offset corner.
+            // brand/BRAND_SYSTEM.md section 5.3 requires the outline; without it
+            // the hearts disappear on a bright world.
+            gfx.fillStyle(tm.getColorNum('ink'), 1);
+            for (const [dx, dy] of [[-2, 0], [2, 0], [0, -2], [0, 2]]) {
+                for (const [x, y, w2, h2] of rows) {
+                    gfx.fillRect(x + dx + 2, y + dy + 2, w2, h2);
+                }
+            }
+
             gfx.fillStyle(color, 1);
-            gfx.fillRect(4, 0, 12, 8);
-            gfx.fillRect(24, 0, 12, 8);
-            gfx.fillRect(0, 4, 40, 16);
-            gfx.fillRect(4, 20, 32, 8);
-            gfx.fillRect(8, 28, 24, 4);
-            gfx.fillRect(12, 32, 16, 4);
-            gfx.fillRect(16, 36, 8, 4);
+            for (const [x, y, w2, h2] of rows) {
+                gfx.fillRect(x + 2, y + 2, w2, h2);
+            }
             // Highlight on left bump
             gfx.fillStyle(0xffffff, 0.35);
             gfx.fillRect(6, 2, 6, 4);

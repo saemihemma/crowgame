@@ -77,6 +77,35 @@ async function conformance(pngPath, palette) {
     return { sampled, onPalette, share: sampled ? onPalette / sampled : 1 };
 }
 
+/**
+ * Click the correct option until the challenge closes.
+ *
+ * An owl serves more than one problem, so this loops. Returns true if the
+ * overlay closed, meaning the owl was actually rescued and the ring should have
+ * a filled segment.
+ */
+async function answerCorrectly(page, levelKey, maxProblems = 6) {
+    for (let i = 0; i < maxProblems; i++) {
+        const state = await page.evaluate(
+            () => window.__crowMathSmoke?.getMathState?.() ?? null);
+        if (!state) {
+            return true;                       // overlay gone: challenge finished
+        }
+        const right = state.optionCenters?.find(o => o.value === state.correctAnswer);
+        if (!right || !state.canvasRect) {
+            fail(`${levelKey}: no correct option to click`);
+            return false;
+        }
+        const { left, top, width, height } = state.canvasRect;
+        await page.mouse.click(
+            left + (right.x / GAME_WIDTH) * width,
+            top + (right.y / GAME_HEIGHT) * height,
+        );
+        await page.waitForTimeout(1800);       // 700ms choreography + the hold
+    }
+    return false;
+}
+
 // ── page helpers ────────────────────────────────────────────────────────────
 
 const activeScenes = (page) => page.evaluate(() =>
@@ -191,6 +220,19 @@ async function main() {
                     fail(`${level.key}: click did not register as a wrong answer`);
                 }
                 await shot('3-math-wrong');
+
+                // 4. Answer the rest correctly and capture the HUD afterwards.
+                //
+                // Without this the harness only ever sees an empty owl ring and
+                // a zero streak - which is to say, none of the states the HUD
+                // exists to show. An unfilled progress ring proves nothing.
+                const rescued = await answerCorrectly(page, level.key);
+                if (rescued) {
+                    await page.waitForTimeout(900);
+                    await shot('4-owl-saved');
+                } else {
+                    console.log('  note: challenge did not complete, owl state not captured');
+                }
             }
         } else {
             console.log('  note: no owl reachable in this level, board not captured');
