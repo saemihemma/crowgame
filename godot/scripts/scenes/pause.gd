@@ -30,7 +30,13 @@ func _ready() -> void:
 var _theme_btn: Button
 
 func _theme_label() -> String:
-	return TextManager.t("pause.theme", [ThemeManager.get_theme_id()])
+	# The theme id is a data key ("forest"/"scifi"), not something to show a
+	# player -- an Icelandic player was reading "Þema: forest". Render its name
+	# through the bundles, falling back to the id if a theme has no name yet.
+	var id := ThemeManager.get_theme_id()
+	var key := "theme.%s" % id
+	var name := TextManager.t(key) if TextManager.has(key) else id
+	return TextManager.t("pause.theme", [name])
 
 func _toggle_theme() -> void:
 	# Tier-3 demo: hot-swap the skin at runtime; HUD restyles via theme_changed.

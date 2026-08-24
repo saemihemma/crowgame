@@ -7,7 +7,7 @@
   "game.completion_stats": "Uglum bjargað: {0}   Mynt: {1}",
   "hud.coins": "x{0}",
   "hud.coins_label": "Mynt {0}",
-  "hud.coins_milestone": "{0} mynt!",
+  "hud.coins_milestone": "{0} myntir!",
   "hud.coins_plus": "+{0}",
   "hud.level": "Stig {0}",
   "hud.level_up": "Stig {0}!",
@@ -264,5 +264,7 @@
   "math.prompt.word.berries_eat.one": "Þú hefur {a} ber. Þú borðar {b}. Hversu mörg eru eftir?",
   "math.demo_watch": "Fylgstu vel med, eg syni ther!",
   "math.demo_your_turn": "Þú átt leik!",
-  "math.comeback": "Þú lærðir það!"
+  "math.comeback": "Þú lærðir það!",
+  "theme.forest": "Skógur",
+  "theme.scifi": "Framtíð"
 }

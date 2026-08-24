@@ -74,7 +74,15 @@ const BOXES = {
     'pause.title': { size: 32, max: 320, where: 'PauseScene panel 320 wide' },
     'pause.resume': { size: 24, max: 200, where: 'PauseScene button 200x48' },
     'pause.quit': { size: 24, max: 200, where: 'PauseScene button 200x48' },
-    'pause.theme': { size: 24, max: 200, where: 'PauseScene button 200x48' },
+    // Measured with the real theme names rather than the '88' stand-in: the
+    // button renders "Þema: Framtíð", not "Þema: 88", and the placeholder
+    // substitution below would otherwise have reported a comfortable fit for a
+    // string twice that width. Godot draws this at 28px on a 240px button
+    // (pause.gd), which is the tighter of the two, so measure that.
+    'pause.theme': {
+        size: 28, max: 240, where: 'Godot pause theme button 240x64 at 28px',
+        fill: ['theme.forest', 'theme.scifi'],
+    },
     'login.new_user': { size: 26, max: 320, where: 'LoginScene button 320x64' },
     'login.back': { size: 26, max: 200, where: 'LoginScene button 200x52' },
     'login.go': { size: 26, max: 200, where: 'LoginScene button 200x56' },
@@ -94,6 +102,19 @@ const BOXES = {
     'game.play_again': { size: 26, max: 280, where: 'Completion button' },
     'game.back_to_menu': { size: 26, max: 280, where: 'Completion button' },
     'boot.loading': { size: 20, max: 400, where: 'Boot loading bar' },
+    // Filled with a domain NAME, not a number, and centred on a 960 canvas at
+    // 36px -- so "Næsta stig! Samanburður" is the string that has to fit, and the
+    // '88' stand-in said nothing useful about it.
+    'math.step_up': {
+        size: 36, max: 900, where: 'HUDScene celebration banner, centred on a 960 canvas',
+        fill: [
+            'domain.addition', 'domain.subtraction', 'domain.multiplication',
+            'domain.division', 'domain.counting', 'domain.comparison',
+            'domain.pattern_matching', 'domain.number_sequence',
+        ],
+    },
+    // The completion line carries two counters and a translated label.
+    'game.completion_stats': { size: 24, max: 900, where: 'GameScene completion line' },
 };
 
 /**
@@ -251,8 +272,15 @@ for (const [key, box] of Object.entries(BOXES)) {
             continue;
         }
         // Substitute a two-digit stand-in for placeholders; counters rarely
-        // exceed that and it keeps the check deterministic.
-        const rendered = String(value).replace(/\{\d\}/g, '88');
+        // exceed that and it keeps the check deterministic. A box may instead
+        // name the keys that actually fill it (`fill`), in which case the widest
+        // of those is used -- a stand-in is meaningless when the real
+        // substitution is a word.
+        const fillers = box.fill
+            ? box.fill.map(k => bundles[primaryDir][locale][k] ?? k)
+            : ['88'];
+        const widest = fillers.reduce((a, b) => (String(b).length >= String(a).length ? b : a));
+        const rendered = String(value).replace(/\{\d\}/g, String(widest));
         const width = rendered.length * box.size * ADVANCE_RATIO;
         measured++;
         if (width > box.max) {
