@@ -67,5 +67,8 @@
   "level.level_04.name": "Mossy Bridge",
   "level.level_05.name": "Treetop Trail",
   "fx.streak_multiplier": "x{0} COINS!",
-  "fx.streak_on_fire": "ON FIRE! x{0}"
+  "fx.streak_on_fire": "ON FIRE! x{0}",
+  "math.verdict_right": "Yes!",
+  "math.verdict_not_yet": "Not yet, try again",
+  "math.verdict_answer": "The answer was {0}"
 }

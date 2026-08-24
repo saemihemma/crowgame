@@ -67,5 +67,8 @@
   "level.level_04.name": "Mosabrú",
   "level.level_05.name": "Trjátoppaslóð",
   "fx.streak_multiplier": "x{0} MYNT!",
-  "fx.streak_on_fire": "Í BÁLI! x{0}"
+  "fx.streak_on_fire": "Í BÁLI! x{0}",
+  "math.verdict_right": "Já!",
+  "math.verdict_not_yet": "Ekki alveg, reyndu aftur",
+  "math.verdict_answer": "Svarið var {0}"
 }
