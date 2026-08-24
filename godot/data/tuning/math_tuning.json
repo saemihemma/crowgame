@@ -32,6 +32,16 @@
     "retryCoinMultiplier": 1.5
   },
   "trophies": {
-    "tierSteps": [0, 4, 7, 10]
+    "tierSteps": [
+      0,
+      4,
+      7,
+      10
+    ]
+  },
+  "feedback": {
+    "retryLockoutMs": 900,
+    "correctCloseMs": 1500,
+    "revealCloseMs": 3000
   }
 }

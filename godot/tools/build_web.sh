@@ -106,5 +106,14 @@ find "$OUT" -maxdepth 1 -name 'index.*.wasm' -o -maxdepth 1 -name 'index.*.pck' 
 	case "$stale" in *"$(cat "$OUT/build_id.txt" 2>/dev/null)"*) ;; *) rm -f "$stale" ;; esac
 done
 
+# Record what this export was built FROM. `npm run validate` and the godot CI job
+# recompute the same hash and fail if the committed export no longer matches
+# godot/**. Content addressing already busts caches; it does NOT catch staleness,
+# because an export built from old sources still gets a perfectly valid
+# content-addressed name. output/web is what Railway serves and it drifted a whole
+# feature behind once. See tools/godot_export_fingerprint.mjs for why a hash and
+# not a timestamp.
+node "$ROOT/tools/write_export_fingerprint.mjs" "$ROOT"
+
 echo "Web build written to $OUT/"
 echo "Play locally:  (cd $OUT && python3 -m http.server 8060)  then open http://<this-machine-ip>:8060"
