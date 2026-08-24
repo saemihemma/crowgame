@@ -5332,12 +5332,12 @@
   "tilesets": [
     {
       "firstgid": 1,
-      "name": "forest_tiles",
+      "name": "geyserworks_tiles",
       "tilewidth": 32,
       "tileheight": 32,
       "tilecount": 16,
       "columns": 4,
-      "image": "../../assets/tilesets/forest_tiles.png",
+      "image": "../../assets/tilesets/geyserworks_tiles.png",
       "imagewidth": 128,
       "imageheight": 128,
       "tiles": [

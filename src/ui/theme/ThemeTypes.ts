@@ -93,6 +93,35 @@ export interface ThemeDialog {
     nameColor: string;
 }
 
+/** One tile's semantic role within a tileset sheet. */
+export interface TilesetTile {
+    index: number;
+    role: string;
+    collides: boolean;
+}
+
+/**
+ * A live tileset. `key` is the Phaser texture key AND the tileset name compiled
+ * maps refer to - `GameScene.loadTiledLevel()` calls
+ * `map.addTilesetImage(name, name, ...)`, so the two must match.
+ */
+export interface TilesetEntry {
+    key: string;
+    theme: string | null;
+    image: string;
+    source: 'generated' | 'authored';
+    note?: string;
+    tiles: TilesetTile[];
+}
+
+export interface TilesetManifest {
+    tileWidth: number;
+    tileHeight: number;
+    columns: number;
+    rows: number;
+    tilesets: TilesetEntry[];
+}
+
 /** Parallax layer scroll factors and base colours. See brand/BRAND_SYSTEM.md section 5.4. */
 export interface ThemeParallaxLayer {
     scroll: number;

@@ -115,20 +115,38 @@ the correct-answer green in luminance as well as hue, the hardcoded `#ff6666` is
 gone, and red is reserved for health loss. `brand/BRAND_SYSTEM.md` §6.2 and
 `brand/tokens/verify_palettes.py` specify and check this.
 
-### Five levels still share one tileset
-Every level now loads its own world theme, so sky, board, dialogue and FX
-colours differ per world. The ground does not: all six specs still declare
-`"theme": "forest"` and every level renders `level1_tiles.png`.
+### The five tilesets are generated placeholders
+Each world has its own tileset and no two levels share a ground, but the five
+sheets come out of `tools/gen_tilesets.mjs` and none of them is finished art.
+`brand/ASSET_MANIFEST.md` carries the per-world grades (5.5 to 6.5 out of 10),
+what is wrong with each, the geometry contract and the replacement steps.
 
-`tools/level_compiler.ts` derives the tileset name and path from
-`LevelSpec.theme` (`${spec.theme}_tiles`), so `spec.theme` is a tileset selector
-while `level_registry.json.theme` is the UI theme id — two concepts sharing one
-word. Flipping a spec before its tileset exists fails `validate:assets`.
+Redrawing them by hand is the highest-value art work available.
 
-`brand/ASSET_MANIFEST.md` lists the five tilesets as P0 with sizes and paths.
+*Done when:* every entry in `public/data/tilesets/tileset_manifest.json` reads
+`"source": "authored"`, and `tools/gen_tilesets.mjs` can be deleted.
 
-*Done when:* no two levels share a tileset, and `LevelSpec.theme` is renamed to
-something that says "tileset" so the two vocabularies stop colliding.
+### The compiler places three tiles and emits an empty decoration layer
+`tools/level_compiler.ts` only ever writes GIDs 1, 2 and 3 — ground surface,
+ground fill, platform — into the ground layer. Indices 3-15 of every tileset are
+unused, and the `decoration` layer is created full of zeros and never populated.
+
+Two consequences worth fixing together. A platform run is the same tile repeated,
+so a 3-wide ledge has no left or right cap and reads as a slab. And because there
+is one tile per role, tile texture has to stay non-figurative or it tiles into
+wallpaper — which means distinctive marks have nowhere to live.
+
+*Done when:* the compiler selects left/middle/right caps for platform runs, and
+scatters decoration tiles into the layer it already emits.
+
+### `level1_tiles.png` is loaded but never selected
+It is in the tileset manifest and BootScene loads it, but no compiled map names
+it: `GameScene.loadTiledLevel()` resolves a tileset by the name the map carries,
+and every map now names its world tileset. It is 32x64, two tiles, and predates
+the current compiler. `LevelRegistryEntry.tilesetImages` is the same story — the
+field is declared in `src/utils/Types.ts` and read by nothing.
+
+*Done when:* both are removed, or something actually uses them.
 
 ### `level_03` and `level_04` are too small for their worlds
 `level_03` is 7 platforms with no hazards and no enemies; `level_04` is 11

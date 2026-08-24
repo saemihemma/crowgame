@@ -3,19 +3,65 @@
     "title": "LevelSpec",
     "description": "Agent-authored level specification for compilation",
     "type": "object",
-    "required": ["id", "name", "theme", "difficulty", "platforms", "spawns", "exits"],
+    "required": [
+        "id",
+        "name",
+        "theme",
+        "difficulty",
+        "platforms",
+        "spawns",
+        "exits"
+    ],
     "properties": {
-        "id": { "type": "string", "pattern": "^level_\\d+" },
-        "name": { "type": "string", "minLength": 1 },
-        "theme": { "type": "string", "enum": ["forest", "cave", "village", "mountain", "sky", "underwater"] },
-        "difficulty": { "type": "integer", "minimum": 1, "maximum": 10 },
-        "music": { "type": "string" },
+        "id": {
+            "type": "string",
+            "pattern": "^level_\\d+"
+        },
+        "name": {
+            "type": "string",
+            "minLength": 1
+        },
+        "theme": {
+            "description": "World id. Selects the UI theme AND the tileset filename that tools/level_compiler.ts emits (<theme>_tiles.png), so it must match a tileset key in public/data/tilesets/tileset_manifest.json.",
+            "type": "string",
+            "enum": [
+                "emberwood",
+                "prism_hollow",
+                "sugarstorm",
+                "geyserworks",
+                "aurora_spire",
+                "forest"
+            ]
+        },
+        "difficulty": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+        },
+        "music": {
+            "type": "string"
+        },
         "criticalPath": {
             "type": "object",
-            "required": ["length", "motifs"],
+            "required": [
+                "length",
+                "motifs"
+            ],
             "properties": {
-                "length": { "type": "string", "enum": ["short", "medium", "long"] },
-                "motifs": { "type": "array", "items": { "type": "string" } }
+                "length": {
+                    "type": "string",
+                    "enum": [
+                        "short",
+                        "medium",
+                        "long"
+                    ]
+                },
+                "motifs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
             }
         },
         "platforms": {
@@ -23,37 +69,77 @@
             "minItems": 1,
             "items": {
                 "type": "object",
-                "required": ["type", "x", "width", "y"],
+                "required": [
+                    "type",
+                    "x",
+                    "width",
+                    "y"
+                ],
                 "properties": {
-                    "type": { "type": "string", "enum": ["ground", "platform"] },
-                    "x": { "type": "number" },
-                    "width": { "type": "number", "minimum": 1 },
-                    "y": { "type": "number" },
-                    "gap_before": { "type": "number", "minimum": 0 }
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "ground",
+                            "platform"
+                        ]
+                    },
+                    "x": {
+                        "type": "number"
+                    },
+                    "width": {
+                        "type": "number",
+                        "minimum": 1
+                    },
+                    "y": {
+                        "type": "number"
+                    },
+                    "gap_before": {
+                        "type": "number",
+                        "minimum": 0
+                    }
                 }
             }
         },
         "spawns": {
             "type": "object",
-            "required": ["player"],
+            "required": [
+                "player"
+            ],
             "properties": {
                 "player": {
                     "type": "object",
-                    "required": ["x", "y"],
+                    "required": [
+                        "x",
+                        "y"
+                    ],
                     "properties": {
-                        "x": { "type": "number" },
-                        "y": { "type": "number" }
+                        "x": {
+                            "type": "number"
+                        },
+                        "y": {
+                            "type": "number"
+                        }
                     }
                 },
                 "npcs": {
                     "type": "array",
                     "items": {
                         "type": "object",
-                        "required": ["npc_id", "x", "y"],
+                        "required": [
+                            "npc_id",
+                            "x",
+                            "y"
+                        ],
                         "properties": {
-                            "npc_id": { "type": "string" },
-                            "x": { "type": "number" },
-                            "y": { "type": "number" }
+                            "npc_id": {
+                                "type": "string"
+                            },
+                            "x": {
+                                "type": "number"
+                            },
+                            "y": {
+                                "type": "number"
+                            }
                         }
                     }
                 },
@@ -61,11 +147,21 @@
                     "type": "array",
                     "items": {
                         "type": "object",
-                        "required": ["type", "x", "y"],
+                        "required": [
+                            "type",
+                            "x",
+                            "y"
+                        ],
                         "properties": {
-                            "type": { "type": "string" },
-                            "x": { "type": "number" },
-                            "y": { "type": "number" }
+                            "type": {
+                                "type": "string"
+                            },
+                            "x": {
+                                "type": "number"
+                            },
+                            "y": {
+                                "type": "number"
+                            }
                         }
                     }
                 }
@@ -76,21 +172,38 @@
             "minItems": 1,
             "items": {
                 "type": "object",
-                "required": ["x", "y", "target_level"],
+                "required": [
+                    "x",
+                    "y",
+                    "target_level"
+                ],
                 "properties": {
-                    "x": { "type": "number" },
-                    "y": { "type": "number" },
-                    "target_level": { "type": "string" }
+                    "x": {
+                        "type": "number"
+                    },
+                    "y": {
+                        "type": "number"
+                    },
+                    "target_level": {
+                        "type": "string"
+                    }
                 }
             }
         },
         "mathGating": {
             "type": "object",
             "properties": {
-                "skills": { "type": "array", "items": { "type": "string" } },
+                "skills": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "difficultyBand": {
                     "type": "array",
-                    "items": { "type": "integer" },
+                    "items": {
+                        "type": "integer"
+                    },
                     "minItems": 2,
                     "maxItems": 2
                 }

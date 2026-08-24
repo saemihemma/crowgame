@@ -13,9 +13,12 @@ import { TextManager } from '../systems/TextManager';
 import { ProfileManager } from '../systems/ProfileManager';
 import { LearnerStateManager } from '../systems/LearnerStateManager';
 import { LearnerSyncService } from '../systems/LearnerSyncService';
-import type { ThemeDefinition } from '../ui/theme/ThemeTypes';
+import type { ThemeDefinition, TilesetManifest } from '../ui/theme/ThemeTypes';
 import type { LevelRegistry, NPCRegistry, MathProblemPool } from '../utils/Types';
 import type { EnemyRegistry } from '../entities/enemies/Enemy';
+
+/** Cache key for the tileset manifest. */
+const TILESET_MANIFEST_KEY = 'tileset_manifest';
 
 /** Every theme cache key BootScene preloads, in registration order. */
 const THEME_CACHE_KEYS = [
@@ -106,12 +109,19 @@ export class BootScene extends Phaser.Scene {
             frameHeight: 96
         });
 
-        // --- Load tilesets ---
-        this.load.image('forest_tiles', 'assets/tilesets/forest_tiles.png');
-        this.load.image('level1_tiles', 'assets/tilesets/level1_tiles.png');
-
-        // --- Load spike hazard spritesheet ---
-        this.load.image('spike_hazards', 'assets/tilesets/spike_hazards.png');
+        // --- Load tilesets from the manifest ---
+        // Nested load: the handler fires while the loader is still running, so
+        // the images it queues are ready by create(). That matters because
+        // defineSpikeFrames() and the compiled maps both need these textures.
+        //
+        // Adding or reskinning a world is a PNG plus a manifest entry. No code.
+        this.load.once(
+            `filecomplete-json-${TILESET_MANIFEST_KEY}`,
+            (_key: string, _type: string, manifest: TilesetManifest) => {
+                this.queueTilesets(manifest);
+            },
+        );
+        this.load.json(TILESET_MANIFEST_KEY, DATA_PATHS.TILESET_MANIFEST);
 
         // --- Load crow idle sprite (crow1) ---
         // Using fixed 64px crow1 with content at bottom (no padding) - matches walking animation structure
@@ -293,6 +303,27 @@ export class BootScene extends Phaser.Scene {
             this.scene.start(SCENES.MAIN_MENU);
         } else {
             this.scene.start(SCENES.LOGIN);
+        }
+    }
+
+    /**
+     * Queue every tileset image the manifest declares.
+     *
+     * The texture key is the manifest `key`, which is also the tileset name a
+     * compiled map carries: `GameScene.loadTiledLevel()` resolves the tileset by
+     * calling `map.addTilesetImage(name, name, ...)`, so the two cannot drift.
+     */
+    private queueTilesets(manifest: TilesetManifest | undefined): void {
+        if (!manifest?.tilesets?.length) {
+            console.warn('[BootScene] tileset manifest missing or empty; levels will render untextured.');
+            return;
+        }
+
+        for (const entry of manifest.tilesets) {
+            if (this.textures.exists(entry.key)) {
+                continue;
+            }
+            this.load.image(entry.key, entry.image);
         }
     }
 

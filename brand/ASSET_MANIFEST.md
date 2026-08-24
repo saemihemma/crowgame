@@ -71,90 +71,82 @@ it. Screenshots land in `output/playwright/themes/`.
 
 ---
 
-## Priority 0 - the five tilesets
+## Priority 0 - the five tilesets — **DONE, as placeholders**
 
-**This is the whole ballgame.** Every level currently loads
-`assets/tilesets/level1_tiles.png`, so all five worlds share one ground. The
-sky, board, HUD and FX are already themed per world; the tiles are the last
-thing making world 5 look like world 1.
+Five generated tilesets ship at `public/assets/tilesets/<world>_tiles.png`, each
+level points at its own, and no two levels share a ground any more. They are
+**art-directed placeholders, not finished art** - see the honest grades at the
+bottom of this section. Replacing them is the highest-value art work available.
 
-Each tileset is a **`320x320` sheet of 32px tiles, 10 columns x 10 rows**, with
-the first 9 tiles in a fixed order so one compiler mapping serves every world:
+### The real geometry contract
 
-| Index | Tile | Notes |
+An earlier version of this document specified a `320x320` sheet with a 9-tile
+order. **That was wrong.** The truth, read out of `tools/level_compiler.ts`:
+
+| | |
+| --- | --- |
+| Sheet | **`128x128`** - 4 columns x 4 rows, 16 tiles of `32x32` |
+| `firstgid` | 1, so map GID *n* renders tile index *n - 1* |
+| Index **0** | ground surface - the top row of a `ground` platform |
+| Index **1** | ground fill - every row below a ground platform |
+| Index **2** | floating platform - a whole `platform`, one tile tall |
+| Index 3-15 | **never placed.** Reserved |
+
+**Only three tiles are ever used.** Drawing more is wasted effort until the
+compiler learns to place them; it emits an empty `decoration` layer today and
+never populates it (tracked in `roadmap.md`).
+
+Three constraints that follow from this, and they are not stylistic:
+
+- **Index 0 and 2 must tile seamlessly on x**; index 1 must tile on **both**
+  axes. A ground run is one tile repeated across the whole screen.
+- **Index 2 must be opaque for its full 32px.** Tilemap collision is per-tile,
+  so art thinner than the tile leaves invisible collision above the visible ledge.
+- **Texture must be non-figurative on organic materials.** With one tile per
+  role, any recognisable mark becomes wallpaper. Generated passes that put
+  pebbles, branching crystal seams and stone cracks into the field produced,
+  respectively, a printed lattice, small repeating stick figures, and what read
+  as a scattered typeface. Machined materials - a boardwalk, a riveted plate -
+  are the exception: they are supposed to repeat, so an aligned grid reads as
+  architecture. Distinctive one-off marks belong in decoration tiles.
+
+### Replacing one
+
+The PNG is the asset. Nothing about a tileset lives in code.
+
+1. Draw `128x128` with tiles 0, 1 and 2 in the order above.
+2. Save over `public/assets/tilesets/<world>_tiles.png`, and copy to
+   `godot/assets/tilesets/`.
+3. Set `"source": "authored"` for that entry in
+   `public/data/tilesets/tileset_manifest.json`, so the generator stops being
+   treated as its origin.
+4. `npm run validate && npm run dev`, then `npm run themes:screenshots`.
+
+To **add** a world: drop a PNG in, add a manifest entry, add a theme token file,
+give a level spec that `theme`. `BootScene` loads every manifest entry, so there
+is still no code change.
+
+The generator that made the current placeholders is `tools/gen_tilesets.mjs`
+(`node tools/gen_tilesets.mjs`, or `--check` to verify the manifest is current).
+It writes both runtimes. Deleting it once real art lands costs nothing.
+
+### Honest grades
+
+Judged in-game at 1x, not on a magnified contact sheet:
+
+| World | Grade | What is still wrong |
 | --- | --- | --- |
-| 0 | ground top | the lit surface row |
-| 1 | ground fill | interior, repeats vertically |
-| 2 | ground edge left | |
-| 3 | ground edge right | |
-| 4 | platform left cap | |
-| 5 | platform middle | |
-| 6 | platform right cap | |
-| 7 | inner corner | |
-| 8 | decorative wall | non-standable, no flat top |
-| 9-99 | variants and props | pebbles, cracks, seams, moss - free slots |
+| Emberwood | 6.5 / 10 | Best of the five and genuinely playable. Grass reads, soil has depth. Grass green is minty against a warm dawn; soil is busier than it should be at depth |
+| Sugarstorm | 6 / 10 | Reads as a boardwalk on a braced frame. Plank band is thin, X-bracing is too low-contrast at 1x, and the platform is the same material as the ground so the two do not separate |
+| Geyserworks | 6 / 10 | Plate, seam and rivets read as industrial. Fill is near-black, so deep ground is a void; the top band is flat enough to read as concrete rather than metal |
+| Prism Hollow | 5.5 / 10 | Basalt with a bright cyan platform lip. Facet blobs still cluster into a faint recurring motif; the handoff from lit band to dark body is abrupt |
+| Aurora Spire | 5.5 / 10 | Turf edge is the best single detail in the set. The stone is washed out and foggy, and its value range is the narrowest of the five |
 
-### Emberwood - `emberwood_tiles.png`
-
-- **Destination:** `public/assets/tilesets/emberwood_tiles.png`
-- **Also copy to:** `godot/assets/tilesets/emberwood_tiles.png`
-- **Size:** `320x320` (10x10 grid of `32x32`)
-- **Material:** grass over dawn-lit earth
-- **Palette:** lit `#5FB574` / shadow `#6B4A2E` / outline `#1F1A16` / accent `#FFC93C`
-- **Wire in:** `public/data/levels/level_registry.json` -> `level_01.tilesetImages`, and `public/data/levels/specs/level_01_forest.spec.json` -> `theme`
-
-### Prism Hollow - `prism_hollow_tiles.png`
-
-- **Destination:** `public/assets/tilesets/prism_hollow_tiles.png`
-- **Also copy to:** `godot/assets/tilesets/prism_hollow_tiles.png`
-- **Size:** `320x320` (10x10 grid of `32x32`)
-- **Material:** faceted violet basalt with cyan seams
-- **Palette:** lit `#4B3F7A` / shadow `#241D52` / outline `#0A0818` / accent `#4DE3FF`
-- **Wire in:** `public/data/levels/level_registry.json` -> `level_02.tilesetImages`, and `public/data/levels/specs/level_02_cave.spec.json` -> `theme`
-
-### Sugarstorm - `sugarstorm_tiles.png`
-
-- **Destination:** `public/assets/tilesets/sugarstorm_tiles.png`
-- **Also copy to:** `godot/assets/tilesets/sugarstorm_tiles.png`
-- **Size:** `320x320` (10x10 grid of `32x32`)
-- **Material:** candy-striped boardwalk over painted scaffold
-- **Palette:** lit `#FFD9EC` / shadow `#FF7EC0` / outline `#1A0E2E` / accent `#FFE14D`
-- **Wire in:** `public/data/levels/level_registry.json` -> `level_03.tilesetImages`, and `public/data/levels/specs/level_03_meadow.spec.json` -> `theme`
-
-### Geyserworks - `geyserworks_tiles.png`
-
-- **Destination:** `public/assets/tilesets/geyserworks_tiles.png`
-- **Also copy to:** `godot/assets/tilesets/geyserworks_tiles.png`
-- **Size:** `320x320` (10x10 grid of `32x32`)
-- **Material:** riveted iron plate over hexagonal basalt
-- **Palette:** lit `#4A3A32` / shadow `#2A2B33` / outline `#160F12` / accent `#FFA22B`
-- **Wire in:** `public/data/levels/level_registry.json` -> `level_04.tilesetImages`, and `public/data/levels/specs/level_04_bridge.spec.json` -> `theme`
-
-### Aurora Spire - `aurora_spire_tiles.png`
-
-- **Destination:** `public/assets/tilesets/aurora_spire_tiles.png`
-- **Also copy to:** `godot/assets/tilesets/aurora_spire_tiles.png`
-- **Size:** `320x320` (10x10 grid of `32x32`)
-- **Material:** pale weathered stone with grass on top
-- **Palette:** lit `#C9D6E8` / shadow `#6E82A6` / outline `#0A0C1E` / accent `#7CF5C4`
-- **Wire in:** `public/data/levels/level_registry.json` -> `level_05.tilesetImages`, and `public/data/levels/specs/level_05_treetop.spec.json` -> `theme`
-
-**One blocker to know about before you start.** `tools/level_compiler.ts` derives
-the tileset name and path from `LevelSpec.theme`:
-
-```
-name:  `${spec.theme}_tiles`
-image: `../../assets/tilesets/${spec.theme}_tiles.png`
-```
-
-So `spec.theme` is a *tileset selector*, not a UI theme - which is why all six
-specs still say `forest` even though the registry now names a world theme per
-level. Changing a spec's `theme` before its tileset exists makes
-`npm run validate:assets` fail on a missing file. **Land the tileset first, then
-flip the spec, then `npm run compile`.** Renaming `LevelSpec.theme` to `tileset`
-so the two concepts stop sharing a word is tracked in `roadmap.md`.
-
----
+**None of these is finished art.** Procedural generation is the right tool for
+proving the geometry contract, giving each world a distinct value structure and
+hue, and unblocking the game - and the wrong tool for finished pixel art. A
+competent tile artist beats every one of these in an afternoon. What they will
+not have to do is guess at the contract, the seams, or the palette.
 
 ## Priority 1 - parallax
 
@@ -308,13 +300,13 @@ Worth stating, so nobody generates something that is already handled:
 
 | Priority | Files | What it buys |
 | --- | --- | --- |
-| P0 tilesets | 5 | five worlds stop sharing one ground |
+| ~~P0 tilesets~~ | ~~5~~ | **done as placeholders** - five worlds no longer share one ground. Redrawing them by hand is still the highest-value art job on the list |
 | P1 parallax | 15 | depth and scale |
 | P2 enemies | 4 new + 1 retint | escalation becomes visible |
 | P3 loop objects | 19 | the moment-to-moment loop gets world identity |
 | P4 themed UI | 45 | replaces placeholders; safe one at a time |
 | P5 hero | 8 | the animation set and the scarf |
 
-**91 files.** P0 alone is five files and closes the largest visual gap in the
-build. Nothing in P1-P5 blocks anything else, so they can land in any order,
-one file per pull request, with `npm run themes:screenshots` as the gate.
+**91 files, of which 5 are placed and 86 remain.** Nothing in P1-P5 blocks
+anything else, so they can land in any order, one file per pull request, with
+`npm run themes:screenshots` as the gate.

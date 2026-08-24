@@ -1,6 +1,6 @@
 {
     "name": "crow-platformer",
-    "description": "A 2D pixel art educational platformer featuring Hörmann, a crow protagonist.",
+    "description": "A 2D pixel art educational platformer featuring H\u00f6rmann, a crow protagonist.",
     "version": "0.1.0",
     "private": true,
     "scripts": {
@@ -10,6 +10,8 @@
         "validate:docs": "node tools/validate_docs.js",
         "validate:assets": "node tools/validate_assets.js",
         "compile": "tsx tools/compile-levels.ts",
+        "tilesets": "node tools/gen_tilesets.mjs",
+        "tilesets:check": "node tools/gen_tilesets.mjs --check",
         "math:materialize": "tsx tools/materialize_math_batches.ts",
         "math:review": "tsx tools/review_math_batches.ts",
         "math:browser-smoke": "node tools/math_browser_smoke.mjs",

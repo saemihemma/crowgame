@@ -15,6 +15,7 @@ const colors = {
 const ROOT = path.join(__dirname, '..');
 const BOOT_SCENE_PATH = path.join(ROOT, 'src', 'scenes', 'BootScene.ts');
 const AUDIO_MANIFEST_PATH = path.join(ROOT, 'public', 'data', 'audio', 'audio_manifest.json');
+const TILESET_MANIFEST_PATH = path.join(ROOT, 'public', 'data', 'tilesets', 'tileset_manifest.json');
 const COMPILED_LEVELS_DIR = path.join(ROOT, 'public', 'data', 'levels', 'compiled');
 const LIVE_ASSET_ROOT = path.join(ROOT, 'public', 'assets');
 
@@ -142,6 +143,20 @@ function extractManifestAudioAssets() {
     };
 }
 
+function extractManifestTilesetAssets() {
+    if (!fs.existsSync(TILESET_MANIFEST_PATH)) {
+        return [];
+    }
+
+    const manifest = loadJson(TILESET_MANIFEST_PATH);
+    const images = (manifest.tilesets || [])
+        .map(entry => entry.image)
+        .filter(Boolean)
+        .map(normalizeToPublicPath);
+
+    return [...new Set(images)].sort();
+}
+
 function extractCompiledLevelAssets() {
     const referenced = new Set();
 
@@ -200,11 +215,13 @@ function main() {
 
     const bootVisuals = extractBootVisualAssets();
     const audioAssets = extractManifestAudioAssets();
+    const manifestTilesets = extractManifestTilesetAssets();
     const compiledLevelAssets = extractCompiledLevelAssets();
     const referencedAssets = [
         ...audioAssets.sfx,
         ...audioAssets.music,
         ...bootVisuals,
+        ...manifestTilesets,
         ...compiledLevelAssets,
     ];
     const uniqueReferencedAssets = [...new Set(referencedAssets)].sort();
@@ -212,11 +229,13 @@ function main() {
 
     console.log(`\n${colors.green}OK${colors.reset} audio_manifest.json loaded`);
     console.log(`${colors.green}OK${colors.reset} BootScene asset paths extracted from source`);
+    console.log(`${colors.green}OK${colors.reset} tileset_manifest.json loaded`);
     console.log(`${colors.green}OK${colors.reset} compiled level tileset image paths extracted from JSON`);
 
     printGroup('Sound Effects', audioAssets.sfx, missingAssets);
     printGroup('Music Tracks', audioAssets.music, missingAssets);
     printGroup('BootScene Visual Assets', bootVisuals, missingAssets);
+    printGroup('Manifest Tilesets', manifestTilesets, missingAssets);
     printGroup('Compiled Level Tileset Assets', compiledLevelAssets, missingAssets);
 
     const suspiciousAssets = findSuspiciousUnreferencedAssets(uniqueReferencedAssets);

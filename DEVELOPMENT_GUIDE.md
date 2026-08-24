@@ -24,6 +24,7 @@ npm.cmd run math:review
 npm.cmd run math:browser-smoke
 npm.cmd run themes:screenshots
 npm.cmd run i18n:screenshots
+npm.cmd run tilesets
 ```
 
 Both screenshot harnesses need a dev server already running and a browser on
@@ -92,6 +93,10 @@ Visual, theme, or art changes:
   `brand/LEVEL_ART_BIBLE.md`; what to generate and where it goes in
   `brand/ASSET_MANIFEST.md`
 - after a palette edit, run `python3 brand/tokens/verify_palettes.py`
+- tilesets are declared in `public/data/tilesets/tileset_manifest.json` and
+  loaded from it, so adding or replacing one needs no code. The five world
+  sheets are generated placeholders: `npm.cmd run tilesets` rebuilds them and
+  `npm.cmd run tilesets:check` fails if the manifest is stale
 
 Math changes:
 - trigger a math challenge

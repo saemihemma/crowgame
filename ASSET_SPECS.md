@@ -12,16 +12,34 @@ This document explains the live asset surface and the difference between runtime
 
 Boot-time asset loading in [src/scenes/BootScene.ts](./src/scenes/BootScene.ts) currently expects:
 
-Sprites and images:
+Sprites and images (tilesets now come from the manifest below, not from
+hardcoded `BootScene` paths):
 - `assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png`
 - `assets/sprites/characters/crow2/crow3/crow-walk-64px-fixed.png`
 - `assets/sprites/characters/npcs/owl.png`
 - `assets/sprites/characters/npcs/cockroach.png`
 - `assets/sprites/ui/coin/coinsprite.png`
 - `assets/sprites/objects/door/door-36.png`
-- `assets/tilesets/forest_tiles.png`
-- `assets/tilesets/level1_tiles.png`
-- `assets/tilesets/spike_hazards.png`
+
+
+Tilesets are no longer listed here. They are declared in the tileset manifest and
+loaded from it.
+
+Tileset manifest:
+- [public/data/tilesets/tileset_manifest.json](./public/data/tilesets/tileset_manifest.json) is the live tileset manifest
+- `BootScene` loads every entry it lists, via a nested load during `preload`, so
+  a tileset needs no code to be added, replaced or removed
+- the manifest `key` is both the Phaser texture key and the tileset name a
+  compiled map carries; `GameScene.loadTiledLevel()` resolves the two by calling
+  `map.addTilesetImage(name, name, ...)`, so they cannot drift apart
+- geometry is fixed by `tools/level_compiler.ts`: a `128x128` sheet of `32x32`
+  tiles, of which only indices 0, 1 and 2 are ever placed
+- entries marked `"source": "generated"` come from `tools/gen_tilesets.mjs`;
+  `node tools/gen_tilesets.mjs --check` fails if the manifest is stale
+- replacing a generated tileset with real art: overwrite the PNG, copy it to
+  `godot/assets/tilesets/`, and flip that entry to `"source": "authored"`
+- full instructions and the per-world quality grades are in
+  [brand/ASSET_MANIFEST.md](./brand/ASSET_MANIFEST.md)
 
 Audio manifest:
 - [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) is the live audio manifest
@@ -72,6 +90,7 @@ npm.cmd run dev
 
 `validate:assets` verifies:
 - the current audio manifest entries
+- the tileset manifest entries
 - BootScene visual assets extracted from source
 - compiled level tileset image references
 - suspicious unreferenced leftovers that should be archived instead of staying live
