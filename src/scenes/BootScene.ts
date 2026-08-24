@@ -245,6 +245,8 @@ export class BootScene extends Phaser.Scene {
         const initAudioAndStart = () => {
             if (audioManifest) {
                 AudioManager.getInstance().init(this, audioManifest);
+                // Restore the player's sound choice before anything can play.
+                AudioManager.getInstance().loadMutePreference();
             } else {
                 console.warn('[BootScene] Audio manifest not found, running in silent mode');
                 AudioManager.getInstance().setSilentMode(true);

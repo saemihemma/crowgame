@@ -182,6 +182,26 @@ at the baseline but keeps working for any NPC that raises the count.
 band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
 the rotation for older kids, or park them explicitly in Settled.
 
+### Nothing ever chooses a theme
+`ThemeManager`'s own docstring says "Each world/level can specify a theme", and
+that was never wired. Boot sets `forest` and nothing else ever calls `setTheme`
+— the only other caller was a toggle in the Pause menu, which has been removed
+because a theme is a property of a place, not a setting. So `theme_scifi.json`
+ships and is unreachable in both ports.
+
+*Done when:* either level specs carry a `theme` that the level loader applies (the
+intended design, and the reason the sci-fi art exists), or `theme_scifi.json` and
+the second-theme support come out together.
+
+### A sound setting exists but a volume one does not
+Pause offers sound on/off, which is what a parent in a waiting room reaches for.
+The underlying API in both ports has separate master, music and SFX volumes and
+nothing exposes them, so "quieter" is not reachable — only "silent".
+
+*Done when:* someone decides whether a child's game needs more than a mute. If it
+does, note the Pause panel is sized for four rows and a slider is a different
+control from a button.
+
 ### The trophy shelf has no heading
 `trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with
 the shelf but nothing ever drew it — the new dead-key guard caught it on its

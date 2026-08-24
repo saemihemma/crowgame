@@ -25,14 +25,14 @@ func _ready() -> void:
 	col.add_child(title)
 	_title = title
 	_resume_btn = _button(col, TextManager.t("pause.resume"), _resume)
-	_theme_btn = _button(col, _theme_label(), _toggle_theme)
+	_sound_btn = _button(col, _sound_label(), _toggle_sound)
 	_language_btn = _button(col, TextManager.endonym(TextManager.get_locale()), _cycle_locale)
 	_add_flag(_language_btn)
 	_quit_btn = _button(col, TextManager.t("pause.quit"), _quit)
 
 var _title: Label
 var _resume_btn: Button
-var _theme_btn: Button
+var _sound_btn: Button
 var _language_btn: Button
 var _quit_btn: Button
 var _language_flag: FlagIcon
@@ -82,28 +82,38 @@ func _cycle_locale() -> void:
 		_resume_btn.text = TextManager.t("pause.resume")
 	if is_instance_valid(_quit_btn):
 		_quit_btn.text = TextManager.t("pause.quit")
-	if is_instance_valid(_theme_btn):
-		_theme_btn.text = _theme_label()
+	if is_instance_valid(_sound_btn):
+		_sound_btn.text = _sound_label()
 	if is_instance_valid(_language_btn):
 		_language_btn.text = TextManager.endonym(next)
 	if is_instance_valid(_language_flag):
 		_language_flag.locale = next
 		_language_flag.queue_redraw()
 
-func _theme_label() -> String:
-	# The theme id is a data key ("forest"/"scifi"), not something to show a
-	# player -- an Icelandic player was reading "Þema: forest". Render its name
-	# through the bundles, falling back to the id if a theme has no name yet.
-	var id := ThemeManager.get_theme_id()
-	var key := "theme.%s" % id
-	var name := TextManager.t(key) if TextManager.has(key) else id
-	return TextManager.t("pause.theme", [name])
+## "Sound: On" / "Hljóð: Slökkt".
+##
+## This row replaced a theme switcher. A theme is not a setting -- it is a
+## property of a place, and ThemeManager's own docstring says so ("Each
+## world/level can specify a theme"). Nothing ever chose one: Boot set `forest`
+## and the only other caller was this toggle, which made it a control standing in
+## for an unbuilt feature. Sound is a setting a parent in a waiting room actually
+## reaches for. Mirrors PauseScene.soundLabel() in the web build.
+func _sound_label() -> String:
+	var key := "sound.off" if AudioManager.is_muted() else "sound.on"
+	return TextManager.t("pause.sound", [TextManager.t(key)])
 
-func _toggle_theme() -> void:
-	# Hot-swap the skin at runtime; the HUD restyles via theme_changed.
-	ThemeManager.set_theme("scifi" if ThemeManager.get_theme_id() == "forest" else "forest")
-	if is_instance_valid(_theme_btn):
-		_theme_btn.text = _theme_label()
+
+func _toggle_sound() -> void:
+	var now_muted := not AudioManager.is_muted()
+	# Play the click BEFORE muting, so turning sound off still acknowledges the
+	# tap; turning it back on is acknowledged by the click after.
+	if now_muted:
+		AudioManager.play_sfx("ui_click")
+	AudioManager.set_muted(now_muted)
+	if not now_muted:
+		AudioManager.play_sfx("ui_click")
+	if is_instance_valid(_sound_btn):
+		_sound_btn.text = _sound_label()
 
 func _button(parent: Node, text: String, cb: Callable) -> Button:
 	var b := Button.new()

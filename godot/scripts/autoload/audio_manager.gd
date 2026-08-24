@@ -16,6 +16,7 @@ func _ready() -> void:
 	_music_player = AudioStreamPlayer.new()
 	_music_player.bus = "Master"
 	add_child(_music_player)
+	_load_mute_preference()
 	init(DataManager.get_dict("AUDIO_MANIFEST"))
 
 func init(manifest: Dictionary) -> void:
@@ -29,7 +30,7 @@ func play_event(event: String) -> void:
 		play_sfx(key)
 
 func play_sfx(key: String, _volume_override: float = -1.0) -> void:
-	if _silent:
+	if _silent or _muted:
 		return
 	var def: Dictionary = _manifest.get("sfx", {}).get(key, {})
 	var stream := _load_stream(String(def.get("file", "")))
@@ -43,7 +44,7 @@ func play_sfx(key: String, _volume_override: float = -1.0) -> void:
 	p.play()
 
 func play_music(key: String, _crossfade_ms: float = 500.0) -> void:
-	if _silent:
+	if _silent or _muted:
 		return
 	if key == _current_music_key and _music_player.playing:
 		return
@@ -61,6 +62,39 @@ func play_music(key: String, _crossfade_ms: float = 500.0) -> void:
 func stop_music(_fade_ms: float = 500.0) -> void:
 	_music_player.stop()
 	_current_music_key = ""
+
+## Mute or unmute everything, and remember the choice.
+##
+## The volume API below has existed since the audio system was written and
+## nothing has ever called it -- there was no way for a player to turn the sound
+## down. A game a child plays in a car, a waiting room or a classroom needs one,
+## and it has to survive a reload, so the choice is persisted beside crow_locale.
+##
+## Mute is a separate flag rather than "master volume 0" so unmuting restores
+## whatever the volume was. Mirrors AudioManager.setMuted() in the web build.
+const MUTE_KEY := "crow_sound_muted"
+
+var _muted := false
+
+
+func set_muted(muted: bool) -> void:
+	_muted = muted
+	# "1"/"0" rather than a bool: Persistence mirrors localStorage and stores
+	# strings, and the web port writes the same two values under the same key.
+	Persistence.set_item(MUTE_KEY, "1" if muted else "0")
+	if muted and is_instance_valid(_music_player):
+		_music_player.stop()
+		_current_music_key = ""
+
+
+func is_muted() -> bool:
+	return _muted
+
+
+## Restore the stored choice. Called from _ready so nothing can play before it.
+func _load_mute_preference() -> void:
+	_muted = String(Persistence.get_item(MUTE_KEY)) == "1"
+
 
 func set_master_volume(v: float) -> void:
 	_master_volume = clampf(v, 0.0, 1.0)

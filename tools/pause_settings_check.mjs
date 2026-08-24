@@ -134,8 +134,11 @@ try {
     await writeFile(join(OUT, 'screen-en.json'), `${JSON.stringify(pauseEn, null, 2)}\n`);
     await page.locator('canvas').screenshot({ path: join(OUT, '01-pause-en.png') });
 
-    if (flat(pauseEn).some(t => /^Theme:/.test(t))) ok('Pause offers the theme row');
-    else fail('Pause has no theme row, so the two ports still disagree about what Pause offers');
+    if (flat(pauseEn).some(t => /^Sound:/.test(t))) ok('Pause offers the sound row');
+    else fail('Pause has no sound row — there is no way for a player to turn the sound off');
+    if (flat(pauseEn).some(t => /^Theme:/.test(t))) {
+        fail('Pause still offers a theme row — a theme is a property of a place, not a setting');
+    }
     if (flat(pauseEn).includes('English')) ok('Pause offers the language row');
     else fail('Pause has no language row');
 
@@ -169,14 +172,33 @@ try {
     if (sceneIdAfter === sceneIdBefore) ok('GameScene was never restarted — the switch happened in place');
     else fail('GameScene restarted during the language switch, throwing the level away underneath the player');
 
-    // ── and the theme path, triggered at runtime for the first time ──────────
+    // ── and the sound toggle, which has to actually mute and to persist ─────
+    const mutedBefore = await page.evaluate(() => localStorage.getItem('crow_sound_muted'));
     await page.mouse.click(480, 266);
     await page.waitForTimeout(1200);
-    await page.locator('canvas').screenshot({ path: join(OUT, '03-theme-switched.png') });
-    const themedScreen = await readScreen();
-    const themeRow = flat(themedScreen).find(t => /^(Theme|Þema):/.test(t));
-    if (themeRow) ok(`theme row now reads ${JSON.stringify(themeRow)}`);
-    else fail('the theme row vanished after switching theme');
+    await page.locator('canvas').screenshot({ path: join(OUT, '03-sound-off.png') });
+
+    const soundRow = flat(await readScreen()).find(t => /^(Sound|Hljóð):/.test(t));
+    if (soundRow) ok(`sound row now reads ${JSON.stringify(soundRow)}`);
+    else fail('the sound row vanished after toggling it');
+
+    const mutedAfter = await page.evaluate(() => localStorage.getItem('crow_sound_muted'));
+    if (mutedAfter === '1' && mutedAfter !== mutedBefore) {
+        ok('the sound toggle muted the game and persisted the choice');
+    } else {
+        fail(`the sound toggle left crow_sound_muted at ${JSON.stringify(mutedAfter)} `
+            + '— a muted game that unmutes on reload is not a setting');
+    }
+
+    // Prove it reaches the audio system, not just storage.
+    const audioMuted = await page.evaluate(() => {
+        const smoke = window.__crowMathSmoke;
+        return smoke?.isAudioMuted?.() ?? null;
+    });
+    if (audioMuted === true) ok('the audio system itself reports muted');
+    else if (audioMuted === null) fail('no way to read the audio system\'s mute state — the '
+        + 'storage assertion above could pass while the game keeps playing sound');
+    else fail('storage says muted but the audio system does not');
 
     if (errors.length === 0) ok('no console or page errors across both switches');
     else fail(`${errors.length} error(s): ${errors.slice(0, 3).join(' | ')}`);

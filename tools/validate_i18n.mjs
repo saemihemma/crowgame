@@ -74,14 +74,14 @@ const BOXES = {
     'pause.title': { size: 32, max: 320, where: 'PauseScene panel 320 wide' },
     'pause.resume': { size: 24, max: 200, where: 'PauseScene button 200x48' },
     'pause.quit': { size: 24, max: 200, where: 'PauseScene button 200x48' },
-    // Measured with the real theme names rather than the '88' stand-in: the
-    // button renders "Þema: Framtíð", not "Þema: 88", and the placeholder
-    // substitution below would otherwise have reported a comfortable fit for a
-    // string twice that width. Godot draws this at 28px on a 240px button
-    // (pause.gd), which is the tighter of the two, so measure that.
-    'pause.theme': {
-        size: 28, max: 240, where: 'Godot pause theme button 240x64 at 28px',
-        fill: ['theme.forest', 'theme.scifi'],
+    // Measured with the real state words rather than the '88' stand-in: the
+    // button renders "Hljóð: Slökkt", not "Hljóð: 88", and the placeholder
+    // substitution below would otherwise report a comfortable fit for a string
+    // twice that width. Godot draws this at 28px on a 240px button (pause.gd),
+    // which is the tighter of the two, so measure that.
+    'pause.sound': {
+        size: 28, max: 240, where: 'Godot pause sound button 240x64 at 28px',
+        fill: ['sound.on', 'sound.off'],
     },
     'login.new_user': { size: 26, max: 320, where: 'LoginScene button 320x64' },
     'login.back': { size: 26, max: 200, where: 'LoginScene button 200x52' },

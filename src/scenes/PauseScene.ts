@@ -5,6 +5,7 @@ import { DopamineFX } from '../ui/fx/DopamineFX';
 import { UINavigator } from '../ui/UINavigator';
 import { TextManager, LOCALE_ENDONYMS, type Locale } from '../systems/TextManager';
 import { drawFlag } from '../ui/components/FlagIcon';
+import { AudioManager } from '../systems/AudioManager';
 
 /**
  * Pause overlay scene.
@@ -15,7 +16,7 @@ export class PauseScene extends Phaser.Scene {
     private titleText!: Phaser.GameObjects.Text;
     private resumeButton?: { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone };
     private quitButton?: { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone };
-    private themeButton?: { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone };
+    private soundButton?: { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone };
     private languageButton?: { text: Phaser.GameObjects.Text; zone: Phaser.GameObjects.Zone };
     private languageFlag?: Phaser.GameObjects.Graphics;
     private languageRowY = 0;
@@ -69,7 +70,7 @@ export class PauseScene extends Phaser.Scene {
         const ROW_Y = [-60, -4, 52, 108];
 
         const resume = this.createButton(0, ROW_Y[0], tt.t('pause.resume'), () => this.resume());
-        this.themeButton = this.createButton(0, ROW_Y[1], this.themeLabel(), () => this.cycleTheme());
+        this.soundButton = this.createButton(0, ROW_Y[1], this.soundLabel(), () => this.toggleSound());
         const language = this.createButton(0, ROW_Y[2], '', () => this.cycleLocale());
         const quit = this.createButton(0, ROW_Y[3], tt.t('pause.quit'), () => this.quitToMenu());
 
@@ -84,11 +85,11 @@ export class PauseScene extends Phaser.Scene {
         const nav = new UINavigator(this, 'vertical');
         const actions = [
             () => this.resume(),
-            () => this.cycleTheme(),
+            () => this.toggleSound(),
             () => this.cycleLocale(),
             () => this.quitToMenu(),
         ];
-        const zones = [resume.zone, this.themeButton.zone, language.zone, quit.zone];
+        const zones = [resume.zone, this.soundButton.zone, language.zone, quit.zone];
         actions.forEach((onActivate, i) => {
             nav.addButton({ x: cx, y: cy + ROW_Y[i], width: 200, height: 48, onActivate });
             zones[i].on('pointerover', () => nav.setFocus(i));
@@ -129,12 +130,20 @@ export class PauseScene extends Phaser.Scene {
         return { text, zone };
     }
 
-    /** "Theme: Skógur" -- the name, never the raw `forest`/`scifi` data key. */
-    private themeLabel(): string {
+    /**
+     * "Sound: On" / "Hljóð: Slökkt".
+     *
+     * This row replaced a theme switcher. A theme is not a setting -- it is a
+     * property of a place, and ThemeManager's own docstring says so ("Each
+     * world/level can specify a theme"). Nothing ever chose one: Boot set
+     * `forest` and the only other caller was the Pause toggle itself, which made
+     * it a control standing in for an unbuilt feature. Sound is a setting a
+     * parent in a waiting room actually reaches for.
+     */
+    private soundLabel(): string {
         const tt = TextManager.getInstance();
-        const id = ThemeManager.getInstance().getActiveThemeId();
-        const key = `theme.${id}`;
-        return tt.t('pause.theme', tt.has(key) ? tt.t(key) : id);
+        const muted = AudioManager.getInstance().isMuted();
+        return tt.t('pause.sound', tt.t(muted ? 'sound.off' : 'sound.on'));
     }
 
     /**
@@ -162,13 +171,15 @@ export class PauseScene extends Phaser.Scene {
         drawFlag(this.languageFlag, locale, -totalW / 2, y - FLAG_H / 2, FLAG_W, FLAG_H);
     }
 
-    private cycleTheme(): void {
-        const tm = ThemeManager.getInstance();
-        const ids = tm.getThemeIds();
-        if (ids.length < 2) return;
-        const next = ids[(ids.indexOf(tm.getActiveThemeId()) + 1) % ids.length];
-        tm.setTheme(next);
-        this.themeButton?.text.setText(this.themeLabel());
+    private toggleSound(): void {
+        const audio = AudioManager.getInstance();
+        const nowMuted = !audio.isMuted();
+        // Play the click BEFORE muting, so turning sound off still acknowledges
+        // the tap; turning it back on is acknowledged by the click after.
+        if (nowMuted) audio.playSFX('ui_click');
+        audio.setMuted(nowMuted);
+        if (!nowMuted) audio.playSFX('ui_click');
+        this.soundButton?.text.setText(this.soundLabel());
     }
 
     /**
@@ -188,7 +199,7 @@ export class PauseScene extends Phaser.Scene {
         this.titleText?.setText(tt.t('pause.title'));
         this.resumeButton?.text.setText(tt.t('pause.resume'));
         this.quitButton?.text.setText(tt.t('pause.quit'));
-        this.themeButton?.text.setText(this.themeLabel());
+        this.soundButton?.text.setText(this.soundLabel());
         this.paintLanguageRow(this.languageRowY);
     }
 
