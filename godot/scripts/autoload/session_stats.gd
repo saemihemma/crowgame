@@ -1,5 +1,6 @@
 extends Node
-## SessionStats — Godot port of src/systems/SessionStats.ts. Autoload.
+## SessionStats — ported from the retired Phaser build; this is now the only
+## implementation. Autoload.
 ##
 ## Counts the good things that happened during a play session (from leaving
 ## the menu until coming back) so the main menu can greet the child with a

@@ -18,9 +18,6 @@ most common way to waste an afternoon:
 - **`math-kernel/**`** — the TypeScript reference implementation of the learner
   maths. Never ships. It generates the golden fixtures the game is tested against.
 - **`tools/**`** — offline curriculum authoring and validation. Never ships.
-- **`src/`, `public/`, `vite/`, `admin.html`** — **dead.** The retired Phaser
-  original, pending deletion. If a search brings you here, you are in the wrong
-  place.
 
 [ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md) is the map, and the only place
 mutable counts live.
