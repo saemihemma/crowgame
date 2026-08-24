@@ -8,6 +8,7 @@ Last verified against code: 2026-08-24
 | --- | --- |
 | [BRAND_SYSTEM.md](./BRAND_SYSTEM.md) | **The canonical brand file.** Positioning, hero and enemy design law, voice, colour architecture, typography, the HUD and maths-board specs, motion grammar, the dopamine economy, audio, accessibility |
 | [LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md) | The five worlds — palettes, tilesets, props, objects, enemies, gimmicks, music and level-design notes |
+| [PRODUCTION_PLAN.md](./PRODUCTION_PLAN.md) | The road to ship: the bar in numbers, where the build actually is against it, the concept-then-measure loop, and the phase order |
 | [ASSET_MANIFEST.md](./ASSET_MANIFEST.md) | The production list: every art asset still to generate, its exact pixel size, its destination path, and what to wire it into |
 | [tokens/](./tokens/) | Five `ThemeDefinition` JSON files, one per world, plus `verify_palettes.py` |
 

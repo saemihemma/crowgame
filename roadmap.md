@@ -42,6 +42,45 @@ there.
 
 ## P1 — Correctness and reachability
 
+### The game letterboxes away most of a tablet screen
+`src/main.ts` runs a fixed 960x540 canvas on `Phaser.Scale.FIT`. Held the way
+children actually hold a tablet, that wastes **61% of an iPad screen in portrait**
+and **74% of an iPhone**; landscape wastes 18-19%. Measured against real device
+viewports, not estimated.
+
+This is the largest single problem in the build and it is architectural: no
+amount of art, HUD or juice survives three-fifths of the screen being black.
+`brand/PRODUCTION_PLAN.md` Phase 1 owns it, and the answer is a design decision
+(what the extra vertical space contains) rather than a scale-mode flag.
+
+*Done when:* letterbox is under 8% on iPad and iPhone in whichever orientations
+ship.
+
+### Touch controls have never been designed
+`src/ui/TouchControls.ts` places five 88px squares labelled `<`, `>`, `JUMP`,
+`ZAP` and `PECK` at 16px padding — inside the 32px touch safe area
+`brand/BRAND_SYSTEM.md` §8.1 requires. Three of the five are labelled with words,
+for a player who is still learning to read, against a brand rule (§12) that
+icons must carry every essential meaning. Two use text glyphs as UI primitives,
+which the Settled section of this file records as a past source of bugs. There
+are no haptics, no gestures, no pressed state a child can see past their own
+thumb, and the positions are computed from a fixed 960x540.
+
+*Done when:* the control scheme has been through the concept-then-measure loop
+and passes B3, B4 and B10 in `brand/PRODUCTION_PLAN.md`.
+
+### The screenshot harness has never opened a device viewport
+`tools/theme_screenshots.mjs` runs one desktop viewport with mouse input. The
+primary device is a tablet, so every judgement made from it so far has been made
+on the wrong screen. It also never opens login, menu, level select, pause or the
+completion screen, and never measures touch-target size, safe-area clearance,
+reach or frame budget.
+
+*Done when:* the harness reports pass/fail for the B1-B10 gates in
+`brand/PRODUCTION_PLAN.md` across iPad and iPhone profiles in both orientations.
+
+
+
 ### The web build has no CI
 `.github/workflows/ci.yml` runs the Godot suite only, and its path filter is
 `godot/**`. Nothing guards the web build on a pull request: `npm run validate`
