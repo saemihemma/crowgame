@@ -665,6 +665,7 @@
         }
 
         const firstTry = attempts.filter(function (a) { return a.correct && a.firstAttempt; }).length;
+        const goldenHits = attempts.filter(function (a) { return a.golden === true; }).length;
         const accuracy = firstTry / attempts.length;
         const avgSeconds = attempts.reduce(function (sum, a) { return sum + (a.responseMs || 0); }, 0) / attempts.length / 1000;
         const laneCounts = {};
@@ -681,6 +682,9 @@
         card.appendChild(createMetric("Session accuracy", describeAccuracy(accuracy)));
         card.appendChild(createMetric("Avg time to answer", avgSeconds.toFixed(1) + " s"));
         card.appendChild(createMetric("Lane mix", laneText));
+        if (goldenHits > 0) {
+            card.appendChild(createMetric("Golden problems", goldenHits + " served"));
+        }
     }
 
     function renderLearnerSummary() {

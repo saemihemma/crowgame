@@ -100,6 +100,7 @@ func _build_attempt(data: Dictionary) -> Dictionary:
 		"answeredAt": int(Time.get_unix_time_from_system() * 1000.0),
 		"problemELO": _problem_elo, "curriculumStep": _curriculum_step,
 		"selectionLane": _selection_lane, "reviewItemId": _review_item_id,
+		"golden": bool(data.get("golden", false)),
 	}
 
 func _clear_context() -> void:

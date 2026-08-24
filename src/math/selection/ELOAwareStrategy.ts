@@ -23,6 +23,7 @@ import {
 import { ELOManager } from '../ELOManager';
 import { ProblemPoolManager } from '../ProblemPoolManager';
 import { LearnerStateManager } from '../../systems/LearnerStateManager';
+import { mathTuning } from '../MathTuning';
 
 type Candidate = {
     problem: MathProblem;
@@ -90,12 +91,8 @@ export class ELOAwareStrategy {
 
         // Empty lanes are dropped in pickLane, which renormalizes the
         // remaining weights, so these are relative shares, not exact odds.
-        const laneWeights: Record<SelectionLane, number> = {
-            comfort: 0.4,
-            review: 0.2,
-            at_level: 0.3,
-            stretch: 0.1,
-        };
+        // The shares live in data/tuning/math_tuning.json, shared with Godot.
+        const laneWeights: Record<SelectionLane, number> = { ...mathTuning().laneWeights };
 
         const availableLanes = (Object.keys(laneCandidates) as SelectionLane[])
             .filter(lane => laneCandidates[lane].length > 0 && laneWeights[lane] > 0);

@@ -116,6 +116,7 @@ if (import.meta.env.DEV) {
                 wrongAttempts: number;
                 demo: boolean;
                 freebie: boolean;
+                golden: boolean;
                 optionCenters: Array<{ value: number; x: number; y: number }>;
                 canvasRect: { left: number; top: number; width: number; height: number } | null;
             } | null;
@@ -193,6 +194,7 @@ if (import.meta.env.DEV) {
                 };
                 wrongAttempts?: number;
                 isDemo?: boolean;
+                isGolden?: boolean;
                 isFreebie?: boolean;
             }) | null;
 
@@ -239,6 +241,7 @@ if (import.meta.env.DEV) {
                 // wait them out before clicking options.
                 demo: scene.isDemo === true,
                 freebie: scene.isFreebie === true,
+                golden: scene.isGolden === true,
                 optionCenters,
                 canvasRect,
             };

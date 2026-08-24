@@ -560,6 +560,21 @@ function validateGodotMathDataSync(): void {
             validated++;
         }
     }
+
+    // The math tuning file is the single home of the ladder, lane, teaching
+    // and golden numbers; both ports load it at runtime, so it must exist and
+    // must be byte-identical or the two ports play different games.
+    const webTuning = join(DATA_DIR, 'tuning', 'math_tuning.json');
+    const godotTuning = join(__dirname, '..', 'godot', 'data', 'tuning', 'math_tuning.json');
+    if (!existsSync(webTuning) || !existsSync(godotTuning)) {
+        console.error('  FAIL: data/tuning/math_tuning.json must exist in both public/data and godot/data — both runtimes load it at boot.');
+        errors++;
+    } else if (readFileSync(webTuning, 'utf-8') !== readFileSync(godotTuning, 'utf-8')) {
+        console.error('  FAIL: godot/data/tuning/math_tuning.json differs from public/data/tuning/math_tuning.json. Copy the edited file over — the ladder must be one set of numbers.');
+        errors++;
+    } else {
+        validated++;
+    }
 }
 validateGodotMathDataSync();
 

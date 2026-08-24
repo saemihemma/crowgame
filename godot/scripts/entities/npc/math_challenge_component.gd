@@ -89,6 +89,16 @@ func _launch() -> void:
 	if freebie_domain != null:
 		greeting = TextManager.t("math.demo_your_turn")
 
+	# Golden problems: a seeded roll on (childId, lifetime attempt index) at
+	# the tuned rate. Never during the teaching window — first contact with
+	# new math stays calm.
+	var golden_rate := float((DataManager.get_dict("MATH_TUNING").get("golden", {}) as Dictionary).get("rate", 0.0))
+	var golden: bool = freebie_domain == null and GoldenRoll.is_golden_encounter(
+		String(LearnerStateManager.get_snapshot().get("childId", "local-child")),
+		LearnerStateManager.get_lifetime_attempt_count(),
+		golden_rate,
+	)
+
 	game.launch_math_challenge(problem, {
 		"coinsReward": reward_for_this,
 		"npcName": TextManager.t("npc.professor_hoot"),
@@ -96,6 +106,7 @@ func _launch() -> void:
 		"currentProblemIndex": _problems_completed + 1,
 		"problemCount": problem_count,
 		"freebie": freebie_domain != null,
+		"golden": golden,
 	})
 
 func _on_demo_complete(_data: Dictionary) -> void:

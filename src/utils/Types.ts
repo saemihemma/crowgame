@@ -287,6 +287,7 @@ export interface LearnerAttemptRecord {
     curriculumStep: number;
     selectionLane: SelectionLane;
     reviewItemId: string | null;
+    golden?: boolean;
 }
 
 export interface LearnerDomainHistory {
@@ -357,6 +358,7 @@ export interface LearnerAttemptSubmission {
     curriculumStep: number;
     selectionLane: SelectionLane;
     reviewItemId: string | null;
+    golden?: boolean;
 }
 
 export interface LearnerSyncResult {

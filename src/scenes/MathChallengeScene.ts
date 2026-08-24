@@ -5,7 +5,9 @@ import { EventBus, GameEvents } from '../utils/EventBus';
 import { DopamineFX } from '../ui/fx/DopamineFX';
 import { ThemeManager } from '../ui/theme/ThemeManager';
 import { TextManager } from '../systems/TextManager';
+import { AudioManager } from '../systems/AudioManager';
 import { LearnerStateManager } from '../systems/LearnerStateManager';
+import { mathTuning } from '../math/MathTuning';
 import type { MathProblem } from '../utils/Types';
 
 /**
@@ -39,6 +41,8 @@ export class MathChallengeScene extends Phaser.Scene {
     // Freebie: the first-ever try at a newly introduced skill. A win counts
     // normally; a miss is never recorded against the learner.
     private isFreebie = false;
+    // Golden: a seeded 1-in-N arrival with a bonus coin multiplier on a win.
+    private isGolden = false;
 
     // NPC header elements
     private headerContainer!: Phaser.GameObjects.Container;
@@ -56,6 +60,7 @@ export class MathChallengeScene extends Phaser.Scene {
         problemCount?: number;
         demo?: boolean;
         freebie?: boolean;
+        golden?: boolean;
     }): void {
         if (!data.problem) {
             console.warn('MathChallengeScene: no problem provided, closing.');
@@ -70,6 +75,7 @@ export class MathChallengeScene extends Phaser.Scene {
         this.firstResponseMs = 0;
         this.isDemo = data.demo === true;
         this.isFreebie = data.freebie === true;
+        this.isGolden = data.golden === true && !this.isDemo;
 
         // Pause the game scene and let the challenge own the screen.
         this.scene.pause(SCENES.GAME);
@@ -106,9 +112,10 @@ export class MathChallengeScene extends Phaser.Scene {
             // through the problem in two beats — think aloud (hint), then the
             // answer with its explanation — and hands over with "Your turn!".
             this.mathBoard.lockInput();
-            this.time.delayedCall(900, () => this.mathBoard.showHintLine());
-            this.time.delayedCall(2400, () => this.mathBoard.revealAnswer());
-            this.time.delayedCall(4200, () => {
+            const teaching = mathTuning().teaching;
+            this.time.delayedCall(teaching.hintMs, () => this.mathBoard.showHintLine());
+            this.time.delayedCall(teaching.revealMs, () => this.mathBoard.revealAnswer());
+            this.time.delayedCall(teaching.handoverMs, () => {
                 DopamineFX.numberFlyUp(
                     this,
                     GAME_WIDTH / 2,
@@ -118,7 +125,7 @@ export class MathChallengeScene extends Phaser.Scene {
                     0,
                 );
             });
-            this.time.delayedCall(5200, () => {
+            this.time.delayedCall(teaching.closeMs, () => {
                 EventBus.emit(GameEvents.MATH_DEMO_COMPLETE, {
                     problemId: this.currentProblem.id,
                     domain: this.currentProblem.domain,
@@ -132,6 +139,10 @@ export class MathChallengeScene extends Phaser.Scene {
         // this problem's domain. The third pip is the step-up moment itself.
         this.drawProgressPips();
 
+        if (this.isGolden) {
+            this.decorateGolden();
+        }
+
         // Listen for answer
         EventBus.on('math-answer-selected', this.onAnswerSelected, this);
 
@@ -140,6 +151,28 @@ export class MathChallengeScene extends Phaser.Scene {
             problemId: this.currentProblem.id,
         });
         EventBus.emit(GameEvents.MATH_PROBLEM_PRESENTED, this.currentProblem);
+    }
+
+    /**
+     * Golden arrival: a pulsing gold frame around the board and a shimmer
+     * chime. The announcement, not the reward — the coin bonus lands on the
+     * win, and a miss costs nothing beyond the ordinary retry flow.
+     */
+    private decorateGolden(): void {
+        const cx = GAME_WIDTH / 2;
+        const cy = GAME_HEIGHT / 2 + 40;
+        const frame = this.add.graphics().setDepth(415).setScrollFactor(0);
+        frame.lineStyle(5, 0xffd700, 1);
+        frame.strokeRoundedRect(cx - 270, cy - 150, 540, 300, 20);
+        this.tweens.add({
+            targets: frame,
+            alpha: { from: 1, to: 0.45 },
+            duration: 650,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+        });
+        AudioManager.getInstance().playSFX('golden');
     }
 
     private drawProgressPips(): void {
@@ -254,17 +287,24 @@ export class MathChallengeScene extends Phaser.Scene {
 
         if (result.isCorrect) {
             const firstAttempt = this.wrongAttempts === 0;
+            // Golden wins multiply the coin reward (bigger for first-try);
+            // multipliers live in the shared tuning JSON.
+            const golden = mathTuning().golden;
+            const reward = this.isGolden
+                ? Math.round(this.coinsReward * (firstAttempt ? golden.firstTryCoinMultiplier : golden.retryCoinMultiplier))
+                : this.coinsReward;
             // Celebration with longer delay for dopamine absorption (1.5s for 6-year-olds)
             this.time.delayedCall(1500, () => {
                 EventBus.emit(GameEvents.MATH_CHALLENGE_COMPLETE, {
                     problemId: result.problemId,
                     correct: true,
                     firstAttempt,
-                    reward: this.coinsReward,
+                    reward,
                     hintsUsed: this.currentProblem.hint && this.wrongAttempts > 0 ? 1 : 0,
                     responseMs: this.firstResponseMs,
                     wrongAttempts: this.wrongAttempts,
                     freebie: this.isFreebie,
+                    golden: this.isGolden,
                 });
                 this.closeMathChallenge();
             });
@@ -284,6 +324,7 @@ export class MathChallengeScene extends Phaser.Scene {
                         responseMs: this.firstResponseMs,
                         wrongAttempts: this.wrongAttempts,
                         freebie: this.isFreebie,
+                        golden: this.isGolden,
                     });
                     this.closeMathChallenge();
                 });

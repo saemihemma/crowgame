@@ -4,6 +4,8 @@ import { SCENES } from '../../../utils/Constants';
 import { EventBus, GameEvents } from '../../../utils/EventBus';
 import { MathProblemManager } from '../../../math/MathProblemManager';
 import { selectOwlProblem, type OwlSelectionConfig } from '../../../math/owlSelection';
+import { isGoldenEncounter } from '../../../math/goldenRoll';
+import { mathTuning } from '../../../math/MathTuning';
 import { TextManager } from '../../../systems/TextManager';
 import { LearnerStateManager } from '../../../systems/LearnerStateManager';
 import { LevelManager } from '../../../systems/LevelManager';
@@ -126,6 +128,16 @@ export class MathChallengeComponent implements NPCComponent {
         ];
         const greeting = tt.t(greetingKeys[Math.floor(Math.random() * greetingKeys.length)]);
 
+        // Golden problems: a seeded roll on (childId, lifetime attempt index)
+        // at the tuned rate. Never during the teaching window — first contact
+        // with new math stays calm.
+        const learner = LearnerStateManager.getInstance();
+        const golden = freebieDomain === null && isGoldenEncounter(
+            learner.getSnapshot().childId,
+            learner.getLifetimeAttemptCount(),
+            mathTuning().golden.rate,
+        );
+
         this.npc.scene.scene.launch(SCENES.MATH_CHALLENGE, {
             problem,
             coinsReward: rewardForThisProblem,
@@ -134,6 +146,7 @@ export class MathChallengeComponent implements NPCComponent {
             currentProblemIndex: this.problemsCompleted + 1,
             problemCount: this.config.problemCount,
             freebie: freebieDomain !== null,
+            golden,
         });
     }
 

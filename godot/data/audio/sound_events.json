@@ -14,5 +14,6 @@
   "answer_wrong": "wrong",
   "level_complete": "level_complete",
   "ability": "ability",
-  "milestone": "milestone"
+  "milestone": "milestone",
+  "golden": "golden"
 }
