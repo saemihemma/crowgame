@@ -1,5 +1,5 @@
 extends Node
-## ELOManager — Godot port of src/math/ELOManager.ts. Autoload.
+## ELOManager — Godot port of math-kernel/math/ELOManager.ts. Autoload.
 ##
 ## Tier-1 exact port. Stats are held as a Dictionary matching PlayerELOStats so
 ## the save shape is identical. All constants/formulas mirror the TS source:

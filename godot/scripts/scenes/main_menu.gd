@@ -1,4 +1,7 @@
 extends Control
+
+const CLOUD_PANEL := preload("res://scenes/CloudPanel.tscn")
+const PARENT_REPORT := preload("res://scenes/ParentReport.tscn")
 ## MainMenu — Godot port of MainMenuScene. Title + Play (and Continue if a save
 ## exists). Keyboard/touch friendly. Login flow is deferred; Play starts the game.
 
@@ -24,6 +27,13 @@ func _ready() -> void:
 		_add_button(col, TextManager.t("menu.continue"), _on_continue)
 	if ProfileManager.get_active_user() != null:
 		_add_button(col, TextManager.t("menu.switch_user"), _on_switch_user)
+	# Cloud save is a grown-up's setting, so it lives behind its own panel rather
+	# than in the child's path through the menu. Web-only: there is no cookie jar
+	# or same-origin proxy on a desktop build.
+	if OS.has_feature("web"):
+		_add_button(col, TextManager.t("cloud_title"), _on_cloud)
+	if ProfileManager.has_profiles():
+		_add_button(col, TextManager.t("report_open"), _on_parent_report)
 	# Language selector, top-right, out of the way of the centred column.
 	add_child(LanguageToggle.build(_on_locale_changed))
 	_add_build_stamp()
@@ -149,6 +159,11 @@ func _show_recap(recap: Dictionary) -> void:
 	AudioManager.play_event("milestone")
 	UiFx.elastic_entrance.call_deferred(panel)
 
+func _on_cloud() -> void:
+	add_child(CLOUD_PANEL.instantiate())
+
+func _on_parent_report() -> void:
+	add_child(PARENT_REPORT.instantiate())
 
 func _on_locale_changed() -> void:
 	SceneRouter.goto("main_menu")

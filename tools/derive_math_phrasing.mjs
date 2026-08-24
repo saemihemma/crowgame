@@ -17,7 +17,7 @@
  *   - tools/math_verifier.ts recomputes the answer by regex-parsing operands out
  *     of prompt.text, which is the only independent check that a problem's
  *     answer is arithmetically right;
- *   - src/math/problemReplayKey.ts builds the anti-repeat key from prompt.text,
+ *   - math-kernel/math/problemReplayKey.ts builds the anti-repeat key from prompt.text,
  *     including literal English tests like startsWith('count these:');
  *   - buildPromptUniquenessKey dedupes the pools on prompt.text;
  *   - the golden fixtures shared with the Godot parity tests.
@@ -68,7 +68,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { render, TEMPLATES, matchers, verify, pluralKey, PLURAL_PARAM } from './math_phrasing_catalog.mjs';
 
-const POOL_DIRS = ['public/data/math', 'godot/data/math'];
+const POOL_DIRS = ['godot/data/math'];
 const POOLS = ['problems_easy', 'problems_dataset', 'problems_gaps', 'problems_curriculum'];
 const WRITE = process.argv.includes('--write');
 const REPORT = process.argv.includes('--report');

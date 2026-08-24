@@ -1,5 +1,5 @@
-import type { MathProblem, ProblemDifficultyTraits } from '../src/utils/Types';
-import { parseWordedArithmetic } from '../src/math/wordedArithmetic';
+import type { MathProblem, ProblemDifficultyTraits } from '../math-kernel/utils/Types';
+import { parseWordedArithmetic } from '../math-kernel/math/wordedArithmetic';
 
 type ParsedArithmeticPrompt = {
     left: number;

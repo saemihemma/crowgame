@@ -17,7 +17,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { TEMPLATES } from './math_phrasing_catalog.mjs';
 
-const EN_BUNDLES = ['public/data/i18n/strings_en.json', 'godot/data/i18n/strings_en.json'];
+const EN_BUNDLES = ['godot/data/i18n/strings_en.json'];
 const CHECK = process.argv.includes('--check');
 
 let drifted = 0;

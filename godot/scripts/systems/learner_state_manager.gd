@@ -1,5 +1,5 @@
 extends Node
-## LearnerStateManager — Godot port of src/systems/LearnerStateManager.ts. Autoload.
+## LearnerStateManager — Godot port of math-kernel/systems/LearnerStateManager.ts. Autoload.
 ##
 ## Tier-1 exact port of the fast learner signals: per-domain confidence offsets,
 ## curriculum steps (promotion/demotion), review SRS queue, recent-attempt

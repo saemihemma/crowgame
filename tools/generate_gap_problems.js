@@ -807,7 +807,7 @@ const problems = [
 ];
 
 const output = { problems };
-const outputPath = path.join(__dirname, '..', 'public', 'data', 'math', 'problems_gaps.json');
+const outputPath = path.join(__dirname, '..', 'godot', 'data', 'math', 'problems_gaps.json');
 
 fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
 console.log(`✓ Generated ${problems.length} problems → ${outputPath}`);

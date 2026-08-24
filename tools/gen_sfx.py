@@ -7,20 +7,17 @@ friendly; the "wrong" cue is gentle and low (never a harsh buzzer — pedagogy
 rail: mistakes are not punished).
 
 Run: python3 tools/gen_sfx.py
-Writes the same 15 WAVs to both runtimes: godot/assets/audio/sfx/ and
-public/assets/audio/sfx/. Both are committed, because public/data/audio/
-audio_manifest.json declares them as required assets and tools/validate_assets.js
-fails without them -- the web build was silently shipping with no SFX at all
-because the generator only ever targeted the Godot side.
+Writes the 15 WAVs to godot/assets/audio/sfx/. They are committed, because
+godot/data/audio/audio_manifest.json declares them as required assets and
+tools/validate_assets.js fails without them.
 """
 import math, os, struct, wave
 
 SR = 44100
 _ROOT = os.path.join(os.path.dirname(__file__), "..")
-# Both runtimes read the same synthesized set; keep them byte-identical.
+# The Godot tree is the only runtime that ships.
 OUTS = [
     os.path.join(_ROOT, "godot", "assets", "audio", "sfx"),
-    os.path.join(_ROOT, "public", "assets", "audio", "sfx"),
 ]
 
 

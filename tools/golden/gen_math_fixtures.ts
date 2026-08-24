@@ -14,16 +14,17 @@
  */
 import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { ELOManager } from '../../src/math/ELOManager';
-import { ProblemPoolManager } from '../../src/math/ProblemPoolManager';
-import { buildProblemReplayKey } from '../../src/math/problemReplayKey';
-import { LearnerStateManager } from '../../src/systems/LearnerStateManager';
-import { MathTuning } from '../../src/math/MathTuning';
-import { goldenDraw, isGoldenEncounter } from '../../src/math/goldenRoll';
+import { ELOManager } from '../../math-kernel/math/ELOManager';
+import { ProblemPoolManager } from '../../math-kernel/math/ProblemPoolManager';
+import { buildProblemReplayKey } from '../../math-kernel/math/problemReplayKey';
+import { LearnerStateManager } from '../../math-kernel/systems/LearnerStateManager';
+import { MathTuning } from '../../math-kernel/math/MathTuning';
+import { goldenDraw, isGoldenEncounter } from '../../math-kernel/math/goldenRoll';
 
-// The ladder numbers come from the shared tuning JSON — the same bytes the
-// Godot port loads, so the fixtures and the replay always agree.
-MathTuning.initialize(JSON.parse(readFileSync(resolve(__dirname, '../../public/data/tuning/math_tuning.json'), 'utf8')));
+// The ladder numbers come from the shared tuning JSON — godot/data is now the
+// only copy of it, and it is the same bytes the Godot port loads, so the
+// fixtures and the replay always agree.
+MathTuning.initialize(JSON.parse(readFileSync(resolve(__dirname, '../../godot/data/tuning/math_tuning.json'), 'utf8')));
 
 // ── seeded PRNG (mulberry32) replacing Math.random for reproducible output ──
 let _seed = 0x9e3779b9;
@@ -236,7 +237,7 @@ function runLearnerScenarios() {
 function runGoldenRolls() {
   const children = ['local-child', 'c-1234', 'stella'];
   const out: { childId: string; attemptIndex: number; draw: number; goldenAtRate: boolean }[] = [];
-  const rate = JSON.parse(readFileSync(resolve(__dirname, '../../public/data/tuning/math_tuning.json'), 'utf8')).golden.rate as number;
+  const rate = JSON.parse(readFileSync(resolve(__dirname, '../../godot/data/tuning/math_tuning.json'), 'utf8')).golden.rate as number;
   for (const childId of children) {
     for (let attemptIndex = 0; attemptIndex < 40; attemptIndex++) {
       out.push({

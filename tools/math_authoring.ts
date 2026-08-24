@@ -2,22 +2,22 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from 'path';
 import { deriveCurriculumStep, deriveDifficultyTraits } from './math_curriculum';
 import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt } from './math_verifier';
-import { ELOManager } from '../src/math/ELOManager';
-import { MathProblemManager } from '../src/math/MathProblemManager';
-import { selectOwlProblem, type OwlSelectionConfig } from '../src/math/owlSelection';
-import { buildProblemReplayKey } from '../src/math/problemReplayKey';
-import { LearnerStateManager } from '../src/systems/LearnerStateManager';
-import { MathTuning } from '../src/math/MathTuning';
-import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool, SelectionLane } from '../src/utils/Types';
+import { ELOManager } from '../math-kernel/math/ELOManager';
+import { MathProblemManager } from '../math-kernel/math/MathProblemManager';
+import { selectOwlProblem, type OwlSelectionConfig } from '../math-kernel/math/owlSelection';
+import { buildProblemReplayKey } from '../math-kernel/math/problemReplayKey';
+import { LearnerStateManager } from '../math-kernel/systems/LearnerStateManager';
+import { MathTuning } from '../math-kernel/math/MathTuning';
+import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool, SelectionLane } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
 
 // Selector smoke and simulations drive the real ladder, so they need the
 // shared tuning JSON loaded exactly like the game does.
-MathTuning.initialize(JSON.parse(readFileSync(join(ROOT, 'public/data/tuning/math_tuning.json'), 'utf8')));
+MathTuning.initialize(JSON.parse(readFileSync(join(ROOT, 'godot/data/tuning/math_tuning.json'), 'utf8')));
 const AUTHORING_DIR = join(ROOT, 'authoring', 'math');
 const REPORTS_DIR = join(ROOT, 'reports', 'math-batches');
-const DATA_DIR = join(ROOT, 'public', 'data', 'math');
+const DATA_DIR = join(ROOT, 'godot', 'data', 'math');
 
 type NumericRange = [number, number];
 
@@ -248,7 +248,7 @@ function loadLiveOwlMathConfig(): LiveOwlMathConfig {
             id?: string;
             components?: Array<Record<string, unknown>>;
         }>;
-    }>(join(ROOT, 'public', 'data', 'npcs', 'npc_registry.json'));
+    }>(join(ROOT, 'godot', 'data', 'npcs', 'npc_registry.json'));
 
     const owlDefinition = registry.npcs?.find(npc => npc.id === 'owl_teacher_01') ?? registry.npcs?.[0];
     const mathComponent = owlDefinition?.components?.find(component => component.type === 'math_challenge') ?? {};
@@ -258,8 +258,10 @@ function loadLiveOwlMathConfig(): LiveOwlMathConfig {
         : [];
     const difficultyRange = Array.isArray(mathComponent.difficultyRange) && mathComponent.difficultyRange.length === 2
         ? [Number(mathComponent.difficultyRange[0]), Number(mathComponent.difficultyRange[1])] as [number, number]
-        : [1, 2];
-    const domains = configuredDomains.length > 0 ? configuredDomains : ['addition', 'subtraction'];
+        : [1, 2] as [number, number];
+    const domains: MathDomain[] = configuredDomains.length > 0
+        ? configuredDomains
+        : ['addition', 'subtraction'];
 
     return {
         domains,
@@ -394,7 +396,7 @@ function formatArithmeticPrompt(variant: string, left: number, operator: string,
         case 'quick_check':
             return `Quick check: ${left} ${operator} ${right}`;
         // Worded prompts: every shape here must have a matching pattern in
-        // src/math/wordedArithmetic.ts so steps, traits, replay keys, and the
+        // math-kernel/math/wordedArithmetic.ts so steps, traits, replay keys, and the
         // verifier can re-derive the underlying fact from the text.
         case 'story_find':
             return `You have ${left} ${plural(left, 'berry', 'berries')}. You find ${right} more. How many berries?`;
@@ -1545,7 +1547,11 @@ function verifyConstraintPreservingFallbacks(
     const recentWindowResult = manager.getNextProblemELOAware('addition', impossibleOptions);
     const recentWindowFallbackPreserved = recentWindowResult === null;
 
-    const managerWithPrivate = manager as MathProblemManager & { eloStrategy: unknown };
+    // Deliberate private-field poke: this simulation has to prove the owl
+    // selector keeps its safety rails even when the ELO strategy is missing.
+    // `Manager & { eloStrategy }` collapses to never because the real member is
+    // private, so route through unknown.
+    const managerWithPrivate = manager as unknown as { eloStrategy: unknown };
     const originalEloStrategy = managerWithPrivate.eloStrategy;
     managerWithPrivate.eloStrategy = null;
     manager.resetAnswered();
@@ -1677,7 +1683,7 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                 }
 
                 const currentDomainStep = LearnerStateManager.getInstance().getCurrentStep('addition');
-                const previousProblemDomain = encounterProblemIndex > 0 ? previousEncounterDomain : null;
+                const previousProblemDomain: MathDomain | null = encounterProblemIndex > 0 ? previousEncounterDomain : null;
             const problem = selectOwlProblem(manager, owlConfig, previousProblemDomain);
 
                 if (!problem) {

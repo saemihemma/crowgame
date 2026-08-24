@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cloudpanel01"]
+
+[ext_resource type="Script" path="res://scripts/ui/cloud_panel.gd" id="1_cloud"]
+
+[node name="CloudPanel" type="CanvasLayer"]
+script = ExtResource("1_cloud")

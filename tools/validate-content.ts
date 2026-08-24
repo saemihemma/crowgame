@@ -11,12 +11,11 @@ import {
     reviewMaterializedMathBatches,
     type MaterializationResult,
 } from './math_authoring';
-import { computeMathBrowserSmokeFingerprint } from './math_artifact_fingerprint.mjs';
 import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt } from './math_verifier';
-import type { MathProblem } from '../src/utils/Types';
+import type { MathProblem } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
-const DATA_DIR = join(ROOT, 'public', 'data');
+const DATA_DIR = join(ROOT, 'godot', 'data');
 const SCHEMA_DIR = join(DATA_DIR, 'schemas');
 const AUTHORING_DIR = join(ROOT, 'authoring', 'math');
 const REPORTS_DIR = join(ROOT, 'reports', 'math-batches');
@@ -76,7 +75,7 @@ function validateCrossReferences(): void {
             continue;
         }
 
-        const mapPath = join(ROOT, 'public', level.mapFile);
+        const mapPath = join(ROOT, 'godot', level.mapFile);
         if (!existsSync(mapPath)) {
             console.error(`  FAIL: Level registry entry ${level.key} points to missing map: ${level.mapFile}`);
             errors++;
@@ -375,10 +374,9 @@ function validateMathReviewReports(materialized: MaterializationResult | null): 
     const reviewSummaryPath = join(REPORTS_DIR, 'review-summary.json');
     const runtimeSmokePath = join(REPORTS_DIR, 'runtime-selector-smoke.json');
     const owlSurfacePath = join(REPORTS_DIR, 'owl-surface-summary.json');
-    const runtimeBrowserSmokePath = join(REPORTS_DIR, 'runtime-browser-smoke.json');
     const batchesDir = join(REPORTS_DIR, 'batches');
 
-    const requiredPaths = [reviewSummaryPath, runtimeSmokePath, owlSurfacePath, runtimeBrowserSmokePath, batchesDir];
+    const requiredPaths = [reviewSummaryPath, runtimeSmokePath, owlSurfacePath, batchesDir];
     for (const requiredPath of requiredPaths) {
         if (!existsSync(requiredPath)) {
             console.error(`  FAIL: Missing math review artifact: ${requiredPath}`);
@@ -391,14 +389,6 @@ function validateMathReviewReports(materialized: MaterializationResult | null): 
     const savedReview = loadJson(reviewSummaryPath);
     const savedRuntimeSmoke = loadJson(runtimeSmokePath);
     const savedOwlSurface = loadJson(owlSurfacePath);
-    const savedRuntimeBrowserSmoke = loadJson(runtimeBrowserSmokePath) as {
-        accepted?: boolean;
-        consoleErrors?: unknown[];
-        pageErrors?: unknown[];
-        sourceFingerprint?: { value?: string; fileCount?: number };
-        gateChecks?: Record<string, boolean>;
-    };
-
     if (JSON.stringify(savedReview) !== JSON.stringify(computedReview)) {
         console.error('  FAIL: Review summary drift detected. Run npm.cmd run math:materialize.');
         errors++;
@@ -420,34 +410,21 @@ function validateMathReviewReports(materialized: MaterializationResult | null): 
         errors++;
     }
 
-    const computedBrowserFingerprint = computeMathBrowserSmokeFingerprint(ROOT);
-    if (savedRuntimeBrowserSmoke.sourceFingerprint?.value !== computedBrowserFingerprint.value) {
-        console.error('  FAIL: Browser smoke fingerprint drift detected. Run npm.cmd run math:browser-smoke.');
-        errors++;
-    }
-
-    if (savedRuntimeBrowserSmoke.accepted !== true) {
-        console.error('  FAIL: Browser smoke artifact is not accepted. Run npm.cmd run math:browser-smoke.');
-        errors++;
-    }
-
-    if ((savedRuntimeBrowserSmoke.consoleErrors?.length ?? 0) > 0) {
-        console.error('  FAIL: Browser smoke captured console errors. Run npm.cmd run math:browser-smoke after fixing them.');
-        errors++;
-    }
-
-    if ((savedRuntimeBrowserSmoke.pageErrors?.length ?? 0) > 0) {
-        console.error('  FAIL: Browser smoke captured page errors. Run npm.cmd run math:browser-smoke after fixing them.');
-        errors++;
-    }
-
-    const gateChecks = savedRuntimeBrowserSmoke.gateChecks ?? {};
-    for (const [key, passed] of Object.entries(gateChecks)) {
-        if (!passed) {
-            console.error(`  FAIL: Browser smoke gate check failed: ${key}. Run npm.cmd run math:browser-smoke.`);
-            errors++;
-        }
-    }
+    // The Phaser-era browser-smoke gate used to live here. It was removed, not
+    // relaxed, for two independent reasons:
+    //
+    //  1. It fingerprinted src/scenes/GameScene.ts, src/scenes/MathChallengeScene.ts
+    //     and src/entities/npc/** — the Phaser owl loop, which is no longer the
+    //     shipped game. Godot is.
+    //  2. It never actually held. The stored fingerprint in
+    //     reports/math-batches/runtime-browser-smoke.json matched the committed
+    //     sources under neither LF nor CRLF, from the initial import onward, so
+    //     `npm run validate` failed for everyone on every machine. CI's old
+    //     `paths: ['godot/**']` filter meant nobody saw it.
+    //
+    // Replaced by two gates that run against the thing that actually ships:
+    //   - godot/tests/integration/OwlProbe.tscn  (the owl loop, in-engine)
+    //   - godot/tools/web_boot_smoke.mjs         (the exported build, in a browser)
 
     const savedBatchFiles = new Set(readdirSync(batchesDir).filter(file => file.endsWith('.json')));
     const expectedBatchFiles = new Set(computedReview.batchReviews.map(review => `${review.batchId}.json`));
@@ -523,60 +500,12 @@ if (existsSync(mathDir)) {
 
 validateMathAuthoringFiles();
 
-// Godot data parity: the Godot port ships its own copy of the math pools and
-// serves them to the deployed export. A drifted copy means the live game and
-// the web game answer from different inventories — the exact bug that let the
-// deployment fall a full content generation behind.
-function validateGodotMathDataSync(): void {
-    const godotMathDir = join(__dirname, '..', 'godot', 'data', 'math');
-    if (!existsSync(mathDir) || !existsSync(godotMathDir)) return;
-    for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
-        const godotPath = join(godotMathDir, file);
-        if (!existsSync(godotPath)) {
-            console.error(`  FAIL: godot/data/math/${file} is missing; copy it from public/data/math.`);
-            errors++;
-            continue;
-        }
-        const webContent = readFileSync(join(mathDir, file), 'utf-8');
-        const godotContent = readFileSync(godotPath, 'utf-8');
-        if (webContent !== godotContent) {
-            console.error(`  FAIL: godot/data/math/${file} differs from public/data/math/${file}. Copy the regenerated pool over so the deployed Godot export serves the same problems.`);
-            errors++;
-        } else {
-            validated++;
-        }
-    }
-
-    // The NPC registry carries the owl's math config (domains, difficulty
-    // band, problemCount) — a drifted copy means the two ports run different
-    // encounters. This is how the Godot owl kept an old difficulty band.
-    const webRegistry = join(DATA_DIR, 'npcs', 'npc_registry.json');
-    const godotRegistry = join(__dirname, '..', 'godot', 'data', 'npcs', 'npc_registry.json');
-    if (existsSync(webRegistry) && existsSync(godotRegistry)) {
-        if (readFileSync(webRegistry, 'utf-8') !== readFileSync(godotRegistry, 'utf-8')) {
-            console.error('  FAIL: godot/data/npcs/npc_registry.json differs from public/data/npcs/npc_registry.json. Sync them so both ports run the same owl config.');
-            errors++;
-        } else {
-            validated++;
-        }
-    }
-
-    // The math tuning file is the single home of the ladder, lane, teaching
-    // and golden numbers; both ports load it at runtime, so it must exist and
-    // must be byte-identical or the two ports play different games.
-    const webTuning = join(DATA_DIR, 'tuning', 'math_tuning.json');
-    const godotTuning = join(__dirname, '..', 'godot', 'data', 'tuning', 'math_tuning.json');
-    if (!existsSync(webTuning) || !existsSync(godotTuning)) {
-        console.error('  FAIL: data/tuning/math_tuning.json must exist in both public/data and godot/data — both runtimes load it at boot.');
-        errors++;
-    } else if (readFileSync(webTuning, 'utf-8') !== readFileSync(godotTuning, 'utf-8')) {
-        console.error('  FAIL: godot/data/tuning/math_tuning.json differs from public/data/tuning/math_tuning.json. Copy the edited file over — the ladder must be one set of numbers.');
-        errors++;
-    } else {
-        validated++;
-    }
-}
-validateGodotMathDataSync();
+// NOTE: a validateGodotMathDataSync() check used to live here, comparing the
+// Phaser-era public/data/math twin against godot/data/math. Once public/ was
+// deleted both sides of that comparison resolved to godot/data/math, so it
+// compared the tree against itself: always green, and it still incremented the
+// validated counter. Removed rather than repaired — godot/data is now the only
+// copy, so there is no longer a twin that can drift.
 
 // The per-level math mixes are a designed curriculum: every level's gating
 // names a teaching intent, its skill order sets the owl's emphasis, and the
@@ -605,14 +534,12 @@ function validateLevelMathGating(): void {
         specGating.set(spec.id, spec.mathGating);
     }
 
-    // The registries are mirrors of the specs, in both ports, byte for byte.
+    // NOTE: a byte-for-byte comparison of the two ports' level registries used to
+    // sit here. With public/ deleted, DATA_DIR resolves to godot/data, so both
+    // sides named the same file and the check could never fail. Dropped for the
+    // same reason as validateGodotMathDataSync() above; the gating cross-check
+    // below is the part that still has something to prove.
     const webLevelReg = join(DATA_DIR, 'levels', 'level_registry.json');
-    const godotLevelReg = join(__dirname, '..', 'godot', 'data', 'levels', 'level_registry.json');
-    if (existsSync(webLevelReg) && existsSync(godotLevelReg) &&
-        readFileSync(webLevelReg, 'utf-8') !== readFileSync(godotLevelReg, 'utf-8')) {
-        console.error('  FAIL: godot/data/levels/level_registry.json differs from public/data/levels/level_registry.json.');
-        errors++;
-    }
     const registry = JSON.parse(readFileSync(webLevelReg, 'utf-8')) as { levels: Array<{ id: string; mathGating?: Gating }> };
     for (const entry of registry.levels) {
         const fromSpec = specGating.get(entry.id);

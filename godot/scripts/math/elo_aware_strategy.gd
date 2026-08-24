@@ -1,6 +1,6 @@
 extends RefCounted
 class_name ELOAwareStrategy
-## Godot port of src/math/selection/ELOAwareStrategy.ts.
+## Godot port of math-kernel/math/selection/ELOAwareStrategy.ts.
 ## Lane policy: 40% comfort (step-1), 20% review (step-2..-1, skill-matched),
 ## 30% at-level (current step), 10% stretch (step+1, only while the learner is
 ## hot). Empty lanes drop out and remaining weights renormalize in _pick_lane.

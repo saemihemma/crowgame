@@ -1,32 +1,187 @@
 name: CI
 
-# Regression gate for the Godot game: runs the headless test suite + physics
-# integration probes (godot/tools/run_tests.sh) on every push/PR to main.
-# Keep main green — this is the contract every roadmap phase ships against.
+# Regression gate for Crow.
+#
+# Two things are gated here, and the second one used to be on the honour system:
+#
+#  1. The Godot game: headless GDScript suite + physics integration probes.
+#  2. The parity oracle: `math-kernel/**` is the TypeScript reference
+#     implementation that GENERATES godot/tests/fixtures/*.json. The Godot
+#     Tier-1 constants are only trustworthy if those committed fixtures still
+#     match what the kernel produces. The old `paths: ['godot/**']` filter meant
+#     a change to the kernel, the generators, or the shipped data ran NO CI at
+#     all — so the most load-bearing invariant in the repo was unchecked.
+#
+# There is deliberately no paths filter now. This suite is minutes long; a
+# skipped run that should have failed costs far more than a redundant one.
 
 on:
   push:
-    branches: [main]
-    paths: ['godot/**', '.github/workflows/ci.yml']
+    branches: [main, release]
+    # Markdown is NOT ignored: doc validation is the check most likely to be
+    # needed by a docs-only change, and ignoring .md turned it off for exactly
+    # that case. Only the committed build artifact is ignored.
+    paths-ignore: ['output/web/**']
   pull_request:
-    branches: [main]
-    paths: ['godot/**', '.github/workflows/ci.yml']
+    branches: [main, release]
+    # Markdown is NOT ignored: doc validation is the check most likely to be
+    # needed by a docs-only change, and ignoring .md turned it off for exactly
+    # that case. Only the committed build artifact is ignored.
+    paths-ignore: ['output/web/**']
   workflow_dispatch:
 
 jobs:
   godot-tests:
+    name: Godot suite (unit + physics probes)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache Godot binary
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot-bin
+          key: godot-4.3-stable-linux
+
       - name: Install Godot 4.3 (headless)
         run: |
           set -euo pipefail
-          curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip"
-          unzip -q godot.zip
-          sudo mv Godot_v4.3-stable_linux.x86_64 /usr/local/bin/godot
-          sudo chmod +x /usr/local/bin/godot
-          godot --version --headless
+          if [ ! -x "$HOME/godot-bin/godot" ]; then
+            mkdir -p "$HOME/godot-bin"
+            curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip"
+            unzip -q godot.zip
+            mv Godot_v4.3-stable_linux.x86_64 "$HOME/godot-bin/godot"
+            chmod +x "$HOME/godot-bin/godot"
+          fi
+          echo "$HOME/godot-bin" >> "$GITHUB_PATH"
 
-      - name: Run test suite (unit + physics probes)
+      - name: Run test suite (guard + unit + probes)
         run: bash godot/tools/run_tests.sh
+
+  parity-gate:
+    name: Parity oracle (kernel -> fixtures -> Godot)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Regenerate golden fixtures from the TS kernel
+        run: |
+          npm run godot:gen-math-fixtures
+          npm run godot:gen-motion-fixtures
+
+      - name: Fail if committed fixtures drifted from the kernel
+        run: |
+          if ! git diff --exit-code -- godot/tests/fixtures/; then
+            echo "::error::godot/tests/fixtures/ does not match what math-kernel/ generates."
+            echo "A Tier-1 change must regenerate the fixtures in the same commit:"
+            echo "  npm run godot:gen-math-fixtures && npm run godot:gen-motion-fixtures"
+            exit 1
+          fi
+          echo "fixtures match the kernel"
+
+      - name: Cache Godot binary
+        uses: actions/cache@v4
+        with:
+          path: ~/godot-bin
+          key: godot-4.3-stable-linux
+
+      - name: Install Godot 4.3 (headless)
+        run: |
+          set -euo pipefail
+          if [ ! -x "$HOME/godot-bin/godot" ]; then
+            mkdir -p "$HOME/godot-bin"
+            curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/4.3-stable/Godot_v4.3-stable_linux.x86_64.zip"
+            unzip -q godot.zip
+            mv Godot_v4.3-stable_linux.x86_64 "$HOME/godot-bin/godot"
+            chmod +x "$HOME/godot-bin/godot"
+          fi
+          echo "$HOME/godot-bin" >> "$GITHUB_PATH"
+
+      - name: Godot must reproduce the regenerated fixtures
+        run: |
+          godot --headless --path godot --import >/dev/null 2>&1 || true
+          godot --headless --path godot res://tests/TestRunner.tscn
+
+  content-validate:
+    name: Content and docs validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Typecheck the reference kernel and the toolchain
+        run: npm run typecheck
+      - name: Validate content, docs and assets
+        run: npm run validate
+
+  api:
+    name: API (server tests against Postgres)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: crow_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/crow_test?sslmode=disable
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install server deps
+        run: npm --prefix server ci
+      - name: Typecheck
+        run: npm --prefix server run typecheck
+      - name: Migrate
+        run: npm --prefix server run migrate
+      - name: Test
+        # The throttle and the partition-drop retention are SQL behaviour, so
+        # these run against a real Postgres rather than a mock.
+        run: npm --prefix server test
+
+  error-pipeline-e2e:
+    name: Error pipeline end-to-end (browser -> API -> Postgres)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: crow_e2e
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/crow_e2e?sslmode=disable
+      # Runners ship Chrome; no browser download needed.
+      CHROMIUM_PATH: /usr/bin/google-chrome
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm --prefix server ci
+      # No Godot needed: output/web is committed, so this exercises the exact
+      # bytes that get deployed.
+      - name: Run the pipeline end to end
+        run: npm run e2e:errors

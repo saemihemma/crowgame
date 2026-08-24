@@ -1,7 +1,7 @@
 # Hörmann Math System Architecture
 
 Status: Current
-Authority: Runtime code and data, especially `BootScene`, `MathProblemManager`, `ELOManager`, `ELOAwareStrategy`, `LearnerStateManager`, `ELOUpdateManager`, `SaveManager`, and `LearnerSyncService`.
+Authority: Runtime code and data, especially `data_manager.gd`, `math_problem_manager.gd`, `elo_manager.gd`, `elo_aware_strategy.gd`, `learner_state_manager.gd`, `elo_update_manager.gd` and `save_manager.gd`. The executable specification for these numbers is `math-kernel/**`, locked by `godot/tests/fixtures/**`.
 Last verified against code: 2026-03-31
 
 ## Purpose
@@ -25,7 +25,7 @@ For offline math authoring, batch materialization, and review outputs, read [doc
 
 ```mermaid
 flowchart LR
-    Boot["BootScene math init"] --> Pools["MathProblemManager loads concrete pools"]
+    Boot["boot.gd math init"] --> Pools["MathProblemManager loads concrete pools"]
     Boot --> Mastery["ELOManager restores mastery"]
     Boot --> Learner["LearnerStateManager restores confidence, steps, review, unlocks"]
     Boot --> Sync["LearnerSyncService caches snapshot and optional sync"]
@@ -35,7 +35,7 @@ flowchart LR
     Learner --> Select
     Mastery --> Select
 
-    Select --> Challenge["MathChallengeScene and MathBoard"]
+    Select --> Challenge["math_challenge.gd overlay"]
     Challenge --> Update["ELOUpdateManager handles completion"]
 
     Update --> MasteryWrite["ELOManager updates mastery"]
@@ -60,7 +60,7 @@ Current target band:
 
 ## Runtime Composition
 
-Boot-time math initialization happens in [src/scenes/BootScene.ts](./src/scenes/BootScene.ts):
+Boot-time math initialization happens in [godot/scripts/autoload/data_manager.gd](./godot/scripts/autoload/data_manager.gd):
 
 - `MathProblemManager` loads 4 pools:
   - `easy`
@@ -84,7 +84,7 @@ Boot-time math initialization happens in [src/scenes/BootScene.ts](./src/scenes/
    - due review items
    - local kid-safe ceilings such as operand caps
 4. `MathProblemManager` suppresses recently seen arithmetic facts by replay key, not just exact problem IDs, so wording variants of the same fact do not bounce back immediately.
-5. `MathChallengeScene` presents the selected problem.
+5. `math_challenge.gd` presents the selected problem.
 6. `MathBoard` renders the answer UI.
 
 Current answer UI:
@@ -166,7 +166,7 @@ Long-term skill estimate is still ELO-based:
 - effective mastery for a domain:
   - `globalELO + domainModifier`
 
-Live update behavior in [src/math/ELOManager.ts](./src/math/ELOManager.ts):
+Live update behavior in [godot/scripts/math/elo_manager.gd](./godot/scripts/math/elo_manager.gd):
 
 - expected score uses standard ELO expectation
 - actual score:
@@ -188,13 +188,15 @@ Live update behavior in [src/math/ELOManager.ts](./src/math/ELOManager.ts):
 
 Local problem selection is now capped by an explicit per-domain curriculum step.
 
-Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerStateManager.ts).
+Live behavior in [godot/scripts/systems/learner_state_manager.gd](./godot/scripts/systems/learner_state_manager.gd),
+mirrored by the reference kernel in
+[math-kernel/systems/LearnerStateManager.ts](./math-kernel/systems/LearnerStateManager.ts).
 The tunable numbers below (promotion, demotion, stretch gate, lane weights,
 teaching pacing, golden economy) live in
-[public/data/tuning/math_tuning.json](./public/data/tuning/math_tuning.json),
-kept byte-identical with `godot/data/tuning/math_tuning.json` by
-`npm run validate`; both runtimes load that file at boot, so tuning a number
-is one JSON edit applied to both ports.
+[godot/data/tuning/math_tuning.json](./godot/data/tuning/math_tuning.json) —
+now the only copy — and both the shipped game and the kernel load that file, so
+tuning a number is one JSON edit that applies to the runtime and the parity
+oracle at once:
 
 - each domain stores:
   - `currentStep`
@@ -226,7 +228,7 @@ This is the primary local safety rail for young learners. ELO no longer authoriz
 
 Confidence is session-local and moves faster than mastery.
 
-Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerStateManager.ts):
+Live behavior in [godot/scripts/systems/learner_state_manager.gd](./godot/scripts/systems/learner_state_manager.gd):
 
 - stored per domain as `confidenceOffsets`
 - clamped to `-50..20`
@@ -272,7 +274,7 @@ Rules:
 
 ## Problem Selection Policy
 
-Live local weighting in [src/math/selection/ELOAwareStrategy.ts](./src/math/selection/ELOAwareStrategy.ts):
+Live local weighting in [godot/scripts/math/elo_aware_strategy.gd](./godot/scripts/math/elo_aware_strategy.gd):
 
 - `40%` comfort
 - `20%` review
@@ -378,7 +380,7 @@ A prerequisite domain only counts as stable when:
 
 ## Runtime Update Flow
 
-The live update path is centralized in [src/systems/ELOUpdateManager.ts](./src/systems/ELOUpdateManager.ts):
+The live update path is centralized in [godot/scripts/systems/elo_update_manager.gd](./godot/scripts/systems/elo_update_manager.gd):
 
 1. `MATH_PROBLEM_PRESENTED`
    - caches domain, problem ELO, skill list, selection lane, and review item id
@@ -409,7 +411,7 @@ This gives Hörmann:
 
 ## Parent And Admin Visibility
 
-[admin.html](./admin.html) now exposes a learner summary panel that reads local learner snapshots and shows:
+The in-engine parent report ([godot/scripts/ui/parent_report.gd](./godot/scripts/ui/parent_report.gd)) reads local learner snapshots and shows:
 
 - first-attempt accuracy
 - summary cards with up to four visible domain rows per child, including mastery and confidence

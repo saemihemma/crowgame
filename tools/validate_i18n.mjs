@@ -31,7 +31,7 @@ import { TEMPLATES, format, render, verify, pluralKey, PLURAL_PARAM, PLURAL_RULE
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MATH_POOLS = ['problems_easy', 'problems_dataset', 'problems_gaps', 'problems_curriculum'];
-const BUNDLE_DIRS = ['public/data/i18n', 'godot/data/i18n'];
+const BUNDLE_DIRS = ['godot/data/i18n'];
 const LOCALES = ['en', 'is'];
 const FALLBACK_LOCALE = 'en';
 
@@ -68,7 +68,6 @@ const STRING_LITERAL = /'(?:[^'\\\n]|\\.)*'|"(?:[^"\\\n]|\\.)*"|`(?:[^`\\]|\\.)*
  */
 const BOXES = {
     'menu.title': { size: 72, max: 900, where: 'MainMenuScene title, centred on a 960 canvas' },
-    'login.title': { size: 64, max: 900, where: 'LoginScene title, centred on a 960 canvas' },
     'menu.play': { size: 24, max: 240, where: 'MainMenuScene button 240x52' },
     'menu.continue': { size: 24, max: 240, where: 'MainMenuScene button 240x52' },
     'pause.title': { size: 32, max: 320, where: 'PauseScene panel 320 wide' },
@@ -85,10 +84,7 @@ const BOXES = {
     },
     'login.new_user': { size: 26, max: 320, where: 'LoginScene button 320x64' },
     'login.back': { size: 26, max: 200, where: 'LoginScene button 200x52' },
-    'login.go': { size: 26, max: 200, where: 'LoginScene button 200x56' },
     'login.name_placeholder': { size: 28, max: 280, where: 'LoginScene DOM input width 280' },
-    'level_select.complete': { size: 16, max: 220, where: 'Level node, label to node edge' },
-    'level_select.ready': { size: 16, max: 220, where: 'Level node' },
     'level_select.locked': { size: 16, max: 220, where: 'Level node' },
     'level.level_01.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
     'level.level_02.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
@@ -251,6 +247,7 @@ for (const dir of otherDirs) {
  */
 const DYNAMIC_PREFIXES = [
     { prefix: 'domain.', built: 'HUDScene.ts / hud.gd, from a problem domain' },
+    { prefix: 'domain_', built: 'parent_report.gd, from a domain in the learner summary' },
     { prefix: 'level.', built: 'LevelSelectScene.ts / level_select.gd, from a level key' },
     { prefix: 'theme.', built: 'pause.gd, from the active theme id' },
     { prefix: 'math.prompt.', built: "each problem's phrasing reference" },
@@ -399,7 +396,7 @@ for (const key of Object.keys(PLURAL_PARAM)) {
 // problem and the sentence a child reads.
 let phrasingChecked = 0;
 for (const pool of MATH_POOLS) {
-    const path = join(ROOT, 'public/data/math', `${pool}.json`);
+    const path = join(ROOT, 'godot/data/math', `${pool}.json`);
     let data;
     try {
         data = JSON.parse(readFileSync(path, 'utf8'));
@@ -521,7 +518,7 @@ const worstFit = {};
 for (const pool of MATH_POOLS) {
     let data;
     try {
-        data = JSON.parse(readFileSync(join(ROOT, 'public/data/math', `${pool}.json`), 'utf8'));
+        data = JSON.parse(readFileSync(join(ROOT, 'godot/data/math', `${pool}.json`), 'utf8'));
     } catch {
         continue;
     }

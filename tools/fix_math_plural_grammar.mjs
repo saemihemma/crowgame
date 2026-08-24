@@ -22,7 +22,7 @@
  * derivation, and is idempotent.
  *
  * SCOPE: `hint` and `explanation` only. `prompt.text` is never touched -- it is
- * parsed by tools/math_verifier.ts and src/math/problemReplayKey.ts and compared
+ * parsed by tools/math_verifier.ts and math-kernel/math/problemReplayKey.ts and compared
  * byte for byte by the golden fixtures. Nothing reads `hint` or `explanation`
  * except the renderers (verified: the fixtures use synthetic inline problems).
  *
@@ -31,7 +31,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { matchers, render, PLURAL_PARAM, format, TEMPLATES } from './math_phrasing_catalog.mjs';
 
-const POOL_DIRS = ['public/data/math', 'godot/data/math'];
+const POOL_DIRS = ['godot/data/math'];
 const POOLS = ['problems_easy', 'problems_dataset', 'problems_gaps', 'problems_curriculum'];
 const CHECK = process.argv.includes('--check');
 const FIELDS = ['hint', 'explanation'];

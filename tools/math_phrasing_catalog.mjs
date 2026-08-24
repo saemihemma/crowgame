@@ -1,7 +1,7 @@
 /**
  * The phrasing catalog: every English sentence the math pools say, as a template.
  *
- * Measured, not guessed. Across the 3000 problems in public/data/math/*.json there
+ * Measured, not guessed. Across the 3150 problems in godot/data/math/*.json there
  * are 8232 English strings but only 381 distinct shapes once you replace the
  * numbers with placeholders -- and far fewer once the operator, the glyph run and
  * the counting sequence also become parameters. This file is that collapsed set.

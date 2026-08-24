@@ -1,6 +1,6 @@
 extends RefCounted
 class_name LanguageToggle
-## Language selector — Godot port of src/ui/components/LanguageToggle.ts.
+## Language selector — ported from the retired Phaser build; this is now the only implementation.
 ##
 ## A segmented control rather than a dropdown: with exactly two languages a
 ## dropdown hides half the choices behind a tap and hands a five-year-old a menu

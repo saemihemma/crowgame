@@ -32,6 +32,7 @@ MathProblemManager="*res://scripts/math/math_problem_manager.gd"
 LearnerSyncService="*res://scripts/systems/learner_sync_service.gd"
 ELOUpdateManager="*res://scripts/systems/elo_update_manager.gd"
 SessionStats="*res://scripts/autoload/session_stats.gd"
+CloudSync="*res://scripts/systems/cloud_sync.gd"
 
 [display]
 
@@ -39,7 +40,7 @@ window/size/viewport_width=960
 window/size/viewport_height=540
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep"
-window/handheld/orientation=1
+window/handheld/orientation=0
 
 [rendering]
 

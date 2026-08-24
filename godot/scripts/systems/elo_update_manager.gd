@@ -1,5 +1,5 @@
 extends Node
-## ELOUpdateManager — Godot port of src/systems/ELOUpdateManager.ts. Autoload.
+## ELOUpdateManager — ported from the retired Phaser build; this is now the only implementation. Autoload.
 ## Bridges completed challenges into the learner model: caches problem context on
 ## math_problem_presented, then on math_challenge_complete updates mastery ELO,
 ## per-problem rating, learner state (confidence/review/curriculum), and save.

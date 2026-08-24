@@ -60,8 +60,8 @@ const MUSIC_MAP = {
 // Directories
 const SOURCE_SFX_DIR = path.join(__dirname, '..', 'downloaded_assets', 'sfx_pack');
 const SOURCE_MUSIC_DIR = path.join(__dirname, '..', 'downloaded_assets', 'music_pack');
-const TARGET_SFX_DIR = path.join(__dirname, '..', 'public', 'assets', 'audio', 'sfx');
-const TARGET_MUSIC_DIR = path.join(__dirname, '..', 'public', 'assets', 'audio', 'music');
+const TARGET_SFX_DIR = path.join(__dirname, '..', 'godot', 'assets', 'audio', 'sfx');
+const TARGET_MUSIC_DIR = path.join(__dirname, '..', 'godot', 'assets', 'audio', 'music');
 
 let successCount = 0;
 let failCount = 0;

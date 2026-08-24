@@ -5,9 +5,9 @@ const path = require('path');
  * Analyze ELO distribution across all problem pools
  */
 
-const EASY_POOL = path.join(__dirname, '..', 'public', 'data', 'math', 'problems_easy.json');
-const DATASET_POOL = path.join(__dirname, '..', 'public', 'data', 'math', 'problems_dataset.json');
-const GAPS_POOL = path.join(__dirname, '..', 'public', 'data', 'math', 'problems_gaps.json');
+const EASY_POOL = path.join(__dirname, '..', 'godot', 'data', 'math', 'problems_easy.json');
+const DATASET_POOL = path.join(__dirname, '..', 'godot', 'data', 'math', 'problems_dataset.json');
+const GAPS_POOL = path.join(__dirname, '..', 'godot', 'data', 'math', 'problems_gaps.json');
 
 function analyzePool(poolPath, poolName) {
     const data = JSON.parse(fs.readFileSync(poolPath, 'utf8'));

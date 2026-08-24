@@ -3,18 +3,81 @@
 	auto_https off
 }
 
-# Railway injects $PORT; default to 8080 for local `docker run`.
+# Crow web build (static Godot HTML5 export).
+#
+# The payload is content-addressed: build_web.sh renames it to
+# index.<content-id>.{wasm,pck,js} and rewrites the engine config to match. That
+# changes what the cache policy can be:
+#
+#   index.html          -> no-store. It is the only file that knows which payload
+#                          belongs to this build, and it is ~5 KB.
+#   index.<id>.*        -> immutable, one year. The name IS the content, so a
+#                          returning player transfers ZERO bytes for ~19 MB, and
+#                          a new build simply has different names. No
+#                          revalidation, no 304, no round trip.
+#
+# This is why hashing was worth doing: the previous best policy was "no-cache",
+# which still cost two conditional requests per launch because a fixed filename
+# cannot tell a browser whether what it holds is current.
+#
+# CROW_ASSET_CACHE remains overridable per environment for the unhashed extras
+# (icons), and so staging can force no-store while iterating.
 :{$PORT:8080} {
 	root * /srv
+
+	# Caddy 2 writes NO access log unless asked. Without this there is not even a
+	# request count to fall back on when the question is "did anyone actually
+	# open it", which is the first question after a public launch.
+	log {
+		output stdout
+		format console
+	}
+
+	# The API is same-origin at /api/*, which is what lets the client use a
+	# relative base ("/api/v1") instead of a configured URL. Consequences worth
+	# spelling out: no CORS, the device cookie is first-party, and staging vs prod
+	# is decided here by env var rather than baked into the client — which it must
+	# be, because promotion ships byte-identical files to both.
+	#
+	# CROW_API_UPSTREAM is the API service's private address, e.g.
+	# crow-api-prod.railway.internal:8080. Left unset, /api/* returns 503 and the
+	# game still runs local-only.
+	@api path /api/*
+	handle @api {
+		reverse_proxy {$CROW_API_UPSTREAM:} {
+			header_up X-Forwarded-For {remote_host}
+			# The API is the only thing that should ever cache-control its own
+			# responses; never apply the static payload policy to it.
+		}
+	}
+
+	# Prefer the precompressed .br/.gz written by build_web.sh over compressing
+	# a 35 MB wasm on every request. Falls back to on-the-fly for anything else.
 	encode zstd gzip
-	file_server
 
-	# Active-iteration: always serve the freshest build (no stale cache on phone).
-	header Cache-Control "no-store"
+	# index.html is tiny and decides which assets load: never cache it.
+	@shell path /index.html /
+	header @shell Cache-Control "no-store"
 
-	# NOTE: the current export is single-threaded, so no special headers are
-	# needed. If we later ship the multi-threaded export (better perf), enable
-	# cross-origin isolation here:
-	#   header Cross-Origin-Opener-Policy "same-origin"
-	#   header Cross-Origin-Embedder-Policy "require-corp"
+	# The content-addressed payload: safe to keep forever, because a different
+	# build has different filenames.
+	@immutable path_regexp ^/index\.[0-9a-f]+\.(wasm|pck|js|audio\.worklet\.js)$
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	# Everything else that is heavy but NOT content-addressed (icons, any loose
+	# media) stays environment-driven.
+	@payload path *.png *.svg *.wav *.mp3
+	header @payload Cache-Control "{$CROW_ASSET_CACHE:no-store}"
+
+	# Keep staging out of search results. Prod leaves this unset.
+	@robots path /robots.txt
+	respond @robots "{$CROW_ROBOTS:User-agent: *\nDisallow:}" 200
+
+	header -Server
+	header X-Content-Type-Options "nosniff"
+	header Referrer-Policy "no-referrer"
+
+	file_server {
+		precompressed br gzip
+	}
 }

@@ -1,5 +1,5 @@
 extends Node
-## LevelManager — Godot port of src/systems/LevelManager.ts.
+## LevelManager — ported from the retired Phaser build; this is now the only implementation.
 ## Owns the level registry (sorted by `order`), tracks the current level, and
 ## orchestrates transitions by emitting level_complete.
 

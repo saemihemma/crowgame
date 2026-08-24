@@ -1,0 +1,25 @@
+Crow — a child-first educational math platformer
+Copyright 2026 Crow contributors
+
+This product includes software developed as part of the Crow project.
+
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+--------------------------------------------------------------------------------
+Scope: what the Apache-2.0 license does and does not cover
+--------------------------------------------------------------------------------
+
+COVERED by Apache-2.0:
+  - all source code (godot/scripts/**, math-kernel/**, tools/**)
+  - all authored data and content (godot/data/**, authoring/**)
+  - documentation
+
+NOT COVERED by Apache-2.0:
+  - art, sprite, tileset, and audio assets under godot/assets/**
+
+  Those assets are governed separately. Several were produced with generative
+  AI tooling and others derive from third-party sources; their provenance and
+  terms are recorded in LICENSE_ATTRIBUTIONS.md. Do not assume an asset is
+  redistributable because the code is. If you fork this project for public
+  distribution, review LICENSE_ATTRIBUTIONS.md and replace any asset whose
+  terms you cannot satisfy.

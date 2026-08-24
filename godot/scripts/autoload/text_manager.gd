@@ -1,5 +1,5 @@
 extends Node
-## TextManager — Godot port of src/systems/TextManager.ts (i18n).
+## TextManager — ported from the retired Phaser build; this is now the only implementation (i18n).
 ## Default strings come from data/i18n/strings_en.json; user overrides persist
 ## under the same key (crow_translations). t(key, args...) does {0},{1} substitution.
 

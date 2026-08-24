@@ -2,7 +2,7 @@ extends RefCounted
 class_name PlayerMotion
 ## Tier-1 movement-feel model — pure, deterministic, unit-testable.
 ##
-## Replicates the Phaser Arcade integration used by src/entities/Player.ts so
+## Replicates the Phaser Arcade integration of the retired original, so
 ## the crow feels identical: per-tick acceleration, linear drag (reduced in air),
 ## manual maxSpeed clamp, coyote time, jump buffer, variable jump height,
 ## world gravity + terminal-velocity cap. The CharacterBody2D node (player.gd)

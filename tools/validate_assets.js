@@ -13,10 +13,10 @@ const colors = {
 };
 
 const ROOT = path.join(__dirname, '..');
-const BOOT_SCENE_PATH = path.join(ROOT, 'src', 'scenes', 'BootScene.ts');
-const AUDIO_MANIFEST_PATH = path.join(ROOT, 'public', 'data', 'audio', 'audio_manifest.json');
-const COMPILED_LEVELS_DIR = path.join(ROOT, 'public', 'data', 'levels', 'compiled');
-const LIVE_ASSET_ROOT = path.join(ROOT, 'public', 'assets');
+const GODOT_ROOT = path.join(ROOT, 'godot');
+const AUDIO_MANIFEST_PATH = path.join(ROOT, 'godot', 'data', 'audio', 'audio_manifest.json');
+const COMPILED_LEVELS_DIR = path.join(ROOT, 'godot', 'data', 'levels', 'compiled');
+const LIVE_ASSET_ROOT = path.join(ROOT, 'godot', 'assets');
 
 const SUSPICIOUS_UNREFERENCED_PATTERNS = [
     { pattern: /\.zip$/i, label: 'archive bundle' },
@@ -24,9 +24,9 @@ const SUSPICIOUS_UNREFERENCED_PATTERNS = [
     { pattern: /(^|[\\/])crownew/i, label: 'crow experiment export' },
     { pattern: /(^|[\\/])crow1(?:\.2|\.3)?\.png$/i, label: 'legacy crow root frame' },
     { pattern: /(^|[\\/])crow[234]\.png$/i, label: 'legacy crow root frame' },
-    { pattern: /^public\/assets\/sprites\/characters\/crow2\/crow2\//i, label: 'archivable crow2 source folder' },
-    { pattern: /^public\/assets\/sprites\/characters\/crow2\/crowjump\//i, label: 'archivable crowjump source folder' },
-    { pattern: /^public\/assets\/sprites\/characters\/crow2\/crow3\/sprite-64px-9-frames\//i, label: 'archivable extracted frame folder' },
+    { pattern: /^godot\/assets\/sprites\/characters\/crow2\/crow2\//i, label: 'archivable crow2 source folder' },
+    { pattern: /^godot\/assets\/sprites\/characters\/crow2\/crowjump\//i, label: 'archivable crowjump source folder' },
+    { pattern: /^godot\/assets\/sprites\/characters\/crow2\/crow3\/sprite-64px-9-frames\//i, label: 'archivable extracted frame folder' },
     { pattern: /(^|[\\/])sprite-256px-25\.png$/i, label: 'legacy extracted sprite sheet' },
     { pattern: /(^|[\\/])sprite-64px-9\.png$/i, label: 'legacy extracted sprite sheet' },
     { pattern: /(^|[\\/])coin\.png$/i, label: 'legacy coin experiment' },
@@ -34,8 +34,8 @@ const SUSPICIOUS_UNREFERENCED_PATTERNS = [
     { pattern: /(^|[\\/])coins2\.png$/i, label: 'legacy coin experiment' },
     { pattern: /(^|[\\/])door1\.png$/i, label: 'legacy door sprite' },
     { pattern: /(^|[\\/])door2\.png$/i, label: 'legacy door sprite' },
-    { pattern: /^public\/assets\/tilesets\/level1\//i, label: 'archivable tileset source folder' },
-    { pattern: /^public\/assets\/sprites\/levels\/level1\//i, label: 'archivable level art source folder' },
+    { pattern: /^godot\/assets\/tilesets\/level1\//i, label: 'archivable tileset source folder' },
+    { pattern: /^godot\/assets\/sprites\/levels\/level1\//i, label: 'archivable level art source folder' },
 ];
 
 function toPosix(value) {
@@ -68,17 +68,17 @@ function walkFiles(directory) {
     return results;
 }
 
-function normalizeToPublicPath(assetPath) {
+function normalizeToLiveAssetPath(assetPath) {
     const normalized = toPosix(assetPath);
-    if (normalized.startsWith('public/')) {
+    if (normalized.startsWith('godot/')) {
         return normalized;
     }
     const embeddedAssetsPath = normalized.match(/(?:^|\/)(assets\/.+)$/);
     if (embeddedAssetsPath) {
-        return `public/${embeddedAssetsPath[1]}`;
+        return `godot/${embeddedAssetsPath[1]}`;
     }
     if (normalized.startsWith('assets/')) {
-        return `public/${normalized}`;
+        return `godot/${normalized}`;
     }
     return normalized;
 }
@@ -103,7 +103,7 @@ function formatSize(bytes) {
 }
 
 function formatAssetLabel(relativePath) {
-    return relativePath.replace(/^public\//, '');
+    return relativePath.replace(/^godot\//, '');
 }
 
 function printGroup(title, entries, missing) {
@@ -122,19 +122,62 @@ function printGroup(title, entries, missing) {
     }
 }
 
-function extractBootVisualAssets() {
-    const bootSource = readText(BOOT_SCENE_PATH);
-    const matches = [
-        ...bootSource.matchAll(/this\.load\.(?:image|spritesheet)\(\s*'[^']+'\s*,\s*'([^']+)'/g),
+/**
+ * Every visual asset the game actually references.
+ *
+ * The Phaser original declared these in one place (a BootScene full of
+ * `this.load.image(...)` calls), so this used to be a single-file scrape. Godot
+ * has no such chokepoint: a texture is referenced from a `.gd` constant, a
+ * `.tscn` ext_resource, a `.tres`, or a data registry. So scan all four for
+ * `res://assets/...` and bare `assets/...` paths.
+ *
+ * Scanning more places than the old version is the point — a single-file scrape
+ * would now silently miss most of the real references and report live assets as
+ * unreferenced.
+ */
+function extractReferencedVisualAssets() {
+    const sources = [
+        ...collectFiles(path.join(GODOT_ROOT, 'scripts'), ['.gd']),
+        ...collectFiles(path.join(GODOT_ROOT, 'scenes'), ['.tscn']),
+        ...collectFiles(path.join(GODOT_ROOT, 'resources'), ['.tres', '.tscn']),
+        ...collectFiles(path.join(GODOT_ROOT, 'data'), ['.json']),
     ];
 
-    return [...new Set(matches.map(match => normalizeToPublicPath(match[1])))].sort();
+    const found = new Set();
+    for (const file of sources) {
+        // Strip GDScript comments first. A path inside a doc comment is an
+        // example, not a reference — level_loader.gd documents the Tiled path
+        // shape as "../../assets/tilesets/x.png", and counting that as live made
+        // validation demand a file that was never supposed to exist.
+        const text = path.extname(file) === '.gd'
+            ? readText(file).split('\n').filter(line => !line.trim().startsWith('#')).join('\n')
+            : readText(file);
+        for (const match of text.matchAll(/(?:res:\/\/)?(assets\/[A-Za-z0-9_\-./]+\.(?:png|jpg|jpeg|svg|webp))/g)) {
+            found.add(normalizeToLiveAssetPath(match[1]));
+        }
+    }
+    return [...found].sort();
+}
+
+/** Recursively list files under dir with one of the given extensions. */
+function collectFiles(dir, extensions) {
+    if (!fs.existsSync(dir)) return [];
+    const out = [];
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+            out.push(...collectFiles(full, extensions));
+        } else if (extensions.includes(path.extname(entry.name).toLowerCase())) {
+            out.push(full);
+        }
+    }
+    return out;
 }
 
 function extractManifestAudioAssets() {
     const audioManifest = loadJson(AUDIO_MANIFEST_PATH);
-    const sfx = Object.values(audioManifest.sfx || {}).map(entry => normalizeToPublicPath(entry.file));
-    const music = Object.values(audioManifest.music || {}).map(entry => normalizeToPublicPath(entry.file));
+    const sfx = Object.values(audioManifest.sfx || {}).map(entry => normalizeToLiveAssetPath(entry.file));
+    const music = Object.values(audioManifest.music || {}).map(entry => normalizeToLiveAssetPath(entry.file));
 
     return {
         sfx: [...new Set(sfx)].sort(),
@@ -156,8 +199,8 @@ function extractCompiledLevelAssets() {
             if (!tileset.image) {
                 continue;
             }
-            const normalized = normalizeToPublicPath(tileset.image);
-            if (normalized.startsWith('public/assets/')) {
+            const normalized = normalizeToLiveAssetPath(tileset.image);
+            if (normalized.startsWith('godot/assets/')) {
                 referenced.add(normalized);
                 continue;
             }
@@ -198,7 +241,7 @@ function main() {
         process.exit(1);
     }
 
-    const bootVisuals = extractBootVisualAssets();
+    const bootVisuals = extractReferencedVisualAssets();
     const audioAssets = extractManifestAudioAssets();
     const compiledLevelAssets = extractCompiledLevelAssets();
     const referencedAssets = [
@@ -211,7 +254,7 @@ function main() {
     const missingAssets = [];
 
     console.log(`\n${colors.green}OK${colors.reset} audio_manifest.json loaded`);
-    console.log(`${colors.green}OK${colors.reset} BootScene asset paths extracted from source`);
+    console.log(`${colors.green}OK${colors.reset} referenced asset paths extracted from godot sources`);
     console.log(`${colors.green}OK${colors.reset} compiled level tileset image paths extracted from JSON`);
 
     printGroup('Sound Effects', audioAssets.sfx, missingAssets);
@@ -235,7 +278,7 @@ function main() {
     }
 
     if (suspiciousAssets.length > 0) {
-        console.log(`\n${colors.yellow}Suspicious unreferenced assets still live under public/assets:${colors.reset}`);
+        console.log(`\n${colors.yellow}Suspicious unreferenced assets still live under godot/assets:${colors.reset}`);
         for (const entry of suspiciousAssets) {
             console.log(`- ${entry.relativePath} (${entry.label})`);
         }
@@ -245,7 +288,7 @@ function main() {
         process.exit(1);
     }
 
-    console.log(`\n${colors.green}All referenced live assets are present, and no suspicious experimental leftovers remain in public/assets.${colors.reset}\n`);
+    console.log(`\n${colors.green}All referenced live assets are present, and no suspicious experimental leftovers remain in godot/assets.${colors.reset}\n`);
 }
 
 main();

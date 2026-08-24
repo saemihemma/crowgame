@@ -13,7 +13,7 @@
 import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 
-const tuning = JSON.parse(readFileSync(resolve(__dirname, '../../public/data/tuning/player_base.json'), 'utf8'));
+const tuning = JSON.parse(readFileSync(resolve(__dirname, '../../godot/data/tuning/player_base.json'), 'utf8'));
 const WORLD_GRAVITY = 800;
 const DT = 1 / 60;
 
