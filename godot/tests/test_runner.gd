@@ -21,7 +21,7 @@ func _run() -> void:
 	var total_pass := 0
 	var total_fail := 0
 	var suites := _discover()
-	print("\n=== Crow GDScript test runner — %d suite(s) ===" % suites.size())
+	print("\n=== Hörmann GDScript test runner — %d suite(s) ===" % suites.size())
 
 	for path in suites:
 		var script: GDScript = load(path)

@@ -1,4 +1,4 @@
-# Crow Math System Architecture
+# Hörmann Math System Architecture
 
 Status: Current
 Authority: Runtime code and data, especially `data_manager.gd`, `math_problem_manager.gd`, `elo_manager.gd`, `elo_aware_strategy.gd`, `learner_state_manager.gd`, `elo_update_manager.gd` and `save_manager.gd`. The executable specification for these numbers is `math-kernel/**`, locked by `godot/tests/fixtures/**`.
@@ -6,7 +6,7 @@ Last verified against code: 2026-03-31
 
 ## Purpose
 
-This document explains the live math progression system in Crow.
+This document explains the live math progression system in Hörmann.
 
 What this is:
 - the current runtime model for problem loading, adaptive selection, mastery updates, confidence shifts, review scheduling, and unlock logic
@@ -46,7 +46,7 @@ flowchart LR
 
 ## Design Intent
 
-Crow is tuned for early elementary learners and aims for:
+Hörmann is tuned for early elementary learners and aims for:
 
 - high confidence and frequent success
 - slow mastery movement
@@ -55,7 +55,8 @@ Crow is tuned for early elementary learners and aims for:
 - stable unlocking of new domains only after the current domain is truly steady
 
 Current target band:
-- roughly `88-92%` first-attempt accuracy over recent history
+- roughly `70-85%` first-attempt accuracy over recent history — high enough to
+  feel like winning, low enough that the problems are still doing work
 
 ## Runtime Composition
 
@@ -88,16 +89,34 @@ Boot-time math initialization happens in [godot/scripts/autoload/data_manager.gd
 
 Current answer UI:
 - MCQ only
+- option order is shuffled twice: deterministically at generation time (the
+  old ascending order put the correct answer in a predictable slot) and again
+  at render time in `MathBoard`, which also covers the hand-authored pools
+- long prompts (framed questions and word problems) scale the question font
+  down and word-wrap so the text always fits the board
+- a second miss reveals the correct answer with the authored explanation
+  before the overlay closes, so a failed challenge ends in teaching
+- a curriculum step-up fires `CURRICULUM_STEP_UP`, and the HUD celebrates it
+  once it is visible again; demotions are never signaled
+
+Prompt wording:
+- addition and subtraction include word-problem variants ("You have 3 berries.
+  You find 2 more.") from curriculum step 3 upward; steps 0-2 stay on the bare
+  equation and simplest question form so reading load never gates the math
+- every worded shape has a parse pattern in
+  [src/math/wordedArithmetic.ts](./src/math/wordedArithmetic.ts); steps,
+  difficulty traits, replay keys, and the verifier all re-derive the fact from
+  that shared table, so wording variants of one fact share a replay key
 
 The shared type system still supports other answer modes, but the live UI does not render them.
-The shipped owl interaction is currently two problems per encounter, so total repo inventory and per-session lived variety are still not the same thing.
+The shipped owl interaction is one problem per encounter — answer it and the owl is saved. `problemCount` stays per-NPC config in `npc_registry.json`, so a future gated variant (e.g. a padlock owl) can demand more without code changes.
 The live owl path is addition-first, and the fresh opening mix currently reaches `addition` plus `counting` to create softer "lucky easy ones" without jumping into later arithmetic too early.
 Pattern matching is part of the broader owl-safe set, but it does not start unlocked on a fresh learner profile.
-When an encounter reaches its follow-up question, the runtime now prefers an alternate unlocked owl-safe domain before falling back to the full owl-safe set, so the second prompt is less likely to be "more addition again" unless the learner has no safe alternative unlocked.
+When an NPC asks more than one problem, follow-up questions prefer an alternate unlocked owl-safe domain before falling back to the full owl-safe set — dormant at the one-problem baseline, live again for any multi-problem NPC.
 
 ## Learner Model
 
-Crow now uses 4 learner signals for local math selection.
+Hörmann now uses 4 learner signals for local math selection.
 
 ### 1. Mastery
 
@@ -116,12 +135,12 @@ Live update behavior in [godot/scripts/math/elo_manager.gd](./godot/scripts/math
   - `0.5` for corrected retry
   - `0.0` for wrong
 - K-factor:
-  - `4` before 50 attempts
-  - `3` before 200 attempts
-  - `2` afterward
+  - `16` before 30 attempts
+  - `12` before 150 attempts
+  - `8` afterward
 - delta cap:
   - `+8` max upward per answer
-  - `-12` max downward per answer
+  - `-8` max downward per answer
 - update split:
   - `70%` to global ELO
   - `30%` to the active domain modifier
@@ -136,13 +155,25 @@ Live behavior in [godot/scripts/systems/learner_state_manager.gd](./godot/script
   - `currentStep`
   - `winsAtCurrentStep`
   - recent step results
-- selection is never allowed above the current step
+- selection is capped at one step above the current step, and that stretch
+  step is only reachable while the learner is hot (see selection policy)
 - promotion:
-  - `+1` step after `5` first-try correct answers at the current step
-  - and at least `90%` first-attempt accuracy across the last `10` attempts in that domain
+  - after `3` first-try correct answers at the current step
+  - and at least `80%` first-attempt accuracy across the last `10` attempts in that domain
+  - the ladder advances to the next step with at least `3` authored problems,
+    skipping empty or near-empty steps; it never promotes onto a rung the
+    learner cannot practice
+  - a first-try correct answer on a stretch problem promotes directly to that step
 - demotion:
+  - evaluated only on a wrong answer, never re-triggered by later correct answers
+    still inside the window
   - `-1` step after `2` wrong answers in the last `5` attempts for that domain
-  - or when confidence for that domain drops to `-15` or below
+  - or when confidence for that domain drops to `-25` or below
+  - after a demotion, confidence is softened to at most `-10` so one bad patch
+    cannot cascade into multiple demotions
+- starting steps are reconciled against the problem pools at boot: a domain
+  whose authored content starts above the stored step is raised to the first
+  step that has problems
 
 This is the primary local safety rail for young learners. ELO no longer authorizes harder local problems by itself.
 
@@ -166,7 +197,7 @@ Effective selection ELO is:
 masteryELO + confidenceOffset
 ```
 
-This lets Crow get easier quickly during a bad stretch without destroying long-term mastery.
+This lets Hörmann get easier quickly during a bad stretch without destroying long-term mastery.
 
 ### 4. Review
 
@@ -198,10 +229,10 @@ Rules:
 
 Live local weighting in [godot/scripts/math/elo_aware_strategy.gd](./godot/scripts/math/elo_aware_strategy.gd):
 
-- `50%` comfort
-- `25%` review
-- `25%` at level
-- `0%` harder
+- `40%` comfort
+- `20%` review
+- `30%` at level
+- `10%` stretch
 
 Lane behavior:
 
@@ -211,12 +242,15 @@ Lane behavior:
   - due review items matched against review-friendly problems `1-2` steps easier than current
 - at level:
   - exact current curriculum step
-- harder:
-  - disabled for the local kid-focused path
+- stretch:
+  - one curriculum step harder than current
+  - only offered while the learner is hot: at least 5 recent attempts in the
+    domain, correct-answer rate `>= 80%` across the last 5, and
+    non-negative confidence
+  - a first-try correct stretch answer promotes the learner to that step
 
-If no review items are due:
-- the review share rolls into comfort when comfort exists
-- otherwise it rolls into the current step
+Empty lanes drop out and their weight is renormalized across the remaining
+non-empty lanes, so the shares above are relative, not exact odds.
 
 If the requested bands are empty:
 - strategy steps down only
@@ -235,13 +269,13 @@ Local kid-safe filter:
 - this keeps two-digit addition and subtraction out of the live local owl loop until a denser later ladder exists
 - Bridge Pack A now gives local owl play dense middle-band coverage for addition steps `10-19` and subtraction steps `6-13`.
 - Subtraction step `5` remains intentionally tiny because the current derivation only yields a narrow `10 - 0` / `10 - 10` style prompt shape there.
-- The repo now ships `3000` total runtime problems, but the current owl-safe local subset is smaller; use `reports/math-batches/owl-surface-summary.json` when you need the owl-safe inventory and fresh-profile subset instead of the full inventory headline.
+- The repo now ships `3150` total runtime problems, but the current owl-safe local subset is smaller; use `reports/math-batches/owl-surface-summary.json` when you need the owl-safe inventory and fresh-profile subset instead of the full inventory headline.
 - `openingUnlockedInventory*` in that report means unlocked-domain inventory before current-step clamping.
 - `freshReachable*` in that report means the real fresh-profile day-one reachable subset after current-step clamping.
 - The owl-safe surface is not arithmetic-only anymore: early fresh encounters can mix addition with counting, while pattern matching joins later and subtraction still waits for addition stability.
 - The component-level fallback and the internal ELO fallback now preserve the same operand, step, and difficulty caps instead of silently widening when the recent-window logic resets.
 - `runtime-selector-smoke.json` is runtime-aligned selector evidence built from the shared owl-selection helper plus live learner-state and NPC-config rails; it is not the literal browser scene/input/retry flow by itself.
-- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the real owl interaction, wrong-answer retry, second-problem follow-up, and overlay close path.
+- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the real owl interaction, wrong-answer retry, and the single-problem completion-and-close path.
 - `runtime-browser-smoke.json` is still not telemetry-backed pedagogy proof and does not independently validate that the frozen ELO bands are perfect for every child.
 
 ## Unlock Logic
@@ -289,7 +323,7 @@ Math state is persisted in 2 layers:
   - `crow_learner_snapshot_<childId>`
   - `crow_learner_pending_attempts_<childId>`
 
-This gives Crow:
+This gives Hörmann:
 - immediate local continuity
 - per-profile learner persistence
 - optional hosted sync when a learner API base is configured

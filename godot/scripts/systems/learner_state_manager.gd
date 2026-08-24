@@ -1,5 +1,5 @@
 extends Node
-## LearnerStateManager — Godot port of src/systems/LearnerStateManager.ts. Autoload.
+## LearnerStateManager — Godot port of math-kernel/systems/LearnerStateManager.ts. Autoload.
 ##
 ## Tier-1 exact port of the fast learner signals: per-domain confidence offsets,
 ## curriculum steps (promotion/demotion), review SRS queue, recent-attempt
@@ -14,11 +14,14 @@ const MAX_BACKLOG_HISTORY := 8
 const MAX_STEP_RESULTS := 10
 const IMMEDIATE_REVIEW_MIN_GAP := 2
 const IMMEDIATE_REVIEW_MAX_GAP := 4
-const PROMOTION_WIN_TARGET := 5
-const PROMOTION_ACCURACY_TARGET := 0.9
+const PROMOTION_WIN_TARGET := 3
+const PROMOTION_ACCURACY_TARGET := 0.8
 const PROMOTION_ACCURACY_WINDOW := 10
 const DEMOTION_WINDOW := 5
 const DEMOTION_WRONG_THRESHOLD := 2
+const DEMOTION_CONFIDENCE_THRESHOLD := -25.0
+const POST_DEMOTION_CONFIDENCE_FLOOR := -10.0
+const PROMOTION_STEP_SCAN_LIMIT := 20
 
 const DAY_MS := 86400000  # 24 * 60 * 60 * 1000
 
@@ -33,6 +36,9 @@ var _initialized := false
 var _id_counter := 0
 # Test seam: when non-empty, _get_review_gap() pops from this instead of RNG.
 var _review_gap_queue: Array = []
+# Pool-backed "does this step have enough problems" check; invalid = fall
+# back to blind +1 promotion (mirrors the TS stepContentProvider).
+var _step_content_provider := Callable()
 
 func _elo() -> Node:
 	return get_node("/root/ELOManager")
@@ -67,10 +73,36 @@ func initialize(profile: Variant, saved_state: Variant = null, mastery: Variant 
 
 	_snapshot = merged
 	_initialized = true
+	reconcile_curriculum_floors()
 	_refresh_derived_state()
 
 func is_initialized() -> bool:
 	return _initialized
+
+func set_step_content_provider(provider: Callable) -> void:
+	_step_content_provider = provider
+	reconcile_curriculum_floors()
+
+## Raise any domain whose authored content starts above its stored step, so a
+## fresh ladder never points at steps that have no problems.
+func reconcile_curriculum_floors() -> void:
+	if not _initialized or not _step_content_provider.is_valid():
+		return
+	for domain in ALL_MATH_DOMAINS:
+		var progress: Dictionary = _snapshot["curriculumProgress"][domain]
+		var current := int(progress["currentStep"])
+		var has_reachable := false
+		for step in range(0, current + 1):
+			if bool(_step_content_provider.call(domain, step)):
+				has_reachable = true
+				break
+		if has_reachable:
+			continue
+		for step in range(current + 1, current + PROMOTION_STEP_SCAN_LIMIT + 1):
+			if bool(_step_content_provider.call(domain, step)):
+				progress["currentStep"] = step
+				progress["winsAtCurrentStep"] = 0
+				break
 
 func get_snapshot() -> Dictionary:
 	if not _initialized:
@@ -202,44 +234,50 @@ func _apply_curriculum_progress(attempt: Dictionary) -> void:
 	})
 	progress["recentStepResults"] = _slice_tail(progress["recentStepResults"], MAX_STEP_RESULTS)
 
-	if step > int(progress["currentStep"]):
+	# Stretch-lane fast path: a first-try win above the current step promotes
+	# directly to that step. Never triggers on a wrong or retried answer.
+	if step > int(progress["currentStep"]) and attempt["correct"] and attempt["firstAttempt"]:
 		progress["currentStep"] = step
 		progress["winsAtCurrentStep"] = 0
 
 	if step == int(progress["currentStep"]) and attempt["correct"] and attempt["firstAttempt"]:
 		progress["winsAtCurrentStep"] = int(progress["winsAtCurrentStep"]) + 1
 
-	# NOTE: this counts misses in EVERY lane, deliberately, for now.
-	#
-	# Filtering to at_level misses only was tried and reverted. It does fix a real
-	# ratchet (only 25% of problems are at-level, so 5 at-level wins take ~20
-	# attempts while the 5-attempt window slides across all of them, and a missed
-	# skill is re-served for review inside that window). But the measured effect in
-	# the runtime selector simulation was +1 curriculum step in addition and
-	# subtraction NEVER unlocking: the unlock gate needs >=90% first-attempt
-	# accuracy over 20 attempts, and a child held at a higher step answers less
-	# accurately. Trading a whole domain for one step of depth is a pedagogy
-	# decision, not a cleanup.
-	#
-	# Note also that this arm is not the binding constraint anyway: a single miss of
-	# any lane sets confidence to exactly -15.0, and the condition below demotes on
-	# confidence <= -15.0. See docs/PREMORTEM_PUBLIC_LAUNCH.md, Story 3.
-	var recent_domain := _get_projected_recent_attempts(domain, attempt, DEMOTION_WINDOW)
-	var wrong_count := 0
-	for entry in recent_domain:
-		if not entry["correct"]:
-			wrong_count += 1
-	var confidence_offset := float(_snapshot["confidenceOffsets"][domain])
-	if wrong_count >= DEMOTION_WRONG_THRESHOLD or confidence_offset <= -15.0:
-		progress["currentStep"] = maxi(0, int(progress["currentStep"]) - 1)
-		progress["winsAtCurrentStep"] = 0
+	# Demotion is only evaluated on the wrong answer itself, so a rough patch
+	# costs one step, not one step per attempt while it sits in the window.
+	if not attempt["correct"]:
+		var recent_domain := _get_projected_recent_attempts(domain, attempt, DEMOTION_WINDOW)
+		var wrong_count := 0
+		for entry in recent_domain:
+			if not entry["correct"]:
+				wrong_count += 1
+		var confidence_offset := float(_snapshot["confidenceOffsets"][domain])
+		if wrong_count >= DEMOTION_WRONG_THRESHOLD or confidence_offset <= DEMOTION_CONFIDENCE_THRESHOLD:
+			progress["currentStep"] = maxi(0, int(progress["currentStep"]) - 1)
+			progress["winsAtCurrentStep"] = 0
+			_snapshot["confidenceOffsets"][domain] = maxf(
+				float(_snapshot["confidenceOffsets"][domain]),
+				POST_DEMOTION_CONFIDENCE_FLOOR,
+			)
 		return
 
 	var promo_window := _get_projected_recent_attempts(domain, attempt, PROMOTION_ACCURACY_WINDOW)
 	var accuracy := _compute_first_attempt_accuracy(promo_window)
-	if step == int(progress["currentStep"]) and int(progress["winsAtCurrentStep"]) >= PROMOTION_WIN_TARGET and accuracy >= PROMOTION_ACCURACY_TARGET:
-		progress["currentStep"] = int(progress["currentStep"]) + 1
-		progress["winsAtCurrentStep"] = 0
+	if int(progress["winsAtCurrentStep"]) >= PROMOTION_WIN_TARGET and accuracy >= PROMOTION_ACCURACY_TARGET:
+		var next_step := _find_next_step_with_content(domain, int(progress["currentStep"]))
+		if next_step > int(progress["currentStep"]):
+			progress["currentStep"] = next_step
+			progress["winsAtCurrentStep"] = 0
+
+## Curriculum step data has authored holes; promotion skips over steps the
+## provider says are not practicable, and stays put if nothing above has content.
+func _find_next_step_with_content(domain: String, current_step: int) -> int:
+	if not _step_content_provider.is_valid():
+		return current_step + 1
+	for step in range(current_step + 1, current_step + PROMOTION_STEP_SCAN_LIMIT + 1):
+		if bool(_step_content_provider.call(domain, step)):
+			return step
+	return current_step
 
 func _apply_review_update(attempt: Dictionary) -> void:
 	var domain := String(attempt["domain"])

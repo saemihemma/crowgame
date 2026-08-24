@@ -1,4 +1,4 @@
-# Crow Product Context
+# Hörmann Product Context
 
 Status: Supportive
 Authority: Product, audience, and design context. Runtime truth lives elsewhere.
@@ -6,7 +6,7 @@ Last verified against code: 2026-03-22
 
 ## Purpose
 
-This document explains what Crow is trying to be.
+This document explains what Hörmann is trying to be.
 
 What this is:
 - product framing
@@ -21,7 +21,7 @@ What this is not:
 
 ## Product Summary
 
-Crow is a child-first educational platformer designed for young learners practicing early math in short, encouraging sessions.
+Hörmann is a child-first educational platformer designed for young learners practicing early math in short, encouraging sessions.
 
 Core audience:
 - children around ages 5-7
@@ -30,7 +30,7 @@ Core audience:
 
 ## Learning Philosophy
 
-Crow is built around a few principles:
+Hörmann is built around a few principles:
 
 - success should be common enough to feel motivating
 - mistakes should lower difficulty faster than success raises it
@@ -74,7 +74,7 @@ As of 2026-03-22, the shipped surface is a playable prototype with:
 
 ## Visual And Tone Direction
 
-Crow should feel:
+Hörmann should feel:
 - bright
 - readable
 - stylized for kids

@@ -1,10 +1,11 @@
 extends RefCounted
 class_name ELOAwareStrategy
-## Godot port of src/math/selection/ELOAwareStrategy.ts.
-## Lane policy: 50% comfort (step-1), 25% review (step-2..-1, skill-matched),
-## 25% at-level (current step), 0% stretch. Empty-review reweights to comfort
-## (else at-level). Empty band -> step-down-only fallback. Curriculum step
-## hard-caps selection; ELO is a background signal.
+## Godot port of math-kernel/math/selection/ELOAwareStrategy.ts.
+## Lane policy: 40% comfort (step-1), 20% review (step-2..-1, skill-matched),
+## 30% at-level (current step), 10% stretch (step+1, only while the learner is
+## hot). Empty lanes drop out and remaining weights renormalize in _pick_lane.
+## Empty band -> step-down-only fallback. Curriculum steps cap selection at one
+## step above current; ELO is a background signal.
 
 var _pool: ProblemPoolManager
 var _last_meta: Variant = null  # { lane, reviewItemId } or null
@@ -28,19 +29,17 @@ func select(domain: String, exclude_ids: Array, constraints: Dictionary = {}) ->
 		"comfort": _wrap(_pool.get_problems_in_curriculum_step_range(domain, comfort_step, comfort_step, exclude_ids, constraints)),
 		"review": _build_review_candidates(domain, review_min, review_max, due_review, exclude_ids, constraints),
 		"at_level": _wrap(_pool.get_problems_in_curriculum_step_range(domain, effective_max_step, effective_max_step, exclude_ids, constraints)),
-		"stretch": [],
+		"stretch": _wrap(_pool.get_problems_in_curriculum_step_range(domain, effective_max_step + 1, effective_max_step + 1, exclude_ids, constraints)) if learner.can_use_stretch_lane(domain) else [],
 	}
 
+	# Relative shares, not exact odds: empty lanes are dropped below and
+	# _pick_lane renormalizes over what remains.
 	var lane_weights := {
-		"comfort": 0.5,
-		"review": 0.25 if (lane_candidates["review"] as Array).size() > 0 else 0.0,
-		"at_level": 0.25,
-		"stretch": 0.0,
+		"comfort": 0.4,
+		"review": 0.2,
+		"at_level": 0.3,
+		"stretch": 0.1,
 	}
-	if (lane_candidates["review"] as Array).is_empty() and (lane_candidates["comfort"] as Array).size() > 0:
-		lane_weights["comfort"] += 0.25
-	elif (lane_candidates["review"] as Array).is_empty():
-		lane_weights["at_level"] += 0.25
 
 	var available: Array = []
 	for lane in ["comfort", "review", "at_level", "stretch"]:

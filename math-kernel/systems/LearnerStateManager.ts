@@ -30,11 +30,14 @@ const MAX_BACKLOG_HISTORY = 8;
 const MAX_STEP_RESULTS = 10;
 const IMMEDIATE_REVIEW_MIN_GAP = 2;
 const IMMEDIATE_REVIEW_MAX_GAP = 4;
-const PROMOTION_WIN_TARGET = 5;
-const PROMOTION_ACCURACY_TARGET = 0.9;
+const PROMOTION_WIN_TARGET = 3;
+const PROMOTION_ACCURACY_TARGET = 0.8;
 const PROMOTION_ACCURACY_WINDOW = 10;
 const DEMOTION_WINDOW = 5;
 const DEMOTION_WRONG_THRESHOLD = 2;
+const DEMOTION_CONFIDENCE_THRESHOLD = -25;
+const POST_DEMOTION_CONFIDENCE_FLOOR = -10;
+const PROMOTION_STEP_SCAN_LIMIT = 20;
 
 const DOMAIN_PREREQUISITES: Partial<Record<MathDomain, MathDomain[]>> = {
     addition: [],
@@ -109,6 +112,7 @@ export class LearnerStateManager {
     private static instance: LearnerStateManager;
     private snapshot!: LearnerSnapshot;
     private initialized = false;
+    private stepContentProvider: ((domain: MathDomain, step: number) => boolean) | null = null;
 
     private constructor() {}
 
@@ -156,6 +160,7 @@ export class LearnerStateManager {
 
         this.snapshot = merged;
         this.initialized = true;
+        this.reconcileCurriculumFloors();
         this.refreshDerivedState();
     }
 
@@ -364,7 +369,9 @@ export class LearnerStateManager {
         });
         progress.recentStepResults = progress.recentStepResults.slice(-MAX_STEP_RESULTS);
 
-        if (attempt.curriculumStep > progress.currentStep) {
+        // Stretch-lane fast path: a first-try win above the current step promotes
+        // directly to that step. Never triggers on a wrong or retried answer.
+        if (attempt.curriculumStep > progress.currentStep && attempt.correct && attempt.firstAttempt) {
             progress.currentStep = attempt.curriculumStep;
             progress.winsAtCurrentStep = 0;
         }
@@ -373,25 +380,20 @@ export class LearnerStateManager {
             progress.winsAtCurrentStep += 1;
         }
 
-        const recentDomainAttempts = this.getProjectedRecentAttempts(attempt.domain, attempt, DEMOTION_WINDOW);
-        // NOTE: this counts misses in EVERY lane, deliberately, for now.
-        //
-        // Filtering to at_level misses only was tried and reverted. It does fix a
-        // real ratchet (only 25% of problems are at-level, so 5 at-level wins take
-        // ~20 attempts while the 5-attempt window slides across all of them, and a
-        // missed skill is re-served for review inside that window). But the
-        // measured effect in the runtime selector simulation was +1 curriculum
-        // step in addition and subtraction NEVER unlocking: the unlock gate needs
-        // >=90% first-attempt accuracy over 20 attempts, and a child held at a
-        // higher step answers less accurately. Trading a whole domain for one step
-        // of depth is a pedagogy decision, not a cleanup.
-        //
-        // See docs/PREMORTEM_PUBLIC_LAUNCH.md, Story 3.
-        const wrongCount = recentDomainAttempts.filter(entry => !entry.correct).length;
-        const confidenceOffset = this.snapshot.confidenceOffsets[attempt.domain];
-        if (wrongCount >= DEMOTION_WRONG_THRESHOLD || confidenceOffset <= -15) {
-            progress.currentStep = Math.max(0, progress.currentStep - 1);
-            progress.winsAtCurrentStep = 0;
+        // Demotion is only evaluated on the wrong answer itself, so a rough patch
+        // costs one step, not one step per attempt while it sits in the window.
+        if (!attempt.correct) {
+            const recentDomainAttempts = this.getProjectedRecentAttempts(attempt.domain, attempt, DEMOTION_WINDOW);
+            const wrongCount = recentDomainAttempts.filter(entry => !entry.correct).length;
+            const confidenceOffset = this.snapshot.confidenceOffsets[attempt.domain];
+            if (wrongCount >= DEMOTION_WRONG_THRESHOLD || confidenceOffset <= DEMOTION_CONFIDENCE_THRESHOLD) {
+                progress.currentStep = Math.max(0, progress.currentStep - 1);
+                progress.winsAtCurrentStep = 0;
+                this.snapshot.confidenceOffsets[attempt.domain] = Math.max(
+                    this.snapshot.confidenceOffsets[attempt.domain],
+                    POST_DEMOTION_CONFIDENCE_FLOOR,
+                );
+            }
             return;
         }
 
@@ -402,12 +404,68 @@ export class LearnerStateManager {
         );
         const accuracy = this.computeFirstAttemptAccuracy(promotionWindow);
         if (
-            attempt.curriculumStep === progress.currentStep &&
             progress.winsAtCurrentStep >= PROMOTION_WIN_TARGET &&
             accuracy >= PROMOTION_ACCURACY_TARGET
         ) {
-            progress.currentStep += 1;
-            progress.winsAtCurrentStep = 0;
+            const nextStep = this.findNextStepWithContent(attempt.domain, progress.currentStep);
+            if (nextStep > progress.currentStep) {
+                progress.currentStep = nextStep;
+                progress.winsAtCurrentStep = 0;
+            }
+        }
+    }
+
+    /**
+     * Curriculum step data has authored holes (steps with zero problems).
+     * Promotion skips over empty steps so the ladder never parks a learner
+     * on a step where at-level problems can never be served.
+     */
+    private findNextStepWithContent(domain: MathDomain, currentStep: number): number {
+        if (!this.stepContentProvider) {
+            return currentStep + 1;
+        }
+
+        for (let step = currentStep + 1; step <= currentStep + PROMOTION_STEP_SCAN_LIMIT; step++) {
+            if (this.stepContentProvider(domain, step)) {
+                return step;
+            }
+        }
+
+        // No content above: stay put instead of promoting into an empty band.
+        return currentStep;
+    }
+
+    /**
+     * Wire in a pool-backed "does this step have problems" check.
+     * Also reconciles domains whose starting step sits below the first
+     * authored step (e.g. a domain whose content starts at step 1).
+     */
+    setStepContentProvider(provider: (domain: MathDomain, step: number) => boolean): void {
+        this.stepContentProvider = provider;
+        this.reconcileCurriculumFloors();
+    }
+
+    reconcileCurriculumFloors(): void {
+        if (!this.initialized || !this.stepContentProvider) return;
+
+        for (const domain of ALL_MATH_DOMAINS) {
+            const progress = this.snapshot.curriculumProgress[domain];
+            let hasReachableContent = false;
+            for (let step = 0; step <= progress.currentStep; step++) {
+                if (this.stepContentProvider(domain, step)) {
+                    hasReachableContent = true;
+                    break;
+                }
+            }
+            if (hasReachableContent) continue;
+
+            for (let step = progress.currentStep + 1; step <= progress.currentStep + PROMOTION_STEP_SCAN_LIMIT; step++) {
+                if (this.stepContentProvider(domain, step)) {
+                    progress.currentStep = step;
+                    progress.winsAtCurrentStep = 0;
+                    break;
+                }
+            }
         }
     }
 

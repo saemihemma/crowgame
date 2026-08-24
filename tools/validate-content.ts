@@ -486,6 +486,13 @@ if (existsSync(mathDir)) {
 
 validateMathAuthoringFiles();
 
+// NOTE: a validateGodotMathDataSync() check used to live here, comparing the
+// Phaser-era public/data/math twin against godot/data/math. Once public/ was
+// deleted both sides of that comparison resolved to godot/data/math, so it
+// compared the tree against itself: always green, and it still incremented the
+// validated counter. Removed rather than repaired — godot/data is now the only
+// copy, so there is no longer a twin that can drift.
+
 // Cross-reference validation
 validateCrossReferences();
 validateCompiledLevels();

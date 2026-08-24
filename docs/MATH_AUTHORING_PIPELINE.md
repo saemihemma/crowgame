@@ -1,4 +1,4 @@
-# Crow Math Authoring Pipeline
+# Hörmann Math Authoring Pipeline
 
 Status: Current
 Authority: Current workflow guide for offline math authoring, materialization, and review. Runtime truth still lives in `godot/data/math/**` plus the live selection code in `godot/scripts/math/**` and `godot/scripts/systems/**`. The offline pipeline itself runs on `math-kernel/**`, which never ships.
@@ -7,7 +7,7 @@ Last verified against code: 2026-03-31
 ## Purpose
 
 What this is:
-- the current offline pipeline for growing Crow math content from trusted templates
+- the current offline pipeline for growing Hörmann math content from trusted templates
 - the source of truth for where batch specs, band tables, seed content, and review outputs live
 - the guide for how lead-producer-style triple verification is encoded in the repo today
 
@@ -41,7 +41,7 @@ flowchart LR
 
 ## Current Model
 
-Crow still ships concrete JSON math pools at runtime.
+Hörmann still ships concrete JSON math pools at runtime.
 
 The authoring layer is offline-only:
 - `authoring/math/seed/problems_curriculum_seed.json`
@@ -90,7 +90,7 @@ npm run validate
 
 `math:browser-smoke`:
 - runs a literal browser-backed smoke against the live dev app
-- clears local Crow state for the smoke run, starts `level_01`, triggers the first owl, answers one wrong then corrected retry, answers the follow-up problem, and verifies overlay close plus completion payloads
+- clears local Hörmann state for the smoke run, starts `level_01`, triggers the first owl, answers one wrong then corrected retry, answers the follow-up problem, and verifies overlay close plus completion payloads
 - rewrites `reports/math-batches/runtime-browser-smoke.json`
 - refreshes screenshots in `output/playwright/math-browser-smoke/*.png`
 
@@ -150,7 +150,7 @@ The current repo-encoded review loop mirrors the lead-producer plan:
 5. Browser-backed owl smoke
    - literal `MathChallengeScene` input path
    - wrong-answer retry timing
-   - second-problem follow-up path
+   - single-problem completion-and-close path
    - overlay close and completion payload verification
    - still not pedagogy proof on its own
 
@@ -191,9 +191,9 @@ What this does not prove:
 - not semantic dedupe of every arithmetic fact phrased in different words
 - not future hosted-backend calibration or liveops tuning
 - not broad browser coverage beyond the specific owl smoke path checked in `runtime-browser-smoke.json`
-- not that the full `3000` total inventory is a `3000`-moment owl curriculum
+- not that the full `3150` total inventory is a `3150`-moment owl curriculum
 - not that `openingUnlockedInventory*` equals the fresh-profile day-one surface; use `freshReachable*` for that
-- not perfect child-perceived replay variety proof on its own, even though the shipped owl opening now mixes addition with counting and serves `2` problems per encounter
+- not perfect child-perceived replay variety proof on its own, even though the shipped owl opening now mixes addition with counting and serves `1` problem per encounter
 - not a substitute for manual play with a real child; the report can prove rail safety and coverage, but it cannot tell you whether a specific six-year-old will find the follow-up mix delightful or tiring
 
 ## Guardrails

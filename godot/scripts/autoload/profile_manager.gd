@@ -1,5 +1,5 @@
 extends Node
-## ProfileManager — Godot port of src/systems/ProfileManager.ts.
+## ProfileManager — ported from the retired Phaser build; this is now the only implementation.
 ## Multi-user profiles (username + 4-digit PIN). Each profile maps to its own
 ## save key `crow_save_<username>`. Storage keys are identical to the web build.
 

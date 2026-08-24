@@ -34,6 +34,8 @@ func _ready() -> void:
 		_add_button(col, TextManager.t("cloud_title"), _on_cloud)
 	if ProfileManager.has_profiles():
 		_add_button(col, TextManager.t("report_open"), _on_parent_report)
+	# Language selector, top-right, out of the way of the centred column.
+	add_child(LanguageToggle.build(_on_locale_changed))
 	_add_build_stamp()
 
 func _on_cloud() -> void:
@@ -41,6 +43,9 @@ func _on_cloud() -> void:
 
 func _on_parent_report() -> void:
 	add_child(PARENT_REPORT.instantiate())
+
+func _on_locale_changed() -> void:
+	SceneRouter.goto("main_menu")
 
 ## Tiny build stamp (bottom-right) so phone refreshes visibly confirm a new
 ## build during fast iteration. Written by tools/build_web.sh.

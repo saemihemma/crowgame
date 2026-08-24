@@ -1,5 +1,5 @@
 extends Node
-## ThemeManager — Godot port of src/ui/theme/ThemeManager.ts.
+## ThemeManager — ported from the retired Phaser build; this is now the only implementation.
 ## Holds registered theme definitions (forest/scifi) and the active theme, and
 ## exposes palette colors. Slice 8 promotes this to the full SkinPack swap system
 ## (Tier 3); for now it loads the JSON themes and serves colors.

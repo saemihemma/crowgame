@@ -1,5 +1,5 @@
 extends Node
-## SaveManager — Godot port of src/systems/SaveManager.ts.
+## SaveManager — ported from the retired Phaser build; this is now the only implementation.
 ## Profile-aware persistence over Persistence (user://). Same SaveData shape,
 ## same auto-save-on-event behaviour. ELO/learner hooks plug in at slice 3 and
 ## are read defensively until then.

@@ -1,6 +1,6 @@
 extends RefCounted
 class_name ProblemPoolManager
-## Godot port of src/math/ProblemPoolManager.ts.
+## Godot port of math-kernel/math/ProblemPoolManager.ts.
 ## Organizes problems by domain, assigns static difficulty->ELO, tracks
 ## per-problem attempt/success telemetry, and filters candidates by ELO/step
 ## range plus common constraints (exclude ids, difficulty, maxStep, maxOperand,

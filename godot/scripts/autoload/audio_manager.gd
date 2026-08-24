@@ -1,5 +1,5 @@
 extends Node
-## AudioManager — Godot port of src/systems/AudioManager.ts.
+## AudioManager — ported from the retired Phaser build; this is now the only implementation.
 ## Baseline music/SFX playback from data/audio/audio_manifest.json. Slice 8 adds
 ## pooling and music cross-fade; the API shape is kept so call sites are stable.
 

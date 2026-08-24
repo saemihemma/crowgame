@@ -1,4 +1,8 @@
-# Crow (Godot) — Architecture & Conventions
+# Hörmann (Godot) — Architecture & Conventions
+
+Status: Current
+Authority: Scene, autoload and convention reference for the Godot port.
+Last verified against code: 2026-08-23
 
 Status: Current
 Authority: Canonical conventions for the shipped game. The CI hardcode guard (`godot/tools/check_hardcoding.py`) is the enforcing authority.

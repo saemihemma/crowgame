@@ -80,67 +80,49 @@ on a real iPad. Until the first, roughly a third of the server is dark code in
 production. The second cannot be simulated — Chromium at an iPad viewport does not
 prove WebKit's eviction, audio unlock, or memory ceiling for a 33.7 MB wasm.
 
-## Story 3 — "The game decided she's bad at maths" · measured, not patched
+## Story 3 — "The game decided she's bad at maths" · already fixed on main
 
 A seven-year-old plays a fortnight and every problem stays trivially easy. She is
 bored; the parent's read is "it's a baby game, it doesn't teach anything". Or the
 mirror: a struggling five-year-old is pinned at step 0 forever and the parent
 concludes it doesn't adapt.
 
-This was the "learner model tuned for one child" risk, and the mechanism turned out
-to be specific:
+**This section is a retraction.** It was written against a branch that had fallen
+twelve commits behind `main`, and it proposed a fix — filtering demotion's
+wrong-count arm to `at_level` misses only — that was written, simulated, and
+reverted here (it bought one step of depth in addition at the cost of subtraction
+never unlocking). All of that is moot: `main` had already fixed the ratchet, by a
+better route, in "Make math difficulty actually progress" (#5).
 
-- **Promotion** needs 5 first-attempt wins at the current step **and** ≥90%
-  first-attempt accuracy over the last 10 attempts in that domain.
-- **Demotion** needs only **2 wrong in the last 5** — counted across *all* lanes.
-- Only **25%** of served problems are at the current step (50% comfort, 25%
-  review), so 5 at-level wins take ~20 attempts while the 5-attempt demotion
-  window slides across every one of them.
-- **The review queue closes the loop.** A miss schedules a review item due in 2-4
-  attempts; the demotion window is 5. The system re-serves a just-missed skill
-  *inside the window where a second miss demotes*, resetting `winsAtCurrentStep`
-  to 0. A downward ratchet assembled from two individually reasonable constants
-  that nobody had compared to each other.
+The ratchet was real, and had four parts. Every one is now addressed:
 
-At 90% first-attempt accuracy a child climbs, barely. At 80%, demotion
-opportunities fire roughly every 4 attempts against a promotion needing ~20 — so
-they never leave step 0-1. The owner's son is almost certainly a 90%+ child on this
-content, which is exactly why it was invisible.
+| The mechanism | What `main` did |
+| --- | --- |
+| a single miss demoted — any miss set confidence to exactly `-15.0`, and the gate was `<= -15.0` | threshold moved to `DEMOTION_CONFIDENCE_THRESHOLD = -25`, which one miss no longer reaches |
+| a miss sitting in the 5-attempt window demoted again on each following attempt | demotion is evaluated only on the wrong answer itself (`if (!attempt.correct)`) |
+| promotion needed 5 first-attempt wins at ≥90% accuracy, ~20 attempts away | `PROMOTION_WIN_TARGET` 5→3, `PROMOTION_ACCURACY_TARGET` 0.9→0.8 |
+| demotion left confidence at the floor, so the next miss demoted instantly again | `POST_DEMOTION_CONFIDENCE_FLOOR = -10` lifts it clear on demotion |
 
-**Tried, measured, and reverted:** filtering demotion's wrong-count arm to
-`at_level` misses only. It is the obvious fix — a miss on a deliberately easier
-comfort problem, or on a review item, is not evidence that the current step is too
-hard — and it was written in both the reference kernel and the Godot
-implementation. Then the runtime selector simulation was run against it:
+Two further causes I had not identified were also fixed there: the ELO K-factor
+was `4/3/2`, so the rating barely moved and difficulty could not track a child at
+all — now `16/12/8`; and promotion could park a learner on a curriculum step with
+zero authored problems, which a pool-backed `stepContentProvider` now skips.
+The lane mix was rebalanced too (`comfort` 0.4, `review` 0.2, `at_level` 0.3, and
+the `stretch` lane restored at 0.1 behind `canUseStretchLane`), so at-level
+exposure is 30% rather than the 25% this document reasoned from.
 
-| | before | after the filter |
-| --- | --- | --- |
-| steady learner's addition step | 1 | 2 |
-| `steadyFirstSubtractionUnlockAttempt` | 38 | **-1 (never)** |
+**What this branch contributes** is not a fix but a guard. The demotion mechanism
+is now pinned in three places so it cannot regress quietly:
+`godot/tests/test_demotion_lane.gd` asserts the behaviour, and
+`tools/validate_docs.js` asserts `if (!attempt.correct)`,
+`DEMOTION_CONFIDENCE_THRESHOLD = -25` and `POST_DEMOTION_CONFIDENCE_FLOOR = -10`
+directly against the kernel source. Before this, nothing failed if someone moved
+that threshold back.
 
-Subtraction unlocks on ≥90% first-attempt accuracy over 20 attempts, and a child
-held one step deeper answers less accurately — so buying a step of depth in
-addition cost the entire second domain. Trading a whole domain for one step is a
-pedagogy decision, not a cleanup, so the code was reverted to counting every lane
-and the reasoning left in a comment at the site in both implementations.
-
-**Also found while testing, and also left alone:** the wrong-count arm is not the
-binding constraint either way. `_apply_confidence_update` sets `delta = -15.0` for
-*any* miss, a fresh offset of 0 becomes exactly `-15.0`, and the demotion condition
-includes `confidence_offset <= -15.0`. **So a single wrong answer on any lane
-demotes the step immediately**, and trigger 1's threshold of 2 is only reachable
-once wins have lifted confidence back above the line. That is consistent with
-`PROJECT.md` ("mistakes should lower difficulty faster than success raises it") and
-is kind in the short term, but combined with the promotion gate it can demote a
-child faster than they can climb.
-
-`godot/tests/test_demotion_lane.gd` pins all of this — including the single-miss
-demotion — so whichever way the decision goes, it goes deliberately. The
-one-character version, if wanted, is `confidence_offset < -15.0`, requiring two
-misses rather than one; it needs the same simulation run against it first.
-
-**The decision is the owner's**, and it is the one open product question left in
-this document.
+**The lesson worth keeping** is the one about process, not pedagogy: this analysis
+was careful, quantified, simulated — and aimed at a version of the file that was
+already superseded. Reasoning backward from failure does not help if you reason
+from a stale tree. Check what trunk did before pre-morteming your own branch.
 
 ## Also shipped
 
@@ -173,7 +155,7 @@ message anyway. Ten lines of CSS plus an overlay injected at build time.
 | `boot_start` vs `boot_ready` per release | `error_groups` / `error_events` | a gap is launches that never became a playable game |
 | `engine_boot` fatals | `error_groups` | the failure a child actually sees |
 | `hadExistingSave` false on repeat launches | `boot_ready` context | storage eviction wiping progress |
-| `currentStep` distribution vs attempt count | needs cloud save | whether the ratchet is real for other children |
+| `currentStep` distribution vs attempt count | needs cloud save | whether main’s ladder fixes actually let other children climb |
 | `sync_conflicts` rows | Postgres | whether the accepted merge cost ever bites |
 
 The last two require cloud save to work, which requires the mail provider. That

@@ -1,5 +1,5 @@
 extends Node
-## LevelingManager — Godot port of src/systems/LevelingManager.ts.
+## LevelingManager — ported from the retired Phaser build; this is now the only implementation.
 ## Player XP / level progression. Awards XP on math_challenge_complete using the
 ## scoring table from data/tuning/leveling.json and persists via SaveManager.
 

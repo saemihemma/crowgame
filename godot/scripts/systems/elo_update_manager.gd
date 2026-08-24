@@ -1,5 +1,5 @@
 extends Node
-## ELOUpdateManager — Godot port of src/systems/ELOUpdateManager.ts. Autoload.
+## ELOUpdateManager — ported from the retired Phaser build; this is now the only implementation. Autoload.
 ## Bridges completed challenges into the learner model: caches problem context on
 ## math_problem_presented, then on math_challenge_complete updates mastery ELO,
 ## per-problem rating, learner state (confidence/review/curriculum), and save.
@@ -16,6 +16,15 @@ var _review_item_id: Variant = null
 func _ready() -> void:
 	EventBus.math_problem_presented.connect(_on_problem_presented)
 	EventBus.math_challenge_complete.connect(_on_challenge_complete)
+	# Let the curriculum ladder see which steps actually have problems, so
+	# promotion can skip authored holes. A rung needs at least 3 problems to
+	# be practicable (promotion requires 3 fresh at-level wins).
+	LearnerStateManager.set_step_content_provider(func(domain: String, step: int) -> bool:
+		var pool: ProblemPoolManager = MathProblemManager.get_pool_manager()
+		if pool == null:
+			return true
+		return pool.get_problems_in_curriculum_step_range(domain, step, step, []).size() >= 3
+	)
 
 func _on_problem_presented(problem: Dictionary) -> void:
 	_problem_id = String(problem.get("id", ""))
@@ -45,7 +54,11 @@ func _on_challenge_complete(data: Dictionary) -> void:
 		pool.update_problem_rating(String(data.get("problemId", _problem_id)), correct)
 
 	var attempt := _build_attempt(data)
+	var step_before: int = LearnerStateManager.get_current_step(String(_domain))
 	LearnerStateManager.record_attempt(attempt)
+	var step_after: int = LearnerStateManager.get_current_step(String(_domain))
+	if step_after > step_before:
+		EventBus.curriculum_step_up.emit({"domain": _domain, "step": step_after})
 	SaveManager.record_math_attempt({
 		"skills": attempt["skills"], "correct": attempt["correct"],
 		"hintsUsed": attempt["hintsUsed"], "timeMs": attempt["responseMs"],

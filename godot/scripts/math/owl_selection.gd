@@ -1,6 +1,6 @@
 extends RefCounted
 class_name OwlSelection
-## Godot port of src/math/owlSelection.ts. Picks the owl's next problem:
+## Godot port of math-kernel/math/owlSelection.ts. Picks the owl's next problem:
 ## prefers unlocked domains, avoids repeating the previous problem's domain when
 ## possible (mixed-domain), then falls back to step-capped random per domain.
 

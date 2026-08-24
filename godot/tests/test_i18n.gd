@@ -33,3 +33,40 @@ func test_locale_switch_and_fallback() -> void:
 	assert_eq(tm.get_locale(), "en", "unknown locale -> en")
 	assert_eq(tm.t("pause.title"), "PAUSED", "english fallback intact")
 	tm.set_locale(prev)
+
+## The corrections from the Icelandic review. Pinned so a future edit cannot
+## silently reintroduce them.
+func test_icelandic_corrections() -> void:
+	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
+	var prev: String = tm.get_locale()
+	tm.set_locale("is")
+	# `bjarga` governs the dative, so the passive participle stays neuter and
+	# indeclinable -- "Uglur bjargaðar" is the learner error this replaced.
+	assert_eq(tm.t("game.completion_stats", [3, 40]), "Uglum bjargað: 3   Mynt: 40", "dative passive for bjarga")
+	assert_eq(tm.t("game.owl_saved"), "Uglu bjargað!", "singular dative passive matches")
+	# "Í bið" is queue/on-hold register; "Hlé" is the cinema-intermission word.
+	assert_eq(tm.t("pause.title"), "HLÉ", "pause uses the everyday word")
+	# `hjálpa` needs its dative object.
+	assert_eq(tm.t("math.greeting_3"), "Geturðu hjálpað mér með þetta?", "hjalpa keeps its dative object")
+	# Must not collide with pause.resume.
+	assert_true(tm.t("menu.continue") != tm.t("pause.resume"), "continue and resume read differently")
+	tm.set_locale(prev)
+
+
+## No string in either locale may need a glyph above Latin-1: that is the block
+## Godot's built-in font covers, and the block the old PIN dots (U+25CF) sat
+## outside of.
+func test_no_glyphs_above_latin1() -> void:
+	for path in ["res://data/i18n/strings_en.json", "res://data/i18n/strings_is.json"]:
+		var bundle := _load(path)
+		for key in bundle:
+			for c in String(bundle[key]):
+				assert_true(c.unicode_at(0) <= 0xFF, "%s [%s] stays within Latin-1" % [path, key])
+
+
+## Every locale names itself in its own language, never translated.
+func test_endonyms_present() -> void:
+	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
+	for code in tm.available_locales():
+		assert_true(tm.endonym(String(code)) != String(code), "locale '%s' has an endonym" % code)
+	assert_eq(tm.endonym("is"), "Íslenska", "Icelandic names itself Íslenska")

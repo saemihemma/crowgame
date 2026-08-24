@@ -1,4 +1,4 @@
-# Crow Agent Context
+# Hörmann Agent Context
 
 Status: Supportive
 Authority: Practical working notes. Code and data outrank this file.
@@ -21,6 +21,29 @@ debugging order, and the traps this repo actually sets.
 - Saves are profile-scoped, never global: `crow_save_<username>`.
 - `cloud_sync.gd` layers cloud upload on top of local saving. It does not replace
   it, and it deliberately runs on a slower clock.
+
+## Open Work Lives in roadmap.md
+
+`roadmap.md` is the single list of what is still to do. It carries hard rules at
+the top: **finished items are deleted from it, never ticked off or annotated**,
+and what you actually did goes in `progress.md`. `npm run validate` fails the
+build if the roadmap picks up checkboxes, strikethrough, "(done)" notes or a
+completed-work heading, or if the rules block is removed.
+
+Before starting work, read it. After finishing work, the roadmap should be
+shorter.
+
+## Quick working model
+
+- `godot/scripts/boot.gd` is the wiring hub: it registers autoloads and hands off
+  to the first scene.
+- `godot/scripts/scenes/game.gd` is the largest gameplay hotspot.
+- Maths progression spans `math/math_problem_manager.gd`, `math/elo_manager.gd`,
+  `systems/learner_state_manager.gd`, `systems/elo_update_manager.gd` and
+  `systems/cloud_sync.gd`.
+- Save behaviour is profile-scoped, not global-only.
+- The grown-up surfaces are `ui/cloud_panel.gd` and `ui/parent_report.gd`. There is
+  no admin page; the retired Phaser `admin.html` is gone.
 
 ## Hotspots by area
 

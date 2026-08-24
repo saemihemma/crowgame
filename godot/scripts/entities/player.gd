@@ -1,5 +1,5 @@
 extends CharacterBody2D
-## Player — Godot port of src/entities/Player.ts on a CharacterBody2D.
+## Player — ported from the retired Phaser build; this is now the only implementation on a CharacterBody2D.
 ## Velocity is computed by the pure PlayerMotion model (Tier-1 feel parity);
 ## move_and_slide() resolves collisions, and we write the resolved velocity back
 ## so a landing zeroes vy exactly like Phaser's blocked.down does.

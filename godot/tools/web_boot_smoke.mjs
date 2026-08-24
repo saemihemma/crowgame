@@ -111,18 +111,22 @@ async function main() {
         await mkdir(dirname(shot), { recursive: true });
         await page.screenshot({ path: shot });
 
-        // Sample the CENTRE of the frame, not a corner — a corner is legitimately
-        // one flat colour (sky), which makes a corner sample useless as a
-        // "did it render anything" signal.
+        // Sample the WHOLE canvas, not a fixed box inside it.
+        //
+        // This used to read a centre 240x240 region, on the reasoning that a corner
+        // is legitimately one flat colour (sky) and so useless as a "did anything
+        // render" signal. But the centre is just as legitimately flat: the login
+        // screen puts its title and buttons in the upper third, so the centre of
+        // the frame is empty sky and the check reported 1 colour on a build that
+        // was rendering perfectly. A layout change should not be able to fail the
+        // boot gate. Reading the full frame is both layout-independent and a
+        // strictly stronger signal.
         const render = await page.evaluate(() => {
             const c = document.querySelector('canvas');
             const g = c.getContext('webgl2') || c.getContext('webgl');
             if (!g) return { distinctColors: -1 };
-            const w = 240, h = 240;
-            const x = Math.max(0, Math.floor((c.width - w) / 2));
-            const y = Math.max(0, Math.floor((c.height - h) / 2));
-            const px = new Uint8Array(4 * w * h);
-            g.readPixels(x, y, w, h, g.RGBA, g.UNSIGNED_BYTE, px);
+            const px = new Uint8Array(4 * c.width * c.height);
+            g.readPixels(0, 0, c.width, c.height, g.RGBA, g.UNSIGNED_BYTE, px);
             const seen = new Set();
             for (let i = 0; i < px.length; i += 4) seen.add(`${px[i]},${px[i+1]},${px[i+2]}`);
             return { distinctColors: seen.size };
@@ -161,7 +165,7 @@ async function main() {
         await writeFile(out, JSON.stringify(result, null, 2) + '\n');
 
         console.log(`canvas          : ${canvas.width}x${canvas.height} (css ${canvas.clientWidth}x${canvas.clientHeight})`);
-        console.log(`distinct colors : ${distinctColors} (centre 240x240 sample)`);
+        console.log(`distinct colors : ${distinctColors} (full canvas)`);
         console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars, game uses ${letterbox.screenUsedPct}% of screen height`);
         console.log(`console errors  : ${consoleErrors.length}`);
         console.log(`failed requests : ${failedRequests.length}`);

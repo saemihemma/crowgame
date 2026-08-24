@@ -1,5 +1,5 @@
 {
-  "_comment": "UI/layout tuning \u2014 sizes, delays, thresholds for menus/HUD/touch/math board. JSON-first: edit here, never hardcode in .gd. (Tier-1 math/learner constants intentionally live in code, not here.)",
+  "_comment": "UI/layout tuning — sizes, delays, thresholds for menus/HUD/touch/math board. JSON-first: edit here, never hardcode in .gd. (Tier-1 math/learner constants intentionally live in code, not here.)",
   "touch": {
     "button_size": 104,
     "gap": 14,
@@ -13,7 +13,12 @@
     "option_min_h": 88,
     "option_font_size": 32,
     "question_font_size": 40,
-    "header_font_size": 22
+    "header_font_size": 22,
+    "teach_delay": 3.0,
+    "question_font_size_medium": 30,
+    "question_font_size_long": 24,
+    "question_wrap_width": 520,
+    "hint_font_size": 20
   },
   "player": {
     "walk_speed_threshold": 10.0

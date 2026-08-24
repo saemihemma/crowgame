@@ -1,4 +1,4 @@
-# Crow — Godot 4 port
+# Hörmann — Godot 4 port
 
 Status: Current
 Authority: Godot project overview and run/test/build commands. Runtime truth lives in `godot/scripts/**`, `godot/data/**`, and `godot/project.godot`.

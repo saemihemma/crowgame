@@ -1,36 +1,32 @@
 extends TestCase
-## How difficulty comes back down.
+## How difficulty comes back down — and, just as importantly, that a child can
+## still climb back up.
 ##
-## These tests document the CURRENT behaviour, including a part of it that may not
-## be intended. Read the note on the confidence arm before changing anything here.
+## Two independent demotion triggers live in `_apply_curriculum_progress`, and
+## both are only ever evaluated on a wrong answer:
 ##
-## There are two independent demotion triggers (`_apply_curriculum_progress`):
+##   1. wrong_count >= DEMOTION_WRONG_THRESHOLD (2) within the last 5 attempts
+##   2. confidence_offset <= DEMOTION_CONFIDENCE_THRESHOLD (-25.0)
 ##
-##   1. wrong_count >= DEMOTION_WRONG_THRESHOLD (2) in the last 5 attempts
-##   2. confidence_offset <= -15.0
+## These tests exist because this exact code path had a downward ratchet, fixed in
+## "Make math difficulty actually progress" (#5), and nothing in the suite would
+## have caught a regression back to it. The ratchet had four interlocking parts:
 ##
-## Trigger 1 counts misses in EVERY lane. Filtering it to at-level misses only was
-## tried and reverted: it does fix a real ratchet (only 25% of served problems are
-## at the current step, so 5 at-level wins take ~20 attempts while the 5-attempt
-## window slides across all of them, and a missed skill is re-served for review
-## within 2-4 attempts — inside the window where a second miss demotes), but the
-## measured effect in the runtime selector simulation was +1 step in addition and
-## subtraction NEVER unlocking. Trading a whole domain for one step of depth is
-## the owner's pedagogy call, not a cleanup.
+##   - a miss set confidence to exactly -15.0 and the gate was `<= -15.0`, so ONE
+##     miss on any lane — including a deliberately easier comfort problem —
+##     demoted immediately;
+##   - demotion was evaluated on every attempt, so a single miss sitting in the
+##     5-attempt window demoted again on each following answer;
+##   - promotion needed 5 first-attempt wins at >=90% accuracy, roughly 20
+##     attempts away, so the two rates were wildly mismatched;
+##   - demotion left confidence pinned at the floor, so the next miss re-demoted.
 ##
-## Trigger 2 is the one that actually dominates, and it is worth being explicit
-## about: `_apply_confidence_update` sets delta = -15.0 for ANY miss, and a fresh
-## offset of 0 becomes 0 * 0.8 - 15 = exactly -15.0. So a SINGLE wrong answer on
-## ANY lane — including a deliberately easier comfort problem, or a review item
-## the child last saw two attempts ago — demotes the curriculum step immediately.
+## Each assertion below pins one of those. If one starts failing, someone has
+## moved a constant back — check that it was deliberate before re-baselining.
 ##
-## That is consistent with PROJECT.md ("mistakes should lower difficulty faster
-## than success raises it") and it is deliberately kind in the short term. But it
-## interacts badly with promotion, which needs 5 at-level wins AND >=90%
-## first-attempt accuracy over the last 10: a child who misses roughly one in ten
-## can be demoted faster than they can climb, and sit at a low step indefinitely.
-## Whether that is the intended pedagogy is a product decision, not a bug to be
-## quietly patched, so it is documented here rather than changed.
+## The same constants are asserted against the reference kernel by
+## tools/validate_docs.js, so the two implementations cannot drift apart quietly.
+## See docs/PREMORTEM_PUBLIC_LAUNCH.md, Story 3.
 
 func _fresh_learner(child_id: String) -> void:
 	Persistence.remove_item("crow_learner_snapshot_%s" % child_id)
@@ -57,39 +53,58 @@ func _attempt(correct: bool, lane: String, step: int) -> Dictionary:
 		"answeredAt": Time.get_unix_time_from_system() * 1000.0,
 	}
 
-func test_a_single_miss_of_any_lane_demotes_via_confidence() -> void:
-	# Documents the dominant trigger. If this ever starts failing, someone changed
-	# the confidence arm — check that it was on purpose.
-	_fresh_learner("dem-confidence")
+func test_one_miss_does_not_demote() -> void:
+	# The core of the ratchet fix. A fresh offset of 0 becomes 0 * 0.8 - 15 =
+	# -15.0 on a miss, which must NOT reach the -25.0 gate.
+	_fresh_learner("dem-single")
 	var start := LearnerStateManager.get_current_step("addition")
 	if start == 0:
-		return  # nothing to fall from
+		return  # nothing to fall from; the floor is already 0
 	LearnerStateManager.record_attempt(_attempt(false, "comfort", start))
-	assert_true(LearnerStateManager.get_current_step("addition") < start,
-		"one miss on an EASIER problem currently lowers the step, via confidence <= -15")
+	assert_eq(LearnerStateManager.get_current_step("addition"), start,
+		"a single miss must not lower the step")
 
-func test_at_level_misses_demote() -> void:
-	# The core product principle: repeated failure at the current step must make
-	# the next question easier. This is the assertion that must never break.
-	_fresh_learner("dem-atlevel")
+func test_two_misses_in_the_window_demote() -> void:
+	# The product principle still has to hold: repeated failure makes the next
+	# question easier. Two misses inside the 5-attempt window trips trigger 1.
+	_fresh_learner("dem-two")
 	var start := LearnerStateManager.get_current_step("addition")
 	if start == 0:
 		return
 	LearnerStateManager.record_attempt(_attempt(false, "at_level", start))
 	LearnerStateManager.record_attempt(_attempt(false, "at_level", start))
 	assert_true(LearnerStateManager.get_current_step("addition") < start,
-		"at-level misses must lower difficulty")
+		"two misses in the window must lower difficulty")
 
-func test_wins_lift_confidence_back_above_the_demotion_line() -> void:
-	# The wrong_count arm can only ever be the deciding trigger once confidence has
-	# climbed back above -15, so pin that recovery: without it, trigger 2 fires on
-	# every single miss forever and trigger 1's threshold is unreachable dead code.
-	_fresh_learner("dem-lane")
-	for _i in range(6):
+func test_demotion_is_evaluated_only_on_the_wrong_answer() -> void:
+	# Before the fix, a miss still sitting in the 5-attempt window demoted again
+	# on each following attempt — so one bad answer cost several steps. Correct
+	# answers after a miss must not demote at all.
+	_fresh_learner("dem-once")
+	var start := LearnerStateManager.get_current_step("addition")
+	if start == 0:
+		return
+	LearnerStateManager.record_attempt(_attempt(false, "at_level", start))
+	LearnerStateManager.record_attempt(_attempt(false, "at_level", start))
+	var after_demote := LearnerStateManager.get_current_step("addition")
+	for _i in range(3):
 		LearnerStateManager.record_attempt(
 			_attempt(true, "at_level", LearnerStateManager.get_current_step("addition")))
-	var recovered := float(LearnerStateManager.get_snapshot()["confidenceOffsets"]["addition"])
-	assert_true(recovered > -15.0, "confidence should be above the demotion line after wins")
+	assert_true(LearnerStateManager.get_current_step("addition") >= after_demote,
+		"correct answers after a miss must never demote further")
+
+func test_confidence_is_lifted_clear_of_the_gate_on_demotion() -> void:
+	# POST_DEMOTION_CONFIDENCE_FLOOR. Without it, confidence stayed at the floor
+	# and the very next miss re-demoted instantly.
+	_fresh_learner("dem-floor")
+	var start := LearnerStateManager.get_current_step("addition")
+	if start == 0:
+		return
+	LearnerStateManager.record_attempt(_attempt(false, "at_level", start))
+	LearnerStateManager.record_attempt(_attempt(false, "at_level", start))
+	var offset := float(LearnerStateManager.get_snapshot()["confidenceOffsets"]["addition"])
+	assert_true(offset >= -10.0,
+		"confidence must be lifted to the post-demotion floor, not left at the gate")
 
 func test_confidence_recovers_more_slowly_than_it_drops() -> void:
 	# The intended asymmetry, stated as a test so it cannot drift silently:
@@ -101,6 +116,6 @@ func test_confidence_recovers_more_slowly_than_it_drops() -> void:
 	LearnerStateManager.record_attempt(
 		_attempt(true, "at_level", LearnerStateManager.get_current_step("addition")))
 	var after_win := float(LearnerStateManager.get_snapshot()["confidenceOffsets"]["addition"])
-	assert_true(after_miss <= -15.0, "a miss drops confidence to the demotion line")
+	assert_true(after_miss <= -15.0, "a miss drops confidence hard")
 	assert_true(after_win > after_miss, "a win recovers some of it")
 	assert_true(after_win < 0.0, "but one win does not undo one miss")

@@ -68,6 +68,11 @@ func test_replay_key_parity() -> void:
 		assert_eq(key, String(c["key"]), "replay key for %s" % c["problem"]["prompt"]["text"])
 
 func test_learner_parity() -> void:
+	# The fixtures exercise the pure learner state machine. The runtime
+	# autoloads wire a pool-backed step-content provider (which reconciles
+	# curriculum floors against the real problem pools), so neutralize it here
+	# to match the providerless TS fixture generator.
+	_lsm().set_step_content_provider(Callable())
 	for sc in _fix["learner"]:
 		_elo().initialize(_make_stats(sc.get("eloInit", {})))
 		_lsm().initialize({"childId": "c", "familyId": "f"}, null, _elo().get_stats())

@@ -311,27 +311,34 @@ function validateOnboardingSnapshot(currentDocs) {
 
 function validateMathAndLearnerContracts() {
     ensureSourcePattern('math-kernel/math/ELOManager.ts', /globalELO:\s*150/, 'starting global ELO');
-    ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*50\)\s*return\s+4;/, 'first K-factor band');
-    ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*200\)\s*return\s+3;/, 'second K-factor band');
-    ensureSourcePattern('math-kernel/math/ELOManager.ts', /return\s+2;/, 'third K-factor band');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*30\)\s*return\s+16;/, 'first K-factor band');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /if\s*\(problemsAttempted\s*<\s*150\)\s*return\s+12;/, 'second K-factor band');
+    ensureSourcePattern('math-kernel/math/ELOManager.ts', /return\s+8;/, 'third K-factor band');
     ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /clamp\(decayed\s*\+\s*delta,\s*-50,\s*20\)/, 'confidence clamp');
     ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /progress\.winsAtCurrentStep\s*>=\s*PROMOTION_WIN_TARGET/, 'curriculum promotion gate');
     ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /wrongCount\s*>=\s*DEMOTION_WRONG_THRESHOLD/, 'curriculum demotion gate');
+    // Demotion is evaluated only on the wrong answer itself, and a single miss no
+    // longer reaches the line. Both are load-bearing for whether a child can climb
+    // at all, so pin them in the oracle rather than only in the GDScript tests.
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /if\s*\(!attempt\.correct\)\s*\{/, 'demotion evaluated on the miss only');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /DEMOTION_CONFIDENCE_THRESHOLD\s*=\s*-25/, 'demotion confidence threshold');
+    ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /POST_DEMOTION_CONFIDENCE_FLOOR\s*=\s*-10/, 'post-demotion confidence floor');
     ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /stage:\s*'immediate'/, 'immediate review stage');
     ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /case\s+'day_7':/, 'day_7 review stage');
-    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /comfort:\s*0\.5/, 'comfort lane weight');
-    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /review:\s*laneCandidates\.review\.length\s*>\s*0\s*\?\s*0\.25\s*:\s*0/, 'review lane weight');
-    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /at_level:\s*0\.25/, 'at-level lane weight');
-    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /stretch:\s*0/, 'stretch lane removal');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /comfort:\s*0\.4/, 'comfort lane weight');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /review:\s*0\.2/, 'review lane weight');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /at_level:\s*0\.3/, 'at-level lane weight');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /stretch:\s*0\.1/, 'stretch lane weight');
+    ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /canUseStretchLane\(domain\)/, 'stretch lane gate');
     ensureSourcePattern('godot/scripts/ui/math_challenge.gd', /var options: Array = answer\.get\("options", \[\]\)/, 'MCQ options drive the answer buttons');
     ensureSourcePattern('godot/scripts/scenes/login.gd', /func _finish_login\(\) -> void:/, 'login success rehydrate owner');
     ensureSourcePattern('godot/scripts/scenes/login.gd', /SaveManager\.switch_profile\(\)/, 'profile-switch on login');
     ensureSourcePattern('godot/scripts/math/owl_selection.gd', /"maxOperand": config\.get\("maxOperand", 20\)/, 'local owl max-operand ceiling');
 
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'default starting global ELO: `150`', 'starting ELO contract');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `4` before 50 attempts', 'K-factor first band');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `3` before 200 attempts', 'K-factor second band');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `2` afterward', 'K-factor third band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `16` before 30 attempts', 'K-factor first band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `12` before 150 attempts', 'K-factor second band');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `8` afterward', 'K-factor third band');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'currentStep', 'curriculum step ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'winsAtCurrentStep', 'curriculum progress ownership');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- clamped to `-50..20`', 'confidence clamp');
@@ -343,10 +350,10 @@ function validateMathAndLearnerContracts() {
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_3`', 'review stage day_3');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `day_7`', 'review stage day_7');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `graduated`', 'review stage graduated');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `50%` comfort', 'comfort lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `25%` review', 'review lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `25%` at level', 'at-level lane weight');
-    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `0%` harder', 'harder lane removal');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `40%` comfort', 'comfort lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `20%` review', 'review lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `30%` at level', 'at-level lane weight');
+    ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `10%` stretch', 'stretch lane weight');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'one curriculum step easier', 'comfort lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'exact current curriculum step', 'at-level lane range');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'strategy steps down only', 'step-down-only fallback');
@@ -455,7 +462,7 @@ function validateMathAuthoringReportContracts() {
 
     ensureDocContains('README.md', `fresh opening owl path currently starts with ${formattedOpeningDomains}`, 'fresh owl opening-domain boundary');
     ensureDocContains('ONBOARDING_AGENT.md', `opening unlocked domains currently ${formattedOpeningDomains}`, 'fresh owl opening-domain boundary');
-    ensureDocContains('ONBOARDING_AGENT.md', `Current shipped owl interaction length is \`${configuredProblemCount}\` problems per owl encounter`, 'owl encounter-length boundary');
+    ensureDocContains('ONBOARDING_AGENT.md', `Current shipped owl interaction length is \`${configuredProblemCount}\` problem${configuredProblemCount === 1 ? '' : 's'} per owl encounter`, 'owl encounter-length boundary');
     ensureDocContains('docs/MATH_AUTHORING_PIPELINE.md', '`openingUnlockedInventory*` is the unlocked-domain inventory before current-step clamping.', 'owl report inventory semantics');
     ensureDocContains('docs/MATH_AUTHORING_PIPELINE.md', '`freshReachable*` is the real fresh-profile day-one reachable subset after current-step clamping.', 'owl report fresh-reachable semantics');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '`openingUnlockedInventory*` in that report means unlocked-domain inventory before current-step clamping.', 'math architecture inventory semantics');
@@ -464,6 +471,62 @@ function validateMathAuthoringReportContracts() {
     const currentDocs = ['README.md', 'ONBOARDING_AGENT.md', 'MATH_SYSTEM_ARCHITECTURE.md', 'docs/MATH_AUTHORING_PIPELINE.md'];
     for (const doc of currentDocs) {
         ensureNoPattern(doc, /pattern matching from the start/i, 'stale pattern-matching opening claim');
+    }
+}
+
+/**
+ * roadmap.md lists open work only. Finished items must be deleted, not ticked
+ * off, so this fails the build on the markers people reach for instead of
+ * deleting. The rule is stated at the top of the file; this is what makes it
+ * stick.
+ */
+function validateRoadmapHasNoCompletedItems() {
+    const relativePath = 'roadmap.md';
+    if (!fs.existsSync(path.join(root, relativePath))) {
+        return;
+    }
+    const text = readText(relativePath);
+
+    // Scan the entries only. The rules block quotes the markers it forbids, and
+    // the Settled section is explicitly allowed to describe closed decisions.
+    const firstEntry = text.search(/\n## (?!READ THIS FIRST)/);
+    const settledIndex = text.indexOf('## Settled');
+    const start = firstEntry === -1 ? 0 : firstEntry;
+    const end = settledIndex === -1 ? text.length : settledIndex;
+    const openWork = start < end ? text.slice(start, end) : '';
+
+    // Everything after the rules block, so a finished item cannot hide by being
+    // appended below the Settled list.
+    const everythingButTheRules = start < text.length ? text.slice(start) : '';
+
+    const banned = [
+        // Never appropriate anywhere in this file.
+        { pattern: /^\s*[-*]\s*\[[xX]\]/m, why: 'a ticked checkbox', scope: everythingButTheRules },
+        { pattern: /~~/, why: 'strikethrough', scope: everythingButTheRules },
+        { pattern: /\u2705|\u2714/, why: 'a check-mark character', scope: everythingButTheRules },
+        { pattern: /^\s*#+\s*(?:done|completed|shipped|finished)\b/im, why: 'a completed-work heading', scope: everythingButTheRules },
+        // Prose in the Settled section may legitimately discuss closed work.
+        { pattern: /\((?:done|DONE|Done|completed|COMPLETED|shipped|SHIPPED)\)/, why: 'a "(done)" style annotation', scope: openWork },
+    ];
+
+    for (const { pattern, why, scope } of banned) {
+        const match = scope.match(pattern);
+        if (match) {
+            fail(
+                `${relativePath}: contains ${why} (${JSON.stringify(match[0].trim())}). ` +
+                'Finished items must be DELETED from the roadmap, not marked complete. ' +
+                'Record what you did in progress.md instead.',
+            );
+        }
+    }
+
+    for (const heading of ['## READ THIS FIRST', 'DELETE IT']) {
+        if (!text.includes(heading)) {
+            fail(
+                `${relativePath}: the enforcement notice is missing ("${heading}"). ` +
+                'Do not remove the rules block at the top of the roadmap.',
+            );
+        }
     }
 }
 
@@ -479,6 +542,7 @@ function main() {
     validateDocWordingAndTaxonomy();
     validateMathAuthoringReportContracts();
     validateLiveSourceReferences();
+    validateRoadmapHasNoCompletedItems();
 
     if (errors.length > 0) {
         console.error('\nDocumentation validation failed:');

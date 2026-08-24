@@ -1,12 +1,19 @@
-# Crow
+# Hörmann
 
 Status: Current
 Authority: Repo entrypoint and navigation only. Runtime truth lives in
 `godot/scripts/**`, `godot/data/**`, `godot/project.godot`, and `server/src/**`.
 Last verified against code: 2026-08-24
 
-Crow is a child-first educational platformer for early-elementary maths practice.
-Built for one seven-year-old first, and now for other people's children too.
+Hörmann is a child-first educational platformer for early-elementary maths
+practice. Built for one seven-year-old first, and now for other people's
+children too.
+
+## What is still to do
+
+See [roadmap.md](./roadmap.md). It lists open work only — finished items are
+deleted from it rather than ticked off, and `npm run validate` enforces that.
+Finished work is recorded in [progress.md](./progress.md).
 
 ## What this repo contains
 
@@ -19,12 +26,11 @@ easiest way to do work that never ships, so they are stated first:
 | `server/**` | **The API.** Node 22 + TypeScript + Postgres: cloud save, family auth, error ingestion. | yes, as a Railway service |
 | `math-kernel/**` | **The reference kernel.** TypeScript implementation of ELO, learner state and problem selection. | never |
 | `tools/**` | Offline authoring and validation for the maths curriculum. | never |
-| `src/`, `public/`, `vite/`, `admin.html` | **Dead.** The retired Phaser game and its data twin, pending deletion. Nothing references or builds them. | no — ignore entirely |
 
 `math-kernel/` is not dead code and not a second game. It has two jobs: it
 generates `godot/tests/fixtures/*.json`, which the Godot parity tests assert
 against — making it the executable specification for the learner maths — and it
-drives the offline pipeline that produced the 2,885-problem curriculum the game
+drives the offline pipeline that produced the 3,035-problem curriculum the game
 ships. CI fails if the committed fixtures no longer match what it produces.
 
 ## Start here
@@ -47,6 +53,16 @@ ships. CI fails if the committed fixtures no longer match what it produces.
 For parents: **[PRIVACY.md](./PRIVACY.md)** says in plain language what the game
 stores about a child, what leaves the device, and how to delete all of it. To
 report something privately, see [SECURITY.md](./SECURITY.md).
+
+If you are changing:
+- learner difficulty, review, or unlock logic: read [MATH_SYSTEM_ARCHITECTURE.md](./MATH_SYSTEM_ARCHITECTURE.md) first
+- offline math authoring, batch materialization, or review reports: read [docs/MATH_AUTHORING_PIPELINE.md](./docs/MATH_AUTHORING_PIPELINE.md) first
+  - what it is not: not empirical child-performance proof, not independent ELO calibration, and not full browser or scene-flow proof by itself
+  - blunt boundary: `3150` is total shipped runtime inventory, not `3150` owl-path experiences; the fresh opening owl path currently starts with `addition` plus `counting`, pattern matching joins the broader owl-safe set later, and each encounter serves `1` problem
+- profile identity, save data, cache, or hosted sync: read [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md) first
+- contributor workflow or verification steps: use [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)
+- runtime assets or staging rules: use [ASSET_SPECS.md](./ASSET_SPECS.md)
+- broad product intent: use [PROJECT.md](./PROJECT.md) after the current docs, not before
 
 ## Run it
 

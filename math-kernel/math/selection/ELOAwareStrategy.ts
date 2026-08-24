@@ -2,13 +2,15 @@
  * ELOAwareStrategy
  *
  * Child-first local selection:
- * - 50% one-step-easier comfort problems
- * - 25% review / two-step-easier problems
- * - 25% current-step problems
- * - 0% harder problems
+ * - 40% one-step-easier comfort problems
+ * - 20% review / two-step-easier problems
+ * - 30% current-step problems
+ * - 10% one-step-harder stretch problems, only while the learner is hot
+ *   (recent accuracy >= 80% and non-negative confidence)
  *
  * ELO still exists as a background mastery signal, but curriculum steps
- * now hard-cap local problem selection.
+ * hard-cap local problem selection. Empty lanes redistribute their weight
+ * across the remaining non-empty lanes.
  */
 
 import {
@@ -75,21 +77,25 @@ export class ELOAwareStrategy {
                 excludeIds,
                 constraints,
             ).map(problem => ({ problem, reviewItemId: null })),
-            stretch: [],
+            stretch: learnerState.canUseStretchLane(domain)
+                ? this.poolManager.getProblemsInCurriculumStepRange(
+                    domain,
+                    effectiveMaxStep + 1,
+                    effectiveMaxStep + 1,
+                    excludeIds,
+                    constraints,
+                ).map(problem => ({ problem, reviewItemId: null }))
+                : [],
         };
 
+        // Empty lanes are dropped in pickLane, which renormalizes the
+        // remaining weights, so these are relative shares, not exact odds.
         const laneWeights: Record<SelectionLane, number> = {
-            comfort: 0.5,
-            review: laneCandidates.review.length > 0 ? 0.25 : 0,
-            at_level: 0.25,
-            stretch: 0,
+            comfort: 0.4,
+            review: 0.2,
+            at_level: 0.3,
+            stretch: 0.1,
         };
-
-        if (laneCandidates.review.length === 0 && laneCandidates.comfort.length > 0) {
-            laneWeights.comfort += 0.25;
-        } else if (laneCandidates.review.length === 0) {
-            laneWeights.at_level += 0.25;
-        }
 
         const availableLanes = (Object.keys(laneCandidates) as SelectionLane[])
             .filter(lane => laneCandidates[lane].length > 0 && laneWeights[lane] > 0);

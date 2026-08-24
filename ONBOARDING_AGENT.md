@@ -81,12 +81,12 @@ Game:
 - **51** `.gd` scripts under `godot/scripts/`, **24** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **15** semantic sound events
-- `godot/data/i18n/strings_en.json`: **95** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **113** keys, matched key-for-key by
   `strings_is.json`
 - **18** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
-Maths content — `DataManager` loads 4 math pools totaling 3000 problems:
-- `curriculum`: 2885
+Maths content — `DataManager` loads 4 math pools totaling 3150 problems:
+- `curriculum`: 3035
 - `gaps`: 60
 - `dataset`: 40
 - `easy`: 15
@@ -95,13 +95,15 @@ Math UI is currently MCQ-only: every problem is answered by picking one of the
 offered options, and `godot/scripts/ui/math_challenge.gd` builds its buttons
 straight from `answer.options`.
 
-Blunt boundaries on that `3000`, because it is the number people quote wrongly:
+Blunt boundaries on that `3150`, because it is the number people quote wrongly:
 
-- `3000` is total shipped inventory, **not** the owl path.
+- `3150` is total shipped inventory, **not** the owl path.
 - The opening unlocked domains currently `addition` plus `counting`; pattern
   matching joins the owl-safe set later through the normal unlock rules.
-- Current shipped owl interaction length is `2` problems per owl encounter, which
-  is deliberate repetition, not padding.
+- Current shipped owl interaction length is `1` problem per owl encounter
+  (`problemCount` in `godot/data/npcs/npc_registry.json` is per-NPC, so a future
+  gated owl can ask more; when one asks several, follow-ups prefer an alternate
+  unlocked domain).
 - Per-domain progression is tracked as `currentStep` in `curriculumProgress`, and
   selection is capped by that step rather than by raw ELO — a child cannot be
   handed a much harder question just because their rating drifted up.
@@ -149,7 +151,7 @@ Tests, all in:
 Boot ──▶ Login ("Who's playing?")  ──▶ MainMenu ──▶ LevelSelect ──▶ Game
           │  name + 4-digit PIN                        │
           │  (a selector, NOT auth)                    ├─▶ owl encounter
-          ▼                                            │     ├─ 2 problems
+          ▼                                            │     ├─ 1 problem 
    profile save loads                                  │     ├─ ELO + learner update
    learner snapshot restores                           │     └─ save (local, then cloud)
    CloudSync binds the child                           │
