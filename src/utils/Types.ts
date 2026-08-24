@@ -131,6 +131,35 @@ export interface ProblemGenerator {
     evaluator: string;
 }
 
+/**
+ * A reference into the i18n bundles for one localisable sentence.
+ *
+ * `params` carries no natural language -- numbers, the operator symbol, a glyph
+ * run ("o o o"), a comma-joined number list. A `math.prompt.wrap.*` key takes an
+ * `inner` that is either a wordless string ("12 - 5 =") or a nested reference,
+ * which is how a prefixed prompt ("Borrow and solve: How much is 18 - 9?")
+ * composes out of two templates instead of needing one per combination.
+ */
+export interface PhrasingRef {
+    key: string;
+    params: Record<string, number | string | PhrasingRef>;
+}
+
+/**
+ * Localised phrasing for a problem's three sentences.
+ *
+ * Additive and optional by design. `prompt.text`, `hint` and `explanation` stay
+ * canonical English because tools/math_verifier.ts, src/math/problemReplayKey.ts
+ * and the golden fixtures all read them. A renderer prefers the phrasing when its
+ * key resolves and falls back to the English text otherwise, so an absent or
+ * unresolvable entry degrades to today's behaviour.
+ */
+export interface ProblemPhrasing {
+    prompt?: PhrasingRef;
+    hint?: PhrasingRef;
+    explanation?: PhrasingRef;
+}
+
 export interface MathProblem {
     id: string;
     domain: MathDomain;
@@ -145,6 +174,7 @@ export interface MathProblem {
     explanation?: string;
     misconceptionTags?: string[];
     generator?: ProblemGenerator | null;
+    phrasing?: ProblemPhrasing;
 }
 
 export interface MathProblemPool {

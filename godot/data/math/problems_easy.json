@@ -35,6 +35,31 @@
       "difficultyTraits": {
         "maxOperand": 3,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.how_much",
+          "params": {
+            "a": 2,
+            "op": "+",
+            "b": 3
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_fingers_more",
+          "params": {
+            "a": 2,
+            "b": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add_x",
+          "params": {
+            "a": 2,
+            "b": 3,
+            "sum": 5
+          }
+        }
       }
     },
     {
@@ -69,6 +94,30 @@
       "difficultyTraits": {
         "maxOperand": 4,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.answer",
+          "params": {
+            "a": 4,
+            "op": "+",
+            "b": 1
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_one_more_word",
+          "params": {
+            "a": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add_x",
+          "params": {
+            "a": 4,
+            "b": 1,
+            "sum": 5
+          }
+        }
       }
     },
     {
@@ -103,6 +152,30 @@
       "difficultyTraits": {
         "maxOperand": 6,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.solve",
+          "params": {
+            "a": 1,
+            "op": "+",
+            "b": 6
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_one_more_word",
+          "params": {
+            "a": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add_x",
+          "params": {
+            "a": 1,
+            "b": 6,
+            "sum": 7
+          }
+        }
       }
     },
     {
@@ -137,6 +210,31 @@
       "difficultyTraits": {
         "maxOperand": 5,
         "requiresBorrow": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.solve",
+          "params": {
+            "a": 5,
+            "op": "-",
+            "b": 2
+          }
+        },
+        "hint": {
+          "key": "math.hint.start_fingers_put_down",
+          "params": {
+            "a": 5,
+            "b": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.sub_x",
+          "params": {
+            "a": 5,
+            "b": 2,
+            "diff": 3
+          }
+        }
       }
     },
     {
@@ -171,6 +269,31 @@
       "difficultyTraits": {
         "maxOperand": 7,
         "requiresBorrow": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 7,
+            "op": "-",
+            "b": 3
+          }
+        },
+        "hint": {
+          "key": "math.hint.start_take_away",
+          "params": {
+            "a": 7,
+            "b": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.sub_x",
+          "params": {
+            "a": 7,
+            "b": 3,
+            "diff": 4
+          }
+        }
       }
     },
     {
@@ -201,7 +324,25 @@
       "hint": "Point to each star as you count!",
       "explanation": "There are 5 stars!",
       "generator": null,
-      "curriculumStep": 1
+      "curriculumStep": 1,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.count.how_many_stars",
+          "params": {
+            "glyphs": "* * * * *"
+          }
+        },
+        "hint": {
+          "key": "math.hint.point_star",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.stars",
+          "params": {
+            "n": 5
+          }
+        }
+      }
     },
     {
       "id": "count_002",
@@ -231,7 +372,25 @@
       "hint": "Count each dot carefully!",
       "explanation": "There are 3 dots!",
       "generator": null,
-      "curriculumStep": 0
+      "curriculumStep": 0,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.count.how_many_dots",
+          "params": {
+            "glyphs": ". . ."
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_dot_carefully",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.dots",
+          "params": {
+            "n": 3
+          }
+        }
+      }
     },
     {
       "id": "comp_001",
@@ -259,7 +418,27 @@
       "hint": "Think about which number comes later when counting!",
       "explanation": "8 is bigger than 3!",
       "generator": null,
-      "curriculumStep": 2
+      "curriculumStep": 2,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.cmp.which_bigger",
+          "params": {
+            "a": 3,
+            "b": 8
+          }
+        },
+        "hint": {
+          "key": "math.hint.comes_later",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.bigger_x",
+          "params": {
+            "a": 8,
+            "b": 3
+          }
+        }
+      }
     },
     {
       "id": "comp_002",
@@ -287,7 +466,27 @@
       "hint": "Think about which number comes first when counting!",
       "explanation": "2 is smaller than 6!",
       "generator": null,
-      "curriculumStep": 2
+      "curriculumStep": 2,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.cmp.which_smaller",
+          "params": {
+            "a": 6,
+            "b": 2
+          }
+        },
+        "hint": {
+          "key": "math.hint.comes_first",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.smaller_x",
+          "params": {
+            "a": 2,
+            "b": 6
+          }
+        }
+      }
     },
     {
       "id": "pat_001",
@@ -317,7 +516,26 @@
       "hint": "Each number goes up by the same amount!",
       "explanation": "The pattern goes up by 2 each time: 2, 4, 6, 8!",
       "generator": null,
-      "curriculumStep": 3
+      "curriculumStep": 3,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_next",
+          "params": {
+            "seq": "2, 4, 6, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.same_amount",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_step",
+          "params": {
+            "step": 2,
+            "run": "2, 4, 6, 8"
+          }
+        }
+      }
     },
     {
       "id": "seq_001",
@@ -347,7 +565,25 @@
       "hint": "The numbers go in order!",
       "explanation": "The numbers go 1, 2, 3, 4, 5!",
       "generator": null,
-      "curriculumStep": 2
+      "curriculumStep": 2,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.fill_blank",
+          "params": {
+            "seq": "1, __, 3, 4, 5"
+          }
+        },
+        "hint": {
+          "key": "math.hint.in_order",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.numbers_go",
+          "params": {
+            "run": "1, 2, 3, 4, 5"
+          }
+        }
+      }
     },
     {
       "id": "add_004",
@@ -381,6 +617,28 @@
       "difficultyTraits": {
         "maxOperand": 3,
         "requiresCarry": false
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.what_is",
+          "params": {
+            "a": 3,
+            "op": "+",
+            "b": 3
+          }
+        },
+        "hint": {
+          "key": "math.hint.three_each_hand",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.add_x",
+          "params": {
+            "a": 3,
+            "b": 3,
+            "sum": 6
+          }
+        }
       }
     },
     {
@@ -415,6 +673,31 @@
       "difficultyTraits": {
         "maxOperand": 7,
         "requiresCarry": true
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.arith.solve",
+          "params": {
+            "a": 7,
+            "op": "+",
+            "b": 5
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_up_more",
+          "params": {
+            "a": 7,
+            "b": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add_x",
+          "params": {
+            "a": 7,
+            "b": 5,
+            "sum": 12
+          }
+        }
       }
     },
     {
@@ -449,6 +732,23 @@
       "difficultyTraits": {
         "maxOperand": 10,
         "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_more",
+          "params": {
+            "a": 10,
+            "b": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.sub_x",
+          "params": {
+            "a": 10,
+            "b": 4,
+            "diff": 6
+          }
+        }
       }
     },
     {
@@ -479,7 +779,28 @@
       "hint": "Each number goes up by 5!",
       "explanation": "The pattern goes up by 5 each time: 5, 10, 15, 20!",
       "generator": null,
-      "curriculumStep": 5
+      "curriculumStep": 5,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_next",
+          "params": {
+            "seq": "5, 10, 15, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.goes_up_by",
+          "params": {
+            "step": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_step",
+          "params": {
+            "step": 5,
+            "run": "5, 10, 15, 20"
+          }
+        }
+      }
     }
   ]
 }

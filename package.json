@@ -10,7 +10,8 @@
         "validate:docs": "node tools/validate_docs.js",
         "validate:assets": "node tools/validate_assets.js",
         "compile": "tsx tools/compile-levels.ts",
-        "math:materialize": "tsx tools/materialize_math_batches.ts",
+        "math:materialize": "tsx tools/materialize_math_batches.ts && npm run math:phrasing",
+        "math:phrasing": "node tools/derive_math_phrasing.mjs --write && node tools/sync_math_phrasing_bundles.mjs",
         "math:review": "tsx tools/review_math_batches.ts",
         "math:browser-smoke": "node tools/math_browser_smoke.mjs",
         "math:sync-metadata": "tsx tools/sync_math_problem_metadata.ts",
@@ -22,7 +23,8 @@
         "dev:host": "vite --config vite/config.dev.mjs --host",
         "validate:i18n": "node tools/validate_i18n.mjs",
         "i18n:screenshots": "node tools/i18n_screenshots.mjs",
-        "godot:play-smoke": "node tools/godot_play_smoke.mjs"
+        "godot:play-smoke": "node tools/godot_play_smoke.mjs",
+        "locale:play-check": "node tools/locale_play_check.mjs"
     },
     "devDependencies": {
         "ajv": "^8.17.1",

@@ -35,6 +35,47 @@ func t(key: String, args: Array = []) -> String:
 		value = value.replace("{%d}" % i, str(args[i]))
 	return value
 
+## Resolve a key with NAMED parameters: `t()` substitutes {0}, {1}, this
+## substitutes {a}, {op}, {sum}.
+##
+## The math pools need names rather than positions. A prompt template is
+## "What is {a} {op} {b}?" and its Icelandic counterpart may order the operands
+## differently; with positional args the two locales would silently disagree
+## about which number goes where.
+##
+## A parameter may itself be a { "key": ..., "params": ... } dictionary, which is
+## rendered first. That is how a prefixed prompt composes: "Mixed fact: {inner}"
+## where `inner` is the phrasing for "What is 3 x 4?".
+##
+## Returns an empty string when the key resolves to nothing, so the caller can
+## fall back to the canonical English in the problem data instead of showing a
+## raw key to a child. Mirrors TextManager.tp() in the web build.
+func tp(key: String, params: Dictionary = {}) -> String:
+	if not (_overrides.has(key) or _locale_strings.has(key) or _defaults.has(key)):
+		return ""
+	var template := String(_overrides.get(key, _locale_strings.get(key, _defaults.get(key, ""))))
+	return _substitute(template, params)
+
+
+func _substitute(template: String, params: Dictionary) -> String:
+	var out := template
+	for name: Variant in params.keys():
+		var placeholder := "{%s}" % String(name)
+		if not out.contains(placeholder):
+			continue
+		var value: Variant = params[name]
+		var rendered := ""
+		if value is Dictionary and (value as Dictionary).has("key"):
+			var ref := value as Dictionary
+			rendered = tp(String(ref["key"]), ref.get("params", {}))
+			if rendered.is_empty():
+				continue
+		else:
+			rendered = str(value)
+		out = out.replace(placeholder, rendered)
+	return out
+
+
 ## Whether a key exists in the active locale or in English. Lets callers fall
 ## back to data that is not translated yet (level names come from the registry).
 func has(key: String) -> bool:

@@ -121,7 +121,10 @@ func _build_ui(opts: Dictionary) -> void:
 
 	_question_label = Label.new()
 	_question_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_question_label.text = String(current_problem.get("prompt", {}).get("text", ""))
+	_question_label.text = _localised_prompt()
+	# The longest prompt in the pools is 69 characters, which does not fit one
+	# line at 40px. Wrap it rather than let it run off the panel.
+	_question_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_question_label.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/question_font_size", 40)))
 	vbox.add_child(_question_label)
 
@@ -159,3 +162,25 @@ func _set_buttons_enabled(enabled: bool) -> void:
 func _close() -> void:
 	closed.emit()
 	queue_free()
+
+
+## The question in the active locale, falling back to the pool's English.
+##
+## `prompt.text` stays canonical English on purpose -- the arithmetic verifier
+## parses its operands, the replay key tests it with literal English prefixes,
+## and the golden fixtures compare it byte for byte. Localisation is an overlay:
+## an optional `phrasing.prompt` names an i18n key and its numeric parameters,
+## derived and verified by tools/derive_math_phrasing.mjs. When the key does not
+## resolve we show the English rather than a raw key.
+##
+## Mirrors localisedPrompt() in src/math/problemPhrasing.ts.
+func _localised_prompt() -> String:
+	var english := String(current_problem.get("prompt", {}).get("text", ""))
+	var phrasing: Variant = current_problem.get("phrasing", null)
+	if not (phrasing is Dictionary):
+		return english
+	var ref: Variant = (phrasing as Dictionary).get("prompt", null)
+	if not (ref is Dictionary) or not (ref as Dictionary).has("key"):
+		return english
+	var rendered := TextManager.tp(String((ref as Dictionary)["key"]), (ref as Dictionary).get("params", {}))
+	return english if rendered.is_empty() else rendered

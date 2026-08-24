@@ -27,7 +27,10 @@ import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
+import { TEMPLATES, format, render, verify } from './math_phrasing_catalog.mjs';
+
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const MATH_POOLS = ['problems_easy', 'problems_dataset', 'problems_gaps', 'problems_curriculum'];
 const BUNDLE_DIRS = ['public/data/i18n', 'godot/data/i18n'];
 const LOCALES = ['en', 'is'];
 const FALLBACK_LOCALE = 'en';
@@ -199,8 +202,24 @@ for (const dir of otherDirs) {
 
 // ── 3. lockstep + placeholder parity ───────────────────────────────────────
 const reference = bundles[primaryDir][FALLBACK_LOCALE];
+
+/**
+ * The SET of placeholder names in a string -- both positional ({0}, {1}) and
+ * named ({a}, {op}, {sum}).
+ *
+ * This used to match /\{(\d)\}/ only, which meant every named placeholder in
+ * the 168 math phrasing templates was invisible to it: an Icelandic template
+ * could reference {sumx} where the English had {sum} and nothing would notice
+ * until a child saw a literal "{sumx}" on the board.
+ *
+ * A SET, not a list, because a translation may legitimately use a placeholder
+ * more than once where English uses it once. "Count by {step}s!" has no compact
+ * Icelandic form with a numeral; the idiom repeats it -- "Teldu {step} og
+ * {step}!" -- and that is correct, not a mismatch.
+ */
 const placeholders = (value) =>
-    [...String(value).matchAll(/\{(\d)\}/g)].map(m => m[1]).sort().join(',');
+    [...new Set([...String(value).matchAll(/\{([a-z0-9][a-z0-9]*)\}/g)].map(m => m[1]))]
+        .sort().join(',');
 
 for (const locale of LOCALES) {
     if (locale === FALLBACK_LOCALE) continue;
@@ -246,13 +265,175 @@ for (const [key, box] of Object.entries(BOXES)) {
     }
 }
 
+// ── 5. math phrasing: the English bundle must equal the catalog ────────────
+// tools/math_phrasing_catalog.mjs is what the derivation parses against and
+// round-trips through. If the bundle's English drifted from it, the derivation
+// would keep passing while the game rendered something else, so the two are
+// generated from one source and checked here.
+for (const [key, english] of Object.entries(TEMPLATES)) {
+    for (const dir of BUNDLE_DIRS) {
+        const actual = bundles[dir][FALLBACK_LOCALE][key];
+        if (actual === undefined) {
+            fail(`${dir}/strings_en.json is missing phrasing template [${key}] — run node tools/sync_math_phrasing_bundles.mjs`);
+        } else if (actual !== english) {
+            fail(
+                `${dir}/strings_en.json has drifted from math_phrasing_catalog.mjs at [${key}]: `
+                + `bundle=${JSON.stringify(actual)} catalog=${JSON.stringify(english)} `
+                + `— run node tools/sync_math_phrasing_bundles.mjs`,
+            );
+        }
+    }
+}
+
+// ── 6. math phrasing: every derivation still round-trips and verifies ──────
+// The pools carry a `phrasing` sibling per problem, derived by
+// tools/derive_math_phrasing.mjs. Re-checking it here means a hand edit to a
+// pool, a template or a verifier cannot quietly break the mapping between a
+// problem and the sentence a child reads.
+let phrasingChecked = 0;
+for (const pool of MATH_POOLS) {
+    const path = join(ROOT, 'public/data/math', `${pool}.json`);
+    let data;
+    try {
+        data = JSON.parse(readFileSync(path, 'utf8'));
+    } catch {
+        fail(`could not read math pool ${pool}.json`);
+        continue;
+    }
+    for (const problem of data.problems ?? []) {
+        const english = {
+            prompt: problem.prompt?.text ?? '',
+            hint: problem.hint ?? '',
+            explanation: problem.explanation ?? '',
+        };
+        // A missing phrasing entry is not a runtime error -- it falls back to
+        // English -- which is exactly why it needs a gate. `npm run
+        // math:materialize` regenerates problems_curriculum.json from the
+        // authoring seed and knows nothing about phrasing, so it silently
+        // stripped 2885 entries once; the game kept working and kept showing
+        // English. Coverage is 100% today, so require it: anything with words to
+        // translate must carry a phrasing reference.
+        for (const [field, text] of Object.entries(english)) {
+            if (!text || !/[A-Za-z]{2,}/.test(text)) continue;
+            if (!problem.phrasing?.[field]) {
+                fail(
+                    `[${problem.id}] ${field} has English text but no phrasing reference, `
+                    + `so it will render in English in every locale — run npm run math:phrasing: `
+                    + JSON.stringify(text),
+                );
+            }
+        }
+
+        for (const [field, ref] of Object.entries(problem.phrasing ?? {})) {
+            phrasingChecked++;
+            const rendered = render(ref.key, ref.params);
+            if (rendered === null) {
+                fail(`[${problem.id}] ${field} phrasing names unknown key [${ref.key}]`);
+                continue;
+            }
+            if (rendered !== english[field]) {
+                fail(
+                    `[${problem.id}] ${field} phrasing does not round-trip: `
+                    + `rendered ${JSON.stringify(rendered)} but the pool says ${JSON.stringify(english[field])}`,
+                );
+                continue;
+            }
+            const problem_ = verify(ref.key, ref.params, problem);
+            if (problem_) {
+                fail(`[${problem.id}] ${field} phrasing contradicts the problem's answer: ${problem_}`);
+            }
+        }
+    }
+}
+
+// ── 7. math phrasing: every rendered sentence fits its box in both locales ─
+/**
+ * Fit for the phrasing templates, checked against real problems rather than the
+ * templates alone.
+ *
+ * A template's own length says little: "What comes next in the number pattern:
+ * {seq}" is short until {seq} is "22, 16, 19, 15, 22, 16, 19, ?". So this walks
+ * the actual pools, renders each problem's prompt and hint in both locales, and
+ * requires the wrapped block to fit at the FLOOR size the renderer will shrink
+ * to. Passing here is what makes MathBoard's floor unreachable in practice.
+ *
+ * Numbers from src/ui/components/MathBoard.ts.
+ */
+const PHRASING_BOXES = {
+    prompt: { wrap: 460, floor: 20, maxH: 96, where: 'MathBoard question band' },
+    hint: { wrap: 460, floor: 16, maxH: 72, where: 'MathBoard hint band below the board' },
+};
+
+/** Greedy word wrap, matching what Phaser does at a monospace advance. */
+function wrappedLines(text, size, wrapWidth) {
+    const perLine = Math.max(1, Math.floor(wrapWidth / (size * ADVANCE_RATIO)));
+    let lines = 1;
+    let used = 0;
+    for (const word of String(text).split(' ')) {
+        const add = (used > 0 ? 1 : 0) + word.length;
+        if (used + add > perLine && used > 0) {
+            lines++;
+            used = word.length;
+        } else {
+            used += add;
+        }
+    }
+    return lines;
+}
+
+/** Render a phrasing ref through one locale's bundle, nesting included. */
+function renderIn(bundle, ref) {
+    if (!ref?.key || bundle[ref.key] === undefined) return null;
+    const params = {};
+    for (const [name, value] of Object.entries(ref.params ?? {})) {
+        params[name] = (value && typeof value === 'object') ? (renderIn(bundle, value) ?? '?') : value;
+    }
+    return format(bundle[ref.key], params, bundle);
+}
+
+const worstFit = {};
+for (const pool of MATH_POOLS) {
+    let data;
+    try {
+        data = JSON.parse(readFileSync(join(ROOT, 'public/data/math', `${pool}.json`), 'utf8'));
+    } catch {
+        continue;
+    }
+    for (const problem of data.problems ?? []) {
+        for (const [field, box] of Object.entries(PHRASING_BOXES)) {
+            const english = field === 'prompt' ? (problem.prompt?.text ?? '') : (problem[field] ?? '');
+            if (!english) continue;
+            for (const locale of LOCALES) {
+                const ref = problem.phrasing?.[field];
+                const text = (ref && renderIn(bundles[primaryDir][locale], ref)) ?? english;
+                const height = wrappedLines(text, box.floor, box.wrap) * box.floor * 1.2;
+                const seen = worstFit[`${field}:${locale}`];
+                if (!seen || height > seen.height) {
+                    worstFit[`${field}:${locale}`] = { height, text, problem: problem.id };
+                }
+                measured++;
+                if (height > box.maxH) {
+                    fail(
+                        `[${problem.id}] ${field} in ${locale.toUpperCase()} does not fit even at its `
+                        + `${box.floor}px floor: ${Math.ceil(height)}px of wrapped text in a ${box.maxH}px `
+                        + `band (${box.where}): ${JSON.stringify(text)}`,
+                    );
+                }
+            }
+        }
+    }
+}
+
 // ── report ─────────────────────────────────────────────────────────────────
 if (failures.length === 0) {
     const keyCount = Object.keys(reference).length;
     console.log(
         `i18n guard: clean (${keyCount} keys x ${LOCALES.length} locales x ${BUNDLE_DIRS.length} targets, ` +
-        `${measured} fit checks)`,
+        `${measured} fit checks, ${phrasingChecked} math phrasings round-tripped and verified)`,
     );
+    for (const [what, w] of Object.entries(worstFit)) {
+        console.log(`  tightest ${what.padEnd(16)} ${String(Math.ceil(w.height)).padStart(3)}px  ${w.problem}`);
+    }
     process.exit(0);
 }
 

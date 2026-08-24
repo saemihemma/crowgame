@@ -84,6 +84,47 @@ export class TextManager {
     }
 
     /**
+     * Resolve a key with NAMED parameters: `t()` substitutes `{0}`, `{1}`, this
+     * substitutes `{a}`, `{op}`, `{sum}`.
+     *
+     * The math pools need names rather than positions. A prompt template is
+     * "What is {a} {op} {b}?" and its Icelandic counterpart may put the operands
+     * in a different order; with positional args the two locales would silently
+     * disagree about which number goes where. Names make the mapping explicit and
+     * checkable, which is what tools/validate_i18n.mjs checks.
+     *
+     * A parameter may itself be a `{ key, params }` reference, which is rendered
+     * first. That is how a prefixed prompt composes: "Mixed fact: {inner}" where
+     * `inner` is the phrasing for "What is 3 × 4?".
+     *
+     * Returns null when the key resolves to nothing, so the caller can fall back
+     * to the canonical English in the problem data rather than render a raw key
+     * at a child.
+     */
+    tp(key: string, params: Record<string, unknown> = {}): string | null {
+        const template =
+            this.overrides[this.locale][key] ??
+            this.bundles[this.locale][key] ??
+            this.bundles[DEFAULT_LOCALE][key];
+        if (template === undefined) return null;
+        return this.substitute(template, params);
+    }
+
+    private substitute(template: string, params: Record<string, unknown>): string {
+        return template.replace(/\{([a-z][a-z0-9]*)\}/g, (whole, name: string) => {
+            const value = params[name];
+            if (value === undefined || value === null) return whole;
+            if (typeof value === 'object') {
+                const ref = value as { key?: unknown; params?: unknown };
+                if (typeof ref.key !== 'string') return whole;
+                const nested = this.tp(ref.key, (ref.params ?? {}) as Record<string, unknown>);
+                return nested ?? whole;
+            }
+            return String(value);
+        });
+    }
+
+    /**
      * Whether a key exists in any bundle. Lets callers fall back to data that
      * is not translated yet (level names come from the level registry).
      */
