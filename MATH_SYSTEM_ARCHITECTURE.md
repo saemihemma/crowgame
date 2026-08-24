@@ -113,8 +113,19 @@ The shipped owl interaction is one problem per encounter — answer it and the o
 
 Per-level math identity:
 - each level's `mathGating` (authored in the level spec, mirrored into
-  `level_registry.json`) names the domains its owls draw from and a difficulty
-  band; the owl component intersects both with its own NPC config
+  `level_registry.json`) names the domains its owls draw from, a difficulty
+  band, and a required `teachingIntent` — the lesson the level exists to
+  teach; the owl component intersects skills and band with its own NPC config
+- the level's skill order is its emphasis: the intersection keeps the LEVEL's
+  order, and the first listed skill is the headline that gets the primary
+  selection share
+- the designed chain: 01 counting (+addition), 02 subtraction (+addition),
+  03 comparison (+counting), 04 pattern matching (+counting),
+  05 number sequences (+addition, subtraction), 99 open practice — each
+  headline's prerequisite domain is the level's own on-theme fallback until
+  the headline unlocks, and `npm run validate` fails if the chain stops
+  covering every servable domain, gates a skill the owl cannot serve, or
+  points a band at fewer than 30 authored problems
 - the curriculum ladder still owns how hard within that band; the level owns
   which math — an empty intersection falls back to the NPC config so a
   mis-authored level never bricks
