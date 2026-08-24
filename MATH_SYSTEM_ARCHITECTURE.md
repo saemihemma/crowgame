@@ -110,6 +110,34 @@ Prompt wording:
 
 The shared type system still supports other answer modes, but the live UI does not render them.
 The shipped owl interaction is one problem per encounter — answer it and the owl is saved. `problemCount` stays per-NPC config in `npc_registry.json`, so a future gated variant (e.g. a padlock owl) can demand more without code changes.
+
+Per-level math identity:
+- each level's `mathGating` (authored in the level spec, mirrored into
+  `level_registry.json`) names the domains its owls draw from and a difficulty
+  band; the owl component intersects both with its own NPC config
+- the curriculum ladder still owns how hard within that band; the level owns
+  which math — an empty intersection falls back to the NPC config so a
+  mis-authored level never bricks
+
+The teaching window:
+- when a level's gating includes a domain the child has never attempted
+  (`totalAttempts` of 0 in `curriculumProgress`), the owl opens with a
+  worked-example demo: the problem appears, the localised hint plays as
+  "thinking aloud", then the answer lights up with its explanation — no input
+  accepted, no learner-model events emitted
+- the demo hands over to a freebie problem in the same domain: a win records
+  normally, a miss records nothing at all, so first contact with new math can
+  never hurt
+
+The comeback arc:
+- a correct answer on a review item whose last outcome was wrong fires
+  `MATH_COMEBACK`, celebrated on the HUD harder than an ordinary win —
+  a miss becomes the setup for the best moment available
+
+Progress pips:
+- the overlay shows one pip per first-try at-level win already banked toward
+  the next promotion; the final pip is the step-up celebration itself
+- pips only ever render as earned-or-not; they are never shown draining
 The live owl path is addition-first, and the fresh opening mix currently reaches `addition` plus `counting` to create softer "lucky easy ones" without jumping into later arithmetic too early.
 Pattern matching is part of the broader owl-safe set, but it does not start unlocked on a fresh learner profile.
 When an NPC asks more than one problem, follow-up questions prefer an alternate unlocked owl-safe domain before falling back to the full owl-safe set — dormant at the one-problem baseline, live again for any multi-problem NPC.

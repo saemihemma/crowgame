@@ -177,9 +177,35 @@ async function runSmoke() {
         lastStage = stage;
         await page.waitForFunction(() => Boolean(window.__crowMathSmoke?.getMathState?.()), undefined, { timeout: 10_000 });
         await page.waitForTimeout(600);
+
+        // A fresh profile meets its first-ever domain here, so the owl opens
+        // with a worked-example demo (no input accepted) and then hands over
+        // a freebie problem. Wait the demo out; the smoke exercises the real
+        // problem that follows.
+        stage = 'wait_out_teaching_demo';
+        lastStage = stage;
+        const openingState = await getMathState(page);
+        let demoSeen = false;
+        if (openingState?.demo) {
+            demoSeen = true;
+            await saveScreenshot(page, 'math-demo');
+            await page.waitForFunction(
+                () => {
+                    const state = window.__crowMathSmoke?.getMathState?.();
+                    return Boolean(state) && state.demo !== true;
+                },
+                undefined,
+                { timeout: 15_000 },
+            );
+            await page.waitForTimeout(600);
+        }
+
         const firstState = await getMathState(page);
         if (!firstState) {
             throw new Error('Missing first math state');
+        }
+        if (firstState.demo) {
+            throw new Error('Demo overlay never handed over to a real problem');
         }
         stage = 'screenshot_first_problem';
         lastStage = stage;
@@ -258,6 +284,9 @@ async function runSmoke() {
         lastStage = stage;
 
         const gateChecks = {
+            // A fresh profile's first-ever domain must open with the worked-
+            // example demo before any test.
+            teachingDemoSeen: demoSeen,
             wrongAttemptRegistered: (afterWrongState?.wrongAttempts ?? 0) >= 1,
             singleProblemEncounter: completions.length === 1,
             completionCountReached: completions.length >= 1,
@@ -289,6 +318,7 @@ async function runSmoke() {
             consoleErrors,
             pageErrors,
             screenshots: [
+                'output/playwright/math-browser-smoke/math-demo.png',
                 'output/playwright/math-browser-smoke/math-first.png',
                 'output/playwright/math-browser-smoke/math-after-wrong.png',
                 'output/playwright/math-browser-smoke/math-second.png',

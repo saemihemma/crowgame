@@ -136,6 +136,13 @@ func get_current_step(domain: String) -> int:
 func get_wins_at_current_step(domain: String) -> int:
 	return int(get_snapshot()["curriculumProgress"][domain]["winsAtCurrentStep"])
 
+## Lifetime attempts in a domain; zero triggers the worked-example demo.
+func get_total_attempts(domain: String) -> int:
+	return int(get_snapshot()["curriculumProgress"][domain].get("totalAttempts", 0))
+
+func get_promotion_win_target() -> int:
+	return PROMOTION_WIN_TARGET
+
 func is_domain_unlocked(domain: String) -> bool:
 	return bool(get_snapshot()["unlockState"].get(domain, false))
 
@@ -227,6 +234,7 @@ func _apply_confidence_update(attempt: Dictionary) -> void:
 func _apply_curriculum_progress(attempt: Dictionary) -> void:
 	var domain := String(attempt["domain"])
 	var progress: Dictionary = _snapshot["curriculumProgress"][domain]
+	progress["totalAttempts"] = int(progress.get("totalAttempts", 0)) + 1
 	var step := int(attempt["curriculumStep"])
 	(progress["recentStepResults"] as Array).append({
 		"step": step, "correct": attempt["correct"],
@@ -542,14 +550,14 @@ func _create_domain_history_map() -> Dictionary:
 
 func _create_curriculum_progress_map() -> Dictionary:
 	return {
-		"addition": {"currentStep": 2, "winsAtCurrentStep": 0, "recentStepResults": []},
-		"subtraction": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": []},
-		"multiplication": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": []},
-		"division": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": []},
-		"counting": {"currentStep": 2, "winsAtCurrentStep": 0, "recentStepResults": []},
-		"comparison": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": []},
-		"pattern_matching": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": []},
-		"number_sequence": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": []},
+		"addition": {"currentStep": 2, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
+		"subtraction": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
+		"multiplication": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
+		"division": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
+		"counting": {"currentStep": 2, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
+		"comparison": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
+		"pattern_matching": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
+		"number_sequence": {"currentStep": 0, "winsAtCurrentStep": 0, "recentStepResults": [], "totalAttempts": 0},
 	}
 
 func _merge_number_map(base: Dictionary, over: Dictionary) -> Dictionary:
@@ -580,6 +588,7 @@ func _merge_curriculum_progress(progress: Variant) -> Dictionary:
 			"currentStep": maxi(0, int(p.get("currentStep", 0))),
 			"winsAtCurrentStep": maxi(0, int(p.get("winsAtCurrentStep", 0))),
 			"recentStepResults": _slice_tail(p.get("recentStepResults", []), MAX_STEP_RESULTS),
+			"totalAttempts": maxi(0, int(p.get("totalAttempts", 0))),
 		}
 	return merged
 

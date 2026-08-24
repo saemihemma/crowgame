@@ -75,6 +75,70 @@ stated whether a child is meant to unlock strictly one at a time.
 *Done when:* the intended progression is written down in `PROJECT.md` and the
 registry matches it.
 
+## P1.5 — The math experience loop
+
+The loop being built: teach → try → win → celebrate → miss → comeback →
+level up → new world → one more. Kid-safe rules bound everything here:
+rewards only ever add (no streaks, no timers, nothing to protect), game
+progress never gated by math level, one big celebration per encounter,
+teaching skippable, no dark patterns.
+
+### Golden problems
+Roughly 1 in 8 owl problems arrives golden — sparkling frame, distinct chime,
+double coins on a first-try win, smaller bonus on a retry win. Purely random
+(seeded), rate and multipliers in tuning data, never tied to time or streaks.
+Variable-ratio reward is the strongest honest "one more" schedule there is.
+
+*Done when:* the golden rate lives in tuning JSON, both ports render it, and
+the admin session report counts golden hits.
+
+### Session-end recap that leaves on the best moment
+On quitting a level or the game, one warm recap screen: owls saved, problems
+solved, any step-ups, and the session's single best moment (comeback or golden
+win) as the closing image. `recentAttempts` already holds everything needed.
+Peak-end rule: a session is remembered by its peak and its ending.
+
+*Done when:* the recap shows after play, ends on the peak, and never shows a
+negative stat.
+
+### Trophy shelf on the main menu
+A per-domain badge row from the learner summary: each domain's badge grows
+with its step (sprout → leaf → flower → star). Badges record the highest step
+ever reached, so a demotion never visibly shrinks one.
+
+*Done when:* badges render from summary data in both ports and the high-water
+mark persists in the save.
+
+### One shared math-tuning file for both ports
+Promotion wins, accuracy target, demotion window and threshold, lane weights,
+stretch gate, teach-window pacing, golden rate — today the ladder constants
+are duplicated in `src/systems/LearnerStateManager.ts` and
+`godot/scripts/systems/learner_state_manager.gd`. Move them to
+`data/tuning/math_tuning.json`, consumed by both ports, covered by the
+byte-identity sync guard and the golden parity fixtures.
+
+*Done when:* changing a ladder number is a one-line JSON edit and validate
+fails if the ports would diverge.
+
+### Tune the ladder against real play, not intuition
+The admin session report tags accuracy against the 70-85% sweet spot. After a
+week of family play: above 85% raise the at-level/stretch share, below 70%
+raise comfort, low comeback rate shorten the review gap. One knob at a time,
+one week per change.
+
+*Done when:* two consecutive weekly reports sit inside the sweet spot with at
+least one step-up per early session and frustration flags under 10%.
+
+### The per-level math mixes need a design pass
+`mathGating` in the level specs is now live, but the authored mixes were never
+play-reviewed: levels 03 and 04 gate to addition only, and no level introduces
+comparison, patterns, or sequences as its headline skill. Decide the skill
+story across the six levels — which level teaches what, in what order — and
+re-author the specs to match.
+
+*Done when:* each level's gating names its teaching intent in the spec and a
+kid can meet every unlocked domain somewhere in the level chain.
+
 ## P2 — Experience decisions that need making
 
 ### The on-screen controls are unverified for desktop-web mouse

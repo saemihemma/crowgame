@@ -25,6 +25,7 @@ func _ready() -> void:
 	EventBus.ability_granted.connect(_on_ability_granted)
 	EventBus.ability_revoked.connect(_on_ability_revoked)
 	EventBus.curriculum_step_up.connect(_on_curriculum_step_up)
+	EventBus.math_comeback.connect(_on_math_comeback)
 	ThemeManager.theme_changed.connect(func(_id): _apply_theme())
 	_apply_theme()
 
@@ -76,7 +77,14 @@ func _on_coins_changed(c: int) -> void:
 ## only — demotions are deliberately never signaled to the child.
 func _on_curriculum_step_up(payload: Dictionary) -> void:
 	var domain := String(payload.get("domain", ""))
-	var banner := TextManager.t("math.step_up", [TextManager.t("domain." + domain)])
+	_show_celebration_banner(TextManager.t("math.step_up", [TextManager.t("domain." + domain)]))
+
+## The redemption arc: a skill missed earlier was just beaten on its
+## scheduled return. Celebrated harder than an ordinary win.
+func _on_math_comeback(_payload: Dictionary) -> void:
+	_show_celebration_banner(TextManager.t("math.comeback"))
+
+func _show_celebration_banner(banner: String) -> void:
 	var center := Vector2(get_viewport().get_visible_rect().size.x / 2.0, 120.0)
 	AudioManager.play_event("milestone")
 	DopamineFX.burst(self, center, ThemeManager.get_color_value("accent"), 24)

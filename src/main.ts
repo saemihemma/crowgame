@@ -114,6 +114,8 @@ if (import.meta.env.DEV) {
                 correctAnswer: number;
                 options: number[];
                 wrongAttempts: number;
+                demo: boolean;
+                freebie: boolean;
                 optionCenters: Array<{ value: number; x: number; y: number }>;
                 canvasRect: { left: number; top: number; width: number; height: number } | null;
             } | null;
@@ -190,6 +192,8 @@ if (import.meta.env.DEV) {
                     answer: { correct: number; options?: number[] };
                 };
                 wrongAttempts?: number;
+                isDemo?: boolean;
+                isFreebie?: boolean;
             }) | null;
 
             if (!scene?.mathBoard?.container || !scene.currentProblem) {
@@ -231,6 +235,10 @@ if (import.meta.env.DEV) {
                 correctAnswer: scene.currentProblem.answer.correct,
                 options: [...(scene.currentProblem.answer.options ?? [])],
                 wrongAttempts: scene.wrongAttempts ?? 0,
+                // Worked-example demo overlays accept no input; harnesses must
+                // wait them out before clicking options.
+                demo: scene.isDemo === true,
+                freebie: scene.isFreebie === true,
                 optionCenters,
                 canvasRect,
             };
