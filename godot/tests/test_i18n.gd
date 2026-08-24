@@ -155,3 +155,60 @@ func _collect_keys(ref: Variant, out: Dictionary) -> void:
 	for value: Variant in (ref as Dictionary).get("params", {}).values():
 		if value is Dictionary:
 			_collect_keys(value, out)
+
+## Plural agreement. Icelandic follows the numeral: 1 -- and 21, 31, anything
+## ending in 1 except 11 -- takes the singular. English inflects at 1 only. The
+## data names the driving parameter and each locale applies its own rule, so
+## these check that the rules really are different and really are applied.
+func test_plural_agreement_per_locale() -> void:
+	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
+	var prev: String = tm.get_locale()
+
+	tm.set_locale("is")
+	assert_eq(tm.tp("math.expl.mul", {"a": 3, "b": 4, "product": 12}, "a"),
+		"3 hópar af 4 gera 12.", "plural form at 3")
+	assert_eq(tm.tp("math.expl.mul", {"a": 1, "b": 2, "product": 2}, "a"),
+		"1 hópur af 2 gerir 2.", "singular form at 1, verb included")
+	assert_eq(tm.tp("math.expl.total", {"n": 21}, "n"),
+		"Það er 21 í allt.", "Icelandic takes the singular at 21")
+	assert_eq(tm.tp("math.expl.total", {"n": 11}, "n"),
+		"Það eru 11 í allt.", "but not at 11")
+
+	tm.set_locale("en")
+	assert_eq(tm.tp("math.expl.total", {"n": 21}, "n"),
+		"There are 21 altogether.", "English stays plural at 21")
+	assert_eq(tm.tp("math.expl.total", {"n": 1}, "n"),
+		"There is 1 altogether.", "English inflects at 1")
+	tm.set_locale(prev)
+
+## Without the marker there is nothing to inflect on, so the base form must come
+## back rather than a missing-key empty string.
+func test_missing_plural_marker_falls_back_to_base_form() -> void:
+	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
+	var prev: String = tm.get_locale()
+	tm.set_locale("is")
+	assert_eq(tm.tp("math.expl.mul", {"a": 1, "b": 2, "product": 2}),
+		"1 hópar af 2 gera 2.", "no marker means no inflection, not an empty string")
+	tm.set_locale(prev)
+
+## Every plural-sensitive key the pools reference must have a `.one` form in both
+## bundles, or a child sees "1 hópar af 2" at exactly the value that matters.
+func test_plural_keys_have_singular_forms() -> void:
+	var en := _load("res://data/i18n/strings_en.json")
+	var is_ := _load("res://data/i18n/strings_is.json")
+	var pools := ["problems_easy", "problems_dataset", "problems_gaps", "problems_curriculum"]
+	var plural_keys := {}
+	for pool in pools:
+		var data := _load("res://data/math/%s.json" % pool)
+		for problem: Variant in data.get("problems", []):
+			var phrasing: Variant = (problem as Dictionary).get("phrasing", null)
+			if not (phrasing is Dictionary):
+				continue
+			for field: Variant in (phrasing as Dictionary).keys():
+				var ref: Variant = (phrasing as Dictionary)[field]
+				if ref is Dictionary and String((ref as Dictionary).get("plural", "")) != "":
+					plural_keys[String((ref as Dictionary)["key"])] = true
+	assert_true(plural_keys.size() > 0, "the pools mark plural-sensitive phrasings")
+	for key: Variant in plural_keys.keys():
+		assert_true(en.has("%s.one" % key), "EN has singular form for '%s'" % key)
+		assert_true(is_.has("%s.one" % key), "IS has singular form for '%s'" % key)

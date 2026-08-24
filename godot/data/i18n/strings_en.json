@@ -237,5 +237,12 @@
   "math.expl.pattern_count_by": "The pattern is counting by {step}s: {run}",
   "math.expl.numbers_go": "The numbers go {run}!",
   "math.expl.sequence_is": "The sequence is: {run}",
-  "math.expl.sequence_backwards": "The sequence is counting backwards: {run}"
+  "math.expl.sequence_backwards": "The sequence is counting backwards: {run}",
+  "math.hint.groups.one": "Think of {a} group of {b}.",
+  "math.expl.mul.one": "{a} group of {b} makes {product}.",
+  "math.expl.div.one": "{a} split into groups of {b} makes {n} group.",
+  "math.expl.total.one": "There is {n} altogether.",
+  "math.hint.groups_makes.one": "{a} group of {b} makes...",
+  "math.expl.stars.one": "There is {n} star!",
+  "math.expl.dots.one": "There is {n} dot!"
 }

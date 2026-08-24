@@ -55,6 +55,17 @@ work.
 older than the newest file under `godot/`. A staleness check is the cheap
 version and would have caught this.
 
+### `math.expl.sub` loses the English's concrete register
+The English explanations deliberately use a five-year-old's words -- "8 take away
+5 leaves 3" -- while the Icelandic says "8 mínus 5 gerir 3", which is the
+arithmetic register. It is correct and it is what an Icelandic worksheet says,
+but it is a shade more formal than the English it translates. The same applies to
+`math.expl.add` ("plús" for "plus" is fine, but "gerir" for "makes" is flatter
+than the English).
+
+*Done when:* a native-speaking teacher has read the 32 `math.expl.*` strings
+aloud to a child in the target age band and either kept them or replaced them.
+
 ### Nothing renders a problem's explanation
 All 2908 explanations sit in the pools unread. Neither runtime displays them:
 the web build reads `prompt.text` and `hint` only (`src/ui/components/MathBoard.ts`),
@@ -215,4 +226,11 @@ of completed tasks.** Do not add finished work here.
   agreement follows the numeral -- "2 plús 3 eru 5" but "4 mínus 3 er 1" -- and
   the result is a parameter, so any agreeing verb is wrong for some values.
   "gerir" is invariant, idiomatic in teaching, and a literal rendering of the
-  English "makes".
+  English "makes". Where a phrasing cannot avoid the verb, the sentence drops it
+  instead ("Bara {diff} eftir!") rather than guess.
+- **Plural agreement is a per-locale rule applied at render time.** A phrasing
+  that inflects names the parameter that drives it (`plural`) and carries a
+  `.one` sibling in every bundle; each runtime resolves the category itself.
+  English inflects at 1, Icelandic at 1, 21, 31 and so on, so the resolved
+  category is deliberately NOT stored in the pools -- baking English's rule into a
+  locale-neutral field works only until a problem contains 21.

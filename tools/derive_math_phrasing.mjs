@@ -66,7 +66,7 @@
  * Without --write it reports coverage and changes nothing.
  */
 import { readFileSync, writeFileSync } from 'fs';
-import { format, TEMPLATES, matchers, verify } from './math_phrasing_catalog.mjs';
+import { render, TEMPLATES, matchers, verify, pluralKey, PLURAL_PARAM } from './math_phrasing_catalog.mjs';
 
 const POOL_DIRS = ['public/data/math', 'godot/data/math'];
 const POOLS = ['problems_easy', 'problems_dataset', 'problems_gaps', 'problems_curriculum'];
@@ -104,13 +104,16 @@ function derive(field, problem, text) {
         const params = matcher.parse(text, problem);
         if (!params) continue;
 
-        const template = TEMPLATES[matcher.key];
-        if (template === undefined) {
+        if (TEMPLATES[pluralKey(matcher.key, params)] === undefined) {
             throw new Error(`matcher ${matcher.key} has no English template`);
         }
 
         // Gate 1: the English render must reproduce the original exactly.
-        const rendered = format(template, params);
+        // Plural-aware: a key in PLURAL_PARAM resolves to its `.one` form when
+        // the driving number takes the singular, so "1 group of 2 makes 2."
+        // round-trips through math.expl.mul rather than being rejected against
+        // its plural form.
+        const rendered = render(matcher.key, params, TEMPLATES, 'en');
         if (rendered !== text) {
             stats.roundTripRejected.push({
                 id: problem.id, field, key: matcher.key,
@@ -131,7 +134,13 @@ function derive(field, problem, text) {
         }
 
         stats.keyUse.set(matcher.key, (stats.keyUse.get(matcher.key) ?? 0) + 1);
-        return { key: matcher.key, params };
+        // Name the parameter that drives plural agreement, so each runtime can
+        // apply its OWN locale's rule at render time. Baking the category into
+        // the data would freeze English's rule (n == 1) into a locale-neutral
+        // field; Icelandic also takes the singular at 21, 31, 41.
+        return matcher.key in PLURAL_PARAM
+            ? { key: matcher.key, params, plural: PLURAL_PARAM[matcher.key] }
+            : { key: matcher.key, params };
     }
     return null;
 }

@@ -506,7 +506,7 @@ function renderHint(strategy: string, values: Record<string, number>): string {
         case 'bridge_ten':
             return `Hop back to the nearest 10 first, then finish counting back.`;
         case 'multiply_groups':
-            return `Think of ${left} groups of ${right}.`;
+            return `Think of ${left} ${plural(left, 'group', 'groups')} of ${right}.`;
         case 'divide_groups':
             return `Share ${left} into groups of ${right}.`;
         case 'count_symbols':
@@ -520,6 +520,19 @@ function renderHint(strategy: string, values: Record<string, number>): string {
         default:
             return `Check each part carefully, then choose the best answer.`;
     }
+}
+
+/**
+ * English plural agreement for a generated sentence.
+ *
+ * These generators emitted the plural unconditionally, which produced 55 strings
+ * of broken English in the pools that a child reads: "Think of 1 groups of 2.",
+ * "1 groups of 2 makes 2.", "... makes 1 groups.", "There are 1 altogether."
+ * Correcting the pool files alone was not enough -- materialization regenerates
+ * them from here, so the fix belongs at the source.
+ */
+function plural(n: number, one: string, other: string): string {
+    return n === 1 ? one : other;
 }
 
 function renderExplanation(strategy: string, values: Record<string, number>): string {
@@ -539,11 +552,11 @@ function renderExplanation(strategy: string, values: Record<string, number>): st
         case 'difference_bridge_ten':
             return `Step back to 10 first, then finish. The answer is ${correct}.`;
         case 'product_result':
-            return `${left} groups of ${right} makes ${correct}.`;
+            return `${left} ${plural(left, 'group', 'groups')} of ${right} makes ${correct}.`;
         case 'quotient_result':
-            return `${left} split into groups of ${right} makes ${correct} groups.`;
+            return `${left} split into groups of ${right} makes ${correct} ${plural(correct, 'group', 'groups')}.`;
         case 'count_result':
-            return `There are ${correct} altogether.`;
+            return `There ${plural(correct, 'is', 'are')} ${correct} altogether.`;
         case 'comparison_result':
             return `${correct} is the correct choice.`;
         case 'sequence_result':

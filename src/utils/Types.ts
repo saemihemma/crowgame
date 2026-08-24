@@ -143,6 +143,13 @@ export interface ProblemGenerator {
 export interface PhrasingRef {
     key: string;
     params: Record<string, number | string | PhrasingRef>;
+    /**
+     * Name of the parameter that drives plural agreement, when the phrasing has
+     * one. The category itself is NOT stored: each locale applies its own rule
+     * at render time, because they differ -- English inflects at 1, Icelandic at
+     * 1, 21, 31 and so on.
+     */
+    plural?: string;
 }
 
 /**

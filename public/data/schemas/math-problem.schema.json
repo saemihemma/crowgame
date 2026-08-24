@@ -91,6 +91,10 @@
             "required": ["key", "params"],
             "additionalProperties": false,
             "properties": {
+                "plural": {
+                    "description": "Name of the parameter that drives plural agreement, when the phrasing has one. The resolved category is deliberately NOT stored: each locale applies its own rule at render time, because they differ (English inflects at 1; Icelandic at 1, 21, 31, ...).",
+                    "type": "string"
+                },
                 "key": {
                     "description": "A key in the i18n bundles, e.g. math.prompt.arith.what_is.",
                     "type": "string",

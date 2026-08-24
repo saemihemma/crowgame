@@ -340,7 +340,8 @@
           "key": "math.expl.stars",
           "params": {
             "n": 5
-          }
+          },
+          "plural": "n"
         }
       }
     },
@@ -388,7 +389,8 @@
           "key": "math.expl.dots",
           "params": {
             "n": 3
-          }
+          },
+          "plural": "n"
         }
       }
     },

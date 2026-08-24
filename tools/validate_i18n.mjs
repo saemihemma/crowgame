@@ -27,7 +27,7 @@ import { readFileSync, readdirSync, statSync } from 'fs';
 import { join, relative, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
-import { TEMPLATES, format, render, verify } from './math_phrasing_catalog.mjs';
+import { TEMPLATES, format, render, verify, pluralKey, PLURAL_PARAM, PLURAL_RULES } from './math_phrasing_catalog.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MATH_POOLS = ['problems_easy', 'problems_dataset', 'problems_gaps', 'problems_curriculum'];
@@ -285,6 +285,27 @@ for (const [key, english] of Object.entries(TEMPLATES)) {
     }
 }
 
+// ── 5b. every plural-sensitive key has a `.one` form in every locale ──────
+// A locale that names no `.one` variant would silently render the plural at 1.
+// The base key is the 'other' form, so only `.one` needs declaring.
+for (const key of Object.keys(PLURAL_PARAM)) {
+    for (const locale of LOCALES) {
+        if (bundles[primaryDir][locale][`${key}.one`] === undefined) {
+            fail(
+                `strings_${locale}.json has no [${key}.one], so it would render the plural form `
+                + `at a value that takes the singular (${locale === 'is'
+                    ? '1, 21, 31, ... in Icelandic' : '1 in English'})`,
+            );
+        }
+    }
+    // Sanity-check the rules themselves rather than trusting the comments.
+    if (PLURAL_RULES.is(21) !== 'one' || PLURAL_RULES.is(11) !== 'other'
+        || PLURAL_RULES.en(21) !== 'other' || PLURAL_RULES.en(1) !== 'one') {
+        fail('the plural rules in math_phrasing_catalog.mjs no longer match the languages they describe');
+        break;
+    }
+}
+
 // ── 6. math phrasing: every derivation still round-trips and verifies ──────
 // The pools carry a `phrasing` sibling per problem, derived by
 // tools/derive_math_phrasing.mjs. Re-checking it here means a hand edit to a
@@ -326,7 +347,7 @@ for (const pool of MATH_POOLS) {
 
         for (const [field, ref] of Object.entries(problem.phrasing ?? {})) {
             phrasingChecked++;
-            const rendered = render(ref.key, ref.params);
+            const rendered = render(ref.key, ref.params, TEMPLATES, 'en');
             if (rendered === null) {
                 fail(`[${problem.id}] ${field} phrasing names unknown key [${ref.key}]`);
                 continue;
@@ -341,6 +362,19 @@ for (const pool of MATH_POOLS) {
             const problem_ = verify(ref.key, ref.params, problem);
             if (problem_) {
                 fail(`[${problem.id}] ${field} phrasing contradicts the problem's answer: ${problem_}`);
+            }
+
+            // The `plural` marker is what tells each runtime which number drives
+            // agreement. Missing, and Icelandic renders "1 hópar af 2"; present
+            // where it should not be, and a locale looks for a `.one` form that
+            // no bundle has.
+            const expected = PLURAL_PARAM[ref.key];
+            if (expected !== ref.plural) {
+                fail(
+                    `[${problem.id}] ${field} phrasing has plural=${JSON.stringify(ref.plural)} `
+                    + `but the catalog says ${JSON.stringify(expected)} for [${ref.key}] `
+                    + `— run npm run math:phrasing`,
+                );
             }
         }
     }
@@ -382,13 +416,19 @@ function wrappedLines(text, size, wrapWidth) {
 }
 
 /** Render a phrasing ref through one locale's bundle, nesting included. */
-function renderIn(bundle, ref) {
-    if (!ref?.key || bundle[ref.key] === undefined) return null;
+function renderIn(bundle, ref, locale) {
+    if (!ref?.key) return null;
+    // Measure the form this locale will actually show, not the base form.
+    const key = ref.plural ? pluralKey(ref.key, ref.params, locale) : ref.key;
+    const template = bundle[key] ?? bundle[ref.key];
+    if (template === undefined) return null;
     const params = {};
     for (const [name, value] of Object.entries(ref.params ?? {})) {
-        params[name] = (value && typeof value === 'object') ? (renderIn(bundle, value) ?? '?') : value;
+        params[name] = (value && typeof value === 'object')
+            ? (renderIn(bundle, value, locale) ?? '?')
+            : value;
     }
-    return format(bundle[ref.key], params, bundle);
+    return format(template, params, bundle);
 }
 
 const worstFit = {};
@@ -405,7 +445,7 @@ for (const pool of MATH_POOLS) {
             if (!english) continue;
             for (const locale of LOCALES) {
                 const ref = problem.phrasing?.[field];
-                const text = (ref && renderIn(bundles[primaryDir][locale], ref)) ?? english;
+                const text = (ref && renderIn(bundles[primaryDir][locale], ref, locale)) ?? english;
                 const height = wrappedLines(text, box.floor, box.wrap) * box.floor * 1.2;
                 const seen = worstFit[`${field}:${locale}`];
                 if (!seen || height > seen.height) {

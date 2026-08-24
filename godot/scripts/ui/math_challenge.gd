@@ -182,5 +182,9 @@ func _localised_prompt() -> String:
 	var ref: Variant = (phrasing as Dictionary).get("prompt", null)
 	if not (ref is Dictionary) or not (ref as Dictionary).has("key"):
 		return english
-	var rendered := TextManager.tp(String((ref as Dictionary)["key"]), (ref as Dictionary).get("params", {}))
+	var rendered := TextManager.tp(
+		String((ref as Dictionary)["key"]),
+		(ref as Dictionary).get("params", {}),
+		String((ref as Dictionary).get("plural", "")),
+	)
 	return english if rendered.is_empty() else rendered

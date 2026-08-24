@@ -52,6 +52,58 @@
  * classifies them as locale-neutral and leaves them alone.
  */
 
+// ── plurals ────────────────────────────────────────────────────────────────
+/**
+ * Some phrasings inflect with one of their numbers, and getting it wrong is
+ * visible to a child.
+ *
+ * Icelandic agreement follows the numeral: 1 (and 21, 31, 41 -- anything ending
+ * in 1 except 11) takes the singular. "3 hópar af 4" is right and "1 hópar af 4"
+ * is not; it has to be "1 hópur af 4", with the verb changing too.
+ *
+ * English has the same problem and the pools already got it wrong. Measured:
+ * "Think of 1 groups of 2." x23, "1 groups of 2 makes 2." x23, "There are 1
+ * altogether." x2, "makes 1 groups." x7. Fifty-five strings of broken English
+ * that a child reads today.
+ *
+ * So this is not a translation workaround, it is a missing feature. Each
+ * plural-sensitive key names the parameter that drives it, and carries a `.one`
+ * sibling in every bundle. The category is resolved per locale at render time,
+ * NOT baked into the data -- the two rules happen to agree over the values the
+ * pools currently use (none of them reaches 21), and hard-coding English's rule
+ * into a locale-neutral field is exactly the kind of thing that works until
+ * someone adds a problem with 21 in it.
+ */
+export const PLURAL_PARAM = {
+    'math.hint.groups': 'a',
+    'math.hint.groups_makes': 'a',
+    'math.expl.mul': 'a',
+    'math.expl.div': 'n',
+    'math.expl.total': 'n',
+    // These three commit to a plural noun the same way. Their driving number
+    // never reaches 1 in the pools as they stand, so nothing renders wrongly
+    // today -- but a counting problem with one dot in it is an ordinary thing to
+    // author, and "Það eru 1 punktar" is the same bug as the 55 already fixed.
+    'math.expl.stars': 'n',
+    'math.expl.dots': 'n',
+};
+
+/** CLDR-style category per locale. Only 'one' and 'other' are needed here. */
+export const PLURAL_RULES = {
+    en: n => (n === 1 ? 'one' : 'other'),
+    is: n => (n % 10 === 1 && n % 100 !== 11 ? 'one' : 'other'),
+};
+
+/** The bundle key to actually look up, given a base key and its parameters. */
+export function pluralKey(key, params, locale = 'en') {
+    const param = PLURAL_PARAM[key];
+    if (param === undefined) return key;
+    const value = params?.[param];
+    if (typeof value !== 'number') return key;
+    const rule = PLURAL_RULES[locale] ?? PLURAL_RULES.en;
+    return rule(value) === 'one' ? `${key}.one` : key;
+}
+
 // ── rendering ──────────────────────────────────────────────────────────────
 
 const PLACEHOLDER = /\{([a-z][a-z0-9]*)\}/g;
@@ -65,7 +117,7 @@ export function format(template, params, templates = TEMPLATES) {
         const value = params?.[name];
         if (value === undefined || value === null) return whole;
         if (typeof value === 'object' && typeof value.key === 'string') {
-            const nested = templates[value.key];
+            const nested = templates[pluralKey(value.key, value.params)];
             if (nested === undefined) return whole;
             return format(nested, value.params ?? {}, templates);
         }
@@ -74,8 +126,8 @@ export function format(template, params, templates = TEMPLATES) {
 }
 
 /** Render a phrasing reference. Used by the round-trip check and the validator. */
-export function render(key, params, templates = TEMPLATES) {
-    const template = templates[key];
+export function render(key, params, templates = TEMPLATES, locale = 'en') {
+    const template = templates[pluralKey(key, params, locale)];
     if (template === undefined) return null;
     return format(template, params ?? {}, templates);
 }
@@ -149,9 +201,20 @@ export function matcherFor(key, template) {
  * template ends at the full stop), but ordering by literal length makes the
  * remaining near-misses deterministic rather than dependent on object key order.
  */
+/**
+ * A `.one` template parses to its BASE key, not to itself. The data stores the
+ * base key plus its parameters; which of the two forms renders is decided per
+ * locale at render time by pluralKey(). So "Think of 1 group of 2." derives to
+ * math.hint.groups with a=1, and Icelandic then renders its own `.one` form.
+ */
 function buildMatchers(keys) {
     return keys
-        .map(key => matcherFor(key, TEMPLATES[key]))
+        .map(key => {
+            const matcher = matcherFor(key, TEMPLATES[key]);
+            return key.endsWith('.one')
+                ? { ...matcher, key: key.slice(0, -'.one'.length) }
+                : matcher;
+        })
         .sort((a, b) => b.literalLength - a.literalLength);
 }
 
@@ -222,6 +285,7 @@ export const TEMPLATES = {
     'math.hint.count_on': 'Start at {a}, then count {b} more.',
     'math.hint.count_back': 'Start at {a}, then count back {b}.',
     'math.hint.groups': 'Think of {a} groups of {b}.',
+    'math.hint.groups.one': 'Think of {a} group of {b}.',
     'math.hint.share': 'Share {a} into groups of {b}.',
     'math.hint.changing': 'Look at how the numbers are changing each time.',
     'math.hint.touch_each': 'Touch each one once as you count.',
@@ -292,6 +356,7 @@ export const TEMPLATES = {
 
     // Multiplication and division.
     'math.hint.groups_makes': '{a} groups of {b} makes...',
+    'math.hint.groups_makes.one': '{a} group of {b} makes...',
     'math.hint.two_groups_all': 'Two groups of {b}! Count them all together!',
     'math.hint.how_many_fit': 'How many {b}s fit into {a}?',
     'math.hint.how_many_make': 'How many {b}s make {a}?',
@@ -342,7 +407,9 @@ export const TEMPLATES = {
     'math.expl.sub_x': '{a} take away {b} leaves {diff}!',
     'math.expl.sub_just': '{a} take away {b} leaves just {diff}!',
     'math.expl.mul': '{a} groups of {b} makes {product}.',
+    'math.expl.mul.one': '{a} group of {b} makes {product}.',
     'math.expl.div': '{a} split into groups of {b} makes {n} groups.',
+    'math.expl.div.one': '{a} split into groups of {b} makes {n} group.',
     'math.expl.add_double': '{a} plus {b} makes {sum}! Double {a} is {sum}!',
     'math.expl.sub_half': '{a} take away {b} leaves {diff}! Half of {a} is {diff}!',
     'math.expl.all_fingers': '{a} plus {b} makes {sum}! That is all your fingers!',
@@ -352,8 +419,11 @@ export const TEMPLATES = {
     'math.expl.zero_any': '{a} plus {b} is {sum}! Zero plus any number is that number.',
     'math.expl.still': '{a} plus {b} is still {sum}!',
     'math.expl.total': 'There are {n} altogether.',
+    'math.expl.total.one': 'There is {n} altogether.',
     'math.expl.stars': 'There are {n} stars!',
+    'math.expl.stars.one': 'There is {n} star!',
     'math.expl.dots': 'There are {n} dots!',
+    'math.expl.dots.one': 'There is {n} dot!',
     'math.expl.choice': '{n} is the correct choice.',
     'math.expl.bigger': '{a} is bigger than {b}',
     'math.expl.bigger_x': '{a} is bigger than {b}!',

@@ -21,7 +21,7 @@ import type { MathProblem, PhrasingRef } from '../utils/Types';
 
 function renderRef(ref: PhrasingRef | undefined, fallback: string): string {
     if (!ref?.key) return fallback;
-    return TextManager.getInstance().tp(ref.key, ref.params) ?? fallback;
+    return TextManager.getInstance().tp(ref.key, ref.params, ref.plural) ?? fallback;
 }
 
 /** The question, localised where possible. */
