@@ -47,7 +47,16 @@ sourced on the final slide or taken from the repository.
 
 ## Numbers That Must Stay Consistent
 
-The ask slide and the arithmetic slide are coupled. The arithmetic prices a
-four-person team at ~12.6m ISK a month (1.75m salary +33% employer cost, +35%
-contractors); the ask funds one hire with the founder deferred. Change the
-headcount on one and the other stops adding up.
+The ask slide and the arithmetic slide are coupled, and so is the model slide's
+price row.
+
+- Burn: 1.75m ISK salary +33% employer cost per head, +35% for contract art,
+  academic and admin time. Two people = 6.3m ISK a month = EUR535k/USD623k a year.
+- Ask: EUR600k = that burn for twelve months plus the pilot, the study and tools.
+- Break-even: 6,500 subscriptions at USD10 a month net of a 20% store cut. Half of
+  Iceland's schools at 2,000 ISK per pupil per year plus 2,400 families gets
+  there too; all 47,162 pupils at that price covers 125% of burn alone.
+- Rates used: ISK/EUR 141, ISK/USD 121.
+
+Change headcount, price, or the store-fee assumption and all four numbers move.
+A third salary takes burn to 9.4m ISK a month and break-even to ~9,700 subs.
