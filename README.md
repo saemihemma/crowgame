@@ -44,7 +44,7 @@ If you are changing:
 - learner difficulty, review, or unlock logic: read [MATH_SYSTEM_ARCHITECTURE.md](./MATH_SYSTEM_ARCHITECTURE.md) first
 - offline math authoring, batch materialization, or review reports: read [docs/MATH_AUTHORING_PIPELINE.md](./docs/MATH_AUTHORING_PIPELINE.md) first
   - what it is not: not empirical child-performance proof, not independent ELO calibration, and not full browser or scene-flow proof by itself
-  - blunt boundary: `3150` is total shipped runtime inventory, not `3150` owl-path experiences; the fresh opening owl path currently starts with `addition` plus `counting`, pattern matching joins the broader owl-safe set later, and each encounter serves `2` problems
+  - blunt boundary: `3150` is total shipped runtime inventory, not `3150` owl-path experiences; the fresh opening owl path currently starts with `addition` plus `counting`, pattern matching joins the broader owl-safe set later, and each encounter serves `1` problem
 - profile identity, save data, cache, or hosted sync: read [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md) first
 - contributor workflow or verification steps: use [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)
 - runtime assets or staging rules: use [ASSET_SPECS.md](./ASSET_SPECS.md)

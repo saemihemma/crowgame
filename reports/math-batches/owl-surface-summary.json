@@ -34,7 +34,7 @@
   },
   "freshReachableAdditionFactCount": 10,
   "freshReachableCountingFactCount": 8,
-  "currentInteractionProblemCount": 2,
+  "currentInteractionProblemCount": 1,
   "owlAdditionByStep": [
     {
       "step": 0,

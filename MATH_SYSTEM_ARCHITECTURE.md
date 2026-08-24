@@ -109,10 +109,10 @@ Prompt wording:
   that shared table, so wording variants of one fact share a replay key
 
 The shared type system still supports other answer modes, but the live UI does not render them.
-The shipped owl interaction is currently two problems per encounter, so total repo inventory and per-session lived variety are still not the same thing.
+The shipped owl interaction is one problem per encounter — answer it and the owl is saved. `problemCount` stays per-NPC config in `npc_registry.json`, so a future gated variant (e.g. a padlock owl) can demand more without code changes.
 The live owl path is addition-first, and the fresh opening mix currently reaches `addition` plus `counting` to create softer "lucky easy ones" without jumping into later arithmetic too early.
 Pattern matching is part of the broader owl-safe set, but it does not start unlocked on a fresh learner profile.
-When an encounter reaches its follow-up question, the runtime now prefers an alternate unlocked owl-safe domain before falling back to the full owl-safe set, so the second prompt is less likely to be "more addition again" unless the learner has no safe alternative unlocked.
+When an NPC asks more than one problem, follow-up questions prefer an alternate unlocked owl-safe domain before falling back to the full owl-safe set — dormant at the one-problem baseline, live again for any multi-problem NPC.
 
 ## Learner Model
 
@@ -275,7 +275,7 @@ Local kid-safe filter:
 - The owl-safe surface is not arithmetic-only anymore: early fresh encounters can mix addition with counting, while pattern matching joins later and subtraction still waits for addition stability.
 - The component-level fallback and the internal ELO fallback now preserve the same operand, step, and difficulty caps instead of silently widening when the recent-window logic resets.
 - `runtime-selector-smoke.json` is runtime-aligned selector evidence built from the shared owl-selection helper plus live learner-state and NPC-config rails; it is not the literal browser scene/input/retry flow by itself.
-- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the real owl interaction, wrong-answer retry, second-problem follow-up, and overlay close path.
+- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the real owl interaction, wrong-answer retry, and the single-problem completion-and-close path.
 - `runtime-browser-smoke.json` is still not telemetry-backed pedagogy proof and does not independently validate that the frozen ELO bands are perfect for every child.
 
 ## Unlock Logic

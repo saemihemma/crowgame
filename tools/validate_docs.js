@@ -423,7 +423,7 @@ function validateMathAuthoringReportContracts() {
 
     ensureDocContains('README.md', `fresh opening owl path currently starts with ${formattedOpeningDomains}`, 'fresh owl opening-domain boundary');
     ensureDocContains('ONBOARDING_AGENT.md', `opening unlocked domains currently ${formattedOpeningDomains}`, 'fresh owl opening-domain boundary');
-    ensureDocContains('ONBOARDING_AGENT.md', `Current shipped owl interaction length is \`${configuredProblemCount}\` problems per owl encounter`, 'owl encounter-length boundary');
+    ensureDocContains('ONBOARDING_AGENT.md', `Current shipped owl interaction length is \`${configuredProblemCount}\` problem${configuredProblemCount === 1 ? '' : 's'} per owl encounter`, 'owl encounter-length boundary');
     ensureDocContains('docs/MATH_AUTHORING_PIPELINE.md', '`openingUnlockedInventory*` is the unlocked-domain inventory before current-step clamping.', 'owl report inventory semantics');
     ensureDocContains('docs/MATH_AUTHORING_PIPELINE.md', '`freshReachable*` is the real fresh-profile day-one reachable subset after current-step clamping.', 'owl report fresh-reachable semantics');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '`openingUnlockedInventory*` in that report means unlocked-domain inventory before current-step clamping.', 'math architecture inventory semantics');

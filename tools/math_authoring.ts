@@ -1743,9 +1743,9 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                 profileGrade -= 1;
             }
 
-            if (owlSurface.currentInteractionProblemCount === 1) {
-                profileGrade -= profile.name === 'depth_probe' ? 0.4 : 0.2;
-            }
+            // One problem per owl encounter is the deliberate baseline (a
+            // future gated NPC may raise problemCount), so interaction length
+            // is no longer graded.
 
             if ((owlSurface.owlAdditionByStep[0]?.uniqueFactCount ?? 0) < 3) {
                 profileGrade -= profile.name === 'depth_probe' ? 0.5 : 0.3;

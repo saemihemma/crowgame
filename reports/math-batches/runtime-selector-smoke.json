@@ -13,15 +13,15 @@
     "currentStepFallbackPreserved": true,
     "maxOperandSeen": 19,
     "maxCurriculumStepSeen": 19,
-    "followUpSelections": 125,
-    "alternateFollowUpSelections": 125,
+    "followUpSelections": 0,
+    "alternateFollowUpSelections": 0,
     "followUpAlternateRate": 1,
-    "steadyFirstSubtractionUnlockAttempt": -1,
+    "steadyFirstSubtractionUnlockAttempt": 29,
     "strugglingFirstSubtractionUnlockAttempt": -1,
-    "depthProbeFirstSubtractionUnlockAttempt": 39,
+    "depthProbeFirstSubtractionUnlockAttempt": 26,
     "steadyFirstSubtractionSelectionAttempt": -1,
     "strugglingFirstSubtractionSelectionAttempt": -1,
-    "depthProbeFirstSubtractionSelectionAttempt": 47,
+    "depthProbeFirstSubtractionSelectionAttempt": 29,
     "owlEligibleProblemCount": 1474,
     "owlEligibleUniquePromptCount": 1474,
     "owlEligibleUniqueFactCount": 590,
@@ -36,7 +36,7 @@
     "openingAdditionStep0Facts": 3,
     "openingAdditionStep1Facts": 3,
     "openingAdditionStep2Facts": 4,
-    "interactionProblemCount": 2,
+    "interactionProblemCount": 1,
     "owlDomains": "addition,counting,pattern_matching,subtraction,comparison,number_sequence",
     "openingUnlockedDomains": "addition,counting"
   },
@@ -64,6 +64,6 @@
   "caveats": [
     "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
     "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-    "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1474 local-safe rows overall, while a fresh profile currently reaches 52 step-capped rows across addition, counting and 2 problems per owl interaction."
+    "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1474 local-safe rows overall, while a fresh profile currently reaches 52 step-capped rows across addition, counting and 1 problems per owl interaction."
   ]
 }

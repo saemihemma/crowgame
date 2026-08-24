@@ -3,10 +3,12 @@ class_name MathChallengeComponent
 ## Port of MathChallengeComponent: the owl flow. On interaction, presents up to
 ## `problem_count` problems (owl-selected). Correct -> next problem; on the final
 ## correct -> owl_saved; any encounter end -> end interaction + fly away.
+## Baseline owl asks 1 problem; problem_count stays per-NPC config so a future
+## gated variant (e.g. a padlock owl) can demand more.
 
 var problem_types: Array = []
-var difficulty_range: Array = [1, 2]
-var problem_count := 2
+var difficulty_range: Array = [1, 3]
+var problem_count := 1
 
 var _problems_completed := 0
 var _last_domain: Variant = null
@@ -14,8 +16,8 @@ var _last_domain: Variant = null
 func _init(config: Dictionary = {}) -> void:
 	type = "math_challenge"
 	problem_types = config.get("problemTypes", [])
-	difficulty_range = config.get("difficultyRange", [1, 2])
-	problem_count = int(config.get("problemCount", 2))
+	difficulty_range = config.get("difficultyRange", [1, 3])
+	problem_count = int(config.get("problemCount", 1))
 
 func init_component(owner_npc: Node) -> void:
 	npc = owner_npc

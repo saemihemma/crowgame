@@ -182,6 +182,15 @@ comparison got stalled before the band was widened. Unify: derive `difficulty`
 from the derived step (one source of truth), or drop the difficulty filter
 from the adaptive path once step data is fully trusted.
 
+### A gated "padlock owl" variant that asks for more than one answer
+The baseline owl asks exactly one problem. `problemCount` is already per-NPC
+config in `npc_registry.json` and both ports' components loop until it is met,
+so the remaining work is content and design, not plumbing: a visually distinct
+NPC variant, a registry entry with `problemCount` 2-3 and a bigger reward, and
+a decision about where it appears (level gates? bonus areas?). The
+multi-problem UI (progress header, alternate-domain follow-ups) stays dormant
+at the baseline but keeps working for any NPC that raises the count.
+
 ### Multiplication and division need a fate decision
 650 authored problems sit in domains the owl never serves — not in its
 `problemTypes`, and with almost no content below step 3 (division's lowest

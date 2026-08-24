@@ -145,7 +145,7 @@ This is the only canonical numeric snapshot block in the current docs. Refresh i
    - `ELOAwareStrategy` only serves easier, review, or current-step problems for the owl path
    - the local owl path currently caps `maxOperand` at `20`
    - opening unlocked domains currently `addition` plus `counting`; the fresh opening owl path is addition-first, and `pattern_matching` is owl-safe overall but unlocks later via the normal domain-stability rules
-   - the shipped owl path serves `2` problems per encounter
+   - the shipped owl path serves `1` problem per encounter
 4. Boot routes to:
    - `LoginScene` if there is no active profile
    - `MainMenuScene` if there is an active profile
@@ -181,9 +181,9 @@ Math authoring report boundaries:
 - Use `reports/math-batches/owl-surface-summary.json` when you need the current owl-safe subset, not the full-repo `3150` inventory count.
 - `openingUnlockedInventory*` means unlocked-domain inventory before current-step clamping.
 - `freshReachable*` means the real fresh-profile day-one reachable subset after current-step clamping.
-- Current shipped owl interaction length is `2` problems per owl encounter, and the follow-up problem now prefers an alternate unlocked domain before falling back to the full owl-safe set.
+- Current shipped owl interaction length is `1` problem per owl encounter (`problemCount` is per-NPC config, so a future gated NPC can ask more); when an NPC asks several, follow-ups prefer an alternate unlocked domain.
 - That selector smoke is selection-layer evidence built from the shared owl helper plus live learner-state and NPC config; it is not full browser or scene-flow proof by itself.
-- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the live owl interaction, wrong-answer retry, second-problem follow-up, and overlay close path.
+- `runtime-browser-smoke.json` is the current browser-backed proof artifact for the live owl interaction, wrong-answer retry, and the single-problem completion-and-close path.
 - `runtime-browser-smoke.json` is not telemetry-backed pedagogy proof and not an independent calibration study for the frozen ELO bands.
 
 ## Live Vs Generated Vs Archived
