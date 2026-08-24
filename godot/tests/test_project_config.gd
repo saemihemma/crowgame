@@ -1,6 +1,7 @@
 extends TestCase
 ## Slice 1 verification: the project boots with the exact display/physics/input
-## settings the port requires (mirrors src/main.ts render config).
+## render settings the game requires. These were originally mirrored from the
+## Phaser config; they are now the source of truth in their own right.
 
 func _reset() -> void:
 	_failures.clear()
