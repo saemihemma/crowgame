@@ -13,7 +13,6 @@
         "godot:gen-math-fixtures": "tsx tools/golden/gen_math_fixtures.ts",
         "godot:gen-motion-fixtures": "tsx tools/golden/gen_motion_fixtures.ts",
         "godot:test": "bash godot/tools/run_tests.sh",
-        "math:browser-smoke": "node tools/math_browser_smoke.mjs",
         "math:materialize": "tsx tools/materialize_math_batches.ts",
         "math:review": "tsx tools/review_math_batches.ts",
         "math:sync-metadata": "tsx tools/sync_math_problem_metadata.ts",

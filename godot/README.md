@@ -4,9 +4,13 @@ Status: Current
 Authority: Godot project overview and run/test/build commands. Runtime truth lives in `godot/scripts/**`, `godot/data/**`, and `godot/project.godot`.
 Last verified against code: 2026-08-23
 
-A 1:1 port of the Phaser 3 / TypeScript "Crow" educational platformer to **Godot 4.3
-(GDScript)**, built self-contained in this folder. Data and assets are reused verbatim
-from `public/data/**` and `public/assets/**`.
+**The game.** Godot 4.3 / GDScript — the only tree players run. Data and assets
+live alongside it in `data/**` and `assets/**`, which are the canonical copies.
+
+It began as a 1:1 port of a Phaser 3 / TypeScript original. That original has been
+retired; what survives of it is `math-kernel/**`, the TypeScript reference
+implementation of the learner maths, which generates the golden fixtures the
+parity tests here assert against.
 
 ## Status — feature complete (slices 1–8)
 - **Pixel-perfect 960×540** viewport (canvas_items/keep, Nearest filter, gravity 800).
@@ -27,7 +31,7 @@ from `public/data/**` and `public/assets/**`.
   Login (PIN dots), MainMenu (build stamp), LevelSelect, Pause, completion screen.
 - **Feel**: crow walk animation, NPC name prompt + idle bob, jump dust, enemy death burst,
   projectile trail + muzzle flash, focus highlights, elastic board entrance.
-- **Progression parity**: death fully reloads the level (Phaser `scene.restart()` semantics);
+- **Progression**: death fully reloads the level;
   Continue resumes `save.currentLevel`.
 - **Tier-3 modularity**: typed level scenes editable in Godot's TileMap editor; runtime
   **skin swap** (forest↔scifi) restyling via palette with no code change.
@@ -68,8 +72,11 @@ godot --headless --path . --script res://tools/import_level.gd
   movement feel — verified by golden-value tests.
 - **Experience parity (ported feel, Godot-native):** screen shake, damage flash, dopamine
   particles, dialog/menus are implemented with Godot tweens/GPUParticles2D/shaders rather than
-  transliterating Phaser draw calls.
+  transliterating the original's draw calls.
 - Hosted learner sync defaults to local-only (the TS default); set the
   `crow_learner_api_base` persistence key to enable a backend.
 - Web build is single-threaded for static-host/mobile compatibility.
-- Still not ported (deliberate): `admin.html` learner dashboard; multi-threaded web export.
+- Deliberately not carried over: the old `admin.html` translation editor (a live
+  string editor is not something to ship publicly) and the multi-threaded web
+  export. The learner dashboard it also held now exists in-engine as the parent
+  report.

@@ -1,7 +1,9 @@
 # Learner State And Sync Architecture
 
 Status: Current
-Authority: Runtime code and data, especially `ProfileManager`, `SaveManager`, `LearnerStateManager`, `LearnerSyncService`, `admin.html`, and `docs/learner_backend_schema.sql`.
+Authority: Runtime code and data, especially `profile_manager.gd`, `save_manager.gd`,
+`learner_state_manager.gd`, `learner_sync_service.gd`, `cloud_sync.gd`, and
+`server/migrations/**`. The wire contract is `docs/API_CONTRACT.md`.
 Last verified against code: 2026-03-31
 
 ## Purpose
@@ -43,7 +45,7 @@ flowchart LR
     Queue --> Submit["LearnerSyncService submit or sync pending attempts"]
     Submit --> Cache
 
-    Learner --> Admin["admin.html learner summary"]
+    Learner --> Report["in-engine parent report"]
 ```
 
 ## At A Glance
@@ -71,7 +73,7 @@ ELOUpdateManager updates mastery, confidence, review, and save
     ->
 LearnerSyncService queues the attempt and optionally submits it
     ->
-admin.html can inspect the resulting learner snapshot
+the in-engine parent report shows the resulting learner snapshot
 ```
 
 Ownership boundary:
@@ -83,7 +85,7 @@ Ownership boundary:
 
 Crow is now family-oriented even when used locally.
 
-Live identity fields in [src/systems/ProfileManager.ts](../src/systems/ProfileManager.ts):
+Live identity fields in [godot/scripts/autoload/profile_manager.gd](../godot/scripts/autoload/profile_manager.gd):
 
 - `username`
 - `pinHash`
@@ -181,7 +183,7 @@ Owns:
 
 ## Boot And Profile Lifecycle
 
-Boot flow in [src/scenes/BootScene.ts](../src/scenes/BootScene.ts):
+Boot flow in [godot/scripts/autoload/data_manager.gd](../godot/scripts/autoload/data_manager.gd):
 
 1. `ProfileManager` loads browser profiles.
 2. `SaveManager` loads the active profile save or defaults.
@@ -290,7 +292,7 @@ The shared type also includes `error`, but the current runtime does not actively
 Configured by:
 - `crow_learner_api_base`
 
-Live methods in [src/systems/LearnerSyncService.ts](../src/systems/LearnerSyncService.ts):
+Live methods in [godot/scripts/systems/learner_sync_service.gd](../godot/scripts/systems/learner_sync_service.gd):
 
 Current client auth model:
 - none built into runtime yet
@@ -392,7 +394,15 @@ This means:
 
 ## Admin Surface
 
-[admin.html](../admin.html) is not just a translation editor anymore.
+The parent-facing surface is now in-engine, not a separate HTML page.
+
+Why the old page had to go rather than be ported: `admin.html` read browser
+`localStorage`, while the Godot build stores everything in
+`user://crow_localstorage.json` — IndexedDB on the web export. Identical key
+names, different storage engine, so it could not see this game's data at all.
+Its translation editor was deliberately not replaced: shipping a live string
+editor to the public would let anyone on a shared family device rewrite what a
+child reads.
 
 It also:
 - reads child profiles from localStorage
@@ -427,4 +437,4 @@ The SQL file is a backend companion artifact, not proof that a backend is alread
 - compare `crow_save_<username>` against `crow_learner_snapshot_<childId>`
 - inspect `crow_learner_pending_attempts_<childId>` before assuming sync dropped data
 - clear the smallest relevant key instead of calling `localStorage.clear()`
-- use [admin.html](../admin.html) to sanity-check learner summary state quickly
+- use the in-engine parent report to sanity-check learner summary state quickly

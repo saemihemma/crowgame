@@ -9,22 +9,22 @@ Last verified against code: 2026-03-31
 Use this as the default change loop:
 
 ```powershell
-npm.cmd run validate
-npx.cmd tsc --noEmit
-npm.cmd run dev
+npm run validate
+npx tsc --noEmit
+godot --path godot   # play it
 ```
 
 Add these when needed:
 
 ```powershell
-npm.cmd run compile
-npm.cmd run build
-npm.cmd run math:materialize
-npm.cmd run math:review
-npm.cmd run math:browser-smoke
+npm run compile
+bash godot/tools/build_web.sh
+npm run math:materialize
+npm run math:review
+node godot/tools/web_boot_smoke.mjs
 ```
 
-`npm.cmd run validate` now covers:
+`npm run validate` now covers:
 - content validation
 - doc metadata presence checks
 - canonical onboarding snapshot checks
@@ -43,25 +43,25 @@ npm.cmd run math:browser-smoke
 ## Content Rules
 
 Levels:
-- edit `public/data/levels/specs/*.spec.json`
-- run `npm.cmd run compile`
-- do not hand-edit `public/data/levels/compiled/*.json` unless debugging compiler output
+- edit `godot/data/levels/specs/*.spec.json`
+- run `npm run compile`
+- do not hand-edit `godot/data/levels/compiled/*.json` unless debugging compiler output
 
 Math:
 - treat `MathProblemManager`, `ELOManager`, `LearnerStateManager`, `ELOUpdateManager`, and `LearnerSyncService` as one system
 - do not change selection rules in one file without checking the companion state and docs
-- author offline math growth in `authoring/math/**`, then rerun `npm.cmd run math:materialize`
-- do not hand-edit `public/data/math/problems_curriculum.json`; treat it as a materialized output
+- author offline math growth in `authoring/math/**`, then rerun `npm run math:materialize`
+- do not hand-edit `godot/data/math/problems_curriculum.json`; treat it as a materialized output
 
 Persistence:
 - profile data, save data, learner snapshot cache, and pending sync queue are separate layers
 - clear the smallest relevant localStorage key when debugging
 
 Assets:
-- place live assets in `public/assets/**`
+- place live assets in `godot/assets/**`
 - do not use archived copy folders as sources of truth
 - treat `ai_assets/` as staging only
-- run `npm.cmd run validate:assets` for the asset-only subset when iterating on audio or art
+- run `npm run validate:assets` for the asset-only subset when iterating on audio or art
 
 Rendering:
 - desktop is currently optimized for integer pixel scaling first
@@ -80,18 +80,25 @@ Math changes:
 - answer one correct first try
 - answer one wrong then corrected retry
 - confirm learner summary or save state changes as expected
-- if you changed owl flow, selection rails, or MathChallengeScene interaction timing, run `npm.cmd run math:browser-smoke`
+- if you changed owl flow or selection rails, rebuild and run `node godot/tools/web_boot_smoke.mjs`
 
 Profile or save changes:
 - create or log into a profile
 - reload the page
 - confirm the expected profile, save data, and learner state persist
 
-Admin changes:
-- open `admin.html`
-- check translation table behavior
-- check learner summary rendering
-- verify learner API URL save and reload behavior if touched
+Grown-up surface changes (parent report, cloud panel):
+- open them from the main menu with at least one child profile present
+- check the report renders per-domain lines rather than raw identifiers
+- switch locale and confirm no key leaks through untranslated
+- for cloud save, exercise the real flow: request a link, enroll, play, then load
+  on a second device and confirm the progress arrives
+
+Cloud sync changes:
+- confirm the local save still works with the API unreachable — local-only is the
+  intended degraded state, not an error
+- confirm a stale device's save is rejected and it adopts the authoritative one
+- confirm its attempts still landed anyway
 
 ## Documentation Update Rule
 

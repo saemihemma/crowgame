@@ -369,7 +369,7 @@ function validateStorageContracts() {
 
 function validateDocWordingAndTaxonomy() {
     ensureDocContains('DEVELOPMENT_GUIDE.md', '- [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)', 'self-listed current doc');
-    ensureDocContains('ASSET_SPECS.md', 'Boot-time asset loading in [src/scenes/BootScene.ts](./src/scenes/BootScene.ts) currently expects:', 'BootScene asset contract lead-in');
+    ensureDocContains('ASSET_SPECS.md', 'Boot-time asset loading in [godot/scripts/autoload/data_manager.gd](./godot/scripts/autoload/data_manager.gd) currently expects:', 'asset contract lead-in');
     ensureDocContains('ASSET_SPECS.md', 'suspicious unreferenced leftovers that should be archived instead of staying live', 'asset validation cleanup scope note');
     ensureDocContains('archived/README.md', 'level-copy-legacy', 'clear archive folder naming');
     ensureDocContains('archived/README.md', 'scratch-images', 'clear archive scratch-image naming');

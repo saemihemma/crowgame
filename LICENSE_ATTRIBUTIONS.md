@@ -66,5 +66,5 @@ When asset provenance changes:
 
 1. Update this document.
 2. Update any runtime manifest or credits file that references the asset.
-3. Run `npm.cmd run validate:assets`.
+3. Run `npm run validate:assets`.
 4. If the asset moved out of the live tree, also update [archived/README.md](./archived/README.md) or [ASSET_SPECS.md](./ASSET_SPECS.md) as needed.

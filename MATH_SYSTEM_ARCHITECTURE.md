@@ -59,7 +59,7 @@ Current target band:
 
 ## Runtime Composition
 
-Boot-time math initialization happens in [src/scenes/BootScene.ts](./src/scenes/BootScene.ts):
+Boot-time math initialization happens in [godot/scripts/autoload/data_manager.gd](./godot/scripts/autoload/data_manager.gd):
 
 - `MathProblemManager` loads 4 pools:
   - `easy`
@@ -108,7 +108,7 @@ Long-term skill estimate is still ELO-based:
 - effective mastery for a domain:
   - `globalELO + domainModifier`
 
-Live update behavior in [src/math/ELOManager.ts](./src/math/ELOManager.ts):
+Live update behavior in [godot/scripts/math/elo_manager.gd](./godot/scripts/math/elo_manager.gd):
 
 - expected score uses standard ELO expectation
 - actual score:
@@ -130,7 +130,7 @@ Live update behavior in [src/math/ELOManager.ts](./src/math/ELOManager.ts):
 
 Local problem selection is now capped by an explicit per-domain curriculum step.
 
-Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerStateManager.ts):
+Live behavior in [godot/scripts/systems/learner_state_manager.gd](./godot/scripts/systems/learner_state_manager.gd):
 
 - each domain stores:
   - `currentStep`
@@ -150,7 +150,7 @@ This is the primary local safety rail for young learners. ELO no longer authoriz
 
 Confidence is session-local and moves faster than mastery.
 
-Live behavior in [src/systems/LearnerStateManager.ts](./src/systems/LearnerStateManager.ts):
+Live behavior in [godot/scripts/systems/learner_state_manager.gd](./godot/scripts/systems/learner_state_manager.gd):
 
 - stored per domain as `confidenceOffsets`
 - clamped to `-50..20`
@@ -196,7 +196,7 @@ Rules:
 
 ## Problem Selection Policy
 
-Live local weighting in [src/math/selection/ELOAwareStrategy.ts](./src/math/selection/ELOAwareStrategy.ts):
+Live local weighting in [godot/scripts/math/elo_aware_strategy.gd](./godot/scripts/math/elo_aware_strategy.gd):
 
 - `50%` comfort
 - `25%` review
@@ -265,7 +265,7 @@ A prerequisite domain only counts as stable when:
 
 ## Runtime Update Flow
 
-The live update path is centralized in [src/systems/ELOUpdateManager.ts](./src/systems/ELOUpdateManager.ts):
+The live update path is centralized in [godot/scripts/systems/elo_update_manager.gd](./godot/scripts/systems/elo_update_manager.gd):
 
 1. `MATH_PROBLEM_PRESENTED`
    - caches domain, problem ELO, skill list, selection lane, and review item id
@@ -296,7 +296,7 @@ This gives Crow:
 
 ## Parent And Admin Visibility
 
-[admin.html](./admin.html) now exposes a learner summary panel that reads local learner snapshots and shows:
+The in-engine parent report ([godot/scripts/ui/parent_report.gd](./godot/scripts/ui/parent_report.gd)) reads local learner snapshots and shows:
 
 - first-attempt accuracy
 - summary cards with up to four visible domain rows per child, including mastery and confidence

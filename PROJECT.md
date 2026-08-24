@@ -68,7 +68,9 @@ As of 2026-03-22, the shipped surface is a playable prototype with:
 - a progression loop through multiple levels in the level registry
 - owl-driven math interactions
 - adaptive learner state per child
-- translation overrides and learner summary visibility in `admin.html`
+- an in-engine parent report showing, per child, curriculum step, first-attempt
+  accuracy and review load
+- optional cloud save, so a child's progress follows them between devices
 
 ## Visual And Tone Direction
 

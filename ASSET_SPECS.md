@@ -10,7 +10,7 @@ This document explains the live asset surface and the difference between runtime
 
 ## Current Runtime Asset Contract
 
-Boot-time asset loading in [src/scenes/BootScene.ts](./src/scenes/BootScene.ts) currently expects:
+Boot-time asset loading in [godot/scripts/autoload/data_manager.gd](./godot/scripts/autoload/data_manager.gd) currently expects:
 
 Sprites and images:
 - `assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png`
@@ -24,15 +24,15 @@ Sprites and images:
 - `assets/tilesets/spike_hazards.png`
 
 Audio manifest:
-- [public/data/audio/audio_manifest.json](./public/data/audio/audio_manifest.json) is the live audio manifest
+- [godot/data/audio/audio_manifest.json](./godot/data/audio/audio_manifest.json) is the live audio manifest
 - mutable manifest counts live only in the dated snapshot block in [ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md) so current docs do not drift independently
 
 Generated or companion runtime data consumed alongside assets:
-- `public/data/levels/level_registry.json`
-- `public/data/levels/compiled/*.json`
-- `public/data/tuning/*.json`
-- `public/data/themes/*.json`
-- `public/data/i18n/strings_en.json`
+- `godot/data/levels/level_registry.json`
+- `godot/data/levels/compiled/*.json`
+- `godot/data/tuning/*.json`
+- `godot/data/themes/*.json`
+- `godot/data/i18n/strings_en.json`
 
 Asset work often fails because one of these companion data files still points at old paths or old keys.
 
@@ -51,7 +51,7 @@ Staging:
 Archived:
 - `archived/**` contains historical plans, dead code, and non-runtime asset copies
 - do not point runtime manifests at archived material
-- obvious backups and scratch artifacts should be moved there instead of being left under `public/assets/**`
+- obvious backups and scratch artifacts should be moved there instead of being left under `godot/assets/**`
 
 ## Current Notes
 
@@ -64,10 +64,10 @@ Archived:
 When asset wiring changes:
 
 ```powershell
-npm.cmd run validate
-npm.cmd run validate:assets
-npx.cmd tsc --noEmit
-npm.cmd run dev
+npm run validate
+npm run validate:assets
+npx tsc --noEmit
+godot --path godot   # play it
 ```
 
 `validate:assets` verifies:
@@ -76,7 +76,7 @@ npm.cmd run dev
 - compiled level tileset image references
 - suspicious unreferenced leftovers that should be archived instead of staying live
 
-`npm.cmd run validate` already includes `validate:assets`. Use `npm.cmd run validate:assets` when you only want the asset subset during iteration.
+`npm run validate` already includes `validate:assets`. Use `npm run validate:assets` when you only want the asset subset during iteration.
 
 Manual checks:
 - confirm BootScene loads the asset without warnings
