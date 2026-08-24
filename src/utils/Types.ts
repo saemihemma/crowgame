@@ -7,6 +7,12 @@ export interface LevelRegistryEntry {
     name: string;
     mapFile: string;
     tilesetImages: Record<string, string>;
+    /**
+     * ThemeManager id this level is dressed in. Distinct from `LevelSpec.theme`,
+     * which the level compiler uses to pick a tileset filename and which cannot
+     * change until the per-world tilesets exist. See brand/LEVEL_ART_BIBLE.md.
+     */
+    theme?: string;
     music?: string;
     unlockRequirement: { level: string; minStars: number } | null;
     order: number;

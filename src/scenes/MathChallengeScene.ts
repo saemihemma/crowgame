@@ -48,6 +48,8 @@ export class MathChallengeScene extends Phaser.Scene {
         currentProblemIndex?: number;
         problemCount?: number;
     }): void {
+        this.events.once('shutdown', this.shutdown, this);
+
         if (!data.problem) {
             console.warn('MathChallengeScene: no problem provided, closing.');
             this.closeMathChallenge();

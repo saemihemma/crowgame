@@ -115,25 +115,69 @@ the correct-answer green in luminance as well as hue, the hardcoded `#ff6666` is
 gone, and red is reserved for health loss. `brand/BRAND_SYSTEM.md` §6.2 and
 `brand/tokens/verify_palettes.py` specify and check this.
 
-### Five levels, one look
-All six level specs declare `"theme": "forest"` and every `level_registry.json`
-entry loads the same `level1_tiles.png`. `ThemeManager` supports per-level
-theming and nothing uses it — `setTheme()` is called once at boot and never
-again.
+### Five levels still share one tileset
+Every level now loads its own world theme, so sky, board, dialogue and FX
+colours differ per world. The ground does not: all six specs still declare
+`"theme": "forest"` and every level renders `level1_tiles.png`.
 
-`brand/tokens/` holds five ready `ThemeDefinition` files and a four-step wiring
-recipe. It needs no new art: `HealthBar` falls back to generated placeholders
-for missing sprite keys and `MathBoard` draws from palette colours, so the
-worlds diverge visually from JSON alone.
+`tools/level_compiler.ts` derives the tileset name and path from
+`LevelSpec.theme` (`${spec.theme}_tiles`), so `spec.theme` is a tileset selector
+while `level_registry.json.theme` is the UI theme id — two concepts sharing one
+word. Flipping a spec before its tileset exists fails `validate:assets`.
 
-Also unresolved in the same area: `level-spec.schema.json` enums `theme` to a
-vocabulary (`forest`/`cave`/`village`/`mountain`/`sky`/`underwater`) that does
-not match any `ThemeManager` id, and `level_03` (7 platforms, no hazards, no
-enemies) and `level_04` (11 platforms, 1 of each) are too small to carry a
-distinct world.
+`brand/ASSET_MANIFEST.md` lists the five tilesets as P0 with sizes and paths.
 
-*Done when:* each level loads its own theme, the spec vocabulary and the theme
-ids are the same words, and no two levels share a tileset.
+*Done when:* no two levels share a tileset, and `LevelSpec.theme` is renamed to
+something that says "tileset" so the two vocabularies stop colliding.
+
+### `level_03` and `level_04` are too small for their worlds
+`level_03` is 7 platforms with no hazards and no enemies; `level_04` is 11
+platforms with one of each. They are now Sugarstorm and Geyserworks, which
+`brand/LEVEL_ART_BIBLE.md` sizes at 18-22 and 20-24 platforms.
+
+*Done when:* both specs carry enough content to read as distinct worlds, or the
+worlds move to levels that do.
+
+### `theme_forest` and `theme_scifi` are kept alive only by the Godot tests
+The web port registers seven themes: the five worlds plus two legacy skins no
+level selects. `godot/tests/test_theme_roles.gd` and `test_theme_swap.gd` assert
+on the `forest` and `scifi` ids by path, so deleting them breaks that suite.
+
+They were backfilled with the Fixed Nine and the world variables so every
+registered theme carries the same 44 palette keys — nothing is broken, it is
+just carried.
+
+*Done when:* the Godot tests assert on two world ids instead, and both ports drop
+the legacy skins.
+
+### The Godot port has none of the world themes
+`godot/data/themes/` still holds only `theme_forest.json` and
+`theme_scifi.json`, so the two runtimes now look different. Godot could not be
+exercised in the session that wired the web port.
+
+*Done when:* the five world themes exist under `godot/data/themes/`, are listed
+in `godot/scripts/autoload/data_manager.gd`, are registered by
+`theme_manager.gd`, and the suite still passes.
+
+### `brand/tokens/` and `public/data/themes/` are duplicate copies
+The five token files exist twice, byte-identical, with nothing enforcing it.
+
+*Done when:* either `npm run validate` checks the two copies match, or the brand
+copies are deleted and `brand/` points at `public/data/themes/`.
+
+### The maths board covers the player, and the header overlaps the board
+Visible in `output/playwright/themes/*-2-math-board.png`. The `520x280` board is
+centred, so it sits on top of Hörmann; `MathChallengeScene`'s header block
+(`GAME_HEIGHT / 2 - 152`) overlaps the board's top edge, so its third line reads
+as if it were inside the frame. There is also no scrim, so a busy world shows
+through behind the problem.
+
+`brand/BRAND_SYSTEM.md` §8.3 and §8.7 specify the intended layout: board anchored
+to the upper 60% with the camera panned so the player stays visible, and a warm
+`#1A1420` scrim at 0.72.
+
+*Done when:* the player is visible during a challenge, the header does not
+collide with the board, and a scrim separates the problem from the world.
 
 ## P3 — Content and localisation
 

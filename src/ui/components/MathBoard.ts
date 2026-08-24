@@ -25,6 +25,9 @@ export class MathBoard {
     private readonly boardW = 520;
     private readonly boardH = 280;
 
+    /** Question type scale, largest first. See brand/BRAND_SYSTEM.md section 7.2. */
+    private static readonly QUESTION_SIZES = [56, 44, 36, 28] as const;
+
     constructor(scene: Phaser.Scene, cx?: number, cy?: number) {
         this.scene = scene;
         const x = cx ?? GAME_WIDTH / 2;
@@ -54,6 +57,9 @@ export class MathBoard {
             stroke: tm.getColor('textShadow'),
             strokeThickness: 5,
             align: 'center',
+            // Counting prompts render one glyph per item, so they outgrow the
+            // board on the horizontal. Wrap inside the frame instead.
+            wordWrap: { width: this.boardW - 48, useAdvancedWrap: true },
         }).setOrigin(0.5, 0);
         this.container.add(this.questionText);
 
@@ -83,13 +89,40 @@ export class MathBoard {
         this.boardBg.fillRoundedRect(-w / 2, -h / 2, w, h, 12);
     }
 
+    /**
+     * Set the question text at the largest size in the type scale that fits the
+     * question band, and return its bottom edge in container space.
+     *
+     * The band is the space above the answer buttons. Steps come from the type
+     * scale in brand/BRAND_SYSTEM.md section 7.2 rather than a continuous
+     * fit, so text stays on-scale.
+     */
+    private fitQuestionText(text: string): number {
+        const top = -this.boardH / 2 + 50;
+        const band = 130;
+
+        for (const size of MathBoard.QUESTION_SIZES) {
+            this.questionText.setFontSize(size);
+            this.questionText.setWordWrapWidth(this.boardW - 48, true);
+            this.questionText.setText(text);
+            if (this.questionText.height <= band) {
+                break;
+            }
+        }
+
+        this.questionText.setY(top);
+        return top + this.questionText.height;
+    }
+
     /** Show a math problem with MCQ options */
     showProblem(problem: MathProblem): void {
         this.currentProblem = problem;
         this.answered = false;
 
-        // Set question text
-        this.questionText.setText(problem.prompt.text);
+        // Set question text, shrinking it until it fits the question band. A
+        // counting prompt renders one glyph per item, so 56px does not always
+        // fit; without this the wrap pushes it down into the answer buttons.
+        const questionBottom = this.fitQuestionText(problem.prompt.text);
         this.hintText.setText('').setAlpha(0);
 
         // Clear old option buttons
@@ -109,13 +142,16 @@ export class MathBoard {
             const gap = 24;
             const totalW = options.length * btnW + (options.length - 1) * gap;
             const startX = -totalW / 2 + btnW / 2;
+            // Buttons sit under the measured question, not at a fixed y, so a
+            // two-line prompt cannot collide with them.
+            const btnY = Math.max(40, questionBottom + 24 + btnH / 2);
 
             for (let i = 0; i < options.length; i++) {
                 const optVal = options[i];
                 const btnX = startX + i * (btnW + gap);
                 const btn = this.createOptionButton(
                     btnX,
-                    40,
+                    btnY,
                     btnW,
                     btnH,
                     String(optVal),
@@ -130,7 +166,7 @@ export class MathBoard {
                 const navIndex = i;
                 this.navigator.addButton({
                     x: this.container.x + btnX,
-                    y: this.container.y + 40,
+                    y: this.container.y + btnY,
                     width: btnW,
                     height: btnH,
                     onActivate: () => zone.emit('pointerdown'),

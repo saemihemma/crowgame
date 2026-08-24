@@ -25,6 +25,8 @@ export class HUDScene extends Phaser.Scene {
     }
 
     create(data: { inputManager?: InputManager }): void {
+        this.events.once('shutdown', this.shutdown, this);
+
         // Health bar: top-left
         this.healthBar = new HealthBar(this, 16, 16);
 

@@ -22,7 +22,16 @@ npm.cmd run build
 npm.cmd run math:materialize
 npm.cmd run math:review
 npm.cmd run math:browser-smoke
+npm.cmd run themes:screenshots
+npm.cmd run i18n:screenshots
 ```
+
+Both screenshot harnesses need a dev server already running and a browser on
+`CHROME_PATH`. `themes:screenshots` is the gate for anything visual: it walks
+every level in the registry, captures gameplay and the maths board in each, and
+checks the captured pixels against that level's theme token file. It exits
+non-zero on an off-palette screen, a console error, or a screen that never
+rendered. Output lands in `output/playwright/themes/`, report included.
 
 `npm.cmd run validate` now covers:
 - content validation
@@ -74,6 +83,15 @@ Gameplay changes:
 - boot to main menu
 - load a level
 - verify player movement, HUD, pause, and level completion still work
+
+Visual, theme, or art changes:
+- run `npm.cmd run themes:screenshots` and look at the PNGs, not just the exit code
+- a new asset in the wrong palette fails the conformance check; a new asset that
+  is merely ugly does not, so the images still need a human
+- brand rules live in `brand/BRAND_SYSTEM.md`; per-world detail in
+  `brand/LEVEL_ART_BIBLE.md`; what to generate and where it goes in
+  `brand/ASSET_MANIFEST.md`
+- after a palette edit, run `python3 brand/tokens/verify_palettes.py`
 
 Math changes:
 - trigger a math challenge

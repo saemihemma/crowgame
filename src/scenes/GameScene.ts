@@ -50,6 +50,11 @@ export class GameScene extends Phaser.Scene {
     }
 
     create(data: { levelKey?: string }): void {
+        // Phaser does not call a Scene's shutdown() method for us; without this
+        // the teardown below never runs and every listener registered in this
+        // scene survives the next level transition.
+        this.events.once('shutdown', this.shutdown, this);
+
         // Reset state for scene re-entry
         this.groundLayer = null;
         this.coins = null;
@@ -75,6 +80,9 @@ export class GameScene extends Phaser.Scene {
         // Track current level in LevelManager & SaveManager
         LevelManager.getInstance().setCurrentLevel(levelKey);
         SaveManager.getInstance().setCurrentLevel(levelKey);
+
+        // Dress the level in its own world theme before anything reads a colour.
+        this.applyLevelTheme(levelKey);
 
         // Setup input
         this.inputManager = new InputManager(this);
@@ -189,7 +197,10 @@ export class GameScene extends Phaser.Scene {
         if (camTuning?.zoomLevel && camTuning.zoomLevel !== 1) {
             this.cameras.main.setZoom(camTuning.zoomLevel);
         }
-        this.cameras.main.setBackgroundColor('#87CEEB'); // Sky blue
+        // Sky comes from the world theme. It is the largest region of the frame,
+        // so a hardcoded value here makes every world look like world 1.
+        this.cameras.main.setBackgroundColor(ThemeManager.getInstance().getColor('sky_bottom'));
+        this.paintSkyGradient();
 
         // Set camera bounds to world/map size
         if (groundLayer) {
@@ -483,6 +494,49 @@ export class GameScene extends Phaser.Scene {
                 this.scene.restart({ levelKey: targetLevel });
             });
         });
+    }
+
+    /**
+     * Two-stop sky gradient from the active theme, pinned to the camera.
+     *
+     * Depth -100 puts it behind the tilemap without needing every other object
+     * to declare a depth. Section 5.4 of brand/BRAND_SYSTEM.md owns the layer
+     * stack; this is the `sky` layer, scroll factor 0.
+     */
+    private paintSkyGradient(): void {
+        const tm = ThemeManager.getInstance();
+        const top = tm.getColorNum('sky_top');
+        const bottom = tm.getColorNum('sky_bottom');
+
+        const sky = this.add.graphics().setScrollFactor(0).setDepth(-100);
+        sky.fillGradientStyle(top, top, bottom, bottom, 1);
+        sky.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    }
+
+    // ─── Theme ──────────────────────────────────────
+
+    /**
+     * Switch ThemeManager to the theme this level declares in the registry.
+     *
+     * Every UI component rebuilds from THEME_CHANGED, so this has to run before
+     * HUDScene and any board is built. A level with no `theme` keeps whatever is
+     * active, which is how the practice arena inherits the menu theme.
+     */
+    private applyLevelTheme(levelKey: string): void {
+        const themeId = LevelManager.getInstance().getLevel(levelKey)?.theme;
+        if (!themeId) {
+            return;
+        }
+
+        const tm = ThemeManager.getInstance();
+        if (!tm.hasTheme(themeId)) {
+            console.warn(`[GameScene] level "${levelKey}" wants unknown theme "${themeId}"; keeping current.`);
+            return;
+        }
+
+        if (tm.getActiveThemeId() !== themeId) {
+            tm.setTheme(themeId);
+        }
     }
 
     // ─── Completion Screen ──────────────────────────

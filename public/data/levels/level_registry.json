@@ -7,6 +7,7 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
+            "theme": "emberwood",
             "music": "level_01_music",
             "unlockRequirement": null,
             "order": 1
@@ -18,6 +19,7 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
+            "theme": "emberwood",
             "music": "level_01_music",
             "unlockRequirement": null,
             "order": 2
@@ -29,8 +31,12 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
+            "theme": "prism_hollow",
             "music": "level_02_music",
-            "unlockRequirement": { "level": "level_01", "minStars": 0 },
+            "unlockRequirement": {
+                "level": "level_01",
+                "minStars": 0
+            },
             "order": 3
         },
         {
@@ -40,8 +46,12 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
+            "theme": "sugarstorm",
             "music": "level_03_music",
-            "unlockRequirement": { "level": "level_02", "minStars": 0 },
+            "unlockRequirement": {
+                "level": "level_02",
+                "minStars": 0
+            },
             "order": 4
         },
         {
@@ -51,8 +61,12 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
+            "theme": "geyserworks",
             "music": "level_04_music",
-            "unlockRequirement": { "level": "level_03", "minStars": 0 },
+            "unlockRequirement": {
+                "level": "level_03",
+                "minStars": 0
+            },
             "order": 5
         },
         {
@@ -62,8 +76,12 @@
             "tilesetImages": {
                 "level1_tiles": "assets/tilesets/level1_tiles.png"
             },
+            "theme": "aurora_spire",
             "music": "level_05_music",
-            "unlockRequirement": { "level": "level_04", "minStars": 0 },
+            "unlockRequirement": {
+                "level": "level_04",
+                "minStars": 0
+            },
             "order": 6
         }
     ]

@@ -17,23 +17,27 @@ Five `ThemeDefinition` files, one per world, in the exact shape
 | `theme_geyserworks.json` | Geyserworks | `level_04` |
 | `theme_aurora_spire.json` | Aurora Spire | `level_05` |
 
-## Why these live here and not in `public/data/themes/`
+## These are the authoring source; the live copies are in `public/data/themes/`
 
-`ASSET_SPECS.md` is explicit that a file under `public/**` is only live if
-runtime code, a registry or a manifest references it. These are not referenced
-yet, so putting them there would make `public/data/themes/` lie about what is
-live. They stay staged until the wiring below lands, and then they move.
+The wiring has landed. Each file here has a copy at
+`public/data/themes/theme_<id>.json`, and that copy is what the game loads.
+**Edit here, then copy across** — they are byte-identical today and nothing
+enforces it, which is a small drift risk worth knowing about.
 
-## Wiring recipe
+What the wiring consists of:
 
-Four steps. None of them needs any new art to exist first.
+1. The five files sit in `public/data/themes/`.
+2. `DATA_PATHS` in `src/utils/Constants.ts` names each one.
+3. `BootScene` preloads them from `THEME_CACHE_KEYS` and registers them in
+   `registerThemes()`. `DEFAULT_THEME_ID`, exported from the same file, dresses
+   the menus.
+4. `level_registry.json` gives each level a `theme`, and
+   `GameScene.applyLevelTheme()` switches to it before the HUD is built.
 
-1. Copy the five files into `public/data/themes/`.
-2. Add each to `DATA_PATHS` in `src/utils/Constants.ts`.
-3. Load and register them in `BootScene` — `this.load.json(...)` in `preload`,
-   `tm.registerTheme(...)` in `registerThemes()`.
-4. In `GameScene`, call `ThemeManager.getInstance().setTheme(spec.theme)` when a
-   level loads, instead of leaving `forest` active from boot.
+The two legacy skins, `forest` and `scifi`, are still registered because the
+Godot suite asserts on their ids. They were backfilled with the Fixed Nine and
+the world variables so every registered theme carries the same 44 palette keys
+and no lookup can return `undefined`. Retiring them is tracked in `roadmap.md`.
 
 ## Why this is safe before the art exists
 

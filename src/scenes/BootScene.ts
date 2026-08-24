@@ -17,6 +17,20 @@ import type { ThemeDefinition } from '../ui/theme/ThemeTypes';
 import type { LevelRegistry, NPCRegistry, MathProblemPool } from '../utils/Types';
 import type { EnemyRegistry } from '../entities/enemies/Enemy';
 
+/** Every theme cache key BootScene preloads, in registration order. */
+const THEME_CACHE_KEYS = [
+    'theme_forest',
+    'theme_scifi',
+    'theme_emberwood',
+    'theme_prism_hollow',
+    'theme_sugarstorm',
+    'theme_geyserworks',
+    'theme_aurora_spire',
+] as const;
+
+/** Theme used for menus, and as the fallback when a level names no theme. */
+export const DEFAULT_THEME_ID = 'emberwood';
+
 export class BootScene extends Phaser.Scene {
     constructor() {
         super({ key: SCENES.BOOT });
@@ -60,8 +74,15 @@ export class BootScene extends Phaser.Scene {
         this.load.json('camera_tuning', DATA_PATHS.CAMERA_TUNING);
 
         // --- Load theme data ---
+        // The two legacy skins stay registered because the Godot suite asserts
+        // on their ids; the five worlds are what levels actually select.
         this.load.json('theme_forest', DATA_PATHS.THEME_FOREST);
         this.load.json('theme_scifi', DATA_PATHS.THEME_SCIFI);
+        this.load.json('theme_emberwood', DATA_PATHS.THEME_EMBERWOOD);
+        this.load.json('theme_prism_hollow', DATA_PATHS.THEME_PRISM_HOLLOW);
+        this.load.json('theme_sugarstorm', DATA_PATHS.THEME_SUGARSTORM);
+        this.load.json('theme_geyserworks', DATA_PATHS.THEME_GEYSERWORKS);
+        this.load.json('theme_aurora_spire', DATA_PATHS.THEME_AURORA_SPIRE);
 
         // --- Load audio manifest ---
         this.load.json('audio_manifest', DATA_PATHS.AUDIO_MANIFEST);
@@ -278,20 +299,17 @@ export class BootScene extends Phaser.Scene {
     private registerThemes(): void {
         const tm = ThemeManager.getInstance();
 
-        // Register forest theme
-        const forestTheme = this.cache.json.get('theme_forest') as ThemeDefinition;
-        if (forestTheme) {
-            tm.registerTheme(forestTheme);
+        for (const cacheKey of THEME_CACHE_KEYS) {
+            const theme = this.cache.json.get(cacheKey) as ThemeDefinition | undefined;
+            if (theme) {
+                tm.registerTheme(theme);
+            } else {
+                console.warn(`[BootScene] theme "${cacheKey}" did not load; skipping.`);
+            }
         }
 
-        // Register sci-fi theme
-        const scifiTheme = this.cache.json.get('theme_scifi') as ThemeDefinition;
-        if (scifiTheme) {
-            tm.registerTheme(scifiTheme);
-        }
-
-        // Set default theme
-        tm.setTheme('forest');
+        // Menus and level select run on world 1 until a level selects its own.
+        tm.setTheme(tm.hasTheme(DEFAULT_THEME_ID) ? DEFAULT_THEME_ID : 'forest');
     }
 
     /**

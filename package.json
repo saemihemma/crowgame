@@ -21,7 +21,8 @@
         "ai:process": "node tools/process_ai_assets.js",
         "dev:host": "vite --config vite/config.dev.mjs --host",
         "validate:i18n": "node tools/validate_i18n.mjs",
-        "i18n:screenshots": "node tools/i18n_screenshots.mjs"
+        "i18n:screenshots": "node tools/i18n_screenshots.mjs",
+        "themes:screenshots": "node tools/theme_screenshots.mjs"
     },
     "devDependencies": {
         "ajv": "^8.17.1",
@@ -30,6 +31,7 @@
         "cli-progress": "^3.12.0",
         "fast-glob": "^3.3.3",
         "playwright-core": "^1.58.2",
+        "pngjs": "^7.0.0",
         "sharp": "^0.34.5",
         "tsx": "^4.21.0",
         "typescript": "~5.7.2",
