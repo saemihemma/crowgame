@@ -1,8 +1,10 @@
-name: Web CI
+name: Web CI (retired build)
 
-# Regression gate for the Phaser build. The Godot suite has its own workflow
-# (ci.yml) with its own path filter, so a web-only change never pays for a
-# Godot download and vice versa.
+# The Phaser build this gates is RETIRED — Hörmann is a Godot game
+# (README, "Runtime: Godot, and only Godot"). This workflow stays only while
+# `src/**` still exists to check the rebuild against, and is deleted with it.
+#
+# The live gate is ci.yml: the Godot suite plus a level capture.
 #
 # Everything here is fast and headless. Deliberately NOT in CI:
 # `npm run math:browser-smoke` and `npm run themes:screenshots`. Both need a dev

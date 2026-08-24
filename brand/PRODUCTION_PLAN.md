@@ -31,7 +31,8 @@ until its rows pass, measured, on a device profile — not on a desktop browser.
 Gates B1, B3, B4, B5 and B10 are **currently unmeasurable** — the harness has
 never opened a device viewport. Phase 0 exists to fix that.
 
-**Every gate is measured twice**, once per runtime. See §2a.
+**Gates are measured on the Godot build.** The device audit currently drives the
+retired Phaser build and moves across as part of Phase 0b. See §2a.
 
 ---
 
@@ -65,34 +66,67 @@ between a game that looks made for the device and one that looks ported to it.
 
 ---
 
-## 2a. Two runtimes, settled
+## 2a. One runtime: Godot
 
-**The Godot port is current and shipping.** Every phase lands twice, and a phase
-is not done until both runtimes pass its gates.
+**Decided 2026-08-24, superseding the two-runtime rule written the same day.**
+Hörmann is a Godot game. The Phaser build is retired.
 
-This is affordable because the port is verifiable here: Godot 4.3 headless runs
-in this container and `bash godot/tools/run_tests.sh` passes **61/61** with a
-frame-budget probe (8.3ms average against a 12ms budget). Parity is a test
-result, not a hope.
+That reverses the direction of the whole backlog. What was "port the web changes
+to Godot for parity" is now "the web build was a prototype, and everything good
+in it has to be rebuilt in the real runtime." The list is the same; its status
+is not.
 
-The divergence to close first, in the order the web port built it:
+**The visual loop survives the move, which was the precondition for making it.**
+Godot renders under a virtual display with the `gl_compatibility` driver, so
+`godot/tools/capture` boots a level, settles it and writes a PNG:
 
-| Web change | Godot state |
-| --- | --- |
-| Five world themes + per-level selection | absent — `theme_manager.gd` registers `forest` and `scifi` only |
-| Themed sky gradient | absent |
-| Five world tilesets + tileset manifest | PNGs copied across; nothing loads them |
-| Scene shutdown wiring | needs its own audit — GDScript lifecycle differs |
-| Feel pass: squash, anticipation, hitstop, look-ahead, coin bob | absent |
-| Wrong-answer choreography in amber, 900ms | absent |
-| Dynamic maths-board layout | absent |
-| Three-pod HUD + owl ring | absent |
-| Streak | absent |
-| One-answer owl roster | absent — `owl_probe` still solves 2 problems |
+```
+xvfb-run -a --server-args="-screen 0 1280x800x24" \
+  godot --path godot res://tools/capture/Capture.tscn -- level_01
+```
 
-**Rule from here:** no web-side change to shared behaviour is accepted until the
-Godot side lands with it and `run_tests.sh` is green. The divergence above is a
-one-time debt to clear in Phase 0b; after that it never accumulates again.
+Concept → implement → capture → compare therefore continues unbroken. Without
+that, retiring the web port would have thrown away the process along with the
+prototype, and would have been the wrong call.
+
+### What the Godot build is missing
+
+Measured from a real capture, not assumed. The first shot showed a flat
+`#87CEEB` sky, the forest tileset in every world, and a HUD reading
+`Lives: *** / Coins 15 / Owls 3` in plain yellow text.
+
+| Behaviour | Prototyped in Phaser | In Godot |
+| --- | --- | --- |
+| Five world themes, per-level | yes | no — `theme_manager.gd` has `forest` and `scifi` |
+| Themed sky gradient | yes | no — hardcoded `#87CEEB` |
+| Five world tilesets | yes | PNGs are present, nothing loads them |
+| Feel pass: squash, anticipation, hitstop, look-ahead, coin bob | yes | no |
+| Wrong-answer choreography, amber, 900ms | yes | no |
+| Dynamic maths-board layout | yes | no |
+| Three-pod HUD + owl ring | yes | no — three lines of yellow text |
+| Streak | yes | no |
+| One-answer owl roster | yes | no — `owl_probe` still solves 2 |
+
+### Retirement, staged
+
+The web build is retired in stages rather than deleted in one commit, so the
+rebuild has something that still runs to check against. Order:
+
+1. Declare it. Nothing in the docs may present `src/**` as current. *(done)*
+2. Rebuild each row of the table above in Godot, verified by capture and by
+   `run_tests.sh`.
+3. Retire the Playwright harnesses as their Godot equivalents land.
+4. Move `src/**`, `vite/**`, `index.html`, `public/**` and the web CI into
+   `archived/`.
+
+**`godot/data/**` is the data truth.** `public/data/**` was a near-mirror that
+nothing kept in sync — `npc_registry.json` had already diverged, and
+`godot/data/math` is a hand copy no tool writes. Anything that generates data
+repoints at the Godot tree as part of step 2.
+
+**Staying either way:** `admin.html`, which is an ops surface rather than part
+of a game build, and the math authoring pipeline under `tools/`, which produces
+the curriculum the game reads.
 
 ---
 

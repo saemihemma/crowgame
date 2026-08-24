@@ -168,31 +168,41 @@ platforms with one of each. They are now Sugarstorm and Geyserworks, which
 worlds move to levels that do.
 
 ### `theme_forest` and `theme_scifi` are kept alive only by the Godot tests
-The web port registers seven themes: the five worlds plus two legacy skins no
-level selects. `godot/tests/test_theme_roles.gd` and `test_theme_swap.gd` assert
-on the `forest` and `scifi` ids by path, so deleting them breaks that suite.
+`godot/tests/test_theme_roles.gd` and `test_theme_swap.gd` assert on the
+`forest` and `scifi` ids by path. Once the five world themes land in Godot those
+two skins have no other reason to exist.
 
-They were backfilled with the Fixed Nine and the world variables so every
-registered theme carries the same 44 palette keys — nothing is broken, it is
-just carried.
+*Done when:* the tests assert on two world ids instead, and the legacy skins are
+deleted.
 
-*Done when:* the Godot tests assert on two world ids instead, and both ports drop
-the legacy skins.
+### The Godot build is missing everything the Phaser prototype proved
+Godot is the only runtime now, so this is not a parity gap — it is the actual
+backlog. A capture of `level_01` shows a flat `#87CEEB` sky, the forest tileset,
+and a HUD reading `Lives: *** / Coins 15 / Owls 3` in plain yellow text.
 
-### The Godot port has none of the world themes
-`godot/data/themes/` still holds only `theme_forest.json` and
-`theme_scifi.json`, so the two runtimes now look different. Godot could not be
-exercised in the session that wired the web port.
+Missing: the five world themes and per-level selection, the themed sky, the five
+tilesets (the PNGs are there; nothing loads them), the feel pass, the
+wrong-answer choreography, the dynamic maths-board layout, the three-pod HUD and
+owl ring, the streak, and the one-answer owl roster — `owl_probe` still solves
+two problems.
 
-*Done when:* the five world themes exist under `godot/data/themes/`, are listed
-in `godot/scripts/autoload/data_manager.gd`, are registered by
-`theme_manager.gd`, and the suite still passes.
+`brand/PRODUCTION_PLAN.md` §2a has the table and the order. Themes go first.
 
-### `brand/tokens/` and `public/data/themes/` are duplicate copies
-The five token files exist twice, byte-identical, with nothing enforcing it.
+*Done when:* captures show five visibly different worlds and `run_tests.sh`
+still passes.
 
-*Done when:* either `npm run validate` checks the two copies match, or the brand
-copies are deleted and `brand/` points at `public/data/themes/`.
+### Data lives in two trees and nothing keeps them in sync
+`godot/data/**` and `public/data/**` are near-mirrors that no tool syncs, and
+they have already drifted: `npc_registry.json` differs, themes are 7 against 2,
+and `godot/data/math` is a hand copy nothing writes. Theme tokens exist in three
+places once `brand/tokens/` is counted.
+
+With the Phaser build retired, `godot/data/**` is the truth and `public/data/**`
+goes with it. Anything that generates data — the math pipeline,
+`gen_tilesets.mjs` — repoints at the Godot tree.
+
+*Done when:* `godot/data/**` is the only runtime data, every generator writes
+there, and `brand/tokens/` is checked against it rather than duplicated.
 
 ### The maths board is themed by colour only, not by material
 Every theme file already declares `mathBoard.frameSprite`, `mathBoard.bgSprite`
@@ -261,15 +271,6 @@ exercised from the container this was written in.
 
 *Done when:* apex damping exists in the shared model, both runtimes implement it
 and the fixtures are regenerated — or the idea is dropped on purpose.
-
-### The Godot port has none of the feel pass either
-Landing squash, jump anticipation, airborne stretch, hitstop, camera look-ahead,
-the phase-offset coin bob, the themed scrim and the 900ms wrong-answer
-choreography all landed on the web port only. Same reason as the world themes:
-Godot could not be run here.
-
-*Done when:* both runtimes feel the same, or the Godot port is declared
-non-current in `README.md` so nobody expects parity.
 
 ## P3 — Content and localisation
 

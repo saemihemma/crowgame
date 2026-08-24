@@ -6,6 +6,22 @@ Last verified against code: 2026-03-31
 
 Hörmann is a child-first educational platformer for early elementary math practice.
 
+## Runtime: Godot, and only Godot
+
+**Decided 2026-08-24. Hörmann is a Godot game.** The Phaser/TypeScript build in
+`src/**` is retired — it is not shipped, not maintained, and not a second
+opinion about how anything should work. Where this repo still reads as if there
+are two runtimes, that text is stale and should be corrected, not obeyed.
+
+- Runtime truth is `godot/**`.
+- Data truth is `godot/data/**`. `public/data/**` was a near-mirror that had
+  already drifted; it is being retired with the rest of the web build.
+- The gate is `bash godot/tools/run_tests.sh` (61 tests) plus
+  `godot/tools/capture` for screenshots.
+- Retirement is staged rather than deleted in one commit, so the port can be
+  finished against something that still runs. `brand/PRODUCTION_PLAN.md` §2a
+  tracks what has moved and what has not.
+
 ## What is still to do
 
 See [roadmap.md](./roadmap.md). It lists open work only — finished items are
@@ -70,15 +86,25 @@ Current architecture docs describe behavior and contracts. They intentionally av
 ## Truth Tiers
 
 Live runtime:
-- `src/**`
-- `public/data/**`
-- `admin.html`
-- referenced files in `public/assets/**`
+- `godot/**`
+- `godot/data/**`
+- `godot/assets/**`
 
-Desktop render policy:
-- desktop is optimized for integer pixel scaling first
-- `1920x1080` is the primary crisp target via `960x540` rendered at `2x`
-- mobile remains on a separate fit-first scaling path for now
+Being retired (see the Runtime section above):
+- `src/**`, `vite/**`, `index.html` — the Phaser build
+- `public/data/**`, `public/assets/**` — its data and assets
+- the Playwright harnesses under `tools/` that drove it
+
+Still shared, and staying:
+- `admin.html` — translation and learner admin, not part of either game build
+- the math authoring pipeline under `tools/` — it feeds the curriculum both
+  runtimes read
+
+Render policy:
+- the target device is a tablet, held in landscape
+- portrait is out of scope; a rotate prompt is in scope
+- `960x540` is the design space, and how it fills a landscape device is an open
+  design question tracked as Phase 1 of `brand/PRODUCTION_PLAN.md`
 
 Generated:
 - `public/data/levels/compiled/*.json`
