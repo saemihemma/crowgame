@@ -509,6 +509,32 @@ if (existsSync(mathDir)) {
 
 validateMathAuthoringFiles();
 
+// Godot data parity: the Godot port ships its own copy of the math pools and
+// serves them to the deployed export. A drifted copy means the live game and
+// the web game answer from different inventories — the exact bug that let the
+// deployment fall a full content generation behind.
+function validateGodotMathDataSync(): void {
+    const godotMathDir = join(__dirname, '..', 'godot', 'data', 'math');
+    if (!existsSync(mathDir) || !existsSync(godotMathDir)) return;
+    for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+        const godotPath = join(godotMathDir, file);
+        if (!existsSync(godotPath)) {
+            console.error(`  FAIL: godot/data/math/${file} is missing; copy it from public/data/math.`);
+            errors++;
+            continue;
+        }
+        const webContent = readFileSync(join(mathDir, file), 'utf-8');
+        const godotContent = readFileSync(godotPath, 'utf-8');
+        if (webContent !== godotContent) {
+            console.error(`  FAIL: godot/data/math/${file} differs from public/data/math/${file}. Copy the regenerated pool over so the deployed Godot export serves the same problems.`);
+            errors++;
+        } else {
+            validated++;
+        }
+    }
+}
+validateGodotMathDataSync();
+
 // Cross-reference validation
 validateCrossReferences();
 validateCompiledLevels();

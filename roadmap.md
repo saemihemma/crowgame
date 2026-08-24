@@ -87,23 +87,6 @@ stated whether a child is meant to unlock strictly one at a time.
 *Done when:* the intended progression is written down in `PROJECT.md` and the
 registry matches it.
 
-## P1.5 — Port parity
-
-### The Godot math port has drifted behind the web ladder
-Four related gaps, best fixed together:
-`godot/data/math/problems_curriculum.json` is a stale copy of the web pool and
-nothing guards the sync (add a check to `npm run validate` or copy at
-materialize time); the GDScript learner model (`godot/scripts/math/*.gd`)
-still runs the old promotion/demotion/ELO tuning; the golden parity fixtures
-(`godot/tests/fixtures/math_fixtures.json`) are pinned to that old behavior,
-so regenerating them via `npm run godot:gen-math-fixtures` will break
-`test_math_parity.gd` until the GDScript is ported to match; and
-`godot/scripts/ui/math_challenge.gd` renders MCQ options in data order — safe
-for the regenerated pool (shuffled at the source) but not for the
-hand-authored easy/dataset/gaps pools, which keep their biased order. Port the
-ladder, regenerate fixtures, sync the data, and add a render shuffle in the
-same change.
-
 ## P2 — Experience decisions that need making
 
 ### The on-screen controls are unverified for desktop-web mouse

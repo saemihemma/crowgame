@@ -5,8 +5,8 @@ extends Node
 ## the save shape is identical. All constants/formulas mirror the TS source:
 ##   start 150; effective = global + domainModifier;
 ##   expected = 1/(1+10^((problemELO - playerELO)/400));
-##   K = 4 (<50), 3 (<200), else 2; rawChange = K*(actual-expected);
-##   totalChange clamped to [-12, +8]; split 0.7 global / 0.3 domain;
+##   K = 16 (<30), 12 (<150), else 8; rawChange = K*(actual-expected);
+##   totalChange clamped to [-8, +8]; split 0.7 global / 0.3 domain;
 ##   global clamp [100,1200], domain modifier clamp [-100,+100].
 
 const DOMAINS := MathDomains.ALL
@@ -40,18 +40,18 @@ func _calculate_expected_score(player_elo: float, problem_elo: float) -> float:
 	return 1.0 / (1.0 + pow(10.0, (problem_elo - player_elo) / 400.0))
 
 func _get_k_factor(problems_attempted: int) -> int:
-	if problems_attempted < 50:
-		return 4
-	if problems_attempted < 200:
-		return 3
-	return 2
+	if problems_attempted < 30:
+		return 16
+	if problems_attempted < 150:
+		return 12
+	return 8
 
 func update_rating(domain: String, problem_elo: float, actual_score: float) -> Dictionary:
 	var effective_elo := get_effective_elo(domain)
 	var expected := _calculate_expected_score(effective_elo, problem_elo)
 	var k := _get_k_factor(int(_stats["problemsAttempted"]))
 	var raw_change := k * (actual_score - expected)
-	var total_change: float = maxf(-12.0, minf(8.0, raw_change))
+	var total_change: float = maxf(-8.0, minf(8.0, raw_change))
 
 	var global_change := total_change * 0.7
 	var domain_change := total_change * 0.3
