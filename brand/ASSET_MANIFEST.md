@@ -239,8 +239,8 @@ So these are pure upgrades, safe to land one at a time, in any order.
 | --- | --- | --- |
 | `hud.healthIcon` | `32x32` | heart; `hurt` red in every world |
 | `hud.coinIcon` | `32x32` | matches the coin skin |
-| `mathBoard.frameSprite` | `536x296` | 9-slice-safe border for the `520x280` board |
-| `mathBoard.bgSprite` | `520x280` | board interior in world material |
+| `mathBoard.frameSprite` | **nine-slice**, 96x96 source | The board measures its content and grows - a two-line prompt makes it ~380 tall - so a fixed-size frame will stretch and smear its corners. Ship a nine-slice source plus its border insets, and carry the insets in the theme file |
+| `mathBoard.bgSprite` | 64x64, tileable | board interior in world material, tiled behind the frame rather than stretched |
 | `mathBoard.optionSprite` | `88x88` | answer button; **square, not the current 100x60 landscape** |
 | `controls.dpadSprite` | `128x128` | touch d-pad |
 | `controls.jumpBtnSprite` | `80x80` | primary action, so the larger target |
@@ -250,6 +250,11 @@ So these are pure upgrades, safe to land one at a time, in any order.
 - **Destination:** `public/assets/sprites/ui/<world>/<name>.png`
 - **Wire in:** `BootScene.preload()`, with the texture key matching the string
   already in the theme file - for example `ui_geyserworks_board_frame`
+- **The board frame needs a code change first**, unlike everything else in this
+  table: `MathBoard.drawBoardBackground()` draws a rounded rect with `Graphics`
+  and has no texture path at all. It needs to render a `NineSlice` when the
+  frame texture exists and keep `Graphics` as the fallback, the way
+  `HealthBar.buildIcons()` already falls back. Tracked in `roadmap.md`
 
 ---
 

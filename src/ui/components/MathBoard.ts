@@ -21,12 +21,41 @@ export class MathBoard {
     private navigator: UINavigator;
     private currentProblem: MathProblem | null = null;
     private answered = false;
+    private wrongAttempts = 0;
+    private correctButton: Phaser.GameObjects.Container | null = null;
+    private hintTween: Phaser.Tweens.Tween | null = null;
 
     private readonly boardW = 520;
-    private readonly boardH = 280;
+
+    /**
+     * Board height. Grows to fit its content rather than clipping it.
+     *
+     * Everything on this board used to sit at a fixed offset, so a prompt that
+     * wrapped to two lines pushed the answer buttons into the hint. The board
+     * now measures question, buttons and hint and sizes itself around them.
+     */
+    private boardH = MathBoard.MIN_BOARD_H;
 
     /** Question type scale, largest first. See brand/BRAND_SYSTEM.md section 7.2. */
     private static readonly QUESTION_SIZES = [56, 44, 36, 28] as const;
+
+    /** Question band before the type scale steps down. Two lines at 56px. */
+    private static readonly QUESTION_BAND_H = 130;
+
+    private static readonly OPTION_W = 100;
+    private static readonly OPTION_H = 60;
+
+    /** Vertical rhythm, measured from the inside of the board's top edge. */
+    private static readonly MIN_BOARD_H = 280;
+    private static readonly PAD_TOP = 34;
+    private static readonly GAP_QUESTION_OPTIONS = 24;
+    private static readonly GAP_OPTIONS_HINT = 14;
+    private static readonly PAD_BOTTOM = 26;
+
+    /** One lockout for every problem type. brand/BRAND_SYSTEM.md section 8.4. */
+    private static readonly WRONG_LOCKOUT_MS = 900;
+    private static readonly WRONG_PICK_ALPHA = 0.45;
+    private static readonly WRONG_DIM_ALPHA = 0.55;
 
     constructor(scene: Phaser.Scene, cx?: number, cy?: number) {
         this.scene = scene;
@@ -72,7 +101,7 @@ export class MathBoard {
             strokeThickness: 3,
             align: 'center',
             wordWrap: { width: this.boardW - 60 },
-        }).setOrigin(0.5, 1).setAlpha(0);
+        }).setOrigin(0.5, 0).setAlpha(0);   // top-anchored: layout() positions its top edge
         this.container.add(this.hintText);
     }
 
@@ -98,32 +127,65 @@ export class MathBoard {
      * fit, so text stays on-scale.
      */
     private fitQuestionText(text: string): number {
-        const top = -this.boardH / 2 + 50;
-        const band = 130;
-
         for (const size of MathBoard.QUESTION_SIZES) {
             this.questionText.setFontSize(size);
             this.questionText.setWordWrapWidth(this.boardW - 48, true);
             this.questionText.setText(text);
-            if (this.questionText.height <= band) {
+            if (this.questionText.height <= MathBoard.QUESTION_BAND_H) {
                 break;
             }
         }
+        return this.questionText.height;
+    }
 
-        this.questionText.setY(top);
-        return top + this.questionText.height;
+    /**
+     * Size the board to its content and position question, options and hint
+     * down a single vertical rhythm.
+     *
+     * Returns the y the option row should sit at. Called before the options are
+     * built, because their position depends on how tall the question came out.
+     */
+    private layout(questionHeight: number, hintHeight: number): number {
+        const optionsTop = MathBoard.PAD_TOP + questionHeight + MathBoard.GAP_QUESTION_OPTIONS;
+        const hintTop = optionsTop + MathBoard.OPTION_H
+            + (hintHeight > 0 ? MathBoard.GAP_OPTIONS_HINT : 0);
+        const contentH = hintTop + hintHeight + MathBoard.PAD_BOTTOM;
+
+        this.boardH = Math.max(MathBoard.MIN_BOARD_H, contentH);
+        this.drawBoardBackground(this.boardW, this.boardH);
+
+        const top = -this.boardH / 2;
+        this.questionText.setY(top + MathBoard.PAD_TOP);
+        this.hintText.setY(top + hintTop);
+
+        return top + optionsTop + MathBoard.OPTION_H / 2;
+    }
+
+    /** Set the hint and report its height, without revealing it yet. */
+    private prepareHint(hint: string | undefined): number {
+        if (!hint) {
+            this.hintText.setText('').setAlpha(0);
+            return 0;
+        }
+        this.hintText.setText(hint).setAlpha(0);
+        return this.hintText.height;
     }
 
     /** Show a math problem with MCQ options */
     showProblem(problem: MathProblem): void {
         this.currentProblem = problem;
         this.answered = false;
+        this.wrongAttempts = 0;
+        this.correctButton = null;
+        this.hintTween?.remove();
+        this.hintTween = null;
 
         // Set question text, shrinking it until it fits the question band. A
         // counting prompt renders one glyph per item, so 56px does not always
         // fit; without this the wrap pushes it down into the answer buttons.
-        const questionBottom = this.fitQuestionText(problem.prompt.text);
-        this.hintText.setText('').setAlpha(0);
+        const questionHeight = this.fitQuestionText(problem.prompt.text);
+        const hintHeight = this.prepareHint(problem.hint);
+        const btnY = this.layout(questionHeight, hintHeight);
 
         // Clear old option buttons
         this.optionButtons.forEach(b => b.destroy(true));
@@ -137,14 +199,11 @@ export class MathBoard {
         if (problem.answer.mode === 'mcq') {
             const mcqAnswer = problem.answer as MCQAnswer;
             const options = mcqAnswer.options;
-            const btnW = 100;
-            const btnH = 60;
+            const btnW = MathBoard.OPTION_W;
+            const btnH = MathBoard.OPTION_H;
             const gap = 24;
             const totalW = options.length * btnW + (options.length - 1) * gap;
             const startX = -totalW / 2 + btnW / 2;
-            // Buttons sit under the measured question, not at a fixed y, so a
-            // two-line prompt cannot collide with them.
-            const btnY = Math.max(40, questionBottom + 24 + btnH / 2);
 
             for (let i = 0; i < options.length; i++) {
                 const optVal = options[i];
@@ -160,6 +219,9 @@ export class MathBoard {
                 );
                 this.container.add(btn);
                 this.optionButtons.push(btn);
+                if (optVal === mcqAnswer.correct) {
+                    this.correctButton = btn;
+                }
 
                 // Register with keyboard navigator (world coordinates)
                 const zone = btn.getAt(2) as Phaser.GameObjects.Zone;
@@ -180,6 +242,45 @@ export class MathBoard {
 
         // Enable keyboard navigation after entrance animation
         this.scene.time.delayedCall(450, () => this.navigator.enable());
+    }
+
+    /** Redraw an option background. One painter, so the states cannot drift. */
+    private drawOptionBackground(
+        bg: Phaser.GameObjects.Graphics,
+        fill: number,
+        stroke: number,
+        strokeAlpha: number,
+    ): void {
+        const w = MathBoard.OPTION_W;
+        const h = MathBoard.OPTION_H;
+        bg.clear();
+        bg.fillStyle(fill, 1);
+        bg.fillRoundedRect(-w / 2, -h / 2, w, h, 8);
+        bg.lineStyle(4, stroke, strokeAlpha);
+        bg.strokeRoundedRect(-w / 2, -h / 2, w, h, 8);
+    }
+
+    /** Slow white rim pulse on the correct option, as a hint after one miss. */
+    private breatheCorrectOption(): void {
+        const target = this.correctButton;
+        if (!target) {
+            return;
+        }
+        const bg = target.getAt(0) as Phaser.GameObjects.Graphics | undefined;
+        if (!bg) {
+            return;
+        }
+        const tm = ThemeManager.getInstance();
+        this.drawOptionBackground(bg, tm.getColorNum('buttonBg'), 0xffffff, 1);
+        this.hintTween?.remove();
+        this.hintTween = this.scene.tweens.add({
+            targets: target,
+            alpha: { from: 0.7, to: 1 },
+            duration: 900,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+        });
     }
 
     private createOptionButton(
@@ -264,6 +365,7 @@ export class MathBoard {
     }
 
     private onCorrectAnswer(btn: Phaser.GameObjects.Container): void {
+        this.stopHintBreathe();
         const tt = TextManager.getInstance();
 
         // Green flash on the correct button
@@ -323,53 +425,86 @@ export class MathBoard {
         });
     }
 
-    private onWrongAnswer(btn: Phaser.GameObjects.Container): void {
-        const tt = TextManager.getInstance();
+    /**
+     * The wrong-answer choreography, specified in brand/BRAND_SYSTEM.md section 8.4.
+     *
+     * The point of this 900ms is that being wrong must not feel like being hurt.
+     * Three rules it exists to enforce:
+     *
+     * - **Amber, never red.** `notyet` is the try-again colour; `hurt` red is
+     *   reserved for losing health. A six-year-old should never see the colour of
+     *   damage on a maths answer.
+     * - **The buttons visibly stop accepting input.** They used to stay fully lit
+     *   through the lockout, so a child who retried immediately got silence.
+     * - **One duration for every problem type**, so the beat is learnable.
+     *
+     * Nothing here costs the player health, coins, streak or progress. The only
+     * cost of a wrong answer is 900ms of adventure.
+     */
+    private stopHintBreathe(): void {
+        this.hintTween?.remove();
+        this.hintTween = null;
+        for (const option of this.optionButtons) {
+            option.setAlpha(1);
+        }
+    }
 
-        // Shake the wrong button
+    private onWrongAnswer(btn: Phaser.GameObjects.Container): void {
+        this.stopHintBreathe();
+        const tt = TextManager.getInstance();
+        const tm = ThemeManager.getInstance();
+
         DopamineFX.wrongShake(this.scene, btn);
 
-        // Tint button red briefly
-        const bg = btn.getAt(0) as Phaser.GameObjects.Graphics;
-        if (bg) {
-            // Redraw bg red
-            const tm = ThemeManager.getInstance();
-            bg.clear();
-            bg.fillStyle(tm.getColorNum('danger'), 1);
-            bg.fillRoundedRect(-50, -30, 100, 60, 8);
-
-            // Revert after delay
-            this.scene.time.delayedCall(400, () => {
-                bg.clear();
-                bg.fillStyle(tm.getColorNum('buttonBg'), 1);
-                bg.fillRoundedRect(-50, -30, 100, 60, 8);
-                bg.lineStyle(4, 0xffffff, 0.3);
-                bg.strokeRoundedRect(-50, -30, 100, 60, 8);
+        // Every button drops out of the lit state, so the lockout is visible.
+        for (const option of this.optionButtons) {
+            this.scene.tweens.add({
+                targets: option,
+                alpha: option === btn ? MathBoard.WRONG_PICK_ALPHA : MathBoard.WRONG_DIM_ALPHA,
+                duration: 120,
             });
         }
 
-        // "Try again" text
+        // Amber rim on the pick. Redrawn rather than tinted because the button
+        // background is a Graphics object, which does not take a tint.
+        const bg = btn.getAt(0) as Phaser.GameObjects.Graphics | undefined;
+        if (bg) {
+            this.drawOptionBackground(bg, tm.getColorNum('buttonBg'), tm.getColorNum('notyet'), 1);
+        }
+
         DopamineFX.numberFlyUp(
             this.scene,
             this.container.x,
             this.container.y - this.boardH / 2 - 20,
             tt.t('math.try_again'),
-            '#ff6666',
+            tm.getColor('notyet'),
             0,
         );
 
-        // Show hint text if available
+        // The hint is already laid out and measured; the board reserved room for
+        // it when the problem was shown. Revealing it cannot move anything.
         if (this.currentProblem?.hint) {
-            this.hintText.setText(this.currentProblem.hint);
-            this.scene.tweens.add({
-                targets: this.hintText,
-                alpha: 1,
-                duration: 300,
+            this.scene.time.delayedCall(200, () => {
+                this.scene.tweens.add({ targets: this.hintText, alpha: 1, duration: 200 });
             });
         }
 
-        // Allow retry after a brief delay
-        this.scene.time.delayedCall(600, () => {
+        // After the first miss only, point at the answer with the game's
+        // universal "press here" signal - `focus` white, not amber. Amber already
+        // means "the one you picked was not it".
+        this.wrongAttempts++;
+        if (this.wrongAttempts === 1) {
+            this.scene.time.delayedCall(400, () => this.breatheCorrectOption());
+        }
+
+        this.scene.time.delayedCall(MathBoard.WRONG_LOCKOUT_MS, () => {
+            for (const option of this.optionButtons) {
+                this.scene.tweens.add({ targets: option, alpha: 1, duration: 140 });
+            }
+            const pickBg = btn.getAt(0) as Phaser.GameObjects.Graphics | undefined;
+            if (pickBg) {
+                this.drawOptionBackground(pickBg, tm.getColorNum('buttonBg'), 0xffffff, 0.3);
+            }
             this.answered = false;
             this.navigator.enable();
         });
@@ -377,6 +512,8 @@ export class MathBoard {
 
     /** Dismiss the board with an exit animation */
     dismiss(onComplete?: () => void): void {
+        this.hintTween?.remove();
+        this.hintTween = null;
         this.navigator.disable();
         DopamineFX.elasticExit(this.scene, this.container, 250, () => {
             onComplete?.();
@@ -392,6 +529,8 @@ export class MathBoard {
     };
 
     destroy(): void {
+        this.hintTween?.remove();
+        this.hintTween = null;
         this.navigator.destroy();
         EventBus.off(THEME_CHANGED, this.onThemeChanged, this);
         this.container.destroy(true);

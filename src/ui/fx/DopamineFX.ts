@@ -549,6 +549,39 @@ export class DopamineFX {
         });
     }
 
+    // ─── Damage edge pulse ───────────────────────────────────
+    /**
+     * Red pulse around the edges of the screen, for taking damage.
+     *
+     * Replaces the full-screen wash of `damageFlash` in gameplay: covering the
+     * whole screen in red is a lot for a six-year-old, and it hides the thing
+     * that just hit them at the exact moment they need to see it. The centre
+     * stays clear. brand/BRAND_SYSTEM.md section 8.2.
+     */
+    static damageEdgePulse(scene: Phaser.Scene): void {
+        const { width, height } = scene.cameras.main;
+        const band = 56;
+        const color = ThemeManager.getInstance().getColorNum('hurt');
+
+        const edges = [
+            scene.add.rectangle(width / 2, band / 2, width, band, color, 0.35),
+            scene.add.rectangle(width / 2, height - band / 2, width, band, color, 0.35),
+            scene.add.rectangle(band / 2, height / 2, band, height, color, 0.35),
+            scene.add.rectangle(width - band / 2, height / 2, band, height, color, 0.35),
+        ];
+
+        for (const edge of edges) {
+            edge.setScrollFactor(0).setDepth(495);
+            scene.tweens.add({
+                targets: edge,
+                alpha: 0,
+                duration: 260,
+                ease: 'Sine.easeOut',
+                onComplete: () => edge.destroy(),
+            });
+        }
+    }
+
     // ─── Jump dust ───────────────────────────────────────────
     /** Small dust puff particles on jump and land */
     static jumpDust(scene: Phaser.Scene, x: number, y: number): void {
@@ -577,5 +610,31 @@ export class DopamineFX {
     /** Camera shake utility with configurable intensity */
     static screenShake(scene: Phaser.Scene, intensity: number = 0.01, duration: number = 200): void {
         scene.cameras.main.shake(duration, intensity);
+    }
+
+    // ─── Hitstop ─────────────────────────────────────────────
+    /**
+     * Freeze the world for a few frames so an impact reads as an impact.
+     *
+     * Two lines of effect for the largest per-effort gain in game feel available
+     * anywhere in brand/BRAND_SYSTEM.md - see section 9.3 for the durations.
+     *
+     * Only physics is paused; tweens, the clock and rendering keep running, so
+     * the particle burst that triggered the hitstop still plays through it. The
+     * resume is guarded because a scene can shut down inside the window - a
+     * level transition during an enemy pop would otherwise resume a dead world.
+     */
+    static hitstop(scene: Phaser.Scene, durationMs: number): void {
+        const world = scene.physics?.world;
+        if (!world || world.isPaused) {
+            return;
+        }
+
+        world.pause();
+        scene.time.delayedCall(durationMs, () => {
+            if (scene.scene.isActive() && scene.physics?.world) {
+                scene.physics.world.resume();
+            }
+        });
     }
 }

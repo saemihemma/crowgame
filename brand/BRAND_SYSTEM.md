@@ -508,9 +508,22 @@ event.
    and pan the camera so the player stays visible below it. The child should
    never lose sight of who they are while they think.
 3. **Diegetic frame per world.** The board is made of the world's material —
-   bark, crystal, candy, iron, cloud — not a generic rounded rect. Same
-   dimensions, same layout, same button positions in all five. **Skin changes,
-   geometry never does.**
+   bark, crystal, candy, iron, sky-stone — not a generic rounded rect. Same
+   layout, same button grid, same timings in all five. **Skin changes, geometry
+   never does.**
+
+   Today the board is themed by *colour only*: `frameSprite`, `bgSprite` and
+   `optionSprite` are declared in every theme file and none has a texture, so
+   `MathBoard` draws a rounded rect from the palette. Emberwood and Geyserworks
+   are the same shape in different browns, and that is the largest remaining
+   gap between this document and the running game.
+
+   **The frame must be a nine-slice.** The board measures its question, options
+   and hint and grows to fit — a two-line prompt takes it to roughly 380 tall —
+   so a fixed-size PNG will stretch and smear its corners. The asset is a
+   nine-slice source plus border insets carried in the theme file.
+   `brand/ASSET_MANIFEST.md` P4 has the sizes; `roadmap.md` has the code change
+   `MathBoard.drawBoardBackground()` needs to accept one.
 4. **Entry: 260ms `Back.easeOut` from scale 0.85** (not from 0 — a full
    zero-scale pop is disorienting at this size), with the world's dust settling
    around it.
@@ -847,20 +860,22 @@ change how the game feels more than anything else on the list.
 
 ### Tier 1 — hours each, disproportionate effect
 
-1. **Land squash, jump anticipation, hitstop.** `Player.ts` + `GameScene.ts`.
-   §9.2, §9.3. This is the biggest single feel upgrade available.
-2. **Fix the wrong-answer choreography to the 900ms spec.** `MathBoard.ts`.
-   §8.4. Speaks to an open P2 roadmap item — but **re-measure first**: that
-   entry reports a 3–4s lockout and the code re-enables input at 600ms, so
-   whatever the browser smoke was tripping over is not the number in the
-   roadmap.
-3. **Amber, not red, for wrong answers.** `DopamineFX.wrongShake`, both
-   `theme_*.json`. §6.2.
-   *Also wire `tokens/verify_palettes.py` into `npm run validate` once the
-   tokens move into `public/data/themes/`, so the colour law is enforced rather
-   than remembered.*
-4. **Phase-offset the collectible bob; add camera look-ahead.** §9.4, §9.5.
-5. **Warm the scrim** from `#0000009e` to `#1A1420` at 0.72. §8.7.
+**Landed.** Land squash, jump-launch anticipation and airborne stretch
+(`Player.ts`); hitstop on enemy defeat and player damage (`DopamineFX.hitstop`);
+camera look-ahead and the phase-offset collectible bob (`GameScene.ts`); the
+warm scrim and the 900ms wrong-answer choreography in amber
+(`MathChallengeScene.ts`, `MathBoard.ts`); and the full-screen red damage wash
+replaced with an edge pulse that leaves the centre clear.
+
+Two things from this tier were deliberately **not** done, and both are in
+`roadmap.md` with the reason:
+
+1. **Apex hang.** It changes gravity, and the vertical motion model is under a
+   golden-fixture parity contract with the Godot port. It has to land in both
+   runtimes at once.
+2. **The board still covers the player.** §8.3 wants the camera panned before
+   the scene pauses; header plus board plus a visible player does not fit in 540
+   by stacking alone.
 
 ### Tier 2 — the systems this document is really about
 

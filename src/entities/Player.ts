@@ -19,6 +19,12 @@ export class Player {
     private isJumping = false;
     private wasOnFloor = false;
 
+    /**
+     * Set while a squash or stretch tween owns the sprite scale, so the
+     * per-frame airborne stretch does not fight it.
+     */
+    private deformTween: Phaser.Tweens.Tween | null = null;
+
     constructor(scene: Phaser.Scene, x: number, y: number, tuningData: PlayerTuningData) {
         this.scene = scene;
         this.tuning = new PlayerTuning(tuningData);
@@ -56,6 +62,64 @@ export class Player {
 
         // Add to player group for collision detection
         this.sprite.setData('entity', this);
+    }
+
+    /**
+     * Anticipation on the launch frame.
+     *
+     * The impulse is still applied the instant the button is read - delaying it
+     * to play a real anticipation frame would add input latency, which is the
+     * wrong trade for a seven-year-old. This is the visual read of anticipation
+     * without the cost: a fast crouch that springs into the rise stretch.
+     */
+    private playJumpDeform(): void {
+        this.deform(0.86, 1.14, 70, () => this.deform(1.02, 0.98, 90));
+    }
+
+    /**
+     * Landing squash, then a small overshoot, then settle.
+     *
+     * Volume is preserved (scaleX * scaleY stays near 1) and the sprite origin
+     * is bottom-centre, so the feet stay planted while the body compresses.
+     * brand/BRAND_SYSTEM.md section 9.2 owns these numbers.
+     */
+    private playLandDeform(): void {
+        this.deform(1.18, 0.82, 80, () =>
+            this.deform(0.96, 1.06, 120, () => this.deform(1, 1, 90)));
+    }
+
+    /** Run one scale tween, replacing whatever deform was running. */
+    private deform(scaleX: number, scaleY: number, duration: number, onComplete?: () => void): void {
+        this.deformTween?.remove();
+        this.deformTween = this.scene.tweens.add({
+            targets: this.sprite,
+            scaleX,
+            scaleY,
+            duration,
+            ease: 'Sine.easeOut',
+            onComplete: () => {
+                this.deformTween = null;
+                onComplete?.();
+            },
+        });
+    }
+
+    /**
+     * Stretch on the way up, recover on the way down.
+     *
+     * Purely visual: no physics value is touched. The vertical motion model is
+     * under a golden-fixture parity contract with the Godot port
+     * (godot/tests/test_motion_parity.gd), so anything that changes gravity or
+     * velocity has to land in both runtimes at once.
+     */
+    private updateAirborneStretch(onFloor: boolean, velocityY: number): void {
+        if (this.deformTween || onFloor) {
+            return;
+        }
+
+        // Fully stretched at the top of the rise, neutral by the time he falls.
+        const rise = Phaser.Math.Clamp(-velocityY / this.tuning.jumpVelocity, 0, 1);
+        this.sprite.setScale(1 - rise * 0.08, 1 + rise * 0.12);
     }
 
     update(input: InputState, delta: number): void {
@@ -108,10 +172,9 @@ export class Player {
             this.jumpBufferTimer = 0;
             this.coyoteTimer = 0;
             this.isJumping = true;
-            // Play jump sound
             AudioManager.getInstance().playSFX('player_jump');
-            // Spawn jump dust
             DopamineFX.jumpDust(this.scene, this.sprite.x, this.sprite.y + 16);
+            this.playJumpDeform();
         }
 
         // Variable jump height - release early for shorter jump
@@ -146,6 +209,15 @@ export class Player {
             this.sprite.anims.stop();
             this.sprite.setTexture('crow');
         }
+
+        // --- Landing ---
+        if (onFloor && !this.wasOnFloor) {
+            AudioManager.getInstance().playSFX('land');
+            DopamineFX.jumpDust(this.scene, this.sprite.x, this.sprite.y);
+            this.playLandDeform();
+        }
+
+        this.updateAirborneStretch(onFloor, body.velocity.y);
 
         this.wasOnFloor = onFloor;
     }

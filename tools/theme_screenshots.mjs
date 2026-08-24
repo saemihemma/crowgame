@@ -28,6 +28,9 @@ const CHROME = process.env.CHROME_PATH ?? '/opt/pw-browsers/chromium';
 
 /** Share of sampled pixels that must fall inside the world palette. */
 const CONFORMANCE_FLOOR = 0.85;
+/** Game design space. Must match GAME_WIDTH/GAME_HEIGHT in src/utils/Constants.ts. */
+const GAME_WIDTH = 960;
+const GAME_HEIGHT = 540;
 /** Max RGB distance from a palette entry for a pixel to count as on-palette. */
 const TOLERANCE = 64;
 
@@ -164,16 +167,30 @@ async function main() {
             board = await shot('2-math-board');
 
             // 3. wrong-answer feedback: the state the brand system says must
-            //    never be red. Worth a frame of its own.
+            //    never be red, and must visibly stop accepting input.
             const state = await page.evaluate(
                 () => window.__crowMathSmoke?.getMathState?.() ?? null);
-            if (state?.optionCenters?.length) {
-                const wrong = state.optionCenters.find(o => o.value !== state.correctAnswer);
-                if (wrong) {
-                    await page.mouse.click(wrong.x, wrong.y);
-                    await page.waitForTimeout(400);
-                    await shot('3-math-wrong');
+            const wrong = state?.optionCenters?.find(o => o.value !== state.correctAnswer);
+
+            if (!wrong || !state.canvasRect) {
+                fail(`${level.key}: could not find a wrong option to click`);
+            } else {
+                // optionCenters are GAME coordinates (960x540). Clicking them as
+                // page coordinates silently misses the board, which is how the
+                // first version of this harness captured a duplicate of the
+                // board shot and called it the wrong-answer state.
+                const { left, top, width, height } = state.canvasRect;
+                const clickX = left + (wrong.x / GAME_WIDTH) * width;
+                const clickY = top + (wrong.y / GAME_HEIGHT) * height;
+                await page.mouse.click(clickX, clickY);
+                await page.waitForTimeout(350);
+
+                const after = await page.evaluate(
+                    () => window.__crowMathSmoke?.getMathState?.() ?? null);
+                if (!after || after.wrongAttempts < 1) {
+                    fail(`${level.key}: click did not register as a wrong answer`);
                 }
+                await shot('3-math-wrong');
             }
         } else {
             console.log('  note: no owl reachable in this level, board not captured');

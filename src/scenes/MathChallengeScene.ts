@@ -26,6 +26,18 @@ import type { MathProblem } from '../utils/Types';
  *   })
  */
 export class MathChallengeScene extends Phaser.Scene {
+    /**
+     * Header baseline. Its backdrop runs from roughly -17 to +75 around this,
+     * so 46 puts it at 29..121 - inside the 24px safe area and clear of the
+     * board, whose top edge is at 162.
+     */
+    private static readonly HEADER_Y = 46;
+
+    /** Trailing alpha byte of an 8-digit theme colour, defaulting to opaque. */
+    private static parseScrimAlpha(hex: string): number {
+        return hex.length >= 9 ? parseInt(hex.slice(7, 9), 16) / 255 : 1;
+    }
+
     private dimOverlay!: Phaser.GameObjects.Rectangle;
     private mathBoard!: MathBoard;
     private currentProblem!: MathProblem;
@@ -65,17 +77,19 @@ export class MathChallengeScene extends Phaser.Scene {
         this.scene.pause(SCENES.GAME);
         this.scene.setVisible(false, SCENES.HUD);
 
-        // Semi-transparent dim overlay
+        // Scrim, from the theme rather than pure black. A black wash behind warm
+        // pixel art reads as a hole punched in the screen; warm near-black reads
+        // as the world dimming. brand/BRAND_SYSTEM.md section 8.7.
+        const scrim = ThemeManager.getInstance().getColor('scrim');
         this.dimOverlay = this.add.rectangle(
             GAME_WIDTH / 2, GAME_HEIGHT / 2,
             GAME_WIDTH, GAME_HEIGHT,
-            0x000000, 0,
+            parseInt(scrim.slice(1, 7), 16), 0,
         ).setDepth(300).setScrollFactor(0);
 
-        // Fade in dim
         this.tweens.add({
             targets: this.dimOverlay,
-            fillAlpha: 0.62,
+            fillAlpha: MathChallengeScene.parseScrimAlpha(scrim),
             duration: 200,
         });
 
@@ -109,7 +123,10 @@ export class MathChallengeScene extends Phaser.Scene {
     ): void {
         const tm = ThemeManager.getInstance();
         const cx = GAME_WIDTH / 2;
-        const headerY = GAME_HEIGHT / 2 - 152;
+        // The header sits clear above the board. At the old -152 its lowest line
+        // fell inside the board's top edge, so "Problem 1 of 2" read as though it
+        // were printed on the frame.
+        const headerY = MathChallengeScene.HEADER_Y;
 
         this.headerContainer = this.add.container(cx, headerY).setDepth(410).setScrollFactor(0);
 

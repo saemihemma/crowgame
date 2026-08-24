@@ -1,7 +1,7 @@
 {
   "accepted": true,
   "kind": "browser_math_scene_smoke",
-  "reviewedAt": "2026-08-24T08:45:25.586Z",
+  "reviewedAt": "2026-08-24T10:32:51.276Z",
   "baseUrl": "http://localhost:8080/",
   "viewport": {
     "width": 1920,
@@ -10,31 +10,31 @@
   "whatThisIs": "Literal browser-backed smoke for the live owl interaction, MathChallengeScene input, wrong-answer retry, second-problem follow-up, and completion flow.",
   "whatThisIsNot": "Not telemetry-backed pedagogy proof, not an empirical ELO calibration study, and not broad cross-session child replayability evidence.",
   "clearedKeyCount": 0,
-  "firstPrompt": "What is 2 + 2?",
-  "firstProblemId": "ext_addition_0005",
-  "firstCorrectAnswer": 4,
-  "wrongOptionClicked": 3,
+  "firstPrompt": "0 + 2 = ?",
+  "firstProblemId": "cur_add_016",
+  "firstCorrectAnswer": 2,
+  "wrongOptionClicked": 0,
   "wrongAttemptRegistered": true,
-  "secondPrompt": "How many stars? * * * * *",
-  "secondProblemId": "count_001",
+  "secondPrompt": "How many are here: * * * * * * *",
+  "secondProblemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_vw6lh",
   "completionCount": 2,
   "completionHistory": [
     {
-      "problemId": "ext_addition_0005",
+      "problemId": "cur_add_016",
       "correct": true,
       "firstAttempt": false,
       "reward": 0,
       "hintsUsed": 1,
-      "responseMs": 4229,
+      "responseMs": 6100,
       "wrongAttempts": 1
     },
     {
-      "problemId": "count_001",
+      "problemId": "auth_batch_05_count_compare_sequence_basics_count_5_8_vw6lh",
       "correct": true,
       "firstAttempt": true,
       "reward": 1,
       "hintsUsed": 0,
-      "responseMs": 2591,
+      "responseMs": 2763,
       "wrongAttempts": 0
     }
   ],
@@ -84,6 +84,6 @@
       "src/utils/Types.ts",
       "tools/math_browser_smoke.mjs"
     ],
-    "value": "20d24def56362ffc9e3f308695533124538b50733bafdbcda675df497de143ba"
+    "value": "71a6b91ae548f78fbdef6dd3c4b3d438c039da76cea249ee6e0fa15482c3e62d"
   }
 }

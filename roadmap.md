@@ -64,22 +64,6 @@ registry matches it.
 
 ## P2 — Experience decisions that need making
 
-### The post-wrong-answer input lockout is long and inconsistent
-After a wrong answer the option buttons stay fully lit and tappable-looking
-while input is refused, so a child who retries immediately gets silence. This is
-what made the browser smoke flaky.
-
-The "three to four seconds" this entry used to claim is not what the source
-does: `MathBoard.ts:336` re-enables input at 600ms on the first miss, and
-`MathChallengeScene.ts:199` dismisses at 800ms on the second. The 1500ms hold
-after a *correct* answer (`MathChallengeScene.ts:183`) is the longest wait in
-the flow and is deliberate. Re-measure on a device before changing any number —
-what the smoke test was tripping over has not actually been identified.
-
-*Done when:* the real duration is measured, the lockout has one deliberate value
-across problem types, and the options visibly show they are not accepting input
-while it runs.
-
 ### Mid-game language switching
 The selector is on Login and Main Menu only. Switching inside a level would
 require live re-rendering of `HUDScene`, `TouchControls`, `DialogBox` and any
@@ -102,18 +86,6 @@ bundles.
 mid-row. Snapping may read better for young players; it may also feel fighty.
 
 *Done when:* tried both ways on a device and one is chosen.
-
-### Wrong answers are painted in the damage colour
-`MathBoard.showWrongFeedback()` fills the chosen option with
-`ThemeManager.getColorNum('danger')` and flies its "Try again" text up in a
-hardcoded `#ff6666`. Both shipped themes also set `wrongFx: "shake_red"`. In a
-game whose point is making a six-year-old comfortable being wrong, the colour of
-taking damage should not appear on a maths answer.
-
-*Done when:* wrong-answer feedback uses an amber that is distinguishable from
-the correct-answer green in luminance as well as hue, the hardcoded `#ff6666` is
-gone, and red is reserved for health loss. `brand/BRAND_SYSTEM.md` §6.2 and
-`brand/tokens/verify_palettes.py` specify and check this.
 
 ### The five tilesets are generated placeholders
 Each world has its own tileset and no two levels share a ground, but the five
@@ -183,19 +155,62 @@ The five token files exist twice, byte-identical, with nothing enforcing it.
 *Done when:* either `npm run validate` checks the two copies match, or the brand
 copies are deleted and `brand/` points at `public/data/themes/`.
 
-### The maths board covers the player, and the header overlaps the board
-Visible in `output/playwright/themes/*-2-math-board.png`. The `520x280` board is
-centred, so it sits on top of Hörmann; `MathChallengeScene`'s header block
-(`GAME_HEIGHT / 2 - 152`) overlaps the board's top edge, so its third line reads
-as if it were inside the frame. There is also no scrim, so a busy world shows
-through behind the problem.
+### The maths board is themed by colour only, not by material
+Every theme file already declares `mathBoard.frameSprite`, `mathBoard.bgSprite`
+and `mathBoard.optionSprite`, and none of them has ever had a texture behind it.
+`MathBoard` draws the panel and the option buttons with `Graphics` from the
+palette, so a world changes the board's *colour* and nothing else. Emberwood and
+Geyserworks should not be the same rounded rectangle in different browns.
 
-`brand/BRAND_SYSTEM.md` §8.3 and §8.7 specify the intended layout: board anchored
-to the upper 60% with the camera panned so the player stays visible, and a warm
-`#1A1420` scrim at 0.72.
+`brand/BRAND_SYSTEM.md` §8.3 owns the intent: the board is made of the world's
+material — bark, crystal, candy, iron, sky-stone — while its geometry, button
+grid and timings stay identical in all five. Skin changes, layout never does.
+`brand/ASSET_MANIFEST.md` P4 lists the files.
 
-*Done when:* the player is visible during a challenge, the header does not
-collide with the board, and a scrim separates the problem from the world.
+*Watch out:* the board is no longer a fixed `520x280`. It measures its question,
+options and hint and grows to fit, so on a two-line prompt it is close to 380
+tall. **The frame has to be a true nine-slice** — a fixed-size PNG will stretch
+and smear its corners. That means the asset is a nine-slice source plus the
+border insets, and `MathBoard.drawBoardBackground()` needs to draw a
+`NineSlice` game object when a texture exists and keep the `Graphics` path as
+the fallback, the same way `HealthBar` already falls back for its icons.
+
+*Done when:* each world's board is visibly made of that world's material, the
+frame survives a two-line prompt without distortion, and replacing one is a PNG
+swap plus insets in the theme file.
+
+### The maths board still covers the player
+The header no longer collides with the board and the scrim is now the theme's
+warm `ink`, but the board itself is centred and sits on top of Hörmann.
+
+The board is 520 wide and now grows vertically to fit its content, so on a
+two-line prompt it is close to 380 tall. Header plus board plus a strip of world
+big enough to show a 64px crow does not fit in 540 by simple stacking. The fix is
+the one `brand/BRAND_SYSTEM.md` §8.3 actually specifies: pan the GameScene camera
+before pausing it so the player renders below the board, and restore it on close.
+
+*Done when:* a child can see who they are while they think.
+
+### Apex hang is blocked by the motion parity contract
+The jump would feel more generous with reduced gravity near the top of the arc,
+which `brand/BRAND_SYSTEM.md` §2.4 calls for as the `apex` hold. It was left out
+of the feel pass deliberately: `godot/tests/test_motion_parity.gd` asserts the
+Godot port matches golden fixtures generated from the web motion model
+(`tools/golden/gen_motion_fixtures.ts`), and that model has one constant gravity.
+Changing it on the web side alone silently breaks parity, and Godot cannot be
+exercised from the container this was written in.
+
+*Done when:* apex damping exists in the shared model, both runtimes implement it
+and the fixtures are regenerated — or the idea is dropped on purpose.
+
+### The Godot port has none of the feel pass either
+Landing squash, jump anticipation, airborne stretch, hitstop, camera look-ahead,
+the phase-offset coin bob, the themed scrim and the 900ms wrong-answer
+choreography all landed on the web port only. Same reason as the world themes:
+Godot could not be run here.
+
+*Done when:* both runtimes feel the same, or the Godot port is declared
+non-current in `README.md` so nobody expects parity.
 
 ## P3 — Content and localisation
 

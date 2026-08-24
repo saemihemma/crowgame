@@ -18,6 +18,10 @@ import { TextManager } from '../systems/TextManager';
 import { ThemeManager } from '../ui/theme/ThemeManager';
 
 export class GameScene extends Phaser.Scene {
+    /** How far ahead of the player the camera leads. brand/BRAND_SYSTEM.md section 9.4. */
+    private static readonly CAMERA_LOOK_AHEAD_PX = 48;
+    private static readonly CAMERA_LOOK_AHEAD_LERP = 0.05;
+
     private player!: Player;
     private inputManager!: InputManager;
     private groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
@@ -191,6 +195,9 @@ export class GameScene extends Phaser.Scene {
         } | undefined;
         const lerp = camTuning?.followLerp ?? 1;
         this.cameras.main.startFollow(this.player.sprite, true, lerp, lerp);
+        // Look-ahead: the camera leads the direction of travel, so the world
+        // opens up ahead of the player instead of dragging behind.
+        this.cameras.main.setFollowOffset(0, 0);
         if (camTuning?.deadzone) {
             this.cameras.main.setDeadzone(camTuning.deadzone.width, camTuning.deadzone.height);
         }
@@ -372,6 +379,19 @@ export class GameScene extends Phaser.Scene {
         body.setSize(20, 20);
         body.setOffset(6, 6);
         coin.anims.play('coin_spin');
+
+        // Bob, phase-offset by world position so a row of coins ripples instead
+        // of pulsing in unison. Two lines, and it is the difference between a
+        // static level and a living one. brand/BRAND_SYSTEM.md section 9.5.
+        this.tweens.add({
+            targets: coin,
+            y: y - 4,
+            duration: 800,
+            delay: (x * 7) % 800,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut',
+        });
     }
 
     private collectCoin(
@@ -511,6 +531,28 @@ export class GameScene extends Phaser.Scene {
         const sky = this.add.graphics().setScrollFactor(0).setDepth(-100);
         sky.fillGradientStyle(top, top, bottom, bottom, 1);
         sky.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+    }
+
+    // ─── Camera ─────────────────────────────────────
+
+    /**
+     * Lead the camera in the direction of travel.
+     *
+     * `setFollowOffset` is inverted relative to the camera's own motion: a
+     * negative x offset pushes the view to the right. The lerp is deliberately
+     * slow so that turning around does not whip the view.
+     */
+    private updateCameraLookAhead(): void {
+        const body = this.player?.sprite?.body as Phaser.Physics.Arcade.Body | undefined;
+        if (!body) {
+            return;
+        }
+
+        const moving = Math.abs(body.velocity.x) > 20;
+        const target = moving ? -Math.sign(body.velocity.x) * GameScene.CAMERA_LOOK_AHEAD_PX : 0;
+        const camera = this.cameras.main;
+        const next = Phaser.Math.Linear(camera.followOffset.x, target, GameScene.CAMERA_LOOK_AHEAD_LERP);
+        camera.setFollowOffset(next, camera.followOffset.y);
     }
 
     // ─── Theme ──────────────────────────────────────
@@ -737,7 +779,9 @@ export class GameScene extends Phaser.Scene {
         const ex = enemy.sprite.x;
         const ey = enemy.sprite.y;
 
-        // Enemy death animation
+        // Enemy death animation. Hitstop first, so the freeze lands on the
+        // frame of contact rather than after the burst has started.
+        DopamineFX.hitstop(this, 60);
         DopamineFX.enemyDeath(this, ex, ey);
 
         // Play enemy death sound
@@ -768,9 +812,11 @@ export class GameScene extends Phaser.Scene {
         if (this.respawning) return;
         this.lives--;
 
-        // Screen shake + flash
-        this.cameras.main.shake(150, 0.005);
-        DopamineFX.screenFlash(this, 0xff0000, 200);
+        // Hitstop, then shake. brand/BRAND_SYSTEM.md section 9.3 and 9.4:
+        // damage is the longest freeze and the strongest shake the game allows.
+        DopamineFX.hitstop(this, 120);
+        this.cameras.main.shake(200, 0.006);
+        DopamineFX.damageEdgePulse(this);
 
         // Emit event so HealthBar animates
         EventBus.emit('player-hurt');
@@ -887,6 +933,7 @@ export class GameScene extends Phaser.Scene {
 
         const input = this.inputManager.getInput();
         this.player.update(input, delta);
+        this.updateCameraLookAhead();
 
         // Update NPCs
         for (const npc of this.activeNPCs) {
