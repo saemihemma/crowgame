@@ -70,30 +70,15 @@ least one step-up per early session and frustration flags under 10%.
 
 ## P2 — Experience decisions that need making
 
-### The game letterboxes away most of a tablet screen
-The Godot project runs a fixed 960x540 viewport. Held the way children actually
-hold a tablet, landscape wastes 18-19% of the screen; portrait was measured at
-61% on iPad and 74% on iPhone before landscape-only was chosen. This is
-architectural - no amount of art, HUD or juice survives a fifth of the screen
-being black - and the answer is a design decision (what the extra width
-contains) rather than a stretch-mode flag. `brand/PRODUCTION_PLAN.md` Phase 1
-owns it.
 
-*Done when:* letterbox is under 8% on iPad in landscape.
+### The on-screen controls are gated on geometry, not on input
+`godot/tests/test_touch_gates.gd` now checks every pad at four real device
+viewports for the 88px target floor (B3), the 32px safe area (B4), thumb-corner
+placement (B10) and non-overlap. That is what caught nothing before: the pads
+were laid out from a fixed 960x540 while the viewport is `expand`, so on any
+other aspect they detached from the corners and floated in the level.
 
-### Touch controls have never been designed
-`godot/scripts/ui/touch_controls.gd` is a direct port of the web build's five
-88px squares. Three of the five were labelled with words, for a player who is
-still learning to read, against the brand rule (§12) that icons must carry every
-essential meaning. There are no haptics, no gestures, and no pressed state a
-child can see past their own thumb. Every other surface in the game has now been
-through the concept-then-measure loop; this one has not.
-
-*Done when:* the control scheme has been through that loop and passes B3, B4 and
-B10 in `brand/PRODUCTION_PLAN.md`.
-
-### The on-screen controls have no automated gate
-Touch has positive evidence and no gate; mouse has neither.
+What is still ungated is whether a press actually *arrives*.
 
 *Touch:* held CDP touches on the d-pad move the world in the exported build,
 measured twice at 0.998 change — the same magnitude as a keyboard walk — and real
@@ -109,8 +94,8 @@ has a mouse, and `pointing/emulate_touch_from_mouse` is enabled as the documente
 fix but has never been confirmed — Playwright's synthetic mouse does not reach a
 TouchScreenButton, which is a harness limitation and not evidence either way.
 
-*Done when:* someone clicks the d-pad with a real mouse in a desktop browser and
-says whether the crow moves. If it does not, the fallback is to hide the controls
+*Done when:* someone clicks a pad with a real mouse in a desktop browser and says
+whether the crow moves. If it does not, the fallback is to hide the controls
 unless `DisplayServer.is_touchscreen_available()`, so desktop players are not
 shown dead buttons.
 

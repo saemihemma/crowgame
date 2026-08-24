@@ -8,7 +8,12 @@ extends Node
 ## container:
 ##
 ##   xvfb-run -a --server-args="-screen 0 1280x800x24" \
-##     godot --path godot res://tools/capture/Capture.tscn -- level_01,level_02 play,math
+##     godot --path godot res://tools/capture/Capture.tscn -- level_01 play 1194x834
+##
+## The third argument is the window size to photograph at. It exists because
+## every judgement about this game had been made at one 16:9 desktop viewport,
+## while the device it is actually played on is a 4:3 tablet - so the letterbox
+## nobody could see was never going to get fixed.
 ##
 ## Writes output/godot-shots/<level>-<variant>.png.
 ##
@@ -61,8 +66,12 @@ var _shots := 0
 ## Set once per job when its scripted interaction has been kicked off, so the
 ## step does not re-fire on every physics frame while we wait for it to land.
 var _staged := false
+## What was asked for on the command line, so the shot can be compared against
+## the window rather than against itself.
+var _requested_window := Vector2i.ZERO
 
 func _ready() -> void:
+	_apply_window_size()
 	# The pause overlay pauses the whole tree, which would stop this node's own
 	# frame loop and hang the harness. Capture keeps stepping regardless of the
 	# game's pause state - it is a camera, not a participant.
@@ -80,6 +89,26 @@ func _ready() -> void:
 	print("[capture] levels: ", ", ".join(levels))
 	print("[capture] variants: ", ", ".join(variants))
 	_load_next()
+
+## Resize the real window before anything renders, so `expand` stretch resolves
+## the viewport against the size being photographed.
+func _apply_window_size() -> void:
+	var args := OS.get_cmdline_user_args()
+	if args.size() < 3 or args[2] == "":
+		return
+	var parts := args[2].split("x", false)
+	if parts.size() != 2:
+		printerr("[capture] bad size '%s'; expected WxH" % args[2])
+		return
+	var size := Vector2i(int(parts[0]), int(parts[1]))
+	if size.x <= 0 or size.y <= 0:
+		return
+	# The window itself is sized by --resolution on the command line, before the
+	# first frame. This only records what was asked for, so the shot can be
+	# compared against the window rather than against itself - measuring the
+	# viewport against a root size this harness had set was how a 19.5%
+	# letterbox first reported as 0%.
+	_requested_window = size
 
 func _resolve_levels() -> PackedStringArray:
 	var args := OS.get_cmdline_user_args()
@@ -263,7 +292,18 @@ func _capture_and_advance() -> void:
 		push_error("[capture] save failed for %s: %d" % [path, err])
 	else:
 		_shots += 1
-		print("[capture] %s-%s  %dx%d" % [job["level"], job["variant"], image.get_width(), image.get_height()])
+		var note := ""
+		if _requested_window != Vector2i.ZERO:
+			# The viewport IS the window when nothing is letterboxed, so any
+			# shortfall is a bar. Printed on every sized shot, because the last
+			# time this number was estimated instead of measured it was wrong by
+			# 19.5% of an iPad screen.
+			var used := float(image.get_width() * image.get_height()) \
+				/ float(_requested_window.x * _requested_window.y)
+			note = "  window %dx%d  letterbox %.1f%%" % [
+				_requested_window.x, _requested_window.y, maxf(0.0, 100.0 - used * 100.0)]
+		print("[capture] %s-%s  %dx%d%s" % [
+			job["level"], job["variant"], image.get_width(), image.get_height(), note])
 
 	# Leave no game paused behind: the next job gets a fresh, running tree.
 	get_tree().paused = false

@@ -1,71 +1,85 @@
 extends CanvasLayer
-## TouchControls — Godot port of the virtual gamepad. D-pad (left/right) bottom
-## -left, Jump + Peck bottom-right. Each button is a TouchScreenButton bound to
-## an InputMap action, so touch drives the exact same actions player.gd reads
-## (no separate input path). Auto-shows on touch devices; harmless on desktop.
+## TouchControls — the on-screen gamepad.
+##
+## Each pad is a TouchScreenButton bound to an InputMap action, so touch drives
+## exactly the same actions player.gd reads. No separate input path.
+##
+## Two things were wrong with the port this replaces, and both were structural:
+##
+## 1. It laid itself out from ProjectSettings' 960x540 rather than from the
+##    viewport it was actually in. The moment the viewport stopped being 960x540
+##    - which is the whole point of Phase 1 - the buttons detached from the
+##    corners and floated in the middle of the screen.
+## 2. Three of the five carried their meaning in a word. See TouchPad.
+##
+## brand/BRAND_SYSTEM.md §8.1, §12. Gates B3 (88px targets), B4 (32px safe
+## area) and B10 (thumb reach) in brand/PRODUCTION_PLAN.md.
 
-# Sizes from data/tuning/ui_tuning.json (Config.ui("touch/...")).
-@onready var BTN: int = int(Config.ui("touch/button_size", 88))
-@onready var GAP: int = int(Config.ui("touch/gap", 12))
-@onready var PAD: int = int(Config.ui("touch/pad", 16))
+## Gate B4: nothing interactive inside 32px of the edge, which is where rounded
+## corners, gesture bars and the meat of a gripping hand are.
+@onready var MARGIN: float = float(Config.ui("touch/safe_margin", 32))
+@onready var GAP: float = float(Config.ui("touch/gap", 14))
+## Gate B3 floor. Jump is larger because it is the action pressed most often and
+## the one pressed in a hurry.
+@onready var BTN: float = float(Config.ui("touch/button_size", 92))
+@onready var JUMP_BTN: float = float(Config.ui("touch/jump_button_size", 112))
 
-## action -> its Label, so a locale change can retitle the buttons without
-## rebuilding them. Rebuilding would mean destroying live TouchScreenButtons,
-## which drops a press the player is holding at that moment; the web port gets
-## away with a full rebuild because its buttons are not the input path.
-var _labels: Dictionary = {}
+var _pads: Array[TouchPad] = []
 
 func _ready() -> void:
 	layer = 8
-	var vw := float(ProjectSettings.get_setting("display/window/size/viewport_width"))
-	var vh := float(ProjectSettings.get_setting("display/window/size/viewport_height"))
-	var dpad_y := vh - PAD - BTN
-	_add_button("move_left", "<", Vector2(PAD, dpad_y))
-	_add_button("move_right", ">", Vector2(PAD + BTN + GAP, dpad_y))
-	_add_button("jump", TextManager.t("touch.jump"), Vector2(vw - PAD - BTN, dpad_y))
-	# The shoot button used to be labelled touch.peck and interact was labelled
-	# the literal "E" -- a keyboard key printed on a touchscreen. Aligned with
-	# TouchControls.ts: shoot reads ZAP/SKOT, interact reads PECK/GOGGA.
-	_add_button("interact", TextManager.t("touch.peck"), Vector2(vw - PAD - BTN, dpad_y - BTN - GAP))
-	_add_button("shoot", TextManager.t("touch.zap"), Vector2(vw - PAD - BTN * 2 - GAP, dpad_y))
 	# Hide on non-touch desktop to avoid clutter (keyboard still works).
 	if not (DisplayServer.is_touchscreen_available() or OS.has_feature("web") or OS.has_feature("mobile")):
 		visible = false
-	# JUMP/STÖKK, PECK/GOGGA and ZAP/SKOT differ between locales, so without
-	# this the d-pad keeps the old language until the level reloads.
-	TextManager.locale_changed.connect(func(_code: String) -> void: _refresh_labels())
+	_build()
+	# The viewport is `expand` now, so its size depends on the device's aspect
+	# and can change on rotation or a resized window. Re-laying out beats
+	# rebuilding: rebuilding destroys live TouchScreenButtons and drops a press
+	# the player is holding at that moment.
+	get_viewport().size_changed.connect(_layout)
 
-## The three localised button labels. The arrows are notation, not words.
-func _refresh_labels() -> void:
-	var keys := {"jump": "touch.jump", "interact": "touch.peck", "shoot": "touch.zap"}
-	for action: String in keys:
-		var lbl: Variant = _labels.get(action, null)
-		if lbl is Label:
-			(lbl as Label).text = TextManager.t(String(keys[action]))
+func _build() -> void:
+	_pads.clear()
+	_pads.append(TouchPad.make("move_left", TouchPad.Icon.LEFT, Vector2.ZERO, BTN))
+	_pads.append(TouchPad.make("move_right", TouchPad.Icon.RIGHT, Vector2.ZERO, BTN))
+	_pads.append(TouchPad.make("shoot", TouchPad.Icon.ZAP, Vector2.ZERO, BTN))
+	_pads.append(TouchPad.make("interact", TouchPad.Icon.PECK, Vector2.ZERO, BTN))
+	_pads.append(TouchPad.make("jump", TouchPad.Icon.JUMP, Vector2.ZERO, JUMP_BTN))
+	for pad in _pads:
+		add_child(pad)
+	_layout()
 
+## Positions come from the live viewport rect, every time.
+func _layout() -> void:
+	layout_for(get_viewport().get_visible_rect().size)
 
-func _add_button(action: String, label: String, pos: Vector2) -> void:
-	var b := TouchScreenButton.new()
-	b.action = action
-	b.position = pos
-	# Visual: a semi-transparent rounded panel + label, sized BTN x BTN.
-	var panel := ColorRect.new()
-	panel.color = ThemeManager.get_color_value("touch_panel")
-	panel.size = Vector2(BTN, BTN)
-	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	b.add_child(panel)
-	var lbl := Label.new()
-	lbl.text = label
-	lbl.size = Vector2(BTN, BTN)
-	lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	lbl.add_theme_color_override("font_color", ThemeManager.get_color_value("touch_label"))
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	b.add_child(lbl)
-	_labels[action] = lbl
-	# Square press shape covering the panel.
-	var shape := RectangleShape2D.new()
-	shape.size = Vector2(BTN, BTN)
-	b.shape = shape
-	b.shape_centered = false
-	add_child(b)
+## Lay out against an arbitrary viewport size.
+##
+## Public so the gate tests can check B3, B4 and B10 at every aspect this game
+## supports rather than only at whatever size the test runner happens to use -
+## and it is the aspects that differ that broke this in the first place.
+func layout_for(view: Vector2) -> void:
+	if _pads.size() < 5:
+		return
+	var floor_y := view.y - MARGIN
+
+	# Left thumb: the two directions, side by side in the corner.
+	_pads[0].position = Vector2(MARGIN, floor_y - BTN)
+	_pads[1].position = Vector2(MARGIN + BTN + GAP, floor_y - BTN)
+
+	# Right thumb: jump in the corner where the thumb rests, with zap beside it
+	# and peck above - the two used less often are the two further to reach.
+	var jump_x := view.x - MARGIN - JUMP_BTN
+	_pads[4].position = Vector2(jump_x, floor_y - JUMP_BTN)
+	var stack_x := jump_x - GAP - BTN
+	_pads[2].position = Vector2(stack_x, floor_y - BTN)
+	_pads[3].position = Vector2(stack_x, floor_y - BTN - GAP - BTN)
+	for pad in _pads:
+		pad.queue_redraw()
+
+## Every pad's rect in viewport space, for the gates.
+func pad_rects() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	for pad in _pads:
+		out.append(Rect2(pad.position, (pad.shape as RectangleShape2D).size))
+	return out

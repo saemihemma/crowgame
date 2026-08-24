@@ -16,6 +16,10 @@ const TOUCH_SCENE := preload("res://scenes/TouchControls.tscn")
 const PAUSE_SCENE := preload("res://scenes/Pause.tscn")
 
 const MAX_LIVES := 3
+## How far below a level the soil is painted. The tallest supported viewport is
+## 720 world units (4:3) against a 640-tall level, so 240 is three times the
+## worst case - cheap insurance against a taller device than anyone has now.
+const UNDERFILL_DEPTH := 240.0
 
 @export var level_key := ""
 
@@ -43,6 +47,11 @@ var _shake_time := 0.0
 var _shake_strength := 0.0
 var _flash: ColorRect
 var _sky: TextureRect
+## Kept so the on-screen controls can be taken away while something else owns
+## the screen. TouchScreenButton reads input in _input, which runs before the
+## GUI layer, so an overlay's scrim does NOT stop a thumb from reaching the pads
+## underneath it - a child could jump and fire mid-question.
+var _touch: CanvasLayer
 
 func _ready() -> void:
 	coin_count = int(SaveManager.get_data().get("coins", 0))
@@ -53,7 +62,8 @@ func _ready() -> void:
 	# happens, and a retry that lands has to relight it.
 	EventBus.math_answer_submitted.connect(_on_answer_submitted)
 	add_child(HUD_SCENE.instantiate())
-	add_child(TOUCH_SCENE.instantiate())
+	_touch = TOUCH_SCENE.instantiate()
+	add_child(_touch)
 	var key := level_key
 	if key == "":
 		key = LevelManager.get_current_level_key()
@@ -100,6 +110,7 @@ func _load_level(key: String) -> void:
 	_world.name = "World"
 	add_child(_world)
 	_parsed = LevelLoader.build(_world, level)
+	_paint_underfill()
 
 	lives = MAX_LIVES
 	streak = 0
@@ -187,6 +198,34 @@ func _paint_sky() -> void:
 	add_child(layer)
 
 
+## Soil below the level, so a viewport taller than the level shows ground rather
+## than sky under the ground.
+##
+## The viewport is `expand` now, which fills any screen but means its height in
+## world units is 960/aspect: 540 on 16:9, 671 on an 11-inch iPad, 720 on a 4:3
+## one. Levels are 640 tall. Camera limits cannot help - when the viewport is
+## taller than the limit range there is nothing to clamp against - so on a tablet
+## the camera showed the sky gradient continuing underneath the soil.
+##
+## Painted rather than built out of tiles: a real fix in the level data would be
+## 80 rows of ground across six levels for a strip no player can ever reach,
+## since everything below the ground is already a death plane.
+func _paint_underfill() -> void:
+	var level_w := int(_parsed.get("width", 0)) * int(_parsed.get("tile_w", 32))
+	var level_h := int(_parsed.get("height", 0)) * int(_parsed.get("tile_h", 32))
+	if level_w <= 0 or level_h <= 0:
+		return
+	var fill := ColorRect.new()
+	fill.name = "Underfill"
+	fill.color = ThemeManager.get_color_value("ground_shadow")
+	# Wide and deep enough to cover the widest viewport at the level's edges and
+	# the tallest one below its floor, with room to spare - it costs one quad.
+	fill.position = Vector2(-level_w, level_h)
+	fill.size = Vector2(level_w * 3, UNDERFILL_DEPTH)
+	fill.z_index = -50
+	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_world.add_child(fill)
+
 func _spawn_entities() -> void:
 	var registry := DataManager.get_dict("SPAWN_REGISTRY")
 	for s in _parsed.get("spawns", []):
@@ -239,10 +278,25 @@ func _unhandled_input(event: InputEvent) -> void:
 
 var _pause_overlay: CanvasLayer
 
+## Hide the on-screen controls while an overlay owns the screen. Visibility is
+## the whole fix: a hidden TouchScreenButton does not take input.
+func _set_touch_visible(shown: bool) -> void:
+	if is_instance_valid(_touch):
+		_touch.visible = shown and _touch_supported()
+
+## The same condition TouchControls uses to decide whether it belongs on this
+## device at all - so showing it back does not summon a d-pad onto a desktop.
+func _touch_supported() -> bool:
+	return DisplayServer.is_touchscreen_available() or OS.has_feature("web") or OS.has_feature("mobile")
+
 func _toggle_pause() -> void:
 	if is_instance_valid(_pause_overlay):
 		return
 	_pause_overlay = PAUSE_SCENE.instantiate()
+	# Same reason as the maths board: the pads sit under the pause card and would
+	# still take a thumb through it.
+	_set_touch_visible(false)
+	_pause_overlay.tree_exited.connect(func(): _set_touch_visible(true))
 	add_child(_pause_overlay)
 	get_tree().paused = true
 
@@ -593,11 +647,13 @@ func launch_math_challenge(problem: Dictionary, opts: Dictionary) -> void:
 	_math_challenge = MATH_CHALLENGE_SCENE.instantiate()
 	add_child(_math_challenge)
 	_math_challenge.closed.connect(_on_challenge_closed)
+	_set_touch_visible(false)
 	if _player:
 		_player.set_physics_process(false)  # pause gameplay during the challenge
 	_math_challenge.present(problem, opts)
 
 func _on_challenge_closed() -> void:
 	_math_challenge = null
+	_set_touch_visible(true)
 	if _player:
 		_player.set_physics_process(true)

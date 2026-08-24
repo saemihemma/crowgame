@@ -1,9 +1,11 @@
 {
   "_comment": "UI/layout tuning — sizes, delays, thresholds for menus/HUD/touch/math board. JSON-first: edit here, never hardcode in .gd. (Tier-1 math/learner constants intentionally live in code, not here.)",
   "touch": {
-    "button_size": 104,
+    "button_size": 92,
     "gap": 14,
-    "pad": 16
+    "_comment": "On-screen gamepad. safe_margin is Gate B4 (nothing interactive within 32px of an edge); button_size is Gate B3's 88px floor with a little headroom.",
+    "safe_margin": 32,
+    "jump_button_size": 112
   },
   "math_challenge": {
     "correct_delay": 1.5,

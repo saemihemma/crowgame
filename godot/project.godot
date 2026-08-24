@@ -39,7 +39,7 @@ CloudSync="*res://scripts/systems/cloud_sync.gd"
 window/size/viewport_width=960
 window/size/viewport_height=540
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
+window/stretch/aspect="expand"
 window/handheld/orientation=0
 
 [rendering]

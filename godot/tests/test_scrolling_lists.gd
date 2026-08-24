@@ -14,11 +14,15 @@ const VIEWPORT_H := 540.0
 const VIEWPORT_W := 960.0
 
 
+## The live viewport, not the project's base resolution.
+##
+## The stretch aspect is `expand` now, so the viewport is 960/aspect tall and as
+## wide as the device makes it - 960x720 on a 4:3 tablet, 1171x540 on a phone. A
+## screen anchored to that viewport is correctly larger than the base 960x540,
+## and comparing it against the base reported a scroller that fits perfectly as
+## overflowing by 300px.
 func _viewport_size() -> Vector2:
-	return Vector2(
-		float(ProjectSettings.get_setting("display/window/size/viewport_width")),
-		float(ProjectSettings.get_setting("display/window/size/viewport_height")),
-	)
+	return Engine.get_main_loop().root.get_visible_rect().size
 
 
 ## Instantiate a routed scene, let it lay out, and hand it back.
