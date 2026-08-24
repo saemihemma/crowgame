@@ -33,6 +33,11 @@ func present(problem: Dictionary, opts: Dictionary = {}) -> void:
 	_wrong_attempts = 0
 	_done = false
 	_presented_at = Time.get_ticks_msec()
+	# Clear any previous board. present() is public and re-presenting on the same
+	# overlay would otherwise stack a second scrim and board over the first,
+	# leaving the old question visible through the new one.
+	for child in get_children():
+		child.queue_free()
 	_build_ui(opts)
 	EventBus.math_challenge_start.emit({"problemId": String(problem.get("id", ""))})
 	EventBus.math_problem_presented.emit(problem)
@@ -168,14 +173,25 @@ func _build_ui(opts: Dictionary) -> void:
 
 	# The question is the subject of the screen, so it is the largest thing on
 	# it. It used to render at the same weight as the four options.
+	var prompt_text := String(current_problem.get("prompt", {}).get("text", ""))
+	var tokens := _countable_tokens(prompt_text)
+
 	_question_label = Label.new()
 	_question_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_question_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_question_label.custom_minimum_size.x = float(Config.ui("math_challenge/board_min_w", 560)) - BOARD_PAD * 2
-	_question_label.text = String(current_problem.get("prompt", {}).get("text", ""))
+	_question_label.text = _question_text(prompt_text, tokens)
 	_question_label.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/question_font_size", 40)))
 	_question_label.add_theme_color_override("font_color", ThemeManager.get_color_value("paper"))
 	vbox.add_child(_question_label)
+
+	# Counting problems get objects instead of a row of asterisks.
+	if tokens > 0:
+		var count_row := CountRow.new()
+		var centred := CenterContainer.new()
+		centred.add_child(count_row)
+		vbox.add_child(centred)
+		count_row.setup(tokens)
 
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -208,6 +224,18 @@ func _build_ui(opts: Dictionary) -> void:
 
 	# Elastic pop-in once the layout has computed sizes.
 	_pop_in.call_deferred(_board)
+
+## How many things a counting prompt is asking about, or 0 if it is not one.
+## The rule itself lives on CountRow, where it can be tested without a board.
+func _countable_tokens(text: String) -> int:
+	return CountRow.tokens_in(text)
+
+## The prompt without its marker run, since the tokens now carry that part.
+func _question_text(text: String, tokens: int) -> String:
+	if tokens <= 0:
+		return text
+	# Without the trailing colon: the tokens below are what it introduced.
+	return text.substr(0, text.rfind(":"))
 
 ## Who is asking. The owl is the reason any of this matters — the child is here
 ## to free it — and it was the one thing the board never showed.

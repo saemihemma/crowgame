@@ -20,6 +20,8 @@ extends Node
 ##   play        the level as it plays
 ##   math        the maths board, open, awaiting an answer
 ##   math-wrong  the board mid-way through the wrong-answer beat
+##   math-count  the board showing a counting problem, whose tokens are drawn
+##               objects rather than a row of asterisks
 
 const GAME_SCENE := preload("res://scenes/Game.tscn")
 
@@ -130,6 +132,10 @@ func _stage(variant: String) -> bool:
 	owl.interact()
 	if variant == "math":
 		return true
+	if variant == "math-count":
+		# Counting problems are a minority of the pool, so asking for one by
+		# domain is the only way to photograph that layout reliably.
+		return _represent_from_domain(owl, "counting")
 	if variant == "math-wrong":
 		# The board is built during interact(), so the wrong answer can be
 		# submitted straight away; the hold above is what shows its aftermath.
@@ -142,6 +148,21 @@ func _stage(variant: String) -> bool:
 		overlay.submit_answer(index)
 		return true
 	return false
+
+## Swap the presented problem for one from a named domain, so a variant can
+## photograph a specific question layout instead of whatever came up.
+func _represent_from_domain(owl: Node2D, domain: String) -> bool:
+	if not _game.is_math_challenge_active():
+		return false
+	var problem = MathProblemManager.get_next_problem({"domains": [domain]})
+	if problem == null:
+		return false
+	var overlay = _game.get_math_challenge()
+	overlay.present(problem, {
+		"npcName": String(owl.definition.get("name", "")),
+		"npcGreeting": "How many?",
+	})
+	return true
 
 func _wrong_index(problem: Dictionary) -> int:
 	var answer: Dictionary = problem.get("answer", {})

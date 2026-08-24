@@ -1,7 +1,7 @@
 # Hörmann — Art Asset Manifest
 
 Status: Supportive
-Authority: The list of art assets still to generate, with their sizes and destinations. Runtime truth is BootScene, the registries and the manifests.
+Authority: The list of art assets still to generate, with their sizes and destinations. Runtime truth is the Godot project under `godot/` - its registries, theme files and tuning JSON.
 Last verified against code: 2026-08-24
 
 Every art asset the five worlds need, in the order worth making them, with the
@@ -17,7 +17,7 @@ Non-negotiable, from BRAND_SYSTEM §5.1. Everything below obeys it.
 
 | Thing | Size | Why |
 | --- | --- | --- |
-| Canvas | `960x540`, integer 2x to 1080p | `GAME_WIDTH`/`GAME_HEIGHT` in `src/utils/Constants.ts` |
+| Canvas | `960x540`, integer 2x to 1080p | `display/window/size/viewport_width`/`_height` in `godot/project.godot` |
 | Tiles | `32x32` | `TILE_SIZE` |
 | Characters, enemies, NPCs, props | `64x64` per frame | `SPRITE_SIZE`; matches the shipped crow, owl and cockroach |
 | Doors | `88x96` | matches the shipped `door-36-runtime-88x96.png` |
@@ -73,7 +73,7 @@ it. Screenshots land in `output/playwright/themes/`.
 
 ## Priority 0 - the five tilesets — **DONE, as placeholders**
 
-Five generated tilesets ship at `public/assets/tilesets/<world>_tiles.png`, each
+Five generated tilesets ship at `godot/assets/tilesets/<world>_tiles.png`, each
 level points at its own, and no two levels share a ground any more. They are
 **art-directed placeholders, not finished art** - see the honest grades at the
 bottom of this section. Replacing them is the highest-value art work available.
@@ -81,7 +81,7 @@ bottom of this section. Replacing them is the highest-value art work available.
 ### The real geometry contract
 
 An earlier version of this document specified a `320x320` sheet with a 9-tile
-order. **That was wrong.** The truth, read out of `tools/level_compiler.ts`:
+order. **That was wrong.** The truth, read out of the compiled level JSON and `scripts/levels/level_loader.gd`:
 
 | | |
 | --- | --- |
@@ -115,7 +115,7 @@ Three constraints that follow from this, and they are not stylistic:
 The PNG is the asset. Nothing about a tileset lives in code.
 
 1. Draw `128x128` with tiles 0, 1 and 2 in the order above.
-2. Save over `public/assets/tilesets/<world>_tiles.png`, and copy to
+2. Save over `godot/assets/tilesets/<world>_tiles.png`, and copy to
    `godot/assets/tilesets/`.
 3. Set `"source": "authored"` for that entry in
    `public/data/tilesets/tileset_manifest.json`, so the generator stops being
@@ -123,7 +123,7 @@ The PNG is the asset. Nothing about a tileset lives in code.
 4. `npm run validate && npm run dev`, then `npm run themes:screenshots`.
 
 To **add** a world: drop a PNG in, add a manifest entry, add a theme token file,
-give a level spec that `theme`. `BootScene` loads every manifest entry, so there
+give a level spec that `theme`. The tileset manifest is loaded by `DataManager`, so there
 is still no code change.
 
 The generator that made the current placeholders is `tools/gen_tilesets.mjs`
@@ -161,15 +161,17 @@ recorded in each token file under `world.parallax`.
 | `mid` | `960x260`, tileable on x | 0.55 | 70% | structures and big flora, 2-3 tone, no outline |
 | `near` | `960x120`, tileable on x | 1.35 | 60% | foreground framing, max 15% screen coverage |
 
-- **Emberwood:** `public/assets/parallax/emberwood_far.png`, `emberwood_mid.png`, `emberwood_near.png` - far `#6E9E8A`, mid `#2E6B47`, near `#194031`
-- **Prism Hollow:** `public/assets/parallax/prism_hollow_far.png`, `prism_hollow_mid.png`, `prism_hollow_near.png` - far `#241D52`, mid `#37306E`, near `#0E0B26`
-- **Sugarstorm:** `public/assets/parallax/sugarstorm_far.png`, `sugarstorm_mid.png`, `sugarstorm_near.png` - far `#6B2A8A`, mid `#A83CA0`, near `#1B0F3B`
-- **Geyserworks:** `public/assets/parallax/geyserworks_far.png`, `geyserworks_mid.png`, `geyserworks_near.png` - far `#3A3B44`, mid `#5A4238`, near `#20161A`
-- **Aurora Spire:** `public/assets/parallax/aurora_spire_far.png`, `aurora_spire_mid.png`, `aurora_spire_near.png` - far `#1E2A55`, mid `#2F4E7A`, near `#0B1030`
+- **Emberwood:** `godot/assets/parallax/emberwood_far.png`, `emberwood_mid.png`, `emberwood_near.png` - far `#6E9E8A`, mid `#2E6B47`, near `#194031`
+- **Prism Hollow:** `godot/assets/parallax/prism_hollow_far.png`, `prism_hollow_mid.png`, `prism_hollow_near.png` - far `#241D52`, mid `#37306E`, near `#0E0B26`
+- **Sugarstorm:** `godot/assets/parallax/sugarstorm_far.png`, `sugarstorm_mid.png`, `sugarstorm_near.png` - far `#6B2A8A`, mid `#A83CA0`, near `#1B0F3B`
+- **Geyserworks:** `godot/assets/parallax/geyserworks_far.png`, `geyserworks_mid.png`, `geyserworks_near.png` - far `#3A3B44`, mid `#5A4238`, near `#20161A`
+- **Aurora Spire:** `godot/assets/parallax/aurora_spire_far.png`, `aurora_spire_mid.png`, `aurora_spire_near.png` - far `#1E2A55`, mid `#2F4E7A`, near `#0B1030`
 
-**Wire in:** a new `paintParallax()` in `src/scenes/GameScene.ts`, next to the
-existing `paintSkyGradient()`, reading `theme.world.parallax`. The `ThemeWorld`
-type already exists in `src/ui/theme/ThemeTypes.ts` and nothing reads it yet.
+**Wire in:** a new `_paint_parallax()` in `godot/scripts/scenes/game.gd`, beside
+the existing `_paint_sky()`, on `ParallaxBackground` layers under the sky's
+`CanvasLayer`. The `far`, `mid` and `deep` palette roles already exist in every
+theme file and nothing reads them yet - the sky gradient uses only `sky_top` and
+`sky_bottom`.
 
 ---
 
@@ -187,7 +189,7 @@ only needs a retint. Adding an enemy is a registry entry plus one sheet -
 | Geyserworks | `slagjaw_armored` | `slagjaw.png` | `64x64` | 4 walk + 2 vent | boxy, spiked shoulders, one huge claw |
 | Aurora Spire | `gloomgull_drifter` | `gloomgull.png` | `64x64` | 4 drift + 2 idle | tall, thin, three torn wings |
 
-- **Destination:** `public/assets/sprites/characters/enemies/<name>.png`
+- **Destination:** `godot/assets/sprites/characters/enemies/<name>.png`
 - **Wire in:** `public/data/enemies/enemy_registry.json`, and the `enemies` array
   of the level spec that uses it
 - **The ugly law applies** (BRAND_SYSTEM §3.1): asymmetric, lumpy, odd number of
@@ -203,11 +205,11 @@ than scenery does, because the player is looking straight at them.
 
 | Object | Size | Frames | Destination | Wire in |
 | --- | --- | --- | --- | --- |
-| Coin skin x5 | `32x32` | 6 spin | `public/assets/sprites/ui/coin/<world>_coin.png` | `BootScene` |
-| Door x5 | `88x96` | 6 open | `public/assets/sprites/objects/door/<world>_door.png` | `theme.door.sprite` |
-| Owl station x5 | `64x64` | 2 idle | `public/assets/sprites/objects/owl_station/<world>.png` | level spec props |
-| Chain link x5 | `32x32` | 1 idle + 4 burst | `public/assets/sprites/objects/chain/<world>_link.png` | `behaviorConfig.chainLinks` |
-| Hazard x4 | `32x32` | 4 idle loop | `public/assets/tilesets/<world>_hazards.png` | level spec `hazards` |
+| Coin skin x5 | `32x32` | 3x3 spin sheet | `godot/assets/sprites/ui/coin/<world>_coin.png` | `Coin.tscn`, and frame 0 in the HUD chip |
+| Door x5 | `88x96` | 6 open | `godot/assets/sprites/objects/door/<world>_door.png` | `theme.door.sprite` |
+| Owl station x5 | `64x64` | 2 idle | `godot/assets/sprites/objects/owl_station/<world>.png` | level spec props |
+| Chain link x5 | `32x32` | 1 idle + 4 burst | `godot/assets/sprites/objects/chain/<world>_link.png` | `behaviorConfig.chainLinks` |
+| Hazard x4 | `32x32` | 4 idle loop | `godot/assets/tilesets/<world>_hazards.png` | level spec `hazards` |
 
 Hazards are **two-tone**: a dark base in `hazard_base` and a bright tip in
 `hazard`. That is not styling - BRAND_SYSTEM §6.5 requires the pair to clear
@@ -235,32 +237,72 @@ coin looks like. Same for the owl.
 
 ## Priority 4 - themed UI sprites
 
-Every theme file already names these keys, and **none of them has ever had a
-texture behind it** - that was already true of the two legacy themes. The code
-handles it: `HealthBar.buildIcons()` checks `textures.exists()` and falls back to
-a palette-tinted placeholder, and `MathBoard` draws its frame with `Graphics`.
-So these are pure upgrades, safe to land one at a time, in any order.
+Every one of these has a **live slot in the Godot build**: the code looks for the
+file at the path below, uses it if it is there, and draws a themed fallback if it
+is not. So each is a drop-in - copy the file to the path, run the game, see it.
+No wiring, no code change, no registry entry.
 
-| Key in theme file | Size | Notes |
-| --- | --- | --- |
-| `hud.healthIcon` | `32x32` | heart; `hurt` red in every world |
-| `hud.coinIcon` | `32x32` | matches the coin skin |
-| `mathBoard.frameSprite` | **nine-slice**, 96x96 source | The board measures its content and grows - a two-line prompt makes it ~380 tall - so a fixed-size frame will stretch and smear its corners. Ship a nine-slice source plus its border insets, and carry the insets in the theme file |
-| `mathBoard.bgSprite` | 64x64, tileable | board interior in world material, tiled behind the frame rather than stretched |
-| `mathBoard.optionSprite` | `88x88` | answer button; **square, not the current 100x60 landscape** |
-| `controls.dpadSprite` | `128x128` | touch d-pad |
-| `controls.jumpBtnSprite` | `80x80` | primary action, so the larger target |
-| `controls.peckBtnSprite` | `64x64` | |
-| `dialog.frameSprite` | `640x160` | dialogue box |
+That is the whole architecture: *nothing here is drawn in code because we want it
+to be.* The fallbacks exist so the game is playable and reviewable before the art
+lands, and every one of them is a placeholder with a file path waiting for it.
 
-- **Destination:** `public/assets/sprites/ui/<world>/<name>.png`
-- **Wire in:** `BootScene.preload()`, with the texture key matching the string
-  already in the theme file - for example `ui_geyserworks_board_frame`
-- **The board frame needs a code change first**, unlike everything else in this
-  table: `MathBoard.drawBoardBackground()` draws a rounded rect with `Graphics`
-  and has no texture path at all. It needs to render a `NineSlice` when the
-  frame texture exists and keep `Graphics` as the fallback, the way
-  `HealthBar.buildIcons()` already falls back. Tracked in `roadmap.md`
+### Live slots - drop a file in and it appears
+
+| File | Size | Falls back to | Drawn by |
+| --- | --- | --- | --- |
+| `godot/assets/sprites/ui/hud/owl-icon-32.png` | `32x32` | a head crop of the 64px world owl | `scripts/ui/components/owl_ring.gd` |
+| `godot/assets/sprites/ui/board/count-token-32.png` | `32x32` | a themed disc with an ink rim | `scripts/ui/components/count_row.gd` |
+| `godot/assets/sprites/ui/board/board-9slice.png` | nine-slice, `96x96` source | a rounded `boardBg`/`boardBorder` panel | `scripts/ui/math_challenge.gd` |
+
+Notes on each:
+
+- **Owl icon.** Sits in the HUD ring at `32x32` and again on the maths board
+  header at `34`. It has one job - say "owl" in a glance - so it wants a head,
+  not the full body. The fallback crops the world sprite's head for exactly this
+  reason; the full owl in chains holding a padlock collapses into noise at this
+  size.
+- **Count token.** The thing a child counts. Drawn at `32x32`, 1:1 with the
+  source, so it must not be resampled. It must **not** look like a coin: coins
+  mean currency everywhere else in the game, and a row of them on the board reads
+  as a reward rather than a question. Ten per row in a ten-frame with a gap after
+  the fifth, so whatever it is has to stay countable at a glance in a run of
+  nineteen.
+- **Board nine-slice.** The board measures its content and grows - a counting
+  problem with nineteen tokens is roughly twice the height of `3 + 2` - so a
+  fixed-size frame would stretch and smear its corners. Ship a nine-slice source
+  and set its border inset in `ui_tuning.json` under
+  `math_challenge.board_texture_inset` (default `24`). The path itself is also
+  configurable there as `math_challenge.board_texture`, so a per-world board is a
+  data change, not a code change.
+
+**The board nine-slice no longer needs a code change first.** That caveat was
+written against the Phaser `MathBoard`, which drew a rounded rect with `Graphics`
+and had no texture path at all. The Godot board takes a `StyleBoxTexture` the
+moment the file exists.
+
+### Still code-drawn, and fine that way
+
+These are drawn from theme colours and want no texture. They are geometry, not
+illustration, and a bitmap would only make them worse at other resolutions:
+
+| What | Where |
+| --- | --- |
+| Heart row | `scripts/ui/components/heart_row.gd` |
+| Coin chip pill | `scripts/ui/components/coin_chip.gd` |
+| Owl ring track, bezel and streak flame | `scripts/ui/components/owl_ring.gd` |
+| Answer button faces | `scripts/ui/components/answer_button.gd` |
+| Sky gradient | `scripts/scenes/game.gd` |
+
+The coin **icon** inside the chip is the existing
+`assets/sprites/ui/coin/coinsprite-runtime-32.png`, frame 0 of its 3x3 spin
+sheet. Replacing that sheet re-skins the HUD coin and the world coin together,
+which is correct - they are the same object.
+
+### Not yet slotted
+
+Touch controls and the dialogue frame have no Godot slot yet, because the touch
+layout is being redesigned in Phase 1 and drawing art against the current one
+would be wasted work. They return to this table once that lands.
 
 ---
 
@@ -281,8 +323,8 @@ restyle him.** What is missing is the animation set and the scarf.
 | `hurt` | 2 | `128x64` | 8 |
 | `celebrate` | 6 | `384x64` | 10 |
 
-- **Destination:** `public/assets/sprites/characters/crow2/crow3/crow-<anim>-64.png`
-- **Wire in:** `BootScene.preload()` and the animation definitions in `BootScene`
+- **Destination:** `godot/assets/sprites/characters/crow2/crow3/crow-<anim>-64.png`
+- **Wire in:** the crow's `AnimatedSprite2D` frames in `godot/scenes/Player.tscn`
 - **The scarf** (`hero` `#E23B3B`) is drawn into every frame, 20-28px trailing.
   It is the single highest-value addition in the brand system: it gives him a
   logo, free secondary motion, readability against all five worlds, and a state
@@ -299,9 +341,9 @@ Worth stating, so nobody generates something that is already handled:
 | Already themed from JSON | Where |
 | --- | --- |
 | Sky gradient, per world | `GameScene.paintSkyGradient()` |
-| Maths board fill, border, buttons, text | `MathBoard`, drawn with `Graphics` |
+| Maths board fill, border, buttons, text | `math_challenge.gd` and `answer_button.gd`, drawn from theme roles |
 | Dialogue colours and name colour | `DialogBox` |
-| HUD placeholder icons | `HealthBar.createPlaceholderIcon()` |
+| HUD hearts, coin pill, owl ring | `heart_row.gd`, `coin_chip.gd`, `owl_ring.gd` |
 | Scrim, dust, laser, muzzle, enemy-pop FX colours | `DopamineFX` via the palette |
 | Hazard, ground and parallax colour values | the five token files |
 

@@ -39,7 +39,8 @@ const TRACK_MIX := 0.70
 const SEGMENT_GAP_RAD := 0.16
 const SWEEP_SECONDS := 0.4
 
-const ICON_SIZE := 30.0
+## Matches the 32x32 icon source 1:1, so pixel art lands on whole pixels.
+const ICON_SIZE := 32.0
 ## Preferred dedicated icon; the ring falls back to a head crop of the world
 ## sprite until it exists. Drop a file here and the ring picks it up with no
 ## code change (brand/ASSET_MANIFEST.md P1).
