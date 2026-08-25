@@ -245,7 +245,21 @@ func _stage(variant: String) -> bool:
 func _represent_from_domain(owl: Node2D, domain: String) -> bool:
 	if not _game.is_math_challenge_active():
 		return false
-	var problem = MathProblemManager.get_next_problem({"domains": [domain]})
+	# Filtered the way the level would filter it. Asking for a domain alone
+	# returned whatever the pool had - a level_01 screenshot showed "87 + 7",
+	# which the real path can never serve a child in world one, and a harness
+	# that photographs content the game does not serve is worse than no shot.
+	var gating: Dictionary = {}
+	var entry: Variant = LevelManager.get_current_level()
+	if entry is Dictionary and entry.get("mathGating", null) is Dictionary:
+		gating = entry["mathGating"]
+	var band: Array = gating.get("difficultyBand", [1, 2])
+	var problem = MathProblemManager.get_next_problem({
+		"domains": [domain],
+		"difficultyRange": band,
+		"maxCurriculumStep": int(round(float(band[1]) * 10.0)),
+		"maxOperand": 20,
+	})
 	if problem == null:
 		return false
 	var overlay = _game.get_math_challenge()

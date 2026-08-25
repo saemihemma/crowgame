@@ -321,7 +321,15 @@ function main() {
         process.exit(1);
     }
 
-    console.log(`\n${colors.green}All referenced live assets are present, and no suspicious experimental leftovers remain in godot/assets.${colors.reset}\n`);
+    const pendingSlots = [...OPTIONAL_ASSET_SLOTS].filter(p => !checkFile(p).exists);
+    console.log(`\n${colors.green}All required assets are present, and no suspicious experimental leftovers remain in godot/assets.${colors.reset}`);
+    if (pendingSlots.length > 0) {
+        // Said out loud rather than passed over: a green gate that quietly hides
+        // unfilled art slots is how they stay unfilled.
+        console.log(`${pendingSlots.length} optional art slot(s) still awaiting art `
+            + `(brand/ASSET_MANIFEST.md P1): ${pendingSlots.map(formatAssetLabel).join(', ')}`);
+    }
+    console.log('');
 }
 
 main();

@@ -119,7 +119,7 @@ rebuild has something that still runs to check against. Order:
 4. Move `src/**`, `vite/**`, `index.html`, `public/**` and the web CI into
    `archived/`.
 
-**`godot/data/**` is the data truth.** `public/data/**` was a near-mirror that
+**`godot/data/**` is the data truth.** `godot/data/**` was a near-mirror that
 nothing kept in sync — `npc_registry.json` had already diverged, and
 `godot/data/math` is a hand copy no tool writes. Anything that generates data
 repoints at the Godot tree as part of step 2.

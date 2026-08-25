@@ -138,14 +138,6 @@ field is declared in `src/utils/Types.ts` and read by nothing.
 
 *Done when:* both are removed, or something actually uses them.
 
-### `level_03` and `level_04` are too small for their worlds
-`level_03` is 7 platforms with no hazards and no enemies; `level_04` is 11
-platforms with one of each. They are now Sugarstorm and Geyserworks, which
-`brand/LEVEL_ART_BIBLE.md` sizes at 18-22 and 20-24 platforms.
-
-*Done when:* both specs carry enough content to read as distinct worlds, or the
-worlds move to levels that do.
-
 ### `theme_forest` and `theme_scifi` are kept alive only by the Godot tests
 `godot/tests/test_theme_roles.gd` and `test_theme_swap.gd` assert on the
 `forest` and `scifi` ids by path. Once the five world themes land in Godot those
@@ -169,19 +161,6 @@ two problems.
 
 *Done when:* captures show five visibly different worlds and `run_tests.sh`
 still passes.
-
-### Data lives in two trees and nothing keeps them in sync
-`godot/data/**` and `public/data/**` are near-mirrors that no tool syncs, and
-they have already drifted: `npc_registry.json` differs, themes are 7 against 2,
-and `godot/data/math` is a hand copy nothing writes. Theme tokens exist in three
-places once `brand/tokens/` is counted.
-
-With the Phaser build retired, `godot/data/**` is the truth and `public/data/**`
-goes with it. Anything that generates data — the math pipeline,
-`gen_tilesets.mjs` — repoints at the Godot tree.
-
-*Done when:* `godot/data/**` is the only runtime data, every generator writes
-there, and `brand/tokens/` is checked against it rather than duplicated.
 
 ### The maths board is themed by colour only, not by material
 Every theme file already declares `mathBoard.frameSprite`, `mathBoard.bgSprite`
@@ -312,17 +291,6 @@ at the baseline but keeps working for any NPC that raises the count.
 `problemTypes`, and with almost no content below step 3 (division's lowest
 band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
 the rotation for older kids, or park them explicitly in Settled.
-
-### Nothing ever chooses a theme
-`ThemeManager`'s own docstring says "Each world/level can specify a theme", and
-that was never wired. Boot sets `forest` and nothing else ever calls `setTheme`
-— the only other caller was a toggle in the Pause menu, which has been removed
-because a theme is a property of a place, not a setting. So `theme_scifi.json`
-ships and is unreachable in both ports.
-
-*Done when:* either level specs carry a `theme` that the level loader applies (the
-intended design, and the reason the sci-fi art exists), or `theme_scifi.json` and
-the second-theme support come out together.
 
 ### A sound setting exists but a volume one does not
 Pause offers sound on/off, which is what a parent in a waiting room reaches for.

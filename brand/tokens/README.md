@@ -17,16 +17,16 @@ Five `ThemeDefinition` files, one per world, in the exact shape
 | `theme_geyserworks.json` | Geyserworks | `level_04` |
 | `theme_aurora_spire.json` | Aurora Spire | `level_05` |
 
-## These are the authoring source; the live copies are in `public/data/themes/`
+## These are the authoring source; the live copies are in `godot/data/themes/`
 
 The wiring has landed. Each file here has a copy at
-`public/data/themes/theme_<id>.json`, and that copy is what the game loads.
+`godot/data/themes/theme_<id>.json`, and that copy is what the game loads.
 **Edit here, then copy across** — they are byte-identical today and nothing
 enforces it, which is a small drift risk worth knowing about.
 
 What the wiring consists of:
 
-1. The five files sit in `public/data/themes/`.
+1. The five files sit in `godot/data/themes/`.
 2. `DATA_PATHS` in `src/utils/Constants.ts` names each one.
 3. `BootScene` preloads them from `THEME_CACHE_KEYS` and registers them in
    `registerThemes()`. `DEFAULT_THEME_ID`, exported from the same file, dresses
@@ -94,4 +94,4 @@ Two of those rules were added because the first draft of these tokens failed
 them — bright amber `#FFB347` was indistinguishable from `yes` green under
 deuteranopia, and three of the five hazards vanished against their own ground.
 Run it after any palette edit. Wire it into `npm run validate` when the tokens
-move into `public/data/themes/`.
+move into `godot/data/themes/`.

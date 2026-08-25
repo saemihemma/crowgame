@@ -7,6 +7,10 @@ const PROFILES_KEY := "crow_profiles"
 const ACTIVE_KEY := "crow_active_user"
 const FAMILY_KEY := "crow_family_id"
 const LEGACY_SAVE_KEY := "crow_save_v1"
+## The name field and the validator both need this, and they were two
+## separate literal 12s: the field would have stopped accepting typing at
+## one length while the error fired at another.
+const NAME_MAX_LENGTH := 12
 
 # Each profile: { username, pinHash, createdAt, childId, familyId }
 var _profiles: Array = []
@@ -37,18 +41,25 @@ func get_active_save_key() -> String:
 		return get_save_key_for_user(String(_active_user))
 	return LEGACY_SAVE_KEY
 
-## Returns true on success, or an error string on failure (mirrors TS contract).
+## Returns true on success, or a STRING TABLE KEY on failure.
+##
+## It used to return the English sentence itself, and login.gd put that straight
+## on the screen -- so an Icelandic child who picked a name someone already had
+## read "Name already taken!" in the middle of an Icelandic game. The keys for
+## all four of these were sitting unused in both bundles. A key rather than a
+## sentence also keeps the wording out of an autoload that has no business
+## owning copy.
 func create_profile(username: String, pin: String) -> Variant:
 	var trimmed := username.strip_edges()
 	if trimmed.is_empty():
-		return "Name cannot be empty"
-	if trimmed.length() > 12:
-		return "Name too long (max 12)"
+		return "login.name_empty"
+	if trimmed.length() > NAME_MAX_LENGTH:
+		return "login.name_too_long"
 	if not _is_four_digits(pin):
-		return "PIN must be exactly 4 digits"
+		return "login.pin_four_digits"
 	for p in _profiles:
 		if String(p.get("username", "")).to_lower() == trimmed.to_lower():
-			return "Name already taken!"
+			return "login.name_taken"
 	_profiles.append({
 		"username": trimmed,
 		"pinHash": _hash_pin(trimmed, pin),

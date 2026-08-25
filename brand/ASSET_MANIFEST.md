@@ -152,7 +152,7 @@ The PNG is the asset. Nothing about a tileset lives in code.
 2. Save over `godot/assets/tilesets/<world>_tiles.png`, and copy to
    `godot/assets/tilesets/`.
 3. Set `"source": "authored"` for that entry in
-   `public/data/tilesets/tileset_manifest.json`, so the generator stops being
+   `godot/data/tilesets/tileset_manifest.json`, so the generator stops being
    treated as its origin.
 4. `npm run validate`, then look at the build: `bash godot/tools/build_web.sh`
    and `node tools/godot_play_smoke.mjs`.
@@ -225,7 +225,7 @@ only needs a retint. Adding an enemy is a registry entry plus one sheet -
 | Aurora Spire | `gloomgull_drifter` | `gloomgull.png` | `64x64` | 4 drift + 2 idle | tall, thin, three torn wings |
 
 - **Destination:** `godot/assets/sprites/characters/enemies/<name>.png`
-- **Wire in:** `public/data/enemies/enemy_registry.json`, and the `enemies` array
+- **Wire in:** `godot/data/enemies/enemy_registry.json`, and the `enemies` array
   of the level spec that uses it
 - **The ugly law applies** (BRAND_SYSTEM §3.1): asymmetric, lumpy, odd number of
   visible legs, one thing snaggled. **Yellow mismatched oversized eyes, never
