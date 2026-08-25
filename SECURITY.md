@@ -29,8 +29,21 @@ The attack surface is small on purpose:
   `HttpOnly; Secure; SameSite=Lax` cookie, stored server-side as SHA-256 only. It
   resolves to a device, which belongs to a family.
 - **Family isolation is enforced in Postgres**, via row-level security, in
-  addition to explicit predicates in every query. The API runs as a
-  non-superuser role precisely because a superuser bypasses those policies.
+  addition to explicit predicates in every query. Every request path — all four
+  database entry points, including the anonymous error ingest and the health
+  probe — drops to the non-superuser `crow_app` role first, precisely because a
+  superuser bypasses those policies outright and holds every privilege. The
+  append-only tables (`attempts`, `child_save_history`) withhold DELETE from that
+  role, so a query bug cannot rewrite the record of what a child did.
+
+  Asserted by `server/test/role-isolation.test.ts` against a real cluster: what
+  `current_user` is on each path, that a predicate-free `select` inside a family
+  transaction returns one family's rows while the same query on the pool returns
+  every family's, and that the role is refused a `delete from attempts`. Two
+  paths did NOT drop the role until 2026-08-25 — `DELETE /api/v1/family` and
+  `POST /api/v1/errors` — while comments in the code claimed they did; the static
+  half of that test file now fails the build if any route reaches for the
+  superuser pool again.
 - **Single-use, short-lived** sign-in links and pairing codes, enforced in SQL
   rather than application logic so two simultaneous uses cannot both succeed.
 - **No PII beyond a parent email.** Children carry a display name only.

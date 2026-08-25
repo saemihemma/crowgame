@@ -60,7 +60,10 @@ that actually works:
 
 1. **Generate externally**, at the exact dimensions in the tables below, using
    the world's palette hexes in the prompt (they are listed per world).
-2. **Stage it** in `ai_assets/` if you want to iterate. Nothing there is live.
+2. **Stage it outside the repo** while you iterate — a scratch directory of
+   your own. There is deliberately no staging tree in git: the one that used to
+   exist got mistaken for a source of truth, and nothing outside the
+   `Destination` paths below is ever live.
 3. **Check it against the pixel law** above. Reject soft edges now, not later.
 4. **Place the approved file** at the exact `Destination` path in the table.
 5. **Wire it** - the `Wire in` column names the file to edit. An asset that
@@ -126,7 +129,7 @@ bottom of this section. Replacing them is the highest-value art work available.
 ### The real geometry contract
 
 An earlier version of this document specified a `320x320` sheet with a 9-tile
-order. **That was wrong.** The truth, read out of the compiled level JSON and `scripts/levels/level_loader.gd`:
+order. **That was wrong.** The truth, read out of the compiled level JSON and `godot/scripts/systems/level_loader.gd`:
 
 | | |
 | --- | --- |

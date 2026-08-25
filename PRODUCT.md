@@ -71,9 +71,22 @@ win records, a miss records nothing at all.
 is celebrated; a step-down is never signalled. The child should never be told
 they got worse.
 
-**Nothing is tied to time or streaks.** Golden problems are a seeded coin flip on
-the save state, not a pressure mechanic. There is nothing a child can feel
-anxious about protecting.
+**Nothing is tied to time, and the streak cannot be lost.** There is no timer, no
+daily streak, no decay, and nothing expires while the game is closed. Golden
+problems are a seeded coin flip on the save state, not a pressure mechanic.
+
+There *is* an in-level streak, and this section used to deny it: it read "nothing
+is tied to time or streaks", generalising a true statement about golden problems
+into a product-wide commitment while a streak counter, a HUD flame at 3 and an
+"ON FIRE" state at 5 all shipped. The reason the commitment survives in substance
+is the rule in `game.gd`: **a wrong answer pauses the streak, it never resets
+it.** The flame dims to 40% and relights on the next correct answer; only leaving
+the level clears the count. So the thing a child could feel anxious about
+protecting is the one thing they cannot lose by getting a question wrong, which is
+the moment this product cannot afford to punish.
+
+Whether an unloseable streak should exist at all is an open design question, not a
+settled one — see `roadmap.md`.
 
 **The 4-digit PIN is a "which kid am I" selector, not security.** It is never
 sent anywhere. See [PRIVACY.md](./PRIVACY.md).

@@ -36,12 +36,35 @@ on:
     branches: [main, release]
   workflow_dispatch:
 
+# One run per ref. Pushing three commits in a row used to start three full runs
+# and let all three finish; only the last one's result means anything. main and
+# release are exempt: on a protected branch the run IS the record of that commit,
+# and cancelling it loses the answer to "was this commit green".
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/release' }}
+
 jobs:
   godot-tests:
     name: Godot suite (unit + physics probes)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This job never opens output/web, so it does not need to fetch it.
+          # Measured: 68 MB of working tree becomes 20 MB. Verified locally that
+          # the pattern excludes ONLY output/web and leaves godot/, math-kernel/,
+          # server/ and tools/ intact -- non-cone mode, because cone mode cannot
+          # express an exclusion.
+          #
+          # content-validate and error-pipeline-e2e deliberately do NOT do this:
+          # one derives the payload table and the export fingerprint FROM those
+          # bytes, the other serves them to a browser.
+          sparse-checkout: |
+            /*
+            !/output/web/
+          sparse-checkout-cone-mode: false
 
       - name: Cache Godot binary
         id: godot-cache
@@ -68,8 +91,23 @@ jobs:
   parity-gate:
     name: Parity oracle (kernel -> fixtures -> Godot)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This job never opens output/web, so it does not need to fetch it.
+          # Measured: 68 MB of working tree becomes 20 MB. Verified locally that
+          # the pattern excludes ONLY output/web and leaves godot/, math-kernel/,
+          # server/ and tools/ intact -- non-cone mode, because cone mode cannot
+          # express an exclusion.
+          #
+          # content-validate and error-pipeline-e2e deliberately do NOT do this:
+          # one derives the payload table and the export fingerprint FROM those
+          # bytes, the other serves them to a browser.
+          sparse-checkout: |
+            /*
+            !/output/web/
+          sparse-checkout-cone-mode: false
 
       - uses: actions/setup-node@v4
         with:
@@ -119,6 +157,7 @@ jobs:
   content-validate:
     name: Content and docs validation
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       # FULL history, blobs filtered.
       #
@@ -169,6 +208,7 @@ jobs:
   api:
     name: API (server tests against Postgres)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16-alpine
@@ -183,6 +223,20 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/crow_test?sslmode=disable
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This job never opens output/web, so it does not need to fetch it.
+          # Measured: 68 MB of working tree becomes 20 MB. Verified locally that
+          # the pattern excludes ONLY output/web and leaves godot/, math-kernel/,
+          # server/ and tools/ intact -- non-cone mode, because cone mode cannot
+          # express an exclusion.
+          #
+          # content-validate and error-pipeline-e2e deliberately do NOT do this:
+          # one derives the payload table and the export fingerprint FROM those
+          # bytes, the other serves them to a browser.
+          sparse-checkout: |
+            /*
+            !/output/web/
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -200,6 +254,7 @@ jobs:
   error-pipeline-e2e:
     name: Error pipeline end-to-end (browser -> API -> Postgres)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:16-alpine

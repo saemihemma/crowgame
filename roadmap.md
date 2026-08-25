@@ -90,7 +90,7 @@ what is wrong with each, the geometry contract and the replacement steps.
 
 Redrawing them by hand is the highest-value art work available.
 
-*Done when:* every entry in `public/data/tilesets/tileset_manifest.json` reads
+*Done when:* every entry in `godot/data/tilesets/tileset_manifest.json` reads
 `"source": "authored"`, and `tools/gen_tilesets.mjs` can be deleted.
 
 ### The compiler places three tiles and emits an empty decoration layer
@@ -106,14 +106,21 @@ wallpaper — which means distinctive marks have nowhere to live.
 *Done when:* the compiler selects left/middle/right caps for platform runs, and
 scatters decoration tiles into the layer it already emits.
 
-### `level1_tiles.png` is loaded but never selected
-It is in the tileset manifest and BootScene loads it, but no compiled map names
-it: `GameScene.loadTiledLevel()` resolves a tileset by the name the map carries,
-and every map now names its world tileset. It is 32x64, two tiles, and predates
-the current compiler. `LevelRegistryEntry.tilesetImages` is the same story — the
-field is declared in `src/utils/Types.ts` and read by nothing.
+### `level1_tiles.png` is registered but never selected
+It is entry `level1_tiles` in `godot/data/tilesets/tileset_manifest.json`, but no
+compiled map reaches it: `level_loader.gd` takes the tileset out of the level's
+own `tilesets[0]` and resolves the image by filename, so the manifest entry is
+never consulted. It is 32x64, two tiles, and predates the current compiler.
 
-*Done when:* both are removed, or something actually uses them.
+`LevelRegistryEntry.tilesetImages` is a near-miss of the same story and costs
+more to remove than it looks. The field is declared in
+`math-kernel/utils/Types.ts`, nothing reads its value — and it is in the
+`required` list of `godot/data/schemas/level-registry.schema.json`, so all six
+registry entries carry it and dropping it means a schema change plus a
+re-emit of the registry, not a delete.
+
+*Done when:* the manifest entry is gone, and `tilesetImages` is either removed
+from the schema, the type and all six entries together, or something reads it.
 
 ### The maths board is themed by colour only, not by material
 Every theme file declares `mathBoard.frameSprite`, `mathBoard.bgSprite` and

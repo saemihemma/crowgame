@@ -105,7 +105,7 @@ static func build(on_change: Callable) -> Control:
 static func _select(locale: String, on_change: Callable) -> void:
 	if TextManager.get_locale() == locale:
 		return
-	AudioManager.play_sfx("ui_click")
+	AudioManager.play_event("button")
 	TextManager.set_locale(locale)
 	if on_change.is_valid():
 		on_change.call()

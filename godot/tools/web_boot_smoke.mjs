@@ -45,6 +45,10 @@ const IPAD = { width: 1180, height: 820 };
 const MIN_DISTINCT_COLORS = 256;
 /** `stretch/aspect=expand` makes the viewport the window, so bars are zero. */
 const MAX_LETTERBOX_PX = 0;
+// Cropping is the same defect as letterboxing with the sign flipped, and under
+// `stretch/aspect=expand` both are zero by construction, so the floor is the
+// same number.
+const MAX_OFFSCREEN_PX = 0;
 
 async function main() {
     // The payload is content-addressed (index.<id>.wasm), so this looks for the
@@ -150,7 +154,19 @@ async function main() {
         // being true.
         //
         // So measure what is actually on screen: the canvas box against the
-        // viewport, in both axes.
+        // viewport, in both axes and in BOTH DIRECTIONS.
+        //
+        // Bars alone are half the failure. `Math.max(0, vw - width)` is
+        // structurally blind to a canvas LARGER than the viewport: injecting
+        // 1450x1000 into the exported build reported "0px bars, canvas covers
+        // 149.9%" and passed, when a third of the frame — including whichever
+        // edge the HUD lives on — was cropped off the owner's primary device.
+        // Same class of defect as the hardcoded 16:9 above: a metric that can
+        // only move in the direction someone thought to look.
+        //
+        // Offscreen is measured from the canvas's POSITION, not just its size,
+        // so a correctly-sized canvas shifted out from under the viewport counts
+        // too.
         const letterbox = await page.evaluate(() => {
             const c = document.querySelector('canvas');
             const r = c.getBoundingClientRect();
@@ -158,6 +174,8 @@ async function main() {
             const vh = window.innerHeight;
             const barsH = Math.max(0, Math.round(vh - r.height));
             const barsW = Math.max(0, Math.round(vw - r.width));
+            const offV = Math.max(0, Math.round(-r.top)) + Math.max(0, Math.round(r.bottom - vh));
+            const offH = Math.max(0, Math.round(-r.left)) + Math.max(0, Math.round(r.right - vw));
             const usedPct = Math.round(((r.width * r.height) / (vw * vh)) * 1000) / 10;
             return {
                 cssViewport: `${Math.round(vw)}x${Math.round(vh)}`,
@@ -165,6 +183,9 @@ async function main() {
                 barsTotalPx: barsH + barsW,
                 verticalBarsPx: barsH,
                 horizontalBarsPx: barsW,
+                offscreenTotalPx: offV + offH,
+                verticalOffscreenPx: offV,
+                horizontalOffscreenPx: offH,
                 screenUsedPct: usedPct,
             };
         });
@@ -180,7 +201,8 @@ async function main() {
                 && failedRequests.length === 0
                 && canvas.width > 0
                 && distinctColors >= MIN_DISTINCT_COLORS
-                && letterbox.barsTotalPx <= MAX_LETTERBOX_PX,
+                && letterbox.barsTotalPx <= MAX_LETTERBOX_PX
+                && letterbox.offscreenTotalPx <= MAX_OFFSCREEN_PX,
             kind: 'web_export_boot_smoke',
             whatThisIs: 'Exported output/web build booted in Chromium at an iPad landscape viewport with touch enabled.',
             whatThisIsNot: 'Not real iPad Safari verification. WebKit audio unlock, memory ceilings and WASM limits are unproven here.',
@@ -198,13 +220,16 @@ async function main() {
 
         console.log(`canvas          : ${canvas.width}x${canvas.height} (css ${canvas.clientWidth}x${canvas.clientHeight})`);
         console.log(`distinct colors : ${distinctColors} (full canvas)`);
-        console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars (${letterbox.verticalBarsPx}v/${letterbox.horizontalBarsPx}h), canvas covers ${letterbox.screenUsedPct}% of the viewport`);
+        console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars (${letterbox.verticalBarsPx}v/${letterbox.horizontalBarsPx}h), ${letterbox.offscreenTotalPx}px offscreen (${letterbox.verticalOffscreenPx}v/${letterbox.horizontalOffscreenPx}h), canvas covers ${letterbox.screenUsedPct}% of the viewport`);
         console.log(`console errors  : ${consoleErrors.length}`);
         if (distinctColors < MIN_DISTINCT_COLORS) {
             console.error(`FAIL: only ${distinctColors} distinct colours (floor ${MIN_DISTINCT_COLORS}) — the build booted but did not render`);
         }
         if (letterbox.barsTotalPx > MAX_LETTERBOX_PX) {
             console.error(`FAIL: ${letterbox.barsTotalPx}px of bars (floor ${MAX_LETTERBOX_PX}) — gate B1 has regressed`);
+        }
+        if (letterbox.offscreenTotalPx > MAX_OFFSCREEN_PX) {
+            console.error(`FAIL: ${letterbox.offscreenTotalPx}px of canvas is off screen (floor ${MAX_OFFSCREEN_PX}) at ${letterbox.screenUsedPct}% coverage — the frame is being cropped, not letterboxed`);
         }
         console.log(`failed requests : ${failedRequests.length}`);
         for (const e of consoleErrors.slice(0, 5)) console.log(`  ERR ${e}`);

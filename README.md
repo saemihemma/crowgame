@@ -72,21 +72,36 @@ npm ci && npm run typecheck && npm run validate
 
 ## The rules that will bite you
 
-Enforced, not aspirational. `godot/tools/check_hardcoding.py` runs in CI and
-rejects all six:
-
 1. No magic numbers in `.gd` — they live in `godot/data/tuning/*.json`, read via
    `Config`.
 2. No user-facing strings in `.gd` — `TextManager.t("key")`, with the Icelandic
    locale kept key-for-key in lockstep.
 3. No inline colours — `ThemeManager.get_color_value("role")`.
-4. No hardcoded scene paths — `SceneRouter.goto("name")`.
+4. No ad-hoc scene navigation — `SceneRouter.goto("name")`, never
+   `change_scene_to_file` outside `scene_router.gd`.
 5. No type-to-behaviour switches for content — new level objects come from
    `spawn_registry.json` plus a scene with `setup_from_spawn(spawn)`.
 6. No scattered `play_sfx("key")` — fire semantic events via
-   `AudioManager.play_event("coin")`.
+   `AudioManager.play_event("coin")`, mapped in `data/audio/sound_events.json`.
 
-Genuine exceptions take `# hardcode-ok` on the line.
+**2, 3, 4 and 6 are enforced.** `godot/tools/check_hardcoding.py` runs in CI and
+fails the build on them. Genuine exceptions take `# hardcode-ok` on the line.
+
+**1 and 5 are conventions, checked by review, not by that script.** This section
+used to say the guard "rejects all six". It rejected two, and its own docstring
+disclaimed rule 1 as "no flaky numeric scanning" — while rule 6 was violated in
+four places in shipped code, three of them in the pause menu. Numeric scanning
+cannot separate a tuning constant from an array index without a false-positive
+rate that gets the guard switched off, and whether a `match` dispatches on
+content or on an enum is a judgment a regex does not have. The Tier-1 constants
+are covered instead by golden-value tests, which is a stronger check than a
+grep would be.
+
+The four rule-6 violations were also all silent no-ops — they named an `ui_click`
+sfx key that is not in `audio_manifest.json`, so the manifest lookup returned
+nothing and no sound played. They now fire `play_event("button")`, which is the
+press sound the manifest actually ships, so **the language toggle and the three
+pause-menu buttons click where they used to be silent.**
 
 **The one carve-out:** Tier-1 constants (ELO, learner state, movement) stay in
 code, not tuning JSON, and are locked by golden-value tests. They decide how hard

@@ -49,10 +49,23 @@ fail=0
 # reads git history, so it needs commits. Two of them, the second touching one
 # doc, which is what makes the depth-2 shape meaningful.
 #
-# Tracked files only, so the fixture matches what CI checks out.
+# The files CI will check out AFTER this change is committed: tracked plus
+# not-yet-added, minus anything gitignored, minus index entries whose file is gone
+# from the working tree.
+#
+# `git ls-files -z` alone was wrong, and wrong in the harness's signature way — it
+# lists the INDEX. Run with a new migration not yet `git add`ed and a rebuilt
+# export whose content-id filenames had changed, the fixture had 2 migrations
+# where ONBOARDING.md said 3, and no wasm or pck at all because tar was handed
+# paths that no longer exist. Two cases failed, blaming the docs. The harness
+# written to stop something assuming the shape of its environment was assuming
+# the author had staged.
 build_fixture() { # dir
 	mkdir -p "$1"
-	(cd "$ROOT" && git ls-files -z | tar -cf - --null -T -) | (cd "$1" && tar -xf -)
+	(cd "$ROOT" \
+		&& git ls-files -z --cached --others --exclude-standard --deduplicate \
+		| while IFS= read -r -d '' f; do [ -f "$f" ] && printf '%s\0' "$f"; done \
+		| tar -cf - --null -T -) | (cd "$1" && tar -xf -)
 	git -C "$1" init --quiet -b main
 	# The commits are DATED, and that matters. Committed "now", every file's
 	# last-touch is today, so any doc whose stamp is older than today reads as

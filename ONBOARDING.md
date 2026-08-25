@@ -23,7 +23,7 @@ tools/**        THE FACTORY.    Offline curriculum authoring + validation. Never
 ```
 
 The retired Phaser tree (`src/`, `public/`, `vite/`, `admin.html`) and
-`archived/` are **deleted**, not merely unused. If a doc or comment still points
+`archived/` are **deleted**, not merely unused. If a doc or comment still points <!-- retired-ref-ok -->
 at them, that reference is stale.
 
 `math-kernel/` earns its keep twice: it generates `godot/tests/fixtures/*.json`,
@@ -84,7 +84,8 @@ Maths content — `DataManager` loads 4 math pools totaling 3150 problems:
 - `easy`: 15
 
 Server:
-- **2** migrations: `001_errors.sql`, `002_family_and_save.sql`
+- **3** migrations: `001_errors.sql`, `002_family_and_save.sql`,
+  `003_app_role_on_every_path.sql`
 
 Tests:
 - the GDScript suite plus **6** headless physics probes, all via
@@ -208,8 +209,9 @@ moment lands for a child. Say in your PR what you played and what you saw.
    It is long — 657 lines — and parity-locked against golden fixtures; splitting
    it risks the silent fidelity drift those fixtures exist to catch. (It is not
    the largest file in the repo, which older docs claimed: `game.gd` is longer at
-   683 lines, and `tools/math_authoring.ts` is 1946. Length is not why this one
-   is protected.)
+   691 lines, and `tools/math_authoring.ts` is 1946. Length is not why this one
+   is protected.) All three numbers are derived by `npm run validate:docs` — they
+   had drifted twice before that, once carrying a superlative that was never true.
 3. **Changing a Tier-1 constant without regenerating fixtures.** CI fails, and
    correctly: the kernel and the game must agree.
 4. **Autoload order.** `CloudSync` must come after `SaveManager`,
@@ -282,7 +284,14 @@ Read the roadmap before starting. After finishing, it should be shorter.
 The doc set is deliberately small: this file, [ARCHITECTURE.md](./ARCHITECTURE.md),
 [PRODUCT.md](./PRODUCT.md), [roadmap.md](./roadmap.md), the compliance set
 (`PRIVACY.md`, `SECURITY.md`, `LICENSE_ATTRIBUTIONS.md`, `CONTRIBUTING.md`), the
-deploy runbook, and `brand/**` for art direction. Resist adding a ninth.
+deploy runbook, and `brand/**` for art direction. Resist adding to it.
+
+(This sentence used to end "resist adding a ninth" while README.md said "six
+files, on purpose" and pointed here as the authority — two Status: Current docs
+disagreeing about the size of the doc set. The two were counting different
+things: README lists the six entries a newcomer reads, this list enumerates the
+compliance files individually. Neither number is load-bearing, so the one that
+could go stale is gone and README's is now checked against its own table.)
 
 If a change affects a count in the snapshot above, storage keys, or anything on
 the wire, update the doc in the same commit. `npm run validate:docs` enforces a

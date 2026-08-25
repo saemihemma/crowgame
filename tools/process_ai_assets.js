@@ -11,7 +11,7 @@
  *
  * Usage:
  *   node tools/process_ai_assets.js --input path/to/image.png --output path/to/output.png --frames 4 --size 32x32 --crop
- *   npm run ai:process -- --input ai_assets/collectibles/coin/coin_raw.png --output ai_assets/processed/coin_sheet_fixed.png --frames 4 --size 32x32 --layout horizontal --crop
+ *   npm run ai:process -- --input staging/collectibles/coin/coin_raw.png --output staging/processed/coin_sheet_fixed.png --frames 4 --size 32x32 --layout horizontal --crop
  */
 
 const sharp = require('sharp');
@@ -485,13 +485,13 @@ ${colors.cyan}OPTIONS:${colors.reset}
 ${colors.cyan}EXAMPLES:${colors.reset}
 
   ${colors.gray}# Process coin sprite sheet (user's example)${colors.reset}
-  npm run ai:process -- --input ai_assets/collectibles/coin/coin_raw.png --output ai_assets/processed/coin_sheet_fixed.png --frames 4 --size 32x32 --crop
+  npm run ai:process -- --input staging/collectibles/coin/coin_raw.png --output staging/processed/coin_sheet_fixed.png --frames 4 --size 32x32 --crop
 
   ${colors.gray}# Combine multiple frames into sprite sheet${colors.reset}
-  npm run ai:process -- --inputs "ai_assets/characters/crow/frame_*.png" --output ai_assets/characters/crow/crow_sheet_fixed.png --size 64x64 --crop
+  npm run ai:process -- --inputs "staging/characters/crow/frame_*.png" --output staging/characters/crow/crow_sheet_fixed.png --size 64x64 --crop
 
   ${colors.gray}# Extract frames from sprite sheet${colors.reset}
-  npm run ai:process -- --mode extract --input ai_assets/characters/crow/crow_sheet_raw.png --output-dir ai_assets/characters/crow/extracted --frames 6 --size 64x64
+  npm run ai:process -- --mode extract --input staging/characters/crow/crow_sheet_raw.png --output-dir staging/characters/crow/extracted --frames 6 --size 64x64
 `);
 }
 

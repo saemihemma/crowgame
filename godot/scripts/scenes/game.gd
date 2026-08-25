@@ -356,13 +356,21 @@ func _on_answer_submitted(payload: Dictionary) -> void:
 
 ## The top centre of the HUD is kept empty precisely so this reads as an event
 ## rather than as another readout. It appears, it says one thing, it leaves.
+##
+## It says the COUNT, not a multiplier. The string was "x{0} COINS!" ("x{0}
+## MYNTIR!" in Icelandic) and nothing in the game multiplies coins: an owl coin is
+## `coin_count += 1` and an enemy drop is `+= amount`, neither of which reads
+## `streak`. A six-year-old was being shown "x3 COINS!" and handed one coin, in a
+## product whose whole thesis is that the reward has to be real. Renamed from
+## fx.streak_multiplier so the key cannot re-acquire the claim by accident, and
+## test_i18n.gd asserts neither locale's toast names the currency.
 func _streak_toast() -> void:
 	var layer := get_node_or_null("FX")
 	if layer == null:
 		return
 	var hot := streak >= int(Config.fx("streak/hot", 5))
 	var vw := float(ProjectSettings.get_setting("display/window/size/viewport_width"))
-	var key := "fx.streak_on_fire" if hot else "fx.streak_multiplier"
+	var key := "fx.streak_on_fire" if hot else "fx.streak_count"
 	DopamineFX.number_fly_up(layer, Vector2(vw * 0.5, 96.0), TextManager.t(key, [streak]))
 	AudioManager.play_event("milestone")
 

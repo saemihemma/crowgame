@@ -16,8 +16,10 @@
  * only thing that survives a clone, so the build records a hash of its inputs
  * and `npm run validate` recomputes it.
  *
- * This mirrors tools/math_artifact_fingerprint.mjs, which does the same job for
- * the browser-smoke report.
+ * There was a sibling doing this for the browser-smoke report
+ * (tools/math_artifact_fingerprint.mjs); it was deleted in aed28a2 and this
+ * comment outlived it by three commits. `npm run validate` names every
+ * fingerprint tool it actually runs.
  *
  * WHAT IS DELIBERATELY EXCLUDED
  * -----------------------------

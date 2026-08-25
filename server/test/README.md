@@ -2,7 +2,7 @@
 
 Status: Supportive
 Authority: How to run the API test suite and why it is shaped this way.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 Run against a real Postgres:
 
@@ -26,6 +26,15 @@ Mocking the database would test the mock. The same goes for row-level security:
 the reason the API drops to a non-superuser role per transaction is that a
 superuser bypasses RLS entirely — which was discovered by running it, not by
 reading it.
+
+That is now asserted rather than explained. `role-isolation.test.ts` proves the
+mechanism against a real cluster — what `current_user` is on each path, that a
+`select` with no family predicate returns one family's rows inside a family
+transaction and every family's on the bare pool, and that the app role is refused
+a `delete from attempts`. It exists because this paragraph was true of the design
+and false of two of the four database entry points, with nothing to notice the
+difference. Its first half needs no database: it fails the build if any route file
+imports `withTransaction` or queries the pool directly.
 
 ## Why `--test-concurrency=1`
 

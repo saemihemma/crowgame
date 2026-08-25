@@ -148,7 +148,7 @@ func _cycle_volume() -> void:
 		if absf(float(VOLUME_STEPS[i]) - now) < absf(float(VOLUME_STEPS[nearest]) - now):
 			nearest = i
 	AudioManager.set_master_volume(float(VOLUME_STEPS[(nearest + 1) % VOLUME_STEPS.size()]))
-	AudioManager.play_sfx("ui_click")
+	AudioManager.play_event("button")
 	if is_instance_valid(_volume_btn):
 		_volume_btn.text = _volume_label()
 
@@ -157,10 +157,10 @@ func _toggle_sound() -> void:
 	# Play the click BEFORE muting, so turning sound off still acknowledges the
 	# tap; turning it back on is acknowledged by the click after.
 	if now_muted:
-		AudioManager.play_sfx("ui_click")
+		AudioManager.play_event("button")
 	AudioManager.set_muted(now_muted)
 	if not now_muted:
-		AudioManager.play_sfx("ui_click")
+		AudioManager.play_event("button")
 	if is_instance_valid(_sound_btn):
 		_sound_btn.text = _sound_label()
 

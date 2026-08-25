@@ -56,19 +56,43 @@ how long it took. This is what makes the game adapt, and it is what lets us tell
 you nothing was lost if a device breaks.
 
 **3. Error reports, when something goes wrong** — what broke, and coarse facts
-about the device: screen size, browser language, which build was running. No
-names, no progress, no free text, and never anything your child typed. These are
-kept for 30 days and then deleted automatically; only anonymous counts of "this
-bug happened N times" are kept longer.
+about the device: screen size, browser language, whether the graphics and memory
+features the game needs are present, which build was running, the **browser's
+user-agent line**, and a **shortened form of your network address** — the first
+three parts of it, with the rest dropped (`203.0.113.0/24`), which is enough to
+notice one source flooding the endpoint and not enough to identify a household.
+No names, no progress, no free text, and never anything your child typed.
+
+Those full reports are kept for 30 days and then deleted automatically, by
+dropping each day's table whole. What is kept longer is one entry per distinct
+bug: how many times it happened, the error message and where in the code it came
+from, the build it happened on, and one saved example of the coarse device facts
+above with the developer stack trace. That is what makes a bug fixable months
+later. It is not a per-child or per-family record and it is not tied to your
+email, but it is more than a count, and the previous version of this page said it
+was only a count.
 
 ## What we never collect
 
-No real names. No ages or birthdays. No location. No photos, audio, or video. No
-contacts. No advertising identifiers. No cross-site tracking. No behavioural
-profiles. No data sold or shared with anyone.
+No real names. No ages or birthdays. No photos, audio, or video. No contacts. No
+advertising identifiers. No cross-site tracking. No behavioural profiles. No data
+sold or shared with anyone.
 
-The only personal detail in the whole system is the grown-up email address, and it
-is used for exactly one thing: emailing you a sign-in link.
+**No location.** The game never asks your device where it is. The shortened
+network address on an error report is not used to work out where you are, and it
+is deliberately cut short enough that it could not identify a household if it
+were — but it is the one thing on this page that could be read as a location, so
+it is named here rather than left to the list above.
+
+The only personal detail we ask you for is the grown-up email address, and it is
+used for exactly one thing: emailing you a sign-in link. It is stored in two
+places for that purpose — against your family, and on the sign-in link itself
+until the link is used or expires.
+
+The shortened network address and the browser user-agent line in an error report
+are not asked for; every web server receives them on every request. We keep them
+in coarse form for abuse triage, on the error reports only, and they are deleted
+with the rest of the report after 30 days.
 
 ## Keeping families apart
 

@@ -316,10 +316,25 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
     app.delete('/api/v1/family', auth, async (request, reply) => {
         const { familyId } = deviceOf(request);
         // Hard delete. Every child-data table cascades from families, so this is
-        // one statement — and it is run as the app role, so the cascade cannot
-        // reach outside this family.
-        const { pool } = await import('../db.js');
-        await pool.query('delete from families where id = $1', [familyId]);
+        // one statement.
+        //
+        // It used to run `pool.query` directly, with a comment claiming it ran as
+        // the app role. It did not: the pool connects as the superuser Railway
+        // gives us, so on the ONE destructive endpoint in the service both
+        // defences the schema provides were off, and the only thing bounding the
+        // cascade was the `where id = $1` predicate this comment called belt to
+        // its braces. `families` carries no RLS policy — resolving a family
+        // cannot depend on one — so the predicate is still what scopes the row;
+        // what withFamily adds back is the non-superuser role, which is why a
+        // typo here can no longer reach another table or do DDL.
+        //
+        // crow_app can perform the cascade: it holds DELETE on `families`, and
+        // referential-integrity cascades run as the table owner, so they reach
+        // `attempts` and `child_save_history` even though the role deliberately
+        // cannot DELETE from them directly. Verified against a real cluster in
+        // test/role-isolation.test.ts.
+        await withFamily(familyId, client =>
+            client.query('delete from families where id = $1', [familyId]));
         return reply
             .clearCookie(config.auth.cookieName, { path: '/api' })
             .send({ deleted: true });

@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { config } from '../config.js';
-import { withTransaction } from '../db.js';
+import { withAppRole } from '../db.js';
 import { coarsenIp, normalizeEvent, recordEvent, type IncomingErrorEvent } from '../lib/errorEvents.js';
 
 interface ErrorBatchBody {
@@ -83,7 +83,7 @@ export async function registerErrorRoutes(app: FastifyInstance): Promise<void> {
 
             let stored = 0;
             let throttled = 0;
-            await withTransaction(async client => {
+            await withAppRole(async client => {
                 for (const event of normalized) {
                     const result = await recordEvent(client, event, meta);
                     if (result.rawStored) stored += 1; else throttled += 1;

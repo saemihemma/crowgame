@@ -24,21 +24,25 @@ mutable counts live.
 
 ## The rules that are enforced
 
-`godot/tools/check_hardcoding.py` runs in CI and will reject:
+`godot/tools/check_hardcoding.py` runs in CI and will reject four things in `.gd`
+files: user-facing strings, inline colours, `change_scene_to_file` outside
+`scene_router.gd`, and `play_sfx` outside `audio_manager.gd`. Each has a
+data-driven home — see [ARCHITECTURE.md](./ARCHITECTURE.md). Genuine exceptions
+take `# hardcode-ok` on the line, and "genuine" means brand text or a diagnostic,
+not "I was in a hurry".
 
-magic numbers, user-facing strings, inline colours, hardcoded scene paths,
-type-to-behaviour switches for content, and scattered `play_sfx` calls in `.gd`
-files. Each has a data-driven home — see
-[ARCHITECTURE.md](./ARCHITECTURE.md). Genuine exceptions take
-`# hardcode-ok` on the line, and "genuine" means brand text or a diagnostic, not
-"I was in a hurry".
+Two of the six rules in README.md are **not** in that script and are checked by
+review instead: magic numbers, and type-to-behaviour switches for content. This
+section used to list all six as rejected, which was false in a way that mattered —
+`play_sfx` was violated in four places while both this file and README.md said it
+could not be.
 
 Strings go in **both** `strings_en.json` and `strings_is.json`. A test enforces
 key-for-key lockstep, and a missing key renders as the raw key to a child.
 
 ## Things to leave alone
 
-- **`learner_state_manager.gd`.** It is 562 lines and looks like it wants
+- **`learner_state_manager.gd`.** It is 657 lines and looks like it wants
   splitting. It is locked against golden fixtures because it decides how hard the
   game feels to a child; splitting it risks drift that no test would catch as a
   behaviour change.

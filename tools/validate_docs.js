@@ -127,10 +127,25 @@ function walkFiles(relativeDirectory, allowedExtensions) {
  * It failed CI on four READMEs whose stamps were provably correct.
  *
  * So a file is only judged when we can tell "HEAD really touched this" from
- * "history is too short to say". `git diff HEAD~1 HEAD` gives that, which is why
- * the content job checks out with `fetch-depth: 2`. Where even that is missing
- * the check declines to judge rather than guessing — a gate that cries wolf gets
- * switched off, and then it guards nothing.
+ * "history is too short to say", and the authority for that is `.git/shallow` —
+ * the graft boundary. A file whose last touch IS the boundary commit is declined,
+ * because the real date is outside the clone. A gate that cries wolf gets switched
+ * off, and then it guards nothing.
+ *
+ * That was still not enough, twice over, and both floors below are the result:
+ *
+ *   - `fetch-depth: 2` made declining the NORMAL case. The content job judged 0
+ *     of 19 and passed, so the gate was inert in the only place it runs. The job
+ *     now checks out `fetch-depth: 0` with `filter: 'blob:none'` — depth is what
+ *     the gate needs, blob filtering is what keeps it cheap. Do not trade one for
+ *     the other; they are unrelated costs.
+ *   - "declines quietly" is itself the defect. Under CI, ANY declined doc fails,
+ *     because a depth regression otherwise narrows the gate silently instead of
+ *     breaking it.
+ *
+ * `tools/test_validate_docs.sh` builds its own fixture repository and asserts all
+ * of this against real full-depth, depth-2 and depth-1 clones. Run it after
+ * touching this function or any checkout depth.
  */
 function validateFreshnessStamps() {
     const git = (args) => {
@@ -513,23 +528,197 @@ function validateLiveSourceReferences() {
     const banned = [
         { pattern: /\barchived[\\/]/i, label: 'archived/** (deleted)' },
         { pattern: /\bai_assets[\\/]/i, label: 'ai_assets/** (staging, not runtime)' },
-        { pattern: /\bpublic[\\/]assets[\\/]/i, label: 'public/assets/** (retired Phaser tree)' },
+        { pattern: /\bpublic[\\/](?:assets|data)[\\/]/i, label: 'public/** (retired Phaser tree)' },
         { pattern: /\bBootScene\b/, label: 'BootScene (retired Phaser tree)' },
         { pattern: /\bsrc[\\/](?:math|systems|scenes|ui|entities|utils)[\\/]/i, label: 'src/** (retired Phaser tree)' },
         { pattern: /\bdocs[\\/]API_CONTRACT\.md\b/, label: 'docs/API_CONTRACT.md (now a section of ARCHITECTURE.md)' },
     ];
 
+    // Scanned trees. `.md` and `tools/**` are here because the ban was written
+    // for exactly the defect the DOCS then kept: roadmap.md, a Status: Current
+    // file, cited `public/data/tilesets/...` and `src/utils/Types.ts` and said
+    // "BootScene loads it" — three instructions to look in a tree that does not
+    // exist, in the one doc whose job is telling the next person what to do next.
+    // A ban that covers only the code it was written from is a ban with a hole
+    // the size of the documentation.
     const liveFiles = [
         ...walkFiles('godot/scripts', new Set(['.gd'])),
         ...walkFiles('godot/data', new Set(['.json'])),
         ...walkFiles('math-kernel', new Set(['.ts'])),
+        ...walkFiles('tools', new Set(['.js', '.mjs', '.py'])),
+        ...walkFiles('godot/tools', new Set(['.mjs', '.py', '.sh'])),
+        ...walkFiles('.', new Set(['.md'])),
     ];
 
+    // Line-level escape hatch, same shape as check_hardcoding.py's `# hardcode-ok`.
+    //
+    // Three references are legitimate and must survive: the two sentences in
+    // ARCHITECTURE.md and ONBOARDING.md that DECLARE these trees deleted (the
+    // ban's own statement of itself), and one comment in validate_assets.js
+    // explaining why the current design exists by contrast with the Phaser
+    // original. A blanket ban would have forced those to be reworded into
+    // vagueness, which is a worse doc than an accurate past-tense reference.
+    //
+    // The marker is deliberately per-LINE rather than per-file: a file allowed to
+    // mention `src/math/` once should not thereby be allowed to instruct the
+    // reader to go and look in it.
+    const ALLOW = 'retired-ref-ok';
+
     for (const file of liveFiles) {
-        for (const { pattern, label } of banned) {
-            if (pattern.test(readText(file))) {
-                fail(`${file}: contains a reference to ${label}`);
+        // This function is the one place the banned strings must appear.
+        if (toPosix(file) === 'tools/validate_docs.js') continue;
+        const lines = readText(file).split('\n');
+        for (let i = 0; i < lines.length; i += 1) {
+            if (lines[i].includes(ALLOW)) continue;
+            for (const { pattern, label } of banned) {
+                if (pattern.test(lines[i])) {
+                    fail(
+                        `${file}:${i + 1}: contains a reference to ${label}. ` +
+                        `If the reference is deliberately historical, mark the line \`${ALLOW}\`.`,
+                    );
+                }
             }
+        }
+    }
+}
+
+/**
+ * The endpoint table in ARCHITECTURE.md is derived from the routes the server
+ * actually registers.
+ *
+ * The table was exactly right when this was written — which is the reason to gate
+ * it now rather than later. It is the wire contract between a Godot client and a
+ * Node API that ship separately, and nothing anywhere compared it to the code, so
+ * a new route or a renamed path would have been invisible until a client called
+ * it. Every other number in this validator is derived; this was the largest
+ * remaining surface on the honour system.
+ *
+ * Fastify's `:param` becomes `{param}` to match the doc's convention.
+ */
+/**
+ * The three file lengths ONBOARDING.md cites, and the README's doc count.
+ *
+ * These were the last hand-maintained numbers outside the derived snapshot, and
+ * one of them had already drifted twice: the learner-state line said 562 before
+ * it said 657, and it carried a "largest file in the repo" superlative that was
+ * never true. The numbers exist to make a point about which file is protected and
+ * why, so a wrong one argues the wrong case.
+ */
+function validateCitedFileLengths() {
+    const cited = [
+        { file: 'godot/scripts/systems/learner_state_manager.gd', doc: 'ONBOARDING.md' },
+        // CONTRIBUTING.md cites the same length in its "leave alone" list, and it
+        // is the copy that went stale: it still read 562 after ONBOARDING.md had
+        // been corrected to 657. Same number, two docs, one of them unchecked.
+        { file: 'godot/scripts/systems/learner_state_manager.gd', doc: 'CONTRIBUTING.md' },
+        { file: 'godot/scripts/scenes/game.gd', doc: 'ONBOARDING.md' },
+        { file: 'tools/math_authoring.ts', doc: 'ONBOARDING.md' },
+    ];
+    for (const { file, doc } of cited) {
+        const full = path.join(root, file);
+        if (!fs.existsSync(full)) {
+            fail(`${doc}: cites ${file}, which does not exist`);
+            continue;
+        }
+        const lines = fs.readFileSync(full, 'utf8').split('\n');
+        // A trailing newline is not a line.
+        const count = lines.length - (lines[lines.length - 1] === '' ? 1 : 0);
+        const text = readText(doc);
+        if (!new RegExp(`\\b${count}\\b`).test(text)) {
+            fail(
+                `${doc}: ${file} is ${count} lines and that number does not appear in the doc. ` +
+                'The lengths are cited to argue which file is protected and why, so a stale one argues the wrong case.',
+            );
+        }
+    }
+
+    // README says how many docs there are; the table below it IS the list. Two
+    // Status: Current docs disagreed on the size of the doc set ("adding a
+    // seventh" vs "resist adding a ninth"), which is a small thing that reads as
+    // nobody having checked.
+    const words = { four: 4, five: 5, Five: 5, Six: 6, six: 6, Seven: 7, seven: 7, Eight: 8, eight: 8 };
+    const readme = readText('README.md');
+    const claim = readme.match(/^(\w+) files, on purpose\./m);
+    if (!claim) {
+        fail('README.md: the "N files, on purpose." claim about the doc set is gone. Keep it — it is what the row count is checked against.');
+        return;
+    }
+    const claimed = words[claim[1]];
+    if (claimed === undefined) {
+        fail(`README.md: could not read "${claim[1]}" as a number in "${claim[0]}".`);
+        return;
+    }
+    // Rows of the "| Read | For |" table: | [X](./x) | ... |
+    const section = readme.slice(readme.indexOf('## The docs'));
+    const rows = section.split('\n').filter(l => /^\|\s*\[/.test(l)).length;
+    if (rows !== claimed) {
+        fail(
+            `README.md: says "${claim[0]}" but the table below it has ${rows} row(s). ` +
+            'One of the two is wrong, and the number is the easier one to get wrong.',
+        );
+    }
+}
+
+function validateWireContract() {
+    const docPath = 'ARCHITECTURE.md';
+    const routesDir = 'server/src/routes';
+    if (!fs.existsSync(path.join(root, routesDir))) return;
+
+    const registered = new Set();
+    for (const file of walkFiles(routesDir, new Set(['.ts']))) {
+        const text = readText(file);
+        // app.get('/api/v1/x', ...) and the multi-line form where the path is the
+        // first argument on its own line.
+        const re = /\bapp\s*\.\s*(get|post|put|patch|delete)\s*\(\s*(?:\/\*[\s\S]*?\*\/\s*)?['"`](\/api\/[^'"`]+)['"`]/g;
+        let match;
+        while ((match = re.exec(text)) !== null) {
+            const verb = match[1].toUpperCase();
+            const route = match[2].replace(/:([A-Za-z_][A-Za-z0-9_]*)/g, '{$1}');
+            registered.add(`${verb} ${route}`);
+        }
+    }
+
+    if (registered.size === 0) {
+        fail(
+            `${docPath}: no routes could be parsed out of ${routesDir}, so the endpoint ` +
+            'table was compared against nothing. Fix this parser rather than deleting the check.',
+        );
+        return;
+    }
+
+    // Table rows look like: | `GET` | `/api/v1/health` | none | ... |
+    const documented = new Set();
+    const rowRe = /^\|\s*`(GET|POST|PUT|PATCH|DELETE)`\s*\|\s*`([^`]+)`\s*\|/gm;
+    let row;
+    const docText = readText(docPath);
+    while ((row = rowRe.exec(docText)) !== null) {
+        documented.add(`${row[1]} ${row[2]}`);
+    }
+
+    // The doc writes {id} where the code writes :childId. Compare on shape, not
+    // on the parameter's name, or the table has to change when a variable is
+    // renamed — which would make the gate annoying, and an annoying gate gets
+    // deleted.
+    const shape = (entry) => entry.replace(/\{[^}]*\}/g, '{}');
+    const registeredShapes = new Map();
+    for (const entry of registered) registeredShapes.set(shape(entry), entry);
+    const documentedShapes = new Map();
+    for (const entry of documented) documentedShapes.set(shape(entry), entry);
+
+    for (const [key, entry] of registeredShapes) {
+        if (!documentedShapes.has(key)) {
+            fail(
+                `${docPath}: the server registers ${entry} and the endpoint table has no row for it. ` +
+                'The table is the wire contract a separately-shipped client reads; add the row.',
+            );
+        }
+    }
+    for (const [key, entry] of documentedShapes) {
+        if (!registeredShapes.has(key)) {
+            fail(
+                `${docPath}: the endpoint table documents ${entry}, which the server does not register. ` +
+                'A client told to call a route that does not exist gets a 404 at runtime.',
+            );
         }
     }
 }
@@ -587,6 +776,8 @@ function main() {
     validateStorageContracts();
     validateMathAuthoringReports();
     validateLiveSourceReferences();
+    validateCitedFileLengths();
+    validateWireContract();
     validateRoadmapHasNoCompletedItems();
     validateFreshnessStamps();
     validateDeployPayloadTable();

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { pool } from '../db.js';
+import { withAppRole } from '../db.js';
 import { config } from '../config.js';
 
 /**
@@ -10,9 +10,12 @@ import { config } from '../config.js';
 export async function registerHealthRoutes(app: FastifyInstance): Promise<void> {
     app.get('/api/v1/health', async (_request, reply) => {
         try {
-            const migrations = await pool.query<{ count: string }>(
-                'select count(*)::text as count from schema_migrations',
-            );
+            // As crow_app, like every other request path — migration 003 grants
+            // it SELECT here for exactly that reason. A liveness probe is the
+            // last place that needs superuser.
+            const migrations = await withAppRole(client =>
+                client.query<{ count: string }>(
+                    'select count(*)::text as count from schema_migrations'));
             return reply.send({
                 ok: true,
                 environment: config.environment,

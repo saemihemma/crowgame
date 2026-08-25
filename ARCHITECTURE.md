@@ -37,7 +37,7 @@ well-tested code in a tree that never ships.
 
 The game began as a 1:1 port of a Phaser 3 / TypeScript original. That original
 is **deleted**, not merely unused — `src/`, `public/`, `vite/`, `admin.html` and
-`archived/` are all gone. If a comment still points at them, the comment is
+`archived/` are all gone. If a comment still points at them, the comment is <!-- retired-ref-ok -->
 stale and the Godot tree is the only implementation.
 
 Godot-side layout:
@@ -639,6 +639,25 @@ is not optional.
   20), so a bad merge is recoverable
 - `attempts(child_id, attempt_id)` — append-only, idempotent, `text` ids
 - `sync_conflicts` — instrumentation for the accepted v1 merge cost
+- `child_aliases` — maps a client-minted child id to the server's, so a second
+  device enrolling into an existing family resolves to the same child instead of
+  creating a duplicate
+- `login_codes(email citext)` — sign-in links and pairing codes, single-use and
+  short-lived, enforced in SQL. The second place the parent email lives, and the
+  reason the sentence above says "the only PII" rather than "the only column"
+- `error_groups(fingerprint)` — one row per distinct bug: counts, message, source,
+  release, and one sample of coarse context plus stack. Kept indefinitely; this
+  is what `PRIVACY.md` describes as "more than a count"
+- `error_events` — the raw reports, **daily-partitioned**, dropped whole past
+  `CROW_ERROR_RETAIN_DAYS` (default 30). Partitioning IS the retention mechanism
+- `schema_migrations` — applied-migration bookkeeping; `GET /api/v1/health`
+  counts it to distinguish a broken deploy from a broken database
+
+`error_groups` and `error_events` carry no `family_id` and no RLS policy: an error
+report is not family-scoped and must be acceptable from a device that has never
+enrolled. They are still written as `crow_app`, which holds INSERT and no DELETE
+on `error_events` — retention drops partitions as the owner, the application
+cannot delete a report.
 
 Mastery is deliberately **not** a table. `learner_state_manager.gd` recomputes it
 from ELO on every read, so storing it as authoritative would invite drift. If a

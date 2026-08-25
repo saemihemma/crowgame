@@ -215,13 +215,43 @@ func test_ui_counters_agree_with_their_number() -> void:
 ## One word for the currency. It was "Peningar" on the completion medal, "MYNT"
 ## on the streak toast and "mynt" on the milestone -- three words for the coins
 ## in one game.
+##
+## The streak toast is no longer in this list, and that is the point of the next
+## test: it named the currency because it claimed to multiply it, and it does not.
 func test_icelandic_currency_is_one_word() -> void:
 	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
 	var prev: String = tm.get_locale()
 	tm.set_locale("is")
-	for key in ["game.stat_coins", "fx.streak_multiplier", "hud.coins_milestone"]:
+	for key in ["game.stat_coins", "hud.coins_milestone"]:
 		assert_true(tm.t(key).to_lower().contains("mynt"),
 			"[%s] names the currency 'mynt', got '%s'" % [key, tm.t(key)])
+	tm.set_locale(prev)
+
+
+## The streak toast must not promise a reward the game does not pay.
+##
+## It read "x{0} COINS!" / "x{0} MYNTIR!" and fired at every third correct answer,
+## while no coin path anywhere reads `streak` -- an owl coin is `coin_count += 1`,
+## an enemy drop adds its own `amount`. So a child was told "x3 COINS!" and given
+## one coin. In a product built on the reward being real, a lying reward is worse
+## than no reward.
+##
+## Gated in both locales and on both toast strings, because the "ON FIRE! x{0}"
+## variant carried the same "x" and would have kept the claim alive.
+func test_streak_toast_promises_no_currency() -> void:
+	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
+	var prev: String = tm.get_locale()
+	for locale in ["en", "is"]:
+		tm.set_locale(locale)
+		for key in ["fx.streak_count", "fx.streak_on_fire"]:
+			var text: String = tm.t(key, [3]).to_lower()
+			assert_true(text != "",
+				"[%s/%s] must exist -- an empty string here makes this test vacuous"
+				% [locale, key])
+			for word in ["coin", "mynt", "x3"]:
+				assert_true(not text.contains(word),
+					"[%s/%s] must not promise currency or a multiplier, got '%s'"
+					% [locale, key, text])
 	tm.set_locale(prev)
 
 
