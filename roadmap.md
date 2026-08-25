@@ -45,7 +45,7 @@ there.
 ### Confirm the intended level unlock chain
 On a fresh save only two of six levels are selectable (`level_99` and
 `level_01`); 3–6 show as locked. That is consistent with
-`unlockRequirement` in `public/data/levels/level_registry.json`, but nobody has
+`unlockRequirement` in `godot/data/levels/level_registry.json`, but nobody has
 stated whether a child is meant to unlock strictly one at a time.
 
 *Done when:* the intended progression is written down in `PROJECT.md` and the
@@ -209,6 +209,11 @@ are checked some other way and the check is written down.
 ### The maths board still covers the player
 The header no longer collides with the board and the scrim is now the theme's
 warm `ink`, but the board itself is centred and sits on top of Hörmann.
+
+Worth knowing when checking this: a capture-harness screenshot makes it look
+fixed. The harness calls `owl.interact()` directly, so the crow is still at the
+spawn and the camera with it, well clear of the board. In play the crow walks to
+the owl and the camera centres on him, which is exactly where the board is.
 
 The board is 520 wide and now grows vertically to fit its content, so on a
 two-line prompt it is close to 380 tall. Header plus board plus a strip of world
