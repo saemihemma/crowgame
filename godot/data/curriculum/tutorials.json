@@ -1404,58 +1404,8 @@
           "body": "see",
           "visual": "groups",
           "params": {
-            "groups": 4,
-            "each": 5
-          }
-        },
-        {
-          "body": "model",
-          "visual": "equation",
-          "params": {
-            "a": 4,
-            "op": "×",
-            "b": 5,
-            "result": 20
-          }
-        },
-        {
-          "body": "worked",
-          "visual": "equation",
-          "params": {
-            "a": 3,
-            "op": "×",
-            "b": 6,
-            "result": 18
-          }
-        },
-        {
-          "body": "try",
-          "visual": "equation",
-          "params": {
-            "a": 5,
-            "op": "×",
-            "b": 7
-          },
-          "choice": {
-            "options": [
-              30,
-              40,
-              35
-            ],
-            "correct": 35
-          }
-        }
-      ]
-    },
-    {
-      "id": "multiplication.tables_large",
-      "cards": [
-        {
-          "body": "see",
-          "visual": "groups",
-          "params": {
             "groups": 6,
-            "each": 5
+            "each": 7
           }
         },
         {
@@ -1464,8 +1414,8 @@
           "params": {
             "a": 6,
             "op": "×",
-            "b": 5,
-            "result": 30
+            "b": 7,
+            "result": 42
           }
         },
         {
@@ -1482,17 +1432,67 @@
           "body": "try",
           "visual": "equation",
           "params": {
-            "a": 9,
+            "a": 8,
             "op": "×",
-            "b": 8
+            "b": 6
           },
           "choice": {
             "options": [
-              72,
-              63,
-              81
+              42,
+              48,
+              54
             ],
-            "correct": 72
+            "correct": 48
+          }
+        }
+      ]
+    },
+    {
+      "id": "multiplication.tables_large",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 3,
+            "each": 12
+          }
+        },
+        {
+          "body": "model",
+          "visual": "equation",
+          "params": {
+            "a": 3,
+            "op": "×",
+            "b": 12,
+            "result": 36
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 4,
+            "op": "×",
+            "b": 14,
+            "result": 56
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 3,
+            "op": "×",
+            "b": 14
+          },
+          "choice": {
+            "options": [
+              38,
+              42,
+              44
+            ],
+            "correct": 42
           }
         }
       ]
@@ -1552,27 +1552,27 @@
           "body": "see",
           "visual": "groups",
           "params": {
-            "groups": 4,
-            "each": 5
+            "groups": 6,
+            "each": 7
           }
         },
         {
           "body": "model",
           "visual": "equation",
           "params": {
-            "a": 20,
+            "a": 42,
             "op": "÷",
-            "b": 4,
-            "result": 5
+            "b": 6,
+            "result": 7
           }
         },
         {
           "body": "worked",
           "visual": "equation",
           "params": {
-            "a": 24,
+            "a": 56,
             "op": "÷",
-            "b": 3,
+            "b": 7,
             "result": 8
           }
         },
@@ -1580,17 +1580,17 @@
           "body": "try",
           "visual": "equation",
           "params": {
-            "a": 32,
+            "a": 48,
             "op": "÷",
-            "b": 4
+            "b": 8
           },
           "choice": {
             "options": [
-              8,
+              5,
               6,
               7
             ],
-            "correct": 8
+            "correct": 6
           }
         }
       ]
@@ -1603,44 +1603,44 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 7
+            "each": 14
           }
         },
         {
           "body": "model",
           "visual": "equation",
           "params": {
-            "a": 21,
+            "a": 42,
             "op": "÷",
-            "b": 3,
-            "result": 7
+            "b": 14,
+            "result": 3
           }
         },
         {
           "body": "worked",
           "visual": "equation",
           "params": {
-            "a": 54,
+            "a": 84,
             "op": "÷",
-            "b": 6,
-            "result": 9
+            "b": 14,
+            "result": 6
           }
         },
         {
           "body": "try",
           "visual": "equation",
           "params": {
-            "a": 60,
+            "a": 96,
             "op": "÷",
-            "b": 6
+            "b": 12
           },
           "choice": {
             "options": [
-              9,
-              10,
-              11
+              6,
+              8,
+              9
             ],
-            "correct": 10
+            "correct": 8
           }
         }
       ]

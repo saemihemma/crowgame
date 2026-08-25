@@ -21,13 +21,14 @@
     "math:sync-metadata": "tsx tools/sync_math_problem_metadata.ts",
     "process:audio": "node tools/process_audio.js",
     "typecheck": "tsc --noEmit",
-    "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js && node tools/validate_i18n.mjs && node tools/validate_math_concepts.mjs && node tools/validate_export.mjs",
+    "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js && node tools/validate_i18n.mjs && node tools/validate_math_concepts.mjs && tsx tools/validate_lesson_bands.ts && node tools/validate_export.mjs",
     "validate:assets": "node tools/validate_assets.js",
     "validate:docs": "node tools/validate_docs.js",
     "validate:concepts": "node tools/validate_math_concepts.mjs",
     "validate:i18n": "node tools/validate_i18n.mjs",
     "web:boot-smoke": "node godot/tools/web_boot_smoke.mjs",
-    "web:build": "bash godot/tools/build_web.sh"
+    "web:build": "bash godot/tools/build_web.sh",
+    "validate:lesson-bands": "tsx tools/validate_lesson_bands.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",
