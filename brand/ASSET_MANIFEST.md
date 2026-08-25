@@ -77,10 +77,31 @@ npx tsc --noEmit
 The screenshot walker used to be the gate that mattered for art: it walked all
 six levels, captured gameplay and the maths board in each, and checked the
 rendered pixels against that world's token file. It drove the Phaser build and
-went with it. **Nothing currently checks a new asset's palette against its
-world**, which is a real gap — `brand/tokens/verify_palettes.py` proves the
-token files are internally lawful, not that the shipped pixels match them.
-Rebuilding it against the Godot export is the honest replacement.
+went with it.
+
+Its job is now done by `godot/tests/test_world_palettes.gd`, one layer down: it
+scores each world's tileset directly against that world's theme tokens, so it
+needs no browser, no served build and no walk through the UI, and it runs in the
+headless suite on every push. A pixel counts as on-palette within an RGB
+distance of 32; at least 75% of opaque, non-neutral pixels must clear that.
+
+Two things it deliberately does not claim:
+
+- **It does not check rendered frames.** A layout bug that draws the right
+  colours in the wrong place will pass. `node tools/godot_play_smoke.mjs` and a
+  human eye still cover that.
+- **It cannot tell worlds apart.** The palettes overlap by design — shared
+  danger red, accents, text — so `geyserworks` art scores 1.000 against
+  `emberwood`'s palette. The matrix is in the test's header. What it does prove
+  is the thing that matters when new art lands: every colour in the file is one
+  its own theme actually declares.
+
+`sugarstorm` is currently waived and named as such, because its tileset uses a
+plum family (`#613049`, 1640 px, 45.6 away) that `theme_sugarstorm.json` does
+not declare. Either the art or the token file is wrong; that is an art call.
+
+`brand/tokens/verify_palettes.py` remains complementary: it proves the token
+files are internally lawful, this proves the pixels match them.
 
 ---
 
@@ -375,6 +396,7 @@ Worth stating, so nobody generates something that is already handled:
 | P5 hero | 8 | the animation set and the scarf |
 
 **91 files, of which 5 are placed and 86 remain.** Nothing in P1-P5 blocks
-anything else, so they can land in any order, one file per pull request. The
-palette gate that used to police them is gone (see above); until it is rebuilt,
-`node tools/godot_play_smoke.mjs` and a human eye are the check.
+anything else, so they can land in any order, one file per pull request.
+`godot/tests/test_world_palettes.gd` polices the palette of each world's tileset
+on every push; `node tools/godot_play_smoke.mjs` and a human eye cover placement
+and composition, which no pixel check can judge.
