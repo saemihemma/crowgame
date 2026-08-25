@@ -5732,7 +5732,7 @@
         },
         {
           "id": 4,
-          "name": "owl_gauntlet",
+          "name": "owl_teacher_01",
           "type": "npc",
           "x": 2400,
           "y": 512,
@@ -5742,7 +5742,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_gauntlet"
+              "value": "owl_teacher_01"
             }
           ]
         },
