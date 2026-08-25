@@ -373,7 +373,16 @@ function validateLiveSourceReferences() {
         { pattern: /\bai_assets[\\/]/i, label: 'ai_assets/** (staging, not runtime)' },
         { pattern: /\bpublic[\\/](?:assets|data)[\\/]/i, label: 'public/** (retired Phaser tree)' },
         { pattern: /\bBootScene\b/, label: 'BootScene (retired Phaser tree)' },
-        { pattern: /\bsrc[\\/](?:math|systems|scenes|ui|entities|utils)[\\/]/i, label: 'src/** (retired Phaser tree)' },
+        // Named subdirectories AND a bare `src/**` or `src/`. The narrow version
+        // missed BRAND_SYSTEM.md's own authority line, which claimed runtime truth
+        // lived in `src/**` — in the doc that declares itself canonical.
+        // The retired tree was `src/` at the REPO ROOT, so the lookbehind is
+        // load-bearing: `server/src/**` and `../src/lib/` are live and must not
+        // match. Named subdirectories AND a bare `src/**`, because the narrow
+        // earlier version missed BRAND_SYSTEM.md's own authority line claiming
+        // runtime truth lived in `src/**` — in the doc that declares itself
+        // canonical.
+        { pattern: /(?<![\w/.])src[\\/](?:\*\*|[a-z]+[\\/])/i, label: 'src/** (retired Phaser tree)' },
         { pattern: /\bdocs[\\/]API_CONTRACT\.md\b/, label: 'docs/API_CONTRACT.md (now a section of ARCHITECTURE.md)' },
     ];
 

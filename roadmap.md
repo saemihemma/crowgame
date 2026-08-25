@@ -53,6 +53,30 @@ least one step-up per early session and frustration flags under 10%.
 ## P2 — Experience decisions that need making
 
 
+### Character sprites break the no-anti-aliasing rule
+`brand/ASSET_MANIFEST.md` states hard pixel edges only, and several shipped
+sprites do not meet it: measured soft-alpha was ~34% on `crow_walk`, ~41% on
+`cockroach`, ~30% on `crow_idle`. All are correctly authored at 1x; it is the
+edges that are soft.
+
+Nothing gates this. The tool that measured it (`audit_pixel_art.py`) was deleted
+in the same pass that recorded this entry — it was unwired, printed rather than
+failed, and 357 lines to restate a rule already written down. Re-measuring is a
+few lines of Pillow against the alpha histogram if the rule is worth enforcing.
+
+*Done when:* the sprites are redrawn with hard edges and a check fails on soft
+ones, or `ASSET_MANIFEST.md` admits soft edges for character art on purpose.
+
+### One enemy exists
+`enemy_registry.json` contains `cockroach_basic` and nothing else, so every
+threat in every world is the same creature. `brand/BRAND_SYSTEM.md` §3.3 already
+specifies a roster and §3.1 the ugly law they have to satisfy; `spawn_registry`
+plus `setup_from_spawn` means a new enemy is data plus a scene, not a `game.gd`
+change.
+
+*Done when:* each world has at least one threat that is not the cockroach, or the
+roster in §3.3 is cut down to what is actually intended.
+
 ### Four limits of the maths ladder
 None of these is decided, and they share one cause: the ladder was derived before
 the owl path existed.
@@ -208,7 +232,6 @@ and the ability slots (needs an ability granted).
 
 The harness that used to cover this was `tools/theme_screenshots.mjs`, which
 drove the Phaser build through `window.__crowGame` and was deleted with it. What
-exists now is `godot/tools/capture.sh`, which boots a level and writes a PNG but
 cannot yet drive damage or a multi-owl streak.
 
 *Done when:* the capture tool can reach those three states, or they are checked

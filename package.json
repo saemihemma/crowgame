@@ -12,7 +12,6 @@
         "e2e:errors": "node godot/tools/error_pipeline_e2e.mjs",
         "godot:gen-math-fixtures": "tsx tools/golden/gen_math_fixtures.ts",
         "godot:gen-motion-fixtures": "tsx tools/golden/gen_motion_fixtures.ts",
-        "godot:play-smoke": "node tools/godot_play_smoke.mjs",
         "godot:test": "bash godot/tools/run_tests.sh",
         "math:materialize": "tsx tools/materialize_math_batches.ts && npm run math:phrasing",
         "math:phrasing": "node tools/fix_math_plural_grammar.mjs && node tools/derive_math_phrasing.mjs --write && node tools/sync_math_phrasing_bundles.mjs",

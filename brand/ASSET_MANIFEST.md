@@ -18,7 +18,6 @@ This table is now also machine-readable, as
 `godot/data/registries/sprite_spec.json`, and the build checks the shipped art
 against it (`godot/tools/check_assets.py`). The sizes there are transcribed from
 here — if the two ever disagree, this file wins and the JSON is the bug. See
-`ARCHITECTURE.md` (the sprite contract). `godot/tools/audit_pixel_art.py` measures the two rules
 below that can be measured — "no anti-aliasing" and "author at 1x" — and currently
 reports four of the six shipped sprites failing the first.
 
@@ -82,7 +81,6 @@ npx tsc --noEmit
 > ```
 > bash godot/tools/build_web.sh
 > (cd output/web && python3 -m http.server 8060)
-> node tools/godot_play_smoke.mjs      # walks login -> menu -> level -> owl
 > node godot/tools/web_boot_smoke.mjs  # iPad viewport, boots and renders
 > ```
 
@@ -94,9 +92,8 @@ distance of 32; at least 75% of opaque, non-neutral pixels must clear that.
 
 Two things it deliberately does not claim:
 
-- **It does not check rendered frames.** A layout bug that draws the right
-  colours in the wrong place will pass. `node tools/godot_play_smoke.mjs` and a
-  human eye still cover that.
+- **It does not check rendered frames.** Art drawn in the right palette but
+  placed wrong still passes; only playing it catches that.
 - **It cannot tell worlds apart.** The palettes overlap by design — shared
   danger red, accents, text — so `geyserworks` art scores 1.000 against
   `emberwood`'s palette. The matrix is in the test's header. What it does prove
@@ -162,7 +159,6 @@ The PNG is the asset. Nothing about a tileset lives in code.
    `godot/data/tilesets/tileset_manifest.json`, so the generator stops being
    treated as its origin.
 4. `npm run validate`, then look at the build: `bash godot/tools/build_web.sh`
-   and `node tools/godot_play_smoke.mjs`.
 
 To **add** a world: drop a PNG in, add a manifest entry, add a theme token file,
 give a level spec that `theme`. The tileset manifest is loaded by `DataManager`, so there
@@ -422,5 +418,4 @@ Worth stating, so nobody generates something that is already handled:
 **91 files, of which 5 are placed and 86 remain.** Nothing in P1-P5 blocks
 anything else, so they can land in any order, one file per pull request.
 `godot/tests/test_world_palettes.gd` polices the palette of each world's tileset
-on every push; `node tools/godot_play_smoke.mjs` and a human eye cover placement
 and composition, which no pixel check can judge.

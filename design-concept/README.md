@@ -19,7 +19,6 @@ The `plate-*.png` files are gameplay captures at 960×540 with the HUD stopped, 
 the concept can be compared directly against a screenshot of the implementation.
 They were taken from the retired Phaser prototype, so they show the old
 left-edge text HUD rather than what ships; refresh them with
-`bash godot/tools/capture.sh` before judging a comparison.
 
 **Most of what these artboards specify has since been built** — `hud.gd` composes
 `HeartRow`, `CoinChip` and `OwlRing` as separate pods, and the maths board

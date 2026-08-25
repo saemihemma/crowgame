@@ -99,11 +99,6 @@ func redeem_pairing_code(code: String) -> bool:
 		await _refresh_session()
 	return res["ok"]
 
-func sign_out() -> void:
-	await _request(HTTPClient.METHOD_POST, "/auth/signout", {})
-	_enrolled = false
-	_remote_child_id = ""
-	state_changed.emit(false)
 
 # ── child mapping ───────────────────────────────────────────────────────────
 

@@ -85,23 +85,10 @@ cyan sky that no other world in the ladder can use.
 
 ### Palette
 
-| Token | Hex | |
-| --- | --- | --- |
-| `sky_top` | `#FFB98A` | peach dawn |
-| `sky_bottom` | `#7ED0E8` | cold morning cyan at the horizon |
-| `far` | `#6E9E8A` | misted tree silhouettes |
-| `mid` | `#2E6B47` | mid canopy |
-| `primary` | `#3F8F5B` | leaf green — the world's identity colour |
-| `secondary` | `#8A5A2B` | bark |
-| `deep` | `#194031` | shadow under the canopy |
-| `ground_lit` | `#5FB574` | lit grass row |
-| `ground_shadow` | `#6B4A2E` | dirt / shadowed ground |
-| `accent` | `#FFC93C` | gold — dawn light and coins agree here |
-| `light` | `#FFD98A` | god-rays |
-| `hazard` | `#FF8A5C` | thorn tip |
-| `hazard_base` | `#3A0F08` | thorn body — the dark half of the two-tone pair |
-| `enemy_pop` | `#9AB03C` | olive |
-| `ink_world` | `#1F1A16` | warm brown-black outline |
+The hexes live in `godot/data/themes/` — one copy, and
+`tools/verify_palettes.py` holds them to the colour law in
+[BRAND_SYSTEM.md](./BRAND_SYSTEM.md) §6 on every push. They were tabulated
+here too until the third copy drifted; read them from the theme file.
 
 ### Environment
 
@@ -187,30 +174,10 @@ enclosed, cold and lit from the geology. Hardest-built level in the game
 
 ### Palette
 
-| Token | Hex | |
-| --- | --- | --- |
-| `sky_top` | `#0E0B26` | cavern void |
-| `sky_bottom` | `#1B1440` | |
-| `far` | `#241D52` | distant stalactite silhouettes |
-| `mid` | `#37306E` | crystal formations |
-| `primary` | `#2B2A5E` | violet rock — identity colour |
-| `secondary` | `#4B3F7A` | |
-| `deep` | `#0E0B26` | |
-| `ground_lit` | `#4B3F7A` | lit basalt |
-| `ground_shadow` | `#241D52` | shadowed basalt |
-| `accent` | `#4DE3FF` | **cyan crystal — the safe light** |
-| `light` | `#FF5FD2` | **magenta crystal — the strange light** |
-| `hazard` | `#FF7A00` | hot orange, the only warm colour in the world |
-| `hazard_base` | `#0A0818` | shard root |
-| `enemy_pop` | `#7BE8FF` | |
-| `ink_world` | `#0A0818` | |
-
-**The two-light rule.** Cyan and magenta both glow, and the player must never
-confuse them. **Cyan is always safe** — platforms, coins, the path, the owls.
-**Magenta is always strange** — the Muddle, the deep background, the parts of
-the cave you are not meant to walk on. Establish it in the first ten seconds and
-never break it. Hazards are neither: they are hot orange, the only warm hue in
-the world, so they scream.
+The hexes live in `godot/data/themes/` — one copy, and
+`tools/verify_palettes.py` holds them to the colour law in
+[BRAND_SYSTEM.md](./BRAND_SYSTEM.md) §6 on every push. They were tabulated
+here too until the third copy drifted; read them from the theme file.
 
 ### Environment
 
@@ -303,26 +270,10 @@ memorable screen in the game.
 
 ### Palette
 
-| Token | Hex | |
-| --- | --- | --- |
-| `sky_top` | `#1B0F3B` | deep carnival night |
-| `sky_bottom` | `#4B1B6B` | |
-| `far` | `#6B2A8A` | distant ferris wheel and tent silhouettes |
-| `mid` | `#A83CA0` | |
-| `primary` | `#FF4FA3` | hot pink — identity colour |
-| `secondary` | `#7B2FBF` | purple |
-| `deep` | `#1B0F3B` | |
-| `ground_lit` | `#FFD9EC` | cream boardwalk plank |
-| `ground_shadow` | `#FF7EC0` | pink boardwalk plank |
-| `accent` | `#FFE14D` | bulb yellow |
-| `light` | `#2CE0C8` | teal neon |
-| `hazard` | `#FF3B6B` | **reserved and unused — this world ships no hazards** |
-| `hazard_base` | `#3A0620` | reserved |
-| `enemy_pop` | `#FF9AD5` | |
-| `ink_world` | `#1A0E2E` | |
-
-Night is essential. Neon does not exist in daylight, and the pink/teal/yellow
-triad only sings against a dark violet ground.
+The hexes live in `godot/data/themes/` — one copy, and
+`tools/verify_palettes.py` holds them to the colour law in
+[BRAND_SYSTEM.md](./BRAND_SYSTEM.md) §6 on every push. They were tabulated
+here too until the third copy drifted; read them from the theme file.
 
 ### Environment
 
@@ -414,40 +365,10 @@ stock, and roots it in the place this game comes from.
 
 ### Palette
 
-| Token | Hex | |
-| --- | --- | --- |
-| `sky_top` | `#20161A` | smoke-choked |
-| `sky_bottom` | `#5C2A1E` | furnace glow on the horizon |
-| `far` | `#3A3B44` | basalt column silhouettes |
-| `mid` | `#5A4238` | rusted structure |
-| `primary` | `#C2582A` | rust — identity colour |
-| `secondary` | `#3A3B44` | basalt |
-| `deep` | `#20161A` | |
-| `ground_lit` | `#4A3A32` | iron plate |
-| `ground_shadow` | `#2A2B33` | basalt underlay |
-| `accent` | `#FFA22B` | hot brass |
-| `light` | `#FF6B1A` | molten |
-| `hazard` | `#FF3B0F` | vent flame |
-| `hazard_base` | `#160F12` | vent grate |
-| `enemy_pop` | `#C8B08A` | |
-| `ink_world` | `#160F12` | |
-
-**This world's ground is deliberately darker than it looks like it should be.**
-The iron plate is `#4A3A32`, not a mid-rust brown, because the vent flame
-`#FF3B0F` has to clear 3:1 against it and a lighter plate put it at 1.6. Dark
-plate under hot vents is also simply the truer image.
-
-Two colour hazards specific to this world, both real:
-
-- `hazard` `#FF3B0F` sits close to `light` `#FF6B1A` and to `hurt` `#FF4D4D`.
-  Colour is doing the least work of the three channels here, so the **telegraph
-  animation and the jagged silhouette are load-bearing**, not polish. §6.5 is
-  not optional in Geyserworks.
-- The physically correct colour for the hottest part of a vent is white-hot
-  yellow. **Do not use it.** It lands on top of `coin` gold `#FFC93C`, and a
-  child confusing a coin with a steam vent is the single worst readability
-  failure available in this game. Orange-red is the deliberate, slightly wrong,
-  correct choice.
+The hexes live in `godot/data/themes/` — one copy, and
+`tools/verify_palettes.py` holds them to the colour law in
+[BRAND_SYSTEM.md](./BRAND_SYSTEM.md) §6 on every push. They were tabulated
+here too until the third copy drifted; read them from the theme file.
 
 ### Environment
 
@@ -542,23 +463,10 @@ it. The reward for finishing is not more stimulus — it is arrival.
 
 ### Palette
 
-| Token | Hex | |
-| --- | --- | --- |
-| `sky_top` | `#0B1030` | high-altitude near-black |
-| `sky_bottom` | `#2A4A8C` | horizon blue |
-| `far` | `#1E2A55` | distant peak silhouettes below you |
-| `mid` | `#2F4E7A` | floating stone |
-| `primary` | `#3A6EA8` | sky stone — identity colour |
-| `secondary` | `#1E2A55` | |
-| `deep` | `#0B1030` | |
-| `ground_lit` | `#C9D6E8` | pale sky-stone |
-| `ground_shadow` | `#6E82A6` | stone in shadow |
-| `accent` | `#7CF5C4` | **aurora green** |
-| `light` | `#A97BFF` | **aurora violet** |
-| `hazard` | `#FF6B8A` | wind-shear pink |
-| `hazard_base` | `#4A1030` | shear-band core — carries the read against pale stone |
-| `enemy_pop` | `#BFD8FF` | |
-| `ink_world` | `#0A0C1E` | |
+The hexes live in `godot/data/themes/` — one copy, and
+`tools/verify_palettes.py` holds them to the colour law in
+[BRAND_SYSTEM.md](./BRAND_SYSTEM.md) §6 on every push. They were tabulated
+here too until the third copy drifted; read them from the theme file.
 
 ### Environment
 

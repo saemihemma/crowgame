@@ -109,6 +109,49 @@ async function main() {
         // Let the boot scene settle and the first real scene come up.
         await page.waitForTimeout(9000);
 
+        // WALK THE FLOW, and gate on engine errors while doing it.
+        //
+        // Booting is not playing. This harness used to stop at the first frame,
+        // which is why it never saw `login.gd` calling `_col.add_child(_pin_edit)`
+        // on a node `_make_pin_edit()` had already parented — Godot refuses that
+        // with "already has a parent" on every visit to the PIN and new-player
+        // screens, and the rejected add left the field looking correct, so nothing
+        // anywhere noticed.
+        //
+        // There WAS a second harness for this (tools/godot_play_smoke.mjs). It
+        // asserted the screen CHANGED between steps, using hand-tuned pixel-noise
+        // floors — "noise floor 0.0066, walk change 0.0055, needs > 0.0265" — and
+        // that is why it rotted unrun: flaky by construction, and nobody wanted to
+        // own the thresholds. It is deleted. What actually found the bug was not a
+        // pixel diff; it was the console. So this asserts only that clicking and
+        // typing through the real screens produces NO engine error, which is
+        // deterministic, needs no threshold, and would have failed on that bug.
+        //
+        // Deliberately blind clicks at the canvas centre. Coordinate-precise
+        // clicking is what makes browser tests break on every layout change; the
+        // point here is to exercise the screens, not to assert a layout.
+        const flow = [
+            ['open a screen',      async () => page.mouse.click(590, 430)],
+            ['type a name',        async () => page.keyboard.type('Smoke')],
+            ['type a PIN',         async () => page.keyboard.type('1234')],
+            ['commit',             async () => page.keyboard.press('Enter')],
+            ['advance',            async () => page.mouse.click(590, 430)],
+            ['advance again',      async () => page.mouse.click(590, 430)],
+            ['hold right',         async () => {
+                await page.keyboard.down('ArrowRight');
+                await page.waitForTimeout(1200);
+                await page.keyboard.up('ArrowRight');
+            }],
+        ];
+        for (const [label, act] of flow) {
+            const before = consoleErrors.length;
+            await act();
+            await page.waitForTimeout(1200);
+            if (consoleErrors.length > before) {
+                consoleErrors.push(`(the ${consoleErrors.length - before} error(s) above appeared while: ${label})`);
+            }
+        }
+
         const canvas = await page.evaluate(() => {
             const c = document.querySelector('canvas');
             return { width: c.width, height: c.height, clientWidth: c.clientWidth, clientHeight: c.clientHeight };
@@ -221,6 +264,7 @@ async function main() {
         console.log(`canvas          : ${canvas.width}x${canvas.height} (css ${canvas.clientWidth}x${canvas.clientHeight})`);
         console.log(`distinct colors : ${distinctColors} (full canvas)`);
         console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars (${letterbox.verticalBarsPx}v/${letterbox.horizontalBarsPx}h), ${letterbox.offscreenTotalPx}px offscreen (${letterbox.verticalOffscreenPx}v/${letterbox.horizontalOffscreenPx}h), canvas covers ${letterbox.screenUsedPct}% of the viewport`);
+        console.log(`flow steps      : ${flow.length} (clicks and keys after boot)`);
         console.log(`console errors  : ${consoleErrors.length}`);
         if (distinctColors < MIN_DISTINCT_COLORS) {
             console.error(`FAIL: only ${distinctColors} distinct colours (floor ${MIN_DISTINCT_COLORS}) — the build booted but did not render`);

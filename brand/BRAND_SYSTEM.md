@@ -1,7 +1,7 @@
 # Hörmann — Brand & Art System
 
 Status: Supportive
-Authority: Canonical brand, art-direction and UI standard. Runtime truth still lives in `src/**`, `godot/data/**` and the manifests.
+Authority: Canonical brand, art-direction and UI standard. Runtime truth lives in `godot/scripts/**`, `godot/data/**` and the manifests.
 
 This is the one brand file. If another document disagrees with this one about
 colour, type, motion, tone or HUD layout, this one is right and the other one is
@@ -9,27 +9,6 @@ stale. Per-world art detail lives in its companion, [LEVEL_ART_BIBLE.md](./LEVEL
 
 Machine-readable palette tokens for every world live in `godot/data/themes/` in
 the exact shape `ThemeDefinition` expects.
-
----
-
-## 0. The problem this document exists to solve
-
-**The founding diagnosis, 2026-08-24.** This is the problem statement the rest of
-this document was written against, kept because it is the reason the brand system
-exists. It is NOT a description of the current build: four of the six gaps are now
-closed, and the table says which. Where a row is still open it names where the
-work is tracked.
-
-| Symptom | Evidence at the time | Status |
-| --- | --- | --- |
-| Every level looks the same | all six `*.spec.json` declared `"theme": "forest"`, and every entry in `level_registry.json` loaded the same `level1_tiles.png` | **partly closed** — the six specs now declare the five worlds, and each level selects its own tileset. Every registry entry still carries a `level1_tiles.png` reference that nothing selects; tracked in `../roadmap.md` |
-| The theme system is built but unused | `ThemeManager` supported swapping, only `forest` and `scifi` were registered, and `scifi` was never selected | **closed** — the five world themes are registered and selected per level from `level_registry.json`; both legacy skins are deleted |
-| One enemy exists | `enemy_registry.json` contains `cockroach_basic` and nothing else | **open** — still one enemy |
-| The HUD is a left-edge text stack | health at `16,16`, coins at `16,56`, owls at `16,88`, all plain text | **closed** — `hud.gd` composes `HeartRow`, `CoinChip` and `OwlRing` as separate pods |
-| Failure is painted red | the chosen button filled with `danger` for 400ms and "Try again" flew up in a hardcoded `#ff6666` | **closed** — the wrong-answer beat is amber over 900ms, and `text_error` is pinned to `notyet` in every theme by the colour law |
-| Colour has no law | nothing measured contrast, hazard separation or the red rule | **closed** — `tools/verify_palettes.py` runs 66 checks inside `npm run validate`, against the palettes the game actually loads, and asserts that every registered theme is gated |
-
-Everything below was written to close those six gaps.
 
 ---
 
@@ -385,17 +364,19 @@ Everything else is a world variable. Each world owns:
 
 ### 6.4 The five worlds at a glance
 
-| World | Hue story | `primary` | `accent` | `light` | Feels like |
-| --- | --- | --- | --- | --- | --- |
-| 1 · **Emberwood** | warm greens under a peach dawn | `#3F8F5B` | `#FFC93C` | `#FFD98A` | waking up |
-| 2 · **Prism Hollow** | violet dark, cyan and magenta emissive | `#2B2A5E` | `#4DE3FF` | `#FF5FD2` | holding your breath |
-| 3 · **Sugarstorm** | hot pink and teal on deep night | `#FF4FA3` | `#FFE14D` | `#2CE0C8` | showing off |
-| 4 · **Geyserworks** | rust and basalt, molten orange | `#C2582A` | `#FFA22B` | `#FF6B1A` | pushing through |
-| 5 · **Aurora Spire** | cold indigo, aurora green and violet | `#3A6EA8` | `#7CF5C4` | `#A97BFF` | arriving |
+The hue story and the intended feeling — the part that is a decision. The hexes
+are in `godot/data/themes/`, one copy, held to §6 by `tools/verify_palettes.py`.
 
-Full tables, tilesets, props and object lists are in
-[LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md). Copy-paste tokens are in
-`godot/data/themes/`.
+| World | Hue story | Feels like |
+| --- | --- | --- |
+| 1 · **Emberwood** | warm greens under a peach dawn | waking up |
+| 2 · **Prism Hollow** | violet dark, cyan and magenta emissive | holding your breath |
+| 3 · **Sugarstorm** | hot pink and teal on deep night | showing off |
+| 4 · **Geyserworks** | rust and basalt, molten orange | pushing through |
+| 5 · **Aurora Spire** | cold indigo, aurora green and violet | arriving |
+
+Tilesets, props and object lists per world are in
+[LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md).
 
 ### 6.5 Contrast floor
 
@@ -972,7 +953,6 @@ the first try, and the gap is written down rather than designed away.
 4. **Capture.** Never judge from source:
 
    ```bash
-   bash godot/tools/capture.sh level_01 play,math    # writes output/godot-shots/
    ```
 
 5. **Compare, brutally.** Name every gap. Fix what is a defect. For what is not

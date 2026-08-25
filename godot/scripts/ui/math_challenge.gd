@@ -30,7 +30,6 @@ static func _feedback_ms(key: String, fallback: float) -> float:
 	return fallback
 
 
-
 var current_problem: Dictionary = {}
 var _coins_reward := 1
 var _wrong_attempts := 0
@@ -109,11 +108,6 @@ func present(problem: Dictionary, opts: Dictionary = {}) -> void:
 	EventBus.math_challenge_start.emit({"problemId": String(problem.get("id", ""))})
 	EventBus.math_problem_presented.emit(problem)
 
-## A demo problem is shown, not answered - the owl is teaching. Public so the
-## capture harness can tell the two apart: it kept photographing a disabled board
-## and reporting it as the wrong-answer state.
-func is_demo() -> bool:
-	return _is_demo
 
 func is_active() -> bool:
 	return not _done

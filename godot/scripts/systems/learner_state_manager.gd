@@ -139,8 +139,6 @@ func update_sync_metadata(status: String, latest_cursor: Variant, last_synced_at
 func get_confidence_offset(domain: String) -> float:
 	return float(get_snapshot()["confidenceOffsets"][domain])
 
-func get_effective_selection_elo(domain: String) -> float:
-	return _elo().get_effective_elo(domain) + get_confidence_offset(domain)
 
 func get_current_step(domain: String) -> int:
 	return int(get_snapshot()["curriculumProgress"][domain]["currentStep"])

@@ -121,11 +121,6 @@ func consume_selection_meta(problem_id: String) -> Variant:
 	_selection_meta.erase(problem_id)
 	return meta
 
-func get_total_count() -> int:
-	return _all_problems.size()
-
-func get_answered_count() -> int:
-	return _recent_problem_ids.size()
 
 # ─── internals ────────────────────────────────────────────
 func _filter_unlocked(domains: Array) -> Array:

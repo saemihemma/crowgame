@@ -64,9 +64,6 @@ func get_dict(key: String) -> Dictionary:
 	var v: Variant = _cache.get(key, null)
 	return v if v is Dictionary else {}
 
-func get_array(key: String) -> Array:
-	var v: Variant = _cache.get(key, null)
-	return v if v is Array else []
 
 ## Math pools --------------------------------------------------------------
 

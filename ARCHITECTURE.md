@@ -739,21 +739,12 @@ the real file in and it is picked up with no code change.
 ```bash
 python3 godot/tools/check_assets.py          # the contract; runs in run_tests.sh
 python3 godot/tools/check_assets.py --spec   # the delivery brief, printed from the data
-python3 godot/tools/audit_pixel_art.py       # is the art actually pixel art?
-python3 godot/tools/audit_pixel_art.py --crops DIR   # 1x/2x/4x Nearest, to judge by eye
 ```
 
 `check_assets.py` fails the build on a missing or orphaned file, an unknown
 class, a sheet that is not a whole number of its class's cells, an unjustified
 override, a `res://assets/**.png` literal in `.gd`, or an `offset`/`scale` on a
 sprite node in a `.tscn`.
-
-`audit_pixel_art.py` measures the two manifest rules that can be measured:
-`soft%` is "no anti-aliasing", `native` is "author at 1x, never downscale". It
-currently reports that several shipped sprites break the first one — `crow_walk`
-at 34.5% soft-alpha, `cockroach` 41.1%, `crow_idle` 29.8% — while all are native
-1x. That is a finding about the art, not the machinery, which is why the tool
-prints rather than fails.
 
 ## The math authoring pipeline
 

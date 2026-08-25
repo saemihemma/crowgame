@@ -45,9 +45,6 @@ func get_next_level() -> Variant:
 		return null
 	return _registry[idx + 1]
 
-func get_next_level_key() -> String:
-	var nxt = get_next_level()
-	return String(nxt.get("key", "")) if nxt != null else ""
 
 func transition_to(target_level_key: String) -> String:
 	if _current_level_key != "":

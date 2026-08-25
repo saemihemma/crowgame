@@ -54,9 +54,6 @@ func _start_pulse() -> void:
 	tw.tween_property(self, "scale", Vector2.ONE, PULSE_SECONDS * 0.5) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-func set_role(new_role: int) -> void:
-	role = new_role
-	_restyle()
 
 func _fill() -> Color:
 	match role:

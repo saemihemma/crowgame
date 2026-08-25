@@ -49,7 +49,6 @@ npm run validate        # includes 65 colour-law checks on godot/data/themes
 > ```
 > bash godot/tools/build_web.sh
 > (cd output/web && python3 -m http.server 8060)
-> node tools/godot_play_smoke.mjs      # walks login -> menu -> level -> owl
 > node godot/tools/web_boot_smoke.mjs  # iPad viewport, boots and renders
 > ```
 

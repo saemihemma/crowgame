@@ -118,9 +118,6 @@ func add_coins(amount: int) -> void:
 	_data["coins"] = int(_data["coins"]) + amount
 	if _auto_save_enabled: save()
 
-func add_stars(amount: int) -> void:
-	_data["stars"] = int(_data["stars"]) + amount
-	if _auto_save_enabled: save()
 
 func increment_owls_saved() -> void:
 	_data["owlsSaved"] = int(_data["owlsSaved"]) + 1
@@ -166,12 +163,6 @@ func record_math_attempt(attempt: Dictionary) -> void:
 		tel["answeredProblemIds"] = answered.slice(answered.size() - 100)
 	if _auto_save_enabled: save()
 
-func set_learner_state() -> void:
-	var learner := get_node_or_null("/root/LearnerStateManager")
-	if learner == null or not (learner.has_method("is_initialized") and learner.is_initialized()):
-		return
-	_data["learnerState"] = learner.get_snapshot()
-	if _auto_save_enabled: save()
 
 func grant_ability(ability_id: String) -> void:
 	if not (_data["activeAbilities"] as Array).has(ability_id):

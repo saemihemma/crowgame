@@ -135,5 +135,3 @@ func _find_game() -> Node:
 func get_motion_state() -> Dictionary:
 	return _state
 
-func set_tuning(t: Dictionary) -> void:
-	_tuning = t
