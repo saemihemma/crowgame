@@ -28,7 +28,10 @@ on:
   # wrong tree — skipped the one check written to catch it, and left a red trunk
   # green after a fix-by-re-export. The gate has to run on the file it guards.
   push:
-    branches: [main, release]
+    # Agent branches are included so their greenness is a fact rather than a
+    # manual dispatch. This whole hardening pass began with nine commits pushed
+    # and called green while CI had never seen the branch at all.
+    branches: [main, release, 'claude/**']
   pull_request:
     branches: [main, release]
   workflow_dispatch:

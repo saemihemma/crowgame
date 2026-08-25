@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
+const zlib = require('zlib');
 
 /*
  * Doc validation.
@@ -145,24 +146,30 @@ function validateFreshnessStamps() {
         return;
     }
 
-    const headDate = git(['log', '-1', '--format=%cs', 'HEAD']);
-    if (git(['rev-parse', '--verify', 'HEAD~1']) === null) {
-        console.log('  (history too shallow to date files — freshness stamps not checked)');
-        return;
-    }
-    const changedInHead = new Set((git(['diff', '--name-only', 'HEAD~1', 'HEAD']) || '').split('\n').filter(Boolean));
+    // Where history is truncated, a file's apparent last touch is the graft
+    // boundary rather than its real one, and we cannot judge it. Test for THAT,
+    // not for a date match: the previous version compared the file's last-commit
+    // DATE to HEAD's date, which fires on a full clone too — every doc edited on
+    // the same calendar day as HEAD was silently declined. On this 143-commit
+    // repo that skipped 15 of 19, and a seven-month-stale stamp on a
+    // Status: Current doc passed. The boundary is the actual limit of knowledge.
+    const boundary = new Set((git(['rev-parse', '--shallow-list']) || '')
+        .split('\n').map(l => l.trim()).filter(l => /^[0-9a-f]{40}$/.test(l)));
 
     let judged = 0;
+    let declined = 0;
+    let stamped = 0;
     for (const doc of walkFiles('.', new Set(['.md']))) {
         const stamp = (readText(doc).match(/^Last verified against code:\s+(\d{4}-\d{2}-\d{2})$/m) || [])[1];
         if (!stamp) continue;
+        stamped += 1;
 
+        const lastSha = git(['log', '-1', '--format=%H', '--', doc]);
         const lastTouched = git(['log', '-1', '--format=%cs', '--', doc]);
-        if (!lastTouched) continue;
-
-        // On a shallow clone every file looks like HEAD touched it. Only trust
-        // that when the diff agrees.
-        if (lastTouched === headDate && !changedInHead.has(doc)) continue;
+        if (!lastSha || !lastTouched || boundary.has(lastSha)) {
+            declined += 1;
+            continue;
+        }
 
         judged += 1;
         if (stamp < lastTouched) {
@@ -170,12 +177,17 @@ function validateFreshnessStamps() {
                 + `(${lastTouched}). Re-read it against the code and bump the stamp, or do not claim it.`);
         }
     }
-    console.log(`  freshness stamps: ${judged} doc(s) dated against git history`);
+    // Always with a denominator. "4 doc(s) dated" reads like success; "4 of 19"
+    // reads like the hole it was.
+    console.log(`  freshness stamps: ${judged} of ${stamped} stamped doc(s) dated against git history`
+        + (declined ? `, ${declined} declined (last touch is the shallow boundary)` : ''));
 }
 
 /**
  * deploy/RAILWAY.md quotes the payload it will serve. Those bytes are on disk,
- * so the table is derived rather than trusted — it had drifted 2 MB.
+ * so the table is derived rather than trusted — it had drifted 2 MB. Both columns
+ * are derived: the gzip figures were accurate but ungated, and the whole egress
+ * argument (~950 MB/month per twice-daily player) is computed from them.
  */
 function validateDeployPayloadTable() {
     const DOC = 'deploy/RAILWAY.md';
@@ -187,13 +199,18 @@ function validateDeployPayloadTable() {
         const hit = fs.readdirSync(webDir).find(f => f.endsWith(suffix));
         return hit ? fs.statSync(path.join(webDir, hit)).size : 0;
     };
+    const gzipOf = suffix => {
+        const hit = fs.readdirSync(webDir).find(f => f.endsWith(suffix));
+        return hit ? zlib.gzipSync(fs.readFileSync(path.join(webDir, hit)), { level: 9 }).length : 0;
+    };
+
     const wasm = sizeOf('.wasm');
     const pck = sizeOf('.pck');
     const total = fs.readdirSync(webDir)
         .reduce((sum, f) => sum + fs.statSync(path.join(webDir, f)).size, 0);
 
-    ensureDocContains(DOC, `| \`index.<id>.wasm\` | ${mib(wasm)} MB`, 'wasm payload size');
-    ensureDocContains(DOC, `| \`index.<id>.pck\` | ${mib(pck)} MB`, 'pck payload size');
+    ensureDocContains(DOC, `| \`index.<id>.wasm\` | ${mib(wasm)} MB | ${mib(gzipOf('.wasm'))} MB |`, 'wasm payload row');
+    ensureDocContains(DOC, `| \`index.<id>.pck\` | ${mib(pck)} MB | ${mib(gzipOf('.pck'))} MB |`, 'pck payload row');
     ensureDocContains(DOC, `| **total** | **${mib(total)} MB**`, 'total payload size');
 }
 

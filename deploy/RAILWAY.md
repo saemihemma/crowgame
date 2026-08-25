@@ -57,13 +57,16 @@ That makes the cache policy simple and, more importantly, correct:
 | `index.html` | `no-store` | ~5 KB, and the only file that knows which payload belongs to this build |
 | `index.<id>.*` | `public, max-age=31536000, immutable` | the name is the content, so it can never be stale |
 
-Measured payload. **The raw column is derived from `output/web` by
-`npm run validate:docs`**, so it cannot drift from the artifact again — it had
-already drifted 2 MB before that check existed:
+Measured payload. **Both columns are derived from `output/web` by
+`npm run validate:docs`**, so they cannot drift from the artifact again — the raw
+column had already drifted 2 MB before that check existed, and the gzip figures
+were accurate but ungated while the egress arithmetic below depends on them.
+Gzip is measured with node's zlib at level 9; a server's own encoder will differ
+by a few tenths of a MB:
 
 | File | Raw | gzip |
 | --- | --- | --- |
-| `index.<id>.wasm` | 33.7 MB | 7.6 MB |
+| `index.<id>.wasm` | 33.7 MB | 7.7 MB |
 | `index.<id>.pck` | 13.6 MB | 8.1 MB |
 | `index.<id>.js` + worklet | 0.3 MB | 0.1 MB |
 | **total** | **47.7 MB** | **~15.8 MB** |

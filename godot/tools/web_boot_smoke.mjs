@@ -41,6 +41,11 @@ function resolveChromium() {
 // iPad (10th gen) CSS viewport in landscape — the owner's primary device class.
 const IPAD = { width: 1180, height: 820 };
 
+/** A blank or near-blank frame is not a render. A working build measures ~2714. */
+const MIN_DISTINCT_COLORS = 256;
+/** `stretch/aspect=expand` makes the viewport the window, so bars are zero. */
+const MAX_LETTERBOX_PX = 0;
+
 async function main() {
     // The payload is content-addressed (index.<id>.wasm), so this looks for the
     // pattern rather than a fixed name.
@@ -165,7 +170,17 @@ async function main() {
         });
 
         const result = {
-            accepted: consoleErrors.length === 0 && failedRequests.length === 0 && canvas.width > 0 && distinctColors > 1,
+            // GATED, not merely recorded. `distinctColors > 1` accepted a
+            // two-colour frame as a render, and nothing checked the geometry at
+            // all — so a regression to the 19.1% letterbox this project fixed
+            // would have printed its number and still passed. Floors are set
+            // well under what a working build measures (2714 colours, 0 bars) so
+            // they fail on a real regression, not on noise.
+            accepted: consoleErrors.length === 0
+                && failedRequests.length === 0
+                && canvas.width > 0
+                && distinctColors >= MIN_DISTINCT_COLORS
+                && letterbox.barsTotalPx <= MAX_LETTERBOX_PX,
             kind: 'web_export_boot_smoke',
             whatThisIs: 'Exported output/web build booted in Chromium at an iPad landscape viewport with touch enabled.',
             whatThisIsNot: 'Not real iPad Safari verification. WebKit audio unlock, memory ceilings and WASM limits are unproven here.',
@@ -185,6 +200,12 @@ async function main() {
         console.log(`distinct colors : ${distinctColors} (full canvas)`);
         console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars (${letterbox.verticalBarsPx}v/${letterbox.horizontalBarsPx}h), canvas covers ${letterbox.screenUsedPct}% of the viewport`);
         console.log(`console errors  : ${consoleErrors.length}`);
+        if (distinctColors < MIN_DISTINCT_COLORS) {
+            console.error(`FAIL: only ${distinctColors} distinct colours (floor ${MIN_DISTINCT_COLORS}) — the build booted but did not render`);
+        }
+        if (letterbox.barsTotalPx > MAX_LETTERBOX_PX) {
+            console.error(`FAIL: ${letterbox.barsTotalPx}px of bars (floor ${MAX_LETTERBOX_PX}) — gate B1 has regressed`);
+        }
         console.log(`failed requests : ${failedRequests.length}`);
         for (const e of consoleErrors.slice(0, 5)) console.log(`  ERR ${e}`);
         for (const f of failedRequests.slice(0, 5)) console.log(`  REQ ${f}`);
