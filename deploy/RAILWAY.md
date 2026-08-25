@@ -148,9 +148,30 @@ For each environment (`staging`, then `prod`):
 5. **Settings → Networking:** do **not** generate a public domain. Private only.
 6. **Variables:**
    ```
-   DATABASE_URL = ${{ Postgres.DATABASE_URL }}
-   CROW_ENV     = staging | production
+   DATABASE_URL          = ${{ Postgres.DATABASE_URL }}
+   CROW_ENV              = staging | production
+   CROW_PUBLIC_BASE_URL  = https://<the web service's public domain>
+   CROW_MAIL_DRIVER      = http
+   CROW_MAIL_ENDPOINT    = <the mail processor's send URL>
+   CROW_MAIL_API_KEY     = <its key>
+   CROW_MAIL_FROM        = Hörmann <no-reply@your-domain>
    ```
+   **The last five are not optional, and following this step without them ships a
+   production where cloud save can never be turned on.** `CROW_MAIL_DRIVER`
+   defaults to `log`, so `createMailer` returns a `LogMailer` with
+   `delivers = false`; every enrollment then answers `sent: false,
+   delivery: 'unavailable'` and writes the sign-in link to the server log instead
+   of the parent's inbox. The code degrades honestly and says so in the response —
+   this list was the gap, and it listed only the first two for as long as the
+   runbook has existed.
+
+   `CROW_PUBLIC_BASE_URL` is what the emailed link points at. Unset, the link is
+   relative and unusable from an inbox.
+
+   Note for PRIVACY.md: turning the mail driver on introduces the first third
+   party that sees a parent's email address. That page says which one; keep the
+   two in step when the processor changes.
+
    The service binds `::` by default. Do not override `HOST` to `0.0.0.0` —
    Railway's private network is IPv6, and that single change is the classic way
    to end up with a service that looks healthy and is unreachable.

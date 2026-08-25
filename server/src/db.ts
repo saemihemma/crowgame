@@ -25,8 +25,7 @@ export const pool = new pg.Pool({
  *
  * A request handler that reaches for this instead of `withAppRole` silently
  * opts out of both defences the schema provides: the RLS policies become
- * decorative, and the deliberate absence of DELETE on the append-only tables
- * stops applying. `POST /api/v1/errors` did exactly that, unauthenticated, while
+ * decorative, and the withheld DELETE on `attempts` stops applying. `POST /api/v1/errors` did exactly that, unauthenticated, while
  * a comment two files away claimed every path dropped the role — so
  * `test/role-isolation.test.ts` now asserts that no route imports this.
  *
@@ -51,8 +50,14 @@ export async function withTransaction<T>(fn: (client: pg.PoolClient) => Promise<
  * Run fn in a transaction as the non-superuser `crow_app` role.
  *
  * This is the floor for every request path, family-scoped or not: no DDL, no
- * ownership, and no DELETE on `attempts` or `child_save_history`, so a query bug
- * cannot rewrite the record of what a child did. `SET LOCAL` reverts on commit
+ * ownership, and no DELETE on `attempts`, so a query bug cannot rewrite the
+ * record of what a child answered.
+ *
+ * `child_save_history` is NOT in that set, though three comments and SECURITY.md
+ * used to say it was: the role holds DELETE there because `recordHistory` prunes
+ * to `CROW_SAVE_HISTORY_DEPTH` versions. What bounds that table is the prune's
+ * own `server_version <= $2 - $3` window, so a bad `serverVersion` reaching it is
+ * a bug the grant will not catch. `SET LOCAL` reverts on commit
  * or rollback, so a pooled connection cannot carry the role into the next
  * request.
  *

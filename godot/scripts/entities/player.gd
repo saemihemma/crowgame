@@ -54,12 +54,19 @@ func _physics_process(delta: float) -> void:
 		"jump_just_pressed": Input.is_action_just_pressed("jump"),
 		"jump_held": Input.is_action_pressed("jump"),
 	}
-	PlayerMotion.compute_velocity(_state, input, is_on_floor(), _tuning, delta)
+	var was_on_floor := is_on_floor()
+	PlayerMotion.compute_velocity(_state, input, was_on_floor, _tuning, delta)
 	velocity = Vector2(float(_state["vx"]), float(_state["vy"]))
+	# Captured before move_and_slide resolves the collision, which zeroes vy on a
+	# landing -- so this is the speed the crow actually hit the ground at.
+	var fall_speed := velocity.y
 	move_and_slide()
 	# Write resolved velocity back so collisions (landing/ceiling) reset feel state.
 	_state["vx"] = velocity.x
 	_state["vy"] = velocity.y
+
+	if not was_on_floor and is_on_floor() and fall_speed >= LAND_SOUND_MIN_FALL_SPEED:
+		AudioManager.play_event("land")
 
 	if input["left"]:
 		_facing = -1
@@ -91,6 +98,13 @@ func _update_animation() -> void:
 			_sprite.play("walk")
 	elif _sprite.animation != "idle":
 		_sprite.play("idle")
+
+## Below this downward speed a landing is a step off a kerb, not a landing, and
+## playing the thud would turn walking across uneven ground into a rattle. Chosen
+## as roughly half the speed a full-height jump lands at, which is well clear of
+## the few px/s that `move_and_slide` produces on a slope.
+const LAND_SOUND_MIN_FALL_SPEED := 220.0
+
 
 func _on_jumped() -> void:
 	AudioManager.play_event("jump")

@@ -31,7 +31,7 @@ claim this script "rejects all six" while implementing two of them:
 Escape hatch: append `# hardcode-ok` to a line to allow it (brand/diagnostic).
 Run: python3 godot/tools/check_hardcoding.py [--selftest]
 """
-import os, re, sys
+import json, os, re, sys
 
 SCRIPTS = os.path.join(os.path.dirname(__file__), "..", "scripts")
 ALLOW = "# hardcode-ok"
@@ -84,6 +84,66 @@ def scan() -> list:
 	return hits
 
 
+AUDIO_EVENTS = os.path.join(os.path.dirname(__file__), "..", "data", "audio", "sound_events.json")
+EVENT_CALL_RE = re.compile(r'play_event\(\s*"([a-z_]+)"\s*\)')
+
+
+def check_audio_events() -> list:
+	"""Every play_event key is registered, and every registered event has a caller.
+
+	Rule 6 above funnels sound through play_event, which is the right shape and
+	silent about the thing that actually breaks: `AudioManager.play_event` does
+	`SOUND_EVENTS.get(event, "")` and returns on empty, so a typo is a no-op with
+	no error, no warning and no failing test. That is not hypothetical — the four
+	rule-6 violations this guard was extended to catch were ALL silent no-ops
+	naming a key that does not exist, and fixing them left `land` registered
+	against a real asset with no caller at all. Rule 6 was gated; its failure mode
+	was not.
+
+	So this derives both directions, like the wire-contract check in
+	validate_docs.js: an unknown key is a typo, and an uncalled event is either a
+	missing call site or a registration to delete. Neither can be decided by the
+	tool, so both fail and say which.
+
+	`test_registries.gd` walks event -> manifest key and never sees the call
+	sites, which is why it could not catch either.
+	"""
+	problems = []
+	with open(AUDIO_EVENTS, encoding="utf-8") as f:
+		registered = {k for k in json.load(f) if not k.startswith("_")}
+
+	called = {}
+	for root, _, files in os.walk(SCRIPTS):
+		for fn in files:
+			if not fn.endswith(".gd"):
+				continue
+			path = os.path.join(root, fn)
+			with open(path, encoding="utf-8") as f:
+				for i, line in enumerate(f, 1):
+					if ALLOW in line or line.strip().startswith("#"):
+						continue
+					for key in EVENT_CALL_RE.findall(line):
+						called.setdefault(key, []).append(
+							(os.path.relpath(path, os.path.join(SCRIPTS, "..")), i))
+
+	if not registered:
+		problems.append("sound_events.json registered no events; this check enforced nothing")
+
+	for key in sorted(set(called) - registered):
+		for rel, i in called[key]:
+			problems.append(
+				"%s:%d  play_event(\"%s\") names no event in data/audio/sound_events.json "
+				"-- AudioManager.play_event returns silently on an unknown key, so this is "
+				"a sound that never plays" % (rel, i, key))
+
+	for key in sorted(registered - set(called)):
+		problems.append(
+			"data/audio/sound_events.json: event \"%s\" has no play_event caller in "
+			"godot/scripts -- either wire it up or remove the registration" % key)
+
+	return problems
+
+
 def selftest() -> int:
 	samples = [
 		('x.text = "Hello there"', True),
@@ -124,12 +184,18 @@ def main() -> int:
 	if "--selftest" in sys.argv:
 		return selftest()
 	hits = scan()
-	if not hits:
+	audio = check_audio_events()
+	if not hits and not audio:
 		print("hardcode guard: clean")
 		return 0
-	print("hardcode guard: %d violation(s) — move to data or add '# hardcode-ok':" % len(hits))
-	for rel, i, why, src in hits:
-		print("  %s:%d  %s\n      %s" % (rel, i, why, src))
+	if hits:
+		print("hardcode guard: %d violation(s) — move to data or add '# hardcode-ok':" % len(hits))
+		for rel, i, why, src in hits:
+			print("  %s:%d  %s\n      %s" % (rel, i, why, src))
+	if audio:
+		print("audio events: %d unresolved reference(s):" % len(audio))
+		for line in audio:
+			print("  %s" % line)
 	return 1
 
 

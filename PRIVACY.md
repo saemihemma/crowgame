@@ -19,8 +19,12 @@ stores, what leaves your device, and how to delete all of it.
 - Your child's **name is just a label they picked**. We never ask for their real
   name, age, birthday, school, photo, or location, and there is nowhere in the
   game to enter any of it.
-- There are **no ads, no analytics, no tracking, and no third parties**. Nothing
-  about your child is sold, shared, or used to build a profile.
+- There are **no ads, no analytics, and no tracking**. Nothing about your child is
+  sold, shared, or used to build a profile. Nothing about a *child* reaches a
+  third party at all. The one exception is the grown-up's own address: if cloud
+  save is on, a mail service sends the sign-in link, so it sees that email
+  address and nothing else. When no mail service is configured the feature simply
+  cannot be switched on — the game says so rather than pretending.
 - You can **export everything** and **delete everything**, at any time, and the
   delete is immediate and permanent.
 
@@ -89,10 +93,17 @@ used for exactly one thing: emailing you a sign-in link. It is stored in two
 places for that purpose — against your family, and on the sign-in link itself
 until the link is used or expires.
 
-The shortened network address and the browser user-agent line in an error report
-are not asked for; every web server receives them on every request. We keep them
-in coarse form for abuse triage, on the error reports only, and they are deleted
-with the rest of the report after 30 days.
+The shortened network address and the browser user-agent line are not asked for;
+every web server receives them on every request. Where they are kept:
+
+- **On error reports** — the shortened address and the user-agent line, for abuse
+  triage, deleted with the rest of the report after 30 days.
+- **On each device you sign in** — the user-agent line only, stored against the
+  device so the device list can say "Safari on iPad" rather than an opaque id.
+  There is no timer on this one: it lives as long as the device does, and is
+  deleted when you remove the device or delete the family. An earlier version of
+  this page said the user-agent was kept "on the error reports only", which was
+  wrong.
 
 ## Keeping families apart
 
@@ -104,7 +115,14 @@ one family's records visible to another.
 
 Both are available from the moment anything is stored, not as a later addition:
 
-- **Export** — download everything held about your family as one file.
+- **Export** — download everything held about your family as one file: the
+grown-up email, each child, their saves and save history, every answer recorded,
+the devices you have signed in, and the sync-conflict log. Two things are left
+out and the file says so in its own `notIncluded` field: live session credentials
+and in-flight sign-in codes, because handing those to whoever opens the file
+would only widen the damage if it leaked. A test derives the family's table list
+from the database and fails the build if a new one is neither exported nor named
+there, so "everything" is checkable rather than a promise.
 - **Delete** — erase your family completely. Every child, every save, every
   answer. It is an immediate, permanent delete, not a hidden flag, and it cannot
   be undone.

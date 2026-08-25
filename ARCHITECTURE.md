@@ -633,7 +633,12 @@ is not optional.
 - `families` ← `parents(email)` — the parent's email is the only PII stored
 - `children(family_id, display_name)` — no PIN, no other child data
 - `devices` + `device_tokens(token_sha256)` — the authorization subject is the
-  device, scoped to a family, never the child
+  device, scoped to a family, never the child. `devices.user_agent` holds the
+  browser's UA line (≤400 chars), written at enrolment so the device list can name
+  a device rather than show an id. Nothing prunes it: it lives as long as the
+  device row, unlike the copy on an error report, which goes with its day
+  partition. `PRIVACY.md` says so too — it did not until a review found this
+  column disclosed nowhere.
 - `child_saves` — one blob per child, arbitrated by `problems_attempted`
 - `child_save_history` — the last `CROW_SAVE_HISTORY_DEPTH` versions (default
   20), so a bad merge is recoverable

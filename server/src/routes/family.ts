@@ -288,11 +288,32 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
     // are cheap now and awkward to retrofit, and for children's data a delete
     // path is not optional.
 
+    // PRIVACY.md promises "everything held about your family as one file", and
+    // this used to return three tables of the nine a family owns. The omission
+    // that mattered most was `parents`: the grown-up email is the only piece of
+    // personal information in the system, so a data-portability export that left
+    // it out was missing the one row a subject-access request is actually about.
+    //
+    // Two tables are deliberately excluded and named as such in the response, so
+    // "everything" is a claim the reader can check rather than take:
+    //   device_tokens — credential material. These are SHA-256 hashes of live
+    //     session tokens; handing them to whoever holds the cookie widens the
+    //     blast radius of a leaked export for no benefit to the reader.
+    //   login_codes  — the same, for in-flight sign-in links and pairing codes.
+    // `test/role-isolation.test.ts` derives the family-scoped table set from the
+    // catalog and fails if a new one appears in neither the export nor that list.
     app.get('/api/v1/family/export', auth, async (request, reply) => {
         const { familyId } = deviceOf(request);
         const data = await withFamily(familyId, async client => {
+            const parents = await client.query(
+                'select email, created_at from parents where family_id = $1', [familyId]);
             const children = await client.query(
                 'select id, display_name, created_at from children where family_id = $1', [familyId]);
+            const childAliases = await client.query(
+                `select child_id, legacy_child_id, created_at from child_aliases where family_id = $1`, [familyId]);
+            const devices = await client.query(
+                `select id, label, user_agent, created_at, last_seen_at
+                   from devices where family_id = $1`, [familyId]);
             const saves = await client.query(
                 `select child_id, save, save_version, problems_attempted, server_version, updated_at
                    from child_saves where family_id = $1`, [familyId]);
@@ -301,11 +322,28 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
                         hints_used, response_ms, problem_elo, curriculum_step, selection_lane,
                         answered_at, received_at
                    from attempts where family_id = $1 order by child_id, seq`, [familyId]);
+            const saveHistory = await client.query(
+                `select child_id, server_version, created_at
+                   from child_save_history where family_id = $1 order by child_id, server_version`,
+                [familyId]);
+            const syncConflicts = await client.query(
+                `select child_id, incoming_attempted, stored_attempted, outcome, created_at
+                   from sync_conflicts where family_id = $1`,
+                [familyId]);
             return {
                 exportedAt: new Date().toISOString(),
+                notIncluded: {
+                    device_tokens: 'session credentials (SHA-256 hashes of live tokens)',
+                    login_codes: 'in-flight sign-in links and pairing codes',
+                },
+                parents: parents.rows,
                 children: children.rows,
+                childAliases: childAliases.rows,
+                devices: devices.rows,
                 saves: saves.rows,
                 attempts: attempts.rows,
+                saveHistory: saveHistory.rows,
+                syncConflicts: syncConflicts.rows,
             };
         });
         return reply
@@ -330,9 +368,10 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
         //
         // crow_app can perform the cascade: it holds DELETE on `families`, and
         // referential-integrity cascades run as the table owner, so they reach
-        // `attempts` and `child_save_history` even though the role deliberately
-        // cannot DELETE from them directly. Verified against a real cluster in
-        // test/role-isolation.test.ts.
+        // `attempts` even though the role cannot DELETE from it directly. (It CAN
+        // delete from `child_save_history` — the prune needs that — which an
+        // earlier version of this comment got wrong.) Verified against a real
+        // cluster in test/role-isolation.test.ts.
         await withFamily(familyId, client =>
             client.query('delete from families where id = $1', [familyId]));
         return reply

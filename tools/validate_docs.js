@@ -547,6 +547,12 @@ function validateLiveSourceReferences() {
         ...walkFiles('math-kernel', new Set(['.ts'])),
         ...walkFiles('tools', new Set(['.js', '.mjs', '.py'])),
         ...walkFiles('godot/tools', new Set(['.mjs', '.py', '.sh'])),
+        // server/** was the last hole. It is clean today, which is the reason to
+        // include it now rather than after it is not: the ban keeps being extended
+        // one tree behind the tree that acquired the defect.
+        ...walkFiles('server/src', new Set(['.ts'])),
+        ...walkFiles('server/test', new Set(['.ts', '.md'])),
+        ...walkFiles('server/migrations', new Set(['.sql'])),
         ...walkFiles('.', new Set(['.md'])),
     ];
 

@@ -2,10 +2,20 @@
  * The two database defences the schema provides, asserted by running them.
  *
  * `migrations/002` enables and FORCEs row-level security on the six child-data
- * tables, and deliberately withholds DELETE on `attempts` and
- * `child_save_history` so the record of what a child did cannot be rewritten.
- * Both defences depend entirely on one statement — `set local role crow_app` —
- * because a superuser bypasses RLS outright and holds every privilege.
+ * tables, and deliberately withholds DELETE on `attempts` so the record of what a
+ * child answered cannot be rewritten. Both defences depend entirely on one
+ * statement — `set local role crow_app` — because a superuser bypasses RLS
+ * outright and holds every privilege.
+ *
+ * `child_save_history` deliberately DOES get DELETE, because the save prune needs
+ * it. That asymmetry is asserted below in both directions, and the reason is a
+ * round of review: this file's own header, SECURITY.md, db.ts, family.ts and
+ * 002's own comment all claimed both tables withheld DELETE, while 002 granted it
+ * 13 lines under the comment denying it. The test asserted only the `attempts`
+ * half, so it was shaped around what was true rather than around what was
+ * claimed — which is exactly how a doc sentence outlives the code it describes.
+ * A grant table is derived from the live catalog at the end of this file so the
+ * privileges cannot drift from the sentences describing them.
  *
  * Nothing tested that statement. Two of the four database entry points did not
  * execute it: `DELETE /api/v1/family`, the only destructive endpoint, and
@@ -155,6 +165,104 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
                     (select count(*)::text from attempts where family_id = $1) as attempts`,
             [target]);
         assert.deepEqual(rows[0], { kids: '0', attempts: '0' });
+    });
+
+    it('crow_app CAN delete save history, because the prune needs it', async () => {
+        // The other half of the asymmetry. Asserting only the refusal let four
+        // comments and SECURITY.md claim a defence that is not there — and it
+        // matters: what bounds this table is recordHistory's
+        // `server_version <= $2 - $3` window, not a privilege, so a bad
+        // serverVersion is a bug no grant will stop.
+        const familyId = families[0]!;
+        const child = await pool.query<{ id: string }>(
+            'select id from children where family_id = $1', [familyId]);
+        const childId = child.rows[0]!.id;
+        await pool.query(
+            `insert into child_saves (family_id, child_id, save, save_version, server_version)
+             values ($1, $2, '{}'::jsonb, 1, 1)
+             on conflict do nothing`, [familyId, childId]);
+        await pool.query(
+            `insert into child_save_history (family_id, child_id, save, server_version)
+             values ($1, $2, '{}'::jsonb, 1)`, [familyId, childId]);
+        const deleted = await withFamily(familyId, c =>
+            c.query('delete from child_save_history where child_id = $1', [childId]));
+        assert.ok((deleted.rowCount ?? 0) > 0,
+            'the prune must be able to delete history; if this fails, saveSync is broken');
+    });
+
+    it('the grants match the sentences that describe them', async () => {
+        // Derived from the live catalog rather than restated, so a migration that
+        // widens a privilege fails HERE, next to the comments that would become
+        // wrong, instead of silently making four of them lies.
+        const { rows } = await pool.query<{ table_name: string; privs: string }>(
+            `select table_name, string_agg(privilege_type, ',' order by privilege_type) as privs
+               from information_schema.table_privileges
+              where grantee = 'crow_app' and table_schema = 'public'
+              group by table_name`);
+        const got = new Map(rows.map(r => [r.table_name, r.privs]));
+        const expected: Record<string, string> = {
+            // No DELETE: the record of what a child answered.
+            attempts: 'INSERT,SELECT',
+            // DELETE on purpose: the save prune. See the header.
+            child_save_history: 'DELETE,INSERT,SELECT',
+            // Error tables: insert-and-count only. Retention drops partitions as
+            // the owner, so the application cannot delete a report either.
+            error_events: 'INSERT,SELECT',
+            error_groups: 'INSERT,SELECT,UPDATE',
+            // Read-only, for the health probe (migration 003).
+            schema_migrations: 'SELECT',
+        };
+        for (const [table, privs] of Object.entries(expected)) {
+            assert.equal(got.get(table), privs,
+                `crow_app privileges on ${table} changed. Update the docs that describe ` +
+                'them in the same commit: SECURITY.md, db.ts, family.ts and migration 002.');
+        }
+    });
+
+    it('the export covers every family-scoped table, or names why not', async () => {
+        // PRIVACY.md promises "everything held about your family as one file".
+        // Nothing checked that, and the handler returned 3 of 9 tables — omitting
+        // `parents`, which holds the only PII in the system.
+        //
+        // Derived from the catalog, not restated: every table with a family_id
+        // column must appear in the export response or in its `notIncluded` map.
+        // A new family-scoped table then fails HERE rather than quietly narrowing
+        // a promise made to a parent.
+        const { rows } = await pool.query<{ table_name: string }>(
+            `select c.table_name
+               from information_schema.columns c
+               join information_schema.tables t
+                 on t.table_schema = c.table_schema and t.table_name = c.table_name
+              where c.table_schema = 'public' and c.column_name = 'family_id'
+                and t.table_type = 'BASE TABLE'`);
+        const familyScoped = new Set(rows.map(r => r.table_name));
+        assert.ok(familyScoped.size >= 8,
+            `expected the family-scoped tables, found ${familyScoped.size}`);
+
+        const source = readFileSync(join(ROUTES_DIR, 'family.ts'), 'utf8');
+        const exportBody = source.slice(source.indexOf("'/api/v1/family/export'"));
+        const handler = exportBody.slice(0, exportBody.indexOf('content-disposition'));
+
+        // The exclusion list is read from the notIncluded literal ALONE, not from
+        // the whole handler. The first version of this check matched `${table}:`
+        // anywhere, which the response object's own `parents: parents.rows` key
+        // satisfied — so deleting the parents query left the gate green. Caught by
+        // mutation-testing the gate rather than by trusting it, which is the
+        // lesson this whole branch keeps relearning.
+        const excludedBlock = handler.slice(
+            handler.indexOf('notIncluded: {'),
+            handler.indexOf('notIncluded: {') === -1 ? 0 : handler.indexOf('},', handler.indexOf('notIncluded: {')));
+        assert.ok(excludedBlock.includes('device_tokens'),
+            'the notIncluded literal could not be located; this check would enforce nothing');
+
+        for (const table of familyScoped) {
+            const selected = new RegExp(`from\\s+${table}\\b`).test(handler);
+            const namedAsExcluded = new RegExp(`\\b${table}\\s*:`).test(excludedBlock);
+            assert.ok(selected || namedAsExcluded,
+                `${table} is family-scoped but the export neither selects from it nor lists it ` +
+                'in notIncluded. PRIVACY.md promises "everything held about your family", so a ' +
+                'new table has to be exported or its exclusion stated in the response.');
+        }
     });
 
     it('health can read schema_migrations as crow_app', async () => {

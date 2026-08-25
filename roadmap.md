@@ -54,6 +54,31 @@ least one step-up per early session and frustration flags under 10%.
 ## P2 — Experience decisions that need making
 
 
+### Should an unloseable streak exist at all?
+The game keeps an in-level streak: a counter, a HUD flame at 3, an "ON FIRE" state
+at 5, and the rule that a wrong answer PAUSES it rather than resetting it. Only
+leaving the level clears the count.
+
+`PRODUCT.md` used to deny the mechanic outright — "nothing is tied to time or
+streaks" — which was a true statement about golden problems generalised into a
+product-wide commitment. It has been corrected to describe what ships. What has
+not been decided is whether it should.
+
+The case for it as built: a streak that cannot be lost puts no punishment on the
+single most confidence-sensitive moment a child has, and children replaying a
+level to protect one are children doing more maths. The case against: it is still
+a thing to protect, and `PRODUCT.md` also says there should be nothing a child can
+feel anxious about protecting. Both sentences are now in that file, which is
+honest and unresolved rather than settled.
+
+Note that the toast was separately a defect and is fixed: it read "x{0} COINS!"
+while no coin path multiplies anything, so a child was promised three coins and
+handed one. It now says the count, and `test_i18n.gd` fails if either toast string
+names a currency or a multiplier.
+
+*Done when:* the mechanic is kept, changed or removed on purpose, and `PRODUCT.md`
+states one position instead of two.
+
 ### The on-screen controls are gated on geometry, not on input
 `godot/tests/test_touch_gates.gd` now checks every pad at four real device
 viewports for the 88px target floor (B3), the 32px safe area (B4), thumb-corner
@@ -247,6 +272,28 @@ against the title ending at x 636.
 long a child stays with the game.
 
 ## P4 — Build and tooling
+
+### `error_groups` grows without bound, while `error_events` is bounded
+Retention is asymmetric, and only one half was designed. `error_events` is
+daily-partitioned and dropped whole past `CROW_ERROR_RETAIN_DAYS` (30), which is
+the mechanism the runbook and `SECURITY.md` both describe. `error_groups` has no
+retention job and no cap on distinct fingerprints, and it is the table that keeps
+the `message` plus a `{context, stack}` sample indefinitely.
+
+The fingerprint is a hash of the normalized message, so a caller varying the
+message mints a new permanent row. `POST /api/v1/errors` is anonymous and rate
+limited to 20/min/IP with up to 10 events a request, so a single address can add
+durable rows at roughly a few MB a minute, indefinitely. Nothing prunes them and
+nothing alerts on the row count.
+
+This is not the endpoint being insecure — it is body-capped, sanitized, reflects
+nothing back, and stores no player-typed text — it is retention that was only
+half specified. `SECURITY.md` now names it rather than leaving it to be
+discovered.
+
+*Done when:* groups have either a last-seen retention window, a distinct-
+fingerprint cap with a documented eviction rule, or a stated decision that
+unbounded growth is acceptable at this scale with the arithmetic to back it.
 
 ### Dead public API under `godot/scripts/`
 The `text_manager.gd` half of this is done: the six functions that made up the

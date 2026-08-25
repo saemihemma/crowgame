@@ -221,8 +221,11 @@ begin
 end $$;
 
 -- Privileges for the application role. Deliberately no DDL, no ownership, and
--- no DELETE on the append-only tables — attempts and save history are a record,
--- and the application has no reason to be able to rewrite one.
+-- and no DELETE on `attempts` — what a child answered is a record, and the
+-- application has no reason to be able to rewrite one. Note the asymmetry with
+-- `child_save_history` 13 lines below, which DOES get DELETE because the save
+-- prune needs it; this comment used to claim both were withheld, and four other
+-- places in the tree repeated it.
 grant usage on schema public to crow_app;
 grant select, insert, update, delete on
     families, parents, children, child_aliases, devices, device_tokens,
