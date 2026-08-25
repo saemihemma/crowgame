@@ -285,5 +285,6 @@
   "menu.continue_detail": "{0} · {1} owls home",
   "level_select.owl_count": "x{0}",
   "game.stat_owls": "Owls home",
-  "game.stat_coins": "Coins"
+  "game.stat_coins": "Coins",
+  "game.completion_stats": "Owls saved: {0}   Coins: {1}"
 }

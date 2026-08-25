@@ -106,6 +106,26 @@ function formatAssetLabel(relativePath) {
     return relativePath.replace(/^godot\//, '');
 }
 
+/**
+ * Art slots the game deliberately ships without.
+ *
+ * Each of these is referenced from a `.gd` constant that is paired with a
+ * documented fallback — owl_ring.gd says outright that "the ring falls back to a
+ * head crop of the world sprite until it exists", and the two READMEs beside
+ * these directories describe them as drop-in slots: put a file here and it is
+ * picked up with no code change.
+ *
+ * The scanner cannot tell an optional slot from a requirement, because both are
+ * just a res:// string. So name them here. They are reported as ABSENT rather
+ * than MISS: still visible, but not a build failure, because the fallback IS the
+ * shipped behaviour. Delete an entry the moment its art lands.
+ */
+const OPTIONAL_ASSET_SLOTS = new Set([
+    'godot/assets/sprites/ui/board/board-9slice.png',
+    'godot/assets/sprites/ui/board/count-token-32.png',
+    'godot/assets/sprites/ui/hud/owl-icon-32.png',
+]);
+
 function printGroup(title, entries, missing) {
     console.log(`\n${colors.cyan}${colors.bold}${title}${colors.reset}`);
     console.log('-'.repeat(60));
@@ -115,6 +135,8 @@ function printGroup(title, entries, missing) {
         const label = formatAssetLabel(relativePath);
         if (result.exists) {
             console.log(`  ${colors.green}OK${colors.reset} ${label.padEnd(42)} (${formatSize(result.size)})`);
+        } else if (OPTIONAL_ASSET_SLOTS.has(relativePath)) {
+            console.log(`  ${colors.cyan}ABSENT${colors.reset} ${label.padEnd(38)} (optional slot; code falls back)`);
         } else {
             console.log(`  ${colors.red}MISS${colors.reset} ${label}`);
             missing.push(relativePath);

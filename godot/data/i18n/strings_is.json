@@ -285,5 +285,6 @@
   "menu.continue_detail": "{0} · {1} uglur heima",
   "level_select.owl_count": "x{0}",
   "game.stat_owls": "Uglur heima",
-  "game.stat_coins": "Peningar"
+  "game.stat_coins": "Peningar",
+  "game.completion_stats": "Uglum bjargað: {0}   Mynt: {1}"
 }
