@@ -131,6 +131,29 @@ describe('analytics', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
         assert.equal(missing.statusCode, 404);
     });
 
+    it('an event ingested before its day partition exists cannot poison partition creation', async () => {
+        // The event this suite posted above landed in error_events_default when
+        // no partition for today existed yet — exactly the state that used to
+        // make maintenance fail forever (and cancel every ingestion test that
+        // ran after this suite). The self-healing ensure function must create
+        // today's partition anyway and carry the stray row into it.
+        const { runMaintenance } = await import('../src/maintenance.ts');
+        await assert.doesNotReject(runMaintenance());
+
+        const strays = await pool.query<{ n: string }>(
+            `select count(*)::text as n from only error_events_default`,
+        );
+        assert.equal(Number(strays.rows[0]!.n), 0, 'no rows left stranded in the default partition');
+
+        const list = await app.inject({
+            method: 'GET',
+            url: '/api/v1/admin/errors?status=all&limit=500',
+            headers: { authorization: `Bearer ${ADMIN_TOKEN}` },
+        });
+        const survived = (list.json().groups as Array<{ kind: string | null }>).some(g => g.kind === 'test_kind');
+        assert.ok(survived, 'the early event survives the rescue');
+    });
+
     it('parent report rolls attempts up by domain and kind, family-scoped', async () => {
         const { PROBLEM_CATALOG } = await import('../src/generated/problemCatalog.ts');
         const entries = Object.entries(PROBLEM_CATALOG);
