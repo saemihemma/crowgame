@@ -16,7 +16,8 @@
     "jump_dust": 8,
     "completion": 24,
     "default": 14,
-    "owl_saved": 30
+    "owl_saved": 30,
+    "chain_link": 12
   },
   "number_fly_up": {
     "rise": 36.0,

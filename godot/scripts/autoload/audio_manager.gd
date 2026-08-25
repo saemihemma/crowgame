@@ -73,6 +73,7 @@ func stop_music(_fade_ms: float = 500.0) -> void:
 ## Mute is a separate flag rather than "master volume 0" so unmuting restores
 ## whatever the volume was. Mirrors AudioManager.setMuted() in the web build.
 const MUTE_KEY := "crow_sound_muted"
+const VOLUME_KEY := "crow_master_volume"
 
 var _muted := false
 
@@ -97,10 +98,29 @@ func _load_mute_preference() -> void:
 	# key was never written, and String(null) is a runtime error -- so it fired on
 	# exactly the boot that has no stored choice to read, a fresh install.
 	_muted = str(Persistence.get_item(MUTE_KEY)) == "1"
+	var stored := str(Persistence.get_item(VOLUME_KEY))
+	if stored != "" and stored != "<null>" and stored.is_valid_float():
+		_master_volume = clampf(stored.to_float(), 0.0, 1.0)
 
 
+## Master volume, remembered and applied at once.
+##
+## The setter existed since the audio system was written and did neither: it
+## changed a number that only affected the *next* sound, and forgot the choice
+## on the next launch. A parent turning the volume down in a waiting room needs
+## it down now and down tomorrow.
 func set_master_volume(v: float) -> void:
 	_master_volume = clampf(v, 0.0, 1.0)
+	Persistence.set_item(VOLUME_KEY, str(_master_volume))
+	_apply_music_volume()
+
+## Re-level whatever is already playing. Without this a volume change is
+## inaudible until the next level loads.
+func _apply_music_volume() -> void:
+	if not is_instance_valid(_music_player) or _current_music_key == "":
+		return
+	var def: Dictionary = DataManager.get_dict("AUDIO_MANIFEST").get("music", {}).get(_current_music_key, {})
+	_music_player.volume_db = linear_to_db(_resolve_volume(float(def.get("volume", 1.0)), _music_volume))
 
 func set_music_volume(v: float) -> void:
 	_music_volume = clampf(v, 0.0, 1.0)

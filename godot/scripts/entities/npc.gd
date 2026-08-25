@@ -57,10 +57,12 @@ func _ready() -> void:
 	var npc_tuning := DataManager.get_dict("NPC_TUNING")
 	_bob_amp = float(npc_tuning.get("float_bob_amplitude", 8))
 	_bob_speed = float(npc_tuning.get("float_bob_speed", 1.5))
+	_build_chains()
 	_build_components(definition.get("components", []))
 	_build_prompt()
 	_zone.body_entered.connect(_on_body_entered)
 	_zone.body_exited.connect(_on_body_exited)
+	EventBus.math_challenge_complete.connect(_on_challenge_complete)
 
 func _process(delta: float) -> void:
 	for c in _components:
@@ -126,6 +128,66 @@ func end_interaction() -> void:
 	_interacting = false
 	_cooldown_until = Time.get_ticks_msec() + 2000
 
+# ─── Chains (brand/BRAND_SYSTEM.md §3.4a) ──────────────────
+## One link per answer this owl still wants. Drawn across the perch rather than
+## around the owl - the owl is stuck, not imprisoned (§3.4) - and a link bursts
+## on each correct answer.
+##
+## The point is that the count is readable from across the screen: a three-link
+## owl has to look like more work *before* a child walks over and commits, or
+## the roster of variants may as well not exist.
+const CHAIN_TEXTURE := "res://assets/sprites/objects/chain/chain-link-32.png"
+const CHAIN_BURST_TEXTURE := "res://assets/sprites/objects/chain/chain-link-burst-32.png"
+## Wide enough that three links reach past the owl's own silhouette. At a
+## tighter spacing the whole chain sat inside the 44px body and a three-link owl
+## looked exactly like a one-link owl from any distance - which is the one thing
+## it must not do.
+const CHAIN_LINK_SIZE := 22.0
+const CHAIN_SPACING := 24.0
+const CHAIN_PERCH_Y := -5.0
+
+var _chain_links: Array[Sprite2D] = []
+
+func _build_chains() -> void:
+	var count := int(definition.get("behaviorConfig", {}).get("chainLinks", 0))
+	if count <= 0 or not ResourceLoader.exists(CHAIN_TEXTURE):
+		return
+	var texture: Texture2D = load(CHAIN_TEXTURE)
+	var span := float(count - 1) * CHAIN_SPACING
+	for i in count:
+		var link := Sprite2D.new()
+		link.texture = texture
+		link.scale = Vector2.ONE * (CHAIN_LINK_SIZE / float(texture.get_width()))
+		link.position = Vector2(-span * 0.5 + float(i) * CHAIN_SPACING, CHAIN_PERCH_Y)
+		link.z_index = 1
+		add_child(link)
+		_chain_links.append(link)
+
+## A correct answer breaks one link. Only while this owl is the one being
+## answered: math_challenge_complete is global, and every owl in the level
+## hears it.
+func _on_challenge_complete(result: Dictionary) -> void:
+	if not _interacting or _flown:
+		return
+	if not bool(result.get("correct", false)):
+		return
+	_break_link()
+
+func _break_link() -> void:
+	if _chain_links.is_empty():
+		return
+	var link: Sprite2D = _chain_links.pop_back()
+	if not is_instance_valid(link):
+		return
+	if ResourceLoader.exists(CHAIN_BURST_TEXTURE):
+		link.texture = load(CHAIN_BURST_TEXTURE)
+	DopamineFX.burst(get_parent(), link.global_position,
+		ThemeManager.get_color_value("enemy_pop"), int(Config.fx("burst/chain_link", 12)))
+	var tw := link.create_tween().set_parallel(true)
+	tw.tween_property(link, "scale", link.scale * 1.8, 0.22).set_trans(Tween.TRANS_BACK)
+	tw.tween_property(link, "modulate:a", 0.0, 0.22)
+	tw.chain().tween_callback(link.queue_free)
+
 func is_interacting() -> bool:
 	return _interacting
 
@@ -133,6 +195,9 @@ func fly_away() -> void:
 	if _flown:
 		return
 	_flown = true
+	# The last link takes the perch with it (§3.4a).
+	while not _chain_links.is_empty():
+		_break_link()
 	_zone.monitoring = false
 	var tw := create_tween().set_parallel(true)
 	tw.tween_property(_sprite, "position:y", _sprite.position.y - 400.0, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
@@ -154,8 +219,6 @@ func _build_components(defs: Array) -> void:
 		match t:
 			"interactable":
 				comp = InteractableComponent.new()
-			"dialog":
-				comp = DialogComponent.new(d)
 			"math_challenge":
 				comp = MathChallengeComponent.new(d)
 		if comp != null:

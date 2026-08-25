@@ -291,5 +291,6 @@
   "menu.continue_detail.one": "{world} · {owls} ugla heima",
   "level_select.owl_count": "x{0}",
   "game.stat_owls": "Uglur heima",
-  "game.stat_coins": "Myntir"
+  "game.stat_coins": "Myntir",
+  "pause.volume": "Hljóðstyrkur: {0}%"
 }

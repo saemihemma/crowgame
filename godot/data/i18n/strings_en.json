@@ -291,5 +291,6 @@
   "menu.continue_detail.one": "{world} · {owls} owl home",
   "level_select.owl_count": "x{0}",
   "game.stat_owls": "Owls home",
-  "game.stat_coins": "Coins"
+  "game.stat_coins": "Coins",
+  "pause.volume": "Volume: {0}%"
 }

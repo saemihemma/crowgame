@@ -239,9 +239,12 @@ func _build_ui(opts: Dictionary) -> void:
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(dim)
 
+	# Centred in the upper part of the screen, not the whole of it. The camera
+	# lifts the crow into the strip this leaves free (game.gd), so the two moves
+	# together are what let a child see themselves while they think.
 	var center := CenterContainer.new()
 	center.anchor_right = 1.0
-	center.anchor_bottom = 1.0
+	center.anchor_bottom = float(Config.ui("math_challenge/board_screen_share", 0.78))
 	dim.add_child(center)
 
 	# THE BOARD. There wasn't one: the question and the options were loose labels
