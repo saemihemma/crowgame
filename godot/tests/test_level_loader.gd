@@ -7,6 +7,8 @@ const LEVEL_PATH := "res://data/levels/compiled/level_01_forest.json"
 var _level: Dictionary = {}
 var _parsed: Dictionary = {}
 
+## Per-test setup: parse the compiled level once, then reuse it.
+func _reset() -> void:
 	if _level.is_empty():
 		var f := FileAccess.open(LEVEL_PATH, FileAccess.READ)
 		_level = JSON.parse_string(f.get_as_text())

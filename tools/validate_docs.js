@@ -338,16 +338,17 @@ function validateMathAuthoringReports() {
 
 /** Live code must not point at trees that are not runtime. */
 function validateLiveSourceReferences() {
-    // NOTE: bans on the retired Phaser names (BootScene, public/assets/**) are
-    // NOT here yet, and that is deliberate. Roughly a dozen comments under
-    // godot/scripts/** and godot/data/** still use them. Those files feed the
-    // committed web export's fingerprint, so editing even a comment stales
-    // output/web and demands a full rebuild — a fresh ~23 MB pack in git for a
-    // comment change. The sweep and these two patterns go in together, on the
-    // next commit that rebuilds the export for a real reason. See roadmap.md.
+    // The retired-Phaser names are banned outright now that the sweep has landed.
+    // They cannot come back without failing the build, which is the point: every
+    // one of them was a comment explaining live code against a tree that had been
+    // deleted, and a reader has no way to tell such a comment from a true one.
     const banned = [
         { pattern: /\barchived[\\/]/i, label: 'archived/** (deleted)' },
         { pattern: /\bai_assets[\\/]/i, label: 'ai_assets/** (staging, not runtime)' },
+        { pattern: /\bpublic[\\/]assets[\\/]/i, label: 'public/assets/** (retired Phaser tree)' },
+        { pattern: /\bBootScene\b/, label: 'BootScene (retired Phaser tree)' },
+        { pattern: /\bsrc[\\/](?:math|systems|scenes|ui|entities|utils)[\\/]/i, label: 'src/** (retired Phaser tree)' },
+        { pattern: /\bdocs[\\/]API_CONTRACT\.md\b/, label: 'docs/API_CONTRACT.md (now a section of ARCHITECTURE.md)' },
     ];
 
     const liveFiles = [

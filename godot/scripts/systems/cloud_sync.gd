@@ -1,7 +1,7 @@
 extends Node
 ## CloudSync — cloud save over the Crow API. Autoload.
 ##
-## Contract: docs/API_CONTRACT.md. The parts that matter here:
+## Contract: ARCHITECTURE.md, "The wire contract". The parts that matter here:
 ##
 ##  * The API base is the RELATIVE string "/api/v1". Not configurable. Caddy
 ##    proxies it to a private API service per environment, which is what keeps
@@ -20,7 +20,7 @@ extends Node
 signal state_changed(enrolled: bool)
 signal sync_finished(ok: bool)
 
-## The API path. Relative by design — see docs/API_CONTRACT.md — but Godot's
+## The API path. Relative by design — see ARCHITECTURE.md — but Godot's
 ## HTTPRequest requires an ABSOLUTE url and rejects "/api/v1/...", so the page
 ## origin is resolved once at startup and prefixed. The design property is
 ## preserved: nothing is configured, and whichever environment served the page is
@@ -181,7 +181,7 @@ func flush_now() -> void:
 	var save_data: Dictionary = SaveManager.get_data()
 	# The pending queue is keyed by the DEVICE-LOCAL childId, which is what the
 	# existing storage key uses. The server is addressed by the remote id. Both
-	# ids are in play on purpose — see docs/API_CONTRACT.md.
+	# ids are in play on purpose — see ARCHITECTURE.md.
 	var local_child_id := _local_child_id()
 	var pending: Array = LearnerSyncService.take_pending_attempts(local_child_id, MAX_BATCH)
 	var res := await _request(HTTPClient.METHOD_PUT, "/children/%s/save" % _remote_child_id, {

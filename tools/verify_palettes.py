@@ -17,22 +17,25 @@ godot/data. They do, so this now reads the shipped files and there is one copy.
 
 SCOPE
 -----
-Section 6 is written for the five worlds, so those are what it gates. `forest`
-and `scifi` are pre-brand-system skins whose retirement is tracked in roadmap.md;
-they are measured and reported below but do not fail the build, because holding
-them to a law they predate would only block on a decision nobody has made yet.
-Pointing the law at the shipped files is what surfaced their state at all.
+Section 6 is written for the five worlds, and those are now the only themes the
+game registers. There used to be two pre-brand-system skins, `forest` and
+`scifi`, reported here but not gated because holding them to a law they predated
+would have blocked on an open decision. Pointing this script at the shipped files
+is what surfaced that `scifi` broke the hazard-contrast rule at 2.84 against a
+3.0 floor -- which is what settled the decision. Both are deleted, so every theme
+the game can select is gated, and the exception is gone.
 """
 import json
 import os
+import pathlib
+import re
 import sys
 
 THEMES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'godot', 'data', 'themes')
 
-# The five worlds section 6 is written for, in level order.
+# The five worlds section 6 is written for, in level order. These are every theme
+# ThemeManager registers, so the law now covers the whole set with no exceptions.
 WORLDS = ['emberwood', 'prism_hollow', 'sugarstorm', 'geyserworks', 'aurora_spire']
-# Pre-brand-system skins: measured, reported, not gated. See roadmap.md.
-LEGACY = ['forest', 'scifi']
 
 FIXED_NINE = ["ink", "paper", "coin", "owl", "yes", "notyet", "hurt", "hero", "focus"]
 
@@ -68,7 +71,7 @@ def check(cond, msg):
 
 
 def law(name, p, report):
-    """Every rule in section 6.5, plus 6.1 and 6.2. `report` collects, `check` gates."""
+    """Every rule in section 6.5, plus 6.1 and 6.2."""
     # 6.5 - text contrast floor 4.5:1
     for surface in ("boardBg", "buttonBg"):
         r = ratio(p["paper"], p[surface])
@@ -106,6 +109,13 @@ for theme_id in WORLDS:
 
 check(len(worlds) == 5, f"five world palettes present (found {len(worlds)})")
 
+# Every theme ThemeManager registers must be gated here, or the law has a hole.
+registered = re.findall(r'"THEME_([A-Z_]+)"', (pathlib.Path(__file__).parent.parent
+    / 'godot' / 'scripts' / 'autoload' / 'theme_manager.gd').read_text(encoding='utf-8'))
+expected = sorted(w.upper() for w in WORLDS)
+check(sorted(registered) == expected,
+      f"every registered theme is gated by this law -> registered {sorted(registered)}, gated {expected}")
+
 # 6.1 - the Fixed Nine are byte-identical everywhere
 for key in FIXED_NINE:
     values = {p[key] for p in worlds.values()}
@@ -116,18 +126,6 @@ for name, palette in worlds.items():
 
 for line in notes:
     print(line)
-
-# The legacy pair: measured, not gated.
-legacy_findings = []
-for theme_id in LEGACY:
-    name, palette = load(theme_id)
-    law(name, palette, lambda ok, msg: None if ok else legacy_findings.append(msg))
-
-if legacy_findings:
-    print(f"\nLegacy skins outside the colour law ({len(legacy_findings)} finding(s), not gated —"
-          " their retirement is tracked in roadmap.md):")
-    for line in legacy_findings:
-        print(f"  {line}")
 
 if fails:
     print()

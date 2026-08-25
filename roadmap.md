@@ -115,39 +115,6 @@ field is declared in `src/utils/Types.ts` and read by nothing.
 
 *Done when:* both are removed, or something actually uses them.
 
-### `theme_forest` and `theme_scifi` are now referenced by nothing but their own registration
-
-The test dependency is gone. `test_theme_roles.gd` used to assert role
-completeness on these two skins **and only these two**, leaving the five shipped
-worlds unchecked, and `test_theme_swap.gd` swapped between them to exercise
-ThemeManager. Both now use world themes, so the circular "kept alive only by the
-tests" argument no longer holds: no level selects either skin, `DEFAULT_THEME_ID`
-is `emberwood`, and the only remaining references are `THEME_KEYS` in
-`theme_manager.gd`, `PATHS` in `data_manager.gd`, and the two JSON files.
-
-Deleting them is now four small edits with no test to rewrite first. It touches
-`godot/data/**` and `godot/scripts/**`, so it wants an export rebuild — fold it
-in with the sweep at the end of P4.
-
-`scifi` also fails the colour law: its hazard pair clears `ground_lit` at only
-2.84 against the 3.0 floor, so a spike is not reliably distinguishable from the
-tile it sits on. This went unseen because the law used to run against a
-duplicate copy of the palettes in `brand/tokens/` that did not include either
-legacy skin; it now runs against `godot/data/themes/` and reports the finding on
-every `npm run validate`, ungated.
-
-That gives the retirement decision a measured reason rather than a tidiness
-argument. If they stay, `scifi`'s hazard or `ground_lit` needs retuning and the
-skin should be brought under the law in `tools/verify_palettes.py`. Either way it
-is a palette edit under `godot/data/**`, so it stales the export and wants a
-rebuild — see the note at the end of P4.
-`godot/tests/test_theme_roles.gd` and `test_theme_swap.gd` assert on the
-`forest` and `scifi` ids by path. Once the five world themes land in Godot those
-two skins have no other reason to exist.
-
-*Done when:* the tests assert on two world ids instead, and the legacy skins are
-deleted.
-
 ### The maths board is themed by colour only, not by material
 Every theme file declares `mathBoard.frameSprite`, `mathBoard.bgSprite` and
 `mathBoard.optionSprite`, and none has ever had a texture behind it. A world
@@ -274,70 +241,34 @@ long a child stays with the game.
 
 ## P4 — Build and tooling
 
-### Dead public API under `godot/scripts/`, and one security-shaped piece of it
+### Dead public API under `godot/scripts/`
+The `text_manager.gd` half of this is done: the six functions that made up the
+`admin.html` translation editor's API — `set_translation`, `import_translations`,
+`export_translations`, `get_override`, `get_default` and `get_all_keys` — are
+deleted. They were lines 127-158 of a 158-line file with no caller anywhere in
+the tree.
 
-About thirty non-underscore functions in `godot/scripts/**` have no caller
-anywhere in `godot/` — not from GDScript, not from a `.tscn`, and not through any
-of the twelve `has_method` / `call_deferred` string dispatches the tree actually
-uses. Verified by name across scripts, scenes and tests.
+**The read path was deliberately kept, and is still a live question.** `t()`
+consults `_overrides` ahead of the locale bundle and the defaults, and
+`_load_overrides()` runs at init, so a `crow_translations` value in the store
+still outranks every shipped string — with nothing in the game able to write one.
+Removing that is a behaviour change for anyone who has such a value, and it would
+drop a storage key from the contract in `ARCHITECTURE.md`. Decide it; do not
+drift into it.
 
-The one to do first is `text_manager.gd`, because it is not merely unused:
-
-- `set_translation()`, `import_translations()`, `export_translations()`,
-  `get_override()`, `get_default()` and `get_all_keys()` are lines 127-158 of a
-  158-line file — the API of the `admin.html` translation editor, which was
-  deliberately NOT ported, on the grounds that a live string editor would let
-  anyone on a shared family device rewrite what a child reads.
-- But the READ path is still live: `_load_overrides()` runs at init, and `t()`
-  consults `_overrides` BEFORE the locale bundle and the defaults. So a
-  `crow_translations` value in IndexedDB still outranks every shipped string,
-  and the write half of that mechanism is still compiled into the build with no
-  caller.
-
-Deleting the unused write API is straight dead-code removal. Whether `t()`
-should keep honouring `_overrides` at all is a behaviour question and needs
-deciding, not assuming: if the answer is no, the read path and the
-`crow_translations` key go too, and the storage contract in `ARCHITECTURE.md`
-changes with them.
-
-The rest, lower priority and to be checked individually rather than swept:
+Still unexamined, and to be checked individually rather than swept — several are
+probably reachable in ways a name search cannot see:
 `problem_pool_manager.gd` (4 unused query helpers), `save_manager.gd`
 (`add_stars`, `increment_owls_saved`, `complete_level`, `grant_ability`,
 `set_learner_state`, `load_save`), `level_manager.gd` (`get_next_level`,
 `get_next_level_key`), `cloud_sync.gd` (`sign_out`, `pull_save`, `mark_dirty` —
-check the panel's signals before touching these), `learner_state_manager.gd`
+check the panel's signals first), `learner_state_manager.gd`
 (`get_confidence_offset`, `get_effective_selection_elo`,
-`reconcile_curriculum_floors` — parity-locked file, so read the fixtures first),
+`reconcile_curriculum_floors` — parity-locked, so read the fixtures first),
 `game.gd` (`respawn_player`), `brand_button.gd` (`set_role`).
 
-Same export-rebuild coupling as the comment sweep below: these files feed
-`output/web`'s fingerprint. Unlike the comments, this one is worth a rebuild on
-its own.
-
-### Retired-Phaser names still sit in comments under `godot/`
-
-About a dozen comments in `godot/scripts/**` and `godot/data/**` still explain
-themselves against the deleted Phaser build: `BootScene` in `data_manager.gd`,
-`elo_manager.gd`, `math_problem_manager.gd`, `ASSET_CREDITS.json` and
-`tileset_manifest.json`; `src/ui/components/FlagIcon.ts` in `flag_icon.gd`
-(which tells the reader to "keep the two in step" with a file that no longer
-exists); the `docs/API_CONTRACT.md` path in `cloud_sync.gd`,
-`learner_sync_service.gd`, `cloud_panel.gd` and `parent_report.gd`, which is now
-a section of `ARCHITECTURE.md`; and `brand/PRODUCTION_PLAN.md` in
-`touch_controls.gd`, which is now `BRAND_SYSTEM.md` §14. The equivalent
-references under `godot/tests/**` and `godot/tools/**` are already fixed —
-neither tree feeds the export fingerprint.
-
-These were left alone on purpose. Every one of those paths feeds
-`GODOT_EXPORT_SOURCE_PATTERNS`, so changing even a comment stales `output/web`
-and requires `bash godot/tools/build_web.sh` — committing a fresh ~23 MB pack to
-git for a comment edit. Fold this sweep into the next commit that rebuilds the
-export for a real reason; it is free there.
-
-When it lands, add the two patterns back to `validateLiveSourceReferences()` in
-`tools/validate_docs.js` (there is a note in the function saying so) so the names
-cannot come back.
-
+*Watch out:* every one of these lives under the export fingerprint, so a removal
+means rebuilding `output/web` in the same commit.
 
 ### Code-drawn UI stand-ins need a real art pass
 Several load-bearing math-experience surfaces render with primitives drawn in

@@ -2,7 +2,7 @@ extends Node
 ## MathProblemManager — Godot port of math-kernel/math/MathProblemManager.ts. Autoload.
 ## Owns the merged problem list, recent-id/replay-key anti-repeat windows, the
 ## ProblemPoolManager + ELOAwareStrategy, and selection metadata. Initialized
-## from DataManager's four pools (mirrors BootScene addPool calls).
+## from DataManager's four pools.
 
 const MAX_RECENT_PROBLEM_IDS := 12
 const MAX_RECENT_REPLAY_KEYS := 18

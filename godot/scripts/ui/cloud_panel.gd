@@ -11,7 +11,7 @@ extends CanvasLayer
 ## The link must be opened on THIS device: clicking it is the top-level
 ## navigation whose response sets the HttpOnly cookie. A cookie set that way
 ## survives Safari's eviction of script-writable storage, which is exactly the
-## failure this feature exists to prevent — see docs/API_CONTRACT.md.
+## failure this feature exists to prevent — see ARCHITECTURE.md.
 ##
 ## No PIN is ever involved here. The PIN is a "which kid am I" selector on a
 ## shared device and never leaves it.

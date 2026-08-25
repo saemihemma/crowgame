@@ -9,6 +9,8 @@ const TOL := 1e-6
 var _fix: Dictionary = {}
 var _tuning: Dictionary = {}
 
+## Per-test setup: load the golden fixtures and the motion tuning once.
+func _reset() -> void:
 	if _fix.is_empty():
 		var f := FileAccess.open(FIX_PATH, FileAccess.READ)
 		_fix = JSON.parse_string(f.get_as_text())

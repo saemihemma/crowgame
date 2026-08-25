@@ -1,5 +1,5 @@
 extends Node
-## EventBus — Godot port of src/utils/EventBus.ts.
+## EventBus — the one signal hub every subsystem publishes through.
 ##
 ## The TS game uses one Phaser EventEmitter with string-named GameEvents for all
 ## cross-scene comms. Here that becomes a single autoload exposing Godot signals

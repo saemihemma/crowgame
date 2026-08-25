@@ -13,7 +13,7 @@ extends CanvasLayer
 ## 2. Three of the five carried their meaning in a word. See TouchPad.
 ##
 ## brand/BRAND_SYSTEM.md §8.1, §12. Gates B3 (88px targets), B4 (32px safe
-## area) and B10 (thumb reach) in brand/PRODUCTION_PLAN.md.
+## area) and B10 (thumb reach) in brand/BRAND_SYSTEM.md §14.
 
 ## Gate B4: nothing interactive inside 32px of the edge, which is where rounded
 ## corners, gesture bars and the meat of a gripping hand are.

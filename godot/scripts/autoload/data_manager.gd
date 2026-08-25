@@ -1,12 +1,12 @@
 extends Node
 ## DataManager — loads the game JSON from res://data (godot/data/**, the only copy)
 ## via FileAccess + JSON.parse_string and caches it. Godot port of the data
-## preload phase of BootScene.preload(). JSON stays the source of truth; later
+## preload phase at boot. JSON stays the source of truth; later
 ## slices hydrate typed Resource registries (Tier 3) on top of these dicts.
 
 const DATA_ROOT := "res://data"
 
-# Mirrors DATA_PATHS in src/utils/Constants.ts (relative to res://data).
+# Every JSON the game loads, relative to res://data.
 const PATHS := {
 	"LEVEL_REGISTRY": "levels/level_registry.json",
 	"NPC_REGISTRY": "npcs/npc_registry.json",
@@ -25,8 +25,6 @@ const PATHS := {
 	"UI_TUNING": "tuning/ui_tuning.json",
 	"FX_TUNING": "tuning/fx_tuning.json",
 	"MATH_TUNING": "tuning/math_tuning.json",
-	"THEME_FOREST": "themes/theme_forest.json",
-	"THEME_SCIFI": "themes/theme_scifi.json",
 	"THEME_EMBERWOOD": "themes/theme_emberwood.json",
 	"THEME_PRISM_HOLLOW": "themes/theme_prism_hollow.json",
 	"THEME_SUGARSTORM": "themes/theme_sugarstorm.json",
@@ -73,7 +71,7 @@ func get_array(key: String) -> Array:
 ## Math pools --------------------------------------------------------------
 
 ## Returns the merged list of every MathProblem across the four pools, exactly
-## as BootScene loads them (easy + dataset + gaps + curriculum).
+## in load order (easy + dataset + gaps + curriculum).
 func get_all_math_problems() -> Array:
 	var out: Array = []
 	for key in ["MATH_EASY", "MATH_DATASET", "MATH_GAPS", "MATH_CURRICULUM"]:

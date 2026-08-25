@@ -518,7 +518,7 @@ func _on_locale_changed() -> void:
 ## that drives plural agreement. Anything unresolvable falls back to the English,
 ## so a child sees their own language or they see English, never a raw key.
 ##
-## Was mirrored by src/math/problemPhrasing.ts in the retired web build; this is
+## Was mirrored by the retired web build's phrasing module; this is
 ## now the only implementation.
 func _localised(field: String) -> String:
 	var english := ""

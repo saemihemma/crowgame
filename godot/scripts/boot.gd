@@ -33,7 +33,8 @@ func _report_boot_ready() -> void:
 		"window.crowBootReady && window.crowBootReady({hadExistingSave:%s})" % had_save, true)
 
 func _build_placeholder() -> void:
-	# Sky is the project's default_clear_color (#87CEEB), matching src/main.ts.
+	# Sky is the project's default_clear_color; ScreenBackdrop paints the themed
+	# gradient over it per world.
 	var label := Label.new()
 	label.text = TextManager.t("menu.title")
 	label.add_theme_font_size_override("font_size", 96)

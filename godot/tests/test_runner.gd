@@ -35,6 +35,12 @@ func _run() -> void:
 			var mname: String = method.name
 			if not mname.begins_with("test_"):
 				continue
+			# Optional per-test setup. Four suites use it for real work — lazily
+			# parsing a fixture or a compiled level, and clearing the learner
+			# store between tests — so this is what keeps those independent of
+			# each other. It runs BEFORE the deltas below are read.
+			if instance.has_method("_reset"):
+				instance.call("_reset")
 			var before: int = instance.failures().size()
 			var asserts_before: int = instance.assertion_count()
 			# AWAITED, deliberately. `instance.call(mname)` alone returns at the
