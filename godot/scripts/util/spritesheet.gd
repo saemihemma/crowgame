@@ -80,6 +80,24 @@ static func has_art(key: String) -> bool:
 	return not e.is_empty() and ResourceLoader.exists("res://%s" % String(e.get("path", "")))
 
 
+## One cell of `key`'s sheet, from the registry.
+##
+## Any caller slicing a single frame out of a sheet — a HUD chip showing the coin
+## at rest, a picker thumbnail — needs the cell size, and writing it as a literal
+## re-declares what sprite_spec.json already says. The two then drift silently:
+## retarget the class to 48 and a caller still cutting 32x32 renders the top-left
+## two-thirds of one frame, with no error and nothing to blame but the new art.
+##
+## Falls back to the whole texture when the key is unknown, so a bad key crops
+## nothing rather than cropping to zero.
+static func frame_size(key: String) -> Vector2i:
+	var e := entry(key)
+	if e.is_empty():
+		var t := texture(key)
+		return Vector2i(t.get_width(), t.get_height()) if t != null else Vector2i.ZERO
+	return Vector2i(int(e.get("frameWidth", 0)), int(e.get("frameHeight", 0)))
+
+
 ## SpriteFrames for `key`, using the grid/fps/loop/anim the registry records.
 ## Returns an empty SpriteFrames carrying the animation name when the art is
 ## missing, so callers can still play() without a null guard.
