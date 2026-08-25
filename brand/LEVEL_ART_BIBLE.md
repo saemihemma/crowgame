@@ -1,7 +1,7 @@
 # Hörmann — Level Art Bible
 
 Status: Supportive
-Authority: Per-world art direction. Brand law lives in `brand/BRAND_SYSTEM.md`; runtime truth lives in `src/**` and `public/data/**`.
+Authority: Per-world art direction. Brand law lives in `brand/BRAND_SYSTEM.md`; runtime truth lives in `godot/**`.
 Last verified against code: 2026-08-24
 
 Five worlds. Companion to [BRAND_SYSTEM.md](./BRAND_SYSTEM.md), which owns
@@ -673,7 +673,7 @@ different as it likes.
 ## Renaming the levels
 
 The five world names are player-facing strings, so this is not a free rename.
-`level.level_0N.name` lives in **four** bundles — `public/data/i18n/strings_{en,is}.json`
+`level.level_0N.name` lives in **four** bundles — `godot/data/i18n/strings_{en,is}.json`
 and `godot/data/i18n/strings_{en,is}.json` — and `tools/validate_i18n.mjs`
 enforces a hard **240px box at 20px type** on each of them
 (`ADVANCE_RATIO = 0.63`, so 19 characters is the ceiling).
@@ -710,7 +710,7 @@ Sequenced so that something is visibly better after every step.
 
 | Step | Work | Output |
 | --- | --- | --- |
-| 1 | Drop the five token files into `public/data/themes/`, register in `BootScene`, call `setTheme(spec.theme)` on level load | **five distinct-looking worlds with zero new art** — palette, board, HUD tint and scrim all change |
+| 1 | Drop the five token files into `godot/data/themes/`, register in `ThemeManager.THEME_KEYS`, applied per level by `game.gd` | **five distinct-looking worlds with zero new art** — palette, board, HUD tint and scrim all change |
 | 2 | Five 32px tilesets (9 tiles each) | worlds become places |
 | 3 | Five sky + far + mid parallax sets | worlds gain depth and scale |
 | 4 | Four new enemy sheets | escalation becomes visible |
