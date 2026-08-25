@@ -263,6 +263,46 @@ long a child stays with the game.
 
 ## P4 — Build and tooling
 
+### Dead public API under `godot/scripts/`, and one security-shaped piece of it
+
+About thirty non-underscore functions in `godot/scripts/**` have no caller
+anywhere in `godot/` — not from GDScript, not from a `.tscn`, and not through any
+of the twelve `has_method` / `call_deferred` string dispatches the tree actually
+uses. Verified by name across scripts, scenes and tests.
+
+The one to do first is `text_manager.gd`, because it is not merely unused:
+
+- `set_translation()`, `import_translations()`, `export_translations()`,
+  `get_override()`, `get_default()` and `get_all_keys()` are lines 127-158 of a
+  158-line file — the API of the `admin.html` translation editor, which was
+  deliberately NOT ported, on the grounds that a live string editor would let
+  anyone on a shared family device rewrite what a child reads.
+- But the READ path is still live: `_load_overrides()` runs at init, and `t()`
+  consults `_overrides` BEFORE the locale bundle and the defaults. So a
+  `crow_translations` value in IndexedDB still outranks every shipped string,
+  and the write half of that mechanism is still compiled into the build with no
+  caller.
+
+Deleting the unused write API is straight dead-code removal. Whether `t()`
+should keep honouring `_overrides` at all is a behaviour question and needs
+deciding, not assuming: if the answer is no, the read path and the
+`crow_translations` key go too, and the storage contract in `ARCHITECTURE.md`
+changes with them.
+
+The rest, lower priority and to be checked individually rather than swept:
+`problem_pool_manager.gd` (4 unused query helpers), `save_manager.gd`
+(`add_stars`, `increment_owls_saved`, `complete_level`, `grant_ability`,
+`set_learner_state`, `load_save`), `level_manager.gd` (`get_next_level`,
+`get_next_level_key`), `cloud_sync.gd` (`sign_out`, `pull_save`, `mark_dirty` —
+check the panel's signals before touching these), `learner_state_manager.gd`
+(`get_confidence_offset`, `get_effective_selection_elo`,
+`reconcile_curriculum_floors` — parity-locked file, so read the fixtures first),
+`game.gd` (`respawn_player`), `brand_button.gd` (`set_role`).
+
+Same export-rebuild coupling as the comment sweep below: these files feed
+`output/web`'s fingerprint. Unlike the comments, this one is worth a rebuild on
+its own.
+
 ### Retired-Phaser names still sit in comments under `godot/`
 
 About a dozen comments in `godot/scripts/**` and `godot/data/**` still explain

@@ -15,7 +15,7 @@ type OwlDomainPlan = {
     primaryDomain: MathDomain;
 };
 
-export function getAllowedOwlDomains(config: OwlSelectionConfig): MathDomain[] {
+function getAllowedOwlDomains(config: OwlSelectionConfig): MathDomain[] {
     let allowedDomains = config.domains.filter(domain =>
         LearnerStateManager.getInstance().isDomainUnlocked(domain),
     );
@@ -29,7 +29,7 @@ export function getAllowedOwlDomains(config: OwlSelectionConfig): MathDomain[] {
     return allowedDomains;
 }
 
-export function buildOwlDomainPlans(
+function buildOwlDomainPlans(
     allowedDomains: MathDomain[],
     previousProblemDomain: MathDomain | null,
     primaryDomain: MathDomain,
