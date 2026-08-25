@@ -531,9 +531,20 @@ Every read and write resolves `token → device → family`, then scopes
 `WHERE child.id = $1 AND child.family_id = $token.family_id`. `childId` may
 appear in a path as an object reference; it never grants anything.
 
-Family isolation is enforced twice: an explicit `family_id` predicate in every
-query, and Postgres row-level security with `SET LOCAL app.family_id` per
-transaction. **The trap found the hard way:** a superuser bypasses RLS
+Family isolation is enforced twice on the six child-data tables (`children`,
+`child_saves`, `child_save_history`, `attempts`, `sync_conflicts`,
+`child_aliases`): an explicit `family_id` predicate in every query, and Postgres
+row-level security — `ENABLE` plus `FORCE` — with `SET LOCAL app.family_id` per
+transaction. The set is derived from `pg_class` and asserted in
+`server/test/role-isolation.test.ts`, rather than trusted from the migration's
+array.
+
+The four auth tables (`parents`, `devices`, `device_tokens`, `login_codes`) carry
+no policy on purpose — resolving a token to a family precedes knowing the family,
+so a policy comparing against `app.family_id` has nothing to compare yet. They are
+scoped by predicate alone, under the app role. Say so when describing this
+mechanism: three docs claimed the database-level guarantee without the exception,
+and the exception is where the only PII lives. **The trap found the hard way:** a superuser bypasses RLS
 unconditionally, and Railway's `DATABASE_URL` user is one, so the API drops to a
 non-superuser role per transaction. Without that, the policies are decorative.
 

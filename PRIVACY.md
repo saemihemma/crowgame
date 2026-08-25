@@ -65,7 +65,11 @@ features the game needs are present, which build was running, the **browser's
 user-agent line**, and a **shortened form of your network address** — the first
 three parts of it, with the rest dropped (`203.0.113.0/24`), which is enough to
 notice one source flooding the endpoint and not enough to identify a household.
-No names, no progress, no free text, and never anything your child typed.
+No names, no progress, and never anything your child typed — there is nowhere in
+the game for a child to type free text, and no answer or score is attached. The
+report does carry text the *game* produced about its own failure: the error
+message, where in the code it came from, and a developer stack trace, described
+below.
 
 Those full reports are kept for 30 days and then deleted automatically, by
 dropping each day's table whole. What is kept longer is one entry per distinct
@@ -107,9 +111,20 @@ every web server receives them on every request. Where they are kept:
 
 ## Keeping families apart
 
-Each family's data is fenced off from every other family's inside the database
-itself, not just in the app's code. Even a mistake in the application cannot make
-one family's records visible to another.
+Everything about a **child** — their name in the game, their progress, every
+answer — is fenced off inside the database itself, not just in the app's code. A
+mistake in the application cannot make one family's child data visible to another;
+the database refuses it rather than trusting the code to remember.
+
+The **sign-in tables** work differently, and this page used to imply otherwise.
+The grown-up email address, the list of devices, and the sign-in codes are not
+fenced that way, because working out which family a device belongs to has to
+happen *before* the family is known — the fence needs the answer that lookup
+provides. Those tables are protected by the ordinary means: the query names the
+row it wants, and nothing runs with more permission than it needs. It is a
+weaker guarantee than the one above, on a smaller amount of data, and it is
+better that you read it here than infer it from the paragraph that used to
+overstate it.
 
 ## Getting your data, or deleting it
 

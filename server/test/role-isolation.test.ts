@@ -36,7 +36,16 @@ import { join } from 'node:path';
 import { after, before, describe, it } from 'node:test';
 
 const HAS_DB = Boolean(process.env['DATABASE_URL']);
-const ROUTES_DIR = join(import.meta.dirname, '..', 'src', 'routes');
+const SRC_DIR = join(import.meta.dirname, '..', 'src');
+const ROUTES_DIR = join(SRC_DIR, 'routes');
+const LIB_DIR = join(SRC_DIR, 'lib');
+
+/**
+ * The two files allowed to touch the pool directly, because they are what every
+ * other file goes through. `db.ts` builds the transaction helpers; `familyDb.ts`
+ * builds withFamily/withAuthTables on top of them.
+ */
+const POOL_OWNERS = new Set(['db.ts', 'familyDb.ts']);
 
 /**
  * The static half, which needs no database and is the check that would actually
@@ -46,28 +55,38 @@ const ROUTES_DIR = join(import.meta.dirname, '..', 'src', 'routes');
  * no failing test and no error at runtime.
  */
 describe('no route bypasses the app role', () => {
-    const routeFiles = readdirSync(ROUTES_DIR).filter(f => f.endsWith('.ts'));
+    // routes/ AND lib/. This scanned routes/ alone for two rounds, while every
+    // actual data access lives in lib/ — deviceAuth, errorEvents, saveSync. Clean
+    // today, which is the reason to include it now rather than after it is not;
+    // the retired-name ban learned the same lesson one commit earlier and this
+    // gate, written before it, did not.
+    const scanned = [
+        ...readdirSync(ROUTES_DIR).filter(f => f.endsWith('.ts')).map(f => ['routes', f] as const),
+        ...readdirSync(LIB_DIR).filter(f => f.endsWith('.ts') && !POOL_OWNERS.has(f))
+            .map(f => ['lib', f] as const),
+    ];
 
-    it('finds the route files at all', () => {
+    it('finds the files to scan at all', () => {
         // Without this, a moved directory turns every assertion below into a
         // vacuous pass over an empty array.
-        assert.ok(routeFiles.length >= 4, `expected the route files, found ${routeFiles.length}`);
+        assert.ok(scanned.length >= 9, `expected routes/ and lib/, found ${scanned.length}`);
+        assert.ok(scanned.some(([dir]) => dir === 'lib'), 'lib/ must be in scope');
     });
 
-    for (const file of routeFiles) {
-        it(`${file} does not import withTransaction or query the bare pool`, () => {
-            const src = readFileSync(join(ROUTES_DIR, file), 'utf8');
+    for (const [dir, file] of scanned) {
+        it(`${dir}/${file} does not import withTransaction or query the bare pool`, () => {
+            const src = readFileSync(join(SRC_DIR, dir, file), 'utf8');
             const code = src
                 .replace(/\/\*[\s\S]*?\*\//g, '')          // block comments
                 .replace(/^\s*\/\/.*$/gm, '');             // line comments
             assert.ok(
                 !/\bwithTransaction\b/.test(code),
-                `${file} imports withTransaction, which runs as the superuser and bypasses RLS. ` +
-                'Use withAppRole, or withFamily for family-scoped data.',
+                `${dir}/${file} imports withTransaction, which runs as the superuser and ` +
+                'bypasses RLS. Use withAppRole, or withFamily for family-scoped data.',
             );
             assert.ok(
                 !/\bpool\s*\.\s*query\b/.test(code),
-                `${file} queries the pool directly, which connects as the superuser. ` +
+                `${dir}/${file} queries the pool directly, which connects as the superuser. ` +
                 'Use withAppRole, or withFamily for family-scoped data.',
             );
         });
@@ -224,19 +243,26 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         // Nothing checked that, and the handler returned 3 of 9 tables — omitting
         // `parents`, which holds the only PII in the system.
         //
-        // Derived from the catalog, not restated: every table with a family_id
-        // column must appear in the export response or in its `notIncluded` map.
-        // A new family-scoped table then fails HERE rather than quietly narrowing
-        // a promise made to a parent.
+        // "Family-scoped" is derived by FOLLOWING FOREIGN KEYS to `families`, not
+        // by looking for a `family_id` column. The column heuristic was itself a
+        // shape assumption and it had a live counterexample: `device_tokens` hangs
+        // off `device_id`, holds family data, and was invisible to it. A future
+        // table hung off `child_id` would be too.
         const { rows } = await pool.query<{ table_name: string }>(
-            `select c.table_name
-               from information_schema.columns c
-               join information_schema.tables t
-                 on t.table_schema = c.table_schema and t.table_name = c.table_name
-              where c.table_schema = 'public' and c.column_name = 'family_id'
-                and t.table_type = 'BASE TABLE'`);
+            `with recursive reach(t) as (
+                 select 'families'::text
+                 union
+                 select c.conrelid::regclass::text
+                   from pg_constraint c
+                   join reach r on c.confrelid::regclass::text = r.t
+                  where c.contype = 'f'
+             )
+             select t as table_name from reach where t <> 'families'`);
         const familyScoped = new Set(rows.map(r => r.table_name));
-        assert.ok(familyScoped.size >= 8,
+        assert.ok(familyScoped.has('device_tokens'),
+            'the FK walk must reach device_tokens — that is the case the old ' +
+            'family_id heuristic missed, so its absence means this check regressed');
+        assert.ok(familyScoped.size >= 10,
             `expected the family-scoped tables, found ${familyScoped.size}`);
 
         const source = readFileSync(join(ROUTES_DIR, 'family.ts'), 'utf8');
@@ -263,6 +289,71 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
                 'in notIncluded. PRIVACY.md promises "everything held about your family", so a ' +
                 'new table has to be exported or its exclusion stated in the response.');
         }
+    });
+
+    it('RLS is enabled AND forced on exactly the six child-data tables', async () => {
+        // Nothing asserted RLS was switched on at all until round 7 of review.
+        // The protected set was a hardcoded six-element array in migration 002
+        // with no gate, and the only behavioural assertion covered `children`, so
+        // five of six were unexercised and a seventh table would have been
+        // unprotected and unnoticed. Meanwhile three docs claimed database-level
+        // isolation for "the family's records" without naming the four auth
+        // tables that deliberately have none — where the only PII lives.
+        //
+        // FORCE matters as much as ENABLE: without it the table OWNER bypasses
+        // its own policies, and on a managed Postgres the owner is the user the
+        // migration ran as.
+        const { rows } = await pool.query<{ relname: string; enabled: boolean; forced: boolean }>(
+            `select c.relname, c.relrowsecurity as enabled, c.relforcerowsecurity as forced
+               from pg_class c join pg_namespace n on n.oid = c.relnamespace
+              where n.nspname = 'public' and c.relkind = 'r'
+                and (c.relrowsecurity or c.relforcerowsecurity)`);
+        const protectedTables = rows.map(r => r.relname).sort();
+        assert.deepEqual(protectedTables, [
+            'attempts', 'child_aliases', 'child_save_history', 'child_saves',
+            'children', 'sync_conflicts',
+        ], 'the RLS-protected set changed. SECURITY.md, ARCHITECTURE.md and PRIVACY.md each ' +
+           'name this list; update them in the same commit.');
+        for (const row of rows) {
+            assert.ok(row.enabled && row.forced,
+                `${row.relname} must have RLS both ENABLEd and FORCEd — without FORCE the ` +
+                'table owner bypasses its own policies');
+        }
+
+        // And the auth tables are outside it ON PURPOSE, asserted so that the
+        // docs' exception clause is a fact rather than a comment.
+        for (const table of ['parents', 'devices', 'device_tokens', 'login_codes']) {
+            assert.ok(!protectedTables.includes(table),
+                `${table} has acquired an RLS policy. That is probably good news, but ` +
+                'three docs currently explain why it has none — rewrite them.');
+        }
+    });
+
+    it('every RLS-protected table actually isolates, not just children', async () => {
+        // The one behavioural assertion covered `children`. A policy could be
+        // missing, misspelled, or written against the wrong column on any of the
+        // other five and every test would still pass.
+        const familyId = families[0]!;
+        const child = await pool.query<{ id: string }>(
+            'select id from children where family_id = $1', [familyId]);
+        const childId = child.rows[0]!.id;
+
+        // One row per protected table for the OTHER family, so a leak is visible
+        // as a count rather than inferred.
+        const other = families[1] ?? families[0]!;
+        for (const table of ['child_saves', 'child_save_history', 'attempts',
+                             'sync_conflicts', 'child_aliases']) {
+            const seen = await withFamily(familyId, async c =>
+                (await c.query<{ n: string }>(`select count(*)::text as n from ${table}`)).rows[0]!.n);
+            const all = (await pool.query<{ n: string }>(
+                `select count(*)::text as n from ${table}`)).rows[0]!.n;
+            const mine = (await pool.query<{ n: string }>(
+                `select count(*)::text as n from ${table} where family_id = $1`, [familyId])).rows[0]!.n;
+            assert.equal(seen, mine,
+                `${table}: inside withFamily the visible row count must equal this family's ` +
+                `own (${mine}), got ${seen} of ${all} total — the policy is not filtering`);
+        }
+        assert.ok(childId && other, 'fixture sanity');
     });
 
     it('health can read schema_migrations as crow_app', async () => {

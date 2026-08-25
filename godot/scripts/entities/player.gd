@@ -65,7 +65,11 @@ func _physics_process(delta: float) -> void:
 	_state["vx"] = velocity.x
 	_state["vy"] = velocity.y
 
-	if not was_on_floor and is_on_floor() and fall_speed >= LAND_SOUND_MIN_FALL_SPEED:
+	# The threshold lives in data/tuning/fx_tuning.json, like every other motion
+	# and FX figure -- it shipped as a bare const for one commit, in the file whose
+	# own README rule is that magic numbers do not live in .gd.
+	if not was_on_floor and is_on_floor() \
+			and fall_speed >= float(Config.fx("land_min_fall_speed", 220.0)):
 		AudioManager.play_event("land")
 
 	if input["left"]:
@@ -98,13 +102,6 @@ func _update_animation() -> void:
 			_sprite.play("walk")
 	elif _sprite.animation != "idle":
 		_sprite.play("idle")
-
-## Below this downward speed a landing is a step off a kerb, not a landing, and
-## playing the thud would turn walking across uneven ground into a rattle. Chosen
-## as roughly half the speed a full-height jump lands at, which is well clear of
-## the few px/s that `move_and_slide` produces on a slope.
-const LAND_SOUND_MIN_FALL_SPEED := 220.0
-
 
 func _on_jumped() -> void:
 	AudioManager.play_event("jump")

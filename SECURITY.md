@@ -41,8 +41,25 @@ The attack surface is small on purpose:
 - **Device-scoped auth.** The credential is an opaque random token in an
   `HttpOnly; Secure; SameSite=Lax` cookie, stored server-side as SHA-256 only. It
   resolves to a device, which belongs to a family.
-- **Family isolation is enforced in Postgres**, via row-level security, in
-  addition to explicit predicates in every query. Every request path — all four
+- **Family isolation is enforced in Postgres**, via row-level security, on the
+  six child-data tables — `children`, `child_saves`, `child_save_history`,
+  `attempts`, `sync_conflicts`, `child_aliases` — with both `ENABLE` and `FORCE`,
+  in addition to explicit predicates in every query.
+
+  **The auth tables are deliberately outside that**, and this page said "family
+  isolation is enforced in Postgres" without the qualifier: `parents`, `devices`,
+  `device_tokens` and `login_codes` carry no policy, because resolving a token to
+  a family has to happen before a family is known — the policy would need the
+  answer the lookup is producing. They go through `withAuthTables`, which drops
+  the role but sets no `app.family_id`, so what scopes them is the query's own
+  predicate. That is a weaker guarantee than the one above, and it covers the
+  grown-up email, which is the only PII in the system. Worth aiming at.
+
+  Which tables are protected is now derived from `pg_class` in
+  `test/role-isolation.test.ts` and compared to that list, along with `FORCE`
+  being set — nothing asserted RLS was even switched on until round 7 of review,
+  and the protected set was a hardcoded array in a migration with no gate. Every
+  request path — all four
   database entry points, including the anonymous error ingest and the health
   probe — drops to the non-superuser `crow_app` role first, precisely because a
   superuser bypasses those policies outright and holds every privilege. The

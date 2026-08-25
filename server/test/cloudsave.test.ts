@@ -337,8 +337,35 @@ describe('cloud save', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => 
         const exported = await app.inject({
             method: 'GET', url: '/api/v1/family/export', headers: { cookie } });
         assert.equal(exported.statusCode, 200);
-        assert.equal(exported.json().children.length, 1);
-        assert.equal(exported.json().attempts.length, 1);
+        const body = exported.json();
+
+        // The RESPONSE, not the handler's source text.
+        //
+        // role-isolation.test.ts derives the family-scoped tables and checks the
+        // handler selects from each — which is a static read, and it passed two
+        // mutations that ship the broken promise: deleting `parents: parents.rows`
+        // from the response object, and returning `parents: []`. Both leave the
+        // query in place, so the source-text gate sees `from parents` and goes
+        // green while the file a parent downloads is missing the only row a
+        // subject-access request is actually about.
+        //
+        // PRIVACY.md now tells parents this is checkable. That sentence is only
+        // true because of the assertions below.
+        for (const key of ['parents', 'children', 'childAliases', 'devices',
+                           'saves', 'attempts', 'saveHistory', 'syncConflicts']) {
+            assert.ok(Array.isArray(body[key]),
+                `the export must carry a "${key}" array — PRIVACY.md promises ` +
+                'everything held about the family, and names its exclusions separately');
+        }
+        assert.equal(body.parents.length, 1,
+            'the grown-up email is the only PII in the system and the reason the export exists');
+        assert.equal(body.parents[0].email, 'erasure@example.com',
+            'the export must carry the real address, not an empty or placeholder row');
+        assert.equal(body.children.length, 1);
+        assert.equal(body.attempts.length, 1);
+        assert.equal(body.devices.length, 1, 'the enrolling device must appear');
+        assert.deepEqual(Object.keys(body.notIncluded).sort(), ['device_tokens', 'login_codes'],
+            'the exclusions are part of the promise; changing them changes what the doc must say');
 
         const deleted = await app.inject({
             method: 'DELETE', url: '/api/v1/family', headers: { cookie } });

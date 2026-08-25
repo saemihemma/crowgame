@@ -108,7 +108,6 @@ def check_audio_events() -> list:
 	`test_registries.gd` walks event -> manifest key and never sees the call
 	sites, which is why it could not catch either.
 	"""
-	problems = []
 	with open(AUDIO_EVENTS, encoding="utf-8") as f:
 		registered = {k for k in json.load(f) if not k.startswith("_")}
 
@@ -126,6 +125,18 @@ def check_audio_events() -> list:
 						called.setdefault(key, []).append(
 							(os.path.relpath(path, os.path.join(SCRIPTS, "..")), i))
 
+	return audio_problems(registered, called)
+
+
+def audio_problems(registered: set, called: dict) -> list:
+	# The decision, split out from the file walking so --selftest can feed it.
+	#
+	# It was not split, and --selftest printed OK while covering check_text alone
+	# -- so the audio check, which is what closes rule 6's actual failure mode, had
+	# no negative test, in a repo that owns a whole harness for exactly that
+	# question. A gate whose selftest does not reach it is a gate nobody has tried
+	# to break.
+	problems = []
 	if not registered:
 		problems.append("sound_events.json registered no events; this check enforced nothing")
 
@@ -176,6 +187,32 @@ def selftest() -> int:
 			print("SELFTEST FAIL: %r in %s expected flag=%s got %s"
 			      % (src, basename, should_flag, flagged))
 			ok = False
+	# The audio decision, fed synthetic inputs. Each case names the defect it
+	# stands for, so a case that stops discriminating is legible rather than a
+	# silent OK.
+	audio_cases = [
+		("clean: every event called, every call registered",
+		 {"coin", "jump"}, {"coin": [("a.gd", 1)], "jump": [("b.gd", 2)]}, 0),
+		("a typo'd key is a silent no-op at runtime",
+		 {"coin"}, {"coin": [("a.gd", 1)], "coinz": [("a.gd", 9)]}, 1),
+		("a registered event with no caller is a sound that never plays",
+		 {"coin", "land"}, {"coin": [("a.gd", 1)]}, 1),
+		("both directions at once are both reported",
+		 {"coin", "land"}, {"coinz": [("a.gd", 9)]}, 3),
+		("an empty registry must fail rather than pass vacuously",
+		 set(), {}, 1),
+	]
+	for desc, registered, called, expected in audio_cases:
+		got = len(audio_problems(registered, called))
+		if got != expected:
+			print("SELFTEST FAIL: audio %r expected %d problem(s), got %d"
+			      % (desc, expected, got))
+			ok = False
+
+	# And the live tree, so --selftest cannot pass while the repo itself is broken.
+	if check_audio_events():
+		print("SELFTEST FAIL: the live audio registry does not resolve both ways")
+		ok = False
 	print("selftest: %s" % ("OK" if ok else "FAILED"))
 	return 0 if ok else 1
 
