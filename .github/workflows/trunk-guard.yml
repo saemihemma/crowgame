@@ -1,0 +1,80 @@
+name: Trunk guard
+
+# Branch protection would be the real fix: require the CI checks, and a push that
+# fails them never lands on main. That needs repo admin rights, which no agent
+# session here has, so it stays one manual switch in Settings -> Branches.
+#
+# Until then, this is the next best thing. It does not PREVENT a red push — it
+# makes one impossible to ignore.
+#
+# The problem it exists for: main sat red across seven commits. Every failure
+# underneath was mechanical (a stale recompile, a missing doc header, an export
+# 24 source files behind), and every one would have been caught at the source by
+# anyone who noticed the red X. Nobody did, because a failing check on someone
+# else's push is invisible unless you go looking.
+#
+# So: one issue, opened when CI fails on main, closed when CI passes again.
+# Reused rather than re-created, because ten issues titled "main is red" is the
+# same silence in a louder font.
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  issues: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open or close the trunk-red issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          RUN_SHA: ${{ github.event.workflow_run.head_sha }}
+          REPO: ${{ github.repository }}
+          TITLE: main is red
+        run: |
+          set -euo pipefail
+
+          api() {
+            curl -sS -H "Authorization: Bearer $GH_TOKEN" \
+                 -H "Accept: application/vnd.github+json" "$@"
+          }
+
+          # Find the open issue by exact title, so no state is stored anywhere.
+          EXISTING=$(api "https://api.github.com/repos/$REPO/issues?state=open&labels=trunk-red&per_page=100" \
+            | python3 -c "import json,sys,os; rows=json.load(sys.stdin); print(next((str(r['number']) for r in rows if r['title']==os.environ['TITLE']), ''))")
+
+          if [ "$CONCLUSION" = "success" ]; then
+            if [ -n "$EXISTING" ]; then
+              api -X PATCH "https://api.github.com/repos/$REPO/issues/$EXISTING" -d '{"state":"closed"}' > /dev/null
+              echo "CI green again; closed #$EXISTING"
+            else
+              echo "CI green; nothing open"
+            fi
+            exit 0
+          fi
+
+          if [ "$CONCLUSION" != "failure" ]; then
+            echo "conclusion=$CONCLUSION; nothing to do"
+            exit 0
+          fi
+
+          export RUN_SHA RUN_URL
+          BODY=$(python3 -c "import os; print('CI failed on \`main\` at \`%s\`.\n\n%s\n\nThis issue closes itself when CI passes on main again.\n\nReproduce locally:\n\n\`\`\`\nnpm run validate\nbash godot/tools/run_tests.sh\n\`\`\`\n\nThe usual causes are mechanical: a level spec edited without \`npm run compile\`, a new doc missing its Status/Authority/Last-verified header, or GDScript changed without \`bash godot/tools/build_web.sh\` (the committed export is what Railway serves).' % (os.environ['RUN_SHA'], os.environ['RUN_URL']))")
+          export BODY
+
+          if [ -n "$EXISTING" ]; then
+            api -X POST "https://api.github.com/repos/$REPO/issues/$EXISTING/comments" \
+                -d "$(python3 -c "import json,os; print(json.dumps({'body':os.environ['BODY']}))")" > /dev/null
+            echo "still red; commented on #$EXISTING"
+          else
+            api -X POST "https://api.github.com/repos/$REPO/issues" \
+                -d "$(python3 -c "import json,os; print(json.dumps({'title':os.environ['TITLE'],'body':os.environ['BODY'],'labels':['trunk-red']}))")" > /dev/null
+            echo "opened the trunk-red issue"
+          fi

@@ -37,10 +37,20 @@ animation set, and every art asset in [ASSET_MANIFEST.md](./ASSET_MANIFEST.md).
 Verify the live side:
 
 ```
-npm run dev                    # then, in a second shell:
-npm run themes:screenshots     # 18 shots + palette conformance, all five worlds
-cd brand/tokens && python3 verify_palettes.py
+cd brand/tokens && python3 verify_palettes.py   # 65 colour-law checks
 ```
+
+> **Note.** The screenshot walker (`themes:screenshots`) and the device audit
+> drove the Phaser build through `window.__crowGame`, which no longer exists —
+> both tools were deleted with it. The colour law below still runs, and is
+> gated in CI. For a live look at the Godot build:
+>
+> ```
+> bash godot/tools/build_web.sh
+> (cd output/web && python3 -m http.server 8060)
+> node tools/godot_play_smoke.mjs      # walks login -> menu -> level -> owl
+> node godot/tools/web_boot_smoke.mjs  # iPad viewport, boots and renders
+> ```
 
 The prioritised implementation list is BRAND_SYSTEM §14.
 

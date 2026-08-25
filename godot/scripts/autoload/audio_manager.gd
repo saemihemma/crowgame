@@ -93,7 +93,9 @@ func is_muted() -> bool:
 
 ## Restore the stored choice. Called from _ready so nothing can play before it.
 func _load_mute_preference() -> void:
-	_muted = String(Persistence.get_item(MUTE_KEY)) == "1"
+	# str(), not String(): get_item returns null when the key was never set,
+	# and String(null) is a runtime error that fired on every boot.
+	_muted = str(Persistence.get_item(MUTE_KEY)) == "1"
 
 
 func set_master_volume(v: float) -> void:
