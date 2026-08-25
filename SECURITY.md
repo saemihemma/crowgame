@@ -4,7 +4,7 @@ Status: Supportive
 Authority: Reporting process and the current security posture.
 Last verified against code: 2026-08-24
 
-Crow stores learning data about young children. Please treat anything in that
+Hörmann stores learning data about young children. Please treat anything in that
 area as worth reporting even if you are unsure it is exploitable.
 
 ## Reporting

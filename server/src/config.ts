@@ -81,7 +81,7 @@ export const config = {
         driver: str('CROW_MAIL_DRIVER', 'log'),
         endpoint: str('CROW_MAIL_ENDPOINT', ''),
         apiKey: str('CROW_MAIL_API_KEY', ''),
-        from: str('CROW_MAIL_FROM', 'Crow <no-reply@example.invalid>'),
+        from: str('CROW_MAIL_FROM', 'Hörmann <no-reply@example.invalid>'),
     },
 
     /** Absolute base used to build the magic link, e.g. https://crow.example.com */
