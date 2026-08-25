@@ -1,8 +1,9 @@
 # Concept UI
 
 Status: Supportive
-Authority: Design intent for the HUD and the maths window. Runtime truth is `src/**`.
-Last verified against code: 2026-08-24
+Authority: Design intent for the HUD and the maths window. Runtime truth is
+`godot/scripts/ui/**`.
+Last verified against code: 2026-08-25
 
 Working files for the concept design canvas. `hormann-hud-concept.html` is the
 seeded canvas; the `.dc.html` files and `canvas.json` are what it is built from,
@@ -15,9 +16,17 @@ so every later change re-seeds from these rather than editing the output.
 | `MathWindow.dc.html` | Maths window in Emberwood, Prism Hollow and Geyserworks material |
 | `WrongAnswer.dc.html` | The 900ms wrong-answer beat, frame by frame |
 
-The `plate-*.png` files are real gameplay captures at 960×540 with `HUDScene`
-stopped, so the concept can be compared directly against a screenshot of the
-implementation.
+The `plate-*.png` files are gameplay captures at 960×540 with the HUD stopped, so
+the concept can be compared directly against a screenshot of the implementation.
+They were taken from the retired Phaser prototype, so they show the old
+left-edge text HUD rather than what ships; refresh them with
+`bash godot/tools/capture.sh` before judging a comparison.
+
+**Most of what these artboards specify has since been built** — `hud.gd` composes
+`HeartRow`, `CoinChip` and `OwlRing` as separate pods, and the maths board
+measures and grows rather than sitting at a fixed size. Treat this folder as the
+design record for that work, not as an outstanding brief. What remains open is
+tracked in [../roadmap.md](../roadmap.md).
 
 ## What the concept got wrong
 

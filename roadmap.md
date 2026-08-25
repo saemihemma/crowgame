@@ -148,54 +148,40 @@ two skins have no other reason to exist.
 *Done when:* the tests assert on two world ids instead, and the legacy skins are
 deleted.
 
-### The Godot build is missing everything the Phaser prototype proved
-Godot is the only runtime now, so this is not a parity gap — it is the actual
-backlog. A capture of `level_01` shows a flat `#87CEEB` sky, the forest tileset,
-and a HUD reading `Lives: *** / Coins 15 / Owls 3` in plain yellow text.
-
-Missing: the five world themes and per-level selection, the themed sky, the five
-tilesets (the PNGs are there; nothing loads them), the feel pass, the
-wrong-answer choreography, the dynamic maths-board layout, the three-pod HUD and
-owl ring, the streak, and the one-answer owl roster — `owl_probe` still solves
-two problems.
-
-`brand/PRODUCTION_PLAN.md` §2a has the table and the order. Themes go first.
-
-*Done when:* captures show five visibly different worlds and `run_tests.sh`
-still passes.
-
 ### The maths board is themed by colour only, not by material
-Every theme file already declares `mathBoard.frameSprite`, `mathBoard.bgSprite`
-and `mathBoard.optionSprite`, and none of them has ever had a texture behind it.
-`MathBoard` draws the panel and the option buttons with `Graphics` from the
-palette, so a world changes the board's *colour* and nothing else. Emberwood and
-Geyserworks should not be the same rounded rectangle in different browns.
+Every theme file declares `mathBoard.frameSprite`, `mathBoard.bgSprite` and
+`mathBoard.optionSprite`, and none has ever had a texture behind it. A world
+changes the board's *colour* and nothing else. Emberwood and Geyserworks should
+not be the same rounded rectangle in different browns.
 
 `brand/BRAND_SYSTEM.md` §8.3 owns the intent: the board is made of the world's
 material — bark, crystal, candy, iron, sky-stone — while its geometry, button
 grid and timings stay identical in all five. Skin changes, layout never does.
 `brand/ASSET_MANIFEST.md` P4 lists the files.
 
-*Watch out:* the board is no longer a fixed `520x280`. It measures its question,
-options and hint and grows to fit, so on a two-line prompt it is close to 380
-tall. **The frame has to be a true nine-slice** — a fixed-size PNG will stretch
-and smear its corners. That means the asset is a nine-slice source plus the
-border insets, and `MathBoard.drawBoardBackground()` needs to draw a
-`NineSlice` game object when a texture exists and keep the `Graphics` path as
-the fallback, the same way `HealthBar` already falls back for its icons.
+**The machinery is already in; this is an art task.** `math_challenge.gd` checks
+`SpriteSheet.has_art("board_panel")` and builds a `StyleBoxTexture` nine-slice
+when a texture exists, falling back to the drawn panel when it does not — which
+matters because the board is not a fixed `520x280`: it measures its question,
+options and hint and grows, so on a two-line prompt it is close to 380 tall. A
+fixed-size PNG would stretch and smear its corners. So each asset is a nine-slice
+source plus its border insets, and dropping one in needs no code change.
 
-*Done when:* each world's board is visibly made of that world's material, the
-frame survives a two-line prompt without distortion, and replacing one is a PNG
-swap plus insets in the theme file.
+*Done when:* each world's board is visibly made of that world's material, and the
+frame survives a two-line prompt without distortion.
 
 ### The HUD has states no screenshot has ever seen
-`tools/theme_screenshots.mjs` now rescues an owl, so the filled ring is covered.
-Still uncovered: a lost heart (needs damage), the streak flame at 3+ (needs two
-owls answered perfectly in sequence), and the ability slots (needs an ability
-granted). Those are three designed states with no visual evidence behind them.
+Three designed states have no visual evidence behind them: a lost heart (needs
+damage), the streak flame at 3+ (needs two owls answered perfectly in sequence),
+and the ability slots (needs an ability granted).
 
-*Done when:* the harness can drive damage and a multi-owl streak, or those states
-are checked some other way and the check is written down.
+The harness that used to cover this was `tools/theme_screenshots.mjs`, which
+drove the Phaser build through `window.__crowGame` and was deleted with it. What
+exists now is `godot/tools/capture.sh`, which boots a level and writes a PNG but
+cannot yet drive damage or a multi-owl streak.
+
+*Done when:* the capture tool can reach those three states, or they are checked
+some other way and the check is written down.
 
 ### Apex hang is blocked by the motion parity contract
 The jump would feel more generous with reduced gravity near the top of the arc,
@@ -335,9 +321,12 @@ themselves against the deleted Phaser build: `BootScene` in `data_manager.gd`,
 `elo_manager.gd`, `math_problem_manager.gd`, `ASSET_CREDITS.json` and
 `tileset_manifest.json`; `src/ui/components/FlagIcon.ts` in `flag_icon.gd`
 (which tells the reader to "keep the two in step" with a file that no longer
-exists); and the `docs/API_CONTRACT.md` path in `cloud_sync.gd`,
+exists); the `docs/API_CONTRACT.md` path in `cloud_sync.gd`,
 `learner_sync_service.gd`, `cloud_panel.gd` and `parent_report.gd`, which is now
-a section of `ARCHITECTURE.md`.
+a section of `ARCHITECTURE.md`; and `brand/PRODUCTION_PLAN.md` in
+`touch_controls.gd`, which is now `BRAND_SYSTEM.md` §14. The equivalent
+references under `godot/tests/**` and `godot/tools/**` are already fixed —
+neither tree feeds the export fingerprint.
 
 These were left alone on purpose. Every one of those paths feeds
 `GODOT_EXPORT_SOURCE_PATTERNS`, so changing even a comment stales `output/web`
@@ -374,6 +363,40 @@ tone.
 *Done when:* someone decides whether these are the shipping sounds.
 
 ---
+
+### Five of the ten quality gates cannot be measured at all
+`brand/BRAND_SYSTEM.md` §14 lists ten gates. B1 is met and asserted by
+`test_project_config.gd`; B8 is partly automated by `test_world_palettes.gd`.
+B3, B4, B5 and B10 — touch-target size, safe-area clearance, time to first
+accepted input, and one-thumb reach — are unmeasurable because nothing in the
+suite opens a device viewport and audits the live scene graph. B2 and B9,
+sustained 60fps on a throttled profile and reduced-motion behaviour, have never
+been measured on any profile.
+
+The device audit that used to do some of this drove the retired Phaser build
+through `window.__crowGame` and was deleted with it.
+
+*Done when:* a headless harness can open the four device profiles already listed
+in `test_project_config.gd`, walk the real scene graph, and report B3, B4 and B10
+per screen. B2 and B9 need a frame trace and a reduced-motion flag; they are
+worth splitting out once the viewport harness exists.
+
+### No first-run teaching of any mechanic
+A child arriving for the first time is shown a level and left to work out
+movement, jumping, shooting and the owl interaction on their own. The maths side
+has a teaching window — a worked example on first contact with a new domain — but
+the platforming has no equivalent.
+
+*Done when:* a decision exists on whether first-run teaching is in scope at all,
+and if it is, which mechanics get it. This is a design question before it is an
+implementation one.
+
+### Is the five-level progression the shipping scope, or a vertical slice?
+Carried over from the production plan's open decisions, because it changes how
+much each world is worth investing in: whether "Only six levels exist" above is
+a gap to close or the intended shape of the finished game.
+
+*Done when:* answered. It gates how much art and level content each world gets.
 
 ## Settled — do not re-open
 

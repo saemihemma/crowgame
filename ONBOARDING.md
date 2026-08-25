@@ -161,7 +161,6 @@ Boot ──▶ Login ("Who's playing?")  ──▶ MainMenu ──▶ LevelSelec
 | Contract | `server/migrations/**`, `godot/tests/fixtures/**` | changing these changes installed clients |
 | Generated | `godot/data/levels/compiled/*.json`, `output/web/**`, `server/dist/**` | never hand-edit |
 | Never shipped | `math-kernel/**`, `tools/**`, `godot/tests/**` | still gated by CI |
-| Staged | `ai_assets/**` | working area |
 
 ## The verification loop
 
