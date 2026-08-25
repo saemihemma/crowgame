@@ -15,6 +15,14 @@ this file is the production list.
 
 Non-negotiable, from BRAND_SYSTEM §5.1. Everything below obeys it.
 
+This table is now also machine-readable, as
+`godot/data/registries/sprite_spec.json`, and the build checks the shipped art
+against it (`godot/tools/check_assets.py`). The sizes there are transcribed from
+here — if the two ever disagree, this file wins and the JSON is the bug. See
+`docs/SPRITE_CONTRACT.md`. `godot/tools/audit_pixel_art.py` measures the two rules
+below that can be measured — "no anti-aliasing" and "author at 1x" — and currently
+reports four of the six shipped sprites failing the first.
+
 | Thing | Size | Why |
 | --- | --- | --- |
 | Canvas | `960x540`, integer 2x to 1080p | `display/window/size/viewport_width`/`_height` in `godot/project.godot` |
@@ -35,7 +43,10 @@ Rules that apply to every file in this document:
   "you can touch this" from "this is scenery".
 - **Sprite sheets are a single horizontal strip**, frames left to right, no
   padding, no margin. `frameWidth`/`frameHeight` in the registry must match
-  exactly. This is how every shipped sheet is already laid out.
+  exactly. (Correction: the shipped sheets are *not* strips — `crow_walk` is a
+  3x3 grid of 64px, `coin` 3x3 of 32px, `door` 6x6 of 88x96. `SpriteSheet` derives
+  columns from the sheet width, so both layouts read correctly; a strip remains
+  the preferred layout for new art.)
 - **Author at 1x.** Never generate at 4x and downscale; it produces the muddy
   edges `PROJECT.md` explicitly warns against.
 

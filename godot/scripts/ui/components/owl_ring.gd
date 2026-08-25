@@ -51,8 +51,8 @@ const ICON_SIZE := 32.0
 ## Preferred dedicated icon; the ring falls back to a head crop of the world
 ## sprite until it exists. Drop a file here and the ring picks it up with no
 ## code change (brand/ASSET_MANIFEST.md P1).
-const ICON_PATH := "res://assets/sprites/ui/hud/owl-icon-32.png"
-const ICON_FALLBACK := "res://assets/sprites/characters/npcs/owl-runtime-64.png"
+const ICON_KEY := "hud_owl_icon"
+const ICON_FALLBACK_KEY := "owl"
 ## Head-and-shoulders window into the world sprite. The full 64px owl is in
 ## chains holding a padlock; shrunk to 30px that detail collapses into noise,
 ## and a HUD icon has one job — say "owl" in a glance.
@@ -116,12 +116,12 @@ func _build() -> void:
 	_apply_theme()
 
 func _load_icon() -> Texture2D:
-	if ResourceLoader.exists(ICON_PATH):
-		return load(ICON_PATH)
-	if not ResourceLoader.exists(ICON_FALLBACK):
+	if SpriteSheet.has_art(ICON_KEY):
+		return SpriteSheet.texture(ICON_KEY)
+	if not SpriteSheet.has_art(ICON_FALLBACK_KEY):
 		return null
 	var atlas := AtlasTexture.new()
-	atlas.atlas = load(ICON_FALLBACK)
+	atlas.atlas = SpriteSheet.texture(ICON_FALLBACK_KEY)
 	atlas.region = ICON_FALLBACK_REGION
 	return atlas
 

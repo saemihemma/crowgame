@@ -1,0 +1,114 @@
+{
+    "$comment": "Every runtime sprite, by key. What each KIND of sprite must be lives in sprite_spec.json (transcribed from brand/ASSET_MANIFEST.md); this file says only what each individual asset IS. Frame size and anchor come from the class and must not be restated. Tilesets are not here — tileset_manifest.json owns those.",
+    "fields": {
+        "class": "which class in sprite_spec.json this asset belongs to; supplies frameWidth, frameHeight and anchor",
+        "path": "res:// path, written without the res:// prefix",
+        "frames": "cells to read, left-to-right then top-to-bottom; 1 = a single still image",
+        "fps": "playback speed; ignored when frames == 1",
+        "loop": "whether the animation repeats",
+        "anim": "SpriteFrames animation name the entity plays",
+        "optional": "true for a slot the art has not landed in yet. Missing files are not a build failure for these; the caller falls back. See `fallback`.",
+        "fallback": "sprite key to use while an optional slot is empty",
+        "frameWidth / frameHeight / anchor": "per-asset override of the class. Requires a `why`.",
+        "why": "required beside any override — puts the deviation on the record instead of letting it drift"
+    },
+    "sprites": {
+        "crow_idle": {
+            "class": "character",
+            "path": "assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "crow_walk": {
+            "class": "character",
+            "path": "assets/sprites/characters/crow2/crow3/crow-walk-64px-fixed.png",
+            "frames": 9,
+            "fps": 10.0,
+            "loop": true,
+            "anim": "walk"
+        },
+        "cockroach": {
+            "class": "enemy",
+            "path": "assets/sprites/characters/npcs/cockroach.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "owl": {
+            "class": "npc",
+            "path": "assets/sprites/characters/npcs/owl-runtime-64.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "coin": {
+            "class": "pickup",
+            "path": "assets/sprites/ui/coin/coinsprite-runtime-32.png",
+            "frames": 9,
+            "fps": 12.0,
+            "loop": true,
+            "anim": "spin"
+        },
+        "door": {
+            "class": "door",
+            "path": "assets/sprites/objects/door/door-36-runtime-88x96.png",
+            "frames": 36,
+            "fps": 24.0,
+            "loop": false,
+            "anim": "open"
+        },
+        "chain_link": {
+            "class": "attachment",
+            "path": "assets/sprites/objects/chain/chain-link-32.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "chain_link_burst": {
+            "class": "attachment",
+            "path": "assets/sprites/objects/chain/chain-link-burst-32.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle",
+            "optional": true,
+            "fallback": "chain_link"
+        },
+        "hud_owl_icon": {
+            "class": "ui",
+            "path": "assets/sprites/ui/hud/owl-icon-32.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle",
+            "optional": true,
+            "fallback": "owl"
+        },
+        "board_count_token": {
+            "class": "ui",
+            "path": "assets/sprites/ui/board/count-token-32.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle",
+            "optional": true
+        },
+        "board_panel": {
+            "class": "ui",
+            "path": "assets/sprites/ui/board/board-9slice.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle",
+            "optional": true,
+            "frameWidth": 96,
+            "frameHeight": 96,
+            "why": "Nine-slice source panel, not a 32px HUD icon. brand/ASSET_MANIFEST.md Priority 4 specifies a 96x96 source for it."
+        }
+    }
+}

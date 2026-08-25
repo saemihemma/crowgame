@@ -591,12 +591,12 @@ func _owl_icon() -> Texture2D:
 	return OwlRing.new()._load_icon()
 
 func _coin_icon() -> Texture2D:
-	var path := "res://assets/sprites/ui/coin/coinsprite-runtime-32.png"
-	if not ResourceLoader.exists(path):
+	var coin_texture := SpriteSheet.texture("coin")
+	if coin_texture == null:
 		return null
 	# Frame 0 of the 3x3 spin sheet; the whole sheet in one box is gold noise.
 	var frame := AtlasTexture.new()
-	frame.atlas = load(path)
+	frame.atlas = coin_texture
 	frame.region = Rect2(0, 0, 32, 32)
 	return frame
 

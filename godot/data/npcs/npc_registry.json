@@ -4,9 +4,6 @@
             "id": "owl_teacher_01",
             "name": "Professor Hoot",
             "spriteKey": "owl",
-            "spritesheet": "assets/sprites/characters/npcs/owl-runtime-64.png",
-            "frameWidth": 64,
-            "frameHeight": 64,
             "behavior": "math_challenger",
             "components": [
                 {
@@ -39,9 +36,6 @@
             "id": "owl_gentle_01",
             "name": "Professor Hoot",
             "spriteKey": "owl",
-            "spritesheet": "assets/sprites/characters/npcs/owl-runtime-64.png",
-            "frameWidth": 64,
-            "frameHeight": 64,
             "behavior": "math_challenger",
             "components": [
                 {
@@ -75,9 +69,6 @@
             "id": "owl_tough_01",
             "name": "Professor Hoot",
             "spriteKey": "owl",
-            "spritesheet": "assets/sprites/characters/npcs/owl-runtime-64.png",
-            "frameWidth": 64,
-            "frameHeight": 64,
             "behavior": "math_challenger",
             "components": [
                 {
@@ -111,9 +102,6 @@
             "id": "owl_twin_chain",
             "name": "Professor Hoot",
             "spriteKey": "owl",
-            "spritesheet": "assets/sprites/characters/npcs/owl-runtime-64.png",
-            "frameWidth": 64,
-            "frameHeight": 64,
             "behavior": "math_challenger",
             "components": [
                 {
@@ -147,9 +135,6 @@
             "id": "owl_triple_chain",
             "name": "Professor Hoot",
             "spriteKey": "owl",
-            "spritesheet": "assets/sprites/characters/npcs/owl-runtime-64.png",
-            "frameWidth": 64,
-            "frameHeight": 64,
             "behavior": "math_challenger",
             "components": [
                 {
@@ -183,9 +168,6 @@
             "id": "owl_gauntlet",
             "name": "Professor Hoot",
             "spriteKey": "owl",
-            "spritesheet": "assets/sprites/characters/npcs/owl-runtime-64.png",
-            "frameWidth": 64,
-            "frameHeight": 64,
             "behavior": "math_challenger",
             "components": [
                 {

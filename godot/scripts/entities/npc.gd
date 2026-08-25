@@ -49,10 +49,13 @@ func _ready() -> void:
 	definition = _lookup_definition(npc_id)
 	display_name = String(definition.get("name", "NPC"))
 	reward_amount = int(definition.get("behaviorConfig", {}).get("rewardAmount", 1))
-	var sheet := String(definition.get("spritesheet", "assets/sprites/characters/npcs/owl-runtime-64.png"))
-	var tex_path := "res://%s" % sheet
-	if ResourceLoader.exists(tex_path):
-		_sprite.texture = load(tex_path)
+	# npc_registry.json names a sprite key; the path and frame grid live in
+	# sprite_registry.json, so a re-exported owl is a registry edit, not this file.
+	var sprite_key := String(definition.get("spriteKey", "owl"))
+	var tex := SpriteSheet.texture(sprite_key)
+	if tex != null:
+		_sprite.texture = tex
+	_sprite.offset = SpriteSheet.anchor_offset(sprite_key, SpriteSheet.grounding_sink())
 	_sprite_base_y = _sprite.position.y
 	var npc_tuning := DataManager.get_dict("NPC_TUNING")
 	_bob_amp = float(npc_tuning.get("float_bob_amplitude", 8))
@@ -136,8 +139,10 @@ func end_interaction() -> void:
 ## The point is that the count is readable from across the screen: a three-link
 ## owl has to look like more work *before* a child walks over and commits, or
 ## the roster of variants may as well not exist.
-const CHAIN_TEXTURE := "res://assets/sprites/objects/chain/chain-link-32.png"
-const CHAIN_BURST_TEXTURE := "res://assets/sprites/objects/chain/chain-link-burst-32.png"
+## Registry keys, not paths — ARCHITECTURE rule 7. Both are `attachment` class
+## (32x32, centred); sprite_registry.json owns where they live.
+const CHAIN_SPRITE := "chain_link"
+const CHAIN_BURST_SPRITE := "chain_link_burst"
 ## Wide enough that three links reach past the owl's own silhouette. At a
 ## tighter spacing the whole chain sat inside the 44px body and a three-link owl
 ## looked exactly like a one-link owl from any distance - which is the one thing
@@ -150,9 +155,9 @@ var _chain_links: Array[Sprite2D] = []
 
 func _build_chains() -> void:
 	var count := int(definition.get("behaviorConfig", {}).get("chainLinks", 0))
-	if count <= 0 or not ResourceLoader.exists(CHAIN_TEXTURE):
+	var texture := SpriteSheet.texture(CHAIN_SPRITE)
+	if count <= 0 or texture == null:
 		return
-	var texture: Texture2D = load(CHAIN_TEXTURE)
 	var span := float(count - 1) * CHAIN_SPACING
 	for i in count:
 		var link := Sprite2D.new()
@@ -179,8 +184,9 @@ func _break_link() -> void:
 	var link: Sprite2D = _chain_links.pop_back()
 	if not is_instance_valid(link):
 		return
-	if ResourceLoader.exists(CHAIN_BURST_TEXTURE):
-		link.texture = load(CHAIN_BURST_TEXTURE)
+	var burst := SpriteSheet.texture(CHAIN_BURST_SPRITE)
+	if burst != null:
+		link.texture = burst
 	DopamineFX.burst(get_parent(), link.global_position,
 		ThemeManager.get_color_value("enemy_pop"), int(Config.fx("burst/chain_link", 12)))
 	var tw := link.create_tween().set_parallel(true)

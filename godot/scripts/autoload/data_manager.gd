@@ -38,6 +38,8 @@ const PATHS := {
 	"STRINGS_IS": "i18n/strings_is.json",
 	"SCENES": "registries/scenes.json",
 	"SPAWN_REGISTRY": "registries/spawn_registry.json",
+	"SPRITE_SPEC": "registries/sprite_spec.json",
+	"SPRITE_REGISTRY": "registries/sprite_registry.json",
 	"SOUND_EVENTS": "audio/sound_events.json",
 }
 

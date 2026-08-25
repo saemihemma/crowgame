@@ -252,16 +252,16 @@ func _build_wordmark(col: VBoxContainer) -> void:
 
 ## Hörmann himself, perched on the ridge line. He was not on his own title
 ## screen - the game was named after a character the first screen never showed.
-const HERO_SPRITE := "res://assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png"
+const HERO_SPRITE_KEY := "crow_idle"
 const HERO_SCALE := 2.0
 const HERO_BOB_PIXELS := 5.0
 const HERO_BOB_SECONDS := 2.4
 
 func _add_hero() -> void:
-	if not ResourceLoader.exists(HERO_SPRITE):
+	if not SpriteSheet.has_art(HERO_SPRITE_KEY):
 		return
 	var hero := TextureRect.new()
-	hero.texture = load(HERO_SPRITE)
+	hero.texture = SpriteSheet.texture(HERO_SPRITE_KEY)
 	hero.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	hero.custom_minimum_size = Vector2(64.0 * HERO_SCALE, 64.0 * HERO_SCALE)
 	hero.mouse_filter = Control.MOUSE_FILTER_IGNORE

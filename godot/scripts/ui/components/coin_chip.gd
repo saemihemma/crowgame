@@ -32,7 +32,7 @@ func _ready() -> void:
 	custom_minimum_size = Vector2(96, HEIGHT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var coin_texture := load("res://assets/sprites/ui/coin/coinsprite-runtime-32.png")
+	var coin_texture := SpriteSheet.texture("coin")
 	if coin_texture != null:
 		# The sheet is a 3x3 spin cycle. Handing the whole sheet to a TextureRect
 		# renders all nine frames shrunk into one 22px box, which is what the
