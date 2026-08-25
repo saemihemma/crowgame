@@ -61,6 +61,23 @@ all play, not just math play.
 *Done when:* the overview's session numbers come from heartbeats, and the
 `derivedFromAttempts` label is gone from `/api/v1/admin/overview`.
 
+### Four grade milestones are approximate alignments, not sourced scope
+The Icelandic grade mapping (docs/GRADE_EXPECTATIONS.md) anchors addition,
+subtraction, counting, multiplication and division milestones to official
+sources (aðalnámskrá end-of-grade-4 criteria, MMS Sproti per-grade scope). The
+comparison, number_sequence and pattern_matching milestones are marked
+`"basis": "approx"` in `godot/data/curriculum/grade_expectations.json` because
+no official number-range anchor exists for them — they were placed by
+judgement against the Sproti topic lists. Contingency: a practising
+grunnskólakennari reviewing that one JSON file (eight domains, sixteen rows)
+would either confirm or correct them in minutes. Also note the content
+ceiling: addition/subtraction pools stop at ~100, so the game cannot measure
+past grade-2 material there — the report says so, but authoring grade-3 range
+content (3-digit, written methods) is the real fix.
+
+*Done when:* every milestone's `basis` is `law`/`curriculum`/`material`, or an
+educator has signed off the `approx` rows in the JSON's provenance notes.
+
 ## P2 — Experience decisions that need making
 
 

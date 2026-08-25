@@ -36,12 +36,12 @@ describe('analytics', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
         return `crow_device=${cookie.value}`;
     }
 
-    async function createChild(cookie: string, displayName: string): Promise<string> {
+    async function createChild(cookie: string, displayName: string, birthYear?: number): Promise<string> {
         const response = await app.inject({
             method: 'POST',
             url: '/api/v1/family/children',
             headers: { cookie },
-            payload: { displayName },
+            payload: birthYear === undefined ? { displayName } : { displayName, birthYear },
         });
         assert.ok([200, 201].includes(response.statusCode), `child create failed: ${response.body}`);
         return response.json().remoteChildId;
@@ -162,7 +162,8 @@ describe('analytics', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
         assert.ok(equation && worded, 'catalog carries both kinds');
 
         const cookie = await enrollFamily('analytics-parent@example.test');
-        const childId = await createChild(cookie, 'Stella');
+        const birthYear = new Date().getUTCFullYear() - 6;
+        const childId = await createChild(cookie, 'Stella', birthYear);
 
         const put = await app.inject({
             method: 'PUT',
@@ -200,8 +201,21 @@ describe('analytics', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
         assert.equal(body.totalAttempts, 4);
         assert.equal(body.globalElo, 180);
 
+        // Grade-vs-skill wiring: the endpoint must agree with the pure grade
+        // library for this birth year and save (semantics are pinned by fixed
+        // dates in grade.test.ts; here we prove the report actually uses them).
+        const { schoolGradeFor, expectationFor } = await import('../src/lib/grade.ts');
+        const expectedGrade = schoolGradeFor(birthYear, new Date());
+        assert.equal(body.grade.birthYear, birthYear);
+        assert.equal(body.grade.grade, expectedGrade);
+
         const addition = body.domains.find((d: { domain: string }) => d.domain === 'addition');
         assert.ok(addition, 'addition domain present');
+        assert.deepEqual(
+            addition.expectation,
+            expectationFor(expectedGrade, 6, 'addition'),
+            'expectation is computed from highestStep and the derived grade',
+        );
         assert.equal(addition.attempted, 2);
         assert.equal(addition.correct, 1);
         assert.equal(addition.accuracy, 0.5);
@@ -229,5 +243,51 @@ describe('analytics', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
             headers: { cookie: stranger },
         });
         assert.equal(denied.statusCode, 404);
+    });
+
+    it('birth year can be backfilled later — family-scoped, plausible years only', async () => {
+        const cookie = await enrollFamily('analytics-backfill@example.test');
+        const childId = await createChild(cookie, 'Noi');
+
+        const before = await app.inject({
+            method: 'GET',
+            url: `/api/v1/family/children/${childId}/report`,
+            headers: { cookie },
+        });
+        assert.equal(before.json().grade, null, 'no birth year, no grade section');
+
+        // 1990 passes the schema range but no grunnskóli child is 36.
+        const implausible = await app.inject({
+            method: 'PUT',
+            url: `/api/v1/family/children/${childId}/birth-year`,
+            headers: { cookie },
+            payload: { birthYear: 1990 },
+        });
+        assert.equal(implausible.statusCode, 400);
+
+        const birthYear = new Date().getUTCFullYear() - 7;
+        const put = await app.inject({
+            method: 'PUT',
+            url: `/api/v1/family/children/${childId}/birth-year`,
+            headers: { cookie },
+            payload: { birthYear },
+        });
+        assert.equal(put.statusCode, 200, put.body);
+
+        const after = await app.inject({
+            method: 'GET',
+            url: `/api/v1/family/children/${childId}/report`,
+            headers: { cookie },
+        });
+        assert.equal(after.json().grade?.birthYear, birthYear);
+
+        const stranger = await enrollFamily('analytics-backfill-stranger@example.test');
+        const denied = await app.inject({
+            method: 'PUT',
+            url: `/api/v1/family/children/${childId}/birth-year`,
+            headers: { cookie: stranger },
+            payload: { birthYear },
+        });
+        assert.equal(denied.statusCode, 404, 'another family cannot set this child\'s birth year');
     });
 });
