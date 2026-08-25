@@ -4,7 +4,7 @@ extends CharacterBody2D
 ## one tile ahead at foot level), flip to face direction. Player contact hurts.
 ## Killed (by a projectile, later slice) awards coins.
 
-const CROACH_TEXTURE := "res://assets/sprites/characters/npcs/cockroach.png"
+const SPRITE_KEY := "cockroach"
 
 @export var enemy_id := "cockroach_basic"
 
@@ -27,8 +27,10 @@ func _ready() -> void:
 	definition = _lookup(enemy_id)
 	speed = float(definition.get("speed", 40))
 	coin_reward = int(definition.get("coinReward", 2))
-	if ResourceLoader.exists(CROACH_TEXTURE):
-		_sprite.texture = load(CROACH_TEXTURE)
+	var tex := SpriteSheet.texture(SPRITE_KEY)
+	if tex != null:
+		_sprite.texture = tex
+	_sprite.offset = SpriteSheet.anchor_offset(SPRITE_KEY, SpriteSheet.grounding_sink())
 	_hitbox.body_entered.connect(_on_body_entered)
 
 func _physics_process(delta: float) -> void:

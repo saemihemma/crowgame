@@ -6,8 +6,8 @@ extends CharacterBody2D
 ## Animation mirrors Player.ts: walk while moving on ground, static pose
 ## otherwise (no jump anim in the source). Jump fires dust + SFX.
 
-@export var crow_texture_path := "res://assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png"
-@export var crow_walk_path := "res://assets/sprites/characters/crow2/crow3/crow-walk-64px-fixed.png"
+const IDLE_SPRITE_KEY := "crow_idle"
+const WALK_SPRITE_KEY := "crow_walk"
 
 const PROJECTILE_SCENE := preload("res://scenes/Projectile.tscn")
 @onready var WALK_SPEED_THRESHOLD: float = Config.ui("player/walk_speed_threshold", 10.0)  # |vx| for walk anim (Player.ts)
@@ -36,17 +36,15 @@ func _ready() -> void:
 func _build_animations() -> void:
 	if _sprite == null:
 		return
-	var frames: SpriteFrames
-	if ResourceLoader.exists(crow_walk_path):
-		frames = SpriteSheet.build_frames(load(crow_walk_path), 64, 64, 9, 10.0, "walk")
-	else:
-		frames = SpriteFrames.new()
-		frames.add_animation("walk")
+	var frames := SpriteSheet.frames(WALK_SPRITE_KEY)
 	frames.add_animation("idle")
 	frames.set_animation_loop("idle", false)
-	if ResourceLoader.exists(crow_texture_path):
-		frames.add_frame("idle", load(crow_texture_path))
+	var idle_tex := SpriteSheet.texture(IDLE_SPRITE_KEY)
+	if idle_tex != null:
+		frames.add_frame("idle", idle_tex)
 	_sprite.sprite_frames = frames
+	# Anchor derived from the registry, never a literal — see SpriteSheet.anchor_offset.
+	_sprite.offset = SpriteSheet.anchor_offset(WALK_SPRITE_KEY, SpriteSheet.grounding_sink())
 	_sprite.play("idle")
 
 func _physics_process(delta: float) -> void:

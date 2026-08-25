@@ -3,7 +3,7 @@ extends Area2D
 ## Spinning 9-frame animation (12 fps), 20x20 pickup body. On player overlap it
 ## notifies the Game, which increments the count and emits coins_changed.
 
-const COIN_TEXTURE := "res://assets/sprites/ui/coin/coinsprite-runtime-32.png"
+const SPRITE_KEY := "coin"
 
 @onready var _anim: AnimatedSprite2D = $Anim
 
@@ -11,9 +11,9 @@ func setup_from_spawn(s: Dictionary) -> void:
 	position = Vector2(s["x"], s["y"])
 
 func _ready() -> void:
-	if ResourceLoader.exists(COIN_TEXTURE):
-		_anim.sprite_frames = SpriteSheet.build_frames(load(COIN_TEXTURE), 32, 32, 9, 12.0, "spin")
-		_anim.play("spin")
+	_anim.sprite_frames = SpriteSheet.frames(SPRITE_KEY)
+	_anim.offset = SpriteSheet.anchor_offset(SPRITE_KEY)
+	_anim.play("spin")
 	body_entered.connect(_on_body_entered)
 
 func _on_body_entered(body: Node) -> void:

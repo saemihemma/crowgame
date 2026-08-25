@@ -379,10 +379,17 @@ func _build_ui(opts: Dictionary) -> void:
 ## brings its own slate - and swappable for a nine-slice texture the day one is
 ## drawn, without touching this file (brand/ASSET_MANIFEST.md P1).
 func _board_face() -> StyleBox:
-	var texture_path := String(Config.ui("math_challenge/board_texture", "res://assets/sprites/ui/board/board-9slice.png"))
-	if ResourceLoader.exists(texture_path):
+	# A theme may point at its own panel; otherwise the registry's board slot,
+	# which is empty until the nine-slice in ASSET_MANIFEST P4 is drawn.
+	var texture_path := String(Config.ui("math_challenge/board_texture", ""))
+	var panel: Texture2D = null
+	if texture_path != "" and ResourceLoader.exists(texture_path):
+		panel = load(texture_path)
+	elif SpriteSheet.has_art("board_panel"):
+		panel = SpriteSheet.texture("board_panel")
+	if panel != null:
 		var nine := StyleBoxTexture.new()
-		nine.texture = load(texture_path)
+		nine.texture = panel
 		nine.set_texture_margin_all(int(Config.ui("math_challenge/board_texture_inset", 24)))
 		nine.set_content_margin_all(BOARD_PAD)
 		return nine

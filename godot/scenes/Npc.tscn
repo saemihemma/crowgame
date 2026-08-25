@@ -9,7 +9,6 @@ size = Vector2(96, 96)
 script = ExtResource("1_npc")
 
 [node name="Sprite" type="Sprite2D" parent="."]
-offset = Vector2(0, -28)
 
 [node name="InteractZone" type="Area2D" parent="."]
 collision_layer = 0

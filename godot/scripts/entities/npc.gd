@@ -49,10 +49,13 @@ func _ready() -> void:
 	definition = _lookup_definition(npc_id)
 	display_name = String(definition.get("name", "NPC"))
 	reward_amount = int(definition.get("behaviorConfig", {}).get("rewardAmount", 1))
-	var sheet := String(definition.get("spritesheet", "assets/sprites/characters/npcs/owl-runtime-64.png"))
-	var tex_path := "res://%s" % sheet
-	if ResourceLoader.exists(tex_path):
-		_sprite.texture = load(tex_path)
+	# npc_registry.json names a sprite key; the path and frame grid live in
+	# sprite_registry.json, so a re-exported owl is a registry edit, not this file.
+	var sprite_key := String(definition.get("spriteKey", "owl"))
+	var tex := SpriteSheet.texture(sprite_key)
+	if tex != null:
+		_sprite.texture = tex
+	_sprite.offset = SpriteSheet.anchor_offset(sprite_key, SpriteSheet.grounding_sink())
 	_sprite_base_y = _sprite.position.y
 	var npc_tuning := DataManager.get_dict("NPC_TUNING")
 	_bob_amp = float(npc_tuning.get("float_bob_amplitude", 8))

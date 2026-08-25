@@ -10,7 +10,7 @@ class_name CountRow
 ##
 ## Tokens are drawn rather than borrowed from the coin sprite on purpose: a coin
 ## means currency everywhere else in the game, and six coins on the board would
-## read as a reward. Drop a texture at TOKEN_PATH and it is used instead, with no
+## read as a reward. Drop the file the registry names for TOKEN_KEY and it is used, with no
 ## change here (brand/ASSET_MANIFEST.md P1).
 
 ## The curriculum writes a counting prompt as a caption, a colon, then a run of
@@ -20,7 +20,7 @@ class_name CountRow
 ## but most letters are just prose.
 const LETTER_MARKERS := ["o", "x", "O", "X"]
 
-const TOKEN_PATH := "res://assets/sprites/ui/board/count-token-32.png"
+const TOKEN_KEY := "board_count_token"
 ## Matches the 32x32 source exactly: a pixel-art token drawn at 34 is resampled,
 ## and a counting object with soft edges is the one thing this must not be.
 const TOKEN := 32.0
@@ -73,7 +73,7 @@ var _texture: Texture2D = null
 
 func setup(count: int) -> void:
 	_count = maxi(0, count)
-	_texture = load(TOKEN_PATH) if ResourceLoader.exists(TOKEN_PATH) else null
+	_texture = SpriteSheet.texture(TOKEN_KEY) if SpriteSheet.has_art(TOKEN_KEY) else null
 	var columns := mini(_count, PER_ROW)
 	var rows := int(ceil(float(_count) / float(PER_ROW)))
 	custom_minimum_size = Vector2(
