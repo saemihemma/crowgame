@@ -241,7 +241,18 @@ function main() {
         process.exit(1);
     }
 
-    const bootVisuals = extractReferencedVisualAssets();
+    // Declared drop-in art slots: the code references these paths but ships a
+    // real drawn/cropped fallback until an artist supplies the file (see the
+    // README.md next to each slot). Their absence is the designed state, not a
+    // missing asset — but once a file IS dropped in, it validates like any other.
+    const OPTIONAL_DROP_IN_SLOTS = new Set([
+        'godot/assets/sprites/ui/board/board-9slice.png',
+        'godot/assets/sprites/ui/board/count-token-32.png',
+        'godot/assets/sprites/ui/hud/owl-icon-32.png',
+    ]);
+
+    const bootVisuals = extractReferencedVisualAssets()
+        .filter(assetPath => !OPTIONAL_DROP_IN_SLOTS.has(assetPath) || fs.existsSync(path.join(ROOT, assetPath)));
     const audioAssets = extractManifestAudioAssets();
     const compiledLevelAssets = extractCompiledLevelAssets();
     const referencedAssets = [

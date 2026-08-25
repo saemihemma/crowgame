@@ -1,5 +1,9 @@
 # HUD art slots
 
+Status: Supportive
+Authority: Drop-in art slot map for the HUD; the fallback drawing lives in code.
+Last verified against code: 2026-08-24
+
 Drop a file here and the game uses it on the next run. No wiring.
 
 | File | Size | Used by | Falls back to |

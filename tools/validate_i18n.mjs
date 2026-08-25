@@ -92,9 +92,6 @@ const BOXES = {
     'level.level_04.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
     'level.level_05.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
     'level.level_99.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
-    'touch.jump': { size: 18, max: 76, where: 'Touch button 88x88 less padding' },
-    'touch.peck': { size: 18, max: 76, where: 'Touch button 88x88 less padding' },
-    'touch.zap': { size: 18, max: 76, where: 'Touch button 88x88 less padding' },
     'game.play_again': { size: 26, max: 280, where: 'Completion button' },
     'game.back_to_menu': { size: 26, max: 280, where: 'Completion button' },
     'boot.loading': { size: 20, max: 400, where: 'Boot loading bar' },
@@ -110,7 +107,6 @@ const BOXES = {
         ],
     },
     // The completion line carries two counters and a translated label.
-    'game.completion_stats': { size: 24, max: 900, where: 'GameScene completion line' },
 };
 
 /**
