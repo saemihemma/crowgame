@@ -1,8 +1,9 @@
 # HUD art slots
 
 Status: Supportive
-Authority: `godot/scripts/ui/hud.gd` and `godot/scripts/ui/components/owl_ring.gd`.
-Last verified against code: 2026-08-25
+Authority: What art files this directory accepts and what each one replaces.
+The fallbacks it describes are drawn in `godot/scripts/ui/hud.gd`.
+Last verified against code: 2026-08-24
 
 Drop a file here and the game uses it on the next run. No wiring.
 

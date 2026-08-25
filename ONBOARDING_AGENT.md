@@ -74,9 +74,8 @@ Game:
 - `godot/data/registries/scenes.json` registers 7 scenes: `boot`, `login`, `main_menu`, `level_select`, `game`, `cloud_panel`, `parent_report`
 - `godot/data/levels/level_registry.json` contains 6 levels, including `level_99`
   (the maths practice arena)
-- `godot/data/npcs/npc_registry.json` contains 6 NPC entries: one owl in six
-  encounter shapes, differing only in `problemCount` and `difficultyRange`
-  (`owl_gentle_01` through `owl_gauntlet`). Levels place them by id
+- `godot/data/npcs/npc_registry.json` contains 6 NPC entries (owl variants:
+  teacher, gentle, tough, twin chain, triple chain, gauntlet)
 - `godot/data/enemies/enemy_registry.json` contains 1 enemy type (the cockroach)
 - `godot/data/audio/audio_manifest.json` currently exposes 5 music tracks and 16 live SFX entries.
 - **51** `.gd` scripts under `godot/scripts/`, **24** `.tscn` scenes under `godot/scenes/`

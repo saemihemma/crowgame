@@ -250,8 +250,8 @@ function validateOnboardingSnapshot(currentDocs) {
     ensureDocContains('ONBOARDING_AGENT.md', `- \`gaps\`: ${gapsCount}`, 'gaps pool count');
     ensureDocContains('ONBOARDING_AGENT.md', `- \`curriculum\`: ${curriculumCount}`, 'curriculum pool count');
     ensureDocContains('ONBOARDING_AGENT.md', `contains ${levelCount} levels`, 'level count snapshot');
-    // The registry grew past one owl, and the expected phrase was pinned in the
-    // singular -- so the only doc line that satisfied it was ungrammatical.
+    // Pluralise: the registry grew past one owl, and "contains 6 NPC entry" in the
+    // canonical onboarding doc is a sentence no reader should have to forgive.
     ensureDocContains('ONBOARDING_AGENT.md',
         `contains ${npcCount} NPC ${npcCount === 1 ? 'entry' : 'entries'}`, 'NPC count snapshot');
     ensureDocContains('ONBOARDING_AGENT.md', `contains ${enemyCount} enemy type`, 'enemy count snapshot');
@@ -296,7 +296,7 @@ function validateOnboardingSnapshot(currentDocs) {
         { pattern: /\bregisters \d+ scenes\b/, description: 'scene counts' },
         { pattern: /\bloads \d+ math pools totaling \d+ problems\b/, description: 'math pool counts' },
         { pattern: /\bcontains \d+ levels\b/, description: 'level counts' },
-        { pattern: /\bcontains \d+ NPC entry\b/, description: 'NPC counts' },
+        { pattern: /\bcontains \d+ NPC (?:entry|entries)\b/, description: 'NPC counts' },
         { pattern: /\bcontains \d+ enemy type\b/, description: 'enemy counts' },
         { pattern: /\b\d+ music tracks\b/, description: 'audio manifest counts' },
         { pattern: /\b\d+ live SFX entries\b/, description: 'audio manifest counts' },

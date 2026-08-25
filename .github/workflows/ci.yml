@@ -124,6 +124,13 @@ jobs:
         run: npm run typecheck
       - name: Validate content, docs and assets
         run: npm run validate
+      # Rescued from web-ci.yml. That workflow gated the retired Phaser build and
+      # could never pass, but this step was real and passing: 65 checks that the
+      # brand palettes obey their own colour laws. Deleting the workflow dropped
+      # it, so it lives here now, where the rest of the gates actually run.
+      - name: Colour law
+        working-directory: brand/tokens
+        run: python3 verify_palettes.py
 
   api:
     name: API (server tests against Postgres)

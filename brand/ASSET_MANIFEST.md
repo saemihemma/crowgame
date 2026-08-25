@@ -60,14 +60,27 @@ that actually works:
 ```
 npm run validate          # content, docs, assets, i18n
 npx tsc --noEmit
-npm run dev               # then, in a second shell:
-npm run themes:screenshots
 ```
 
-`npm run themes:screenshots` is the one that matters for art. It walks all six
-levels, captures gameplay and the maths board in each, and checks the rendered
-pixels against that world's token file. A new asset in the wrong palette fails
-it. Screenshots land in `output/playwright/themes/`.
+> **Note.** The screenshot walker (`themes:screenshots`) and the device audit
+> drove the Phaser build through `window.__crowGame`, which no longer exists —
+> both tools were deleted with it. The colour law below still runs, and is
+> gated in CI. For a live look at the Godot build:
+>
+> ```
+> bash godot/tools/build_web.sh
+> (cd output/web && python3 -m http.server 8060)
+> node tools/godot_play_smoke.mjs      # walks login -> menu -> level -> owl
+> node godot/tools/web_boot_smoke.mjs  # iPad viewport, boots and renders
+> ```
+
+The screenshot walker used to be the gate that mattered for art: it walked all
+six levels, captured gameplay and the maths board in each, and checked the
+rendered pixels against that world's token file. It drove the Phaser build and
+went with it. **Nothing currently checks a new asset's palette against its
+world**, which is a real gap — `brand/tokens/verify_palettes.py` proves the
+token files are internally lawful, not that the shipped pixels match them.
+Rebuilding it against the Godot export is the honest replacement.
 
 ---
 
@@ -120,7 +133,8 @@ The PNG is the asset. Nothing about a tileset lives in code.
 3. Set `"source": "authored"` for that entry in
    `public/data/tilesets/tileset_manifest.json`, so the generator stops being
    treated as its origin.
-4. `npm run validate && npm run dev`, then `npm run themes:screenshots`.
+4. `npm run validate`, then look at the build: `bash godot/tools/build_web.sh`
+   and `node tools/godot_play_smoke.mjs`.
 
 To **add** a world: drop a PNG in, add a manifest entry, add a theme token file,
 give a level spec that `theme`. The tileset manifest is loaded by `DataManager`, so there
@@ -361,5 +375,6 @@ Worth stating, so nobody generates something that is already handled:
 | P5 hero | 8 | the animation set and the scarf |
 
 **91 files, of which 5 are placed and 86 remain.** Nothing in P1-P5 blocks
-anything else, so they can land in any order, one file per pull request, with
-`npm run themes:screenshots` as the gate.
+anything else, so they can land in any order, one file per pull request. The
+palette gate that used to police them is gone (see above); until it is rebuilt,
+`node tools/godot_play_smoke.mjs` and a human eye are the check.

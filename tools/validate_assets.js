@@ -107,27 +107,23 @@ function formatAssetLabel(relativePath) {
 }
 
 /**
- * Art slots that are referenced but genuinely optional.
+ * Art slots the game deliberately ships without.
  *
- * Each of these is guarded at its call site — `ResourceLoader.exists()`, or a
- * `*_FALLBACK` constant — and the game draws something deliberate without it:
- * the ring crops the world sprite, the board paints a StyleBoxFlat, the counting
- * row draws a themed disc. `brand/ASSET_MANIFEST.md` lists them as P1 "drop a
- * file here and it is picked up with no code change".
+ * Each of these is referenced from a `.gd` constant that is paired with a
+ * documented fallback — owl_ring.gd says outright that "the ring falls back to a
+ * head crop of the world sprite until it exists", and the two READMEs beside
+ * these directories describe them as drop-in slots: put a file here and it is
+ * picked up with no code change.
  *
- * The scraper cannot tell a guarded reference from a hard one, so it called all
- * three "missing required assets" and failed the gate on art that was never
- * committed and does not block play. Declaring them keeps the reporting honest
- * WITHOUT going blind: an undeclared missing reference still fails, and a slot
- * that has since been filled is reported as filled.
+ * The scanner cannot tell an optional slot from a requirement, because both are
+ * just a res:// string. So name them here. They are reported as ABSENT rather
+ * than MISS: still visible, but not a build failure, because the fallback IS the
+ * shipped behaviour. Delete an entry the moment its art lands.
  */
-const OPTIONAL_ART_SLOTS = new Map([
-    ['godot/assets/sprites/ui/hud/owl-icon-32.png',
-        'owl_ring.gd falls back to ICON_FALLBACK, a head crop of the world sprite'],
-    ['godot/assets/sprites/ui/board/count-token-32.png',
-        'count_row.gd falls back to a themed disc with an ink rim'],
-    ['godot/assets/sprites/ui/board/board-9slice.png',
-        'math_challenge.gd _board_face() falls back to a rounded StyleBoxFlat'],
+const OPTIONAL_ASSET_SLOTS = new Set([
+    'godot/assets/sprites/ui/board/board-9slice.png',
+    'godot/assets/sprites/ui/board/count-token-32.png',
+    'godot/assets/sprites/ui/hud/owl-icon-32.png',
 ]);
 
 function printGroup(title, entries, missing) {
@@ -139,9 +135,8 @@ function printGroup(title, entries, missing) {
         const label = formatAssetLabel(relativePath);
         if (result.exists) {
             console.log(`  ${colors.green}OK${colors.reset} ${label.padEnd(42)} (${formatSize(result.size)})`);
-        } else if (OPTIONAL_ART_SLOTS.has(relativePath)) {
-            console.log(`  ${colors.cyan}SLOT${colors.reset} ${label.padEnd(42)} `
-                + `(optional — ${OPTIONAL_ART_SLOTS.get(relativePath)})`);
+        } else if (OPTIONAL_ASSET_SLOTS.has(relativePath)) {
+            console.log(`  ${colors.cyan}ABSENT${colors.reset} ${label.padEnd(38)} (optional slot; code falls back)`);
         } else {
             console.log(`  ${colors.red}MISS${colors.reset} ${label}`);
             missing.push(relativePath);
@@ -268,6 +263,17 @@ function main() {
         process.exit(1);
     }
 
+    // NOTE: a second copy of the optional-slot list used to sit here, filtering
+    // absent slots out of the list entirely. It arrived from a different session
+    // in the same week as OPTIONAL_ASSET_SLOTS above, which solves the same
+    // problem — two lists of the same three paths in one file, and a file dropped
+    // into one but not the other would behave differently depending on which
+    // branch you read. Collapsed onto the single list at the top.
+    //
+    // Kept the ABSENT reporting rather than the filter, on one argument: 86 art
+    // files are still to land, and a slot you can SEE is unfilled is worth more
+    // than a slot that vanishes from the output. Both agree on the part that
+    // matters — once a file is dropped in, it validates like any other asset.
     const bootVisuals = extractReferencedVisualAssets();
     const audioAssets = extractManifestAudioAssets();
     const compiledLevelAssets = extractCompiledLevelAssets();
@@ -315,7 +321,7 @@ function main() {
         process.exit(1);
     }
 
-    const pendingSlots = [...OPTIONAL_ART_SLOTS.keys()].filter(p => !checkFile(p).exists);
+    const pendingSlots = [...OPTIONAL_ASSET_SLOTS].filter(p => !checkFile(p).exists);
     console.log(`\n${colors.green}All required assets are present, and no suspicious experimental leftovers remain in godot/assets.${colors.reset}`);
     if (pendingSlots.length > 0) {
         // Said out loud rather than passed over: a green gate that quietly hides

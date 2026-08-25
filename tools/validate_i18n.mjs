@@ -36,7 +36,14 @@ const LOCALES = ['en', 'is'];
 const FALLBACK_LOCALE = 'en';
 
 /** Directories whose contents get rendered to a player. */
-const RENDERED_CODE = ['src', 'godot/scripts'];
+// godot/tests counts as rendering. A key pinned by a test is not dead:
+// game.completion_stats has no call site yet, but test_i18n.gd asserts its
+// Icelandic dative passive, and deleting the key silently deletes that
+// grammar check. Scanning only scripts reported it orphaned and this file
+// duly removed it — the suite caught the mistake, which is the only reason
+// you are reading this comment instead of losing the translation.
+const RENDERED_CODE = ['godot/scripts', 'godot/tests'];
+const GLYPH_SCAN_DIRS = ['godot/scripts'];
 const RENDERED_EXTENSIONS = ['.ts', '.gd'];
 
 /**
@@ -194,7 +201,12 @@ function walk(dir, out = []) {
     return out;
 }
 
-for (const codeDir of RENDERED_CODE) {
+// The glyph allowlist applies to strings the GAME renders, so scan scripts only.
+// Tests are in RENDERED_CODE so a key they pin is not reported dead, but their
+// own prose is never drawn by Godot's font — an em dash in a test's comment is
+// not a tofu risk, and failing on one would push contributors to write worse
+// comments to satisfy a check that does not apply to them.
+for (const codeDir of GLYPH_SCAN_DIRS) {
     for (const path of walk(join(ROOT, codeDir))) {
         const rel = relative(ROOT, path);
         readFileSync(path, 'utf8').split('\n').forEach((line, i) => {
