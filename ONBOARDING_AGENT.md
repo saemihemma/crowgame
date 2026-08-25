@@ -4,7 +4,7 @@ Status: Current
 Authority: The working map, plus the ONLY canonical numeric snapshot in the docs.
 Runtime truth still outranks this file — if they disagree, the code is right and
 this file is stale.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 ## Purpose
 
@@ -66,7 +66,7 @@ ships against.
 
 ## Dated repo snapshot
 
-Snapshot as of 2026-08-24.
+Snapshot as of 2026-08-25.
 This is the only canonical numeric snapshot block in the current docs.
 Refresh it here, and nowhere else, when a count changes.
 
@@ -78,18 +78,25 @@ Game:
   teacher, gentle, tough, twin chain, triple chain, gauntlet)
 - `godot/data/enemies/enemy_registry.json` contains 1 enemy type (the cockroach)
 - `godot/data/audio/audio_manifest.json` currently exposes 5 music tracks and 16 live SFX entries.
-- **51** `.gd` scripts under `godot/scripts/`, **24** `.tscn` scenes under `godot/scenes/`
+- **70** `.gd` scripts under `godot/scripts/`, **25** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **294** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **449** keys, matched key-for-key by
   `strings_is.json`
-- **19** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
+- **20** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
 Maths content — `DataManager` loads 4 math pools totaling 3150 problems:
 - `curriculum`: 3035
 - `gaps`: 60
 - `dataset`: 40
 - `easy`: 15
+
+Those 3150 problems are grouped into **30** concepts by
+`godot/data/curriculum/concept_ladder.json`, each opening with a **4**-card
+lesson from `godot/data/curriculum/tutorials.json` — **30** lessons, **120**
+cards. `reports/math-concepts/coverage.json` is the generated rung-by-rung
+inventory, including the **15** empty and **12** thin rungs the ladder currently
+declares. See [docs/MATH_CONCEPT_LADDER.md](./docs/MATH_CONCEPT_LADDER.md).
 
 Math UI is currently MCQ-only: every problem is answered by picking one of the
 offered options, and `godot/scripts/ui/math_challenge.gd` builds its buttons
@@ -125,7 +132,7 @@ Reference kernel:
 - **2** fixture files under `godot/tests/fixtures/**`
 
 Tests, all in:
-- **69** GDScript unit tests, **6** headless physics probes
+- **173** GDScript unit tests across **33** suites, **6** headless physics probes
 - **31** server tests
 - **2** browser harnesses: `web_boot_smoke.mjs` (the export boots) and
   `error_pipeline_e2e.mjs` (browser → API → Postgres)
@@ -139,6 +146,7 @@ Tests, all in:
 | What does a player read? | `godot/data/i18n/strings_*.json` |
 | Which scenes exist, and how are they reached? | `godot/data/registries/scenes.json` |
 | How does difficulty adapt? | `godot/scripts/systems/learner_state_manager.gd` + `godot/scripts/math/**` |
+| What does a step MEAN, and what teaches it? | `godot/data/curriculum/**` + `docs/MATH_CONCEPT_LADDER.md` |
 | Is that logic still correct? | `godot/tests/fixtures/**` vs `math-kernel/**` |
 | What is stored, where, under which key? | `docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md` |
 | What crosses the network? | `docs/API_CONTRACT.md` |
@@ -151,11 +159,12 @@ Tests, all in:
 Boot ──▶ Login ("Who's playing?")  ──▶ MainMenu ──▶ LevelSelect ──▶ Game
           │  name + 4-digit PIN                        │
           │  (a selector, NOT auth)                    ├─▶ owl encounter
-          ▼                                            │     ├─ 1 problem 
-   profile save loads                                  │     ├─ ELO + learner update
-   learner snapshot restores                           │     └─ save (local, then cloud)
-   CloudSync binds the child                           │
-   and pulls the cloud save                            └─▶ death: level reloads
+          ▼                                            │     ├─ concept lesson, if the idea is new
+   profile save loads                                  │     ├─ 1 problem
+   learner snapshot restores                           │     ├─ ELO + learner update
+   CloudSync binds the child                           │     └─ save (local, then cloud)
+   and pulls the cloud save                            │
+                                                       └─▶ death: level reloads
 ```
 
 Autoload order matters and is set in `godot/project.godot`: `Persistence` and
@@ -172,6 +181,7 @@ Autoload order matters and is set in `godot/project.godot`: `Persistence` and
 | add a sound | `tools/gen_sfx.py` or drop a file → `audio_manifest.json` → `sound_events.json` → `AudioManager.play_event()` |
 | change ELO/learner/movement constants | edit `math-kernel/**`, regenerate fixtures, keep Godot parity green, all in one commit |
 | add curriculum content | `docs/MATH_AUTHORING_PIPELINE.md`, then `npm run math:materialize` |
+| change what a lesson teaches, says or looks like | `docs/MATH_CONCEPT_LADDER.md` — data only, no `.gd` |
 | change anything on the wire | `docs/API_CONTRACT.md` first — it is frozen deliberately |
 | add a database column | a new forward-only migration; expand/contract, never destructive in the same deploy |
 | debug "it works locally but not deployed" | `node godot/tools/web_boot_smoke.mjs`, then the error groups in Postgres |

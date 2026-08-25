@@ -1,0 +1,413 @@
+extends Control
+class_name TutorialVisual
+## The picture on a tutorial card, drawn from data.
+##
+## Ten representations, each one the standard primary-maths model for the idea
+## it carries: a ten-frame for quantity and bonds to ten, a number line for
+## counting on and back, base-ten rods for place value, equal groups for
+## multiplication and its mirror image, division. They are drawn rather than
+## authored as art so a lesson costs a JSON entry instead of a sprite, and so
+## every one of them recolours with the world's theme.
+##
+## Adding an eleventh is one entry in RENDERERS and one _draw_ function. Nothing
+## else in the tutorial knows the list.
+##
+## Geometry comes from data/tuning/tutorial_tuning.json ("visual"), colour from
+## the "roles" map in the same file, resolved through the active theme. There
+## are no numbers and no colours in this file that a designer cannot move.
+
+const RENDERERS := {
+	"count_all": "_draw_count_all",
+	"ten_frame": "_draw_ten_frame",
+	"number_line": "_draw_number_line",
+	"take_away": "_draw_take_away",
+	"balance": "_draw_balance",
+	"pattern_strip": "_draw_pattern_strip",
+	"numbers": "_draw_numbers",
+	"groups": "_draw_groups",
+	"tens_and_ones": "_draw_tens_and_ones",
+	"equation": "_draw_equation",
+}
+
+## The ten-frame is five and five, which is the whole reason it works: eight
+## reads as "a full row and three", not as eight things to count one at a time.
+const FRAME_COLUMNS := 5
+const FRAME_ROWS := 2
+const FRAME_CAPACITY := FRAME_COLUMNS * FRAME_ROWS
+
+var _visual := ""
+var _params: Dictionary = {}
+
+func setup(visual: String, params: Dictionary) -> void:
+	_visual = visual
+	_params = params
+	custom_minimum_size = Vector2(0, float(Config.tutorial("layout/visual_height", 190)))
+	queue_redraw()
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ThemeManager.theme_changed.connect(func(_id): queue_redraw())
+	resized.connect(queue_redraw)
+
+## Whether anything knows how to draw this name. Public so a test can assert the
+## data and the renderer agree without instancing a whole tutorial.
+static func can_draw(visual: String) -> bool:
+	return RENDERERS.has(visual)
+
+func _draw() -> void:
+	if not RENDERERS.has(_visual):
+		return
+	call(RENDERERS[_visual])
+
+# --- shared helpers -------------------------------------------------------
+
+func _tune(key: String, fallback: float) -> float:
+	return float(Config.tutorial("visual/%s" % key, fallback))
+
+## A drawn part's colour: the part names a role in tutorial_tuning.json, that
+## role names a palette entry, and the active theme supplies it. Two levels of
+## indirection on purpose - a reskin never edits this file.
+func _role(part: String, fallback_role: String) -> Color:
+	return ThemeManager.get_color_value(String(Config.tutorial("roles/%s" % part, fallback_role)))
+
+func _font() -> Font:
+	return get_theme_default_font()
+
+func _numeral(text: String, centre: Vector2, size_px: float, colour: Color) -> void:
+	var font := _font()
+	var measured := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, int(size_px))
+	# draw_string anchors on the BASELINE, not the top: passing a centre straight
+	# through drops every numeral roughly half a line below where it belongs.
+	font.draw_string(get_canvas_item(), centre - Vector2(measured.x * 0.5, -measured.y * 0.32),
+		text, HORIZONTAL_ALIGNMENT_LEFT, -1, int(size_px), colour)
+
+func _token(centre: Vector2, radius: float, fill: Color) -> void:
+	draw_circle(centre, radius, fill)
+	draw_arc(centre, radius, 0.0, TAU, 24, _role("outline", "ink"), 2.5)
+
+## A cross through a token that has been taken away. Subtraction needs the thing
+## to still be visible after it is gone - a child who is shown five and then
+## three has to count what was removed, not re-count what remains.
+func _cross(centre: Vector2, radius: float) -> void:
+	var w := _tune("cross_thickness", 4.0)
+	var c := _role("outline", "ink")
+	draw_line(centre + Vector2(-radius, -radius), centre + Vector2(radius, radius), c, w)
+	draw_line(centre + Vector2(-radius, radius), centre + Vector2(radius, -radius), c, w)
+
+## Lay `count` tokens out in a row, centred, wrapping if the row would overflow.
+func _token_row(count: int, origin: Vector2, colours: Array) -> void:
+	var token := _tune("token_size", 26.0)
+	var gap := _tune("token_gap", 9.0)
+	var per_row := maxi(1, int((size.x - token) / (token + gap)))
+	var radius := token * 0.5
+	for i in count:
+		var col := i % per_row
+		var row := i / per_row
+		var wide: int = mini(count - row * per_row, per_row)
+		var row_w := wide * token + maxf(0.0, wide - 1) * gap
+		var at := Vector2(origin.x - row_w * 0.5 + col * (token + gap) + radius,
+			origin.y + row * (token + gap))
+		_token(at, radius, colours[i] if i < colours.size() else _role("token_a", "owl"))
+
+func _int(key: String, fallback: int = 0) -> int:
+	return int(_params.get(key, fallback))
+
+# --- the ten representations ---------------------------------------------
+
+## Two groups of objects, side by side and clearly separate. The first picture
+## of addition a child should ever see: not a symbol, two piles.
+func _draw_count_all() -> void:
+	var a := _int("a")
+	var b := _int("b")
+	var token := _tune("token_size", 26.0)
+	var gap := _tune("token_gap", 9.0)
+	var group_gap := _tune("group_gap", 24.0)
+	var a_w := a * token + maxf(0.0, a - 1) * gap
+	var b_w := b * token + maxf(0.0, b - 1) * gap
+	var total_w := a_w + (group_gap + b_w if b > 0 else 0.0)
+	var y := size.y * 0.5
+	var x := size.x * 0.5 - total_w * 0.5 + token * 0.5
+	for i in a:
+		_token(Vector2(x + i * (token + gap), y), token * 0.5, _role("token_a", "owl"))
+	if b > 0:
+		var bx := x + a_w + group_gap
+		for i in b:
+			_token(Vector2(bx + i * (token + gap), y), token * 0.5, _role("token_b", "accent"))
+
+## Five and five, with the empty cells still drawn. The gaps are half the
+## lesson: "six" and "four more to ten" are the same picture.
+func _draw_ten_frame() -> void:
+	var filled := _int("filled")
+	var second := _int("second")
+	var total := filled + second
+	var frames := maxi(1, int(ceil(float(total) / float(FRAME_CAPACITY))))
+	var token := _tune("token_size", 26.0)
+	var gap := _tune("token_gap", 9.0)
+	var frame_gap := _tune("frame_gap", 18.0)
+	var cell := token + gap
+	var frame_w := FRAME_COLUMNS * cell
+	var frame_h := FRAME_ROWS * cell
+	var total_w := frames * frame_w + maxf(0.0, frames - 1) * frame_gap
+	var origin := Vector2(size.x * 0.5 - total_w * 0.5, size.y * 0.5 - frame_h * 0.5)
+	var border := _tune("frame_border", 3.0)
+	var outline := _role("outline", "ink")
+
+	for f in frames:
+		var fx := origin.x + f * (frame_w + frame_gap)
+		draw_rect(Rect2(Vector2(fx, origin.y), Vector2(frame_w, frame_h)), outline, false, border)
+		for r in FRAME_ROWS:
+			for c in FRAME_COLUMNS:
+				var index := f * FRAME_CAPACITY + r * FRAME_COLUMNS + c
+				var at := Vector2(fx + c * cell + cell * 0.5, origin.y + r * cell + cell * 0.5)
+				if index < filled:
+					_token(at, token * 0.5, _role("token_a", "owl"))
+				elif index < total:
+					_token(at, token * 0.5, _role("token_b", "accent"))
+				else:
+					draw_arc(at, token * 0.5, 0.0, TAU, 20, Color(outline, 0.35), 2.0)
+
+## The line, with every number on it a child can reach. Hops are drawn as arcs
+## rather than a slid marker because the count is the point: four hops IS "add
+## four", and a child can put a finger on each one.
+func _draw_number_line() -> void:
+	var from := _int("from")
+	var to := _int("to", 10)
+	var span: int = maxi(1, to - from)
+	var thickness := _tune("line_thickness", 4.0)
+	var tick_h := _tune("tick_height", 12.0)
+	var margin := _tune("token_size", 26.0)
+	var y := size.y * 0.62
+	var left := margin
+	var right := maxf(margin + 1.0, size.x - margin)
+	var line := _role("line", "paper")
+	draw_line(Vector2(left, y), Vector2(right, y), line, thickness)
+
+	# A tick per number while they still fit; every fifth once they do not, which
+	# is also how a child is taught to read a longer line.
+	var stride: int = 1 if span <= 20 else 5
+	var numeral_size := _tune("numeral_font_size", 26.0) * (1.0 if span <= 12 else 0.75)
+	var at_x := func(value: int) -> float:
+		return left + (right - left) * float(value - from) / float(span)
+	for v in range(from, to + 1):
+		if (v - from) % stride != 0:
+			continue
+		var x: float = at_x.call(v)
+		draw_line(Vector2(x, y - tick_h * 0.5), Vector2(x, y + tick_h * 0.5), line, thickness * 0.6)
+		_numeral(str(v), Vector2(x, y + tick_h + numeral_size * 0.6), numeral_size, line)
+
+	# The landmark: the ten a bridging problem stops at on the way past.
+	if _params.has("mark"):
+		var mx: float = at_x.call(_int("mark"))
+		draw_circle(Vector2(mx, y), _tune("mark_radius", 9.0), _role("highlight", "yes"))
+
+	# Comparison uses the same line with two numbers on it and no hops - which is
+	# the honest picture of "greater": further along.
+	if _params.has("marks"):
+		for value: Variant in (_params["marks"] as Array):
+			var vx: float = at_x.call(int(value))
+			_token(Vector2(vx, y), _tune("mark_radius", 9.0), _role("mark", "accent"))
+		return
+
+	if not _params.has("start"):
+		return
+	var start := _int("start")
+	var hops := _int("hops")
+	_token(Vector2(at_x.call(start), y), _tune("mark_radius", 9.0), _role("mark", "accent"))
+	var step := 1 if hops >= 0 else -1
+	var height := _tune("hop_height", 34.0)
+	var points := maxi(4, int(_tune("hop_points", 20.0)))
+	var hop_colour := _role("hop", "accent")
+	for i in absi(hops):
+		var a: float = at_x.call(start + i * step)
+		var b: float = at_x.call(start + (i + 1) * step)
+		var arc := PackedVector2Array()
+		for p in points + 1:
+			var t := float(p) / float(points)
+			arc.append(Vector2(lerpf(a, b, t), y - sin(t * PI) * height))
+		draw_polyline(arc, hop_colour, _tune("hop_thickness", 4.0))
+
+## What is left, with what went still on the board.
+func _draw_take_away() -> void:
+	var total := _int("total")
+	var gone := _int("gone")
+	var kept := maxi(0, total - gone)
+	var colours: Array = []
+	for i in total:
+		colours.append(_role("token_a", "owl") if i < kept else _role("token_gone", "text_dim"))
+	var token := _tune("token_size", 26.0)
+	_token_row(total, Vector2(size.x * 0.5, size.y * 0.5 - token * 0.5), colours)
+	# Cross the taken ones after the row, so the geometry is computed once.
+	var gap := _tune("token_gap", 9.0)
+	var per_row := maxi(1, int((size.x - token) / (token + gap)))
+	for i in range(kept, total):
+		var col := i % per_row
+		var row := i / per_row
+		var wide: int = mini(total - row * per_row, per_row)
+		var row_w := wide * token + maxf(0.0, wide - 1) * gap
+		var at := Vector2(size.x * 0.5 - row_w * 0.5 + col * (token + gap) + token * 0.5,
+			size.y * 0.5 - token * 0.5 + row * (token + gap))
+		_cross(at, token * 0.36)
+
+## Two towers and their numerals, in the shape of the snap cubes a classroom
+## compares with: squares stacked edge to edge, so the taller tower IS the
+## greater number before a child reads either numeral.
+##
+## Drawn as one file, always. An earlier version wrapped a tall stack into
+## columns to make it fit, which is exactly the wrong thing to do here -- five
+## drawn as one-then-two-then-two is no longer taller than two, and the card's
+## own words ("you can see which pile is taller") stopped being true.
+func _draw_balance() -> void:
+	var a := _int("a")
+	var b := _int("b")
+	var tallest: int = maxi(1, maxi(a, b))
+	var numeral_size := _tune("numeral_font_size", 26.0)
+	var available := size.y - numeral_size * 1.6
+	# Size the cube to the taller tower rather than clamping the count: both
+	# towers stay single file at any height the card can be given.
+	# Width is fixed and only the brick HEIGHT shrinks. Shrinking both turned a
+	# fourteen-tall tower into a 6px thread: correct, and invisible.
+	var brick_w := _tune("token_size", 26.0) * 0.9
+	var brick_h: float = clampf(available / float(tallest), 4.0, brick_w)
+	var base := available
+	var outline := _role("outline", "ink")
+	var roles := ["token_a", "token_b"]
+	var fallbacks := ["owl", "accent"]
+	var winner: int = 0 if a >= b else 1
+	for c in 2:
+		var count: int = a if c == 0 else b
+		var x := size.x * (0.35 if c == 0 else 0.65)
+		var fill := _role(roles[c], fallbacks[c])
+		for i in count:
+			var cell := Rect2(Vector2(x - brick_w * 0.5, base - (i + 1) * brick_h), Vector2(brick_w, brick_h))
+			draw_rect(cell, fill)
+			# The seam between bricks only survives while the brick is taller
+			# than the line; a very tall tower draws as one solid bar instead,
+			# which still reads correctly.
+			if brick_h > 5.0:
+				draw_rect(cell, outline, false, 1.5)
+		var colour := _role("highlight", "yes") if c == winner else _role("numeral", "paper")
+		_numeral(str(count), Vector2(x, base + numeral_size * 0.7), numeral_size, colour)
+
+## The repeating core, coloured by position within it. A pattern is only visible
+## once the repeat is: the colours say "this one is the same as that one" before
+## a child has read a single numeral.
+func _draw_pattern_strip() -> void:
+	var core: Array = _params.get("core", [])
+	if core.is_empty():
+		return
+	var length := _int("length", 5)
+	var chip := _tune("chip_size", 34.0)
+	var gap := _tune("chip_gap", 10.0)
+	var slots := length + 1
+	var total_w := slots * chip + maxf(0.0, slots - 1) * gap
+	var y := size.y * 0.5
+	var x := size.x * 0.5 - total_w * 0.5 + chip * 0.5
+	var numeral_size := _tune("numeral_font_size", 26.0) * 0.8
+	var parts := ["token_a", "token_b", "token_c"]
+	var fallbacks := ["owl", "accent", "primary"]
+	for i in slots:
+		var at := Vector2(x + i * (chip + gap), y)
+		var last := i == length
+		var value: Variant = _params.get("reveal", null) if last else core[i % core.size()]
+		var slot := i % core.size()
+		if last and value == null:
+			draw_arc(at, chip * 0.5, 0.0, TAU, 28, _role("mark", "accent"), 3.0)
+			_numeral("?", at, numeral_size, _role("mark", "accent"))
+			continue
+		_token(at, chip * 0.5, _role(parts[slot % parts.size()], fallbacks[slot % fallbacks.size()]))
+		_numeral(str(value), at, numeral_size, _role("outline", "ink"))
+
+## A sequence as a child meets it in the pools: numbers, a comma, and a gap.
+func _draw_numbers() -> void:
+	var values: Array = _params.get("values", [])
+	var numeral_size := _tune("numeral_font_size", 26.0) * 1.5
+	var parts: PackedStringArray = PackedStringArray()
+	for v: Variant in values:
+		parts.append(str(v))
+	parts.append(str(_params["reveal"]) if _params.has("reveal") else "?")
+	var text := ", ".join(parts)
+	var colour := _role("numeral", "paper")
+	_numeral(text, Vector2(size.x * 0.5, size.y * 0.5), numeral_size, colour)
+	# The unknown, or the answer, in the colour the rest is not.
+	var tail: String = parts[parts.size() - 1]
+	var font := _font()
+	var full := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, int(numeral_size)).x
+	var tail_w := font.get_string_size(tail, HORIZONTAL_ALIGNMENT_LEFT, -1, int(numeral_size)).x
+	_numeral(tail, Vector2(size.x * 0.5 + full * 0.5 - tail_w * 0.5, size.y * 0.5), numeral_size,
+		_role("highlight", "yes") if _params.has("reveal") else _role("mark", "accent"))
+
+## Equal groups, ringed. Read left to right it is multiplication; read as "share
+## these out fairly" it is division. Same picture, and saying so is the lesson.
+func _draw_groups() -> void:
+	var count := _int("groups", 2)
+	var each := _int("each", 2)
+	var token := _tune("token_size", 26.0) * 0.8
+	var gap := _tune("token_gap", 9.0) * 0.8
+	var group_gap := _tune("group_gap", 24.0)
+	var columns: int = maxi(1, int(ceil(sqrt(float(each)))))
+	var rows: int = maxi(1, int(ceil(float(each) / float(columns))))
+	var ring_w := columns * (token + gap) + gap
+	var ring_h := rows * (token + gap) + gap
+	var total_w := count * ring_w + maxf(0.0, count - 1) * group_gap
+	var origin := Vector2(size.x * 0.5 - total_w * 0.5, size.y * 0.5 - ring_h * 0.5)
+	var outline := _role("outline", "ink")
+	for g in count:
+		var gx := origin.x + g * (ring_w + group_gap)
+		draw_rect(Rect2(Vector2(gx, origin.y), Vector2(ring_w, ring_h)), outline, false,
+			_tune("group_ring_border", 3.0))
+		for i in each:
+			var at := Vector2(gx + gap + (i % columns) * (token + gap) + token * 0.5,
+				origin.y + gap + (i / columns) * (token + gap) + token * 0.5)
+			_token(at, token * 0.5, _role("token_a", "owl"))
+
+## Rods and units. Twenty-four is two rods and four cubes, and a child who has
+## seen that will never again read the 2 in 24 as a two.
+func _draw_tens_and_ones() -> void:
+	var tens := _int("tens")
+	var ones := _int("ones")
+	var add_tens := _int("addTens")
+	var add_ones := _int("addOnes")
+	var take_ones := _int("takeOnes")
+	var rod_w := _tune("rod_width", 16.0)
+	var rod_h := _tune("rod_height", 84.0)
+	var rod_gap := _tune("rod_gap", 8.0)
+	var unit := rod_w
+	var total_rods := tens + add_tens
+	var total_units := ones + add_ones
+	var unit_columns: int = maxi(1, mini(total_units, 5))
+	var units_w := unit_columns * (unit + rod_gap)
+	var rods_w := total_rods * (rod_w + rod_gap)
+	var total_w := rods_w + (rod_gap * 2.0 if total_rods > 0 and total_units > 0 else 0.0) + units_w
+	var top := size.y * 0.5 - rod_h * 0.5
+	var x := size.x * 0.5 - total_w * 0.5
+	var outline := _role("outline", "ink")
+
+	for i in total_rods:
+		var colour := _role("token_a", "owl") if i < tens else _role("token_b", "accent")
+		var at := Rect2(Vector2(x + i * (rod_w + rod_gap), top), Vector2(rod_w, rod_h))
+		draw_rect(at, colour)
+		draw_rect(at, outline, false, 2.0)
+
+	var ux := x + rods_w + (rod_gap * 2.0 if total_rods > 0 and total_units > 0 else 0.0)
+	var kept := maxi(0, ones - take_ones)
+	for i in total_units:
+		var col := i % unit_columns
+		var row := i / unit_columns
+		var colour := _role("token_a", "owl")
+		if i >= ones:
+			colour = _role("token_b", "accent")
+		elif i >= kept:
+			colour = _role("token_gone", "text_dim")
+		var cell := Rect2(Vector2(ux + col * (unit + rod_gap), top + row * (unit + rod_gap)), Vector2(unit, unit))
+		draw_rect(cell, colour)
+		draw_rect(cell, outline, false, 2.0)
+		if i >= kept and i < ones:
+			_cross(cell.get_center(), unit * 0.36)
+
+## The abstract form, last and largest. A result of null draws the question a
+## child is about to be asked rather than its answer.
+func _draw_equation() -> void:
+	var size_px := _tune("equation_font_size", 46.0)
+	var tail := str(_params["result"]) if _params.has("result") else "?"
+	var text := "%s %s %s = %s" % [str(_int("a")), String(_params.get("op", "+")), str(_int("b")), tail]
+	_numeral(text, Vector2(size.x * 0.5, size.y * 0.5), size_px, _role("numeral", "paper"))

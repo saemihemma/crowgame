@@ -128,7 +128,7 @@ function validateCrossReferences(): void {
     if (existsSync(mathDir)) {
         const problemIds = new Set<string>();
         const promptKeys = new Map<string, string>();
-        for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+        for (const file of readdirSync(mathDir).filter(f => f.startsWith('problems_') && f.endsWith('.json'))) {
             const pool = loadJson(join(mathDir, file)) as {
                 problems: Array<{
                     id: string;
@@ -554,7 +554,7 @@ if (existsSync(npcRegPath)) {
 console.log('\nMath problems:');
 const mathDir = join(DATA_DIR, 'math');
 if (existsSync(mathDir)) {
-    for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+    for (const file of readdirSync(mathDir).filter(f => f.startsWith('problems_') && f.endsWith('.json'))) {
         validateFile(join(mathDir, file), join(SCHEMA_DIR, 'math-problem.schema.json'), file);
     }
 }
@@ -620,7 +620,7 @@ function validateLevelMathGating(): void {
         npcRegistry.npcs.flatMap(npc => npc.components).find(c => c.type === 'math_challenge')?.problemTypes ?? [],
     );
     const byDomain = new Map<string, MathProblem[]>();
-    for (const file of readdirSync(join(DATA_DIR, 'math')).filter(f => f.endsWith('.json'))) {
+    for (const file of readdirSync(join(DATA_DIR, 'math')).filter(f => f.startsWith('problems_') && f.endsWith('.json'))) {
         const pool = JSON.parse(readFileSync(join(DATA_DIR, 'math', file), 'utf-8')) as { problems?: MathProblem[] };
         for (const problem of pool.problems ?? []) {
             const list = byDomain.get(problem.domain) ?? [];

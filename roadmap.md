@@ -2,7 +2,7 @@
 
 Status: Current
 Authority: The list of open work. Not a record of finished work. Runtime truth lives in the code.
-Last verified against code: 2026-08-23
+Last verified against code: 2026-08-25
 
 ## READ THIS FIRST — THIS FILE HAS ONE JOB
 
@@ -41,6 +41,28 @@ there.
 ---
 
 ## P1 — Correctness and reachability
+
+### Fill the four-rung subtraction hole, steps 17-20
+`godot/data/curriculum/concept_ladder.json` declares it, and
+`tools/validate_math_concepts.mjs` fails the build if it silently closes or
+widens. It sits inside `subtraction.tens_and_ones`, inside the owl-safe band, so
+a child leaving step 16 lands on step 21 with nothing in between. Author against
+`docs/MATH_AUTHORING_PIPELINE.md`; `subtraction` step 15 also holds exactly one
+problem (`20 - 10`) and wants filling in the same pass. Delete the `knownGaps`
+and `knownThin` entries when they close — the guard requires it.
+
+*Done when:* steps 15 and 17-20 each hold at least six authored subtraction
+problems and their ladder entries are gone.
+
+### Fill addition step 20
+Same shape, one rung wide: nothing generates a sum whose largest operand is
+exactly 20, so a child promoting off `addition.bridge_ten` skips straight to
+step 21. Also inside the owl-safe band. `addition` step 0 is thin at five
+problems, which is close to the real number of true facts with both operands at
+most one — decide whether that one is worth widening or is simply the floor.
+
+*Done when:* step 20 holds at least six problems and its `knownGaps` entry is
+deleted.
 
 ### Tune the ladder against real play, not intuition
 The admin session report tags accuracy against the 70-85% sweet spot. After a
@@ -185,6 +207,32 @@ exercised from the container this was written in.
 and the fixtures are regenerated — or the idea is dropped on purpose.
 
 ## P3 — Content and localisation
+
+### Multiplication and division have no foundation rungs
+`multiplication` steps 0, 1, 2 and 4 and `division` steps 0, 1, 2, 4 and 5 have
+no problems authored at all, so both concepts open mid-ladder. Sharing into two
+and three groups — the entire concrete foundation of division — does not exist.
+Neither domain is reachable today (unlock rules plus the operand cap of 20), so
+this is not urgent, but the lessons for `multiplication.groups_of` and
+`division.sharing` currently teach an idea the pools cannot then practise.
+Both are declared in `concept_ladder.json`.
+
+*Done when:* each of those rungs holds at least six problems, or the concepts
+are re-cut to start where the content actually does.
+
+### Number sequence has no step 0
+The gentlest possible sequence — counting on from a single number — was never
+authored, so `number_sequence` starts at step 1, where it holds two problems.
+Step 3 also holds two. This is the domain a child meets last in the chain and
+the one with the thinnest opening.
+
+### Lessons for the concepts, and only some of the practice
+`docs/MATH_CONCEPT_LADDER.md` ships 30 lessons over 30 concepts, but a lesson is
+authored copy and the pools are generated. When a concept is re-cut, split or
+its step range moved, the lesson's numbers stop matching the rung it teaches.
+`tools/validate_math_concepts.mjs` checks each card's arithmetic against its own
+picture; nothing yet checks that a lesson's numbers sit inside its concept's
+band. Worth adding when the ladder next moves.
 
 ### Visual and richer worded prompts
 Addition and subtraction now carry two word-problem shapes each (berries,

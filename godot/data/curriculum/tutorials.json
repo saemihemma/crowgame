@@ -1,0 +1,283 @@
+{
+  "version": 1,
+  "_comment": "One click-through tutorial per concept in data/math/concept_ladder.json. Every tutorial is the same four beats, in the order the evidence says a novice learns them (docs/MATH_CONCEPT_LADDER.md): see it with objects, see it in a model, watch it worked out, then try one with help. Card text is NOT here - each card names a body suffix, and the string is tutorial.<tutorial id>.<suffix> in data/i18n/strings_*.json. Numbers here are the picture; the words are the teaching; the layout is data/tuning/tutorial_tuning.json. All three move independently.",
+  "tutorials": [
+    {
+      "id": "addition.count_all",
+      "cards": [
+        { "body": "see", "visual": "count_all", "params": { "a": 2, "b": 1 } },
+        { "body": "model", "visual": "ten_frame", "params": { "filled": 2, "second": 1 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 2, "op": "+", "b": 1, "result": 3 } },
+        { "body": "try", "visual": "count_all", "params": { "a": 1, "b": 2 }, "choice": { "options": [2, 3, 4], "correct": 3 } }
+      ]
+    },
+    {
+      "id": "addition.count_on",
+      "cards": [
+        { "body": "see", "visual": "count_all", "params": { "a": 4, "b": 2 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 4, "hops": 2 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 4, "op": "+", "b": 2, "result": 6 } },
+        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 5, "hops": 2 }, "choice": { "options": [5, 6, 7], "correct": 7 } }
+      ]
+    },
+    {
+      "id": "addition.make_ten",
+      "cards": [
+        { "body": "see", "visual": "ten_frame", "params": { "filled": 7 } },
+        { "body": "model", "visual": "ten_frame", "params": { "filled": 7, "second": 3 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 7, "op": "+", "b": 3, "result": 10 } },
+        { "body": "try", "visual": "ten_frame", "params": { "filled": 6, "second": 4 }, "choice": { "options": [9, 10, 11], "correct": 10 } }
+      ]
+    },
+    {
+      "id": "addition.teen_numbers",
+      "cards": [
+        { "body": "see", "visual": "ten_frame", "params": { "filled": 10, "second": 3 } },
+        { "body": "model", "visual": "tens_and_ones", "params": { "tens": 1, "ones": 3 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 13, "op": "+", "b": 2, "result": 15 } },
+        { "body": "try", "visual": "tens_and_ones", "params": { "tens": 1, "ones": 1, "addOnes": 2 }, "choice": { "options": [12, 13, 14], "correct": 13 } }
+      ]
+    },
+    {
+      "id": "addition.bridge_ten",
+      "cards": [
+        { "body": "see", "visual": "ten_frame", "params": { "filled": 16, "second": 4 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 10, "to": 20, "start": 16, "hops": 4 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 16, "op": "+", "b": 4, "result": 20 } },
+        { "body": "try", "visual": "number_line", "params": { "from": 10, "to": 20, "start": 17, "hops": 3 }, "choice": { "options": [19, 20, 21], "correct": 20 } }
+      ]
+    },
+    {
+      "id": "addition.tens_and_ones",
+      "cards": [
+        { "body": "see", "visual": "tens_and_ones", "params": { "tens": 2, "ones": 2, "addOnes": 3 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 20, "to": 30, "start": 22, "hops": 3 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 22, "op": "+", "b": 3, "result": 25 } },
+        { "body": "try", "visual": "number_line", "params": { "from": 30, "to": 40, "start": 31, "hops": 5 }, "choice": { "options": [35, 36, 37], "correct": 36 } }
+      ]
+    },
+    {
+      "id": "addition.carrying",
+      "cards": [
+        { "body": "see", "visual": "tens_and_ones", "params": { "tens": 6, "ones": 8, "addOnes": 5 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 60, "to": 80, "start": 68, "hops": 5, "mark": 70 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 68, "op": "+", "b": 5, "result": 73 } },
+        { "body": "try", "visual": "number_line", "params": { "from": 70, "to": 90, "start": 77, "hops": 9, "mark": 80 }, "choice": { "options": [85, 86, 87], "correct": 86 } }
+      ]
+    },
+
+    {
+      "id": "subtraction.take_away",
+      "cards": [
+        { "body": "see", "visual": "take_away", "params": { "total": 3, "gone": 1 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 3, "hops": -1 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 3, "op": "-", "b": 1, "result": 2 } },
+        { "body": "try", "visual": "take_away", "params": { "total": 6, "gone": 2 }, "choice": { "options": [3, 4, 5], "correct": 4 } }
+      ]
+    },
+    {
+      "id": "subtraction.count_back",
+      "cards": [
+        { "body": "see", "visual": "take_away", "params": { "total": 8, "gone": 3 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 8, "hops": -3 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 8, "op": "-", "b": 3, "result": 5 } },
+        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 9, "hops": -4 }, "choice": { "options": [4, 5, 6], "correct": 5 } }
+      ]
+    },
+    {
+      "id": "subtraction.bridge_back",
+      "cards": [
+        { "body": "see", "visual": "take_away", "params": { "total": 13, "gone": 5 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 13, "hops": -5, "mark": 10 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 13, "op": "-", "b": 5, "result": 8 } },
+        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 14, "hops": -6, "mark": 10 }, "choice": { "options": [7, 8, 9], "correct": 8 } }
+      ]
+    },
+    {
+      "id": "subtraction.teens_back",
+      "cards": [
+        { "body": "see", "visual": "ten_frame", "params": { "filled": 16 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 16, "hops": -8, "mark": 10 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 16, "op": "-", "b": 8, "result": 8 } },
+        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 17, "hops": -8, "mark": 10 }, "choice": { "options": [8, 9, 10], "correct": 9 } }
+      ]
+    },
+    {
+      "id": "subtraction.tens_and_ones",
+      "cards": [
+        { "body": "see", "visual": "tens_and_ones", "params": { "tens": 2, "ones": 4, "takeOnes": 3 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 20, "to": 30, "start": 24, "hops": -3 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 24, "op": "-", "b": 3, "result": 21 } },
+        { "body": "try", "visual": "number_line", "params": { "from": 30, "to": 40, "start": 38, "hops": -5 }, "choice": { "options": [32, 33, 34], "correct": 33 } }
+      ]
+    },
+    {
+      "id": "subtraction.borrowing",
+      "cards": [
+        { "body": "see", "visual": "tens_and_ones", "params": { "tens": 8, "ones": 4, "takeOnes": 7 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 70, "to": 90, "start": 84, "hops": -7, "mark": 80 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 84, "op": "-", "b": 7, "result": 77 } },
+        { "body": "try", "visual": "number_line", "params": { "from": 80, "to": 100, "start": 94, "hops": -8, "mark": 90 }, "choice": { "options": [85, 86, 87], "correct": 86 } }
+      ]
+    },
+
+    {
+      "id": "counting.to_five",
+      "cards": [
+        { "body": "see", "visual": "count_all", "params": { "a": 3 } },
+        { "body": "model", "visual": "ten_frame", "params": { "filled": 3 } },
+        { "body": "worked", "visual": "ten_frame", "params": { "filled": 5 } },
+        { "body": "try", "visual": "ten_frame", "params": { "filled": 4 }, "choice": { "options": [3, 4, 5], "correct": 4 } }
+      ]
+    },
+    {
+      "id": "counting.to_ten",
+      "cards": [
+        { "body": "see", "visual": "count_all", "params": { "a": 5, "b": 2 } },
+        { "body": "model", "visual": "ten_frame", "params": { "filled": 7 } },
+        { "body": "worked", "visual": "ten_frame", "params": { "filled": 8 } },
+        { "body": "try", "visual": "ten_frame", "params": { "filled": 9 }, "choice": { "options": [8, 9, 10], "correct": 9 } }
+      ]
+    },
+    {
+      "id": "counting.ten_and_more",
+      "cards": [
+        { "body": "see", "visual": "ten_frame", "params": { "filled": 10, "second": 3 } },
+        { "body": "model", "visual": "tens_and_ones", "params": { "tens": 1, "ones": 3 } },
+        { "body": "worked", "visual": "ten_frame", "params": { "filled": 13 } },
+        { "body": "try", "visual": "ten_frame", "params": { "filled": 16 }, "choice": { "options": [15, 16, 17], "correct": 16 } }
+      ]
+    },
+
+    {
+      "id": "comparison.more_or_less",
+      "cards": [
+        { "body": "see", "visual": "balance", "params": { "a": 2, "b": 5 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 10, "marks": [2, 5] } },
+        { "body": "worked", "visual": "balance", "params": { "a": 8, "b": 10 } },
+        { "body": "try", "visual": "balance", "params": { "a": 7, "b": 9 }, "choice": { "options": [7, 9], "correct": 9 } }
+      ]
+    },
+    {
+      "id": "comparison.compare_teens",
+      "cards": [
+        { "body": "see", "visual": "balance", "params": { "a": 14, "b": 13 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 10, "to": 20, "marks": [13, 14] } },
+        { "body": "worked", "visual": "balance", "params": { "a": 14, "b": 18 } },
+        { "body": "try", "visual": "balance", "params": { "a": 14, "b": 10 }, "choice": { "options": [10, 14], "correct": 14 } }
+      ]
+    },
+
+    {
+      "id": "pattern_matching.ab_repeat",
+      "cards": [
+        { "body": "see", "visual": "pattern_strip", "params": { "core": [1, 2], "length": 4 } },
+        { "body": "model", "visual": "pattern_strip", "params": { "core": [1, 2], "length": 5 } },
+        { "body": "worked", "visual": "pattern_strip", "params": { "core": [4, 3], "length": 5, "reveal": 3 } },
+        { "body": "try", "visual": "pattern_strip", "params": { "core": [7, 6], "length": 5 }, "choice": { "options": [5, 6, 7], "correct": 6 } }
+      ]
+    },
+    {
+      "id": "pattern_matching.longer_core",
+      "cards": [
+        { "body": "see", "visual": "pattern_strip", "params": { "core": [4, 1, 6], "length": 3 } },
+        { "body": "model", "visual": "pattern_strip", "params": { "core": [4, 1, 6], "length": 5 } },
+        { "body": "worked", "visual": "pattern_strip", "params": { "core": [4, 1, 6], "length": 5, "reveal": 6 } },
+        { "body": "try", "visual": "pattern_strip", "params": { "core": [2, 6, 4], "length": 5 }, "choice": { "options": [2, 4, 6], "correct": 4 } }
+      ]
+    },
+    {
+      "id": "pattern_matching.tricky_core",
+      "cards": [
+        { "body": "see", "visual": "pattern_strip", "params": { "core": [9, 12, 16], "length": 3 } },
+        { "body": "model", "visual": "pattern_strip", "params": { "core": [9, 12, 16], "length": 5 } },
+        { "body": "worked", "visual": "pattern_strip", "params": { "core": [9, 12, 16], "length": 5, "reveal": 16 } },
+        { "body": "try", "visual": "pattern_strip", "params": { "core": [16, 20, 12], "length": 5 }, "choice": { "options": [12, 16, 20], "correct": 12 } }
+      ]
+    },
+
+    {
+      "id": "number_sequence.one_more",
+      "cards": [
+        { "body": "see", "visual": "numbers", "params": { "values": [1, 2, 3, 4] } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 4, "hops": 1 } },
+        { "body": "worked", "visual": "numbers", "params": { "values": [3, 4, 5, 6], "reveal": 7 } },
+        { "body": "try", "visual": "numbers", "params": { "values": [4, 5, 6, 7] }, "choice": { "options": [7, 8, 9], "correct": 8 } }
+      ]
+    },
+    {
+      "id": "number_sequence.skip_two",
+      "cards": [
+        { "body": "see", "visual": "numbers", "params": { "values": [2, 4, 6, 8] } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 12, "start": 8, "hops": 2 } },
+        { "body": "worked", "visual": "numbers", "params": { "values": [6, 8, 10, 12], "reveal": 14 } },
+        { "body": "try", "visual": "numbers", "params": { "values": [7, 9, 11, 13] }, "choice": { "options": [14, 15, 16], "correct": 15 } }
+      ]
+    },
+    {
+      "id": "number_sequence.bigger_jumps",
+      "cards": [
+        { "body": "see", "visual": "numbers", "params": { "values": [1, 4, 7, 10] } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 16, "start": 10, "hops": 3 } },
+        { "body": "worked", "visual": "numbers", "params": { "values": [3, 6, 9, 12], "reveal": 15 } },
+        { "body": "try", "visual": "numbers", "params": { "values": [5, 8, 11, 14] }, "choice": { "options": [16, 17, 18], "correct": 17 } }
+      ]
+    },
+
+    {
+      "id": "multiplication.groups_of",
+      "cards": [
+        { "body": "see", "visual": "groups", "params": { "groups": 2, "each": 3 } },
+        { "body": "model", "visual": "groups", "params": { "groups": 3, "each": 2 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 2, "op": "×", "b": 3, "result": 6 } },
+        { "body": "try", "visual": "groups", "params": { "groups": 3, "each": 4 }, "choice": { "options": [10, 12, 14], "correct": 12 } }
+      ]
+    },
+    {
+      "id": "multiplication.tables_small",
+      "cards": [
+        { "body": "see", "visual": "groups", "params": { "groups": 4, "each": 5 } },
+        { "body": "model", "visual": "equation", "params": { "a": 4, "op": "×", "b": 5, "result": 20 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 3, "op": "×", "b": 6, "result": 18 } },
+        { "body": "try", "visual": "equation", "params": { "a": 5, "op": "×", "b": 7 }, "choice": { "options": [30, 35, 40], "correct": 35 } }
+      ]
+    },
+    {
+      "id": "multiplication.tables_large",
+      "cards": [
+        { "body": "see", "visual": "groups", "params": { "groups": 6, "each": 5 } },
+        { "body": "model", "visual": "equation", "params": { "a": 6, "op": "×", "b": 5, "result": 30 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 7, "op": "×", "b": 8, "result": 56 } },
+        { "body": "try", "visual": "equation", "params": { "a": 9, "op": "×", "b": 8 }, "choice": { "options": [63, 72, 81], "correct": 72 } }
+      ]
+    },
+
+    {
+      "id": "division.sharing",
+      "cards": [
+        { "body": "see", "visual": "groups", "params": { "groups": 2, "each": 3 } },
+        { "body": "model", "visual": "groups", "params": { "groups": 3, "each": 2 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 6, "op": "÷", "b": 2, "result": 3 } },
+        { "body": "try", "visual": "equation", "params": { "a": 8, "op": "÷", "b": 2 }, "choice": { "options": [3, 4, 5], "correct": 4 } }
+      ]
+    },
+    {
+      "id": "division.tables",
+      "cards": [
+        { "body": "see", "visual": "groups", "params": { "groups": 4, "each": 5 } },
+        { "body": "model", "visual": "equation", "params": { "a": 20, "op": "÷", "b": 4, "result": 5 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 24, "op": "÷", "b": 3, "result": 8 } },
+        { "body": "try", "visual": "equation", "params": { "a": 32, "op": "÷", "b": 4 }, "choice": { "options": [6, 7, 8], "correct": 8 } }
+      ]
+    },
+    {
+      "id": "division.larger",
+      "cards": [
+        { "body": "see", "visual": "groups", "params": { "groups": 3, "each": 7 } },
+        { "body": "model", "visual": "equation", "params": { "a": 21, "op": "÷", "b": 3, "result": 7 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 54, "op": "÷", "b": 6, "result": 9 } },
+        { "body": "try", "visual": "equation", "params": { "a": 60, "op": "÷", "b": 6 }, "choice": { "options": [9, 10, 11], "correct": 10 } }
+      ]
+    }
+  ]
+}

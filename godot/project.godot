@@ -32,6 +32,7 @@ MathProblemManager="*res://scripts/math/math_problem_manager.gd"
 LearnerSyncService="*res://scripts/systems/learner_sync_service.gd"
 ELOUpdateManager="*res://scripts/systems/elo_update_manager.gd"
 SessionStats="*res://scripts/autoload/session_stats.gd"
+TutorialManager="*res://scripts/systems/tutorial_manager.gd"
 CloudSync="*res://scripts/systems/cloud_sync.gd"
 
 [display]

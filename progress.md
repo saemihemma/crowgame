@@ -1,6 +1,6 @@
 Status: Supportive
 Authority: Working log for this asset-baseline pass, not a source-of-truth architecture doc.
-Last verified against code: 2026-03-24
+Last verified against code: 2026-08-25
 
 Original prompt: Export tighter runtime assets and wire the game to them so gameplay stops relying on magnification/resizing.
 
@@ -181,3 +181,71 @@ Original prompt: Export tighter runtime assets and wire the game to them so game
 - 2026-08-25: Post-restructure audit of main after the multi-agent merge wave (Phaser tree removed, math truth moved to math-kernel, board/HUD/menus rebuilt, owl roster + streak added). Verdict on the math-experience systems built here: everything survived with behavioural parity, verified by running, not by reading - 120 unit tests green including the golden-roll/ladder/ELO parity fixtures, the owl probe drives demo -> answer -> owl_saved with the identical ELO delta (150 -> 155.60), and the rebuilt board still carries the tuning-paced teaching beats, progress pips, golden frame and golden coin multipliers; the menus still carry the recap and trophy shelf; gating still keeps the level's headline order.
 - 2026-08-25: Fixed what the audit found red or noisy on trunk. The two mechanical validate reds: compiled-level drift for levels 05/99 (recompiled) and the stale committed export (rebuilt; the new freshness guard and the boot smoke both pass). Two boot-time script errors: String(null) crash loading the mute preference (str() now), and complete_level crashing on saves that predate completedLevels (backfilled). Post-rebuild debris: 21 dead i18n keys deleted from both bundles (including hud.level/hud.level_up/login.delete/login.delete_confirm, which closes the old four-dead-keys roadmap item), 4 stale fit-budget rows removed, ONBOARDING count snapshots synced (6 NPCs, 287 keys), required doc headers added to the two new asset-slot READMEs, and validate_assets now understands declared drop-in art slots (board-9slice, count-token-32, owl-icon-32) whose absence is the designed state.
 - 2026-08-25: Known non-blockers left on purpose: tools/godot_play_smoke.mjs predates the menu rebuild and the cloud-save POSTs and is no longer the CI gate (web_boot_smoke.mjs is, and passes); the owl-ring streak flame is celebration-only but sits in mild tension with the documented "nothing to protect" kid-safe rule - flagged for the design owner, not reverted.
+
+## 2026-08-25 — Concept ladder and click-through lessons
+
+Original prompt: teach a step-by-step, skippable, click-through tutorial for every level of maths problem, in both languages, easy to restyle for a UI/UX pass; group the problems architecturally; identify what is missing.
+
+- The gap this closes: the learner model knew how HARD a problem was
+  (`curriculumStep`, 0-36 per domain) and nothing else. Step 6, step 9 and step
+  30 were all "addition", so the moment a genuinely new idea arrived — carrying,
+  bridging past ten, place value — was invisible and nothing could trigger on
+  it. The one teaching moment that existed fired once per domain, ever.
+- Added the grouping layer as data: `godot/data/curriculum/concept_ladder.json`,
+  30 concepts over the 8 domains, contiguous step ranges covering all 3150
+  authored problems with none left outside. `concept_ladder.gd` is the lookup
+  and is pure; seen-state is a new `TutorialManager` autoload persisting through
+  `SaveManager` (`tutorialsSeen`, profile-scoped).
+- Deliberately NOT in `learner_state_manager.gd`. That file is parity-locked
+  against the kernel's golden fixtures; teaching is a product decision that will
+  change often, and putting it there would make every lesson tweak Tier-1.
+- 30 lessons, 120 cards, in `godot/data/curriculum/tutorials.json`. Four beats
+  each, in the order the evidence supports for a novice: concrete, pictorial,
+  worked example, guided try. Sources are cited in
+  `docs/MATH_CONCEPT_LADDER.md` rather than asserted.
+- Ten representations drawn in code (`tutorial_visual.gd`): ten-frame, number
+  line with hops and a landmark, base-ten rods, equal groups, unifix towers,
+  pattern strip, take-away with crosses, count-all, sequence, equation. Adding an
+  eleventh is one `RENDERERS` entry plus one `_draw_` function.
+- Every pixel, delay and colour role is in `godot/data/tuning/tutorial_tuning.json`,
+  including a `roles` map from each drawn part to a palette role. Nothing a
+  designer needs to move lives in a `.gd`.
+- 155 new string keys, English and Icelandic, key-for-key. Bundle is now 449.
+- Where it fires: `math_challenge_component.gd` asks twice — on first contact
+  with a domain (replacing the silent demo), and when a selected problem's own
+  `curriculumStep` lands on an unmet concept. Keyed off the PROBLEM's step, not
+  the learner's: the comfort and stretch lanes routinely hand out a problem a
+  rung either side of the ladder's position. The problem is held across the
+  lesson so the child is asked what they were just taught.
+- `tools/validate_math_concepts.mjs` (wired into `npm run validate`) recomputes
+  every number all 120 cards assert from the picture it is drawn on. It caught a
+  real teaching bug on first run: `division.sharing`'s guided question sat on an
+  equal-groups picture, which asserts the TOTAL, while the question asked how
+  many were in each box — the card would have marked 4 correct against a picture
+  of 8. It also caught three Icelandic lines over their fit budget.
+- The same guard turns "what is missing" into a build gate. Fifteen rungs have
+  no problems on them and twelve more have fewer than six; all are declared in
+  `concept_ladder.json` with a reason, and an undeclared gap — or a declared one
+  that has since been filled — fails the build. `reports/math-concepts/coverage.json`
+  is the generated inventory. The two that matter for a child playing today are
+  `subtraction` steps 17-20 and `addition` step 20; both are now in `roadmap.md`.
+- `bash godot/tools/capture_tutorials.sh` renders every card to PNG, in either
+  language and any theme. It found two real bugs immediately: the board
+  overflowed a 960x540 screen with the Next button off the bottom edge, and
+  `token_c` mapped to `coin`, which is the same hex as `accent` in emberwood, so
+  the second and third slot of every pattern lesson were identical there.
+  `test_theme_roles.gd` now fails the build on the latter.
+- `owl_probe.gd` drives the whole chain against the real scene tree and asserts
+  the lesson happened: owl -> lesson -> four cards -> guided answer -> freebie
+  question -> learner update. It was the failure that proved the wiring was live.
+- Verification: `bash godot/tools/run_tests.sh` green (174 unit tests across 33
+  suites, 6 probes, hardcode/asset/reachability guards), `npm run validate`
+  green, `npm run typecheck` clean, `bash godot/tools/build_web.sh` +
+  `node godot/tools/web_boot_smoke.mjs` green with 0 console errors.
+- Not verified: `tools/godot_play_smoke.mjs` fails at profile creation in this
+  environment, identically on the pre-change export — a harness/environment
+  issue, not a regression. It is not part of `run_tests.sh` or `npm run validate`.
+- Also not verified: whether these lessons actually teach a real five-year-old
+  anything. No artifact in this repo claims that, and this one does not either.
+  The evidence cited is for the instructional pattern, not for this
+  implementation of it.

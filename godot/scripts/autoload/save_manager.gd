@@ -47,6 +47,7 @@ func load_save() -> void:
 			_data["mathStats"] = _merge(defaults["mathStats"], parsed.get("mathStats", {}))
 			_data["telemetry"] = _merge(defaults["telemetry"], parsed.get("telemetry", {}))
 			_data["settings"] = _merge(defaults["settings"], parsed.get("settings", {}))
+			_data["tutorialsSeen"] = _merge(defaults["tutorialsSeen"], parsed.get("tutorialsSeen", {}))
 			if parsed.has("learnerState"):
 				_data["learnerState"] = parsed["learnerState"]
 			return
@@ -173,6 +174,27 @@ func set_learner_state() -> void:
 	_data["learnerState"] = learner.get_snapshot()
 	if _auto_save_enabled: save()
 
+## Which tutorials this child has seen: id -> {"skipped": bool, "at": ms}.
+##
+## A skipped tutorial still counts as seen -- a child who taps Skip has told us
+## they do not want it, and re-showing it would make the button a lie. The flag
+## is kept rather than discarded so a grown-up surface can tell "was taught" from
+## "chose to skip", which are very different facts about a struggling child.
+func get_tutorials_seen() -> Dictionary:
+	var seen: Variant = _data.get("tutorialsSeen", {})
+	return seen if seen is Dictionary else {}
+
+func has_seen_tutorial(tutorial_id: String) -> bool:
+	return get_tutorials_seen().has(tutorial_id)
+
+func mark_tutorial_seen(tutorial_id: String, skipped: bool) -> void:
+	if tutorial_id == "":
+		return
+	if not (_data.get("tutorialsSeen", null) is Dictionary):
+		_data["tutorialsSeen"] = {}
+	(_data["tutorialsSeen"] as Dictionary)[tutorial_id] = {"skipped": skipped, "at": _now_ms()}
+	if _auto_save_enabled: save()
+
 func grant_ability(ability_id: String) -> void:
 	if not (_data["activeAbilities"] as Array).has(ability_id):
 		(_data["activeAbilities"] as Array).append(ability_id)
@@ -207,6 +229,10 @@ func _create_default_save() -> Dictionary:
 		"activeAbilities": [],
 		"mathStats": {"totalCorrect": 0, "totalWrong": 0, "bySkill": {}},
 		"telemetry": {"hintUsage": 0, "problemsAttempted": 0, "answeredProblemIds": []},
+		# Which concept tutorials this child has already been shown, and whether
+		# they sat through it or skipped it. Profile-scoped like everything else
+		# here: two children on one device get taught independently.
+		"tutorialsSeen": {},
 		"settings": {"musicVolume": 0.7, "sfxVolume": 1.0},
 		"timestamp": _now_ms(),
 	}

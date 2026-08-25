@@ -269,6 +269,11 @@ const DYNAMIC_PREFIXES = [
     { prefix: 'math.prompt.', built: "each problem's phrasing reference" },
     { prefix: 'math.hint.', built: "each problem's phrasing reference" },
     { prefix: 'math.expl.', built: "each problem's phrasing reference" },
+    // math_tutorial.gd builds `tutorial.<tutorial id>.<card body>` from
+    // data/curriculum/tutorials.json, so 150 of the 155 tutorial keys are
+    // never literals. validate_math_concepts.mjs is what actually holds them to
+    // account: it fails if a card has no string, or a string has no card.
+    { prefix: 'tutorial.', built: 'math_tutorial.gd, from a tutorial id and a card body' },
 ];
 
 {

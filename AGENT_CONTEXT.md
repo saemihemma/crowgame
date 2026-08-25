@@ -2,7 +2,7 @@
 
 Status: Supportive
 Authority: Practical working notes. Code and data outrank this file.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 ## Read this after onboarding
 
@@ -18,6 +18,9 @@ debugging order, and the traps this repo actually sets.
   hazards, doors, camera, death, and hosting the maths overlay.
 - Maths progression spans `math_problem_manager.gd`, `elo_manager.gd`,
   `learner_state_manager.gd`, `elo_update_manager.gd`, `owl_selection.gd`.
+- Maths *teaching* is a separate stack: `concept_ladder.gd` (what a step means),
+  `tutorial_manager.gd` (who has been taught what), `math_tutorial.gd` and
+  `tutorial_visual.gd` (the lesson itself). Data in `godot/data/curriculum/**`.
 - Saves are profile-scoped, never global: `crow_save_<username>`.
 - `cloud_sync.gd` layers cloud upload on top of local saving. It does not replace
   it, and it deliberately runs on a slower clock.
@@ -57,6 +60,13 @@ Maths and learner:
 - `godot/scripts/systems/learner_state_manager.gd` (562 lines — **the largest file
   in the repo**)
 - `godot/data/math/*.json`
+
+Maths teaching:
+- `godot/data/curriculum/concept_ladder.json` — which steps mean which idea
+- `godot/data/curriculum/tutorials.json` — the 30 lessons, 120 cards
+- `godot/data/tuning/tutorial_tuning.json` — every pixel and colour role of them
+- `bash godot/tools/capture_tutorials.sh` renders every card to PNG for review
+- read [docs/MATH_CONCEPT_LADDER.md](./docs/MATH_CONCEPT_LADDER.md) first
 
 Profile, save, sync:
 - `godot/scripts/autoload/profile_manager.gd`
@@ -103,7 +113,12 @@ Ranked by how much time each one has actually cost:
    runtime with a URL parse error, which is why `CloudSync` resolves the page
    origin first.
 8. **Editing compiled levels.** They are generated. Author the spec, then compile.
-9. **`archived/**` is not runtime.** It is also 54 MiB of the git pack, which is
+9. **Teaching state is NOT learner state.** `tutorialsSeen` lives in the
+   profile save through `SaveManager`, deliberately not in
+   `learner_state_manager.gd`: that file is parity-locked against the kernel's
+   golden fixtures and teaching is a product decision that will change often.
+   Putting it there would make every lesson tweak a Tier-1 change.
+10. **`archived/**` is not runtime.** It is also 54 MiB of the git pack, which is
    why a clone feels heavier than the project is.
 
 ## Recommended debug order
