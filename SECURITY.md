@@ -102,6 +102,37 @@ anything that recovers a device token from stored data.
   planned: the only consequence is their own difficulty being mis-tuned.
 - **The parent report is not behind a gate.** It is a read-only view of the
   child's own progress on their own device.
+- **Prose claims about behaviour are not gated, and this class of defect
+  recurs.** `tools/validate_docs.js` checks only what can be derived from the
+  tree — counts, payload figures, endpoint tables, freshness stamps — by
+  deliberate design stated in its own header. A sentence of the form "the game
+  never does X" is outside it, and no reasonable validator brings it inside.
+
+  Five consecutive review rounds each found one such sentence that the code
+  denies, in a different file each time: that this endpoint stored no
+  caller-supplied text; that the browser user-agent was kept on error reports
+  only; that `child_save_history` withheld DELETE from the app role; that there
+  was nowhere in the game for a child to type free text; and that the game does
+  not check the child's PIN — which `profile_manager.gd` does, and which the game
+  answers on screen with "Wrong PIN!". Each was found by one person reading a
+  document against the code in the same sitting. None was found by a gate.
+
+  So: **treat every absolute in these documents as unverified until someone has
+  done that, and treat a report that one of them is false as a valid security
+  finding rather than a wording complaint.** The sentence a parent relies on is
+  part of the product. `PRIVACY.md` carries an authority clause saying that where
+  it disagrees with the code the page is the bug; this paragraph is the reason
+  that clause is not decoration.
+
+  What IS gated, so you can tell the two apart: the four database entry points
+  and the role each runs as; the RLS-protected set, derived by walking foreign
+  keys to `families` rather than listed, so a new family-scoped table with no
+  policy fails the build; per-table behavioural isolation over that same derived
+  set, with a vacuity guard so it cannot pass on an empty fixture; the export's
+  response contents against every table it promises; the absence of
+  player-identifying keys in a stored error report, asserted through a real
+  browser; and the app role's privilege set per table, compared against the
+  sentences above.
 
 ## Data handling
 

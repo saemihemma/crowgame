@@ -550,8 +550,9 @@ non-superuser role per transaction. Without that, the policies are decorative.
 
 ### 3. The PIN never leaves the device
 
-`_hash_pin()` computes `btoa(pin + ':' + username)`, which is reversible by
-inspection. The 4-digit PIN is a "which kid am I" selector on a shared family
+`_hash_pin()` computes `btoa(pin + ':' + username.toLowerCase())` — the lowercase
+matters, because `login()` matches the username case-insensitively and would
+otherwise fail to recognise its own hash. It is reversible by inspection. The 4-digit PIN is a "which kid am I" selector on a shared family
 device. It is not authentication, it never has been, and no server verifies it.
 
 So: never transmitted, never stored server-side, and there is **no `pin_hash`

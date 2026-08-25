@@ -59,6 +59,47 @@ const LIB_DIR = join(SRC_DIR, 'lib');
 const POOL_OWNERS = new Set(['db.ts', 'familyDb.ts', 'migrate.ts', 'maintenance.ts']);
 
 /**
+ * The four tables that deliberately carry no RLS policy, subtracted by name from
+ * the derived family-scoped set. Resolving a token to a family has to happen
+ * BEFORE the family is known, so a policy comparing against `app.family_id` would
+ * need the answer the lookup is producing.
+ *
+ * This list is the whole exception, and it is subtracted rather than the protected
+ * set being enumerated — that direction matters. See RLS_DENOMINATOR below.
+ */
+const AUTH_TABLES_WITHOUT_RLS = ['device_tokens', 'devices', 'login_codes', 'parents'];
+
+/**
+ * RLS_DENOMINATOR — why the protected set is DERIVED and not listed.
+ *
+ * `... where relrowsecurity or relforcerowsecurity` enumerates the tables that
+ * ARE protected. Compared against six literals that passes, and a seventh table
+ * with no policy at all is invisible to it by construction. A reviewer proved
+ * exactly that: a new `child_notes` table with a foreign key to `families`, a
+ * grant to `crow_app` and no policy passed all 59 tests, with every family's rows
+ * in it readable inside any `withFamily` transaction.
+ *
+ * So the denominator is the FK walk: every table whose foreign keys reach
+ * `families`, minus the four above. Today that is exactly the six the migration
+ * protects, so this passes unchanged — and the seventh table fails it.
+ */
+async function familyScopedTables(
+    pool: typeof import('../src/db.ts').pool,
+): Promise<Set<string>> {
+    const { rows } = await pool.query<{ table_name: string }>(
+        `with recursive reach(t) as (
+             select 'families'::text
+             union
+             select c.conrelid::regclass::text
+               from pg_constraint c
+               join reach r on c.confrelid::regclass::text = r.t
+              where c.contype = 'f'
+         )
+         select t as table_name from reach where t <> 'families'`);
+    return new Set(rows.map(r => r.table_name));
+}
+
+/**
  * The static half, which needs no database and is the check that would actually
  * have caught this. `withTransaction` runs as the connecting user — the
  * superuser on Railway — and exists for `migrate.ts`, which does DDL. A route
@@ -88,7 +129,7 @@ describe('no route bypasses the app role', () => {
     it('finds the files to scan at all', () => {
         // Without this, a moved directory turns every assertion below into a
         // vacuous pass over an empty array.
-        assert.ok(scanned.length >= 11, `expected routes/, lib/ and src/, found ${scanned.length}`);
+        assert.ok(scanned.length >= 13, `expected routes/, lib/ and src/, found ${scanned.length}`);
         for (const dir of ['routes', 'lib', '.']) {
             assert.ok(scanned.some(([d]) => d === dir), `${dir} must be in scope`);
         }
@@ -309,17 +350,7 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         // shape assumption and it had a live counterexample: `device_tokens` hangs
         // off `device_id`, holds family data, and was invisible to it. A future
         // table hung off `child_id` would be too.
-        const { rows } = await pool.query<{ table_name: string }>(
-            `with recursive reach(t) as (
-                 select 'families'::text
-                 union
-                 select c.conrelid::regclass::text
-                   from pg_constraint c
-                   join reach r on c.confrelid::regclass::text = r.t
-                  where c.contype = 'f'
-             )
-             select t as table_name from reach where t <> 'families'`);
-        const familyScoped = new Set(rows.map(r => r.table_name));
+        const familyScoped = await familyScopedTables(pool);
         assert.ok(familyScoped.has('device_tokens'),
             'the FK walk must reach device_tokens — that is the case the old ' +
             'family_id heuristic missed, so its absence means this check regressed');
@@ -364,29 +395,40 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         // FORCE matters as much as ENABLE: without it the table OWNER bypasses
         // its own policies, and on a managed Postgres the owner is the user the
         // migration ran as.
+        // The set that MUST be protected, derived (see RLS_DENOMINATOR above).
+        const familyScoped = await familyScopedTables(pool);
+        const mustBeProtected = [...familyScoped]
+            .filter(t => !AUTH_TABLES_WITHOUT_RLS.includes(t)).sort();
+        assert.ok(mustBeProtected.length >= 6,
+            `the FK walk found only ${mustBeProtected.length} tables needing RLS; ` +
+            'if the walk broke, this check enforces nothing');
+
         const { rows } = await pool.query<{ relname: string; enabled: boolean; forced: boolean }>(
             `select c.relname, c.relrowsecurity as enabled, c.relforcerowsecurity as forced
                from pg_class c join pg_namespace n on n.oid = c.relnamespace
-              where n.nspname = 'public' and c.relkind = 'r'
-                and (c.relrowsecurity or c.relforcerowsecurity)`);
-        const protectedTables = rows.map(r => r.relname).sort();
-        assert.deepEqual(protectedTables, [
-            'attempts', 'child_aliases', 'child_save_history', 'child_saves',
-            'children', 'sync_conflicts',
-        ], 'the RLS-protected set changed. SECURITY.md, ARCHITECTURE.md and PRIVACY.md each ' +
-           'name this list; update them in the same commit.');
-        for (const row of rows) {
-            assert.ok(row.enabled && row.forced,
-                `${row.relname} must have RLS both ENABLEd and FORCEd — without FORCE the ` +
-                'table owner bypasses its own policies');
+              where n.nspname = 'public' and c.relkind = 'r'`);
+        const state = new Map(rows.map(r => [r.relname, r]));
+
+        for (const table of mustBeProtected) {
+            const row = state.get(table);
+            assert.ok(row, `${table} is family-scoped but not in pg_class`);
+            assert.ok(row.enabled,
+                `${table}'s foreign keys reach families, so it holds one family's data, and ` +
+                'it has NO row-level security. Either add a policy in a migration, or add it ' +
+                'to AUTH_TABLES_WITHOUT_RLS with the reason and say so in SECURITY.md, ' +
+                'ARCHITECTURE.md and PRIVACY.md — all three describe this set.');
+            assert.ok(row.forced,
+                `${table} has RLS ENABLEd but not FORCEd — the table owner then bypasses its ` +
+                'own policies, and on managed Postgres the owner is the migration user');
         }
 
-        // And the auth tables are outside it ON PURPOSE, asserted so that the
-        // docs' exception clause is a fact rather than a comment.
-        for (const table of ['parents', 'devices', 'device_tokens', 'login_codes']) {
-            assert.ok(!protectedTables.includes(table),
+        // And the four exceptions really are outside it, so the docs' exception
+        // clause is a fact rather than a comment.
+        for (const table of AUTH_TABLES_WITHOUT_RLS) {
+            assert.ok(!state.get(table)?.enabled,
                 `${table} has acquired an RLS policy. That is probably good news, but ` +
-                'three docs currently explain why it has none — rewrite them.');
+                'three docs currently explain why it has none — rewrite them, and remove ' +
+                'it from AUTH_TABLES_WITHOUT_RLS.');
         }
     });
 
@@ -396,8 +438,16 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         // other five and every test would still pass.
         const familyId = families[0]!;
 
-        for (const table of ['child_saves', 'child_save_history', 'attempts',
-                             'sync_conflicts', 'child_aliases']) {
+        // Derived, for the same reason as the assertion above: a hardcoded array
+        // never exercises a new table. `children` is covered by its own subtest,
+        // which compares display names rather than counts.
+        const familyScoped = await familyScopedTables(pool);
+        const toCheck = [...familyScoped]
+            .filter(t => !AUTH_TABLES_WITHOUT_RLS.includes(t) && t !== 'children').sort();
+        assert.ok(toCheck.length >= 5,
+            `expected the protected tables less children, found ${toCheck.length}`);
+
+        for (const table of toCheck) {
             const seen = Number(await withFamily(familyId, async c =>
                 (await c.query<{ n: string }>(`select count(*)::text as n from ${table}`)).rows[0]!.n));
             const all = Number((await pool.query<{ n: string }>(

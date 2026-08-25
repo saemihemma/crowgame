@@ -54,6 +54,27 @@ least one step-up per early session and frustration flags under 10%.
 ## P2 — Experience decisions that need making
 
 
+### A forgotten PIN locks a child out, and there is no way back
+`ProfileManager.login()` really does compare the typed PIN against the stored one
+and returns false on a mismatch; `login.gd` renders "Wrong PIN!". There is no
+"forgot my PIN" screen, no adult override, and `delete_profile()` exists in
+`profile_manager.gd` with no caller anywhere in the UI. So the only route out is
+clearing the site's data, which erases every player on the device.
+
+For a 5-to-7-year-old choosing a 4-digit number, forgetting it is the expected
+case rather than the edge case, and the cost is another child's progress. Three
+plausible shapes, none obviously right: an adult-gated reset on the login screen,
+a "this is not a password" affordance that lets any PIN through after N failures,
+or wiring `delete_profile()` to a per-player remove that keeps the others. The
+first is the most work and the most correct; the second matches what `PRIVACY.md`
+tells parents the PIN is for.
+
+`PRIVACY.md` documents the lockout now, so nobody sets a PIN without knowing. It
+is still a bad end state.
+
+*Done when:* a child who has forgotten their PIN can get back to their own
+progress without destroying anyone else's, or the PIN stops gating entry at all.
+
 ### Should an unloseable streak exist at all?
 The game keeps an in-level streak: a counter, a HUD flame at 3, an "ON FIRE" state
 at 5, and the rule that a wrong answer PAUSES it rather than resetting it. Only
