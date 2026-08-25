@@ -292,7 +292,7 @@ function main() {
 
     printGroup('Sound Effects', audioAssets.sfx, missingAssets);
     printGroup('Music Tracks', audioAssets.music, missingAssets);
-    printGroup('BootScene Visual Assets', bootVisuals, missingAssets);
+    printGroup('Boot-Loaded Visual Assets', bootVisuals, missingAssets);
     printGroup('Compiled Level Tileset Assets', compiledLevelAssets, missingAssets);
 
     const suspiciousAssets = findSuspiciousUnreferencedAssets(uniqueReferencedAssets);

@@ -114,7 +114,7 @@ const BOXES = {
     // 36px -- so "Næsta stig! Samanburður" is the string that has to fit, and the
     // '88' stand-in said nothing useful about it.
     'math.step_up': {
-        size: 36, max: 900, where: 'HUDScene celebration banner, centred on a 960 canvas',
+        size: 36, max: 900, where: 'HUD celebration banner, centred on a 960 canvas',
         fill: [
             'domain.addition', 'domain.subtraction', 'domain.multiplication',
             'domain.division', 'domain.counting', 'domain.comparison',
@@ -247,7 +247,7 @@ for (const dir of otherDirs) {
  * A naive "does the source mention this string" sweep DELETES LIVE STRINGS. Four
  * families of key are assembled at runtime and never appear as literals:
  *
- *   domain.*        HUDScene.ts:81   t(`domain.${data.domain}`)
+ *   domain.*        hud.gd           t(`domain.${data.domain}`)
  *                   hud.gd:80        TextManager.t("domain." + domain)
  *   level.*         LevelSelectScene.ts:226  `level.${level.key}.name`
  *                   level_select.gd:74       "level.%s.name" % key
@@ -262,7 +262,7 @@ for (const dir of otherDirs) {
  * strings the game is using.
  */
 const DYNAMIC_PREFIXES = [
-    { prefix: 'domain.', built: 'HUDScene.ts / hud.gd, from a problem domain' },
+    { prefix: 'domain.', built: 'hud.gd, from a problem domain' },
     { prefix: 'domain_', built: 'parent_report.gd, from a domain in the learner summary' },
     { prefix: 'level.', built: 'LevelSelectScene.ts / level_select.gd, from a level key' },
     { prefix: 'theme.', built: 'pause.gd, from the active theme id' },
@@ -493,16 +493,16 @@ for (const pool of MATH_POOLS) {
  * {seq}" is short until {seq} is "22, 16, 19, 15, 22, 16, 19, ?". So this walks
  * the actual pools, renders each problem's prompt and hint in both locales, and
  * requires the wrapped block to fit at the FLOOR size the renderer will shrink
- * to. Passing here is what makes MathBoard's floor unreachable in practice.
+ * to. Passing here is what makes the board's font floor unreachable in practice.
  *
- * Numbers from src/ui/components/MathBoard.ts.
+ * Numbers from godot/scripts/ui/math_challenge.gd.
  */
 const PHRASING_BOXES = {
-    prompt: { wrap: 460, floor: 20, maxH: 96, where: 'MathBoard question band' },
-    hint: { wrap: 460, floor: 16, maxH: 72, where: 'MathBoard hint band below the board' },
+    prompt: { wrap: 460, floor: 20, maxH: 96, where: 'maths board question band' },
+    hint: { wrap: 460, floor: 16, maxH: 72, where: 'hint band below the maths board' },
 };
 
-/** Greedy word wrap, matching what Phaser does at a monospace advance. */
+/** Greedy word wrap at a monospace advance, matching the board's renderer. */
 function wrappedLines(text, size, wrapWidth) {
     const perLine = Math.max(1, Math.floor(wrapWidth / (size * ADVANCE_RATIO)));
     let lines = 1;

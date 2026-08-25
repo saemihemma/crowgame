@@ -1,6 +1,6 @@
 -- 002_family_and_save.sql — family identity, device enrollment, cloud save.
 --
--- Shape follows docs/API_CONTRACT.md. The decisions worth restating here,
+-- Shape follows ARCHITECTURE.md (the wire contract). The decisions worth restating here,
 -- because the schema is where they become permanent:
 --
 --   * The authorization subject is the DEVICE, scoped to a family. Never the

@@ -3,22 +3,37 @@
 Status: Current
 Authority: Repo entrypoint and navigation only. Runtime truth lives in
 `godot/scripts/**`, `godot/data/**`, `godot/project.godot`, and `server/src/**`.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 Hörmann is a child-first educational platformer for early-elementary maths
 practice. Built for one seven-year-old first, and now for other people's
 children too.
 
-## What is still to do
+## The docs
 
-See [roadmap.md](./roadmap.md). It lists open work only — finished items are
-deleted from it rather than ticked off, and `npm run validate` enforces that.
-Finished work is recorded in [progress.md](./progress.md).
+Six files, on purpose. If you are adding a seventh, read the doc hygiene note at
+the end of [ONBOARDING.md](./ONBOARDING.md) first.
+
+| Read | For |
+| --- | --- |
+| [ONBOARDING.md](./ONBOARDING.md) | the working map, the verification loop, the footguns, and the only place mutable counts live |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | system shape, the maths engine, save and sync, the frozen wire contract, the sprite contract, the authoring pipeline |
+| [PRODUCT.md](./PRODUCT.md) | what the game is trying to be, and the design commitments behind it |
+| [roadmap.md](./roadmap.md) | open work only — finished items are deleted, and `npm run validate` enforces that |
+| [deploy/RAILWAY.md](./deploy/RAILWAY.md) | staging, prod, promotion, rollback |
+| [brand/](./brand/) | art direction, the pixel law, and the level art bible |
+
+For parents: **[PRIVACY.md](./PRIVACY.md)** says in plain language what the game
+stores about a child, what leaves the device, and how to delete all of it. To
+report something privately, see [SECURITY.md](./SECURITY.md). To contribute, see
+[CONTRIBUTING.md](./CONTRIBUTING.md).
+
+Finished work is recorded in git history, not in a progress file.
 
 ## What this repo contains
 
-Four trees, with four different jobs. Getting these confused is the single
-easiest way to do work that never ships, so they are stated first:
+Four trees, four different jobs. Getting them confused is the easiest way to do
+work that never ships, so they are stated first:
 
 | Tree | What it is | Ships? |
 | --- | --- | --- |
@@ -27,42 +42,11 @@ easiest way to do work that never ships, so they are stated first:
 | `math-kernel/**` | **The reference kernel.** TypeScript implementation of ELO, learner state and problem selection. | never |
 | `tools/**` | Offline authoring and validation for the maths curriculum. | never |
 
-`math-kernel/` is not dead code and not a second game. It has two jobs: it
-generates `godot/tests/fixtures/*.json`, which the Godot parity tests assert
-against — making it the executable specification for the learner maths — and it
-drives the offline pipeline that produced the 3,035-problem curriculum the game
-ships. CI fails if the committed fixtures no longer match what it produces.
-
-## Start here
-
-1. [ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md) — the working map, and the only
-   place mutable repo counts live
-2. [godot/ARCHITECTURE.md](./godot/ARCHITECTURE.md) — the conventions the game is
-   held to, and the CI guard that enforces them
-3. [MATH_SYSTEM_ARCHITECTURE.md](./MATH_SYSTEM_ARCHITECTURE.md) — how difficulty
-   adapts to a child
-4. [docs/API_CONTRACT.md](./docs/API_CONTRACT.md) — the client/server contract,
-   and why each part of it is the way it is
-5. [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md)
-   — learner state, saves, and cloud sync
-6. [deploy/RAILWAY.md](./deploy/RAILWAY.md) — staging, prod, promotion, rollback
-7. [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md) — the verification loop every
-   change ships against
-8. [CONTRIBUTING.md](./CONTRIBUTING.md) — what a good change looks like here
-
-For parents: **[PRIVACY.md](./PRIVACY.md)** says in plain language what the game
-stores about a child, what leaves the device, and how to delete all of it. To
-report something privately, see [SECURITY.md](./SECURITY.md).
-
-If you are changing:
-- learner difficulty, review, or unlock logic: read [MATH_SYSTEM_ARCHITECTURE.md](./MATH_SYSTEM_ARCHITECTURE.md) first
-- offline math authoring, batch materialization, or review reports: read [docs/MATH_AUTHORING_PIPELINE.md](./docs/MATH_AUTHORING_PIPELINE.md) first
-  - what it is not: not empirical child-performance proof, not independent ELO calibration, and not full browser or scene-flow proof by itself
-  - blunt boundary: `3150` is total shipped runtime inventory, not `3150` owl-path experiences; the fresh opening owl path currently starts with `addition` plus `counting`, pattern matching joins the broader owl-safe set later, and each encounter serves `1` problem
-- profile identity, save data, cache, or hosted sync: read [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md) first
-- contributor workflow or verification steps: use [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md)
-- runtime assets or staging rules: use [ASSET_SPECS.md](./ASSET_SPECS.md)
-- broad product intent: use [PROJECT.md](./PROJECT.md) after the current docs, not before
+`math-kernel/` is not dead code and not a second game. It generates
+`godot/tests/fixtures/*.json`, which the Godot parity tests assert against —
+making it the executable specification for the learner maths — and it drove the
+pipeline that produced the curriculum the game ships. CI fails if the committed
+fixtures no longer match what it produces.
 
 ## Run it
 
@@ -70,7 +54,7 @@ If you are changing:
 # The game, in the Godot editor (Godot 4.3)
 godot --path godot
 
-# The full gate: hardcode guard + 69 unit tests + 6 physics probes
+# The full gate: hardcode guard + unit tests + 6 physics probes
 bash godot/tools/run_tests.sh
 
 # The web build players get
@@ -86,29 +70,15 @@ DATABASE_URL=postgres://... npm --prefix server test
 npm ci && npm run typecheck && npm run validate
 ```
 
-## Change routing
-
-| Changing | Read first |
-| --- | --- |
-| difficulty, review, or unlock logic | [MATH_SYSTEM_ARCHITECTURE.md](./MATH_SYSTEM_ARCHITECTURE.md) |
-| ELO / learner / movement constants (**Tier-1**) | [godot/ARCHITECTURE.md](./godot/ARCHITECTURE.md) — regenerate fixtures in the same commit |
-| curriculum content or authoring | [docs/MATH_AUTHORING_PIPELINE.md](./docs/MATH_AUTHORING_PIPELINE.md) |
-| saves, profiles, cloud sync | [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md) |
-| anything crossing client and server | [docs/API_CONTRACT.md](./docs/API_CONTRACT.md) — it is frozen on purpose |
-| deployment, environments, rollback | [deploy/RAILWAY.md](./deploy/RAILWAY.md) |
-| tuning numbers, strings, colours, spawns | edit `godot/data/**`, never a `.gd` file |
-| runtime assets | [ASSET_SPECS.md](./ASSET_SPECS.md) |
-| product intent and tone | [PROJECT.md](./PROJECT.md) |
-
 ## The rules that will bite you
 
-These are enforced, not aspirational. `godot/tools/check_hardcoding.py` runs in
-CI and rejects all six:
+Enforced, not aspirational. `godot/tools/check_hardcoding.py` runs in CI and
+rejects all six:
 
 1. No magic numbers in `.gd` — they live in `godot/data/tuning/*.json`, read via
    `Config`.
 2. No user-facing strings in `.gd` — `TextManager.t("key")`, with the Icelandic
-   locale kept key-for-key in lockstep (a test enforces it).
+   locale kept key-for-key in lockstep.
 3. No inline colours — `ThemeManager.get_color_value("role")`.
 4. No hardcoded scene paths — `SceneRouter.goto("name")`.
 5. No type-to-behaviour switches for content — new level objects come from
@@ -119,9 +89,9 @@ CI and rejects all six:
 Genuine exceptions take `# hardcode-ok` on the line.
 
 **The one carve-out:** Tier-1 constants (ELO, learner state, movement) stay in
-code, not tuning JSON, and are locked by golden-value tests. They are the part
-that decides how hard the game feels to a child, and moving them somewhere
-editable would invite exactly the silent drift the fixtures exist to catch.
+code, not tuning JSON, and are locked by golden-value tests. They decide how hard
+the game feels to a child, and moving them somewhere editable would invite
+exactly the silent drift the fixtures exist to catch.
 
 ## What is deliberately not true here
 
@@ -130,29 +100,15 @@ Stated plainly, because each of these has misled someone:
 - **The 4-digit PIN is not security.** It is a "which kid am I" selector on a
   shared family device. It is never sent to the server, never verified remotely,
   and `ProfileManager._hash_pin()` is reversible base64 despite the name.
-- **`3000` is total shipped problem inventory, not the owl path.**
-  The fresh opening owl path currently starts with `addition` plus `counting`; the rest unlocks through normal progression.
-  Use `reports/math-batches/owl-surface-summary.json` for the owl-safe subset.
-- **The Apache-2.0 licence covers code and data, not art and audio.** Assets under
-  `godot/assets/**` have their own terms — see [NOTICE](./NOTICE) and
+- **The shipped problem total is not the owl path.** The fresh opening owl path
+  starts with `addition` plus `counting`; the rest unlocks through normal
+  progression. Use `reports/math-batches/owl-surface-summary.json` for the
+  owl-safe subset.
+- **The Apache-2.0 licence covers code and data, not art and audio.** Assets
+  under `godot/assets/**` have their own terms — see [NOTICE](./NOTICE) and
   [LICENSE_ATTRIBUTIONS.md](./LICENSE_ATTRIBUTIONS.md). Do not assume an asset is
   redistributable because the code is.
-- **`archived/**` is not current.** It is preserved history, not runtime truth.
-- **`docs/learner_backend_schema.sql` is a superseded draft.** The real schema is
-  `server/migrations/**`; the draft contains a `pin_hash` column that must never
-  be built.
-
-## Truth tiers
-
-| Tier | Where |
-| --- | --- |
-| Live runtime | `godot/scripts/**`, `godot/data/**`, `godot/assets/**` (referenced files), `server/src/**` |
-| Contract | `docs/API_CONTRACT.md`, `server/migrations/**`, `godot/tests/fixtures/**` |
-| Generated | `godot/data/levels/compiled/*.json`, `output/web/**`, `server/dist/**` |
-| Never shipped | `math-kernel/**`, `tools/**`, `godot/tests/**` |
-| Staged | `ai_assets/**` |
-| Historical | `archived/**` |
 
 Mutable numeric repo counts live in one place only:
-[ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md). Architecture docs describe behaviour
-and contracts, and avoid repeating counts unless the number is itself the rule.
+[ONBOARDING.md](./ONBOARDING.md). Architecture docs describe behaviour and
+contracts, and avoid repeating counts unless the number is itself the rule.

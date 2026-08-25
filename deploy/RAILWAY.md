@@ -12,9 +12,9 @@ one repo, a promotion path between them, and a rollback that does not require a
 rebuild.
 
 What this is not:
-- not a description of the game (see `godot/README.md`)
+- not a description of the game (see `ONBOARDING.md`)
 - not a CI reference (see `.github/workflows/`)
-- not the client/server contract (see `docs/API_CONTRACT.md`)
+- not the client/server contract (see `ARCHITECTURE.md` (the wire contract))
 
 ## Topology
 

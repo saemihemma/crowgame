@@ -26,7 +26,7 @@ export interface ELOSelectionOptions extends AdaptiveProblemSelectionOptions {
 
 /**
  * Manages math problem pools, selection, and tracking.
- * Loads problem data from Phaser cache and provides filtered problem retrieval.
+ * Loads problem data from the pool JSON and provides filtered problem retrieval.
  */
 export class MathProblemManager {
     private static instance: MathProblemManager;

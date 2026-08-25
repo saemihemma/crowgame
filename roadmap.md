@@ -15,19 +15,19 @@ or need to do. Nothing else belongs here.
    through. Do not move it to a "completed" section. Do not write "(done)" after
    it. Delete the lines. An item that is finished has no business in a list of
    open work, and a roadmap that accumulates finished items stops being read.
-2. **Never add an entry describing something you just did.** That is what
-   `progress.md` is for. If you finished it, it goes in `progress.md` and it
+2. **Never add an entry describing something you just did.** That is what the
+   commit message is for. If you finished it, it goes in git history and it
    comes *out* of here.
 3. **If you finish part of an item, rewrite the item to describe only what is
    left.** Do not annotate it with what you did.
 4. **This file is not a changelog, a status report, a diary, or a design
    document.** No dates on entries. No author names. No "as of" notes. No
-   history. If you want to explain a decision, put it in `progress.md` or an
-   architecture doc and link to it.
+   history. If you want to explain a decision, put it in the commit message or
+   `ARCHITECTURE.md` and link to it.
 5. **Every entry must be actionable and specific enough to start on.** Name the
    file, the behaviour, or the question to answer. "Improve UX" is not an entry.
-6. **Deleting an item you did not finish requires a reason** written into
-   `progress.md`. Silent removal of open work is worse than leaving it.
+6. **Deleting an item you did not finish requires a reason** written into the
+   commit message. Silent removal of open work is worse than leaving it.
 
 If you are an agent working in this repository: you are expected to leave this
 file *shorter* than you found it whenever you complete something. Adding to it
@@ -192,7 +192,7 @@ birds), gated to steps 3+. Still open: more story families and objects so the
 wording doesn't wear out, worded shapes for comparison and sequences, and
 visual prompts via the unused `prompt.assets` field (picture-group addition in
 the spirit of counting's dot strings). Every new worded shape needs a matching
-pattern in `src/math/wordedArithmetic.ts` — that table is what keeps steps,
+pattern in `math-kernel/math/wordedArithmetic.ts` — that table is what keeps steps,
 traits, and replay keys honest.
 
 ### Misconception tags are authored but nothing consumes them
@@ -263,6 +263,28 @@ long a child stays with the game.
 
 ## P4 — Build and tooling
 
+### Retired-Phaser names still sit in comments under `godot/`
+
+About a dozen comments in `godot/scripts/**` and `godot/data/**` still explain
+themselves against the deleted Phaser build: `BootScene` in `data_manager.gd`,
+`elo_manager.gd`, `math_problem_manager.gd`, `ASSET_CREDITS.json` and
+`tileset_manifest.json`; `src/ui/components/FlagIcon.ts` in `flag_icon.gd`
+(which tells the reader to "keep the two in step" with a file that no longer
+exists); and the `docs/API_CONTRACT.md` path in `cloud_sync.gd`,
+`learner_sync_service.gd`, `cloud_panel.gd` and `parent_report.gd`, which is now
+a section of `ARCHITECTURE.md`.
+
+These were left alone on purpose. Every one of those paths feeds
+`GODOT_EXPORT_SOURCE_PATTERNS`, so changing even a comment stales `output/web`
+and requires `bash godot/tools/build_web.sh` — committing a fresh ~23 MB pack to
+git for a comment edit. Fold this sweep into the next commit that rebuilds the
+export for a real reason; it is free there.
+
+When it lands, add the two patterns back to `validateLiveSourceReferences()` in
+`tools/validate_docs.js` (there is a note in the function saying so) so the names
+cannot come back.
+
+
 ### Code-drawn UI stand-ins need a real art pass
 Several load-bearing math-experience surfaces render with primitives drawn in
 code because no authored art exists for them: the trophy-shelf badges
@@ -324,19 +346,16 @@ of completed tasks.** Do not add finished work here.
   an extra affordance for a child who cannot read yet, never the identifier. The
   word stays, and stays untranslated. 🇺🇸 was chosen for English over 🇬🇧 as the
   owner's call.
-  They are vector geometry (`src/ui/components/FlagIcon.ts`,
-  `godot/scripts/ui/flag_icon.gd`), not emoji, for the same reason the PIN dots
+  They are vector geometry (`godot/scripts/ui/flag_icon.gd`), not emoji, for the same reason the PIN dots
   and the tick are: a flag emoji is a regional-indicator pair far outside
   Latin-1, Windows ships no flag glyphs so Chrome there renders it as the
   letters "US"/"IS", and the Godot export's bundled font has no emoji at all --
   which is exactly the tofu this whole localisation pass started from.
-- **The dated review documents under `docs/` still say "Crow".** They are
-  historical records; rewriting them would be revisionist.
 - **`prompt.text`, `hint` and `explanation` stay canonical English.** Four
   things read them and would break if they became Icelandic:
   `tools/math_verifier.ts` recomputes every answer by parsing operands out of
   `prompt.text` and is the only independent arithmetic check;
-  `src/math/problemReplayKey.ts` builds the anti-repeat key from it with literal
+  `math-kernel/math/problemReplayKey.ts` builds the anti-repeat key from it with literal
   tests like `startsWith('count these:')`; `buildPromptUniquenessKey` dedupes the
   pools on it; and the golden fixtures shared with the Godot parity tests compare
   it byte for byte. Localisation is a render-time overlay through the optional

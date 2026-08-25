@@ -2,7 +2,7 @@
 
 Status: Supportive
 Authority: Contribution process. The verification loop itself is
-[DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md).
+[ONBOARDING.md](./ONBOARDING.md).
 Last verified against code: 2026-08-24
 
 Hörmann is a maths game played by young children, including the author's own. That
@@ -10,7 +10,7 @@ shapes what a good contribution looks like more than anything else here.
 
 ## Before you write code: which tree?
 
-This repo contains four live trees and one dead one. Getting this wrong is the
+This repo contains four live trees. Getting this wrong is the
 most common way to waste an afternoon:
 
 - **`godot/**`** — the game. Godot 4.3 / GDScript. This is what players run.
@@ -19,7 +19,7 @@ most common way to waste an afternoon:
   maths. Never ships. It generates the golden fixtures the game is tested against.
 - **`tools/**`** — offline curriculum authoring and validation. Never ships.
 
-[ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md) is the map, and the only place
+[ONBOARDING.md](./ONBOARDING.md) is the map, and the only place
 mutable counts live.
 
 ## The rules that are enforced
@@ -29,7 +29,7 @@ mutable counts live.
 magic numbers, user-facing strings, inline colours, hardcoded scene paths,
 type-to-behaviour switches for content, and scattered `play_sfx` calls in `.gd`
 files. Each has a data-driven home — see
-[godot/ARCHITECTURE.md](./godot/ARCHITECTURE.md). Genuine exceptions take
+[ARCHITECTURE.md](./ARCHITECTURE.md). Genuine exceptions take
 `# hardcode-ok` on the line, and "genuine" means brand text or a diagnostic, not
 "I was in a hurry".
 
@@ -45,10 +45,8 @@ key-for-key lockstep, and a missing key renders as the raw key to a child.
 - **Tier-1 constants** (ELO, learner, movement). Changing one is legitimate, but
   it means editing `math-kernel/**`, regenerating the fixtures, and keeping Godot
   parity green — all in the same commit.
-- **The wire contract.** [docs/API_CONTRACT.md](./docs/API_CONTRACT.md) is frozen
+- **The wire contract.** [ARCHITECTURE.md](./ARCHITECTURE.md#the-wire-contract) is frozen
   deliberately; it is baked into every installed client.
-- **`docs/learner_backend_schema.sql`.** A superseded draft. Its banner lists
-  three things in it that must never be built.
 
 ## Things that will not be accepted
 

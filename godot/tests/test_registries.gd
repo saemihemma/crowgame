@@ -32,7 +32,7 @@ func test_sound_events_map_to_manifest() -> void:
 			continue
 		assert_true(sfx.has(String(events[ev])), "event '%s' -> sfx key '%s' exists" % [ev, events[ev]])
 
-## The progression PROJECT.md commits to: worlds unlock strictly one at a time,
+## The progression PRODUCT.md commits to: worlds unlock strictly one at a time,
 ## in registry order, with the practice arena outside the chain.
 ##
 ## Pinned because the reason is the maths rather than the platforming - each

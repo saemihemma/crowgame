@@ -6,7 +6,7 @@ Why this exists: the game renders at 960x540 with Nearest filtering and integer
 upscaling, so nothing softens the source art on its way to the screen. Soft
 anti-aliased edges, stray near-invisible pixels and silhouettes cropped flush
 against their own frame all survive magnification intact — that is the
-"muddy silhouette" PROJECT.md rules out. The numbers say which assets carry it;
+"muddy silhouette" PRODUCT.md rules out. The numbers say which assets carry it;
 `--crops` renders the same frames at 1x/2x/4x Nearest so you can judge by eye
 rather than by metric. Read both: a high colour count alone is dithering or
 anti-aliasing, not proof that art was upscaled — `native` is what settles that.

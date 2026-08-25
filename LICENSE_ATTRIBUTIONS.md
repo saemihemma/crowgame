@@ -17,13 +17,13 @@ What this is not:
 - not the canonical source for current asset counts
 - not proof that every archived asset is still shipped
 
-For live asset expectations, use [ASSET_SPECS.md](./ASSET_SPECS.md). For archived or historical material, use [archived/README.md](./archived/README.md).
+For live asset expectations, use [brand/ASSET_MANIFEST.md](./brand/ASSET_MANIFEST.md). For archived or historical material, use [archived/README.md](./archived/README.md).
 
 ## Current Guidance
 
 - Treat this file as a provenance ledger, not as a manifest.
 - If an asset is replaced, update this file and any related manifest or credits data in the same pass.
-- Do not infer current runtime counts from this document. Mutable runtime counts live in [ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md).
+- Do not infer current runtime counts from this document. Mutable runtime counts live in [ONBOARDING.md](./ONBOARDING.md).
 
 ## Audio Provenance
 
@@ -67,4 +67,4 @@ When asset provenance changes:
 1. Update this document.
 2. Update any runtime manifest or credits file that references the asset.
 3. Run `npm run validate:assets`.
-4. If the asset moved out of the live tree, also update [archived/README.md](./archived/README.md) or [ASSET_SPECS.md](./ASSET_SPECS.md) as needed.
+4. If the asset moved out of the live tree, also update [archived/README.md](./archived/README.md) or [brand/ASSET_MANIFEST.md](./brand/ASSET_MANIFEST.md) as needed.
