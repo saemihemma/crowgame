@@ -1,36 +1,36 @@
 {
-  "batchId": "batch_16_subtraction_50_100_borrow",
-  "title": "Subtraction 50-100 with borrow plus lighter-domain variance",
+  "batchId": "batch_24_addition_3digit",
+  "title": "Three-digit addition",
   "accepted": true,
   "averageGrade": 9.8,
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.4,
-      "summary": "Template coverage is stable: 14 templates, 5 families, steps 2-36.",
+      "grade": 9.5,
+      "summary": "Template coverage is stable: 3 templates, 1 families, steps 41-43.",
       "metrics": {
-        "templateCount": 14,
-        "familyCount": 5,
-        "minStep": 2,
-        "maxStep": 36,
-        "promptVariantCount": 32,
-        "averageProblemsPerTemplate": 10.7
+        "templateCount": 3,
+        "familyCount": 1,
+        "minStep": 41,
+        "maxStep": 43,
+        "promptVariantCount": 15,
+        "averageProblemsPerTemplate": 30
       }
     },
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.4,
+        "grade": 9.5,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.4,
+        "grade": 9.5,
         "rationale": "Families and wording variants support replay and gentle pacing."
       },
       {
         "role": "role-analytics-engineer",
-        "grade": 9.4,
+        "grade": 9.6,
         "rationale": "Template volume and spread are consistent enough for later measurement."
       }
     ]
@@ -40,7 +40,7 @@
       "grade": 10,
       "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
       "metrics": {
-        "problemCount": 150,
+        "problemCount": 90,
         "arithmeticErrors": 0,
         "metadataErrors": 0,
         "optionErrors": 0,
@@ -69,15 +69,15 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.9,
+      "grade": 10,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.9,
+        "steadyChildGrade": 10,
         "strugglingChildGrade": 10,
-        "strongChildGrade": 9.9,
-        "openingProbeStep": 2,
-        "middleProbeStep": 27,
-        "upperProbeStep": 36,
+        "strongChildGrade": 10,
+        "openingProbeStep": 41,
+        "middleProbeStep": 42,
+        "upperProbeStep": 43,
         "uniqueStartAnchors": 3,
         "probeCount": 9,
         "exhaustionWarnings": 0
@@ -86,12 +86,12 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
-    "How much is 53 - 8?",
-    "How much is 53 - 6?",
-    "52 - 7 equals ?",
-    "54 - 9 equals ?",
-    "53 - 7 equals ?"
+    "What is 214 + 134?",
+    "121 + 232 = ?",
+    "621 + 105 =",
+    "424 + 253 equals ?",
+    "You have 214 berries. You find 123 more. How many berries?"
   ]
 }

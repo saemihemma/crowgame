@@ -1056,7 +1056,7 @@
       "explanation": "2 × 3 = 6",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 3,
+      "curriculumStep": 1,
       "difficultyTraits": {
         "maxOperand": 3
       },
@@ -1100,7 +1100,7 @@
       "explanation": "2 × 5 = 10",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 6,
+      "curriculumStep": 1,
       "difficultyTraits": {
         "maxOperand": 5
       },
@@ -1143,7 +1143,7 @@
       "explanation": "5 × 2 = 10",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 6,
+      "curriculumStep": 1,
       "difficultyTraits": {
         "maxOperand": 5
       },
@@ -1186,7 +1186,7 @@
       "explanation": "3 × 4 = 12",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 8,
+      "curriculumStep": 4,
       "difficultyTraits": {
         "maxOperand": 4
       }
@@ -1220,7 +1220,7 @@
       "explanation": "4 × 3 = 12",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 10,
+      "curriculumStep": 4,
       "difficultyTraits": {
         "maxOperand": 4
       }
@@ -1254,7 +1254,7 @@
       "explanation": "3 × 5 = 15",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 11,
+      "curriculumStep": 3,
       "difficultyTraits": {
         "maxOperand": 5
       },
@@ -1297,7 +1297,7 @@
       "explanation": "6 × 3 = 18",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 12,
+      "curriculumStep": 4,
       "difficultyTraits": {
         "maxOperand": 6
       }
@@ -1331,7 +1331,7 @@
       "explanation": "6 ÷ 2 = 3",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 3,
+      "curriculumStep": 2,
       "difficultyTraits": {
         "maxOperand": 6
       },
@@ -1374,7 +1374,7 @@
       "explanation": "10 ÷ 2 = 5",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 6,
+      "curriculumStep": 2,
       "difficultyTraits": {
         "maxOperand": 10
       },
@@ -1417,7 +1417,7 @@
       "explanation": "12 ÷ 3 = 4",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 10,
+      "curriculumStep": 5,
       "difficultyTraits": {
         "maxOperand": 12
       },
@@ -1460,7 +1460,7 @@
       "explanation": "15 ÷ 3 = 5",
       "misconceptionTags": [],
       "generator": null,
-      "curriculumStep": 11,
+      "curriculumStep": 4,
       "difficultyTraits": {
         "maxOperand": 15
       },

@@ -293,36 +293,36 @@
       "domain": "multiplication",
       "family": "tables_2_to_5",
       "curriculumStepRange": [
-        4,
-        10
+        0,
+        7
       ],
       "targetEloRange": [
         340,
-        520
+        560
       ],
       "ageBand": [
         6,
         8
       ],
-      "notes": ""
+      "notes": "Easy tables per the measured order (x1 x2 x10 x5 x3 x4) plus x0 and squares."
     },
     {
       "id": "div_2_5",
       "domain": "division",
       "family": "division_2_to_5",
       "curriculumStepRange": [
-        4,
-        16
+        1,
+        8
       ],
       "targetEloRange": [
-        360,
+        380,
         620
       ],
       "ageBand": [
         6,
         8
       ],
-      "notes": ""
+      "notes": "Fact families of the easy tables; a division fact sits one step after the fact it inverts."
     },
     {
       "id": "add_50_100_no_carry",
@@ -401,26 +401,26 @@
       "domain": "multiplication",
       "family": "tables_6_to_9",
       "curriculumStepRange": [
-        8,
-        18
+        1,
+        11
       ],
       "targetEloRange": [
         520,
-        820
+        830
       ],
       "ageBand": [
         7,
         9
       ],
-      "notes": ""
+      "notes": "Hard-cluster tables (x6-x9). Easy facts inside these templates keep their low ladder step; the band only prices ELO."
     },
     {
       "id": "div_6_9",
       "domain": "division",
       "family": "division_6_to_9",
       "curriculumStepRange": [
-        8,
-        20
+        2,
+        12
       ],
       "targetEloRange": [
         540,
@@ -430,7 +430,187 @@
         7,
         9
       ],
-      "notes": ""
+      "notes": "Fact families of the hard cluster."
+    },
+    {
+      "id": "mult_ladder_fill",
+      "domain": "multiplication",
+      "family": "tables_ladder",
+      "curriculumStepRange": [
+        0,
+        12
+      ],
+      "targetEloRange": [
+        360,
+        780
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": "Fills the table ladder: x1, x0, x10, equal-groups stories, multiples of ten."
+    },
+    {
+      "id": "mult_beyond_tables",
+      "domain": "multiplication",
+      "family": "beyond_tables",
+      "curriculumStepRange": [
+        13,
+        14
+      ],
+      "targetEloRange": [
+        780,
+        980
+      ],
+      "ageBand": [
+        8,
+        10
+      ],
+      "notes": "Two-digit x one-digit, split by carry in the partial product (grade 4)."
+    },
+    {
+      "id": "div_ladder_fill",
+      "domain": "division",
+      "family": "fact_families",
+      "curriculumStepRange": [
+        1,
+        13
+      ],
+      "targetEloRange": [
+        400,
+        800
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": "Fills fact families: x3/x4/x10 inverses, sharing stories, tens dividends."
+    },
+    {
+      "id": "div_beyond_tables",
+      "domain": "division",
+      "family": "beyond_tables",
+      "curriculumStepRange": [
+        14,
+        15
+      ],
+      "targetEloRange": [
+        800,
+        1000
+      ],
+      "ageBand": [
+        8,
+        10
+      ],
+      "notes": "Two-digit dividends past the tables (96/4), no remainders by format."
+    },
+    {
+      "id": "add_3digit",
+      "domain": "addition",
+      "family": "three_digit_addition",
+      "curriculumStepRange": [
+        41,
+        43
+      ],
+      "targetEloRange": [
+        820,
+        960
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": "Three-digit; steps split by regrouping load (none / one / multiple)."
+    },
+    {
+      "id": "add_4digit",
+      "domain": "addition",
+      "family": "four_digit_addition",
+      "curriculumStepRange": [
+        44,
+        46
+      ],
+      "targetEloRange": [
+        940,
+        1080
+      ],
+      "ageBand": [
+        8,
+        10
+      ],
+      "notes": "Crossing 1000 and four-digit (grade 4)."
+    },
+    {
+      "id": "sub_3digit",
+      "domain": "subtraction",
+      "family": "three_digit_subtraction",
+      "curriculumStepRange": [
+        41,
+        43
+      ],
+      "targetEloRange": [
+        840,
+        980
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": "Three-digit; steps split by borrow load, across-zeros lands in multiple."
+    },
+    {
+      "id": "sub_4digit",
+      "domain": "subtraction",
+      "family": "four_digit_subtraction",
+      "curriculumStepRange": [
+        44,
+        46
+      ],
+      "targetEloRange": [
+        960,
+        1090
+      ],
+      "ageBand": [
+        8,
+        10
+      ],
+      "notes": "Four-digit (grade 4)."
+    },
+    {
+      "id": "comparison_big",
+      "domain": "comparison",
+      "family": "comparison",
+      "curriculumStepRange": [
+        7,
+        9
+      ],
+      "targetEloRange": [
+        620,
+        840
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": "Ordering into the hundreds and thousands (end-of-grade-4 criterion)."
+    },
+    {
+      "id": "sequence_big",
+      "domain": "number_sequence",
+      "family": "skip_counting",
+      "curriculumStepRange": [
+        7,
+        10
+      ],
+      "targetEloRange": [
+        640,
+        880
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": "Skip counting by 10/25/50/100 into the hundreds."
     }
   ]
 }

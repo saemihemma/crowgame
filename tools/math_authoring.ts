@@ -59,6 +59,12 @@ interface BaseTemplateSpec {
     promptLeadIn?: string;
     templateStepRange?: NumericRange;
     ageBand?: [number, number];
+    /**
+     * Use ONLY the listed promptVariants instead of unioning the kind's
+     * fallback set. Without this, a story-only template loses most of its
+     * count to bare-equation variants in the hash lottery.
+     */
+    strictVariants?: boolean;
 }
 
 export interface ArithmeticTemplateSpec extends BaseTemplateSpec {
@@ -406,6 +412,15 @@ function formatArithmeticPrompt(variant: string, left: number, operator: string,
             return `You have ${left} ${plural(left, 'berry', 'berries')}. You eat ${right}. How many are left?`;
         case 'story_fly':
             return `${left} ${plural(left, 'bird sits', 'birds sit')} on a branch. ${right} fly away. How many are left?`;
+        // Multiplicative stories (CGI equal-groups and partitive sharing). Both
+        // quantities are kept >= 2 by the candidate filter, and the nouns were
+        // chosen so their Icelandic forms survive the 21/31 singular-agreement
+        // rule (ber, egg, hreiður are identical singular/plural) — so the plain
+        // plural here is correct in both languages for every authored value.
+        case 'story_nests':
+            return `There are ${left} nests. Each nest has ${right} eggs. How many eggs in all?`;
+        case 'story_share':
+            return `${left} berries are shared by ${right} birds. How many berries does each bird get?`;
         default:
             return `${left} ${operator} ${right} = ?`;
     }
@@ -463,7 +478,10 @@ function applyPromptLeadIn(text: string, leadIn?: string): string {
     return leadIn ? `${leadIn} ${text}` : text;
 }
 
-function withFallbackVariants(kind: AuthoringTemplateKind, promptVariants: string[]): string[] {
+function withFallbackVariants(kind: AuthoringTemplateKind, promptVariants: string[], strict = false): string[] {
+    if (strict && promptVariants.length > 0) {
+        return Array.from(new Set(promptVariants));
+    }
     const fallbackByKind: Record<AuthoringTemplateKind, string[]> = {
         addition: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check', 'story_find', 'story_land'],
         subtraction: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check', 'story_eat', 'story_fly'],
@@ -548,8 +566,14 @@ function renderHint(strategy: string, values: Record<string, number>): string {
             return `Start at ${left}, then count back ${right}.`;
         case 'bridge_ten':
             return `Hop back to the nearest 10 first, then finish counting back.`;
+        case 'add_place_value':
+            return `Add the hundreds, then the tens, then the ones.`;
+        case 'subtract_place_value':
+            return `Take away the hundreds, then the tens, then the ones.`;
         case 'multiply_groups':
             return `Think of ${left} ${plural(left, 'group', 'groups')} of ${right}.`;
+        case 'split_tens':
+            return `Multiply the tens, multiply the ones, then add the two parts.`;
         case 'divide_groups':
             return `Share ${left} into groups of ${right}.`;
         case 'count_symbols':
@@ -581,8 +605,16 @@ function renderExplanation(strategy: string, values: Record<string, number>): st
             return `${left} take away ${right} leaves ${correct}.`;
         case 'difference_bridge_ten':
             return `Step back to 10 first, then finish. The answer is ${correct}.`;
+        case 'sum_place_value':
+            return `Add each place, hundreds to ones. The answer is ${correct}.`;
+        case 'difference_place_value':
+            return `Take away place by place. The answer is ${correct}.`;
         case 'product_result':
             return `${left} ${plural(left, 'group', 'groups')} of ${right} makes ${correct}.`;
+        case 'product_split':
+            return `Multiply the tens by ${right}, then the ones, and add the parts. The answer is ${correct}.`;
+        case 'quotient_share':
+            return `${left} shared into ${right} equal ${plural(right, 'group', 'groups')} gives ${correct} each.`;
         case 'quotient_result':
             return `${left} split into groups of ${right} makes ${correct} ${plural(correct, 'group', 'groups')}.`;
         case 'count_result':
@@ -653,7 +685,7 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
     const rightValues = template.rightValues ?? enumerateRange(template.rightRange);
     const leftBounds: NumericRange = template.leftRange ?? [Math.min(...leftValues), Math.max(...leftValues)];
     const rightBounds: NumericRange = template.rightRange ?? [Math.min(...rightValues), Math.max(...rightValues)];
-    const promptVariants = withFallbackVariants(template.kind, template.promptVariants);
+    const promptVariants = withFallbackVariants(template.kind, template.promptVariants, template.strictVariants);
 
     for (const left of leftValues) {
         for (const right of rightValues) {
@@ -696,6 +728,14 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
                 if (plainOnly && variant !== 'equation' && variant !== 'question') continue;
                 // Story shapes need both quantities present to read naturally.
                 if (variant.startsWith('story_') && (left < 1 || right < 1)) continue;
+                // Multiplicative stories keep both quantities >= 2 so plural
+                // nouns are always correct in both locales without per-number
+                // inflection (docs/MATH_AUTHORING_STANDARDS.md §4).
+                if (
+                    variant.startsWith('story_') &&
+                    (template.kind === 'multiplication' || template.kind === 'division') &&
+                    (left < 2 || right < 2 || correct < 2)
+                ) continue;
 
                 const promptText = applyPromptLeadIn(formatArithmeticPrompt(variant, left, operator, right), template.promptLeadIn);
                 candidates.push({
@@ -715,7 +755,7 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
 
 function renderCountingCandidates(template: CountingTemplateSpec): RawCandidate[] {
     const symbol = template.symbol ?? 'o';
-    const promptVariants = withFallbackVariants(template.kind, template.promptVariants);
+    const promptVariants = withFallbackVariants(template.kind, template.promptVariants, template.strictVariants);
     const counts = enumerateRange(template.countRange);
     const candidates: RawCandidate[] = [];
 
@@ -738,7 +778,7 @@ function renderCountingCandidates(template: CountingTemplateSpec): RawCandidate[
 }
 
 function renderComparisonCandidates(template: ComparisonTemplateSpec): RawCandidate[] {
-    const promptVariants = withFallbackVariants(template.kind, template.promptVariants);
+    const promptVariants = withFallbackVariants(template.kind, template.promptVariants, template.strictVariants);
     const leftValues = enumerateRange(template.leftRange);
     const rightValues = enumerateRange(template.rightRange);
     const candidates: RawCandidate[] = [];
@@ -769,7 +809,7 @@ function renderComparisonCandidates(template: ComparisonTemplateSpec): RawCandid
 }
 
 function renderSequenceCandidates(template: SequenceTemplateSpec): RawCandidate[] {
-    const promptVariants = withFallbackVariants(template.kind, template.promptVariants);
+    const promptVariants = withFallbackVariants(template.kind, template.promptVariants, template.strictVariants);
     const starts = enumerateRange(template.startRange);
     const candidates: RawCandidate[] = [];
 
@@ -802,7 +842,7 @@ function renderSequenceCandidates(template: SequenceTemplateSpec): RawCandidate[
 }
 
 function renderPatternCandidates(template: PatternTemplateSpec): RawCandidate[] {
-    const promptVariants = withFallbackVariants(template.kind, template.promptVariants);
+    const promptVariants = withFallbackVariants(template.kind, template.promptVariants, template.strictVariants);
     const values = enumerateRange(template.valueRange);
     const candidates: RawCandidate[] = [];
     const seenPatterns = new Set<string>();

@@ -70,13 +70,23 @@ comparison, number_sequence and pattern_matching milestones are marked
 no official number-range anchor exists for them — they were placed by
 judgement against the Sproti topic lists. Contingency: a practising
 grunnskólakennari reviewing that one JSON file (eight domains, sixteen rows)
-would either confirm or correct them in minutes. Also note the content
-ceiling: addition/subtraction pools stop at ~100, so the game cannot measure
-past grade-2 material there — the report says so, but authoring grade-3 range
-content (3-digit, written methods) is the real fix.
+would either confirm or correct them in minutes. The grade-2 content ceiling
+is closed: the ladders now run to grade-4 material (3- and 4-digit
+add/subtract by regrouping load, the full table-order multiplication ladder,
+fact-family division, ordering and skip counting into the thousands — see
+docs/MATH_AUTHORING_STANDARDS.md). The `approx` rows now also include the
+number_sequence grade-3/4 milestones.
 
 *Done when:* every milestone's `basis` is `law`/`curriculum`/`material`, or an
 educator has signed off the `approx` rows in the JSON's provenance notes.
+
+### Division with remainders needs a new answer mode
+The MCQ answer format is a single number, so "deiling með afgangi" (Sproti 4)
+cannot be asked honestly — division content stops at exact division. A
+quotient+remainder answer widget (or a two-part question) unlocks it.
+
+*Done when:* a remainder answer mode exists and a `division` band authored
+with remainders passes the materialize review gate.
 
 ## P2 — Experience decisions that need making
 

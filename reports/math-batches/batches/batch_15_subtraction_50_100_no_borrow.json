@@ -7,11 +7,11 @@
   "templateReview": {
     "category": {
       "grade": 9.5,
-      "summary": "Template coverage is stable: 14 templates, 6 families, steps 3-36.",
+      "summary": "Template coverage is stable: 14 templates, 6 families, steps 2-36.",
       "metrics": {
         "templateCount": 14,
         "familyCount": 6,
-        "minStep": 3,
+        "minStep": 2,
         "maxStep": 36,
         "promptVariantCount": 32,
         "averageProblemsPerTemplate": 10.7
@@ -69,13 +69,13 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.9,
+      "grade": 9.8,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 10,
+        "steadyChildGrade": 9.9,
         "strugglingChildGrade": 9.9,
         "strongChildGrade": 9.7,
-        "openingProbeStep": 3,
+        "openingProbeStep": 2,
         "middleProbeStep": 27,
         "upperProbeStep": 36,
         "uniqueStartAnchors": 3,
@@ -91,7 +91,7 @@
       },
       {
         "role": "role-game-designer",
-        "grade": 10,
+        "grade": 9.9,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {

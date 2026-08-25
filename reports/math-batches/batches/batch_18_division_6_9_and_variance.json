@@ -2,17 +2,17 @@
   "batchId": "batch_18_division_6_9_and_variance",
   "title": "Division 6-9 plus lighter-domain variance",
   "accepted": true,
-  "averageGrade": 9.9,
+  "averageGrade": 9.8,
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.6,
-      "summary": "Template coverage is stable: 12 templates, 8 families, steps 5-20.",
+      "grade": 9.8,
+      "summary": "Template coverage is stable: 12 templates, 8 families, steps 2-11.",
       "metrics": {
         "templateCount": 12,
         "familyCount": 8,
-        "minStep": 5,
-        "maxStep": 20,
+        "minStep": 2,
+        "maxStep": 11,
         "promptVariantCount": 28,
         "averageProblemsPerTemplate": 12.5
       }
@@ -20,12 +20,12 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.6,
+        "grade": 9.8,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.7,
+        "grade": 10,
         "rationale": "Families and wording variants support replay and gentle pacing."
       },
       {
@@ -69,15 +69,15 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 10,
+      "grade": 9.8,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 10,
-        "strugglingChildGrade": 10,
-        "strongChildGrade": 10,
-        "openingProbeStep": 5,
-        "middleProbeStep": 15,
-        "upperProbeStep": 20,
+        "steadyChildGrade": 9.7,
+        "strugglingChildGrade": 9.9,
+        "strongChildGrade": 9.7,
+        "openingProbeStep": 2,
+        "middleProbeStep": 6,
+        "upperProbeStep": 11,
         "uniqueStartAnchors": 3,
         "probeCount": 9,
         "exhaustionWarnings": 0
@@ -86,17 +86,17 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 10,
+        "grade": 9.7,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {
         "role": "role-game-designer",
-        "grade": 10,
+        "grade": 9.7,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
         "role": "role-qa-engineer",
-        "grade": 10,
+        "grade": 9.9,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],
@@ -110,6 +110,6 @@
     "60 ÷ 6 = ?",
     "54 ÷ 6 equals ?",
     "Answer: 48 ÷ 6",
-    "72 ÷ 6 = ?"
+    "18 ÷ 6 = ?"
   ]
 }
