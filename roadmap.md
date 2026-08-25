@@ -63,30 +63,6 @@ need a third operator pair.
 *Done when:* multiplication has a relational overlay, or a decision is written
 down that the cap makes wider relational content pointless.
 
-### The step derivation cannot express five rungs, and nobody decided that
-`subtraction` steps 17-20 and `addition` step 20 hold nothing, and it is not
-authoring debt: no fact whose operands and result stay inside twenty derives
-onto them at all. Addition step 20 needs maxOperand 20 with a carry, and 20's
-ones digit is zero, so nothing can carry into it. Subtraction 17-20 need
-operands above twenty, which the owl's cap drops.
-
-They are harmless today. `_find_next_step_with_content` scans ahead and lands on
-21, and `test_concept_ladder.gd::test_promotion_can_step_over_every_impossible_rung`
-asserts it, so no child stalls. `subtraction` step 15 is the same shape one notch
-softer: exactly three facts inside twenty derive onto it, so three is its
-ceiling.
-
-The open question is whether a magnitude-derived ladder with holes in it is the
-right shape at all, or whether `deriveAdditionStep` and `deriveSubtractionStep`
-should produce a dense sequence. Dense numbering would make "step 12 of 20" mean
-something to a parent report and would remove five permanent exceptions from
-`concept_ladder.json`. It would also renumber every problem in the pools and
-move every concept range, so it is not a small change and it is not urgent.
-
-*Done when:* either the derivation produces no unreachable rungs, or a decision
-is written down that magnitude-derived numbering with declared holes is the
-intended shape.
-
 ### Tune the ladder against real play, not intuition
 The admin session report tags accuracy against the 70-85% sweet spot. After a
 week of family play: above 85% raise the at-level/stretch share, below 70%
@@ -268,26 +244,8 @@ and the fixtures are regenerated — or the idea is dropped on purpose.
 
 ## P3 — Content and localisation
 
-### Multiplication and division have no foundation rungs
-`multiplication` steps 0, 1, 2 and 4 and `division` steps 0, 1, 2, 4 and 5 have
-no problems authored at all, so both concepts open mid-ladder. Sharing into two
-and three groups — the entire concrete foundation of division — does not exist.
-Neither domain is reachable today (unlock rules plus the operand cap of 20), so
-this is not urgent, but the lessons for `multiplication.groups_of` and
-`division.sharing` currently teach an idea the pools cannot then practise.
-Both are declared in `concept_ladder.json`.
-
-*Done when:* each of those rungs holds at least six problems, or the concepts
-are re-cut to start where the content actually does.
-
-### Number sequence has no step 0
-The gentlest possible sequence — counting on from a single number — was never
-authored, so `number_sequence` starts at step 1, where it holds two problems.
-Step 3 also holds two. This is the domain a child meets last in the chain and
-the one with the thinnest opening.
-
 ### Lessons for the concepts, and only some of the practice
-`docs/MATH_CONCEPT_LADDER.md` ships 30 lessons over 30 concepts, but a lesson is
+`docs/MATH_CONCEPT_LADDER.md` ships 38 lessons over 40 concepts, but a lesson is
 authored copy and the pools are generated. When a concept is re-cut, split or
 its step range moved, the lesson's numbers stop matching the rung it teaches.
 `tools/validate_math_concepts.mjs` checks each card's arithmetic against its own

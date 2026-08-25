@@ -177,7 +177,16 @@ func test_the_owl_can_actually_serve_a_relational_problem() -> void:
 ## content, and only while the next rung that HAS content is inside
 ## `promotionStepScanLimit`. Both halves are asserted here, because "harmless"
 ## was an assumption until something checked it.
-const IMPOSSIBLE_RUNGS := {"subtraction": [17, 18, 19, 20], "addition": [20]}
+## Measured, not asserted: `npm run math:step-domains` brute-forces every
+## derivation and writes reports/math-concepts/emittable-steps.json. That report
+## is the authority; this constant is its in-game mirror, and
+## tools/validate_math_concepts.mjs fails the build if the two ever disagree.
+const IMPOSSIBLE_RUNGS := {
+	"addition": [20],
+	"subtraction": [17, 18, 19, 20],
+	"multiplication": [11],
+	"division": [0, 12],
+}
 
 func _problems_on(domain: String, step: int) -> int:
 	var n := 0
@@ -201,18 +210,22 @@ func test_promotion_can_step_over_every_impossible_rung() -> void:
 	assert_true(scan > 0, "there is a scan limit to test against")
 	for domain: String in IMPOSSIBLE_RUNGS:
 		var holes: Array = IMPOSSIBLE_RUNGS[domain]
-		var from: int = int(holes[0]) - 1
-		# The rung a child sits on before the hole must have somewhere to go.
-		var landed := -1
-		for step in range(from + 1, from + scan + 1):
-			if _problems_on(domain, step) > 0:
-				landed = step
-				break
-		assert_true(landed > from,
-			"%s promotion from step %d finds content within %d steps (landed on %d)" % [domain, from, scan, landed])
-		# And it must clear the whole hole, not stop inside it.
-		assert_true(not holes.has(landed),
-			"%s promotion from step %d clears the hole entirely, landing on %d" % [domain, from, landed])
+		# Every hole is checked on its own, not just the first. Division's holes
+		# are 0 and 12 -- not contiguous -- so testing only the first would have
+		# left step 12 unasserted.
+		for hole: Variant in holes:
+			var from: int = int(hole) - 1
+			# The rung a child sits on before the hole must have somewhere to go.
+			var landed := -1
+			for step in range(from + 1, from + scan + 1):
+				if _problems_on(domain, step) > 0:
+					landed = step
+					break
+			assert_true(landed > from,
+				"%s promotion from step %d finds content within %d steps (landed on %d)" % [domain, from, scan, landed])
+			# And it must clear the hole, not stop inside it.
+			assert_true(not holes.has(landed),
+				"%s promotion from step %d clears the hole, landing on %d" % [domain, from, landed])
 
 
 ## Relational shapes across both operations.

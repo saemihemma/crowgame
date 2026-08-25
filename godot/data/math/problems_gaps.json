@@ -6266,6 +6266,4427 @@
           }
         }
       }
+    },
+    {
+      "id": "gap_add_step37_001",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 104,
+        "options": [
+          104,
+          114,
+          103,
+          101
+        ]
+      },
+      "hint": "Think: 101 + 3 = 104.",
+      "explanation": "101 plus 3 makes 104.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 101,
+            "b": 3,
+            "sum": 104
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 101,
+            "b": 3,
+            "sum": 104
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step37_002",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 + 12 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 113,
+        "options": [
+          123,
+          113,
+          112,
+          101
+        ]
+      },
+      "hint": "Think: 101 + 12 = 113.",
+      "explanation": "101 plus 12 makes 113.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 101,
+            "b": 12,
+            "sum": 113
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 101,
+            "b": 12,
+            "sum": 113
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step37_003",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 + 21 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 122,
+        "options": [
+          132,
+          121,
+          122,
+          101
+        ]
+      },
+      "hint": "Think: 101 + 21 = 122.",
+      "explanation": "101 plus 21 makes 122.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 101,
+            "b": 21,
+            "sum": 122
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 101,
+            "b": 21,
+            "sum": 122
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step37_004",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 + 34 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 135,
+        "options": [
+          145,
+          134,
+          101,
+          135
+        ]
+      },
+      "hint": "Think: 101 + 34 = 135.",
+      "explanation": "101 plus 34 makes 135.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 101,
+            "b": 34,
+            "sum": 135
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 101,
+            "b": 34,
+            "sum": 135
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step37_005",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 + 45 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 146,
+        "options": [
+          146,
+          156,
+          145,
+          101
+        ]
+      },
+      "hint": "Think: 101 + 45 = 146.",
+      "explanation": "101 plus 45 makes 146.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 101,
+            "b": 45,
+            "sum": 146
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 101,
+            "b": 45,
+            "sum": 146
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step37_006",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 107,
+        "options": [
+          117,
+          107,
+          106,
+          101
+        ]
+      },
+      "hint": "Think: 101 + 6 = 107.",
+      "explanation": "101 plus 6 makes 107.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 101,
+            "b": 6,
+            "sum": 107
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 101,
+            "b": 6,
+            "sum": 107
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step37_007",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 + 17 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 118,
+        "options": [
+          128,
+          117,
+          118,
+          101
+        ]
+      },
+      "hint": "Think: 101 + 17 = 118.",
+      "explanation": "101 plus 17 makes 118.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 101,
+            "b": 17,
+            "sum": 118
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 101,
+            "b": 17,
+            "sum": 118
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step37_008",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 97,
+        "options": [
+          107,
+          96,
+          101,
+          97
+        ]
+      },
+      "hint": "Count back 4 from 101 to reach 97.",
+      "explanation": "101 take away 4 leaves 97.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 4,
+            "a": 101,
+            "diff": 97
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 101,
+            "gone": 4,
+            "left": 97
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step37_009",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 - 13 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 88,
+        "options": [
+          88,
+          98,
+          87,
+          101
+        ]
+      },
+      "hint": "Count back 13 from 101 to reach 88.",
+      "explanation": "101 take away 13 leaves 88.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 13,
+            "a": 101,
+            "diff": 88
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 101,
+            "gone": 13,
+            "left": 88
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step37_010",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 - 22 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 79,
+        "options": [
+          89,
+          79,
+          78,
+          101
+        ]
+      },
+      "hint": "Count back 22 from 101 to reach 79.",
+      "explanation": "101 take away 22 leaves 79.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 22,
+            "a": 101,
+            "diff": 79
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 101,
+            "gone": 22,
+            "left": 79
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step37_011",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 - 35 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 66,
+        "options": [
+          76,
+          65,
+          66,
+          101
+        ]
+      },
+      "hint": "Count back 35 from 101 to reach 66.",
+      "explanation": "101 take away 35 leaves 66.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 35,
+            "a": 101,
+            "diff": 66
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 101,
+            "gone": 35,
+            "left": 66
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step37_012",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 - 46 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 55,
+        "options": [
+          65,
+          54,
+          101,
+          55
+        ]
+      },
+      "hint": "Count back 46 from 101 to reach 55.",
+      "explanation": "101 take away 46 leaves 55.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 46,
+            "a": 101,
+            "diff": 55
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 101,
+            "gone": 46,
+            "left": 55
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step37_013",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 94,
+        "options": [
+          94,
+          104,
+          93,
+          101
+        ]
+      },
+      "hint": "Count back 7 from 101 to reach 94.",
+      "explanation": "101 take away 7 leaves 94.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 7,
+            "a": 101,
+            "diff": 94
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 101,
+            "gone": 7,
+            "left": 94
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step37_014",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "101 - 18 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 83,
+        "options": [
+          93,
+          83,
+          82,
+          101
+        ]
+      },
+      "hint": "Count back 18 from 101 to reach 83.",
+      "explanation": "101 take away 18 leaves 83.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 37,
+      "difficultyTraits": {
+        "maxOperand": 101,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 18,
+            "a": 101,
+            "diff": 83
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 101,
+            "gone": 18,
+            "left": 83
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step38_015",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 109,
+        "options": [
+          119,
+          108,
+          109,
+          106
+        ]
+      },
+      "hint": "Think: 106 + 3 = 109.",
+      "explanation": "106 plus 3 makes 109.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 106,
+            "b": 3,
+            "sum": 109
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 106,
+            "b": 3,
+            "sum": 109
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step38_016",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 + 12 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 118,
+        "options": [
+          128,
+          117,
+          106,
+          118
+        ]
+      },
+      "hint": "Think: 106 + 12 = 118.",
+      "explanation": "106 plus 12 makes 118.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 106,
+            "b": 12,
+            "sum": 118
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 106,
+            "b": 12,
+            "sum": 118
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step38_017",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 + 21 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 127,
+        "options": [
+          127,
+          137,
+          126,
+          106
+        ]
+      },
+      "hint": "Think: 106 + 21 = 127.",
+      "explanation": "106 plus 21 makes 127.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 106,
+            "b": 21,
+            "sum": 127
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 106,
+            "b": 21,
+            "sum": 127
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step38_018",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 + 34 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 140,
+        "options": [
+          150,
+          140,
+          139,
+          106
+        ]
+      },
+      "hint": "Think: 106 + 34 = 140.",
+      "explanation": "106 plus 34 makes 140.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 106,
+            "b": 34,
+            "sum": 140
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 106,
+            "b": 34,
+            "sum": 140
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step38_019",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 + 45 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 151,
+        "options": [
+          161,
+          150,
+          151,
+          106
+        ]
+      },
+      "hint": "Think: 106 + 45 = 151.",
+      "explanation": "106 plus 45 makes 151.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 106,
+            "b": 45,
+            "sum": 151
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 106,
+            "b": 45,
+            "sum": 151
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step38_020",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 112,
+        "options": [
+          122,
+          111,
+          106,
+          112
+        ]
+      },
+      "hint": "Think: 106 + 6 = 112.",
+      "explanation": "106 plus 6 makes 112.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 106,
+            "b": 6,
+            "sum": 112
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 106,
+            "b": 6,
+            "sum": 112
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step38_021",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 + 17 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 123,
+        "options": [
+          123,
+          133,
+          122,
+          106
+        ]
+      },
+      "hint": "Think: 106 + 17 = 123.",
+      "explanation": "106 plus 17 makes 123.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 106,
+            "b": 17,
+            "sum": 123
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 106,
+            "b": 17,
+            "sum": 123
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step38_022",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 102,
+        "options": [
+          112,
+          102,
+          101,
+          106
+        ]
+      },
+      "hint": "Count back 4 from 106 to reach 102.",
+      "explanation": "106 take away 4 leaves 102.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 4,
+            "a": 106,
+            "diff": 102
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 106,
+            "gone": 4,
+            "left": 102
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step38_023",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 - 13 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 93,
+        "options": [
+          103,
+          92,
+          93,
+          106
+        ]
+      },
+      "hint": "Count back 13 from 106 to reach 93.",
+      "explanation": "106 take away 13 leaves 93.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 13,
+            "a": 106,
+            "diff": 93
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 106,
+            "gone": 13,
+            "left": 93
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step38_024",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 - 22 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 84,
+        "options": [
+          94,
+          83,
+          106,
+          84
+        ]
+      },
+      "hint": "Count back 22 from 106 to reach 84.",
+      "explanation": "106 take away 22 leaves 84.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 22,
+            "a": 106,
+            "diff": 84
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 106,
+            "gone": 22,
+            "left": 84
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step38_025",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 - 35 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 71,
+        "options": [
+          71,
+          81,
+          70,
+          106
+        ]
+      },
+      "hint": "Count back 35 from 106 to reach 71.",
+      "explanation": "106 take away 35 leaves 71.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 35,
+            "a": 106,
+            "diff": 71
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 106,
+            "gone": 35,
+            "left": 71
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step38_026",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 - 46 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 60,
+        "options": [
+          70,
+          60,
+          59,
+          106
+        ]
+      },
+      "hint": "Count back 46 from 106 to reach 60.",
+      "explanation": "106 take away 46 leaves 60.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 46,
+            "a": 106,
+            "diff": 60
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 106,
+            "gone": 46,
+            "left": 60
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step38_027",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 99,
+        "options": [
+          109,
+          98,
+          99,
+          106
+        ]
+      },
+      "hint": "Count back 7 from 106 to reach 99.",
+      "explanation": "106 take away 7 leaves 99.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 7,
+            "a": 106,
+            "diff": 99
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 106,
+            "gone": 7,
+            "left": 99
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step38_028",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "106 - 18 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 88,
+        "options": [
+          98,
+          87,
+          106,
+          88
+        ]
+      },
+      "hint": "Count back 18 from 106 to reach 88.",
+      "explanation": "106 take away 18 leaves 88.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 38,
+      "difficultyTraits": {
+        "maxOperand": 106,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 18,
+            "a": 106,
+            "diff": 88
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 106,
+            "gone": 18,
+            "left": 88
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step39_029",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 114,
+        "options": [
+          114,
+          124,
+          113,
+          111
+        ]
+      },
+      "hint": "Think: 111 + 3 = 114.",
+      "explanation": "111 plus 3 makes 114.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 111,
+            "b": 3,
+            "sum": 114
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 111,
+            "b": 3,
+            "sum": 114
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step39_030",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 + 12 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 123,
+        "options": [
+          133,
+          123,
+          122,
+          111
+        ]
+      },
+      "hint": "Think: 111 + 12 = 123.",
+      "explanation": "111 plus 12 makes 123.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 111,
+            "b": 12,
+            "sum": 123
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 111,
+            "b": 12,
+            "sum": 123
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step39_031",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 + 21 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 132,
+        "options": [
+          142,
+          131,
+          132,
+          111
+        ]
+      },
+      "hint": "Think: 111 + 21 = 132.",
+      "explanation": "111 plus 21 makes 132.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 111,
+            "b": 21,
+            "sum": 132
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 111,
+            "b": 21,
+            "sum": 132
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step39_032",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 + 34 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 145,
+        "options": [
+          155,
+          144,
+          111,
+          145
+        ]
+      },
+      "hint": "Think: 111 + 34 = 145.",
+      "explanation": "111 plus 34 makes 145.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 111,
+            "b": 34,
+            "sum": 145
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 111,
+            "b": 34,
+            "sum": 145
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step39_033",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 + 45 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 156,
+        "options": [
+          156,
+          166,
+          155,
+          111
+        ]
+      },
+      "hint": "Think: 111 + 45 = 156.",
+      "explanation": "111 plus 45 makes 156.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 111,
+            "b": 45,
+            "sum": 156
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 111,
+            "b": 45,
+            "sum": 156
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step39_034",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 117,
+        "options": [
+          127,
+          117,
+          116,
+          111
+        ]
+      },
+      "hint": "Think: 111 + 6 = 117.",
+      "explanation": "111 plus 6 makes 117.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 111,
+            "b": 6,
+            "sum": 117
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 111,
+            "b": 6,
+            "sum": 117
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step39_035",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 + 17 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 128,
+        "options": [
+          138,
+          127,
+          128,
+          111
+        ]
+      },
+      "hint": "Think: 111 + 17 = 128.",
+      "explanation": "111 plus 17 makes 128.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 111,
+            "b": 17,
+            "sum": 128
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 111,
+            "b": 17,
+            "sum": 128
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step39_036",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 107,
+        "options": [
+          117,
+          106,
+          111,
+          107
+        ]
+      },
+      "hint": "Count back 4 from 111 to reach 107.",
+      "explanation": "111 take away 4 leaves 107.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 4,
+            "a": 111,
+            "diff": 107
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 111,
+            "gone": 4,
+            "left": 107
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step39_037",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 - 13 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 98,
+        "options": [
+          98,
+          108,
+          97,
+          111
+        ]
+      },
+      "hint": "Count back 13 from 111 to reach 98.",
+      "explanation": "111 take away 13 leaves 98.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 13,
+            "a": 111,
+            "diff": 98
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 111,
+            "gone": 13,
+            "left": 98
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step39_038",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 - 22 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 89,
+        "options": [
+          99,
+          89,
+          88,
+          111
+        ]
+      },
+      "hint": "Count back 22 from 111 to reach 89.",
+      "explanation": "111 take away 22 leaves 89.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 22,
+            "a": 111,
+            "diff": 89
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 111,
+            "gone": 22,
+            "left": 89
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step39_039",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 - 35 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 76,
+        "options": [
+          86,
+          75,
+          76,
+          111
+        ]
+      },
+      "hint": "Count back 35 from 111 to reach 76.",
+      "explanation": "111 take away 35 leaves 76.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 35,
+            "a": 111,
+            "diff": 76
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 111,
+            "gone": 35,
+            "left": 76
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step39_040",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 - 46 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 65,
+        "options": [
+          75,
+          64,
+          111,
+          65
+        ]
+      },
+      "hint": "Count back 46 from 111 to reach 65.",
+      "explanation": "111 take away 46 leaves 65.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 46,
+            "a": 111,
+            "diff": 65
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 111,
+            "gone": 46,
+            "left": 65
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step39_041",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 104,
+        "options": [
+          104,
+          114,
+          103,
+          111
+        ]
+      },
+      "hint": "Count back 7 from 111 to reach 104.",
+      "explanation": "111 take away 7 leaves 104.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 7,
+            "a": 111,
+            "diff": 104
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 111,
+            "gone": 7,
+            "left": 104
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step39_042",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "111 - 18 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 93,
+        "options": [
+          103,
+          93,
+          92,
+          111
+        ]
+      },
+      "hint": "Count back 18 from 111 to reach 93.",
+      "explanation": "111 take away 18 leaves 93.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 39,
+      "difficultyTraits": {
+        "maxOperand": 111,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 18,
+            "a": 111,
+            "diff": 93
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 111,
+            "gone": 18,
+            "left": 93
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step40_043",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 + 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 119,
+        "options": [
+          129,
+          118,
+          119,
+          116
+        ]
+      },
+      "hint": "Think: 116 + 3 = 119.",
+      "explanation": "116 plus 3 makes 119.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 116,
+            "b": 3,
+            "sum": 119
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 116,
+            "b": 3,
+            "sum": 119
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step40_044",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 + 12 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 128,
+        "options": [
+          138,
+          127,
+          116,
+          128
+        ]
+      },
+      "hint": "Think: 116 + 12 = 128.",
+      "explanation": "116 plus 12 makes 128.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 116,
+            "b": 12,
+            "sum": 128
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 116,
+            "b": 12,
+            "sum": 128
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step40_045",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 + 21 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 137,
+        "options": [
+          137,
+          147,
+          136,
+          116
+        ]
+      },
+      "hint": "Think: 116 + 21 = 137.",
+      "explanation": "116 plus 21 makes 137.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 116,
+            "b": 21,
+            "sum": 137
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 116,
+            "b": 21,
+            "sum": 137
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step40_046",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 + 34 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 150,
+        "options": [
+          160,
+          150,
+          149,
+          116
+        ]
+      },
+      "hint": "Think: 116 + 34 = 150.",
+      "explanation": "116 plus 34 makes 150.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 116,
+            "b": 34,
+            "sum": 150
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 116,
+            "b": 34,
+            "sum": 150
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step40_047",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 + 45 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 161,
+        "options": [
+          171,
+          160,
+          161,
+          116
+        ]
+      },
+      "hint": "Think: 116 + 45 = 161.",
+      "explanation": "116 plus 45 makes 161.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 116,
+            "b": 45,
+            "sum": 161
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 116,
+            "b": 45,
+            "sum": 161
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step40_048",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 + 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 122,
+        "options": [
+          132,
+          121,
+          116,
+          122
+        ]
+      },
+      "hint": "Think: 116 + 6 = 122.",
+      "explanation": "116 plus 6 makes 122.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 116,
+            "b": 6,
+            "sum": 122
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 116,
+            "b": 6,
+            "sum": 122
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_add_step40_049",
+      "domain": "addition",
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 + 17 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 133,
+        "options": [
+          133,
+          143,
+          132,
+          116
+        ]
+      },
+      "hint": "Think: 116 + 17 = 133.",
+      "explanation": "116 plus 17 makes 133.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.think_sum",
+          "params": {
+            "a": 116,
+            "b": 17,
+            "sum": 133
+          }
+        },
+        "explanation": {
+          "key": "math.expl.add",
+          "params": {
+            "a": 116,
+            "b": 17,
+            "sum": 133
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step40_050",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 - 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 112,
+        "options": [
+          122,
+          112,
+          111,
+          116
+        ]
+      },
+      "hint": "Count back 4 from 116 to reach 112.",
+      "explanation": "116 take away 4 leaves 112.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 4,
+            "a": 116,
+            "diff": 112
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 116,
+            "gone": 4,
+            "left": 112
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step40_051",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 - 13 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 103,
+        "options": [
+          113,
+          102,
+          103,
+          116
+        ]
+      },
+      "hint": "Count back 13 from 116 to reach 103.",
+      "explanation": "116 take away 13 leaves 103.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 13,
+            "a": 116,
+            "diff": 103
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 116,
+            "gone": 13,
+            "left": 103
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step40_052",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 - 22 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 94,
+        "options": [
+          104,
+          93,
+          116,
+          94
+        ]
+      },
+      "hint": "Count back 22 from 116 to reach 94.",
+      "explanation": "116 take away 22 leaves 94.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 22,
+            "a": 116,
+            "diff": 94
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 116,
+            "gone": 22,
+            "left": 94
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step40_053",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 - 35 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 81,
+        "options": [
+          81,
+          91,
+          80,
+          116
+        ]
+      },
+      "hint": "Count back 35 from 116 to reach 81.",
+      "explanation": "116 take away 35 leaves 81.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 35,
+            "a": 116,
+            "diff": 81
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 116,
+            "gone": 35,
+            "left": 81
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step40_054",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 - 46 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 70,
+        "options": [
+          80,
+          70,
+          69,
+          116
+        ]
+      },
+      "hint": "Count back 46 from 116 to reach 70.",
+      "explanation": "116 take away 46 leaves 70.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresBorrow": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 46,
+            "a": 116,
+            "diff": 70
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 116,
+            "gone": 46,
+            "left": 70
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step40_055",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 - 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 109,
+        "options": [
+          119,
+          108,
+          109,
+          116
+        ]
+      },
+      "hint": "Count back 7 from 116 to reach 109.",
+      "explanation": "116 take away 7 leaves 109.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 7,
+            "a": 116,
+            "diff": 109
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 116,
+            "gone": 7,
+            "left": 109
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_sub_step40_056",
+      "domain": "subtraction",
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "difficulty": 3.4,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "116 - 18 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 98,
+        "options": [
+          108,
+          97,
+          116,
+          98
+        ]
+      },
+      "hint": "Count back 18 from 116 to reach 98.",
+      "explanation": "116 take away 18 leaves 98.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 40,
+      "difficultyTraits": {
+        "maxOperand": 116,
+        "requiresBorrow": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.count_back_reach",
+          "params": {
+            "b": 18,
+            "a": 116,
+            "diff": 98
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.taken",
+          "params": {
+            "start": 116,
+            "gone": 18,
+            "left": 98
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_div_step7_001",
+      "domain": "division",
+      "skills": [
+        "simple_division"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "0 ÷ 2 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          2,
+          1,
+          0
+        ]
+      },
+      "hint": "Share 0 into groups of 2.",
+      "explanation": "0 shared into 2 equal groups gives 0 each.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 2
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.share",
+          "params": {
+            "a": 0,
+            "b": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 0,
+            "b": 2,
+            "n": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_div_step7_002",
+      "domain": "division",
+      "skills": [
+        "simple_division"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "0 ÷ 3 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          3,
+          0,
+          1,
+          2
+        ]
+      },
+      "hint": "Share 0 into groups of 3.",
+      "explanation": "0 shared into 3 equal groups gives 0 each.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 3
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.share",
+          "params": {
+            "a": 0,
+            "b": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 0,
+            "b": 3,
+            "n": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_div_step7_003",
+      "domain": "division",
+      "skills": [
+        "simple_division"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "0 ÷ 4 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          4,
+          1,
+          0,
+          3
+        ]
+      },
+      "hint": "Share 0 into groups of 4.",
+      "explanation": "0 shared into 4 equal groups gives 0 each.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 4
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.share",
+          "params": {
+            "a": 0,
+            "b": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 0,
+            "b": 4,
+            "n": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_div_step7_004",
+      "domain": "division",
+      "skills": [
+        "simple_division"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "0 ÷ 5 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          5,
+          1,
+          4,
+          0
+        ]
+      },
+      "hint": "Share 0 into groups of 5.",
+      "explanation": "0 shared into 5 equal groups gives 0 each.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 5
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.share",
+          "params": {
+            "a": 0,
+            "b": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 0,
+            "b": 5,
+            "n": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_div_step7_005",
+      "domain": "division",
+      "skills": [
+        "simple_division"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "0 ÷ 6 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          0,
+          6,
+          1,
+          5
+        ]
+      },
+      "hint": "Share 0 into groups of 6.",
+      "explanation": "0 shared into 6 equal groups gives 0 each.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 6
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.share",
+          "params": {
+            "a": 0,
+            "b": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 0,
+            "b": 6,
+            "n": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_div_step7_006",
+      "domain": "division",
+      "skills": [
+        "simple_division"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "0 ÷ 7 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          7,
+          0,
+          1,
+          6
+        ]
+      },
+      "hint": "Share 0 into groups of 7.",
+      "explanation": "0 shared into 7 equal groups gives 0 each.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 7
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.share",
+          "params": {
+            "a": 0,
+            "b": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 0,
+            "b": 7,
+            "n": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_div_step7_007",
+      "domain": "division",
+      "skills": [
+        "simple_division"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "0 ÷ 8 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          8,
+          1,
+          0,
+          7
+        ]
+      },
+      "hint": "Share 0 into groups of 8.",
+      "explanation": "0 shared into 8 equal groups gives 0 each.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 8
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.share",
+          "params": {
+            "a": 0,
+            "b": 8
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 0,
+            "b": 8,
+            "n": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_div_step7_008",
+      "domain": "division",
+      "skills": [
+        "simple_division"
+      ],
+      "difficulty": 2.2,
+      "ageBand": [
+        7,
+        9
+      ],
+      "prompt": {
+        "text": "0 ÷ 9 = ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          9,
+          1,
+          8,
+          0
+        ]
+      },
+      "hint": "Share 0 into groups of 9.",
+      "explanation": "0 shared into 9 equal groups gives 0 each.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 9
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.share",
+          "params": {
+            "a": 0,
+            "b": 9
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 0,
+            "b": 9,
+            "n": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step0_001",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 1, 2, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          6,
+          2
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 3.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "1, 2, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step0_002",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 2, 3, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          5,
+          4,
+          7,
+          3
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 4.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "2, 3, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step0_003",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 3, 4, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          5,
+          8,
+          4
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 5.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "3, 4, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step0_004",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 0, 1, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          3,
+          2,
+          5,
+          1
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 2.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "0, 1, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step0_005",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 1, 2, 3, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          5,
+          4,
+          7,
+          3
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 4.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "1, 2, 3, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step0_006",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 2, 3, 4, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          5,
+          8,
+          4
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 5.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "2, 3, 4, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step0_007",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 0, 1, 2, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          6,
+          2
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 3.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 0,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "0, 1, 2, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step1_001",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 5, 6, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          8,
+          7,
+          10,
+          6
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 7.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "5, 6, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step1_002",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 6, 7, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          9,
+          8,
+          11,
+          7
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 8.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "6, 7, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step1_003",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 7, 8, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          10,
+          9,
+          12,
+          8
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 9.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "7, 8, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 9
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step1_004",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 8, 9, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          11,
+          10,
+          13,
+          9
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 10.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "8, 9, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 10
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step1_005",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 4, 5, 6, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          8,
+          7,
+          10,
+          6
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 7.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "4, 5, 6, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step1_006",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 5, 6, 7, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          9,
+          8,
+          11,
+          7
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 8.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "5, 6, 7, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step3_001",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 9, 11, 13, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 15,
+        "options": [
+          17,
+          15,
+          14,
+          13
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 15.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "9, 11, 13, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 15
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step3_002",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 7, 9, 11, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 13,
+        "options": [
+          15,
+          13,
+          12,
+          11
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 13.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "7, 9, 11, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 13
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step3_003",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 8, 10, 12, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 14,
+        "options": [
+          16,
+          14,
+          13,
+          12
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 14.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "8, 10, 12, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 14
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step3_004",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 10, 12, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 14,
+        "options": [
+          16,
+          14,
+          13,
+          12
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 14.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "10, 12, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 14
+          }
+        }
+      }
+    },
+    {
+      "id": "gap_seq_step3_005",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 11, 13, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 15,
+        "options": [
+          17,
+          15,
+          14,
+          13
+        ]
+      },
+      "hint": "Look at how the numbers are changing each time.",
+      "explanation": "The pattern keeps going to 15.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "11, 13, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.changing",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 15
+          }
+        }
+      }
     }
   ]
 }

@@ -85,13 +85,13 @@ Game:
   `strings_is.json`
 - **20** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
-Maths content — `DataManager` loads 4 math pools totaling 3917 problems:
+Maths content — `DataManager` loads 4 math pools totaling 3999 problems:
 - `curriculum`: 3736
-- `gaps`: 126
+- `gaps`: 208
 - `dataset`: 40
 - `easy`: 15
 
-Those 3917 problems are grouped into **40** concepts by
+Those 3999 problems are grouped into **40** concepts by
 `godot/data/curriculum/concept_ladder.json` — **34** rungs keyed on step range
 plus **6** overlays keyed on problem shape — of which **38** open with a
 **4**-card lesson from `godot/data/curriculum/tutorials.json`: **38** lessons,

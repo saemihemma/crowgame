@@ -6,74 +6,7 @@
   "gapPolicy": {
     "minPerStep": 6
   },
-  "knownGaps": [
-    {
-      "domain": "addition",
-      "steps": [
-        20
-      ],
-      "why": "STRUCTURALLY IMPOSSIBLE, not unauthored. No fact whose operands and result stay inside twenty derives onto step 20 at all: the rung needs maxOperand 20 WITH a carry, and 20's ones digit is zero, so no second addend can carry into it. Harmless because promotion scans ahead for a rung with content and lands on 21 - asserted by test_concept_ladder.gd::test_promotion_can_step_over_every_impossible_rung. Closing it would mean changing the step derivation, not authoring problems."
-    },
-    {
-      "domain": "addition",
-      "steps": [
-        37,
-        38,
-        39,
-        40
-      ],
-      "why": "The gap between two-digit and multi-digit addition. Step 21 upward is magnitude-derived (21 + floor((maxOperand-21)/5)), so these four rungs are operands 101-120 - three-digit sums below 121 - and the multi-digit batches start at 121. Out of the owl path either way, since the operand cap is 20."
-    },
-    {
-      "domain": "subtraction",
-      "steps": [
-        17,
-        18,
-        19,
-        20
-      ],
-      "why": "STRUCTURALLY IMPOSSIBLE, not unauthored - the same finding as addition step 20, four rungs wide. Zero facts with operands and result inside twenty derive onto steps 17-20; everything that would reach them needs operands above 20, which the owl's cap drops anyway. Promotion steps from 16 straight to 21, well inside promotionStepScanLimit, and a test asserts it. This was previously recorded as authoring debt. It is not."
-    },
-    {
-      "domain": "subtraction",
-      "steps": [
-        37,
-        38,
-        39,
-        40
-      ],
-      "why": "The same magnitude gap as addition, for the same reason: the multi-digit batches begin above operand 120 and nothing fills 101-120."
-    },
-    {
-      "domain": "number_sequence",
-      "steps": [
-        0
-      ],
-      "why": "The ladder's own first rung. Sequences start at step 1, so the gentlest possible sequence - counting on from a single number - has never been authored."
-    },
-    {
-      "domain": "multiplication",
-      "steps": [
-        11
-      ],
-      "why": "One rung inside the tables, skipped by the batch bands. The neighbours are dense (steps 10 and 12 both hold problems), so a promotion through 11 lands on content; it is a hole in the inventory rather than in a child's path."
-    },
-    {
-      "domain": "division",
-      "steps": [
-        0
-      ],
-      "why": "Division's first rung. Sharing into a single group is trivially true and arguably not worth authoring, but nothing has decided that on purpose."
-    },
-    {
-      "domain": "division",
-      "steps": [
-        7,
-        12
-      ],
-      "why": "Two rungs the batch bands step over. Both have dense neighbours, so like multiplication step 11 these are inventory holes rather than breaks in a child's progression."
-    }
-  ],
+  "knownGaps": [],
   "_unreachableComment": "A concept every one of whose problems the owl filters out. The cap that does it is `maxOperand` in godot/scripts/entities/npc/math_challenge_component.gd, and tools/validate_math_concepts.mjs reads it from there rather than restating it: raise the cap and these entries must be deleted, lower it and new ones must be added. Distinct from knownGaps, which is about whether problems were WRITTEN. These were written, and are unservable.",
   "knownUnreachable": [
     {
@@ -122,14 +55,6 @@
         15
       ],
       "why": "Three facts exist and three is the ceiling: 20-0, 20-10 and 20-20 are the only subtractions inside twenty that derive onto step 15. One is authored. Structurally thin rather than under-authored."
-    },
-    {
-      "domain": "number_sequence",
-      "steps": [
-        1,
-        3
-      ],
-      "why": "Two problems each. The first +1 and first +2 sequences are the two thinnest rungs a child actually meets."
     }
   ],
   "concepts": [

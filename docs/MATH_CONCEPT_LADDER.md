@@ -389,33 +389,50 @@ build on an **undeclared** empty or thin rung — and equally on a declared one
 that has since been filled. A gap can only be closed by deleting its entry, and
 a new one can never appear quietly.
 
-Every gap and every unreachable concept below is quoted from its declaration in
-`concept_ladder.json`. `tools/validate_math_concepts.mjs` checks that this
-document carries each reason, so the two cannot drift apart.
+**There are no unauthored rungs left.** Every step the derivation can reach has
+at least six problems on it. What remains below is two other things entirely,
+and the difference decides what a fix would even be.
 
-Note the distinction the list draws, because it changes what the fix is: some
-rungs are **unauthored** and can be filled by writing problems, and some are
-**structurally impossible** — no fact inside the age band derives onto them, so
-only changing the step derivation would close them. The second kind is harmless,
-and a test rather than an assertion says so.
+### Dead zones: rungs nothing can land on
 
-**Rungs with no problems authored on them**
+A **dead zone** is a step no input produces. It is not authoring debt and no
+amount of writing problems closes it — only changing the step derivation would.
+`npm run math:step-domains` brute-forces every derivation over both a dense
+synthetic sweep and every authored prompt, and writes the answer to
+`reports/math-concepts/emittable-steps.json`. The guard reads that file, skips
+these steps in its gap sweep, and **fails if anyone declares one as a gap**.
 
-- **`addition` step 20.** STRUCTURALLY IMPOSSIBLE, not unauthored. No fact whose operands and result stay inside twenty derives onto step 20 at all: the rung needs maxOperand 20 WITH a carry, and 20's ones digit is zero, so no second addend can carry into it. Harmless because promotion scans ahead for a rung with content and lands on 21 - asserted by test_concept_ladder.gd::test_promotion_can_step_over_every_impossible_rung. Closing it would mean changing the step derivation, not authoring problems.
-- **`addition` steps 37, 38, 39, 40.** The gap between two-digit and multi-digit addition. Step 21 upward is magnitude-derived (21 + floor((maxOperand-21)/5)), so these four rungs are operands 101-120 - three-digit sums below 121 - and the multi-digit batches start at 121. Out of the owl path either way, since the operand cap is 20.
-- **`subtraction` steps 17, 18, 19, 20.** STRUCTURALLY IMPOSSIBLE, not unauthored - the same finding as addition step 20, four rungs wide. Zero facts with operands and result inside twenty derive onto steps 17-20; everything that would reach them needs operands above 20, which the owl's cap drops anyway. Promotion steps from 16 straight to 21, well inside promotionStepScanLimit, and a test asserts it. This was previously recorded as authoring debt. It is not.
-- **`subtraction` steps 37, 38, 39, 40.** The same magnitude gap as addition, for the same reason: the multi-digit batches begin above operand 120 and nothing fills 101-120.
-- **`number_sequence` step 0.** The ladder's own first rung. Sequences start at step 1, so the gentlest possible sequence - counting on from a single number - has never been authored.
-- **`multiplication` step 11.** One rung inside the tables, skipped by the batch bands. The neighbours are dense (steps 10 and 12 both hold problems), so a promotion through 11 lands on content; it is a hole in the inventory rather than in a child's path.
-- **`division` step 0.** Division's first rung. Sharing into a single group is trivially true and arguably not worth authoring, but nothing has decided that on purpose.
-- **`division` steps 7, 12.** Two rungs the batch bands step over. Both have dense neighbours, so like multiplication step 11 these are inventory holes rather than breaks in a child's progression.
+The report is hashed against the derivation, the pools, *and its own payload*, so
+it cannot quietly rot into an excuse for a real hole. Both halves of that are
+load-bearing: hashing only the inputs let a hand-edited `unreachable` list
+through, which a negative test caught.
+
+| Domain | Dead steps | Why nothing lands there |
+| --- | --- | --- |
+| `addition` | 20 | Inside twenty the rung is `(maxOperand - 1) + carry`, so step 20 needs maxOperand 20 **with** a carry. 20's ones digit is zero, so no second addend can carry into it. |
+| `subtraction` | 17, 18, 19, 20 | Inside twenty the rung is `(maxOperand - 5) + borrow`, which tops out at 16. The next magnitude band starts at 21. Four rungs wide, and nothing can reach them. |
+| `multiplication` | 11 | Rank 11 is the ×9 table, and it is only ever the *minimum* rank when both operands are 9 — but 9 × 9 is a square, caught by the earlier squares branch at step 7. |
+| `division` | 0, 12 | A division fact sits one step after the multiplication it inverts, clamped to 1..15: 0 is below the clamp, and 12 is 11 + 1, inheriting multiplication's dead rung. |
+
+None of this hurts a child: promotion scans ahead for a rung with content, and
+`test_concept_ladder.gd::test_promotion_can_step_over_every_impossible_rung`
+asserts it steps over every one of them.
+
+Five of these eight were previously written down as *missing content*, which sent
+me hunting for problems that could not exist. `number_sequence` step 0 was
+written down the same way and was the opposite error — it is perfectly
+authorable (`1, 2, ?`), and an early version of the prober called it dead only
+because it swept four-term sequences exclusively, when sequence *length* is one
+of the step's own inputs. It is authored now. Measure, do not argue.
 
 **Rungs with fewer than six problems**
+
+Each of these is thin because the mathematics is thin, not because nobody wrote
+enough:
 
 - **`addition` step 0.** Five problems: 0+1, 1+0, 1+1 and their wordings. The set of true facts with both operands at most one is genuinely almost this small.
 - **`subtraction` step 2.** Five problems. Narrow but serviceable.
 - **`subtraction` step 15.** Three facts exist and three is the ceiling: 20-0, 20-10 and 20-20 are the only subtractions inside twenty that derive onto step 15. One is authored. Structurally thin rather than under-authored.
-- **`number_sequence` steps 1, 3.** Two problems each. The first +1 and first +2 sequences are the two thinnest rungs a child actually meets.
 
 **Concepts no child can currently be served**
 
@@ -472,5 +489,7 @@ work is the thing that predicts later success with growing patterns rather than 
 lesser version of it.
 ([Papic, Mulligan & Mitchelmore](https://researchers.mq.edu.au/en/publications/assessing-the-development-of-preschoolers-mathematical-patterning/))
 
-Authoring against these gaps is [MATH_AUTHORING_PIPELINE.md](./MATH_AUTHORING_PIPELINE.md);
-`roadmap.md` carries them as open work.
+Authoring is [MATH_AUTHORING_PIPELINE.md](./MATH_AUTHORING_PIPELINE.md). Nothing
+in this section is open work any more: the rungs are full, the dead zones are
+measured and stepped over, and the thin ones are as full as the arithmetic
+allows.

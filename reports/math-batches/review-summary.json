@@ -8,14 +8,14 @@
   "acceptedBatchCount": 28,
   "averageAcceptedGrade": 9.84,
   "domainTotals": {
-    "addition": 1198,
-    "subtraction": 1168,
+    "addition": 1226,
+    "subtraction": 1196,
     "multiplication": 588,
-    "division": 383,
+    "division": 391,
     "counting": 125,
     "comparison": 165,
     "pattern_matching": 125,
-    "number_sequence": 165
+    "number_sequence": 183
   },
   "owlSurface": {
     "domains": [
@@ -32,18 +32,18 @@
       "addition",
       "counting"
     ],
-    "owlEligibleProblemCount": 1889,
-    "owlEligibleUniquePromptCount": 1889,
-    "owlEligibleUniqueFactCount": 741,
+    "owlEligibleProblemCount": 1915,
+    "owlEligibleUniquePromptCount": 1915,
+    "owlEligibleUniqueFactCount": 767,
     "domainCounts": {
       "addition": 496,
       "counting": 125,
       "pattern_matching": 125,
       "subtraction": 544,
       "comparison": 125,
-      "number_sequence": 125,
+      "number_sequence": 143,
       "multiplication": 217,
-      "division": 132
+      "division": 140
     },
     "openingUnlockedInventoryProblemCount": 621,
     "openingUnlockedInventoryUniquePromptCount": 621,
@@ -3332,20 +3332,20 @@
       "recentWindowFallbackPreserved": true,
       "uninitializedFallbackPreserved": true,
       "currentStepFallbackPreserved": true,
-      "maxOperandSeen": 19,
+      "maxOperandSeen": 20,
       "maxCurriculumStepSeen": 19,
       "followUpSelections": 0,
       "alternateFollowUpSelections": 0,
       "followUpAlternateRate": 1,
       "steadyFirstSubtractionUnlockAttempt": 29,
-      "strugglingFirstSubtractionUnlockAttempt": -1,
-      "depthProbeFirstSubtractionUnlockAttempt": 24,
+      "strugglingFirstSubtractionUnlockAttempt": 47,
+      "depthProbeFirstSubtractionUnlockAttempt": 27,
       "steadyFirstSubtractionSelectionAttempt": -1,
       "strugglingFirstSubtractionSelectionAttempt": -1,
-      "depthProbeFirstSubtractionSelectionAttempt": 27,
-      "owlEligibleProblemCount": 1889,
-      "owlEligibleUniquePromptCount": 1889,
-      "owlEligibleUniqueFactCount": 741,
+      "depthProbeFirstSubtractionSelectionAttempt": 95,
+      "owlEligibleProblemCount": 1915,
+      "owlEligibleUniquePromptCount": 1915,
+      "owlEligibleUniqueFactCount": 767,
       "openingUnlockedInventoryProblemCount": 621,
       "openingUnlockedInventoryUniquePromptCount": 621,
       "openingUnlockedInventoryUniqueFactCount": 179,
@@ -3385,7 +3385,7 @@
     "caveats": [
       "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
       "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1889 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1915 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
     ]
   }
 }

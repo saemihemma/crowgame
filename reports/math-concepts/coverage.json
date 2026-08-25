@@ -1,7 +1,7 @@
 {
   "generatedBy": "tools/validate_math_concepts.mjs",
   "minPerStep": 6,
-  "totalProblems": 3917,
+  "totalProblems": 3999,
   "concepts": [
     {
       "id": "addition.count_all",
@@ -336,30 +336,25 @@
         46
       ],
       "tutorial": null,
-      "total": 150,
-      "empty": [
-        37,
-        38,
-        39,
-        40
-      ],
+      "total": 178,
+      "empty": [],
       "thin": [],
       "perStep": [
         {
           "step": 37,
-          "problems": 0
+          "problems": 7
         },
         {
           "step": 38,
-          "problems": 0
+          "problems": 7
         },
         {
           "step": 39,
-          "problems": 0
+          "problems": 7
         },
         {
           "step": 40,
-          "problems": 0
+          "problems": 7
         },
         {
           "step": 41,
@@ -1066,30 +1061,25 @@
         46
       ],
       "tutorial": null,
-      "total": 150,
-      "empty": [
-        37,
-        38,
-        39,
-        40
-      ],
+      "total": 178,
+      "empty": [],
       "thin": [],
       "perStep": [
         {
           "step": 37,
-          "problems": 0
+          "problems": 7
         },
         {
           "step": 38,
-          "problems": 0
+          "problems": 7
         },
         {
           "step": 39,
-          "problems": 0
+          "problems": 7
         },
         {
           "step": 40,
-          "problems": 0
+          "problems": 7
         },
         {
           "step": 41,
@@ -1435,21 +1425,17 @@
         2
       ],
       "tutorial": "number_sequence.one_more",
-      "total": 13,
-      "empty": [
-        0
-      ],
-      "thin": [
-        1
-      ],
+      "total": 26,
+      "empty": [],
+      "thin": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 0
+          "problems": 7
         },
         {
           "step": 1,
-          "problems": 2
+          "problems": 8
         },
         {
           "step": 2,
@@ -1464,7 +1450,7 @@
         "number_ordering",
         "simple_sequences"
       ],
-      "servable": 13
+      "servable": 26
     },
     {
       "id": "number_sequence.skip_two",
@@ -1475,15 +1461,13 @@
         4
       ],
       "tutorial": "number_sequence.skip_two",
-      "total": 21,
+      "total": 26,
       "empty": [],
-      "thin": [
-        3
-      ],
+      "thin": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 2
+          "problems": 7
         },
         {
           "step": 4,
@@ -1496,7 +1480,7 @@
       "skillsDeclared": [
         "number_ordering"
       ],
-      "servable": 21
+      "servable": 26
     },
     {
       "id": "number_sequence.bigger_jumps",
@@ -1705,10 +1689,9 @@
         8
       ],
       "tutorial": "division.sharing",
-      "total": 268,
+      "total": 276,
       "empty": [
-        0,
-        7
+        0
       ],
       "thin": [],
       "perStep": [
@@ -1742,7 +1725,7 @@
         },
         {
           "step": 7,
-          "problems": 0
+          "problems": 8
         },
         {
           "step": 8,
@@ -1757,7 +1740,7 @@
         "division_word_problems",
         "simple_division"
       ],
-      "servable": 268
+      "servable": 276
     },
     {
       "id": "division.tables",

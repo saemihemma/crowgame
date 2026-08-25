@@ -1,0 +1,218 @@
+{
+  "generatedBy": "tools/gen_step_domains.ts",
+  "note": "A step in `unreachable` is one the derivation cannot produce for any input. It is not a content gap and cannot be filled by authoring.",
+  "inputsHash": "333d2c2c47ca09a63c93ab153f1fef8bd62e2b89a0a7d6011d25eccff88632cb",
+  "domains": {
+    "addition": {
+      "emittable": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "unreachable": [
+        20
+      ]
+    },
+    "subtraction": {
+      "emittable": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "unreachable": [
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    "multiplication": {
+      "emittable": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        12,
+        13,
+        14
+      ],
+      "unreachable": [
+        11
+      ]
+    },
+    "division": {
+      "emittable": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        13,
+        14,
+        15
+      ],
+      "unreachable": [
+        0,
+        12
+      ]
+    },
+    "counting": {
+      "emittable": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+      ],
+      "unreachable": []
+    },
+    "comparison": {
+      "emittable": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "unreachable": []
+    },
+    "pattern_matching": {
+      "emittable": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "unreachable": []
+    },
+    "number_sequence": {
+      "emittable": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "unreachable": []
+    }
+  }
+}
