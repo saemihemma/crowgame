@@ -42,30 +42,73 @@ there.
 
 ## P1 — Correctness and reachability
 
-### `=` is a relation for addition within ten, and nowhere else
-`addition.balance` teaches it and eight problems write the whole first
-(`8 = 5 + ?`). Three things are still missing. Subtraction has no relational
-form at all. No relational problem exceeds a total of ten, so the idea never
-scales with the child. And the form Falkner, Levi and Carpenter actually tested
--- `4 + 5 = ? + 6`, an operation on BOTH sides, the most diagnostic shape -- is
-refused by name in `isUnrecognisedEquation` (tools/math_verifier.ts) because the
-generic scan reads `4 + 3 = ? + 5` as `{4,+,3}` and reports 7 when the answer is
-2. Teaching `parseRelationalPrompt` that shape is the prerequisite for
-authoring it.
+### Two-sided equations are refused by the verifier, so the hardest form cannot be authored
+`4 + 5 = ? + 6` -- an operation on BOTH sides -- is the shape Falkner, Levi and
+Carpenter actually tested, and the most diagnostic one: a child reading `=` as
+"compute" answers 9, and there is no other question that separates the two
+readings so cleanly. It is the one relational form still absent.
 
-*Done when:* two-sided equations parse and verify, and subtraction has at least
-one relational concept.
+It is absent because it cannot currently be verified, not because nobody wrote
+it. `parseArithmeticPromptIndependent` in `tools/math_verifier.ts` is a
+first-match scan: on `4 + 3 = ? + 5` it returns `{4,+,3}` and reports the answer
+as 7 when it is 2. `isUnrecognisedEquation` therefore refuses the shape by name,
+and `validate-content` fails any problem carrying it, deliberately — refusing is
+safe, mis-verifying is not.
 
-### Missing addend stops at a total of ten, and never reaches subtraction
-`addition.missing_part` covers `a + ? = c` and `? + b = c` over twelve problems,
-all totalling ten or less. Start-unknown within twenty is unauthored, and
-subtraction is result-unknown throughout -- so Separate Change Unknown and
-Compare Difference Unknown, the mid and upper CGI tiers, have no content.
-`relationalTraits` already derives `maxOperand` from the total, so widening the
-range needs no new machinery, only problems.
+The work, in order: extend `parseRelationalPrompt` with a two-sided shape
+(`a + b = ? + d`, unknown `a + b - d`); confirm `relationalTraits` reports
+`maxOperand` as the larger side's total; drop the shape out of
+`isUnrecognisedEquation` only once it parses. Then author into
+`problems_gaps.json` and give `addition.balance` a card that shows it —
+`tutorial_visual.gd`'s `equation` renderer has no two-sided form yet either.
 
-*Done when:* relational addition reaches totals up to twenty, and subtraction has
-a missing-part shape.
+Watch the replay key: `problem_replay_key.gd::_parse_arithmetic` matches
+`4 + 3` inside `4 + 3 = ? + 5` and would key it as the ordinary fact `3 + 4`,
+so a two-sided problem would suppress, and be suppressed by, plain addition on
+the same numbers. That may be correct — it is arguably the same fact asked
+differently — but decide it deliberately rather than discovering it. Changing
+that file means regenerating the parity-locked `replayKeys` fixture.
+
+*Done when:* a two-sided equation parses, verifies, is authored, and has a card
+teaching it.
+
+### No relational problem exceeds a total of ten
+`addition.missing_part` and `addition.balance` cover twelve and eight problems
+respectively, every one totalling ten or less, so the idea never scales with the
+child. A learner past `addition.make_ten` meets no relational form again.
+
+This is the cheapest of the three and needs no new machinery:
+`relationalTraits` already derives `maxOperand` from the total, so a total of 18
+correctly reports 18 and the owl's cap of 20 admits it. Add totals 11-20 to the
+`SPEC` list, run `npm run math:sync-metadata` to stamp step and traits, and
+widen the two overlays' declared spans in `concept_ladder.json` — the guard
+fails if a problem sits outside the span its overlay declares.
+
+Start-unknown (`? + b = c`) is the harder CGI tier and is the one to weight
+toward, not `a + ? = c`.
+
+*Done when:* both overlays hold problems with totals above ten and their
+declared spans match.
+
+### Subtraction has nothing relational and nothing missing-part
+Every subtraction problem in the pools is result-unknown (`a - b = ?`). That
+leaves Separate Change Unknown (`8 - ? = 3`) and Compare Difference Unknown —
+the mid and upper CGI tiers — with no content at all, and it means the relational
+reading of `=` is taught for one operation and then silently dropped for the
+other.
+
+The mechanism exists and does not need designing: add overlays to `subtraction`
+with `requires: {"skill": ...}` exactly as addition has, author the problems, and
+write the lessons. `parseRelationalPrompt` is addition-only today — its three
+patterns hardcode `+` — so subtraction shapes need adding there first, and
+`deriveCurriculumStep` should route them through `deriveSubtractionStep` the way
+the addition ones route through `deriveAdditionStep`.
+
+Do this AFTER the totals above, not before: the same authoring pass can cover
+both, and doing subtraction first means writing the parser twice.
+
+*Done when:* subtraction has at least one overlay with a lesson and authored
+problems that verify.
 
 ### Fill the four-rung subtraction hole, steps 17-20
 `godot/data/curriculum/concept_ladder.json` declares it, and
