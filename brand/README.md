@@ -1,7 +1,7 @@
 # Hörmann — brand and art direction
 
 Status: Supportive
-Authority: Index for the brand artifacts in this folder. Brand law is in `BRAND_SYSTEM.md`; runtime truth is in `src/**` and `public/data/**`.
+Authority: Index for the brand artifacts in this folder. Brand law is in `BRAND_SYSTEM.md`; runtime truth is in `godot/**`.
 Last verified against code: 2026-08-24
 
 | File | What it owns |
@@ -27,7 +27,7 @@ If two documents disagree, `BRAND_SYSTEM.md` wins.
 ## Status of this work
 
 **The five world themes are live.** The token files are copied into
-`public/data/themes/`, registered in `BootScene`, and selected per level from
+`godot/data/themes/`, registered in `ThemeManager.THEME_KEYS`, and selected per level from
 `level_registry.json`. The sky gradient, maths board, dialogue, HUD tint and FX
 colours all come from the active world.
 
