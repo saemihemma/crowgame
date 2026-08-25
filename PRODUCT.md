@@ -3,7 +3,6 @@
 Status: Current
 Authority: Product intent, audience, and design direction. Runtime truth lives in
 the code; the system reference is [ARCHITECTURE.md](./ARCHITECTURE.md).
-Last verified against code: 2026-08-25
 
 ## What this is
 
@@ -33,8 +32,10 @@ adjustment, explicit review after misses, and stability-based unlocks rather tha
 lucky streaks. The mechanics that implement it are in
 [ARCHITECTURE.md](./ARCHITECTURE.md#the-math-system).
 
-The target is roughly **70–85%** first-attempt accuracy: high enough to feel like
-winning, low enough that the problems are still doing work.
+The band we are aiming at is "mostly winning, but still working" — high enough
+that a child feels successful, low enough that the questions are not free. The
+number that expresses it is a tuning target, not a product promise, and it lives
+with the tuning work in `roadmap.md`.
 
 ## The intended loop
 
@@ -43,6 +44,11 @@ winning, low enough that the problems are still doing work.
 3. Meet an owl.
 4. Answer a small, high-confidence question set.
 5. Return to movement with clear feedback and visible progress.
+
+An owl encounter is deliberately short — as shipped, one question. The length is
+per-owl in the registry rather than global, so a later gated owl can ask more
+without changing the loop for every other one. A fresh profile opens on addition
+and counting; other domains join through the normal unlock rules.
 
 Desired feel: friendly, readable on small screens, rewarding without being noisy,
 playful rather than school-like.
@@ -71,22 +77,11 @@ win records, a miss records nothing at all.
 is celebrated; a step-down is never signalled. The child should never be told
 they got worse.
 
-**Nothing is tied to time, and the streak cannot be lost.** There is no timer, no
-daily streak, no decay, and nothing expires while the game is closed. Golden
-problems are a seeded coin flip on the save state, not a pressure mechanic.
-
-There *is* an in-level streak, and this section used to deny it: it read "nothing
-is tied to time or streaks", generalising a true statement about golden problems
-into a product-wide commitment while a streak counter, a HUD flame at 3 and an
-"ON FIRE" state at 5 all shipped. The reason the commitment survives in substance
-is the rule in `game.gd`: **a wrong answer pauses the streak, it never resets
-it.** The flame dims to 40% and relights on the next correct answer; only leaving
-the level clears the count. So the thing a child could feel anxious about
-protecting is the one thing they cannot lose by getting a question wrong, which is
-the moment this product cannot afford to punish.
-
-Whether an unloseable streak should exist at all is an open design question, not a
-settled one — see `roadmap.md`.
+**No pressure mechanics.** No timer, no daily streak, no decay, nothing that
+expires while the game is closed. There is an in-level streak, and the rule that
+makes it safe is that **a wrong answer pauses it and never resets it** — the one
+thing a child might want to protect is the one thing a wrong answer cannot take
+away. Whether it should exist at all is open; see `roadmap.md`.
 
 **The 4-digit PIN is a "which kid am I" selector, not security.** It is never
 sent anywhere. See [PRIVACY.md](./PRIVACY.md).
@@ -97,30 +92,19 @@ anything.
 
 ## Progression
 
-**Worlds unlock strictly one at a time, in order.** A fresh save offers the
-Practice Arena and Emberwood Run; each of the four worlds after that unlocks when
-the one before it is completed. `unlockRequirement` in
-`godot/data/levels/level_registry.json` is the runtime expression of this, and
+**Worlds unlock one at a time, in order.** `unlockRequirement` in
+`godot/data/levels/level_registry.json` is the runtime expression of it, and
 `godot/tests/test_registries.gd` fails if the chain breaks.
 
-The reason is the maths, not the platforming. Each world's `mathGating` names the
-skills it teaches and the band it teaches them in, and the bands step upward:
-Emberwood is counting and addition at band 1–2, Aurora Spire is everything
-together at 2–5. Letting a child pick the fifth world first hands them
-subtraction before they have met addition — the one thing the curriculum ladder
-exists to prevent.
+**The reason is the maths, not the platforming.** Each world's `mathGating` names
+the skills it teaches and the band it teaches them in, and the bands step upward.
+Letting a child pick a late world first would hand them subtraction before they
+had met addition — the one thing the curriculum ladder exists to prevent. That is
+why the order is not a player choice.
 
-The Practice Arena sits outside the chain deliberately. It is always open, holds
-the whole owl roster at every chain length, and is where a child goes to drill
-rather than to progress.
-
-## Current surface
-
-A playable prototype with profile-based child login, a progression chain through
-the level registry, owl-driven maths interactions, adaptive learner state per
-child, an in-engine parent report (per-child curriculum step, first-attempt
-accuracy, review load), and optional cloud save so progress follows a child
-between devices.
+**The practice arena sits outside the chain deliberately.** It is always open and
+holds the whole owl roster, and it is where a child goes to drill rather than to
+progress.
 
 ## Open product questions
 

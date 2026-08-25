@@ -4,7 +4,6 @@ Status: Supportive
 Authority: Written for parents. The behaviour it describes is implemented in
 `godot/scripts/**` and `server/**`; if they ever disagree, the code is what runs
 and this page is a bug.
-Last verified against code: 2026-08-25
 
 Hörmann is a maths game for young children. This page says, in plain terms, what it
 stores, what leaves your device, and how to delete all of it.
@@ -40,9 +39,7 @@ Whether or not you use cloud save, the game keeps this on the device:
 
 **About that PIN: it is not a password, but it is checked.** It exists so two
 children sharing one iPad can each find their own progress. The game does compare
-what is typed against what was set, and answers a wrong one on screen — this page
-said "the game does not check it against anything", which was simply false, and
-`SECURITY.md` had it right all along.
+what is typed against what was set, and answers a wrong one on screen.
 
 What makes it not a password is everything else about it. It never leaves the
 device and no server ever sees it. It is stored with a scramble that is reversible
@@ -89,18 +86,13 @@ What the report does carry is text the *game* produced about its own failure: th
 error message, where in the code it came from, and a developer stack trace, all
 described below.
 
-(This paragraph said "no free text" until a review pointed out that the same page
-describes "your child's chosen display name" two sections up. The claim worth
-making is the narrow one, and it is the one the code actually enforces.)
-
 Those full reports are kept for 30 days and then deleted automatically, by
 dropping each day's table whole. What is kept longer is one entry per distinct
 bug: how many times it happened, the error message and where in the code it came
 from, the build it happened on, and one saved example of the coarse device facts
 above with the developer stack trace. That is what makes a bug fixable months
 later. It is not a per-child or per-family record and it is not tied to your
-email, but it is more than a count, and the previous version of this page said it
-was only a count.
+email — but it is more than a count.
 
 ## What we never collect
 
@@ -127,9 +119,7 @@ every web server receives them on every request. Where they are kept:
 - **On each device you sign in** — the user-agent line only, stored against the
   device so the device list can say "Safari on iPad" rather than an opaque id.
   There is no timer on this one: it lives as long as the device does, and is
-  deleted when you remove the device or delete the family. An earlier version of
-  this page said the user-agent was kept "on the error reports only", which was
-  wrong.
+  deleted when you remove the device or delete the family.
 
 ## Keeping families apart
 

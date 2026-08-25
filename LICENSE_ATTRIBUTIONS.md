@@ -2,7 +2,6 @@
 
 Status: Supportive
 Authority: Licensing and provenance reference only. Runtime truth still lives in manifests, `godot/scripts/**`, and referenced assets under `godot/assets/**`. Code and data are Apache-2.0 (see `NOTICE`); the assets described here are not.
-Last verified against code: 2026-08-25
 
 ## Purpose
 

@@ -2,7 +2,6 @@
 
 Status: Supportive
 Authority: Per-world art direction. Brand law lives in `brand/BRAND_SYSTEM.md`; runtime truth lives in `godot/**`.
-Last verified against code: 2026-08-25
 
 Five worlds. Companion to [BRAND_SYSTEM.md](./BRAND_SYSTEM.md), which owns
 everything that does **not** change per world. Tokens in `godot/data/themes/`.

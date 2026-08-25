@@ -2,7 +2,6 @@
 
 Status: Supportive
 Authority: How to run the API test suite and why it is shaped this way.
-Last verified against code: 2026-08-25
 
 Run against a real Postgres:
 

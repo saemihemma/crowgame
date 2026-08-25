@@ -159,28 +159,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      # FULL history, blobs filtered.
+      # A shallow checkout is fine here now. This was `fetch-depth: 0` because the
+      # validator dated a `Last verified against code:` stamp on every doc against
+      # git history, so it needed the history. That gate is gone — it asserted a
+      # doc had been edited recently, which git answers better, and bumping the
+      # stamp in the same commit always satisfied it. Nothing left in
+      # `npm run validate` reads git.
       #
-      # The doc validator dates each `Last verified against code:` stamp against
-      # git history, and it can only judge a file whose real last-touch commit is
-      # in the clone. This was `fetch-depth: 2`, which meant it judged only the
-      # `.md` files changed in the tip commit and declined every other one — 0 of
-      # 19 on a commit that touched no docs, and a stale stamp introduced in any
-      # commit but the last of a push was invisible.
-      #
-      # The depth was chosen to avoid refetching the 47 MB export, which confused
-      # depth with blob filtering. Measured on this repo as PACKED bytes — what
-      # actually crosses the wire, `%(objectsize:disk)` rather than the inflated
-      # `%(objectsize)` an earlier version of this comment quoted: commits 0.2 MB,
-      # trees 0.2 MB, blobs 140 MB. So `filter: 'blob:none'` is what controls the
-      # cost and the depth controls how much of the gate works — two orders of
-      # magnitude apart either way you measure it. Note the filter only skips
-      # HISTORICAL blobs; the ~66 MB any checkout must materialize for HEAD is
-      # unavoidable.
+      # This job DOES need the committed export, so no sparse-checkout exclusion:
+      # it derives the payload figures and the export fingerprint from those bytes.
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          filter: 'blob:none'
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

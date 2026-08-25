@@ -114,137 +114,6 @@ function walkFiles(relativeDirectory, allowedExtensions) {
 }
 
 /**
- * A `Last verified against code:` stamp older than the file's own last commit is
- * a lie in the header, and it is derivable — so it is checked rather than
- * trusted. Ten of nineteen docs were stale by this measure, two of them
- * Status: Current, because the old validator only checked that the line PARSED.
- *
- * THE SHALLOW-CLONE TRAP, learned the hard way. The first version compared each
- * stamp to `git log -1 --format=%cs -- <file>` and assumed a shallow checkout
- * would return nothing for files it did not know. It does the opposite: at
- * `fetch-depth: 1` there is one grafted commit, so EVERY file reports that
- * commit as its last touch, and the check demanded every doc carry today's date.
- * It failed CI on four READMEs whose stamps were provably correct.
- *
- * So a file is only judged when we can tell "HEAD really touched this" from
- * "history is too short to say", and the authority for that is `.git/shallow` —
- * the graft boundary. A file whose last touch IS the boundary commit is declined,
- * because the real date is outside the clone. A gate that cries wolf gets switched
- * off, and then it guards nothing.
- *
- * That was still not enough, twice over, and both floors below are the result:
- *
- *   - `fetch-depth: 2` made declining the NORMAL case. The content job judged 0
- *     of 19 and passed, so the gate was inert in the only place it runs. The job
- *     now checks out `fetch-depth: 0` with `filter: 'blob:none'` — depth is what
- *     the gate needs, blob filtering is what keeps it cheap. Do not trade one for
- *     the other; they are unrelated costs.
- *   - "declines quietly" is itself the defect. Under CI, ANY declined doc fails,
- *     because a depth regression otherwise narrows the gate silently instead of
- *     breaking it.
- *
- * `tools/test_validate_docs.sh` builds its own fixture repository and asserts all
- * of this against real full-depth, depth-2 and depth-1 clones. Run it after
- * touching this function or any checkout depth.
- */
-function validateFreshnessStamps() {
-    const git = (args) => {
-        try {
-            return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
-        } catch {
-            return null;
-        }
-    };
-
-    if (git(['rev-parse', '--git-dir']) === null) {
-        console.log('  (no git available — freshness stamps not checked)');
-        return;
-    }
-
-    // Where history is truncated, a file's apparent last touch is the graft
-    // boundary rather than its real one, and we cannot judge it. Test for THAT,
-    // not for a date match: the previous version compared the file's last-commit
-    // DATE to HEAD's date, which fires on a full clone too — every doc edited on
-    // the same calendar day as HEAD was silently declined. On this 143-commit
-    // repo that skipped 15 of 19, and a seven-month-stale stamp on a
-    // Status: Current doc passed. The boundary is the actual limit of knowledge.
-    // Read .git/shallow, not `git rev-parse --shallow-list` — that flag is not
-    // supported here and rev-parse echoes it back as a literal, which a 40-hex
-    // filter silently swallowed. The result was an empty boundary set, so every
-    // file was judged, and CI failed the four READMEs a depth-2 checkout cannot
-    // date. The file is the authority.
-    const gitDir = git(['rev-parse', '--absolute-git-dir']);
-    let boundary = new Set();
-    if (gitDir) {
-        const shallowFile = path.join(gitDir, 'shallow');
-        if (fs.existsSync(shallowFile)) {
-            boundary = new Set(fs.readFileSync(shallowFile, 'utf8')
-                .split('\n').map(l => l.trim()).filter(l => /^[0-9a-f]{40}$/.test(l)));
-        }
-    }
-
-    let judged = 0;
-    let declined = 0;
-    let stamped = 0;
-    for (const doc of walkFiles('.', new Set(['.md']))) {
-        const stamp = (readText(doc).match(/^Last verified against code:\s+(\d{4}-\d{2}-\d{2})$/m) || [])[1];
-        if (!stamp) continue;
-        stamped += 1;
-
-        const lastSha = git(['log', '-1', '--format=%H', '--', doc]);
-        const lastTouched = git(['log', '-1', '--format=%cs', '--', doc]);
-        if (!lastSha || !lastTouched || boundary.has(lastSha)) {
-            declined += 1;
-            continue;
-        }
-
-        judged += 1;
-        if (stamp < lastTouched) {
-            fail(`${doc}: "Last verified against code: ${stamp}" predates the file's own last commit `
-                + `(${lastTouched}). Re-read it against the code and bump the stamp, or do not claim it.`);
-        }
-    }
-    // Always with a denominator. "4 doc(s) dated" reads like success; "4 of 19"
-    // reads like the hole it was.
-    console.log(`  freshness stamps: ${judged} of ${stamped} stamped doc(s) dated against git history`
-        + (declined ? `, ${declined} declined (last touch is the shallow boundary)` : ''));
-
-    // And a floor, because the denominator alone was not enough. Twice now this
-    // gate has degraded to near-zero enforcement while exiting 0: first judging
-    // 4 of 19 on a bad discriminator, then 0 of 19 on a shallow CI checkout. Both
-    // times it printed a cheerful number and passed. Observability was the wrong
-    // fix for a defect that called for enforcement — a gate that judges nothing
-    // has to fail, or the next person tuning a checkout for speed silently turns
-    // it off again.
-    if (stamped > 0 && judged === 0) {
-        fail(`freshness stamps: ${stamped} doc(s) carry a "Last verified against code:" line and NONE `
-            + 'could be dated, so this check enforced nothing. Git history is too shallow to see any '
-            + "doc's last-touch commit — check out with fetch-depth: 0 (keep filter: 'blob:none'; "
-            + 'the blobs, not the depth, are what cost anything).');
-    }
-
-    // And in CI, ANY declined doc is a failure — not just all of them.
-    //
-    // `judged === 0` turned out to be a narrower predicate than the defect. A
-    // depth-2 clone whose tip commit happens to touch one doc judges 2 of 19 and
-    // exits 0, with five Status: Current docs free to carry stale stamps. The
-    // earlier run judged 0 only because its tip commit touched no docs at all;
-    // one line of difference and the floor above would have waved it through.
-    //
-    // So the thing that keeps this gate honest cannot be a literal `0` in a
-    // workflow file plus a sentence in CONTRIBUTING.md — that is the honour
-    // system this whole exercise exists to remove. Under CI, partial coverage
-    // fails, which means the next person tuning a checkout for speed breaks the
-    // build instead of quietly hollowing out the check.
-    if (process.env['CI'] && declined > 0) {
-        fail(`freshness stamps: ${declined} of ${stamped} doc(s) could not be dated because their `
-            + 'last-touch commit is outside this clone, so their stamps went unverified. In CI that is '
-            + 'a failure rather than a warning: check out with fetch-depth: 0 and keep '
-            + "filter: 'blob:none'.");
-    }
-}
-
-/**
  * deploy/RAILWAY.md quotes the payload it will serve. Those bytes are on disk,
  * so the table is derived rather than trusted — it had drifted 2 MB. Both columns
  * are derived: the gzip figures were accurate but ungated, and the whole egress
@@ -256,33 +125,17 @@ function validateDeployPayloadTable() {
     if (!fs.existsSync(webDir)) return;
 
     const mib = bytes => Math.round((bytes / 1048576) * 10) / 10;
-    const sizeOf = suffix => {
-        const hit = fs.readdirSync(webDir).find(f => f.endsWith(suffix));
-        return hit ? fs.statSync(path.join(webDir, hit)).size : 0;
-    };
-    const gzipOf = suffix => {
-        const hit = fs.readdirSync(webDir).find(f => f.endsWith(suffix));
-        return hit ? zlib.gzipSync(fs.readFileSync(path.join(webDir, hit)), { level: 9 }).length : 0;
-    };
 
-    const wasm = sizeOf('.wasm');
-    const pck = sizeOf('.pck');
+    // The total and the first-launch figure only. The per-file rows were derived
+    // too, and correct, and nobody made a decision from them — the decision is
+    // "is a first launch acceptable on home wifi", which comes from the total.
     const total = fs.readdirSync(webDir)
         .reduce((sum, f) => sum + fs.statSync(path.join(webDir, f)).size, 0);
-
-    // The .js row and the gzip TOTAL were the two figures left ungated, and the
-    // egress arithmetic below the table is computed from the total.
-    const jsFiles = fs.readdirSync(webDir).filter(f => f.endsWith('.js'));
-    const sum = (files, fn) => files.reduce((acc, f) => acc + fn(path.join(webDir, f)), 0);
-    const jsRaw = sum(jsFiles, f => fs.statSync(f).size);
-    const jsGzip = sum(jsFiles, f => zlib.gzipSync(fs.readFileSync(f), { level: 9 }).length);
     const payload = fs.readdirSync(webDir).filter(f => /\.(wasm|pck|js)$/.test(f));
-    const gzipTotal = sum(payload, f => zlib.gzipSync(fs.readFileSync(f), { level: 9 }).length);
+    const gzipTotal = payload.reduce(
+        (acc, f) => acc + zlib.gzipSync(fs.readFileSync(path.join(webDir, f)), { level: 9 }).length, 0);
 
-    ensureDocContains(DOC, `| \`index.<id>.wasm\` | ${mib(wasm)} MB | ${mib(gzipOf('.wasm'))} MB |`, 'wasm payload row');
-    ensureDocContains(DOC, `| \`index.<id>.pck\` | ${mib(pck)} MB | ${mib(gzipOf('.pck'))} MB |`, 'pck payload row');
-    ensureDocContains(DOC, `| \`index.<id>.js\` + worklet | ${mib(jsRaw)} MB | ${mib(jsGzip)} MB |`, 'js payload row');
-    ensureDocContains(DOC, `| **total** | **${mib(total)} MB** | **~${mib(gzipTotal)} MB** |`, 'payload totals');
+    ensureDocContains(DOC, `| **whole payload** | **${mib(total)} MB** | **~${mib(gzipTotal)} MB** |`, 'payload totals');
     ensureDocContains(DOC, `a first launch transfers about **${mib(gzipTotal)} MB**`, 'first-launch transfer figure');
 }
 
@@ -304,7 +157,7 @@ function ensureNoPattern(relativePath, pattern, description) {
     }
 }
 
-/** Every doc carries Status / Authority / Last-verified metadata. */
+/** Every doc says what it is for: a Status and an Authority line. */
 function validateDocMetadata() {
     const markdownFiles = walkFiles('.', new Set(['.md']));
     const byStatus = { Current: [], Supportive: [], Historical: [] };
@@ -313,14 +166,11 @@ function validateDocMetadata() {
         const text = readText(doc);
         const status = text.match(/^Status:\s+(.+)$/m);
         const authority = text.match(/^Authority:\s+(.+)$/m);
-        const verified = text.match(/^Last verified against code:\s+(\d{4}-\d{2}-\d{2})$/m);
-
         if (!status) fail(`${doc}: missing Status metadata`);
         else if (!VALID_STATUSES.has(status[1].trim())) fail(`${doc}: invalid Status "${status[1].trim()}"`);
         else byStatus[status[1].trim()].push(doc);
 
         if (!authority) fail(`${doc}: missing Authority metadata`);
-        if (!verified) fail(`${doc}: missing or malformed Last verified metadata`);
     }
 
     const present = new Set(markdownFiles);
@@ -334,78 +184,6 @@ function validateDocMetadata() {
     }
 
     return byStatus;
-}
-
-/**
- * The canonical snapshot. Every number here is computed from the data, so a
- * content change forces the doc to follow in the same commit.
- */
-function validateOnboardingSnapshot() {
-    const DOC = 'ONBOARDING.md';
-
-    const sceneCount = countObjectKeys(loadJson('godot/data/registries/scenes.json'));
-    const easy = loadJson('godot/data/math/problems_easy.json').problems.length;
-    const dataset = loadJson('godot/data/math/problems_dataset.json').problems.length;
-    const gaps = loadJson('godot/data/math/problems_gaps.json').problems.length;
-    const curriculum = loadJson('godot/data/math/problems_curriculum.json').problems.length;
-    const totalProblems = easy + dataset + gaps + curriculum;
-    const levelCount = loadJson('godot/data/levels/level_registry.json').levels.length;
-    const npcCount = loadJson('godot/data/npcs/npc_registry.json').npcs.length;
-    const enemyCount = loadJson('godot/data/enemies/enemy_registry.json').enemies.length;
-    const audio = loadJson('godot/data/audio/audio_manifest.json');
-    const musicCount = countObjectKeys(audio.music);
-    const sfxCount = countObjectKeys(audio.sfx);
-    const autoloadCount = (readText('godot/project.godot').match(/^[A-Za-z_][A-Za-z0-9_]*="\*res:\/\//gm) || []).length;
-    const soundEventCount = countObjectKeys(loadJson('godot/data/audio/sound_events.json'));
-    const spawnCount = countObjectKeys(loadJson('godot/data/registries/spawn_registry.json'));
-    const stringKeyCount = countObjectKeys(loadJson('godot/data/i18n/strings_en.json'));
-    const probeCount = (readText('godot/tools/run_tests.sh').match(/res:\/\/tests\/integration\/\w+\.tscn/g) || []).length;
-    const migrationCount = fs.readdirSync(path.join(root, 'server/migrations')).filter(f => f.endsWith('.sql')).length;
-
-    ensureDocContains('README.md', 'Mutable numeric repo counts live in one place only:', 'canonical snapshot rule');
-    ensureDocContains(DOC, 'This is the only canonical numeric snapshot block in the current docs.', 'canonical snapshot block rule');
-
-    ensureDocContains(DOC, `registers ${sceneCount} scenes`, 'scene count');
-    ensureDocContains(DOC, `loads 4 math pools totaling ${totalProblems} problems`, 'math pool total');
-    ensureDocContains(DOC, `- \`easy\`: ${easy}`, 'easy pool count');
-    ensureDocContains(DOC, `- \`dataset\`: ${dataset}`, 'dataset pool count');
-    ensureDocContains(DOC, `- \`gaps\`: ${gaps}`, 'gaps pool count');
-    ensureDocContains(DOC, `- \`curriculum\`: ${curriculum}`, 'curriculum pool count');
-    ensureDocContains(DOC, `contains ${levelCount} levels`, 'level count');
-    ensureDocContains(DOC, `contains ${npcCount} NPC ${npcCount === 1 ? 'entry' : 'entries'}`, 'NPC count');
-    ensureDocContains(DOC, `contains ${enemyCount} enemy type`, 'enemy count');
-    ensureDocContains(DOC, sfxCount === 0
-        ? `currently exposes ${musicCount} music tracks and no live SFX entries`
-        : `currently exposes ${musicCount} music tracks and ${sfxCount} live SFX entries`, 'audio manifest');
-    ensureDocContains(DOC, `**${autoloadCount}** autoloads`, 'autoload count');
-    ensureDocContains(DOC, `**${soundEventCount}** semantic sound events`, 'sound event count');
-    ensureDocContains(DOC, `**${spawnCount}** spawnable object types`, 'spawn type count');
-    ensureDocContains(DOC, `**${stringKeyCount}** keys`, 'string key count');
-    ensureDocContains(DOC, `**${probeCount}** headless physics probes`, 'probe count');
-    ensureDocContains(DOC, `**${migrationCount}** migrations`, 'migration count');
-    ensureDocContains('README.md', `${probeCount} physics probes`, 'readme probe count');
-
-    // Counts belong in one file. Anywhere else they rot unnoticed.
-    const duplicated = [
-        { pattern: /\bregisters \d+ scenes\b/, description: 'scene counts' },
-        { pattern: /\bloads \d+ math pools totaling \d+ problems\b/, description: 'math pool counts' },
-        { pattern: /\bcontains \d+ levels\b/, description: 'level counts' },
-        { pattern: /\bcontains \d+ NPC (?:entry|entries)\b/, description: 'NPC counts' },
-        { pattern: /\bcontains \d+ enemy type\b/, description: 'enemy counts' },
-        { pattern: /\b\d+ (?:music tracks|live SFX entries)\b/, description: 'audio manifest counts' },
-    ];
-    // EVERY doc except the canonical one, not a hardcoded list. A hardcoded list
-    // was the first version of this and it leaked: a count landing in
-    // CONTRIBUTING.md, PRIVACY.md, brand/README.md or deploy/RAILWAY.md sailed
-    // through, which is exactly the drift this check exists to stop.
-    for (const doc of walkFiles('.', new Set(['.md']))) {
-        if (doc === DOC) continue;
-        for (const { pattern, description } of duplicated) {
-            ensureNoPattern(doc, pattern, `a duplicate mutable count for ${description} (these live in ${DOC})`);
-        }
-    }
-
-    return { sceneCount, totalProblems, levelCount, npcCount, enemyCount, musicCount, sfxCount };
 }
 
 /**
@@ -511,15 +289,80 @@ function validateMathAuthoringReports() {
         fail('owl-surface-summary.json: freshReachableProblemCount cannot exceed openingUnlockedInventoryProblemCount');
     }
 
-    // The owl-path boundary is the claim people get wrong, so it is derived.
-    const openingDomains = formatInlineCodeList(owlSurface.openingUnlockedDomains);
-    ensureDocContains('ONBOARDING.md', `The opening unlocked domains are ${openingDomains}`, 'fresh owl opening domains');
-    ensureDocContains('ONBOARDING.md',
-        `Shipped owl interaction length is \`${problemCount}\` problem${problemCount === 1 ? '' : 's'} per encounter`,
-        'owl encounter length');
 }
 
 /** Live code must not point at trees that are not runtime. */
+/**
+ * The retention and history figures are PROMISES, so they are derived from the
+ * defaults they promise.
+ *
+ * This is the one number in the corpus that earns a gate, and it never had one.
+ * Fourteen assertions used to guard the scene count and the SFX count — numbers
+ * whose staleness costs a reader nothing — while five separate copies of "30
+ * days" sat ungated across PRIVACY.md, SECURITY.md and the runbook. The first of
+ * those is a commitment to a parent who cannot read the code to check it.
+ *
+ * Both figures are env-overridable per deployment. What is asserted is that the
+ * docs match the DEFAULT, which is what an unconfigured deploy does and what the
+ * pages describe.
+ */
+function validateRetentionPromises() {
+    const configPath = 'server/src/config.ts';
+    if (!fs.existsSync(path.join(root, configPath))) return;
+    const config = readText(configPath);
+
+    const promises = [
+        {
+            knob: 'CROW_ERROR_RETAIN_DAYS',
+            unit: 'days',
+            docs: ['PRIVACY.md', 'SECURITY.md', 'deploy/RAILWAY.md'],
+            phrase: (n) => `${n} days`,
+            why: 'how long a full error report is kept',
+        },
+        {
+            knob: 'CROW_SAVE_HISTORY_DEPTH',
+            unit: 'versions',
+            docs: ['SECURITY.md'],
+            phrase: (n) => `${n} save versions`,
+            why: 'how many save versions a family can roll back through',
+        },
+    ];
+
+    for (const { knob, unit, docs, phrase, why } of promises) {
+        const match = config.match(new RegExp(`int\\('${knob}',\\s*(\\d+)\\)`));
+        if (!match) {
+            fail(`${configPath}: could not read the default for ${knob}, so the docs that ` +
+                 'promise it were compared against nothing. Fix this parser, do not delete the check.');
+            continue;
+        }
+        const wanted = phrase(match[1]);
+        for (const doc of docs) {
+            if (!fs.existsSync(path.join(root, doc))) continue;
+            const text = readText(doc);
+            if (!text.includes(wanted)) {
+                fail(
+                    `${doc}: does not say "${wanted}" — ${knob} defaults to ${match[1]}, and this ` +
+                    `doc states ${why}. A stale retention figure is a broken promise, not a typo.`,
+                );
+                continue;
+            }
+            // EVERY occurrence, not just one. PRIVACY.md states the window twice,
+            // so an `includes` check passed with one copy stale and one fresh —
+            // a gate satisfied by the sentence a reader did not happen to read.
+            const found = [...text.matchAll(new RegExp(`(\\d+)\\s+${unit}\\b`, 'g'))];
+            for (const occurrence of found) {
+                if (occurrence[1] !== match[1]) {
+                    fail(
+                        `${doc}: says "${occurrence[0]}" somewhere as well as "${wanted}" — ` +
+                        `${knob} defaults to ${match[1]}. Every copy of a promise has to agree, ` +
+                        'because a reader only sees one of them.',
+                    );
+                }
+            }
+        }
+    }
+}
+
 function validateLiveSourceReferences() {
     // The retired-Phaser names are banned outright now that the sweep has landed.
     // They cannot come back without failing the build, which is the point: every
@@ -585,83 +428,6 @@ function validateLiveSourceReferences() {
                 }
             }
         }
-    }
-}
-
-/**
- * The endpoint table in ARCHITECTURE.md is derived from the routes the server
- * actually registers.
- *
- * The table was exactly right when this was written — which is the reason to gate
- * it now rather than later. It is the wire contract between a Godot client and a
- * Node API that ship separately, and nothing anywhere compared it to the code, so
- * a new route or a renamed path would have been invisible until a client called
- * it. Every other number in this validator is derived; this was the largest
- * remaining surface on the honour system.
- *
- * Fastify's `:param` becomes `{param}` to match the doc's convention.
- */
-/**
- * The three file lengths ONBOARDING.md cites, and the README's doc count.
- *
- * These were the last hand-maintained numbers outside the derived snapshot, and
- * one of them had already drifted twice: the learner-state line said 562 before
- * it said 657, and it carried a "largest file in the repo" superlative that was
- * never true. The numbers exist to make a point about which file is protected and
- * why, so a wrong one argues the wrong case.
- */
-function validateCitedFileLengths() {
-    const cited = [
-        { file: 'godot/scripts/systems/learner_state_manager.gd', doc: 'ONBOARDING.md' },
-        // CONTRIBUTING.md cites the same length in its "leave alone" list, and it
-        // is the copy that went stale: it still read 562 after ONBOARDING.md had
-        // been corrected to 657. Same number, two docs, one of them unchecked.
-        { file: 'godot/scripts/systems/learner_state_manager.gd', doc: 'CONTRIBUTING.md' },
-        { file: 'godot/scripts/scenes/game.gd', doc: 'ONBOARDING.md' },
-        { file: 'tools/math_authoring.ts', doc: 'ONBOARDING.md' },
-    ];
-    for (const { file, doc } of cited) {
-        const full = path.join(root, file);
-        if (!fs.existsSync(full)) {
-            fail(`${doc}: cites ${file}, which does not exist`);
-            continue;
-        }
-        const lines = fs.readFileSync(full, 'utf8').split('\n');
-        // A trailing newline is not a line.
-        const count = lines.length - (lines[lines.length - 1] === '' ? 1 : 0);
-        const text = readText(doc);
-        if (!new RegExp(`\\b${count}\\b`).test(text)) {
-            fail(
-                `${doc}: ${file} is ${count} lines and that number does not appear in the doc. ` +
-                'The lengths are cited to argue which file is protected and why, so a stale one argues the wrong case.',
-            );
-        }
-    }
-
-    // README says how many docs there are; the table below it IS the list. Two
-    // Status: Current docs disagreed on the size of the doc set ("adding a
-    // seventh" vs "resist adding a ninth"), which is a small thing that reads as
-    // nobody having checked.
-    const words = { four: 4, five: 5, Five: 5, Six: 6, six: 6, Seven: 7, seven: 7, Eight: 8, eight: 8 };
-    const readme = readText('README.md');
-    const claim = readme.match(/^(\w+) files, on purpose\./m);
-    if (!claim) {
-        fail('README.md: the "N files, on purpose." claim about the doc set is gone. Keep it — it is what the row count is checked against.');
-        return;
-    }
-    const claimed = words[claim[1]];
-    if (claimed === undefined) {
-        fail(`README.md: could not read "${claim[1]}" as a number in "${claim[0]}".`);
-        return;
-    }
-    // Rows of the "| Read | For |" table: | [X](./x) | ... |
-    const section = readme.slice(readme.indexOf('## The docs'));
-    const rows = section.split('\n').filter(l => /^\|\s*\[/.test(l)).length;
-    if (rows !== claimed) {
-        fail(
-            `README.md: says "${claim[0]}" but the table below it has ${rows} row(s). ` +
-            'One of the two is wrong, and the number is the easier one to get wrong.',
-        );
     }
 }
 
@@ -777,15 +543,13 @@ function main() {
     console.log('Validating documentation...');
 
     const byStatus = validateDocMetadata();
-    const snapshot = validateOnboardingSnapshot();
     validateLearnerConstants();
     validateStorageContracts();
     validateMathAuthoringReports();
+    validateRetentionPromises();
     validateLiveSourceReferences();
-    validateCitedFileLengths();
     validateWireContract();
     validateRoadmapHasNoCompletedItems();
-    validateFreshnessStamps();
     validateDeployPayloadTable();
 
     if (errors.length > 0) {
@@ -795,11 +559,6 @@ function main() {
     }
 
     console.log('Documentation is internally consistent.');
-    console.log(
-        `Verified snapshot: ${snapshot.sceneCount} scenes, ${snapshot.totalProblems} problems, `
-        + `${snapshot.levelCount} levels, ${snapshot.npcCount} NPCs, ${snapshot.enemyCount} enemy type, `
-        + `${snapshot.musicCount} music, ${snapshot.sfxCount} SFX.`,
-    );
     console.log(
         `Docs by metadata: ${byStatus.Current.length} Current, ${byStatus.Supportive.length} Supportive, `
         + `${byStatus.Historical.length} Historical.`,

@@ -2,7 +2,6 @@
 
 Status: Supportive
 Authority: The list of art assets still to generate, with their sizes and destinations. Runtime truth is the Godot project under `godot/` - its registries, theme files and tuning JSON.
-Last verified against code: 2026-08-25
 
 Every art asset the five worlds need, in the order worth making them, with the
 exact pixel dimensions and the exact path each file goes to. Design intent lives
@@ -60,9 +59,8 @@ that actually works:
 
 1. **Generate externally**, at the exact dimensions in the tables below, using
    the world's palette hexes in the prompt (they are listed per world).
-2. **Stage it outside the repo** while you iterate — a scratch directory of
-   your own. There is deliberately no staging tree in git: the one that used to
-   exist got mistaken for a source of truth, and nothing outside the
+2. **Stage it outside the repo** while you iterate — a scratch directory of your
+   own. There is deliberately no staging tree in git, and nothing outside the
    `Destination` paths below is ever live.
 3. **Check it against the pixel law** above. Reject soft edges now, not later.
 4. **Place the approved file** at the exact `Destination` path in the table.
@@ -88,12 +86,7 @@ npx tsc --noEmit
 > node godot/tools/web_boot_smoke.mjs  # iPad viewport, boots and renders
 > ```
 
-The screenshot walker used to be the gate that mattered for art: it walked all
-six levels, captured gameplay and the maths board in each, and checked the
-rendered pixels against that world's token file. It drove the Phaser build and
-went with it.
-
-Its job is now done by `godot/tests/test_world_palettes.gd`, one layer down: it
+The art gate is `godot/tests/test_world_palettes.gd`, one layer down: it
 scores each world's tileset directly against that world's theme tokens, so it
 needs no browser, no served build and no walk through the UI, and it runs in the
 headless suite on every push. A pixel counts as on-palette within an RGB

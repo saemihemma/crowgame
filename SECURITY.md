@@ -2,7 +2,6 @@
 
 Status: Supportive
 Authority: Reporting process and the current security posture.
-Last verified against code: 2026-08-25
 
 Hörmann stores learning data about young children. Please treat anything in that
 area as worth reporting even if you are unsure it is exploitable.
@@ -23,21 +22,18 @@ The attack surface is small on purpose:
 
 - **One anonymous write endpoint**, `POST /api/v1/errors`. It exists because the
   errors most worth having — the game failing to load — happen before any device
-  is enrolled. It is IP rate-limited (20/min), body-capped, reflects nothing back,
-  and stores no text a *player* typed — no child id, no display name, no answer.
+  is enrolled. It is IP rate-limited, body-capped, reflects nothing back, and
+  stores no text a *player* typed: no child id, no display name, no answer. The
+  live caps are in `server/src/config.ts`.
 
-  It does store caller-supplied text, and this page previously said it stored
-  none, which is the claim a researcher would have tested first. `message` (≤2000
-  chars), `stack` (≤8000), `source` (≤500) and up to 20 sanitized `context` keys
-  (≤200 each) are all attacker-controlled, and one of them persists: `message`
-  plus a `{context, stack}` sample is written into `error_groups`, which has no
-  retention job and no cap on distinct fingerprints. The fingerprint is a hash of
-  the normalized message, so varying the message mints a new permanent row —
-  roughly a few MB/minute of durable growth from a single address at the shipped
-  limits, where `error_events` is bounded by dropping day partitions at 30 days.
-  That asymmetry is a real finding rather than a design choice, and it is open in
-  `roadmap.md`. Reports about it are welcome; it is named here so nobody has to
-  discover it to tell us.
+  **Known hole, and the sharpest one here.** It does store caller-supplied text —
+  `message`, `stack`, `source` and sanitized `context` keys — and one of them
+  persists: the message plus a context/stack sample is written into
+  `error_groups`, which has no retention job and no cap on distinct fingerprints.
+  The fingerprint is a hash of the normalized message, so varying the message
+  mints a new permanent row, indefinitely, from an unauthenticated caller. That is
+  asymmetric with `error_events`, which is bounded by dropping day partitions. It
+  is open in `roadmap.md` and named here so nobody has to discover it to tell us.
 - **Device-scoped auth.** The credential is an opaque random token in an
   `HttpOnly; Secure; SameSite=Lax` cookie, stored server-side as SHA-256 only. It
   resolves to a device, which belongs to a family.
@@ -46,8 +42,7 @@ The attack surface is small on purpose:
   `attempts`, `sync_conflicts`, `child_aliases` — with both `ENABLE` and `FORCE`,
   in addition to explicit predicates in every query.
 
-  **The auth tables are deliberately outside that**, and this page said "family
-  isolation is enforced in Postgres" without the qualifier: `parents`, `devices`,
+  **The auth tables are deliberately outside that.** `parents`, `devices`,
   `device_tokens` and `login_codes` carry no policy, because resolving a token to
   a family has to happen before a family is known — the policy would need the
   answer the lookup is producing. They go through `withAuthTables`, which drops
@@ -55,32 +50,23 @@ The attack surface is small on purpose:
   predicate. That is a weaker guarantee than the one above, and it covers the
   grown-up email, which is the only PII in the system. Worth aiming at.
 
-  Which tables are protected is now derived from `pg_class` in
-  `test/role-isolation.test.ts` and compared to that list, along with `FORCE`
-  being set — nothing asserted RLS was even switched on until round 7 of review,
-  and the protected set was a hardcoded array in a migration with no gate. Every
-  request path — all four
-  database entry points, including the anonymous error ingest and the health
-  probe — drops to the non-superuser `crow_app` role first, precisely because a
-  superuser bypasses those policies outright and holds every privilege. The
-  role holds DELETE on `attempts` **not at all**, so the record of what a child
-  answered cannot be rewritten by a query bug. `child_save_history` is different
-  and the distinction is deliberate: the role DOES hold DELETE there, because the
-  application prunes history to the last `CROW_SAVE_HISTORY_DEPTH` versions, so
-  what bounds that table is the prune's `server_version <= $2 - $3` window and not
-  a privilege. An earlier version of this page claimed both tables withheld
-  DELETE. Only `attempts` does.
+  **Every request path drops to the non-superuser `crow_app` role first** — all
+  four database entry points, the anonymous error ingest and the health probe
+  included — because a superuser bypasses RLS outright and holds every privilege.
+  That role has no DELETE on `attempts`, so the record of what a child answered
+  cannot be rewritten by a query bug. It *does* have DELETE on
+  `child_save_history`, deliberately: the application prunes history to
+  `CROW_SAVE_HISTORY_DEPTH` versions, so what bounds that table is the prune's own
+  window and not a privilege.
 
-  Asserted by `server/test/role-isolation.test.ts` against a real cluster: what
-  `current_user` is on each path, that a predicate-free `select` inside a family
-  transaction returns one family's rows while the same query on the pool returns
-  every family's, that the role is refused a `delete from attempts`, and — the
-  assertion whose absence let the wrong claim above stand for a round — that it is
-  *allowed* one on `child_save_history`, with the prune named as the reason. Two
-  paths did NOT drop the role until 2026-08-25 — `DELETE /api/v1/family` and
-  `POST /api/v1/errors` — while comments in the code claimed they did; the static
-  half of that test file now fails the build if any route reaches for the
-  superuser pool again.
+  All of it is asserted against a real cluster in
+  `server/test/role-isolation.test.ts`: `current_user` on each path; that a
+  predicate-free `select` inside a family transaction returns one family's rows
+  while the same query on the pool returns every family's; the DELETE asymmetry in
+  both directions; and the protected set itself, derived by walking foreign keys
+  to `families` rather than listed, so a new family-scoped table with no policy
+  fails the build. A static half needs no database and fails if any route reaches
+  for the superuser pool.
 - **Single-use, short-lived** sign-in links and pairing codes, enforced in SQL
   rather than application logic so two simultaneous uses cannot both succeed.
 - **No PII beyond a parent email.** Children carry a display name only.
@@ -108,31 +94,18 @@ anything that recovers a device token from stored data.
   deliberate design stated in its own header. A sentence of the form "the game
   never does X" is outside it, and no reasonable validator brings it inside.
 
-  Five consecutive review rounds each found one such sentence that the code
-  denies, in a different file each time: that this endpoint stored no
-  caller-supplied text; that the browser user-agent was kept on error reports
-  only; that `child_save_history` withheld DELETE from the app role; that there
-  was nowhere in the game for a child to type free text; and that the game does
-  not check the child's PIN — which `profile_manager.gd` does, and which the game
-  answers on screen with "Wrong PIN!". Each was found by one person reading a
-  document against the code in the same sitting. None was found by a gate.
+  Review has repeatedly found such sentences false — five in a row, in a different
+  file each time, every one found by a person reading a document against the code
+  and none by a gate. So **treat every absolute in these documents as unverified,
+  and treat a report that one is false as a valid finding rather than a wording
+  complaint.** The sentence a parent relies on is part of the product.
 
-  So: **treat every absolute in these documents as unverified until someone has
-  done that, and treat a report that one of them is false as a valid security
-  finding rather than a wording complaint.** The sentence a parent relies on is
-  part of the product. `PRIVACY.md` carries an authority clause saying that where
-  it disagrees with the code the page is the bug; this paragraph is the reason
-  that clause is not decoration.
-
-  What IS gated, so you can tell the two apart: the four database entry points
-  and the role each runs as; the RLS-protected set, derived by walking foreign
-  keys to `families` rather than listed, so a new family-scoped table with no
-  policy fails the build; per-table behavioural isolation over that same derived
-  set, with a vacuity guard so it cannot pass on an empty fixture; the export's
-  response contents against every table it promises; the absence of
-  player-identifying keys in a stored error report, asserted through a real
-  browser; and the app role's privilege set per table, compared against the
-  sentences above.
+  What IS mechanically enforced, so you can tell the two apart: the role each
+  database path runs as; the RLS-protected set, derived from foreign keys rather
+  than listed; per-table behavioural isolation with a guard against passing on an
+  empty fixture; the export's response contents; the app role's privileges per
+  table; and the absence of player-identifying keys in a stored error report,
+  asserted through a real browser.
 
 ## Data handling
 

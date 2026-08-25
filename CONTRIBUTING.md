@@ -3,7 +3,6 @@
 Status: Supportive
 Authority: Contribution process. The verification loop itself is
 [ONBOARDING.md](./ONBOARDING.md).
-Last verified against code: 2026-08-25
 
 Hörmann is a maths game played by young children, including the author's own. That
 shapes what a good contribution looks like more than anything else here.
@@ -32,10 +31,7 @@ take `# hardcode-ok` on the line, and "genuine" means brand text or a diagnostic
 not "I was in a hurry".
 
 Two of the six rules in README.md are **not** in that script and are checked by
-review instead: magic numbers, and type-to-behaviour switches for content. This
-section used to list all six as rejected, which was false in a way that mattered —
-`play_sfx` was violated in four places while both this file and README.md said it
-could not be.
+review instead: magic numbers, and type-to-behaviour switches for content.
 
 Strings go in **both** `strings_en.json` and `strings_is.json`. A test enforces
 key-for-key lockstep, and a missing key renders as the raw key to a child.
@@ -86,23 +82,26 @@ would have.
 Some things still need a human: movement feel, difficulty pacing, whether a moment
 lands for a child. Say in your PR what you played and what you saw.
 
-## The doc gate, and what your clone can see
+## The doc gate
 
-`npm run validate` dates every `Last verified against code:` stamp against git
-history, so editing a doc without bumping its stamp fails the build. That check
-can only judge a file whose real last-touch commit is in your clone — on a
-truncated history it declines, and if it can judge NOTHING it fails rather than
-passing quietly. Worth knowing because agent checkouts are often shallow.
+`npm run validate` checks the doc claims that are **contracts**: the endpoint
+table against the routes the server registers, the storage keys, the Tier-1
+constants, the retention figures against the defaults they promise, the deploy
+payload against the artifact, and that no doc points at a deleted tree.
 
-If you touch `tools/validate_docs.js` or any checkout depth, run:
+It deliberately does not check descriptions. There is no gate on how many levels
+or sounds exist, because the docs no longer state those — a count in prose goes
+stale silently, and the fix is to not write it down.
+
+If you touch `tools/validate_docs.js`, run:
 
 ```bash
-npm run validate:docs-test     # clones itself at three depths and mutates docs
+npm run validate:docs-test     # mutates each claim and asserts the gate objects
 ```
 
-That gate has shipped broken three times, every time because the clone the author
-stood in differed from the clone CI stood in. The harness exists so the fourth
-time is caught before the push.
+Two of those checks once shipped enforcing nothing. Every one now has a case that
+proves it fails for the right reason, asserted on the message rather than the exit
+code — a validator too broken to parse also exits non-zero.
 
 ## Docs are part of the change
 

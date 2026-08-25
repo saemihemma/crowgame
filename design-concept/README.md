@@ -3,7 +3,6 @@
 Status: Supportive
 Authority: Design intent for the HUD and the maths window. Runtime truth is
 `godot/scripts/ui/**`.
-Last verified against code: 2026-08-25
 
 Working files for the concept design canvas. `hormann-hud-concept.html` is the
 seeded canvas; the `.dc.html` files and `canvas.json` are what it is built from,

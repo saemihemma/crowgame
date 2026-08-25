@@ -3,7 +3,6 @@
 Status: Current
 Authority: Canonical deployment runbook. The live truth is the Railway dashboard
 plus `deploy/web/Dockerfile` and `deploy/web/Caddyfile`.
-Last verified against code: 2026-08-25
 
 ## What this is
 
@@ -57,19 +56,17 @@ That makes the cache policy simple and, more importantly, correct:
 | `index.html` | `no-store` | ~5 KB, and the only file that knows which payload belongs to this build |
 | `index.<id>.*` | `public, max-age=31536000, immutable` | the name is the content, so it can never be stale |
 
-Measured payload. **Both columns are derived from `output/web` by
-`npm run validate:docs`**, so they cannot drift from the artifact again — the raw
-column had already drifted 2 MB before that check existed, and the gzip figures
-were accurate but ungated while the egress arithmetic below depends on them.
-Gzip is measured with node's zlib at level 9; a server's own encoder will differ
-by a few tenths of a MB:
+Measured payload, **derived from `output/web` by `npm run validate:docs`** so it
+cannot drift from the artifact. The per-file breakdown used to be here; nobody
+made a decision from it. The decision — is a first launch acceptable on home wifi
+— comes from the total.
 
-| File | Raw | gzip |
+| | Raw | gzip |
 | --- | --- | --- |
-| `index.<id>.wasm` | 33.7 MB | 7.7 MB |
-| `index.<id>.pck` | 13.6 MB | 8.1 MB |
-| `index.<id>.js` + worklet | 0.3 MB | 0.1 MB |
-| **total** | **47.7 MB** | **~15.9 MB** |
+| **whole payload** | **47.7 MB** | **~15.9 MB** |
+
+Gzip is node's zlib at level 9; a server's own encoder will differ by a few
+tenths. Per-file sizes are `ls -la output/web` when you need them.
 
 **One field is deliberately outside the fingerprint:** `build_info.json` carries
 a timestamp and the commit the build was made from, and it is excluded so a
@@ -83,11 +80,6 @@ So a first launch transfers about **15.9 MB**, and a returning player transfers
 **nothing at all** for the payload — no bytes, no conditional request, no `304`.
 Only the 5 KB shell is re-fetched.
 
-For context on how that was reached: the payload was ~25.8 MB gzipped before two
-changes. Excluding unreferenced source art from the export took the pck from
-22.1 MB to 18.7 MB raw, and re-encoding the five music tracks from 193 kbps to
-96 kbps took another 7.1 MB out of it. Neither is visible or audible on a tablet
-speaker; both are reversible from git history.
 
 `CROW_ASSET_CACHE` still exists for the handful of files that are *not*
 content-addressed (icons), and so staging can force `no-store` while iterating.

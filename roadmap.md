@@ -2,7 +2,6 @@
 
 Status: Current
 Authority: The list of open work. Not a record of finished work. Runtime truth lives in the code.
-Last verified against code: 2026-08-25
 
 ## READ THIS FIRST — THIS FILE HAS ONE JOB
 
@@ -54,6 +53,27 @@ least one step-up per early session and frustration flags under 10%.
 ## P2 — Experience decisions that need making
 
 
+### Four limits of the maths ladder
+None of these is decided, and they share one cause: the ladder was derived before
+the owl path existed.
+
+- **Two-digit addition and subtraction stay out of the owl's local path
+  deliberately.** Whether that holds once a child clears the existing bands is a
+  content decision nobody has taken.
+- **Subtraction step 5 is structurally sparse** under the current derivation, so
+  it ships as a tiny bridge rather than a full band. Either the derivation widens
+  it or the band should be merged into its neighbour.
+- **Review is queued on failed challenges, not on first wrong attempts** that the
+  child then corrects within the same challenge. The second is arguably the more
+  useful signal and is currently discarded.
+- **Pool ELO ratings are still initialized from legacy static difficulty.** Local
+  selection obeys curriculum steps instead, so this does not affect what a child
+  is asked — but the telemetry-facing ELO layer is coarse, and any future
+  analysis that trusts it will be reading a number nothing maintains.
+
+*Done when:* each is either implemented, or written into PRODUCT.md as a decision
+taken on purpose.
+
 ### A forgotten PIN locks a child out, and there is no way back
 `ProfileManager.login()` really does compare the typed PIN against the stored one
 and returns false on a mismatch; `login.gd` renders "Wrong PIN!". There is no
@@ -76,26 +96,17 @@ is still a bad end state.
 progress without destroying anyone else's, or the PIN stops gating entry at all.
 
 ### Should an unloseable streak exist at all?
-The game keeps an in-level streak: a counter, a HUD flame at 3, an "ON FIRE" state
-at 5, and the rule that a wrong answer PAUSES it rather than resetting it. Only
-leaving the level clears the count.
+The game keeps an in-level streak: a counter, a HUD flame, an "ON FIRE" state, and
+the rule that a wrong answer PAUSES it rather than resetting it. Only leaving the
+level clears the count.
 
-`PRODUCT.md` used to deny the mechanic outright — "nothing is tied to time or
-streaks" — which was a true statement about golden problems generalised into a
-product-wide commitment. It has been corrected to describe what ships. What has
-not been decided is whether it should.
+**For, as built:** a streak that cannot be lost puts no punishment on the single
+most confidence-sensitive moment a child has, and children replaying a level to
+protect one are children doing more maths.
 
-The case for it as built: a streak that cannot be lost puts no punishment on the
-single most confidence-sensitive moment a child has, and children replaying a
-level to protect one are children doing more maths. The case against: it is still
-a thing to protect, and `PRODUCT.md` also says there should be nothing a child can
-feel anxious about protecting. Both sentences are now in that file, which is
-honest and unresolved rather than settled.
-
-Note that the toast was separately a defect and is fixed: it read "x{0} COINS!"
-while no coin path multiplies anything, so a child was promised three coins and
-handed one. It now says the count, and `test_i18n.gd` fails if either toast string
-names a currency or a multiplier.
+**Against:** it is still a thing to protect, while `PRODUCT.md` also says there
+should be nothing a child can feel anxious about protecting. Both positions are in
+that file, which is honest and unresolved rather than settled.
 
 *Done when:* the mechanic is kept, changed or removed on purpose, and `PRODUCT.md`
 states one position instead of two.
@@ -209,8 +220,9 @@ which `brand/BRAND_SYSTEM.md` §2.4 calls for as the `apex` hold. It was left ou
 of the feel pass deliberately: `godot/tests/test_motion_parity.gd` asserts the
 Godot port matches golden fixtures generated from the web motion model
 (`tools/golden/gen_motion_fixtures.ts`), and that model has one constant gravity.
-Changing it on the web side alone silently breaks parity, and Godot cannot be
-exercised from the container this was written in.
+Changing it on the web side alone silently breaks parity, so the apex hold has to
+land as a matched pair: the motion model and the Godot port in one commit, with
+regenerated fixtures.
 
 *Done when:* apex damping exists in the shared model, both runtimes implement it
 and the fixtures are regenerated — or the idea is dropped on purpose.
@@ -293,6 +305,36 @@ against the title ending at x 636.
 long a child stays with the game.
 
 ## P4 — Build and tooling
+
+### Decide: build the export in CI, or keep committing it
+`output/web` is the live game — `railway.json` copies it straight into Caddy — and
+it is committed by hand. That is ~48 MB of artifact in the tree, re-written on
+every rebuild, and `.git` has grown accordingly.
+
+**The fact that should decide this, measured 2026-08-25: the pck is not
+byte-reproducible.** Two consecutive `build_web.sh` runs on an unchanged tree
+produce pck files of identical size and different content, ~197 KB of 14.3 MB
+differing. The embedded Godot caches are byte-stable, so the variation is in the
+packing itself. So *every* rebuild churns the artifact whether or not anything
+changed — "rebuild to be safe" is never free, and the cost is worse than the
+directory size suggests.
+
+**A correction to what was previously recorded here.** An earlier pass concluded
+that GDScript comment text reaches the pck bytes, and therefore that normalizing
+comments out of the export fingerprint would make the fingerprint lie. That was
+inferred from editing a comment, rebuilding, and seeing the pck hash change — an
+experiment the nondeterminism above invalidates, because the hash changes on a
+no-op rebuild too. **Whether comments reach the bytes is unknown.** Answering it
+needs extracting two pcks and diffing the stored files, not comparing hashes. So
+the option of a comment-insensitive fingerprint is NOT eliminated; it is
+unevaluated.
+
+The three options, then: build in CI and stop committing the artifact; keep
+committing it and accept the churn; or narrow the fingerprint so fewer edits
+force a rebuild, which needs the deterministic comparison done first.
+
+*Done when:* one of the three is chosen and the reasoning is written into
+`deploy/RAILWAY.md`, where the deploy path is described.
 
 ### `error_groups` grows without bound, while `error_events` is bounded
 Retention is asymmetric, and only one half was designed. `error_events` is

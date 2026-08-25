@@ -5,7 +5,6 @@ Authority: This is the system reference: shape, contracts, and the numbers that
 are frozen on purpose. Runtime truth outranks it — if this file and
 `godot/scripts/**`, `godot/data/**` or `server/src/**` disagree, the code is
 right and this file is stale.
-Last verified against code: 2026-08-25
 
 Mutable counts live in [ONBOARDING.md](./ONBOARDING.md) and nowhere else. This
 file describes behaviour and contracts, and quotes a number only when the number
@@ -25,31 +24,14 @@ is itself the rule.
 
 ## The four trees
 
-The most expensive mistake available in this repo is writing correct,
-well-tested code in a tree that never ships.
-
-| Tree | What it is | Ships? |
-| --- | --- | --- |
-| `godot/**` | **The game.** Godot 4.3 / GDScript. The only tree players run. | yes, as `output/web` |
-| `server/**` | **The API.** Node 22 + TypeScript + Postgres: cloud save, family auth, error ingestion. | yes, as a Railway service |
-| `math-kernel/**` | **The reference kernel.** TypeScript implementation of ELO, learner state and problem selection. | never |
-| `tools/**` | Offline curriculum authoring and validation. | never |
+Which tree ships and which never does is the table at the top of
+[README.md](./README.md). Two things about the Godot tree belong here instead,
+because they are contracts rather than orientation.
 
 The game began as a 1:1 port of a Phaser 3 / TypeScript original. That original
 is **deleted**, not merely unused — `src/`, `public/`, `vite/`, `admin.html` and
 `archived/` are all gone. If a comment still points at them, the comment is <!-- retired-ref-ok -->
 stale and the Godot tree is the only implementation.
-
-Godot-side layout:
-
-- `scripts/boot.gd` — cold-start wiring, then hands off to the first scene.
-- `scripts/autoload/` — Config, DataManager, SceneRouter, EventBus, Persistence,
-  and the Save / Profile / Text / Level / Leveling / Theme / Audio managers.
-- `scripts/math/`, `scripts/systems/` — the learning engine, LevelLoader, sync.
-- `scripts/entities/`, `scripts/ui/`, `scripts/scenes/` — gameplay, HUD, screens.
-- `data/` — the source of truth: `tuning/`, `i18n/`, `themes/`, `registries/`,
-  `audio/`, `levels/`, `math/`, `npcs/`, `enemies/`.
-- `tests/` — headless suite, golden fixtures, physics probes.
 
 Autoload order is set in `godot/project.godot` and **matters**: `Persistence` and
 `EventBus` first, `CloudSync` last, because it depends on `SaveManager`,
@@ -215,6 +197,12 @@ advance a stage; after `day_7` the item graduates out of the queue.
 
 ### Selection policy
 
+**The cap is `currentStep` in `curriculumProgress`, not raw ELO.** This is the
+design invariant most likely to be broken by someone optimising selection: a child
+whose rating has drifted upward is still never handed a question above their
+curriculum step. ELO orders candidates *within* the band the step allows; it does
+not choose the band.
+
 Lane weights in `elo_aware_strategy.gd`:
 
 - `40%` comfort — one curriculum step easier
@@ -317,35 +305,24 @@ problem into mastery, review, save and sync.
    a `LearnerAttemptSubmission`, records the attempt, saves the profile, and
    submits or queues through `LearnerSyncService`.
 
-### Session recap and trophy shelf
+### Badges are high-water marks
 
-Two menu surfaces close the loop, on the peak-end rule — a session is remembered
-by its peak and its ending.
+`curriculumProgress` carries a `highestStep` per domain, raised on every step rise
+and never lowered, and the trophy shelf renders from it. **A demotion never
+shrinks a badge** — that is the invariant, and it is the same commitment as silent
+demotions elsewhere in this document. The end-of-session recap reads `SessionStats`
+and only ever counts positives, so a session with nothing to celebrate shows no
+recap rather than a bad one.
 
-`SessionStats` counts owls saved, problems solved, step-ups, comebacks and golden
-wins during play; the main menu consumes it once and ends the recap on the best
-moment (comeback beats golden beats step-up). Only positive counts exist, so a
-session with nothing to celebrate shows no recap at all.
+### Two shapes worth knowing before you extend this
 
-`curriculumProgress` carries a `highestStep` high-water mark per domain, raised
-on every step rise and never lowered. The main menu renders a code-drawn badge
-per attempted domain — sprout / leaf / flower / star from `trophies.tierSteps`. A
-demotion never shrinks a badge.
+The answer UI is multiple-choice only, though the type system already admits
+other answer kinds — adding one is a UI job, not a model change. And
+`level_registry.json` still carries a `minStars` field that the live learner
+model never reads; treat it as vestigial rather than as a gate you have missed.
 
-### Known limitations
-
-- MCQ-only UI, though the type system supports more.
-- Pool ELO ratings are still initialized from legacy static difficulty; local
-  selection obeys curriculum steps instead, but the telemetry-facing ELO layer
-  is coarse.
-- Two-digit addition and subtraction stay out of the owl's local path
-  deliberately.
-- Subtraction step `5` is structurally sparse under the current derivation, so it
-  exists as a tiny bridge rather than a full band.
-- Review is queued on failed challenges, not on first wrong attempts that are
-  corrected within the same challenge.
-- `level_registry.json` still carries `minStars`, which the live learner model
-  does not use.
+Everything else about the current limits of the maths ladder is open work, in
+[roadmap.md](./roadmap.md), not here.
 
 ## Identity, save and sync
 
@@ -461,23 +438,8 @@ It exposes **no** API base field. That was the old admin page's most dangerous
 control: the base was client-writable, so anything on the origin could redirect a
 child's learning records.
 
-The old `admin.html` was deliberately not ported. It read browser
-`localStorage`, while the Godot build stores everything in
-`user://crow_localstorage.json` — identical key names, different storage engine,
-so it could not see this game's data at all. Its translation editor was not
-replaced either: shipping a live string editor would let anyone on a shared
-family device rewrite what a child reads.
-
-### Debug order
-
-1. Confirm which profile is active. Most "impossible" state is another child's
-   save.
-2. Inspect `user://crow_localstorage.json`; delete it for a clean slate.
-3. If behaviour differs after a reload, suspect autoload initialization order.
-4. Compare `crow_save_<username>` against
-   `crow_learner_snapshot_<childId>`, and check
-   `crow_learner_pending_attempts_<childId>` before assuming sync dropped data.
-5. Clear the smallest relevant key rather than the whole store.
+The old `admin.html` was deliberately not ported: a live string editor would let
+anyone on a shared family device rewrite what a child reads.
 
 ## The wire contract
 
@@ -542,11 +504,14 @@ array.
 The four auth tables (`parents`, `devices`, `device_tokens`, `login_codes`) carry
 no policy on purpose — resolving a token to a family precedes knowing the family,
 so a policy comparing against `app.family_id` has nothing to compare yet. They are
-scoped by predicate alone, under the app role. Say so when describing this
-mechanism: three docs claimed the database-level guarantee without the exception,
-and the exception is where the only PII lives. **The trap found the hard way:** a superuser bypasses RLS
-unconditionally, and Railway's `DATABASE_URL` user is one, so the API drops to a
-non-superuser role per transaction. Without that, the policies are decorative.
+scoped by predicate alone, under the app role. **Name that exception whenever you
+describe this mechanism** — it is where the only PII lives, so "isolation is
+enforced in the database" without the qualifier is the kind of half-true a reader
+acts on.
+
+**The trap found the hard way:** a superuser bypasses RLS unconditionally, and
+Railway's `DATABASE_URL` user is one, so the API drops to a non-superuser role per
+transaction. Without that, the policies are decorative.
 
 ### 3. The PIN never leaves the device
 
@@ -649,8 +614,7 @@ is not optional.
   browser's UA line (≤400 chars), written at enrolment so the device list can name
   a device rather than show an id. Nothing prunes it: it lives as long as the
   device row, unlike the copy on an error report, which goes with its day
-  partition. `PRIVACY.md` says so too — it did not until a review found this
-  column disclosed nowhere.
+  partition. `PRIVACY.md` discloses it too.
 - `child_saves` — one blob per child, arbitrated by `problems_attempted`
 - `child_save_history` — the last `CROW_SAVE_HISTORY_DEPTH` versions (default
   20), so a bad merge is recoverable
@@ -719,12 +683,7 @@ enemies, NPCs and props, 88×96 for doors, 32×32 for coins and HUD icons, no
 anti-aliasing, authored at 1x. **Where this section and the manifest disagree,
 the manifest wins.** This describes the machinery that holds the code to it.
 
-Before that machinery, every sprite path and frame grid was a literal wherever it
-happened to be drawn: twelve `res://assets/sprites/**.png` strings across eight
-`.gd` files, six duplicated `spritesheet`/`frameWidth`/`frameHeight` blocks in
-`npc_registry.json`, and a hardcoded `offset` in four `.tscn` files.
-
-Two files carry it now:
+Two files carry the sprite contract:
 
 | File | Says |
 | --- | --- |

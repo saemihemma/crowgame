@@ -2,7 +2,6 @@
 
 Status: Supportive
 Authority: Canonical brand, art-direction and UI standard. Runtime truth still lives in `src/**`, `godot/data/**` and the manifests.
-Last verified against code: 2026-08-25
 
 This is the one brand file. If another document disagrees with this one about
 colour, type, motion, tone or HUD layout, this one is right and the other one is
@@ -1000,8 +999,3 @@ which is the single list of open work for the whole repo. The production list of
 individual art files, with sizes and destinations, is
 [ASSET_MANIFEST.md](./ASSET_MANIFEST.md).
 
-There used to be a `PRODUCTION_PLAN.md` beside this file holding a phase plan and
-a status snapshot. It was deleted: the snapshot had gone badly stale (it described
-a Phaser runtime, `Phaser.Scale.FIT`, and a 19% letterbox as the single biggest
-problem, all of which were gone or fixed) and its phase list duplicated the
-roadmap. The gates and the loop above are what was worth keeping from it.

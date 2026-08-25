@@ -1,116 +1,32 @@
 # Onboarding
 
 Status: Current
-Authority: The working map, plus the ONLY canonical numeric snapshot in the docs.
-Runtime truth still outranks this file — if they disagree, the code is right and
-this file is stale.
-Last verified against code: 2026-08-25
+Authority: The working map — which tree, which loop, where truth lives, what will
+bite you. Runtime truth outranks this file: if they disagree, the code is right.
 
 Get productive without reading the whole repo, and without editing the wrong
 tree. For *why* the game exists, read [PRODUCT.md](./PRODUCT.md). For how the
 system is shaped, read [ARCHITECTURE.md](./ARCHITECTURE.md).
 
+This file deliberately states no counts — not how many levels, scenes, sounds or
+problems exist. Those change with every feature, and a number in prose is a
+number that goes stale silently. The map below says where to look instead.
+
 ## First: which tree are you in?
 
-The most expensive mistake available here is writing correct, well-tested code in
-a tree that never ships.
-
-```
-godot/**        THE GAME.       Godot 4.3 / GDScript. Players run this.
-server/**       THE API.        Node 22 + TS + Postgres. Cloud save, auth, errors.
-math-kernel/**  THE SPEC.       TS reference for ELO/learner/selection. Never ships.
-tools/**        THE FACTORY.    Offline curriculum authoring + validation. Never ships.
-```
-
-The retired Phaser tree (`src/`, `public/`, `vite/`, `admin.html`) and
-`archived/` are **deleted**, not merely unused. If a doc or comment still points <!-- retired-ref-ok -->
-at them, that reference is stale.
+**The most expensive mistake available here is writing correct, well-tested code
+in a tree that never ships.** Which tree does what, and which two never ship, is
+the table at the top of [README.md](./README.md) — read that before anything else.
 
 `math-kernel/` earns its keep twice: it generates `godot/tests/fixtures/*.json`,
 which the parity tests assert against, and it produced the curriculum the game
-ships. CI regenerates the fixtures and fails on any diff, so a Tier-1 change must
-regenerate them in the same commit.
-
-## First 15 minutes
-
-```bash
-# 1. Is the tree healthy?
-bash godot/tools/run_tests.sh        # guard + unit + physics probes
-npm ci && npm run typecheck && npm run validate
-
-# 2. Does the thing players get actually work?
-bash godot/tools/build_web.sh
-node godot/tools/web_boot_smoke.mjs
-
-# 3. Play it
-godot --path godot                   # F5 in the editor
-```
-
-If step 1 is red, stop and fix that first. Green is the contract every change
-ships against.
-
-## Dated repo snapshot
-
-Snapshot as of 2026-08-25.
-This is the only canonical numeric snapshot block in the current docs.
-Refresh it here, and nowhere else, when a count changes.
-
-Every number below is **derived from the data by `npm run validate:docs`**, which
-fails if the prose and the data disagree. That is deliberate, and it is why the
-counts that used to live here in prose alone — script counts, scene-file counts,
-test counts — are gone rather than restated: they drifted every time, silently,
-because nothing computed them. Count those with `git ls-files` when you need
-them; do not write them down.
-
-Game:
-- `godot/data/registries/scenes.json` registers 7 scenes: `boot`, `login`,
-  `main_menu`, `level_select`, `game`, `cloud_panel`, `parent_report`
-- `godot/data/levels/level_registry.json` contains 6 levels, including `level_99`
-  (the maths practice arena)
-- `godot/data/npcs/npc_registry.json` contains 6 NPC entries (owl variants:
-  teacher, gentle, tough, twin chain, triple chain, gauntlet)
-- `godot/data/enemies/enemy_registry.json` contains 1 enemy type (the cockroach)
-- `godot/data/audio/audio_manifest.json` currently exposes 5 music tracks and 16 live SFX entries.
-- `godot/data/registries/spawn_registry.json`: **5** spawnable object types
-- `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **294** keys, matched key-for-key by
-  `strings_is.json`
-- **19** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
-
-Maths content — `DataManager` loads 4 math pools totaling 3150 problems:
-- `curriculum`: 3035
-- `gaps`: 60
-- `dataset`: 40
-- `easy`: 15
-
-Server:
-- **3** migrations: `001_errors.sql`, `002_family_and_save.sql`,
-  `003_app_role_on_every_path.sql`
-
-Tests:
-- the GDScript suite plus **6** headless physics probes, all via
-  `bash godot/tools/run_tests.sh`
-- the server suite against a real Postgres, via `npm --prefix server test`
-- **2** browser harnesses: `web_boot_smoke.mjs` (the export boots) and
-  `error_pipeline_e2e.mjs` (browser → API → Postgres)
-
-### The one number people quote wrongly
-
-`3150` is **total shipped inventory, not the owl path.**
-
-- The opening unlocked domains are `addition` plus `counting`; pattern matching
-  joins the owl-safe set later through the normal unlock rules.
-- Shipped owl interaction length is `1` problem per encounter. `problemCount` is
-  per-NPC, so a future gated owl can ask more.
-- Selection is capped by `currentStep` in `curriculumProgress`, not raw ELO — a
-  child cannot be handed a much harder question because their rating drifted up.
-- For the owl-safe inventory and the fresh-profile subset, use
-  `reports/math-batches/owl-surface-summary.json`.
-
-No artifact in this repo claims the difficulty curve suits a particular child.
-The maths evidence is selection-layer rail safety, not pedagogy.
+ships. Change a learner or motion constant there and regenerate the fixtures in
+the same commit.
 
 ## Source-of-truth map
+
+The most useful table in this file. When you want to know something, look here
+before you grep.
 
 | Question | Answer lives in |
 | --- | --- |
@@ -118,6 +34,9 @@ The maths evidence is selection-layer rail safety, not pedagogy.
 | What numbers tune it? | `godot/data/tuning/*.json` |
 | What does a player read? | `godot/data/i18n/strings_*.json` |
 | Which scenes exist, and how are they reached? | `godot/data/registries/scenes.json` |
+| Which levels exist? | `godot/data/levels/level_registry.json` — `level_99` is the maths practice arena, not a test fixture |
+| Which maths pools exist? | `godot/data/math/` — `curriculum` is what ships; `gaps`, `dataset` and `easy` are supporting sets |
+| Which problems an owl may actually ask | `reports/math-batches/owl-surface-summary.json` |
 | How does difficulty adapt? | `godot/scripts/systems/learner_state_manager.gd` + `godot/scripts/math/**` |
 | Is that logic still correct? | `godot/tests/fixtures/**` vs `math-kernel/**` |
 | What is stored, where, under which key? | [ARCHITECTURE.md](./ARCHITECTURE.md#identity-save-and-sync) |
@@ -125,51 +44,14 @@ The maths evidence is selection-layer rail safety, not pedagogy.
 | What is in the database? | `server/migrations/**` |
 | How does it get deployed? | [deploy/RAILWAY.md](./deploy/RAILWAY.md) |
 
-## Actual runtime flow
+## The loop
 
-```
-Boot ──▶ Login ("Who's playing?")  ──▶ MainMenu ──▶ LevelSelect ──▶ Game
-          │  name + 4-digit PIN                        │
-          │  (a selector, NOT auth)                    ├─▶ owl encounter
-          ▼                                            │     ├─ 1 problem
-   profile save loads                                  │     ├─ ELO + learner update
-   learner snapshot restores                           │     └─ save (local, then cloud)
-   CloudSync binds the child                           │
-   and pulls the cloud save                            └─▶ death: level reloads
-```
-
-## Task routing
-
-| I want to… | Do this |
-| --- | --- |
-| change a number a player feels | edit `godot/data/tuning/*.json`. Never a `.gd`. |
-| add or change a string | edit BOTH `strings_en.json` and `strings_is.json` |
-| add a level object type | one entry in `spawn_registry.json` + a scene with `setup_from_spawn(spawn)`. No `game.gd` change. |
-| add a sound | `tools/gen_sfx.py` or drop a file → `audio_manifest.json` → `sound_events.json` → `AudioManager.play_event()` |
-| add a sprite | `python3 godot/tools/check_assets.py --spec`, then [the sprite contract](./ARCHITECTURE.md#the-sprite-contract) |
-| change ELO/learner/movement constants | edit `math-kernel/**`, regenerate fixtures, keep Godot parity green, all in one commit |
-| add curriculum content | [the authoring pipeline](./ARCHITECTURE.md#the-math-authoring-pipeline), then `npm run math:materialize` |
-| change anything on the wire | [the wire contract](./ARCHITECTURE.md#the-wire-contract) first — it is frozen deliberately |
-| add a database column | a new forward-only migration; expand/contract, never destructive in the same deploy |
-| debug "works locally, not deployed" | `node godot/tools/web_boot_smoke.mjs`, then the error groups in Postgres |
-
-## Live vs generated vs never-shipped
-
-| Category | Paths | Note |
-| --- | --- | --- |
-| Live | `godot/scripts/**`, `godot/data/**`, `server/src/**` | edit these |
-| Referenced assets | `godot/assets/**` | not every file is live; `npm run validate:assets` checks |
-| Contract | `server/migrations/**`, `godot/tests/fixtures/**` | changing these changes installed clients |
-| Generated | `godot/data/levels/compiled/*.json`, `output/web/**`, `server/dist/**` | never hand-edit |
-| Never shipped | `math-kernel/**`, `tools/**`, `godot/tests/**` | still gated by CI |
-
-## The verification loop
-
-The default change loop:
+Run this first. If it is red, stop and fix that before anything else — green is
+the contract every change ships against.
 
 ```bash
 bash godot/tools/run_tests.sh          # hardcode guard + unit tests + physics probes
-npm run typecheck
+npm ci && npm run typecheck
 npm run validate
 godot --path godot                     # then actually play it
 ```
@@ -201,17 +83,52 @@ that broke an autoload entirely — both invisible to every other check here.
 Some things still need a human: movement feel, difficulty pacing, whether a
 moment lands for a child. Say in your PR what you played and what you saw.
 
+## Task routing
+
+| I want to… | Do this |
+| --- | --- |
+| change a number a player feels | edit `godot/data/tuning/*.json`. Never a `.gd`. |
+| add or change a string | edit BOTH `strings_en.json` and `strings_is.json` |
+| add a level object type | one entry in `spawn_registry.json` + a scene with `setup_from_spawn(spawn)`. No `game.gd` change. |
+| add a sound | `tools/gen_sfx.py` or drop a file → `audio_manifest.json` → `sound_events.json` → `AudioManager.play_event()` |
+| add a sprite | `python3 godot/tools/check_assets.py --spec`, then [the sprite contract](./ARCHITECTURE.md#the-sprite-contract) |
+| change ELO/learner/movement constants | edit `math-kernel/**`, regenerate fixtures, keep Godot parity green, all in one commit |
+| add curriculum content | [the authoring pipeline](./ARCHITECTURE.md#the-math-authoring-pipeline), then `npm run math:materialize` |
+| change anything on the wire | [the wire contract](./ARCHITECTURE.md#the-wire-contract) first — it is frozen deliberately |
+| add a database column | a new forward-only migration; expand/contract, never destructive in the same deploy |
+| debug "works locally, not deployed" | `node godot/tools/web_boot_smoke.mjs`, then the error groups in Postgres |
+
+## Live vs generated vs never-shipped
+
+| Category | Paths | Note |
+| --- | --- | --- |
+| Live | `godot/scripts/**`, `godot/data/**`, `server/src/**` | edit these |
+| Referenced assets | `godot/assets/**` | not every file is live; `npm run validate:assets` checks |
+| Contract | `server/migrations/**`, `godot/tests/fixtures/**` | changing these changes installed clients |
+| Generated | `godot/data/levels/compiled/*.json`, `output/web/**`, `server/dist/**` | never hand-edit |
+| Never shipped | `math-kernel/**`, `tools/**`, `godot/tests/**` | still gated by CI |
+
+## Runtime flow
+
+```
+Boot ──▶ Login ("Who's playing?")  ──▶ MainMenu ──▶ LevelSelect ──▶ Game
+          │  name + 4-digit PIN                        │
+          │  (a selector, NOT auth)                    ├─▶ owl encounter
+          ▼                                            │     ├─ ELO + learner update
+   profile save loads                                  │     └─ save (local, then cloud)
+   learner snapshot restores                           │
+   CloudSync binds the child                           └─▶ death: level reloads
+   and pulls the cloud save
+```
+
 ## Footguns, ranked by time actually lost
 
 1. **Editing the wrong tree.** `math-kernel/**` and `tools/**` never ship. A
    perfect fix there changes nothing a player sees.
 2. **`learner_state_manager.gd` looks like it wants refactoring. It does not.**
-   It is long — 657 lines — and parity-locked against golden fixtures; splitting
-   it risks the silent fidelity drift those fixtures exist to catch. (It is not
-   the largest file in the repo, which older docs claimed: `game.gd` is longer at
-   691 lines, and `tools/math_authoring.ts` is 1946. Length is not why this one
-   is protected.) All three numbers are derived by `npm run validate:docs` — they
-   had drifted twice before that, once carrying a superlative that was never true.
+   It is parity-locked against golden fixtures, and splitting it risks the silent
+   fidelity drift those fixtures exist to catch. Length is not why it is
+   protected — other files are longer.
 3. **Changing a Tier-1 constant without regenerating fixtures.** CI fails, and
    correctly: the kernel and the game must agree.
 4. **Autoload order.** `CloudSync` must come after `SaveManager`,
@@ -286,14 +203,9 @@ The doc set is deliberately small: this file, [ARCHITECTURE.md](./ARCHITECTURE.m
 (`PRIVACY.md`, `SECURITY.md`, `LICENSE_ATTRIBUTIONS.md`, `CONTRIBUTING.md`), the
 deploy runbook, and `brand/**` for art direction. Resist adding to it.
 
-(This sentence used to end "resist adding a ninth" while README.md said "six
-files, on purpose" and pointed here as the authority — two Status: Current docs
-disagreeing about the size of the doc set. The two were counting different
-things: README lists the six entries a newcomer reads, this list enumerates the
-compliance files individually. Neither number is load-bearing, so the one that
-could go stale is gone and README's is now checked against its own table.)
-
-If a change affects a count in the snapshot above, storage keys, or anything on
-the wire, update the doc in the same commit. `npm run validate:docs` enforces a
-good deal of this mechanically — counts are computed from the data, not trusted
-from prose.
+Two rules keep it that way. **Write down contracts, not descriptions** — what
+crosses the network, what a storage key means, what a promise to a parent is. A
+count of what currently exists is a description, and it belongs in the data, not
+in prose. And **if a change touches a storage key, the wire contract or a
+compliance claim, update the doc in the same commit**; `npm run validate:docs`
+enforces the mechanical part.
