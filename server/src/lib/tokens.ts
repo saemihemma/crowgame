@@ -35,10 +35,6 @@ export function hashToken(token: string): Buffer {
     return createHash('sha256').update(token).digest();
 }
 
-/** Constant-time compare, for anywhere a hash is checked outside of a SQL lookup. */
-export function hashesEqual(a: Buffer, b: Buffer): boolean {
-    return a.length === b.length && timingSafeEqual(a, b);
-}
 
 /** Pairing codes are compared case-insensitively; a parent will type lowercase. */
 export function normalizePairingCode(raw: string): string {
