@@ -211,7 +211,12 @@ function validateOnboardingSnapshot() {
         { pattern: /\bcontains \d+ enemy type\b/, description: 'enemy counts' },
         { pattern: /\b\d+ (?:music tracks|live SFX entries)\b/, description: 'audio manifest counts' },
     ];
-    for (const doc of ['README.md', 'ARCHITECTURE.md', 'PRODUCT.md', 'roadmap.md']) {
+    // EVERY doc except the canonical one, not a hardcoded list. A hardcoded list
+    // was the first version of this and it leaked: a count landing in
+    // CONTRIBUTING.md, PRIVACY.md, brand/README.md or deploy/RAILWAY.md sailed
+    // through, which is exactly the drift this check exists to stop.
+    for (const doc of walkFiles('.', new Set(['.md']))) {
+        if (doc === DOC) continue;
         for (const { pattern, description } of duplicated) {
             ensureNoPattern(doc, pattern, `a duplicate mutable count for ${description} (these live in ${DOC})`);
         }

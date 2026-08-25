@@ -15,9 +15,9 @@ What this is:
 What this is not:
 - not the runtime asset contract
 - not the canonical source for current asset counts
-- not proof that every archived asset is still shipped
+- not proof that every asset it lists is still shipped
 
-For live asset expectations, use [brand/ASSET_MANIFEST.md](./brand/ASSET_MANIFEST.md). For archived or historical material, use [archived/README.md](./archived/README.md).
+For live asset expectations, use [brand/ASSET_MANIFEST.md](./brand/ASSET_MANIFEST.md).
 
 ## Current Guidance
 
@@ -67,4 +67,4 @@ When asset provenance changes:
 1. Update this document.
 2. Update any runtime manifest or credits file that references the asset.
 3. Run `npm run validate:assets`.
-4. If the asset moved out of the live tree, also update [archived/README.md](./archived/README.md) or [brand/ASSET_MANIFEST.md](./brand/ASSET_MANIFEST.md) as needed.
+4. If the asset moved out of the live tree, also update [brand/ASSET_MANIFEST.md](./brand/ASSET_MANIFEST.md) as needed. There is no archive tree: material that leaves the live tree is deleted, and git history is the record.
