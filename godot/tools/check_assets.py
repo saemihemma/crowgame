@@ -38,6 +38,7 @@ import json
 import os
 import re
 import struct
+import zlib
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -126,11 +127,99 @@ def resolve(raw, spec):
     return merged, overridden
 
 
+# Inlined from the deleted godot/tools/audit_pixel_art.py, which was 357 lines of
+# unwired reporting wrapped around this one live function. Deleting that module
+# broke CI, because the reference sweep grepped for the FILENAME and a Python
+# `import audit_pixel_art` carries no .py. One consumer, so it lives here.
+def read_png_rgba(path):
+    """Decode an 8-bit PNG to (width, height, bytearray RGBA). Handles colour
+    types 0/2/3/4/6 and the five standard filters — enough for game sprites."""
+    with open(path, "rb") as f:
+        data = f.read()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("not a PNG: %s" % path)
+    pos, idat, palette, trns = 8, bytearray(), None, None
+    width = height = depth = ctype = None
+    while pos < len(data):
+        (length,) = struct.unpack(">I", data[pos:pos + 4])
+        ctag = data[pos + 4:pos + 8]
+        body = data[pos + 8:pos + 8 + length]
+        pos += 12 + length
+        if ctag == b"IHDR":
+            width, height, depth, ctype, _, _, interlace = struct.unpack(">IIBBBBB", body)
+            if depth != 8 or interlace != 0:
+                raise ValueError("unsupported PNG (depth=%d interlace=%d): %s" % (depth, interlace, path))
+        elif ctag == b"PLTE":
+            palette = body
+        elif ctag == b"tRNS":
+            trns = body
+        elif ctag == b"IDAT":
+            idat += body
+        elif ctag == b"IEND":
+            break
+
+    raw = zlib.decompress(bytes(idat))
+    channels = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[ctype]
+    stride = width * channels
+    out = bytearray(stride * height)
+    prev = bytearray(stride)
+    p = 0
+    for y in range(height):
+        ftype = raw[p]
+        p += 1
+        line = bytearray(raw[p:p + stride])
+        p += stride
+        if ftype == 1:
+            for i in range(channels, stride):
+                line[i] = (line[i] + line[i - channels]) & 0xFF
+        elif ftype == 2:
+            for i in range(stride):
+                line[i] = (line[i] + prev[i]) & 0xFF
+        elif ftype == 3:
+            for i in range(stride):
+                left = line[i - channels] if i >= channels else 0
+                line[i] = (line[i] + ((left + prev[i]) >> 1)) & 0xFF
+        elif ftype == 4:
+            for i in range(stride):
+                a = line[i - channels] if i >= channels else 0
+                b = prev[i]
+                c = prev[i - channels] if i >= channels else 0
+                pa, pb, pc = abs(b - c), abs(a - c), abs(a + b - 2 * c)
+                pred = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
+                line[i] = (line[i] + pred) & 0xFF
+        elif ftype != 0:
+            raise ValueError("bad PNG filter %d" % ftype)
+        out[y * stride:(y + 1) * stride] = line
+        prev = line
+
+    rgba = bytearray(width * height * 4)
+    for i in range(width * height):
+        s, d = i * channels, i * 4
+        if ctype == 6:
+            rgba[d:d + 4] = out[s:s + 4]
+        elif ctype == 2:
+            rgba[d:d + 3] = out[s:s + 3]
+            rgba[d + 3] = 255
+        elif ctype == 0:
+            g = out[s]
+            rgba[d:d + 4] = bytes((g, g, g, 255))
+        elif ctype == 4:
+            g = out[s]
+            rgba[d:d + 4] = bytes((g, g, g, out[s + 1]))
+        elif ctype == 3:
+            idx = out[s]
+            rgba[d:d + 3] = palette[idx * 3:idx * 3 + 3]
+            rgba[d + 3] = trns[idx] if trns and idx < len(trns) else 255
+    return width, height, rgba
+
+
+# --- metrics ----------------------------------------------------------------
+
+
 def read_frames(path, fw, fh, count):
     """Grid-slice a PNG into `count` RGBA frame buffers. Reuses the audit tool's
     dependency-free decoder so CI needs no Pillow."""
     sys.path.insert(0, HERE)
-    from audit_pixel_art import read_png_rgba
     w, _h, rgba = read_png_rgba(path)
     cols = max(1, w // fw)
     out = []
