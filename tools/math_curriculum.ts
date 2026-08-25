@@ -65,7 +65,15 @@ export function deriveCurriculumStep(problem: MathProblem): number {
     // author cannot place a relational problem wherever they like.
     const relational = parseRelationalPrompt(problem.prompt.text);
     if (relational) {
-        return deriveAdditionStep(relational.known, relational.unknown);
+        // The rung the plain fact would earn. "5 + ? = 8" is exactly as hard as
+        // "5 + 3 = 8" -- the same bond, asked from the other end -- and
+        // "? - 3 = 5" is the fact 8 - 3. Deriving from the fact rather than from
+        // the authored `difficulty` keeps the step VERIFIED: an author cannot
+        // place a relational problem wherever they like.
+        const [left, right] = relational.fact;
+        return relational.operator === '-'
+            ? deriveSubtractionStep(left, right)
+            : deriveAdditionStep(left, right);
     }
 
     const parsed = parseArithmeticPrompt(problem.prompt.text);

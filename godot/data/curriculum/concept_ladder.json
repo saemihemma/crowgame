@@ -243,7 +243,7 @@
       "domain": "addition",
       "steps": [
         2,
-        6
+        9
       ],
       "requires": {
         "skill": "missing_addend"
@@ -258,7 +258,7 @@
       "domain": "addition",
       "steps": [
         2,
-        7
+        12
       ],
       "requires": {
         "skill": "relational_equals"
@@ -267,6 +267,66 @@
         "relational_equals"
       ],
       "tutorial": "addition.balance"
+    },
+    {
+      "id": "subtraction.missing_part",
+      "domain": "subtraction",
+      "steps": [
+        3,
+        11
+      ],
+      "requires": {
+        "skill": "missing_subtrahend"
+      },
+      "skills": [
+        "missing_subtrahend"
+      ],
+      "tutorial": "subtraction.missing_part"
+    },
+    {
+      "id": "subtraction.start_unknown",
+      "domain": "subtraction",
+      "steps": [
+        6,
+        13
+      ],
+      "requires": {
+        "skill": "missing_minuend"
+      },
+      "skills": [
+        "missing_minuend"
+      ],
+      "tutorial": "subtraction.start_unknown"
+    },
+    {
+      "id": "subtraction.balance",
+      "domain": "subtraction",
+      "steps": [
+        4,
+        13
+      ],
+      "requires": {
+        "skill": "subtraction_relational"
+      },
+      "skills": [
+        "subtraction_relational"
+      ],
+      "tutorial": "subtraction.balance"
+    },
+    {
+      "id": "addition.both_sides",
+      "domain": "addition",
+      "steps": [
+        3,
+        9
+      ],
+      "requires": {
+        "skill": "both_sides_equals"
+      },
+      "skills": [
+        "both_sides_equals"
+      ],
+      "tutorial": "addition.both_sides"
     },
     {
       "id": "subtraction.take_away",

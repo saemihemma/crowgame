@@ -466,3 +466,52 @@ Original prompt: fix the division cap, the four-rung subtraction hole and additi
   live build rebuilt and boot-smoked with zero console errors, analytics catalog
   regenerated, server suite green (18 pass / 0 fail; Postgres-backed cases need a
   DATABASE_URL this environment lacks).
+
+## 2026-08-25 - Relational maths across both operations, and the form the research tested
+
+- One parser pass covered all three roadmap items, which is why they were
+  sequenced that way: `parseRelationalPrompt` went from three addition-only
+  patterns to four shapes across two operators, and each pattern now carries its
+  own reader. "5 - ? = 2" and "? - 3 = 5" are not the same question and must not
+  be verified as though they were.
+- Added `fact: [left, right]` to the parse result - the plain arithmetic
+  underneath, in an order that matters. "? - 3 = 5" is the fact `8 - 3`, and the
+  minuend has to come first for both the borrow rule and the step derivation.
+  `deriveCurriculumStep` now routes by operator, so a relational subtraction gets
+  the rung its plain fact would earn.
+- TWO BUGS IN MY OWN WORK, caught by probing rather than by assuming.
+  `8 + 7 = ? + 6` reported maxOperand 9 when the child has to work inside
+  FIFTEEN - the total nobody writes down was missing from the operand list, and
+  the cap would have admitted a problem it should refuse. And its carry flag was
+  computed from the wrong pair: the carry lives in the 8 + 7, not in the known
+  and unknown.
+- 46 new problems, all inside the operand cap: relational addition widened to
+  totals of twenty, subtraction Change Unknown and Start Unknown, and twelve
+  two-sided equations. 66 relational problems in total across six overlays.
+- Four new lessons, EN + IS. Reviewing the cards before trusting the guard found
+  two teaching errors it could not have caught, because both were internally
+  consistent: the start-unknown try card asked for the part that WENT when the
+  lesson is about the start, and the subtraction balance card had the same
+  mismatch. `part_whole` can only ever assert the missing part, so both became
+  equations with the unknown in the slot the lesson is about.
+- That needed a renderer gap closed: the unknown can now lead
+  ("? - 4 = 9"), which is the only way to draw start-unknown at all.
+- MY GUARD CHANGE BROKE FIVE EXISTING CARDS and said so immediately: collapsing
+  the equation truth into +/- turned `5 x 7` into `5 - 7` and reported -2.
+  Restructured to keep the operator switch for a complete sum and add the
+  missing-slot cases beside it.
+- The equality card was colouring one side green. `addition.both_sides` opens on
+  two towers of seven, and highlighting one of them says the opposite of what the
+  card is for. A previous pass had already restructured that code around `ask`,
+  so the first fix landed in the wrong branch and the capture is what caught it.
+  Captures are worth taking even when the guard is clean.
+- Also restored a documentation section I had destroyed earlier: "What is not on
+  the ladder at all" was consumed by one of my own generated-section rewrites,
+  taking the subitizing, commutativity and CGI-compare analysis with it.
+  Recovered from git and updated rather than left lost.
+- Verified: 184 Godot tests, 6 probes, all guards, npm run validate, typecheck,
+  live build rebuilt and boot-smoked clean, analytics catalog regenerated, server
+  suite green.
+- Left undone on purpose: nothing relational exceeds a total of twenty, and
+  multiplication and division have no relational form. Both in roadmap.md; the
+  first is blocked on the operand-cap decision rather than on the parser.

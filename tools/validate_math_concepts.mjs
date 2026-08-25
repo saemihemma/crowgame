@@ -117,19 +117,35 @@ function truthOf(visual, params) {
             return core[Number(params.length ?? core.length) % core.length];
         }
         case 'equation': {
-            // An absent `b` means the unknown is the PART, not the result:
-            // "8 = 5 + ?" asserts 3. Only addition is meaningful in that shape.
-            if (params.b === undefined) {
-                return params.op === '+' && params.result !== undefined ? n('result') - n('a') : null;
+            // Which slot is missing decides what the card asserts. A complete
+            // sum asserts its result; anything else asserts the missing number.
+            //   a op b            ->  a op b
+            //   a + ? = c / c = a + ?  ->  c - a
+            //   a - ? = c / c = a - ?  ->  a - c
+            //   ? + b = c              ->  c - b
+            //   ? - b = c / c = ? - b  ->  c + b
+            const has = (k) => params[k] !== undefined;
+            if (has('a') && has('b')) {
+                switch (params.op) {
+                    case '+': return n('a') + n('b');
+                    case '-': return n('a') - n('b');
+                    case '\u00D7': return n('a') * n('b');
+                    case '\u00F7': return n('b') === 0 ? null : n('a') / n('b');
+                    default: return null;
+                }
             }
-            const [a, b] = [n('a'), n('b')];
-            switch (params.op) {
-                case '+': return a + b;
-                case '-': return a - b;
-                case '×': return a * b;
-                case '÷': return b === 0 ? null : a / b;
-                default: return null;
+            // Only addition and subtraction are written with an unknown slot in
+            // this pack; a missing operand on x or / asserts nothing checkable.
+            if (!has('result') || (params.op !== '+' && params.op !== '-')) {
+                return null;
             }
+            if (has('a')) {
+                return params.op === '+' ? n('result') - n('a') : n('a') - n('result');
+            }
+            if (has('b')) {
+                return params.op === '+' ? n('result') - n('b') : n('result') + n('b');
+            }
+            return null;
         }
         default:
             return null;
@@ -462,12 +478,14 @@ for (const tutorial of tutorials.tutorials) {
 
         const truth = truthOf(card.visual, card.params ?? {});
 
-        // A card that states an answer must state the true one -- but on the
-        // interior-unknown form ("9 = 4 + ?") `result` is the WHOLE, not the
-        // answer, so cross-checking it against the missing part is comparing two
-        // different numbers. Only treat `result` as an assertion about the answer
-        // when the sum is complete.
-        const resultIsTheAnswer = card.visual !== 'equation' || card.params?.b !== undefined;
+        // A card that states an answer must state the true one -- but on an
+        // unknown-slot form ("9 = 4 + ?", "? - 4 = 9") `result` is the other side
+        // of the equals, not the answer.
+        // `result` only states the answer when the sum is COMPLETE. With either
+        // operand missing it is the other side of the equals, and cross-checking
+        // it against the missing number compares two different things.
+        const resultIsTheAnswer = card.visual !== 'equation'
+            || (card.params?.a !== undefined && card.params?.b !== undefined);
         if (resultIsTheAnswer && card.params?.result !== undefined && truth !== null
             && Number(card.params.result) !== truth) {
             fail(`${where} shows the answer ${card.params.result}, but its own numbers make ${truth}.`);

@@ -445,6 +445,20 @@ export const TEMPLATES = {
     'math.hint.rel.count_up': 'Something and {known} makes {total}. Start at {known} and count up to {total}.',
     'math.hint.rel.other_part': '{total} is the whole, and {known} is one part. What is the other part?',
     'math.expl.rel.parts': '{known} and {unknown} makes {total}.',
+
+    // Relational subtraction: the unknown is the part that WENT, or the amount
+    // there was to start with. Separate wording from the addition family because
+    // "how many more to make eight" and "how many went" are different questions
+    // and a child should not have to translate between them.
+    'math.hint.rel.how_many_went': 'You had {start}. Now there are {left}. How many went?',
+    'math.hint.rel.how_many_started': 'Something lost {gone} and {left} were left. How many were there to start?',
+    'math.hint.rel.left_after': '{left} is what is left when you take some away from {start}. How many were taken?',
+    'math.expl.rel.taken': '{start} take away {gone} leaves {left}.',
+
+    // Both sides carry an operation. The sentence has to say the balance out
+    // loud, because the whole point of the shape is that "=" is not an
+    // instruction to compute the left side.
+    'math.hint.rel.both_sides': 'This side makes {total}. The other side has {known}, so it needs enough to reach {total} too.',
     'math.expl.sub': '{a} take away {b} leaves {diff}.',
     'math.expl.sub_x': '{a} take away {b} leaves {diff}!',
     'math.expl.sub_just': '{a} take away {b} leaves just {diff}!',
@@ -801,6 +815,17 @@ export const SEMANTICS = {
     'math.hint.rel.how_many_more': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
     'math.hint.rel.count_up': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
     'math.hint.rel.other_part': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
+    'math.hint.rel.how_many_went': (p, problem) => isAnswer(p.start - p.left, problem, `${p.start}-${p.left}`),
+    'math.hint.rel.how_many_started': (p, problem) => isAnswer(p.left + p.gone, problem, `${p.left}+${p.gone}`),
+    'math.hint.rel.left_after': (p, problem) => isAnswer(p.start - p.left, problem, `${p.start}-${p.left}`),
+    'math.hint.rel.both_sides': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
+    // Internal arithmetic only, deliberately: which of the three numbers is the
+    // ANSWER depends on the shape ("12 - ? = 5" answers 7, "? - 3 = 9" answers
+    // 12), so tying this to answer.correct would be wrong for two of the three.
+    // The hint families above each tie to the answer, so every problem still has
+    // one phrasing checked against it.
+    'math.expl.rel.taken': (p) => holds(p.start - p.gone === p.left, `${p.start}-${p.gone}=${p.left}`),
+
     'math.expl.rel.parts': (p, problem) => holds(p.known + p.unknown === p.total, `${p.known}+${p.unknown}=${p.total}`)
         ?? isAnswer(p.unknown, problem, `the missing part ${p.unknown}`),
 

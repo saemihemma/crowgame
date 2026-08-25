@@ -1753,6 +1753,205 @@
           }
         }
       ]
+    },
+    {
+      "id": "subtraction.missing_part",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "take_away",
+          "params": {
+            "total": 12,
+            "gone": 7
+          }
+        },
+        {
+          "body": "model",
+          "visual": "number_line",
+          "params": {
+            "from": 0,
+            "to": 15,
+            "start": 12,
+            "hops": -7
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 12,
+            "op": "-",
+            "b": 7,
+            "result": 5
+          }
+        },
+        {
+          "body": "try",
+          "visual": "part_whole",
+          "params": {
+            "total": 10,
+            "known": 4
+          },
+          "choice": {
+            "options": [
+              10,
+              6,
+              4
+            ],
+            "correct": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "subtraction.start_unknown",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "part_whole",
+          "params": {
+            "total": 11,
+            "known": 8
+          }
+        },
+        {
+          "body": "model",
+          "visual": "number_line",
+          "params": {
+            "from": 0,
+            "to": 15,
+            "start": 8,
+            "hops": 3
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 11,
+            "op": "-",
+            "b": 3,
+            "result": 8
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "op": "-",
+            "b": 4,
+            "result": 9
+          },
+          "choice": {
+            "options": [
+              13,
+              5,
+              9
+            ],
+            "correct": 13
+          }
+        }
+      ]
+    },
+    {
+      "id": "subtraction.balance",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "take_away",
+          "params": {
+            "total": 9,
+            "gone": 4
+          }
+        },
+        {
+          "body": "model",
+          "visual": "equation",
+          "params": {
+            "a": 9,
+            "op": "-",
+            "b": 4,
+            "result": 5,
+            "form": "total_first"
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 13,
+            "op": "-",
+            "b": 5,
+            "result": 8,
+            "form": "total_first"
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 11,
+            "op": "-",
+            "result": 7,
+            "form": "total_first"
+          },
+          "choice": {
+            "options": [
+              7,
+              4,
+              11
+            ],
+            "correct": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "addition.both_sides",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "balance",
+          "params": {
+            "a": 7,
+            "b": 7
+          }
+        },
+        {
+          "body": "model",
+          "visual": "part_whole",
+          "params": {
+            "total": 7,
+            "known": 5
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 4,
+            "op": "+",
+            "b": 3,
+            "result": 7
+          }
+        },
+        {
+          "body": "try",
+          "visual": "part_whole",
+          "params": {
+            "total": 9,
+            "known": 6
+          },
+          "choice": {
+            "options": [
+              3,
+              9,
+              6
+            ],
+            "correct": 3
+          }
+        }
+      ]
     }
   ]
 }

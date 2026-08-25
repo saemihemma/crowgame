@@ -280,11 +280,14 @@ func _draw_balance() -> void:
 	var outline := _role("outline", "ink")
 	var roles := ["token_a", "token_b"]
 	var fallbacks := ["owl", "accent"]
-	# A statement points at one tower; a question must point at neither.
+	# A statement points at one tower; a question must point at neither. Two
+	# equal towers also point at neither: colouring one side of an equality says
+	# the opposite of what an equality card is for, and addition.both_sides opens
+	# on exactly that picture.
 	var ask := String(_params.get("ask", ""))
 	var winner: int = -1
-	if ask == "":
-		winner = 0 if a >= b else 1
+	if ask == "" and a != b:
+		winner = 0 if a > b else 1
 	for c in 2:
 		var count: int = a if c == 0 else b
 		var x := size.x * (0.35 if c == 0 else 0.65)
@@ -466,7 +469,9 @@ func _draw_part_whole() -> void:
 ## child is about to be asked rather than its answer.
 ## The abstract form, last and largest. A missing `result` draws the question a
 ## child is about to be asked rather than its answer; a missing `b` puts the
-## unknown INSIDE the sum instead of after the equals.
+## unknown INSIDE the sum; a missing `a` puts it FIRST, which is the only way to
+## draw "? - 4 = 9" -- the start-unknown shape, and the hardest one a child in
+## this band meets.
 ##
 ## `form: "total_first"` writes the whole before the equals -- "8 = 5 + 3". That
 ## is not a stylistic variant: it is the sentence a child has to be able to read
@@ -475,7 +480,7 @@ func _draw_part_whole() -> void:
 func _draw_equation() -> void:
 	var size_px := _tune("equation_font_size", 46.0)
 	var op := String(_params.get("op", "+"))
-	var left := str(_int("a"))
+	var left := str(_params["a"]) if _params.has("a") else "?"
 	var right := str(_params["b"]) if _params.has("b") else "?"
 	var whole := str(_params["result"]) if _params.has("result") else "?"
 	var text := "%s = %s %s %s" % [whole, left, op, right] if String(_params.get("form", "")) == "total_first" \

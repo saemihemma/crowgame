@@ -68,14 +68,18 @@ Two rules the build enforces:
 | `addition.carrying` | 30-36 | When ten ones become a new ten: stop at the ten on the way. |
 | `addition.multi_digit` | 37-46 | Hundreds and thousands: the same two moves, in wider columns. |
 
-Two more concepts sit on addition as **overlays** rather than rungs. They claim
-problems by authored skill, not by step, so they share the step range of the
-rungs above rather than owning any of it — see **Overlays** below.
+Six concepts sit on addition and subtraction as **overlays** rather than rungs.
+They claim problems by authored skill, not by step, so they share the step ranges
+of the rungs above rather than owning any of them -- see **Overlays** below.
 
 | Overlay | Spans | Claims | The idea |
 | --- | --- | --- | --- |
-| `addition.missing_part` | 2-6 | `missing_addend` | The unknown is a PART, not the result. Count up inside the whole to find it. |
-| `addition.balance` | 2-7 | `relational_equals` | The whole can be written first. `=` means both sides are the same amount. |
+| `addition.missing_part` | 2-9 | `missing_addend` | The unknown is a PART, not the result. Count up inside the whole to find it. |
+| `addition.balance` | 2-12 | `relational_equals` | The whole can be written first. `=` means both sides are the same amount. |
+| `subtraction.missing_part` | 3-11 | `missing_subtrahend` | How many went. Count back to the amount that is left, and the hops are the answer. |
+| `subtraction.start_unknown` | 6-13 | `missing_minuend` | How many there were to begin with. Put the part that went back on -- the hardest CGI tier. |
+| `subtraction.balance` | 4-13 | `subtraction_relational` | The answer written first: `5 = 12 - ?`. |
+| `addition.both_sides` | 3-9 | `both_sides_equals` | An operation on BOTH sides. The form that separates `=` as a relation from `=` as an instruction. |
 
 ### Overlays
 
@@ -414,6 +418,48 @@ that the cap drops entirely:
 - **`subtraction.borrowing`.** Same cap as its neighbour. Nothing in steps 30-36 has an operand at or below 20.
 - **`addition.multi_digit`.** Every problem here has an operand between 121 and 4788 and the owl caps at 20. Authored for a wider audience than the owl currently serves; carries tutorial: null on purpose, because a lesson for content no child can reach is waste.
 - **`subtraction.multi_digit`.** Same as addition.multi_digit: operands far above the cap, tutorial deliberately absent.
+
+## What is not on the ladder at all
+
+Named here because an absence nobody wrote down is indistinguishable from a
+decision, and these are decisions:
+
+- **Relational equals — now present across both operations.** Six overlays teach
+  it: the whole written first (`8 = 5 + ?`, `5 = 12 - ?`), the unknown inside the
+  sum (`5 + ? = 8`, `12 - ? = 5`), the start unknown (`? - 3 = 9`), and an
+  operation on **both** sides (`4 + 3 = ? + 5`) — the form Falkner, Levi and
+  Carpenter actually tested, where a child reading `=` as "compute" answers 7 and
+  every kindergartener in their study did. 66 authored problems, all inside the
+  owl's operand cap. Still absent: nothing exceeds a total of twenty, and
+  multiplication and division have no relational form.
+  ([Falkner, Levi & Carpenter 1999](https://eric.ed.gov/?id=EJ600209))
+- **Missing addend — now present for both operations.**
+  `addition.missing_part` and `subtraction.missing_part` cover Join and Separate
+  Change Unknown; `subtraction.start_unknown` covers Start Unknown, the top of
+  the CGI ordering for this band. Result Unknown is still the only shape above a
+  total of twenty.
+  ([CGI problem types by difficulty](http://www.langfordmath.com/ECEMath/CGI/DifficultyText.html))
+- **Compare as a problem type.** The `comparison` domain compares two numerals.
+  It never compares two sets and asks the difference, which is the mid-tier CGI
+  Compare Difference Unknown. Unchanged.
+- **Subitizing as its own rung.** The ten-frame is justified by subitizing, and
+  `counting.to_five` says "after a while you will see five without counting it at
+  all" — but no concept, lesson or problem ever asks a child to see a quantity
+  without counting it. Clements and Sarama treat conceptual subitizing as
+  instructable; here it is an aside in one card. Unchanged.
+- **Zero and identity, and commutativity.** `addition.count_on` *instructs*
+  "start at the bigger number and count on", which is only valid because addition
+  commutes, and that is never said. The pool holds `1 + 3` and `3 + 1` as
+  separate problems. Nothing anywhere says adding zero changes nothing.
+  Unchanged.
+- **Numeral formation** is correctly absent: this is a tap-only game.
+
+What the decomposition gets right and should not be disturbed: `pattern_matching`
+covers repeating patterns and `number_sequence` covers arithmetic growing
+sequences, which is the split the patterning literature supports — unit-of-repeat
+work is the thing that predicts later success with growing patterns rather than a
+lesser version of it.
+([Papic, Mulligan & Mitchelmore](https://researchers.mq.edu.au/en/publications/assessing-the-development-of-preschoolers-mathematical-patterning/))
 
 Authoring against these gaps is [MATH_AUTHORING_PIPELINE.md](./MATH_AUTHORING_PIPELINE.md);
 `roadmap.md` carries them as open work.

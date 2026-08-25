@@ -1,7 +1,7 @@
 {
   "generatedBy": "tools/validate_math_concepts.mjs",
   "minPerStep": 6,
-  "totalProblems": 3871,
+  "totalProblems": 3917,
   "concepts": [
     {
       "id": "addition.count_all",
@@ -400,10 +400,10 @@
       "overlay": "missing_addend",
       "steps": [
         2,
-        6
+        9
       ],
       "tutorial": "addition.missing_part",
-      "total": 12,
+      "total": 22,
       "empty": [],
       "thin": [],
       "perStep": [
@@ -425,7 +425,19 @@
         },
         {
           "step": 6,
-          "problems": 2
+          "problems": 3
+        },
+        {
+          "step": 7,
+          "problems": 1
+        },
+        {
+          "step": 8,
+          "problems": 3
+        },
+        {
+          "step": 9,
+          "problems": 5
         }
       ],
       "skillsAuthored": [
@@ -434,7 +446,7 @@
       "skillsDeclared": [
         "missing_addend"
       ],
-      "servable": 12
+      "servable": 22
     },
     {
       "id": "addition.balance",
@@ -442,10 +454,10 @@
       "overlay": "relational_equals",
       "steps": [
         2,
-        7
+        12
       ],
       "tutorial": "addition.balance",
-      "total": 8,
+      "total": 14,
       "empty": [],
       "thin": [],
       "perStep": [
@@ -471,6 +483,26 @@
         },
         {
           "step": 7,
+          "problems": 2
+        },
+        {
+          "step": 8,
+          "problems": 1
+        },
+        {
+          "step": 9,
+          "problems": 2
+        },
+        {
+          "step": 10,
+          "problems": 0
+        },
+        {
+          "step": 11,
+          "problems": 1
+        },
+        {
+          "step": 12,
           "problems": 1
         }
       ],
@@ -480,7 +512,231 @@
       "skillsDeclared": [
         "relational_equals"
       ],
-      "servable": 8
+      "servable": 14
+    },
+    {
+      "id": "subtraction.missing_part",
+      "domain": "subtraction",
+      "overlay": "missing_subtrahend",
+      "steps": [
+        3,
+        11
+      ],
+      "tutorial": "subtraction.missing_part",
+      "total": 6,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 1
+        },
+        {
+          "step": 4,
+          "problems": 1
+        },
+        {
+          "step": 5,
+          "problems": 0
+        },
+        {
+          "step": 6,
+          "problems": 1
+        },
+        {
+          "step": 7,
+          "problems": 0
+        },
+        {
+          "step": 8,
+          "problems": 1
+        },
+        {
+          "step": 9,
+          "problems": 0
+        },
+        {
+          "step": 10,
+          "problems": 1
+        },
+        {
+          "step": 11,
+          "problems": 1
+        }
+      ],
+      "skillsAuthored": [
+        "missing_subtrahend"
+      ],
+      "skillsDeclared": [
+        "missing_subtrahend"
+      ],
+      "servable": 6
+    },
+    {
+      "id": "subtraction.start_unknown",
+      "domain": "subtraction",
+      "overlay": "missing_minuend",
+      "steps": [
+        6,
+        13
+      ],
+      "tutorial": "subtraction.start_unknown",
+      "total": 6,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 6,
+          "problems": 1
+        },
+        {
+          "step": 7,
+          "problems": 1
+        },
+        {
+          "step": 8,
+          "problems": 1
+        },
+        {
+          "step": 9,
+          "problems": 1
+        },
+        {
+          "step": 10,
+          "problems": 0
+        },
+        {
+          "step": 11,
+          "problems": 0
+        },
+        {
+          "step": 12,
+          "problems": 1
+        },
+        {
+          "step": 13,
+          "problems": 1
+        }
+      ],
+      "skillsAuthored": [
+        "missing_minuend"
+      ],
+      "skillsDeclared": [
+        "missing_minuend"
+      ],
+      "servable": 6
+    },
+    {
+      "id": "subtraction.balance",
+      "domain": "subtraction",
+      "overlay": "subtraction_relational",
+      "steps": [
+        4,
+        13
+      ],
+      "tutorial": "subtraction.balance",
+      "total": 6,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 4,
+          "problems": 1
+        },
+        {
+          "step": 5,
+          "problems": 0
+        },
+        {
+          "step": 6,
+          "problems": 0
+        },
+        {
+          "step": 7,
+          "problems": 1
+        },
+        {
+          "step": 8,
+          "problems": 0
+        },
+        {
+          "step": 9,
+          "problems": 1
+        },
+        {
+          "step": 10,
+          "problems": 1
+        },
+        {
+          "step": 11,
+          "problems": 0
+        },
+        {
+          "step": 12,
+          "problems": 1
+        },
+        {
+          "step": 13,
+          "problems": 1
+        }
+      ],
+      "skillsAuthored": [
+        "subtraction_relational"
+      ],
+      "skillsDeclared": [
+        "subtraction_relational"
+      ],
+      "servable": 6
+    },
+    {
+      "id": "addition.both_sides",
+      "domain": "addition",
+      "overlay": "both_sides_equals",
+      "steps": [
+        3,
+        9
+      ],
+      "tutorial": "addition.both_sides",
+      "total": 12,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 1
+        },
+        {
+          "step": 4,
+          "problems": 2
+        },
+        {
+          "step": 5,
+          "problems": 1
+        },
+        {
+          "step": 6,
+          "problems": 2
+        },
+        {
+          "step": 7,
+          "problems": 0
+        },
+        {
+          "step": 8,
+          "problems": 3
+        },
+        {
+          "step": 9,
+          "problems": 3
+        }
+      ],
+      "skillsAuthored": [
+        "both_sides_equals"
+      ],
+      "skillsDeclared": [
+        "both_sides_equals"
+      ],
+      "servable": 12
     },
     {
       "id": "subtraction.take_away",

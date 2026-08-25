@@ -81,21 +81,21 @@ Game:
 - **70** `.gd` scripts under `godot/scripts/`, **25** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **506** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **531** keys, matched key-for-key by
   `strings_is.json`
 - **20** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
-Maths content — `DataManager` loads 4 math pools totaling 3871 problems:
+Maths content — `DataManager` loads 4 math pools totaling 3917 problems:
 - `curriculum`: 3736
-- `gaps`: 80
+- `gaps`: 126
 - `dataset`: 40
 - `easy`: 15
 
-Those 3871 problems are grouped into **36** concepts by
+Those 3917 problems are grouped into **40** concepts by
 `godot/data/curriculum/concept_ladder.json` — **34** rungs keyed on step range
-plus **2** overlays keyed on problem shape — of which **34** open with a
-**4**-card lesson from `godot/data/curriculum/tutorials.json`: **34** lessons,
-**136** cards. The two without one are `addition.multi_digit` and
+plus **6** overlays keyed on problem shape — of which **38** open with a
+**4**-card lesson from `godot/data/curriculum/tutorials.json`: **38** lessons,
+**152** cards. The two without one are `addition.multi_digit` and
 `subtraction.multi_digit`, deliberately, because the owl's operand cap of 20
 means no child can reach them.
 `reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,
@@ -109,7 +109,7 @@ straight from `answer.options`.
 
 Blunt boundaries on that `3851`, because it is the number people quote wrongly:
 
-- `3871` is total shipped inventory, **not** the owl path.
+- `3917` is total shipped inventory, **not** the owl path.
 - The opening unlocked domains currently `addition` plus `counting`; pattern
   matching joins the owl-safe set later through the normal unlock rules.
 - Current shipped owl interaction length is `1` problem per owl encounter

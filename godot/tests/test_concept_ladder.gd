@@ -213,3 +213,47 @@ func test_promotion_can_step_over_every_impossible_rung() -> void:
 		# And it must clear the whole hole, not stop inside it.
 		assert_true(not holes.has(landed),
 			"%s promotion from step %d clears the hole entirely, landing on %d" % [domain, from, landed])
+
+
+## Relational shapes across both operations.
+##
+## Six overlays now claim problems by the position of the unknown rather than by
+## difficulty. The thing worth failing a build over is that a problem lands on
+## the overlay that teaches ITS shape: "12 - ? = 5" and "? - 3 = 9" derive onto
+## nearby rungs and would otherwise both get the take-away lesson, which teaches
+## neither of them.
+const RELATIONAL_SHAPES := {
+	"missing_addend": "addition.missing_part",
+	"relational_equals": "addition.balance",
+	"both_sides_equals": "addition.both_sides",
+	"missing_subtrahend": "subtraction.missing_part",
+	"missing_minuend": "subtraction.start_unknown",
+	"subtraction_relational": "subtraction.balance",
+}
+
+func test_every_relational_shape_reaches_its_own_lesson() -> void:
+	var counted := {}
+	for problem: Variant in DataManager.get_all_math_problems():
+		for skill: Variant in problem.get("skills", []):
+			if not RELATIONAL_SHAPES.has(skill):
+				continue
+			counted[skill] = int(counted.get(skill, 0)) + 1
+			var concept := ConceptLadder.concept_for_problem(problem)
+			assert_eq(String(concept.get("id", "")), String(RELATIONAL_SHAPES[skill]),
+				"%s (%s) reaches its own lesson" % [problem.get("id", "?"), problem.get("prompt", {}).get("text", "")])
+	for skill: Variant in RELATIONAL_SHAPES:
+		assert_true(int(counted.get(skill, 0)) >= 6,
+			"%s has enough authored problems to practise (%d)" % [skill, int(counted.get(skill, 0))])
+
+func test_every_relational_problem_is_inside_the_owl_cap() -> void:
+	# These exist to be PLAYED. Six concepts in this pack already teach content no
+	# child can reach; the relational ones must not join them.
+	for problem: Variant in DataManager.get_all_math_problems():
+		var is_relational := false
+		for skill: Variant in problem.get("skills", []):
+			if RELATIONAL_SHAPES.has(skill):
+				is_relational = true
+		if not is_relational:
+			continue
+		var operand := int((problem.get("difficultyTraits", {}) as Dictionary).get("maxOperand", 0))
+		assert_true(operand <= 20, "%s has maxOperand %d, inside the owl's cap" % [problem.get("id", "?"), operand])

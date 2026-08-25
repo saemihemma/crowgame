@@ -15,42 +15,113 @@ type ParsedArithmeticPrompt = {
  * total` -- which is what makes one verifier enough for all of them.
  */
 export type ParsedRelationalPrompt = {
-    shape: 'missing_right' | 'missing_left' | 'total_first';
+    shape: 'missing_right' | 'missing_left' | 'total_first' | 'both_sides';
+    /** The operator the equation is written with. */
+    operator: '+' | '-';
+    /** The addend or minuend the child can see. */
     known: number;
+    /** The whole: the number both sides have to agree on. */
     total: number;
     unknown: number;
+    /**
+     * Every number in play, for trait derivation. A two-sided form has five --
+     * including the total nobody writes down -- and `known`/`total` cannot
+     * describe all of them.
+     */
+    operands: number[];
+    /**
+     * The plain arithmetic underneath, as `[left, right]` where
+     * `left <operator> right` gives the third number. "? - 3 = 5" is the fact
+     * `8 - 3`, and the ORDER matters: subtraction's minuend has to come first,
+     * for the borrow rule and for the step derivation alike.
+     */
+    fact: [number, number];
+};
+
+type RelationalPattern = {
+    shape: ParsedRelationalPrompt['shape'];
+    re: RegExp;
+    /** Turn the captured digits into the fact underneath the writing. */
+    read: (n: number[], op: '+' | '-') => {
+        known: number; total: number; unknown: number; operands: number[]; fact: [number, number];
+    };
 };
 
 /**
  * ANCHORED patterns, deliberately. The generic arithmetic regex is a first-match
  * scan, and on a relational prompt it finds the wrong thing with total
- * confidence: "4 + 3 = ? + 5" parses as {4,+,3} and reports the answer as 7 when
- * it is 2. Anchoring means a prompt is relational only if it is EXACTLY one of
- * these shapes, so nothing can be half-recognised.
+ * confidence: "4 + 3 = ? + 5" reads as {4,+,3} and reports 7 when the answer is
+ * 2. Anchoring means a prompt is relational only if it is EXACTLY one of these
+ * shapes, so nothing can be half-recognised.
+ *
+ * Each pattern carries its own reader rather than sharing one formula, because
+ * the same three numbers rearrange per shape and per operator: "5 - ? = 2" and
+ * "? - 3 = 5" are not the same question and must not be verified as though they
+ * were.
  *
  * The pools keep canonical English in `prompt.text` (localisation is the
- * `phrasing` overlay), and these three forms are wordless, so they are the same
- * string in every locale.
+ * `phrasing` overlay), and every form here is wordless, so it is the same string
+ * in every locale.
  */
-const RELATIONAL_PATTERNS: Array<{ shape: ParsedRelationalPrompt['shape']; re: RegExp }> = [
-    { shape: 'missing_right', re: /^(\d+) \+ \? = (\d+)$/ },
-    { shape: 'missing_left', re: /^\? \+ (\d+) = (\d+)$/ },
-    { shape: 'total_first', re: /^(\d+) = (\d+) \+ \?$/ },
+const RELATIONAL_PATTERNS: RelationalPattern[] = [
+    {
+        // a ? b = c, unknown in the second operand slot.
+        shape: 'missing_right',
+        re: /^(\d+) ([+-]) \? = (\d+)$/,
+        read: ([a, c], op) => {
+            const unknown = op === '+' ? c - a : a - c;
+            return { known: a, total: c, unknown, operands: [a, c, unknown], fact: [a, unknown] };
+        },
+    },
+    {
+        // ? ? b = c, unknown in the first operand slot.
+        shape: 'missing_left',
+        re: /^\? ([+-]) (\d+) = (\d+)$/,
+        read: ([b, c], op) => {
+            const unknown = op === '+' ? c - b : c + b;
+            return { known: b, total: c, unknown, operands: [b, c, unknown], fact: [unknown, b] };
+        },
+    },
+    {
+        // c = a ? b, the whole written first.
+        shape: 'total_first',
+        re: /^(\d+) = (\d+) ([+-]) \?$/,
+        read: ([c, a], op) => {
+            const unknown = op === '+' ? c - a : a - c;
+            return { known: a, total: c, unknown, operands: [a, c, unknown], fact: [a, unknown] };
+        },
+    },
+    {
+        // a + b = ? + d -- an operation on BOTH sides. The form Falkner, Levi
+        // and Carpenter tested, and the one that separates "=" as a relation
+        // from "=" as an instruction: a child reading it as "compute" answers
+        // a + b.
+        shape: 'both_sides',
+        re: /^(\d+) \+ (\d+) = \? \+ (\d+)$/,
+        read: ([a, b, d]) => {
+            const total = a + b;
+            // `total` is in the list on purpose: "8 + 7 = ? + 6" makes a child
+            // work inside fifteen, and no 15 appears in the prompt. Leaving it
+            // out under-reports the difficulty and smuggles the problem past the
+            // owl's cap. carryPair is (a, b) -- the side that is actually added.
+            return {
+                known: d, total, unknown: total - d,
+                operands: [a, b, d, total, total - d], fact: [a, b],
+            };
+        },
+    },
 ];
 
 /**
  * An equation this file does not understand, and must not guess at.
  *
- * "4 + 3 = ? + 5" is the motivating case: it is not one of the three shapes
- * above, and the generic scan reads it as {4,+,3} and reports 7 when the answer
- * is 2. Rather than leave that landmine for whoever adds two-sided equations
- * next, this names the condition -- an equation with its unknown somewhere other
- * than alone at the end -- so validate-content can refuse it outright instead of
- * verifying it wrongly.
+ * validate-content skips both its answer check and its trait check when a parse
+ * comes back null, so an unrecognised shape would ship with neither ever
+ * independently re-derived. This names the condition -- an equation with its
+ * unknown somewhere other than alone at the end -- so it can be refused instead.
  *
  * Deliberately narrow: an ordinary prompt has one "?" and it is the last
- * character. Verified against all 3150 authored problems, which produce zero
- * hits.
+ * character. Verified against every authored problem, which produces zero hits.
  */
 export function isUnrecognisedEquation(text: string): boolean {
     const trimmed = text.trim();
@@ -66,19 +137,21 @@ export function isUnrecognisedEquation(text: string): boolean {
 
 export function parseRelationalPrompt(text: string): ParsedRelationalPrompt | null {
     const trimmed = text.trim();
-    for (const { shape, re } of RELATIONAL_PATTERNS) {
+    for (const { shape, re, read } of RELATIONAL_PATTERNS) {
         const match = trimmed.match(re);
         if (!match) {
             continue;
         }
-        // total_first puts the whole first: "8 = 5 + ?".
-        const total = shape === 'total_first' ? Number(match[1]) : Number(match[2]);
-        const known = shape === 'total_first' ? Number(match[2]) : Number(match[1]);
-        const unknown = total - known;
-        if (!Number.isFinite(unknown) || unknown < 0) {
+        const captured = match.slice(1);
+        const operator = (captured.find(c => c === '+' || c === '-') ?? '+') as '+' | '-';
+        const numbers = captured.filter(c => c !== '+' && c !== '-').map(Number);
+        const fact = read(numbers, operator);
+        // A relational prompt whose answer is negative is not a hard problem, it
+        // is a broken one: nothing in this age band has an answer below zero.
+        if (!Number.isFinite(fact.unknown) || fact.unknown < 0) {
             return null;
         }
-        return { shape, known, total, unknown };
+        return { shape, operator, ...fact };
     }
     return null;
 }
@@ -86,15 +159,24 @@ export function parseRelationalPrompt(text: string): ParsedRelationalPrompt | nu
 /**
  * The traits of the fact underneath a relational prompt.
  *
- * `maxOperand` is the TOTAL, not the visible addend: "3 + ? = 18" asks a child
- * to work inside eighteen, and the owl's operand cap is the age band, so
- * pretending this problem is a three would smuggle it past the gate.
+ * `maxOperand` is the largest number the child has to hold, whichever slot it
+ * sits in -- including one nobody wrote down: "8 + 7 = ? + 6" asks a child to
+ * work inside fifteen even though no 15 appears in the prompt. The owl's cap is
+ * the age band, so under-reporting here would smuggle a problem past the gate.
  */
 export function relationalTraits(parsed: ParsedRelationalPrompt): ProblemDifficultyTraits {
-    const { known, unknown, total } = parsed;
+    const maxOperand = Math.max(...parsed.operands);
+    if (parsed.operator === '-') {
+        const [minuend, subtrahend] = parsed.fact;
+        return {
+            maxOperand,
+            requiresBorrow: minuend >= 10 && (minuend % 10) < (subtrahend % 10),
+        };
+    }
+    const [x, y] = parsed.fact;
     return {
-        maxOperand: total,
-        requiresCarry: known > 0 && unknown > 0 && ((known % 10) + (unknown % 10)) >= 10,
+        maxOperand,
+        requiresCarry: x > 0 && y > 0 && ((x % 10) + (y % 10)) >= 10,
     };
 }
 

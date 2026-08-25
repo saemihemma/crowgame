@@ -17,17 +17,17 @@
     "alternateFollowUpSelections": 0,
     "followUpAlternateRate": 1,
     "steadyFirstSubtractionUnlockAttempt": 29,
-    "strugglingFirstSubtractionUnlockAttempt": 50,
-    "depthProbeFirstSubtractionUnlockAttempt": 23,
+    "strugglingFirstSubtractionUnlockAttempt": -1,
+    "depthProbeFirstSubtractionUnlockAttempt": 24,
     "steadyFirstSubtractionSelectionAttempt": -1,
     "strugglingFirstSubtractionSelectionAttempt": -1,
-    "depthProbeFirstSubtractionSelectionAttempt": 68,
-    "owlEligibleProblemCount": 1843,
-    "owlEligibleUniquePromptCount": 1843,
-    "owlEligibleUniqueFactCount": 707,
-    "openingUnlockedInventoryProblemCount": 593,
-    "openingUnlockedInventoryUniquePromptCount": 593,
-    "openingUnlockedInventoryUniqueFactCount": 163,
+    "depthProbeFirstSubtractionSelectionAttempt": 27,
+    "owlEligibleProblemCount": 1889,
+    "owlEligibleUniquePromptCount": 1889,
+    "owlEligibleUniqueFactCount": 741,
+    "openingUnlockedInventoryProblemCount": 621,
+    "openingUnlockedInventoryUniquePromptCount": 621,
+    "openingUnlockedInventoryUniqueFactCount": 179,
     "freshReachableProblemCount": 57,
     "freshReachableUniquePromptCount": 57,
     "freshReachableUniqueFactCount": 23,
@@ -64,6 +64,6 @@
   "caveats": [
     "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
     "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-    "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1843 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
+    "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1889 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
   ]
 }
