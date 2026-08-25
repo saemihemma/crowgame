@@ -81,26 +81,28 @@ Game:
 - **70** `.gd` scripts under `godot/scripts/`, **25** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **531** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **552** keys, matched key-for-key by
   `strings_is.json`
 - **20** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
-Maths content — `DataManager` loads 4 math pools totaling 3999 problems:
+Maths content — `DataManager` loads 4 math pools totaling 4039 problems:
 - `curriculum`: 3736
-- `gaps`: 208
+- `gaps`: 248
 - `dataset`: 40
 - `easy`: 15
 
-Those 3999 problems are grouped into **40** concepts by
+Those 4039 problems are grouped into **43** concepts by
 `godot/data/curriculum/concept_ladder.json` — **34** rungs keyed on step range
-plus **6** overlays keyed on problem shape — of which **38** open with a
-**4**-card lesson from `godot/data/curriculum/tutorials.json`: **38** lessons,
-**152** cards. The two without one are `addition.multi_digit` and
+plus **9** overlays keyed on problem shape — of which **41** open with a
+**4**-card lesson from `godot/data/curriculum/tutorials.json`: **41** lessons,
+**164** cards. The two without one are `addition.multi_digit` and
 `subtraction.multi_digit`, deliberately, because the owl's operand cap of 20
 means no child can reach them.
 `reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,
-including the **18** empty and **5** thin rungs, and the **8** concepts the cap
-puts out of reach — all declared.
+including the **0** empty and **3** thin rungs, and the **6** concepts the cap
+puts out of reach — all declared. Separately, **8** rungs are dead zones the step
+derivation cannot emit at all: not authoring debt, and measured rather than
+asserted by `npm run math:step-domains`.
 See [docs/MATH_CONCEPT_LADDER.md](./docs/MATH_CONCEPT_LADDER.md).
 
 Math UI is currently MCQ-only: every problem is answered by picking one of the

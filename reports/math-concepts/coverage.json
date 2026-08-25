@@ -1,7 +1,7 @@
 {
   "generatedBy": "tools/validate_math_concepts.mjs",
   "minPerStep": 6,
-  "totalProblems": 3999,
+  "totalProblems": 4039,
   "concepts": [
     {
       "id": "addition.count_all",
@@ -1821,6 +1821,156 @@
         "division_two_digit"
       ],
       "servable": 6
+    },
+    {
+      "id": "multiplication.missing_factor",
+      "domain": "multiplication",
+      "overlay": "missing_factor",
+      "steps": [
+        1,
+        7
+      ],
+      "tutorial": "multiplication.missing_factor",
+      "total": 16,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 1,
+          "problems": 6
+        },
+        {
+          "step": 2,
+          "problems": 0
+        },
+        {
+          "step": 3,
+          "problems": 4
+        },
+        {
+          "step": 4,
+          "problems": 4
+        },
+        {
+          "step": 5,
+          "problems": 0
+        },
+        {
+          "step": 6,
+          "problems": 0
+        },
+        {
+          "step": 7,
+          "problems": 2
+        }
+      ],
+      "skillsAuthored": [
+        "missing_factor"
+      ],
+      "skillsDeclared": [
+        "missing_factor"
+      ],
+      "servable": 16
+    },
+    {
+      "id": "division.missing_groups",
+      "domain": "division",
+      "overlay": "missing_divisor",
+      "steps": [
+        2,
+        8
+      ],
+      "tutorial": "division.missing_groups",
+      "total": 12,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 4
+        },
+        {
+          "step": 3,
+          "problems": 0
+        },
+        {
+          "step": 4,
+          "problems": 3
+        },
+        {
+          "step": 5,
+          "problems": 3
+        },
+        {
+          "step": 6,
+          "problems": 0
+        },
+        {
+          "step": 7,
+          "problems": 0
+        },
+        {
+          "step": 8,
+          "problems": 2
+        }
+      ],
+      "skillsAuthored": [
+        "missing_divisor"
+      ],
+      "skillsDeclared": [
+        "missing_divisor"
+      ],
+      "servable": 12
+    },
+    {
+      "id": "division.start_unknown",
+      "domain": "division",
+      "overlay": "missing_dividend",
+      "steps": [
+        2,
+        8
+      ],
+      "tutorial": "division.start_unknown",
+      "total": 12,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 4
+        },
+        {
+          "step": 3,
+          "problems": 0
+        },
+        {
+          "step": 4,
+          "problems": 3
+        },
+        {
+          "step": 5,
+          "problems": 3
+        },
+        {
+          "step": 6,
+          "problems": 0
+        },
+        {
+          "step": 7,
+          "problems": 0
+        },
+        {
+          "step": 8,
+          "problems": 2
+        }
+      ],
+      "skillsAuthored": [
+        "missing_dividend"
+      ],
+      "skillsDeclared": [
+        "missing_dividend"
+      ],
+      "servable": 12
     }
   ],
   "skillDrift": []

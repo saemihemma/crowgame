@@ -589,6 +589,51 @@
         "division_two_digit"
       ],
       "tutorial": "division.larger"
+    },
+    {
+      "id": "multiplication.missing_factor",
+      "domain": "multiplication",
+      "steps": [
+        1,
+        7
+      ],
+      "requires": {
+        "skill": "missing_factor"
+      },
+      "skills": [
+        "missing_factor"
+      ],
+      "tutorial": "multiplication.missing_factor"
+    },
+    {
+      "id": "division.missing_groups",
+      "domain": "division",
+      "steps": [
+        2,
+        8
+      ],
+      "requires": {
+        "skill": "missing_divisor"
+      },
+      "skills": [
+        "missing_divisor"
+      ],
+      "tutorial": "division.missing_groups"
+    },
+    {
+      "id": "division.start_unknown",
+      "domain": "division",
+      "steps": [
+        2,
+        8
+      ],
+      "requires": {
+        "skill": "missing_dividend"
+      },
+      "skills": [
+        "missing_dividend"
+      ],
+      "tutorial": "division.start_unknown"
     }
   ]
 }

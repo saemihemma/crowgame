@@ -191,16 +191,36 @@ function truthOf(visual, params) {
                     default: return null;
                 }
             }
-            // Only addition and subtraction are written with an unknown slot in
-            // this pack; a missing operand on x or / asserts nothing checkable.
-            if (!has('result') || (params.op !== '+' && params.op !== '-')) {
+            // A missing operand asserts the number that fills it, recovered by
+            // inverting the operator. Multiplicative shapes were added when the
+            // relational overlays reached x and / : "2 x ? = 10" asserts 5, and
+            // "? / 4 = 3" asserts 12, so both are checkable and neither may be
+            // waved through as "asserts nothing".
+            //   a + ? = c  ->  c - a       a x ? = c  ->  c / a
+            //   a - ? = c  ->  a - c       a / ? = c  ->  a / c
+            //   ? + b = c  ->  c - b       ? x b = c  ->  c / b
+            //   ? - b = c  ->  c + b       ? / b = c  ->  c * b
+            if (!has('result')) {
                 return null;
             }
+            const whole = (v) => (Number.isFinite(v) && Number.isInteger(v) ? v : null);
             if (has('a')) {
-                return params.op === '+' ? n('result') - n('a') : n('a') - n('result');
+                switch (params.op) {
+                    case '+': return n('result') - n('a');
+                    case '-': return n('a') - n('result');
+                    case '\u00D7': return n('a') === 0 ? null : whole(n('result') / n('a'));
+                    case '\u00F7': return n('result') === 0 ? null : whole(n('a') / n('result'));
+                    default: return null;
+                }
             }
             if (has('b')) {
-                return params.op === '+' ? n('result') - n('b') : n('result') + n('b');
+                switch (params.op) {
+                    case '+': return n('result') - n('b');
+                    case '-': return n('result') + n('b');
+                    case '\u00D7': return n('b') === 0 ? null : whole(n('result') / n('b'));
+                    case '\u00F7': return n('result') * n('b');
+                    default: return null;
+                }
             }
             return null;
         }
@@ -717,6 +737,49 @@ writeFileSync(join(REPORT_DIR, 'coverage.json'), JSON.stringify({
 // which concepts exist and which steps each one owns -- is a design decision,
 // and it belongs in prose a human wrote. This check is what stops that prose
 // from quietly becoming fiction.
+const ONBOARDING_DOC = 'ONBOARDING_AGENT.md';
+
+// The onboarding snapshot states the ladder's shape as bare numbers, and bare
+// numbers rot in silence: it claimed 40 concepts, 6 overlays, 18 empty rungs and
+// 5 thin ones long after every one of those had changed. A new reader takes
+// those on trust, so they are checked like any other assertion.
+{
+    const onboarding = readFileSync(join(ROOT, ONBOARDING_DOC), 'utf8');
+    const overlays = ladder.concepts.filter(c => c.requires);
+    const withLesson = ladder.concepts.filter(c => c.tutorial);
+    const deadSteps = Object.values(emittable.domains ?? {}).reduce((a, d) => a + (d.unreachable?.length ?? 0), 0);
+    // The same two maps the summary line prints from, so the doc is checked
+    // against exactly what the guard itself reports. Both already exclude dead
+    // zones, because the sweep that fills them skips those.
+    const emptyRungs = [...actualGaps.values()].reduce((a, set) => a + set.size, 0);
+    const thinRungs = [...actualThin.values()].reduce((a, set) => a + set.size, 0);
+
+    // Each count is matched WITH its label, not just looked for somewhere in
+    // the file. A bare "does **9** appear anywhere" passes on any unrelated 9 in
+    // the document -- a negative test caught exactly that, changing the overlay
+    // count to a wrong number that the check waved through.
+    const claims = [
+        [`\\*\\*%d\\*\\* concepts`, ladder.concepts.length, 'concepts'],
+        [`\\*\\*%d\\*\\* rungs keyed on step range`, ladder.concepts.length - overlays.length, 'step-keyed rungs'],
+        [`\\*\\*%d\\*\\* overlays keyed on problem shape`, overlays.length, 'overlays'],
+        [`of which \\*\\*%d\\*\\* open with a`, withLesson.length, 'concepts that open with a lesson'],
+        [`\\*\\*%d\\*\\* lessons`, tutorials.tutorials.length, 'lessons'],
+        [`\\*\\*%d\\*\\* cards`, tutorials.tutorials.reduce((a, t) => a + t.cards.length, 0), 'lesson cards'],
+        [`\\*\\*%d\\*\\* empty`, emptyRungs, 'empty rungs'],
+        [`\\*\\*%d\\*\\* thin rungs`, thinRungs, 'thin rungs'],
+        [`\\*\\*%d\\*\\* concepts the cap`, (ladder.knownUnreachable ?? []).length, 'concepts the cap puts out of reach'],
+        [`\\*\\*%d\\*\\* rungs are dead zones`, deadSteps, 'dead-zone rungs'],
+    ];
+    for (const [pattern, value, what] of claims) {
+        const flatDoc = onboarding.replace(/\s+/g, ' ');
+        if (!new RegExp(pattern.replace('%d', String(value))).test(flatDoc)) {
+            const label = pattern.replace(/\\\*/g, '').replace('%d', 'N').trim();
+            fail(`${ONBOARDING_DOC} does not say "${label.replace('N', String(value))}", `
+                + `but ${value} is the current count of ${what}. Its ladder snapshot has gone stale.`);
+        }
+    }
+}
+
 const LADDER_DOC = 'docs/MATH_CONCEPT_LADDER.md';
 {
     // Whitespace-normalised: the doc wraps its prose at 80 columns, so a

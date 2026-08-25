@@ -70,10 +70,18 @@ export function deriveCurriculumStep(problem: MathProblem): number {
         // "? - 3 = 5" is the fact 8 - 3. Deriving from the fact rather than from
         // the authored `difficulty` keeps the step VERIFIED: an author cannot
         // place a relational problem wherever they like.
+        //
+        // For division the pair is (divisor, quotient), NOT the written
+        // operands -- see the `fact` doc in math_verifier.ts. That is what
+        // deriveDivisionStep expects, so "? / 4 = 3" earns the same rung as
+        // "12 / 4", which is the point.
         const [left, right] = relational.fact;
-        return relational.operator === '-'
-            ? deriveSubtractionStep(left, right)
-            : deriveAdditionStep(left, right);
+        switch (relational.operator) {
+            case '-': return deriveSubtractionStep(left, right);
+            case '\u00D7': return deriveMultiplicationStep(left, right);
+            case '\u00F7': return deriveDivisionStep(left, right);
+            default: return deriveAdditionStep(left, right);
+        }
     }
 
     const parsed = parseArithmeticPrompt(problem.prompt.text);

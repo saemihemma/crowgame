@@ -68,9 +68,10 @@ Two rules the build enforces:
 | `addition.carrying` | 30-36 | When ten ones become a new ten: stop at the ten on the way. |
 | `addition.multi_digit` | 37-46 | Hundreds and thousands: the same two moves, in wider columns. |
 
-Six concepts sit on addition and subtraction as **overlays** rather than rungs.
-They claim problems by authored skill, not by step, so they share the step ranges
-of the rungs above rather than owning any of them -- see **Overlays** below.
+Nine concepts sit on the four arithmetic domains as **overlays** rather than
+rungs. They claim problems by authored skill, not by step, so they share the step
+ranges of the rungs above rather than owning any of them -- see **Overlays**
+below.
 
 | Overlay | Spans | Claims | The idea |
 | --- | --- | --- | --- |
@@ -80,6 +81,9 @@ of the rungs above rather than owning any of them -- see **Overlays** below.
 | `subtraction.start_unknown` | 6-13 | `missing_minuend` | How many there were to begin with. Put the part that went back on -- the hardest CGI tier. |
 | `subtraction.balance` | 4-13 | `subtraction_relational` | The answer written first: `5 = 12 - ?`. |
 | `addition.both_sides` | 3-9 | `both_sides_equals` | An operation on BOTH sides. The form that separates `=` as a relation from `=` as an instruction. |
+| `multiplication.missing_factor` | 1-7 | `missing_factor` | `3 × ? = 12`. A times fact asked from the other end, which is what a table is for. |
+| `division.missing_groups` | 2-8 | `missing_divisor` | `12 ÷ ? = 4`. The share is known; the question is how many groups. |
+| `division.start_unknown` | 2-8 | `missing_dividend` | `? ÷ 4 = 3`. Only the ending is written down -- division's hardest shape, the counterpart of `subtraction.start_unknown`. |
 
 ### Overlays
 
@@ -452,20 +456,37 @@ that the cap drops entirely:
 Named here because an absence nobody wrote down is indistinguishable from a
 decision, and these are decisions:
 
-- **Relational equals — now present across both operations.** Six overlays teach
-  it: the whole written first (`8 = 5 + ?`, `5 = 12 - ?`), the unknown inside the
-  sum (`5 + ? = 8`, `12 - ? = 5`), the start unknown (`? - 3 = 9`), and an
-  operation on **both** sides (`4 + 3 = ? + 5`) — the form Falkner, Levi and
-  Carpenter actually tested, where a child reading `=` as "compute" answers 7 and
-  every kindergartener in their study did. 66 authored problems, all inside the
-  owl's operand cap. Still absent: nothing exceeds a total of twenty, and
-  multiplication and division have no relational form.
+- **Relational equals — now present across all four operations.** Nine overlays
+  teach it: the whole written first (`8 = 5 + ?`, `5 = 12 - ?`), the unknown
+  inside the sum (`5 + ? = 8`, `12 - ? = 5`), the start unknown (`? - 3 = 9`,
+  `? ÷ 4 = 3`), the missing factor (`3 × ? = 12`), the missing divisor
+  (`12 ÷ ? = 4`), and an operation on **both** sides (`4 + 3 = ? + 5`) — the form
+  Falkner, Levi and Carpenter actually tested, where a child reading `=` as
+  "compute" answers 7 and every kindergartener in their study did. 106 authored
+  problems, all inside the owl's operand cap.
   ([Falkner, Levi & Carpenter 1999](https://eric.ed.gov/?id=EJ600209))
-- **Missing addend — now present for both operations.**
+
+  **Why nothing exceeds a total of twenty, on purpose.** Relational content
+  already reaches operands of 18 to 20 and the owl's cap *is* 20, so there is no
+  servable headroom left: anything larger is content no child can be served.
+  Writing it would repeat the mistake `addition.multi_digit` documents — a
+  concept authored for a wider audience that the cap then drops entirely. The
+  limit here is the age band, not the parser: `parseRelationalPrompt` and
+  `deriveCurriculumStep` have no ceiling of their own, so raising the cap is the
+  only change wider relational content needs.
+
+  **Why `both_sides` stops at addition.** `a + b = ? + d` is the form the
+  literature tested because it separates `=` as a relation from `=` as an
+  instruction. Its multiplicative version asks a child to hold two products in
+  mind at once, which is a working-memory load rather than a relational insight,
+  and nothing places it in this age band. Deliberately absent.
+- **Missing addend — now present for all four operations.**
   `addition.missing_part` and `subtraction.missing_part` cover Join and Separate
-  Change Unknown; `subtraction.start_unknown` covers Start Unknown, the top of
-  the CGI ordering for this band. Result Unknown is still the only shape above a
-  total of twenty.
+  Change Unknown; `subtraction.start_unknown` and `division.start_unknown` cover
+  Start Unknown, the top of the CGI ordering for this band;
+  `multiplication.missing_factor` and `division.missing_groups` carry the
+  multiplicative equivalents. Result Unknown is still the only shape above a
+  total of twenty, for the reason given above.
   ([CGI problem types by difficulty](http://www.langfordmath.com/ECEMath/CGI/DifficultyText.html))
 - **Compare as a problem type.** The `comparison` domain compares two numerals.
   It never compares two sets and asks the difference, which is the mid-tier CGI

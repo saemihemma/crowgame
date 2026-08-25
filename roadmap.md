@@ -42,27 +42,6 @@ there.
 
 ## P1 — Correctness and reachability
 
-### Relational shapes stop at a total of twenty, and never reach multiplication
-Six overlays now teach `=` as a relation across addition and subtraction --
-unknown inside the sum, whole written first, start unknown, and an operation on
-both sides -- over 66 authored problems. Two limits remain.
-
-Nothing exceeds a total of twenty, so a child past `addition.make_ten` meets the
-idea and then loses it. Widening needs no new machinery: `relationalTraits`
-derives `maxOperand` from every number in play including the total nobody writes
-down, so a two-sided problem totalling 34 correctly reports 34 and the owl's cap
-would drop it. That means widening relational content is blocked on the same
-decision as everything else above the cap, not on the parser.
-
-Multiplication and division have no relational form at all. `? x 3 = 12` is the
-natural bridge from `multiplication.groups_of` to division and is exactly the
-"same fact read two ways" the division lesson already claims in words.
-`parseRelationalPrompt` hardcodes `+` and `-` in its four patterns and would
-need a third operator pair.
-
-*Done when:* multiplication has a relational overlay, or a decision is written
-down that the cap makes wider relational content pointless.
-
 ### Tune the ladder against real play, not intuition
 The admin session report tags accuracy against the 70-85% sweet spot. After a
 week of family play: above 85% raise the at-level/stretch share, below 70%

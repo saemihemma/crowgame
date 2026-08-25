@@ -22,9 +22,9 @@
     "steadyFirstSubtractionSelectionAttempt": -1,
     "strugglingFirstSubtractionSelectionAttempt": -1,
     "depthProbeFirstSubtractionSelectionAttempt": 95,
-    "owlEligibleProblemCount": 1915,
-    "owlEligibleUniquePromptCount": 1915,
-    "owlEligibleUniqueFactCount": 767,
+    "owlEligibleProblemCount": 1955,
+    "owlEligibleUniquePromptCount": 1955,
+    "owlEligibleUniqueFactCount": 807,
     "openingUnlockedInventoryProblemCount": 621,
     "openingUnlockedInventoryUniquePromptCount": 621,
     "openingUnlockedInventoryUniqueFactCount": 179,
@@ -64,6 +64,6 @@
   "caveats": [
     "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
     "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-    "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1915 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
+    "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1955 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
   ]
 }

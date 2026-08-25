@@ -95,13 +95,18 @@ function factOf(card: Card): Fact | null {
             // missing is the question form -- recover the absent side from the
             // result, because the fact being taught is the whole equation.
             if (has('a', 'b')) return { op, left: n('a')!, right: n('b')! };
+            // Recover the absent side from the result, per operator. `a / b = r`
+            // inverts to `a = b * r`, not to a subtraction -- getting that wrong
+            // would band every division question card off its own rung.
             if (has('b', 'result')) {
-                const a = op === '+' ? n('result')! - n('b')! : n('result')! + n('b')!;
-                return { op, left: a, right: n('b')! };
+                const [b, r] = [n('b')!, n('result')!];
+                const a = op === '+' ? r - b : op === '-' ? r + b : op === '×' ? (b === 0 ? NaN : r / b) : b * r;
+                return { op, left: a, right: b };
             }
             if (has('a', 'result')) {
-                const b = op === '+' ? n('result')! - n('a')! : n('a')! - n('result')!;
-                return { op, left: n('a')!, right: b };
+                const [a, r] = [n('a')!, n('result')!];
+                const b = op === '+' ? r - a : op === '-' ? a - r : op === '×' ? (a === 0 ? NaN : r / a) : (r === 0 ? NaN : a / r);
+                return { op, left: a, right: b };
             }
             return null;
         }
@@ -187,6 +192,7 @@ for (const concept of concepts) {
         // this one's; skip it rather than report the same defect twice.
         const answer = answerOf(fact);
         if (!Number.isFinite(answer) || answer < 0) return;
+        if (!Number.isFinite(fact.left) || !Number.isFinite(fact.right)) return;
 
         checked += 1;
         const step = stepOf(concept.domain, fact);

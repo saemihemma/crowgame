@@ -10687,6 +10687,2182 @@
           }
         }
       }
+    },
+    {
+      "id": "rel_missing_factor_0001",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.66,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "2 × ? = 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          6,
+          2
+        ]
+      },
+      "hint": "2 groups make 6 altogether. How many in each group?",
+      "explanation": "2 groups of 3 makes 6 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 6
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 2,
+            "total": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 2,
+            "each": 3,
+            "total": 6
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0002",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.66,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? × 3 = 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          3,
+          2,
+          6,
+          1
+        ]
+      },
+      "hint": "Groups of 3 make 6 altogether. How many groups?",
+      "explanation": "2 groups of 3 makes 6 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 6
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_groups",
+          "params": {
+            "known": 3,
+            "total": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 2,
+            "each": 3,
+            "total": 6
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0003",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.66,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "2 × ? = 10",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          5,
+          2,
+          4
+        ]
+      },
+      "hint": "2 groups make 10 altogether. How many in each group?",
+      "explanation": "2 groups of 5 makes 10 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 10
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 2,
+            "total": 10
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 2,
+            "each": 5,
+            "total": 10
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0004",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.66,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? × 5 = 10",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          3,
+          2,
+          5,
+          1
+        ]
+      },
+      "hint": "Groups of 5 make 10 altogether. How many groups?",
+      "explanation": "2 groups of 5 makes 10 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 10
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_groups",
+          "params": {
+            "known": 5,
+            "total": 10
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 2,
+            "each": 5,
+            "total": 10
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0005",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "3 × ? = 12",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          5,
+          4,
+          12,
+          3
+        ]
+      },
+      "hint": "3 groups make 12 altogether. How many in each group?",
+      "explanation": "3 groups of 4 makes 12 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 12
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 3,
+            "total": 12
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 3,
+            "each": 4,
+            "total": 12
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0006",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? × 4 = 12",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          12,
+          2
+        ]
+      },
+      "hint": "Groups of 4 make 12 altogether. How many groups?",
+      "explanation": "3 groups of 4 makes 12 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 12
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_groups",
+          "params": {
+            "known": 4,
+            "total": 12
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 3,
+            "each": 4,
+            "total": 12
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0007",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "12 = 3 × ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          5,
+          4,
+          12,
+          3
+        ]
+      },
+      "hint": "3 groups make 12 altogether. How many in each group?",
+      "explanation": "3 groups of 4 makes 12 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 12
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 3,
+            "total": 12
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 3,
+            "each": 4,
+            "total": 12
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0008",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.78,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "3 × ? = 15",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          5,
+          3,
+          4
+        ]
+      },
+      "hint": "3 groups make 15 altogether. How many in each group?",
+      "explanation": "3 groups of 5 makes 15 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 15
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 3,
+            "total": 15
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 3,
+            "each": 5,
+            "total": 15
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0009",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.78,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? × 5 = 15",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          5,
+          2
+        ]
+      },
+      "hint": "Groups of 5 make 15 altogether. How many groups?",
+      "explanation": "3 groups of 5 makes 15 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 15
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_groups",
+          "params": {
+            "known": 5,
+            "total": 15
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 3,
+            "each": 5,
+            "total": 15
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0010",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.78,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "4 × ? = 20",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          5,
+          20,
+          4
+        ]
+      },
+      "hint": "4 groups make 20 altogether. How many in each group?",
+      "explanation": "4 groups of 5 makes 20 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 20
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 4,
+            "total": 20
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 4,
+            "each": 5,
+            "total": 20
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0011",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.78,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "20 = 4 × ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          5,
+          20,
+          4
+        ]
+      },
+      "hint": "4 groups make 20 altogether. How many in each group?",
+      "explanation": "4 groups of 5 makes 20 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 20
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 4,
+            "total": 20
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 4,
+            "each": 5,
+            "total": 20
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0012",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.66,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "2 × ? = 16",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          9,
+          8,
+          2,
+          7
+        ]
+      },
+      "hint": "2 groups make 16 altogether. How many in each group?",
+      "explanation": "2 groups of 8 makes 16 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 16
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 2,
+            "total": 16
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 2,
+            "each": 8,
+            "total": 16
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0013",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 2.02,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "3 × ? = 9",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          9,
+          2
+        ]
+      },
+      "hint": "3 groups make 9 altogether. How many in each group?",
+      "explanation": "3 groups of 3 makes 9 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 9
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 3,
+            "total": 9
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 3,
+            "each": 3,
+            "total": 9
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0014",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 2.02,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "4 × ? = 16",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          5,
+          4,
+          16,
+          3
+        ]
+      },
+      "hint": "4 groups make 16 altogether. How many in each group?",
+      "explanation": "4 groups of 4 makes 16 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 16
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 4,
+            "total": 16
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 4,
+            "each": 4,
+            "total": 16
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0015",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? × 6 = 18",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          6,
+          2
+        ]
+      },
+      "hint": "Groups of 6 make 18 altogether. How many groups?",
+      "explanation": "3 groups of 6 makes 18 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 18
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_groups",
+          "params": {
+            "known": 6,
+            "total": 18
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 3,
+            "each": 6,
+            "total": 18
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_factor_0016",
+      "domain": "multiplication",
+      "skills": [
+        "missing_factor"
+      ],
+      "difficulty": 1.66,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "2 × ? = 14",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          8,
+          7,
+          2,
+          6
+        ]
+      },
+      "hint": "2 groups make 14 altogether. How many in each group?",
+      "explanation": "2 groups of 7 makes 14 in all.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 1,
+      "difficultyTraits": {
+        "maxOperand": 14
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.each_group_size",
+          "params": {
+            "known": 2,
+            "total": 14
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.grouped",
+          "params": {
+            "groups": 2,
+            "each": 7,
+            "total": 14
+          },
+          "plural": "groups"
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0001",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.72,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "6 ÷ ? = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          3,
+          2,
+          6,
+          1
+        ]
+      },
+      "hint": "6 shared out gives 3 in each group. How many groups?",
+      "explanation": "6 shared into 2 equal groups gives 3 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 6
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 6,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 6,
+            "b": 2,
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0002",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.72,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "10 ÷ ? = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          3,
+          2,
+          10,
+          1
+        ]
+      },
+      "hint": "10 shared out gives 5 in each group. How many groups?",
+      "explanation": "10 shared into 2 equal groups gives 5 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 10
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 10,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 10,
+            "b": 2,
+            "n": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0003",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "12 ÷ ? = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          12,
+          2
+        ]
+      },
+      "hint": "12 shared out gives 4 in each group. How many groups?",
+      "explanation": "12 shared into 3 equal groups gives 4 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 12
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 12,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 12,
+            "b": 3,
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0004",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "12 ÷ ? = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          5,
+          4,
+          12,
+          3
+        ]
+      },
+      "hint": "12 shared out gives 3 in each group. How many groups?",
+      "explanation": "12 shared into 4 equal groups gives 3 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 12
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 12,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 12,
+            "b": 4,
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0005",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "15 ÷ ? = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          15,
+          2
+        ]
+      },
+      "hint": "15 shared out gives 5 in each group. How many groups?",
+      "explanation": "15 shared into 3 equal groups gives 5 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 15
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 15,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 15,
+            "b": 3,
+            "n": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0006",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "20 ÷ ? = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          5,
+          4,
+          20,
+          3
+        ]
+      },
+      "hint": "20 shared out gives 5 in each group. How many groups?",
+      "explanation": "20 shared into 4 equal groups gives 5 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 20
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 20,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 20,
+            "b": 4,
+            "n": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0007",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "20 ÷ ? = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          5,
+          20,
+          4
+        ]
+      },
+      "hint": "20 shared out gives 4 in each group. How many groups?",
+      "explanation": "20 shared into 5 equal groups gives 4 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 20
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 20,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 20,
+            "b": 5,
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0008",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.72,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "16 ÷ ? = 8",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          3,
+          2,
+          16,
+          1
+        ]
+      },
+      "hint": "16 shared out gives 8 in each group. How many groups?",
+      "explanation": "16 shared into 2 equal groups gives 8 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 16
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 16,
+            "total": 8
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 16,
+            "b": 2,
+            "n": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0009",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "18 ÷ ? = 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          18,
+          2
+        ]
+      },
+      "hint": "18 shared out gives 6 in each group. How many groups?",
+      "explanation": "18 shared into 3 equal groups gives 6 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 18
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 18,
+            "total": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 18,
+            "b": 3,
+            "n": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0010",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 2.08,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "9 ÷ ? = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          9,
+          2
+        ]
+      },
+      "hint": "9 shared out gives 3 in each group. How many groups?",
+      "explanation": "9 shared into 3 equal groups gives 3 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 9
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 9,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 9,
+            "b": 3,
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0011",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 2.08,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "16 ÷ ? = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          5,
+          4,
+          16,
+          3
+        ]
+      },
+      "hint": "16 shared out gives 4 in each group. How many groups?",
+      "explanation": "16 shared into 4 equal groups gives 4 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 16
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 16,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 16,
+            "b": 4,
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_divisor_0012",
+      "domain": "division",
+      "skills": [
+        "missing_divisor"
+      ],
+      "difficulty": 1.72,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "14 ÷ ? = 7",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          3,
+          2,
+          14,
+          1
+        ]
+      },
+      "hint": "14 shared out gives 7 in each group. How many groups?",
+      "explanation": "14 shared into 2 equal groups gives 7 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 14
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.shared_into",
+          "params": {
+            "known": 14,
+            "total": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 14,
+            "b": 2,
+            "n": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0001",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.72,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 2 = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          7,
+          6,
+          2,
+          5
+        ]
+      },
+      "hint": "Shared into 2 groups it gives 3 each. How many were there to start?",
+      "explanation": "6 shared into 2 equal groups gives 3 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 6
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 2,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 6,
+            "b": 2,
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0002",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 3 = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          13,
+          12,
+          3,
+          11
+        ]
+      },
+      "hint": "Shared into 3 groups it gives 4 each. How many were there to start?",
+      "explanation": "12 shared into 3 equal groups gives 4 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 12
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 3,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 12,
+            "b": 3,
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0003",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.72,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 2 = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 10,
+        "options": [
+          11,
+          10,
+          2,
+          9
+        ]
+      },
+      "hint": "Shared into 2 groups it gives 5 each. How many were there to start?",
+      "explanation": "10 shared into 2 equal groups gives 5 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 10
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 2,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 10,
+            "b": 2,
+            "n": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0004",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 4 = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 12,
+        "options": [
+          13,
+          12,
+          4,
+          11
+        ]
+      },
+      "hint": "Shared into 4 groups it gives 3 each. How many were there to start?",
+      "explanation": "12 shared into 4 equal groups gives 3 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 12
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 4,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 12,
+            "b": 4,
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0005",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 5 = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 15,
+        "options": [
+          16,
+          15,
+          5,
+          14
+        ]
+      },
+      "hint": "Shared into 5 groups it gives 3 each. How many were there to start?",
+      "explanation": "15 shared into 5 equal groups gives 3 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 15
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 5,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 15,
+            "b": 5,
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0006",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 5 = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 20,
+        "options": [
+          21,
+          20,
+          5,
+          19
+        ]
+      },
+      "hint": "Shared into 5 groups it gives 4 each. How many were there to start?",
+      "explanation": "20 shared into 5 equal groups gives 4 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 20
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 5,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 20,
+            "b": 5,
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0007",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.84,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 3 = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 15,
+        "options": [
+          16,
+          15,
+          3,
+          14
+        ]
+      },
+      "hint": "Shared into 3 groups it gives 5 each. How many were there to start?",
+      "explanation": "15 shared into 3 equal groups gives 5 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 15
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 3,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 15,
+            "b": 3,
+            "n": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0008",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.72,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 2 = 8",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 16,
+        "options": [
+          17,
+          16,
+          2,
+          15
+        ]
+      },
+      "hint": "Shared into 2 groups it gives 8 each. How many were there to start?",
+      "explanation": "16 shared into 2 equal groups gives 8 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 16
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 2,
+            "total": 8
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 16,
+            "b": 2,
+            "n": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0009",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.9,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 3 = 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 18,
+        "options": [
+          19,
+          18,
+          3,
+          17
+        ]
+      },
+      "hint": "Shared into 3 groups it gives 6 each. How many were there to start?",
+      "explanation": "18 shared into 3 equal groups gives 6 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 18
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 3,
+            "total": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 18,
+            "b": 3,
+            "n": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0010",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 2.08,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 3 = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          10,
+          9,
+          3,
+          8
+        ]
+      },
+      "hint": "Shared into 3 groups it gives 3 each. How many were there to start?",
+      "explanation": "9 shared into 3 equal groups gives 3 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 9
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 3,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 9,
+            "b": 3,
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0011",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 2.08,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 4 = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 16,
+        "options": [
+          17,
+          16,
+          4,
+          15
+        ]
+      },
+      "hint": "Shared into 4 groups it gives 4 each. How many were there to start?",
+      "explanation": "16 shared into 4 equal groups gives 4 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 8,
+      "difficultyTraits": {
+        "maxOperand": 16
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 4,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 16,
+            "b": 4,
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_dividend_0012",
+      "domain": "division",
+      "skills": [
+        "missing_dividend"
+      ],
+      "difficulty": 1.72,
+      "ageBand": [
+        6,
+        8
+      ],
+      "prompt": {
+        "text": "? ÷ 2 = 7",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 14,
+        "options": [
+          15,
+          14,
+          2,
+          13
+        ]
+      },
+      "hint": "Shared into 2 groups it gives 7 each. How many were there to start?",
+      "explanation": "14 shared into 2 equal groups gives 7 each.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 14
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_shared",
+          "params": {
+            "known": 2,
+            "total": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.share_each",
+          "params": {
+            "a": 14,
+            "b": 2,
+            "n": 7
+          }
+        }
+      }
     }
   ]
 }

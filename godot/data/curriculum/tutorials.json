@@ -1952,6 +1952,149 @@
           }
         }
       ]
+    },
+    {
+      "id": "multiplication.missing_factor",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 3,
+            "each": 4
+          }
+        },
+        {
+          "body": "model",
+          "visual": "groups",
+          "params": {
+            "groups": 4,
+            "each": 3
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 3,
+            "op": "×",
+            "b": 4,
+            "result": 12
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 2,
+            "op": "×",
+            "result": 10
+          },
+          "choice": {
+            "options": [
+              4,
+              5,
+              6
+            ],
+            "correct": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "division.missing_groups",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 4,
+            "each": 3
+          }
+        },
+        {
+          "body": "model",
+          "visual": "groups",
+          "params": {
+            "groups": 3,
+            "each": 4
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 12,
+            "op": "÷",
+            "b": 3,
+            "result": 4
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 20,
+            "op": "÷",
+            "result": 5
+          },
+          "choice": {
+            "options": [
+              3,
+              4,
+              5
+            ],
+            "correct": 4
+          }
+        }
+      ]
+    },
+    {
+      "id": "division.start_unknown",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 3,
+            "each": 5
+          }
+        },
+        {
+          "body": "model",
+          "visual": "groups",
+          "params": {
+            "groups": 5,
+            "each": 3
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "op": "÷",
+            "b": 3,
+            "result": 5
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "op": "÷",
+            "b": 4,
+            "result": 3
+          },
+          "choice": {
+            "options": [
+              10,
+              12,
+              14
+            ],
+            "correct": 12
+          }
+        }
+      ]
     }
   ]
 }

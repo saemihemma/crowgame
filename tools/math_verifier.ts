@@ -14,10 +14,24 @@ type ParsedArithmeticPrompt = {
  * is the answer. Every shape reduces to the same fact -- `known + unknown =
  * total` -- which is what makes one verifier enough for all of them.
  */
+/**
+ * Multiplication and division read relationally too, and they are the shapes a
+ * child actually needs: "3 x ? = 12" IS the question a times table answers from
+ * the other end, and it is how division stops being a separate ritual and starts
+ * being the same fact asked backwards.
+ *
+ * `both_sides` is deliberately not extended past addition. Falkner, Levi and
+ * Carpenter tested "a + b = ? + d" because it separates "=" as a relation from
+ * "=" as an instruction; the multiplicative version asks a child to hold two
+ * products in mind at once, which is a working-memory problem rather than a
+ * relational one, and nothing in the literature places it in this age band.
+ */
+export type RelationalOperator = '+' | '-' | '\u00D7' | '\u00F7';
+
 export type ParsedRelationalPrompt = {
     shape: 'missing_right' | 'missing_left' | 'total_first' | 'both_sides';
     /** The operator the equation is written with. */
-    operator: '+' | '-';
+    operator: RelationalOperator;
     /** The addend or minuend the child can see. */
     known: number;
     /** The whole: the number both sides have to agree on. */
@@ -34,6 +48,12 @@ export type ParsedRelationalPrompt = {
      * `left <operator> right` gives the third number. "? - 3 = 5" is the fact
      * `8 - 3`, and the ORDER matters: subtraction's minuend has to come first,
      * for the borrow rule and for the step derivation alike.
+     *
+     * Division is the one place the pair is NOT the written prompt's operands.
+     * `deriveDivisionStep` takes (divisor, quotient) -- the two small numbers
+     * whose table the child is actually working in -- so "? / 4 = 3" carries
+     * `[4, 3]`, not the dividend it never writes down. Reading the dividend
+     * would rank 96 / 12 harder than 96 / 8, which is backwards.
      */
     fact: [number, number];
 };
@@ -42,7 +62,7 @@ type RelationalPattern = {
     shape: ParsedRelationalPrompt['shape'];
     re: RegExp;
     /** Turn the captured digits into the fact underneath the writing. */
-    read: (n: number[], op: '+' | '-') => {
+    read: (n: number[], op: RelationalOperator) => {
         known: number; total: number; unknown: number; operands: number[]; fact: [number, number];
     };
 };
@@ -110,6 +130,50 @@ const RELATIONAL_PATTERNS: RelationalPattern[] = [
             };
         },
     },
+    {
+        // a x ? = c and a / ? = c -- unknown in the second slot, multiplicative.
+        // Kept separate from the additive pattern above rather than widened into
+        // it, because the two operators read the SAME three numbers into
+        // different facts and a shared reader would have to branch anyway.
+        shape: 'missing_right',
+        re: /^(\d+) ([\u00D7\u00F7]) \? = (\d+)$/,
+        read: ([a, c], op) => {
+            // a x ? = c  ->  the missing factor.
+            // a / ? = c  ->  the missing DIVISOR: 12 / ? = 3 asks for 4.
+            const unknown = op === '\u00D7' ? a === 0 ? NaN : c / a : c === 0 ? NaN : a / c;
+            return {
+                known: a, total: c, unknown, operands: [a, c, unknown],
+                fact: op === '\u00D7' ? [a, unknown] : [unknown, c],
+            };
+        },
+    },
+    {
+        // ? x b = c and ? / b = c -- unknown in the first slot.
+        shape: 'missing_left',
+        re: /^\? ([\u00D7\u00F7]) (\d+) = (\d+)$/,
+        read: ([b, c], op) => {
+            // ? x b = c  ->  the missing factor.
+            // ? / b = c  ->  the missing DIVIDEND: ? / 4 = 3 asks for 12.
+            const unknown = op === '\u00D7' ? b === 0 ? NaN : c / b : c * b;
+            return {
+                known: b, total: c, unknown,
+                operands: op === '\u00D7' ? [b, c, unknown] : [b, c, unknown],
+                fact: op === '\u00D7' ? [unknown, b] : [b, c],
+            };
+        },
+    },
+    {
+        // c = a x ? and c = a / ? -- the whole written first.
+        shape: 'total_first',
+        re: /^(\d+) = (\d+) ([\u00D7\u00F7]) \?$/,
+        read: ([c, a], op) => {
+            const unknown = op === '\u00D7' ? a === 0 ? NaN : c / a : c === 0 ? NaN : a / c;
+            return {
+                known: a, total: c, unknown, operands: [a, c, unknown],
+                fact: op === '\u00D7' ? [a, unknown] : [unknown, c],
+            };
+        },
+    },
 ];
 
 /**
@@ -143,12 +207,19 @@ export function parseRelationalPrompt(text: string): ParsedRelationalPrompt | nu
             continue;
         }
         const captured = match.slice(1);
-        const operator = (captured.find(c => c === '+' || c === '-') ?? '+') as '+' | '-';
-        const numbers = captured.filter(c => c !== '+' && c !== '-').map(Number);
+        const OPERATORS: readonly string[] = ['+', '-', '\u00D7', '\u00F7'];
+        const operator = (captured.find(c => OPERATORS.includes(c)) ?? '+') as RelationalOperator;
+        const numbers = captured.filter(c => !OPERATORS.includes(c)).map(Number);
         const fact = read(numbers, operator);
         // A relational prompt whose answer is negative is not a hard problem, it
         // is a broken one: nothing in this age band has an answer below zero.
-        if (!Number.isFinite(fact.unknown) || fact.unknown < 0) {
+        if (!Number.isFinite(fact.unknown) || fact.unknown < 0 || !Number.isInteger(fact.unknown)) {
+            return null;
+        }
+        // The derived fact has to be whole too. "12 / ? = 5" has no answer in
+        // this age band, and a pattern that produced 2.4 for the divisor would
+        // otherwise ship a problem no child can be right about.
+        if (!fact.fact.every(v => Number.isFinite(v) && Number.isInteger(v) && v >= 0)) {
             return null;
         }
         return { shape, operator, ...fact };
@@ -166,6 +237,14 @@ export function parseRelationalPrompt(text: string): ParsedRelationalPrompt | nu
  */
 export function relationalTraits(parsed: ParsedRelationalPrompt): ProblemDifficultyTraits {
     const maxOperand = Math.max(...parsed.operands);
+    // Carrying and borrowing are column-arithmetic ideas and neither applies to
+    // a times or share fact. What the owl's cap has to see is the largest
+    // number in play, INCLUDING the one the prompt leaves blank: "? / 4 = 3"
+    // makes a child produce 12, and reporting only the 4 and the 3 would smuggle
+    // it past a cap set at ten.
+    if (parsed.operator === '\u00D7' || parsed.operator === '\u00F7') {
+        return { maxOperand };
+    }
     if (parsed.operator === '-') {
         const [minuend, subtrahend] = parsed.fact;
         return {

@@ -97,6 +97,9 @@ export const PLURAL_PARAM = {
     // author, and "Það eru 1 punktar" is the same bug as the 55 already fixed.
     'math.expl.stars': 'n',
     'math.expl.dots': 'n',
+    // Same reason: "1 hópar" would be the same bug. No authored problem drives
+    // this to one today, and the variant costs nothing.
+    'math.expl.rel.grouped': 'groups',
 };
 
 /** CLDR-style category per locale. Only 'one' and 'other' are needed here. */
@@ -454,6 +457,25 @@ export const TEMPLATES = {
     'math.hint.rel.how_many_started': 'Something lost {gone} and {left} were left. How many were there to start?',
     'math.hint.rel.left_after': '{left} is what is left when you take some away from {start}. How many were taken?',
     'math.expl.rel.taken': '{start} take away {gone} leaves {left}.',
+
+    // Relational multiplication and division: the times fact and the share fact
+    // asked from an end other than the result. Four hints because four different
+    // questions are being asked -- how big is a group, how many groups, how many
+    // groups fit, how many were there to start -- and a child should not have to
+    // translate between them any more than between "how many more" and "how many
+    // went". The explanations reuse math.expl.mul and math.expl.share_each,
+    // because once the missing number is found the sentence is the plain fact.
+    'math.hint.rel.each_group_size': '{known} groups make {total} altogether. How many in each group?',
+    'math.hint.rel.how_many_groups': 'Groups of {known} make {total} altogether. How many groups?',
+    'math.hint.rel.shared_into': '{known} shared out gives {total} in each group. How many groups?',
+    'math.hint.rel.how_many_shared': 'Shared into {known} groups it gives {total} each. How many were there to start?',
+    // Deliberately NOT math.expl.mul. That template's verifier ties `product` to
+    // answer.correct, which is right for "3 x 4 = ?" and wrong for "3 x ? = 12",
+    // where the answer is the missing factor. Same split, and the same reason,
+    // as math.expl.rel.taken against math.expl.sub. The wording differs too, so
+    // the generated matchers stay unambiguous.
+    'math.expl.rel.grouped': '{groups} groups of {each} makes {total} in all.',
+    'math.expl.rel.grouped.one': '{groups} group of {each} makes {total} in all.',
 
     // Both sides carry an operation. The sentence has to say the balance out
     // loud, because the whole point of the shape is that "=" is not an
@@ -825,6 +847,27 @@ export const SEMANTICS = {
     // The hint families above each tie to the answer, so every problem still has
     // one phrasing checked against it.
     'math.expl.rel.taken': (p) => holds(p.start - p.gone === p.left, `${p.start}-${p.gone}=${p.left}`),
+
+    // Every multiplicative relational hint names the two numbers a child can
+    // see, so the answer is forced and can be checked against answer.correct --
+    // the same grounding the additive families get.
+    'math.hint.rel.each_group_size': (p, problem) =>
+        holds(p.known !== 0, `${p.total} in ${p.known} groups`)
+        ?? isAnswer(p.total / p.known, problem, `${p.total}/${p.known}`),
+    'math.hint.rel.how_many_groups': (p, problem) =>
+        holds(p.known !== 0, `${p.total} in groups of ${p.known}`)
+        ?? isAnswer(p.total / p.known, problem, `${p.total}/${p.known}`),
+    'math.hint.rel.shared_into': (p, problem) =>
+        holds(p.total !== 0, `${p.known} shared ${p.total} at a time`)
+        ?? isAnswer(p.known / p.total, problem, `${p.known}/${p.total}`),
+    'math.hint.rel.how_many_shared': (p, problem) =>
+        isAnswer(p.known * p.total, problem, `${p.known}x${p.total}`),
+    // Internal arithmetic only, for the reason math.expl.rel.taken gives: which
+    // of the three numbers is the ANSWER depends on the shape. The hint above it
+    // ties to answer.correct, so every one of these problems still has one
+    // phrasing checked against its own answer.
+    'math.expl.rel.grouped': (p) =>
+        holds(p.groups * p.each === p.total, `${p.groups}x${p.each}=${p.total}`),
 
     'math.expl.rel.parts': (p, problem) => holds(p.known + p.unknown === p.total, `${p.known}+${p.unknown}=${p.total}`)
         ?? isAnswer(p.unknown, problem, `the missing part ${p.unknown}`),
