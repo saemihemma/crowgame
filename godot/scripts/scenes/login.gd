@@ -127,7 +127,7 @@ func _show_new_player() -> void:
 	_title(TextManager.t("login.create_title"), 34)
 	_name_edit = LineEdit.new()
 	_name_edit.placeholder_text = TextManager.t("login.name_placeholder")
-	_name_edit.max_length = 12
+	_name_edit.max_length = ProfileManager.NAME_MAX_LENGTH
 	_name_edit.custom_minimum_size = Vector2(280, 48)
 	_name_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_col.add_child(_name_edit)
@@ -254,7 +254,8 @@ func _try_create() -> void:
 		ProfileManager.login(_name_edit.text, _pin_edit.text)
 		_finish_login()
 	else:
-		_status.text = String(res)
+		# create_profile returns a string table key, not a sentence.
+		_status.text = TextManager.t(String(res))
 
 func _finish_login() -> void:
 	SaveManager.switch_profile()

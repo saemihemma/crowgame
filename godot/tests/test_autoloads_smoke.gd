@@ -47,8 +47,38 @@ func test_profile_pin_hash_and_login() -> void:
 	assert_eq(res, true, "create_profile ok")
 	assert_eq(pm.login(uname, "0000"), false, "wrong pin rejected")
 	assert_eq(pm.login(uname, "1234"), true, "correct pin accepted")
-	assert_eq(pm.create_profile("x", "12"), "PIN must be exactly 4 digits", "pin validation")
+	assert_eq(pm.create_profile("x", "12"), "login.pin_four_digits", "pin validation")
 	pm.delete_profile(uname)
+
+## Every rejection reason must be a key the string table can actually resolve.
+##
+## Returning the English sentence looked identical on screen in English and put
+## untranslated English in front of an Icelandic child. Asserting only that a
+## rejection happened would not have caught that, so this asserts the value is a
+## key AND that both locales serve real copy for it.
+func test_create_profile_rejections_are_resolvable_keys() -> void:
+	var pm: Node = _root().get_node("ProfileManager")
+	var tm: Node = _root().get_node("TextManager")
+	var taken := "Dup%d" % (randi() % 1000)
+	assert_eq(pm.create_profile(taken, "1234"), true, "seed profile for the taken-name case")
+
+	var rejections := {
+		"empty name": pm.create_profile("   ", "1234"),
+		"long name": pm.create_profile("x".repeat(pm.NAME_MAX_LENGTH + 1), "1234"),
+		"short pin": pm.create_profile("Someone", "12"),
+		"taken name": pm.create_profile(taken.to_lower(), "1234"),
+	}
+	var prev: String = tm.get_locale()
+	for case: String in rejections:
+		var key: Variant = rejections[case]
+		assert_true(key is String, "%s is rejected with a key, not true" % case)
+		for locale in ["en", "is"]:
+			tm.set_locale(locale)
+			var copy: String = tm.t(String(key))
+			assert_true(copy != "" and copy != String(key),
+				"[%s] %s resolves '%s' to real copy, got '%s'" % [locale, case, key, copy])
+	tm.set_locale(prev)
+	pm.delete_profile(taken)
 
 func test_save_default_shape_and_roundtrip() -> void:
 	var sm: Node = _root().get_node("SaveManager")
