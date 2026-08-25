@@ -217,7 +217,11 @@ func _paint_underfill() -> void:
 		return
 	var fill := ColorRect.new()
 	fill.name = "Underfill"
-	fill.color = ThemeManager.get_color_value("ground_shadow")
+	# `ink_world`, not `ground_shadow`: the shadow role is a mid-tone that each
+	# world tints to taste, and in Sugarstorm it is hot pink - which painted a
+	# bright stripe across the bottom of the screen instead of reading as depth.
+	# ink_world is the near-black every theme defines for exactly this.
+	fill.color = ThemeManager.get_color_value("ink_world")
 	# Wide and deep enough to cover the widest viewport at the level's edges and
 	# the tallest one below its floor, with room to spare - it costs one quad.
 	fill.position = Vector2(-level_w, level_h)

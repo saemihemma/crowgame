@@ -37,6 +37,11 @@ const EXTENT := RADIUS + BEZEL * 0.5 + BEZEL_RADIUS_OFFSET + RIM
 ## gold, distinctly lighter than the disc and bezel it lies on.
 const TRACK_MIX := 0.70
 const SEGMENT_GAP_RAD := 0.16
+## Above this many owls the ring stops drawing one segment each and becomes a
+## continuous arc. Segments exist to be counted at a glance; the practice arena
+## has twenty, and twenty segments read as the teeth of a cog rather than as
+## progress. The fraction underneath carries the exact number either way.
+const MAX_SEGMENTS := 12
 const SWEEP_SECONDS := 0.4
 ## brand/BRAND_SYSTEM.md §10.2: "the flame dims to 40%".
 const PAUSED_FLAME_ALPHA := 0.4
@@ -180,22 +185,28 @@ func _draw() -> void:
 		Color(ThemeManager.get_color_value("paper"), 0.55), RIM)
 
 	var track := owl.lerp(ink, TRACK_MIX)
-	var step := TAU / float(_segments)
 	var top := -PI * 0.5
 
-	for i in _segments:
-		draw_arc(c, RADIUS,
-			top + i * step + SEGMENT_GAP_RAD * 0.5,
-			top + (i + 1) * step - SEGMENT_GAP_RAD * 0.5,
-			32, track, STROKE)
+	if _segments > MAX_SEGMENTS:
+		# One unbroken track, one unbroken sweep.
+		draw_arc(c, RADIUS, 0, TAU, 64, track, STROKE)
+		if _sweep > 0.0:
+			draw_arc(c, RADIUS, top, top + _sweep * TAU, 64, lit, STROKE)
+	else:
+		var step := TAU / float(_segments)
+		for i in _segments:
+			draw_arc(c, RADIUS,
+				top + i * step + SEGMENT_GAP_RAD * 0.5,
+				top + (i + 1) * step - SEGMENT_GAP_RAD * 0.5,
+				32, track, STROKE)
 
-	var sweep_end := top + _sweep * TAU
-	for i in _segments:
-		var from := top + i * step + SEGMENT_GAP_RAD * 0.5
-		var to := minf(top + (i + 1) * step - SEGMENT_GAP_RAD * 0.5, sweep_end)
-		if to <= from:
-			break
-		draw_arc(c, RADIUS, from, to, 32, lit, STROKE)
+		var sweep_end := top + _sweep * TAU
+		for i in _segments:
+			var from := top + i * step + SEGMENT_GAP_RAD * 0.5
+			var to := minf(top + (i + 1) * step - SEGMENT_GAP_RAD * 0.5, sweep_end)
+			if to <= from:
+				break
+			draw_arc(c, RADIUS, from, to, 32, lit, STROKE)
 
 	if _streak >= flame_at:
 		var hot := _streak >= hot_at

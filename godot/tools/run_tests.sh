@@ -49,6 +49,14 @@ python3 "$HERE/tools/check_hardcoding.py" --selftest
 python3 "$HERE/tools/check_hardcoding.py"
 guard_status=$?
 
+# Level reachability: every door and every coin has to be reachable from the
+# spawn, using the crow's real movement envelope. Cheap, deterministic, and it
+# found three unfinishable levels and twelve unobtainable coins the first time
+# it ran.
+echo "=== level reachability ==="
+python3 "$HERE/tools/check_level_reachability.py"
+reach_status=$?
+
 "$GODOT" --headless --path "$HERE" --import >/dev/null 2>&1 || true
 reset_store
 "$GODOT" --headless --path "$HERE" res://tests/TestRunner.tscn
@@ -75,4 +83,4 @@ reset_store
 "$GODOT" --headless --path "$HERE" res://tests/integration/PerfProbe.tscn
 perf_status=$?
 
-exit $(( guard_status != 0 || unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 || shoot_status != 0 || death_status != 0 || perf_status != 0 ))
+exit $(( guard_status != 0 || reach_status != 0 || unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 || shoot_status != 0 || death_status != 0 || perf_status != 0 ))
