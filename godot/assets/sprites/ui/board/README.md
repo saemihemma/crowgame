@@ -1,5 +1,9 @@
 # Maths board art slots
 
+Status: Supportive
+Authority: `godot/scripts/ui/math_challenge.gd` and the `math_challenge` block of `godot/data/tuning/ui_tuning.json`.
+Last verified against code: 2026-08-25
+
 Drop a file here and the game uses it on the next run. No wiring.
 
 | File | Size | Used by | Falls back to |

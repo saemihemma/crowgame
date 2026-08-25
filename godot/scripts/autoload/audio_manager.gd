@@ -92,8 +92,14 @@ func is_muted() -> bool:
 
 
 ## Restore the stored choice. Called from _ready so nothing can play before it.
+##
+## No String() cast: get_item mirrors localStorage and returns null when the key
+## has never been written, and String(null) is not a valid constructor call in
+## Godot 4 -- it threw on every boot of a fresh install, which is exactly the
+## boot where there is no stored choice to read. Comparing the Variant directly
+## is null-safe.
 func _load_mute_preference() -> void:
-	_muted = String(Persistence.get_item(MUTE_KEY)) == "1"
+	_muted = Persistence.get_item(MUTE_KEY) == "1"
 
 
 func set_master_volume(v: float) -> void:

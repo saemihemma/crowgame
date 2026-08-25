@@ -106,6 +106,30 @@ function formatAssetLabel(relativePath) {
     return relativePath.replace(/^godot\//, '');
 }
 
+/**
+ * Art slots that are referenced but genuinely optional.
+ *
+ * Each of these is guarded at its call site — `ResourceLoader.exists()`, or a
+ * `*_FALLBACK` constant — and the game draws something deliberate without it:
+ * the ring crops the world sprite, the board paints a StyleBoxFlat, the counting
+ * row draws a themed disc. `brand/ASSET_MANIFEST.md` lists them as P1 "drop a
+ * file here and it is picked up with no code change".
+ *
+ * The scraper cannot tell a guarded reference from a hard one, so it called all
+ * three "missing required assets" and failed the gate on art that was never
+ * committed and does not block play. Declaring them keeps the reporting honest
+ * WITHOUT going blind: an undeclared missing reference still fails, and a slot
+ * that has since been filled is reported as filled.
+ */
+const OPTIONAL_ART_SLOTS = new Map([
+    ['godot/assets/sprites/ui/hud/owl-icon-32.png',
+        'owl_ring.gd falls back to ICON_FALLBACK, a head crop of the world sprite'],
+    ['godot/assets/sprites/ui/board/count-token-32.png',
+        'count_row.gd falls back to a themed disc with an ink rim'],
+    ['godot/assets/sprites/ui/board/board-9slice.png',
+        'math_challenge.gd _board_face() falls back to a rounded StyleBoxFlat'],
+]);
+
 function printGroup(title, entries, missing) {
     console.log(`\n${colors.cyan}${colors.bold}${title}${colors.reset}`);
     console.log('-'.repeat(60));
@@ -115,6 +139,9 @@ function printGroup(title, entries, missing) {
         const label = formatAssetLabel(relativePath);
         if (result.exists) {
             console.log(`  ${colors.green}OK${colors.reset} ${label.padEnd(42)} (${formatSize(result.size)})`);
+        } else if (OPTIONAL_ART_SLOTS.has(relativePath)) {
+            console.log(`  ${colors.cyan}SLOT${colors.reset} ${label.padEnd(42)} `
+                + `(optional — ${OPTIONAL_ART_SLOTS.get(relativePath)})`);
         } else {
             console.log(`  ${colors.red}MISS${colors.reset} ${label}`);
             missing.push(relativePath);
@@ -288,7 +315,15 @@ function main() {
         process.exit(1);
     }
 
-    console.log(`\n${colors.green}All referenced live assets are present, and no suspicious experimental leftovers remain in godot/assets.${colors.reset}\n`);
+    const pendingSlots = [...OPTIONAL_ART_SLOTS.keys()].filter(p => !checkFile(p).exists);
+    console.log(`\n${colors.green}All required assets are present, and no suspicious experimental leftovers remain in godot/assets.${colors.reset}`);
+    if (pendingSlots.length > 0) {
+        // Said out loud rather than passed over: a green gate that quietly hides
+        // unfilled art slots is how they stay unfilled.
+        console.log(`${pendingSlots.length} optional art slot(s) still awaiting art `
+            + `(brand/ASSET_MANIFEST.md P1): ${pendingSlots.map(formatAssetLabel).join(', ')}`);
+    }
+    console.log('');
 }
 
 main();

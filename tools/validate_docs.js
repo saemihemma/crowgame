@@ -250,7 +250,10 @@ function validateOnboardingSnapshot(currentDocs) {
     ensureDocContains('ONBOARDING_AGENT.md', `- \`gaps\`: ${gapsCount}`, 'gaps pool count');
     ensureDocContains('ONBOARDING_AGENT.md', `- \`curriculum\`: ${curriculumCount}`, 'curriculum pool count');
     ensureDocContains('ONBOARDING_AGENT.md', `contains ${levelCount} levels`, 'level count snapshot');
-    ensureDocContains('ONBOARDING_AGENT.md', `contains ${npcCount} NPC entry`, 'NPC count snapshot');
+    // The registry grew past one owl, and the expected phrase was pinned in the
+    // singular -- so the only doc line that satisfied it was ungrammatical.
+    ensureDocContains('ONBOARDING_AGENT.md',
+        `contains ${npcCount} NPC ${npcCount === 1 ? 'entry' : 'entries'}`, 'NPC count snapshot');
     ensureDocContains('ONBOARDING_AGENT.md', `contains ${enemyCount} enemy type`, 'enemy count snapshot');
 
     const audioSnapshot = sfxCount === 0

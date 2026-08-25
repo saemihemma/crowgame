@@ -1,5 +1,9 @@
 # HUD art slots
 
+Status: Supportive
+Authority: `godot/scripts/ui/hud.gd` and `godot/scripts/ui/components/owl_ring.gd`.
+Last verified against code: 2026-08-25
+
 Drop a file here and the game uses it on the next run. No wiring.
 
 | File | Size | Used by | Falls back to |

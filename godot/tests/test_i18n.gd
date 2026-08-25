@@ -49,9 +49,10 @@ func test_icelandic_corrections() -> void:
 	var prev: String = tm.get_locale()
 	tm.set_locale("is")
 	# `bjarga` governs the dative, so the passive participle stays neuter and
-	# indeclinable -- "Uglur bjargaðar" is the learner error this replaced.
-	assert_eq(tm.t("game.completion_stats", [3, 40]), "Uglum bjargað: 3   Mynt: 40", "dative passive for bjarga")
-	assert_eq(tm.t("game.owl_saved"), "Uglu bjargað!", "singular dative passive matches")
+	# indeclinable -- "Uglur bjargaðar" is the learner error this replaced. The
+	# plural half of this pin lived on game.completion_stats, which the stat
+	# medals replaced; you cannot pin grammar in a string nobody renders.
+	assert_eq(tm.t("game.owl_saved"), "Uglu bjargað!", "dative passive for bjarga")
 	# "Í bið" is queue/on-hold register; "Hlé" is the cinema-intermission word.
 	assert_eq(tm.t("pause.title"), "HLÉ", "pause uses the everyday word")
 	# `hjálpa` needs its dative object.
@@ -188,6 +189,44 @@ func test_plural_agreement_per_locale() -> void:
 	assert_eq(tm.tp("math.expl.total", {"n": 1}, "n"),
 		"There is 1 altogether.", "English inflects at 1")
 	tm.set_locale(prev)
+
+## The two UI counters that carry a number a child can read.
+##
+## Both shipped through t(), which has no plural path, so Icelandic read
+## "1 uglur heima" and "10 mynt!" -- singular noun on a plural count, and the
+## reverse. The maths pools have had per-locale agreement since the phrasing
+## overlay landed; these two were the surfaces it never reached.
+func test_ui_counters_agree_with_their_number() -> void:
+	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
+	var prev: String = tm.get_locale()
+
+	tm.set_locale("is")
+	assert_eq(tm.tp("hud.coins_milestone", {"n": 10}, "n"), "10 myntir!", "plural noun at 10")
+	assert_eq(tm.tp("hud.coins_milestone", {"n": 1}, "n"), "1 mynt!", "singular at 1")
+	assert_eq(tm.tp("hud.coins_milestone", {"n": 21}, "n"), "21 mynt!", "Icelandic singular at 21")
+	assert_eq(tm.tp("hud.coins_milestone", {"n": 11}, "n"), "11 myntir!", "but not at 11")
+	assert_eq(tm.tp("menu.continue_detail", {"world": "Emberskógur", "owls": 4}, "owls"),
+		"Emberskógur · 4 uglur heima", "plural owls")
+	assert_eq(tm.tp("menu.continue_detail", {"world": "Emberskógur", "owls": 1}, "owls"),
+		"Emberskógur · 1 ugla heima", "singular owl")
+
+	tm.set_locale("en")
+	assert_eq(tm.tp("hud.coins_milestone", {"n": 21}, "n"), "21 coins!", "English stays plural at 21")
+	assert_eq(tm.tp("hud.coins_milestone", {"n": 1}, "n"), "1 coin!", "English inflects at 1")
+	tm.set_locale(prev)
+
+## One word for the currency. It was "Peningar" on the completion medal, "MYNT"
+## on the streak toast and "mynt" on the milestone -- three words for the coins
+## in one game.
+func test_icelandic_currency_is_one_word() -> void:
+	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")
+	var prev: String = tm.get_locale()
+	tm.set_locale("is")
+	for key in ["game.stat_coins", "fx.streak_multiplier", "hud.coins_milestone"]:
+		assert_true(tm.t(key).to_lower().contains("mynt"),
+			"[%s] names the currency 'mynt', got '%s'" % [key, tm.t(key)])
+	tm.set_locale(prev)
+
 
 ## Without the marker there is nothing to inflect on, so the base form must come
 ## back rather than a missing-key empty string.
