@@ -44,3 +44,9 @@ reports/web/
 # every local smoke run dirtied the working tree, and 28 of them were outputs of
 # tools that no longer exist. CI uploads what it needs as job artifacts.
 output/playwright/
+
+# Python bytecode. The asset guard imports audit_pixel_art as a module, so every
+# run of tools/check_assets.py writes a __pycache__ next to the tools and dirties
+# the working tree. Nothing reads it back.
+__pycache__/
+*.pyc
