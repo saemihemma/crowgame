@@ -153,8 +153,20 @@ function validateFreshnessStamps() {
     // the same calendar day as HEAD was silently declined. On this 143-commit
     // repo that skipped 15 of 19, and a seven-month-stale stamp on a
     // Status: Current doc passed. The boundary is the actual limit of knowledge.
-    const boundary = new Set((git(['rev-parse', '--shallow-list']) || '')
-        .split('\n').map(l => l.trim()).filter(l => /^[0-9a-f]{40}$/.test(l)));
+    // Read .git/shallow, not `git rev-parse --shallow-list` — that flag is not
+    // supported here and rev-parse echoes it back as a literal, which a 40-hex
+    // filter silently swallowed. The result was an empty boundary set, so every
+    // file was judged, and CI failed the four READMEs a depth-2 checkout cannot
+    // date. The file is the authority.
+    const gitDir = git(['rev-parse', '--absolute-git-dir']);
+    let boundary = new Set();
+    if (gitDir) {
+        const shallowFile = path.join(gitDir, 'shallow');
+        if (fs.existsSync(shallowFile)) {
+            boundary = new Set(fs.readFileSync(shallowFile, 'utf8')
+                .split('\n').map(l => l.trim()).filter(l => /^[0-9a-f]{40}$/.test(l)));
+        }
+    }
 
     let judged = 0;
     let declined = 0;
