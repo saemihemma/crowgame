@@ -318,8 +318,6 @@ func _draw_pattern_strip() -> void:
 	var y := size.y * 0.5
 	var x := size.x * 0.5 - total_w * 0.5 + chip * 0.5
 	var numeral_size := _tune("numeral_font_size", 26.0) * 0.8
-	var parts := ["token_a", "token_b", "token_c"]
-	var fallbacks := ["owl", "accent", "primary"]
 	for i in slots:
 		var at := Vector2(x + i * (chip + gap), y)
 		var last := i == length
@@ -329,8 +327,43 @@ func _draw_pattern_strip() -> void:
 			draw_arc(at, chip * 0.5, 0.0, TAU, 28, _role("mark", "accent"), 3.0)
 			_numeral("?", at, numeral_size, _role("mark", "accent"))
 			continue
-		_token(at, chip * 0.5, _role(parts[slot % parts.size()], fallbacks[slot % fallbacks.size()]))
+		_pattern_chip(at, chip * 0.5, slot)
 		_numeral(str(value), at, numeral_size, _role("outline", "ink"))
+
+## One chip of a repeating pattern, marked by SHAPE first and colour second.
+##
+## Colour alone cannot do this job here, and that is measurable rather than a
+## matter of taste: across the seven palettes there is no set of three roles that
+## are all legible on the board AND distinguishable from each other. The only two
+## that came close were `hurt` and `spike`, which are the damage colours. A
+## previous fix swapped the third slot from `coin` to `primary` to stop it
+## matching `accent` -- and made it near-invisible instead, 1.16:1 against the
+## board in prism_hollow.
+##
+## Shape works in every theme by construction, and it is what a child who cannot
+## separate the colours needs anyway. Colour stays, as reinforcement.
+func _pattern_chip(at: Vector2, radius: float, slot: int) -> void:
+	var fill := _role("token_a", "owl") if slot % 2 == 0 else _role("token_b", "accent")
+	var edge := _role("outline", "ink")
+	match slot % 3:
+		0:
+			draw_circle(at, radius, fill)
+			draw_arc(at, radius, 0.0, TAU, 24, edge, 2.5)
+		1:
+			var box := Rect2(at - Vector2(radius, radius) * 0.9, Vector2(radius, radius) * 1.8)
+			draw_rect(box, fill)
+			draw_rect(box, edge, false, 2.5)
+		_:
+			# A diamond: the square turned, so the third slot reads as its own
+			# thing at a glance without needing a new colour.
+			var points := PackedVector2Array([
+				at + Vector2(0, -radius), at + Vector2(radius, 0),
+				at + Vector2(0, radius), at + Vector2(-radius, 0),
+			])
+			draw_colored_polygon(points, fill)
+			var outline := points.duplicate()
+			outline.append(points[0])
+			draw_polyline(outline, edge, 2.5)
 
 ## A sequence as a child meets it in the pools: numbers, a comma, and a gap.
 func _draw_numbers() -> void:

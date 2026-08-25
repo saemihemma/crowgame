@@ -515,3 +515,35 @@ Original prompt: fix the division cap, the four-rung subtraction hole and additi
 - Left undone on purpose: nothing relational exceeds a total of twenty, and
   multiplication and division have no relational form. Both in roadmap.md; the
   first is blocked on the operand-cap decision rather than on the parser.
+
+## 2026-08-25 - Making the lessons legible in all seven worlds
+
+- I had only ever looked at these cards in emberwood. Auditing all seven palettes
+  by contrast ratio rather than by eye found two real defects, and one of them was
+  a test of mine that was passing while the thing it guarded was broken.
+- `token_c` was below 3:1 against the board in SIX of seven themes - 1.16:1 in
+  prism_hollow, which is invisible. My own earlier "fix" caused it: swapping the
+  third pattern slot from `coin` to `primary` stopped it matching `accent` and
+  made it unreadable instead. The test I wrote at the time asserted the three
+  colours were DIFFERENT HEX VALUES. They were. Testing identity where the
+  requirement is perceptibility is exactly how that got through.
+- Searched every role in every palette for a third colour that is legible on the
+  board AND distinct from the other two, in all seven themes. Two qualify:
+  `hurt` and `spike`, the damage colours. So this is not a palette-picking
+  problem - colour cannot carry a three-way distinction here at all.
+- The repeat is carried by SHAPE now: circle, square, diamond, with colour
+  reinforcing. Works in every theme by construction, and it is what a child who
+  cannot separate the colours needed anyway. `token_c` is deleted from the tuning
+  file with the reason recorded beside the roles that remain, and the lesson copy
+  says "the shapes show you where" in both languages because the copy has to
+  follow the carrier.
+- Replaced the bad test with one that measures WCAG 1.4.11 contrast for every
+  drawn part against the board, in every theme, and negative-tested it by
+  pointing `token_b` back at the invisible colour: it fails per theme with the
+  measured ratio.
+- Text contrast was already fine everywhere (5.5:1 to 16:1), so the audit's one
+  genuine finding was in the drawn parts - which is where I had never looked.
+- Careless moment worth recording: `git checkout` on the tuning file to undo the
+  negative test silently reverted the uncommitted token_c removal, the same trap
+  that wiped twenty problems earlier in this session. Checked, reapplied, and
+  staged first this time.

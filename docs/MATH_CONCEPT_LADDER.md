@@ -251,9 +251,20 @@ against the 960x540 design viewport, and `BrandButton` floors every tap target
 at 88px on its short edge (Gate B3). Grow `visual_height` or `body_min_h` and
 the nav row walks off the bottom of the screen.
 
-The ten representations `tutorial_visual.gd` can draw: `count_all`,
+**Colour is never the only carrier.** The pattern strip marks its repeating core
+by SHAPE — circle, square, diamond — with colour reinforcing it. That is not a
+stylistic preference: across the seven palettes there is no set of three roles
+that are all legible on the board *and* distinguishable from each other, and the
+only two that came close were the damage colours. An earlier version used three
+colours, passed a test that checked they were different hex values, and sat at
+1.16:1 against the board in `prism_hollow` — different, and invisible.
+`test_theme_roles.gd::test_every_drawn_part_is_visible_on_the_board_in_every_theme`
+now measures contrast rather than inequality, at the WCAG 1.4.11 floor of 3:1 for
+a graphic that carries meaning.
+
+The eleven representations `tutorial_visual.gd` can draw: `count_all`,
 `ten_frame`, `number_line`, `take_away`, `balance`, `pattern_strip`, `numbers`,
-`groups`, `tens_and_ones`, `equation`. None of them can draw a **regroup** — ten
+`groups`, `tens_and_ones`, `part_whole`, `equation`. None of them can draw a **regroup** — ten
 ones becoming a ten, or a ten broken back into ones — which is why
 `addition.carrying` and `subtraction.borrowing` teach bridging through a landmark
 ten on a number line instead of the thing they are named after, and why

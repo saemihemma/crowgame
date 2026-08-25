@@ -60,14 +60,13 @@
     "cross_thickness": 4
   },
   "roles": {
-    "_comment": "Left side: what the tutorial draws. Right side: a palette role every theme already defines. Remap freely -- but keep token_a/b/c mutually distinct in EVERY theme: the pattern strip colours a slot by its position in the repeating core, so two slots sharing a colour hides the repeat the card is about. token_c was `coin`, which is the same hex as `accent` in the emberwood palette, so the second and third slot were identical there.",
+    "_comment": "Left side: what the tutorial draws. Right side: a palette role every theme already defines. Remap freely, but token_a and token_b must clear 3:1 against the board in all seven palettes -- test_theme_roles.gd fails the build otherwise. There is deliberately no token_c: the pattern strip used to need a third colour and NO role in these palettes is both legible on the board and distinct from the other two everywhere, so the repeat is carried by SHAPE now (circle, square, diamond) and colour only reinforces it.",
     "board_bg": "boardBg",
     "board_border": "boardBorder",
     "title": "accent",
     "body": "paper",
     "token_a": "owl",
     "token_b": "accent",
-    "token_c": "primary",
     "token_gone": "text_dim",
     "outline": "ink",
     "line": "paper",
