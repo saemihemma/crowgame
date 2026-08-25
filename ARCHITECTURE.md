@@ -122,7 +122,16 @@ Genuine exceptions — brand text, diagnostics — take `# hardcode-ok` on the l
 - **A colour or skin:** a palette role in every `theme_*.json`, read via
   `ThemeManager.get_color_value(role)`.
 - **A level:** author `data/levels/specs/*.spec.json`, then `npm run compile`.
-  Never hand-edit `data/levels/compiled/**`.
+  Never hand-edit `data/levels/compiled/**`. To author natively instead, convert
+  the compiled levels into editable Godot scenes — a shared `TileSet` per tileset
+  image plus a `.tscn` with background/ground/decoration layers and a `Spawns`
+  node of `Marker2D`s — and they open in the TileMap editor:
+
+  ```bash
+  godot --headless --path godot --script res://tools/import_level.gd
+  ```
+
+  The runtime `LevelLoader` stays the parity path either way.
 - **A scene or route:** one entry in `scenes.json`, then `SceneRouter.goto(name)`.
 
 ## The math system
@@ -569,8 +578,9 @@ sentence.
 
 Accepted cost for v1: a device that plays offline while another plays more loses
 that session's cosmetic progress. Bounded to one session; every arbitration logs
-a conflict event; the last 20 save versions per child are retained, so a bad
-merge is a support action rather than a loss.
+a conflict event; save versions per child are retained to `config.save.historyDepth`
+(`CROW_SAVE_HISTORY_DEPTH`, default 20), so a bad merge is a support action
+rather than a loss.
 
 ### 5. Attempts are a batched, idempotent, append-only log
 
@@ -625,7 +635,8 @@ is not optional.
 - `devices` + `device_tokens(token_sha256)` — the authorization subject is the
   device, scoped to a family, never the child
 - `child_saves` — one blob per child, arbitrated by `problems_attempted`
-- `child_save_history` — the last 20 versions, so a bad merge is recoverable
+- `child_save_history` — the last `CROW_SAVE_HISTORY_DEPTH` versions (default
+  20), so a bad merge is recoverable
 - `attempts(child_id, attempt_id)` — append-only, idempotent, `text` ids
 - `sync_conflicts` — instrumentation for the accepted v1 merge cost
 

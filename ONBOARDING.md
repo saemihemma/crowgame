@@ -205,8 +205,11 @@ moment lands for a child. Say in your PR what you played and what you saw.
 1. **Editing the wrong tree.** `math-kernel/**` and `tools/**` never ship. A
    perfect fix there changes nothing a player sees.
 2. **`learner_state_manager.gd` looks like it wants refactoring. It does not.**
-   It is the largest file in the repo and parity-locked against golden fixtures;
-   splitting it risks the silent fidelity drift those fixtures exist to catch.
+   It is long — 657 lines — and parity-locked against golden fixtures; splitting
+   it risks the silent fidelity drift those fixtures exist to catch. (It is not
+   the largest file in the repo, which older docs claimed: `game.gd` is longer at
+   683 lines, and `tools/math_authoring.ts` is 1946. Length is not why this one
+   is protected.)
 3. **Changing a Tier-1 constant without regenerating fixtures.** CI fails, and
    correctly: the kernel and the game must agree.
 4. **Autoload order.** `CloudSync` must come after `SaveManager`,
