@@ -292,5 +292,14 @@
   "level_select.owl_count": "x{0}",
   "game.stat_owls": "Uglur heima",
   "game.stat_coins": "Myntir",
-  "pause.volume": "Hljóðstyrkur: {0}%"
+  "pause.volume": "Hljóðstyrkur: {0}%",
+  "report_source_cloud": "Allt spil, frá öllum tækjum.",
+  "report_source_local": "Aðeins nýlegt spil á þessu tæki.",
+  "report_elo_line": "Færnistig: {0}",
+  "report_domain_head": "{0} - þrep {1} (mest {2})",
+  "report_kind_line": "{0}: {1} rétt af {2} ({3}%)",
+  "report_domain_total": "Samtals: {0} rétt af {1} ({2}%)",
+  "kind_equation": "Bein dæmi",
+  "kind_word_problem": "Orðadæmi",
+  "kind_visual": "Talningarmyndir"
 }

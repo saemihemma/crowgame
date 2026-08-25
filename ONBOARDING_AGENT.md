@@ -81,7 +81,7 @@ Game:
 - **51** `.gd` scripts under `godot/scripts/`, **24** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **294** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **303** keys, matched key-for-key by
   `strings_is.json`
 - **19** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
@@ -117,7 +117,7 @@ difficulty curve suits a particular child — no artifact in this repo claims th
 
 Server:
 - **17** TypeScript sources under `server/src/**`
-- **2** migrations: `001_errors.sql`, `002_family_and_save.sql`
+- **4** migrations: `001_errors.sql`, `002_family_and_save.sql`, `003_error_partition_selfheal.sql`, `004_attempts_received_index.sql`
 - **31** tests, run against a real Postgres
 
 Reference kernel:

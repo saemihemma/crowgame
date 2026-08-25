@@ -51,6 +51,16 @@ one week per change.
 *Done when:* two consecutive weekly reports sit inside the sweet spot with at
 least one step-up per early session and frustration flags under 10%.
 
+### Sessions are derived from math attempts, so math-free play is invisible
+The admin overview splits attempt timestamps on a 30-minute gap to get session
+counts and lengths. A child who runs and jumps without meeting an owl leaves no
+trace in it. A lightweight client heartbeat (session start + a ping every few
+minutes, batched into the existing API) would make session length honest for
+all play, not just math play.
+
+*Done when:* the overview's session numbers come from heartbeats, and the
+`derivedFromAttempts` label is gone from `/api/v1/admin/overview`.
+
 ## P2 — Experience decisions that need making
 
 

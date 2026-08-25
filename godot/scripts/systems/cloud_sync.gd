@@ -137,6 +137,21 @@ func bind_active_profile() -> void:
 	if _remote_child_id != "":
 		await pull_save()
 
+## The parent report: the server's lifetime, cross-device rollup for one child
+## (per domain and per problem kind). Empty when this device is not enrolled or
+## the profile was never bound to a server child — the ParentReport scene then
+## falls back to what this device has seen locally.
+func fetch_child_report(profile: Dictionary) -> Dictionary:
+	if not _enrolled:
+		return {}
+	var remote := String(profile.get(REMOTE_CHILD_KEY, ""))
+	if remote == "":
+		return {}
+	var res := await _request(HTTPClient.METHOD_GET, "/family/children/%s/report" % remote, {})
+	if res["ok"] and res["json"] is Dictionary:
+		return res["json"]
+	return {}
+
 ## Fetch the authoritative save and adopt it when the server is ahead.
 func pull_save() -> void:
 	if _remote_child_id == "":

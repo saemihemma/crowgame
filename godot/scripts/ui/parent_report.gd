@@ -49,7 +49,9 @@ func _ready() -> void:
 		_body(TextManager.t("report_no_children"))
 	else:
 		for profile in profiles:
-			_render_child(profile)
+			# Awaited so children render in order and the back button stays last
+			# in the column even when a cloud fetch is in flight.
+			await _render_child(profile)
 
 	var back := Button.new()
 	back.text = TextManager.t("menu.back")
@@ -65,6 +67,14 @@ func _render_child(profile: Dictionary) -> void:
 	var username := String(profile.get("username", ""))
 	_heading(username, int(Config.ui("parent_report/child_font_size", 30)))
 
+	# The cloud report is the truth when it exists: every attempt ever, from
+	# every device, grouped by domain and by problem kind. Local data is the
+	# fallback and says so — it is this device's recent window, not a lifetime.
+	var cloud: Dictionary = await CloudSync.fetch_child_report(profile)
+	if not cloud.is_empty():
+		_render_cloud_report(cloud)
+		return
+
 	var snapshot := _snapshot_for(profile)
 	if snapshot.is_empty():
 		_body(TextManager.t("report_not_played_yet"))
@@ -79,6 +89,7 @@ func _render_child(profile: Dictionary) -> void:
 	if not (domains is Array):
 		return
 
+	_body(TextManager.t("report_source_local"))
 	for entry in domains:
 		if not (entry is Dictionary):
 			continue
@@ -86,18 +97,84 @@ func _render_child(profile: Dictionary) -> void:
 		# Locked domains are noise for a parent: the child has not met them yet.
 		if not bool(d.get("unlocked", false)):
 			continue
-		_body(TextManager.t("report_domain_line", [
+		var accuracy := float(d.get("firstAttemptAccuracy", 0.0))
+		_stat_line(TextManager.t("report_domain_line", [
 			TextManager.t("domain_" + String(d.get("domain", ""))),
 			str(int(d.get("currentStep", 0))),
-			str(int(round(float(d.get("firstAttemptAccuracy", 0.0)) * 100.0))),
+			str(int(round(accuracy * 100.0))),
 			str(int(d.get("activeReviewCount", 0))),
-		]))
+		]), accuracy)
 
 	# Confidence is the number that explains behaviour a parent actually notices —
 	# a child who has hit a rough patch gets easier questions on purpose.
 	var conf := _lowest_confidence(domains)
 	if conf < 0.0:
 		_body(TextManager.t("report_confidence_low"))
+
+## The lifetime matrix: per domain a header with step and skill score, then one
+## colour-coded line per problem kind (straight math / word problems / counting
+## pictures) with counts — a parent sees where to help at a glance.
+func _render_cloud_report(report: Dictionary) -> void:
+	_body(TextManager.t("report_source_cloud"))
+	var global_elo: Variant = report.get("globalElo", null)
+	if global_elo != null:
+		_body(TextManager.t("report_elo_line", [str(int(round(float(global_elo))))]))
+
+	for entry in report.get("domains", []):
+		if not (entry is Dictionary):
+			continue
+		var d: Dictionary = entry
+		if int(d.get("attempted", 0)) <= 0:
+			continue
+		var progress: Variant = d.get("progress", null)
+		var step := 0
+		var highest := 0
+		if progress is Dictionary:
+			step = int((progress as Dictionary).get("currentStep", 0))
+			highest = int((progress as Dictionary).get("highestStep", 0))
+		_heading(TextManager.t("report_domain_head", [
+			TextManager.t("domain_" + String(d.get("domain", ""))),
+			str(step), str(maxi(step, highest)),
+		]), int(Config.ui("parent_report/domain_font_size", 24)))
+
+		for kind_entry in d.get("kinds", []):
+			if not (kind_entry is Dictionary):
+				continue
+			var k: Dictionary = kind_entry
+			var attempted := int(k.get("attempted", 0))
+			if attempted <= 0:
+				continue
+			var correct := int(k.get("correct", 0))
+			var accuracy := float(correct) / attempted
+			_stat_line(TextManager.t("report_kind_line", [
+				TextManager.t("kind_" + String(k.get("kind", "equation"))),
+				str(correct), str(attempted), str(int(round(accuracy * 100.0))),
+			]), accuracy)
+
+		var domain_attempted := int(d.get("attempted", 0))
+		var domain_correct := int(d.get("correct", 0))
+		_stat_line(TextManager.t("report_domain_total", [
+			str(domain_correct), str(domain_attempted),
+			str(int(round(100.0 * domain_correct / domain_attempted))),
+		]), float(domain_correct) / domain_attempted)
+
+## A body line whose colour says how it is going: green comfortably right,
+## amber in the working zone, red where a parent's help lands best. The
+## thresholds and hexes are data (ui_tuning parent_report), not code.
+func _stat_line(text: String, accuracy: float) -> void:
+	var label := Label.new()
+	label.text = text
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.add_theme_font_size_override("font_size", int(Config.ui("parent_report/body_font_size", 22)))
+	var color_hex: String
+	if accuracy >= float(Config.ui("parent_report/accuracy_good_min", 0.85)):
+		color_hex = String(Config.ui("parent_report/accuracy_color_good", "#2e9e4f"))
+	elif accuracy >= float(Config.ui("parent_report/accuracy_ok_min", 0.70)):
+		color_hex = String(Config.ui("parent_report/accuracy_color_ok", "#c98500"))
+	else:
+		color_hex = String(Config.ui("parent_report/accuracy_color_low", "#d05353"))
+	label.add_theme_color_override("font_color", Color.html(color_hex))
+	_column.add_child(label)
 
 func _snapshot_for(profile: Dictionary) -> Dictionary:
 	# The learner snapshot is embedded in the child's save, which is the same

@@ -573,7 +573,6 @@ validateMathAuthoringFiles();
 // chain as a whole must cover every skill the owl can serve. These guards
 // keep the design from rotting as specs, registries, or pools change.
 function validateLevelMathGating(): void {
-    const LIVE_DOMAINS = ['addition', 'subtraction', 'counting', 'comparison', 'pattern_matching', 'number_sequence'];
     const MIN_PROBLEMS_IN_BAND = 30;
 
     const specsDir = join(DATA_DIR, 'levels', 'specs');
@@ -646,15 +645,91 @@ function validateLevelMathGating(): void {
             }
         }
     }
-    const missing = LIVE_DOMAINS.filter(domain => !covered.has(domain));
+    // Every domain the owl can serve must have a level that teaches it. The
+    // list comes from the NPC config itself, so enabling a new domain for the
+    // owl immediately demands a home in the chain — no list to remember.
+    const missing = [...owlDomains].filter(domain => !covered.has(domain));
     if (missing.length > 0) {
-        console.error(`  FAIL: no level in the chain teaches: ${missing.join(', ')} — every servable domain needs a home.`);
+        console.error(`  FAIL: no level in the chain teaches: ${missing.join(', ')} — every owl-servable domain needs a home.`);
         errors++;
     } else {
         validated++;
     }
 }
 validateLevelMathGating();
+
+// The analytics problem catalog (server/src/generated/problemCatalog.ts) maps
+// problem_id -> domain + kind for the parent report. It is generated from the
+// pools; a stale copy silently mislabels a child's accuracy matrix, so drift
+// fails validation instead.
+function validateProblemCatalogFreshness(): void {
+    const catalogPath = join(ROOT, 'server', 'src', 'generated', 'problemCatalog.ts');
+    if (!existsSync(catalogPath)) {
+        console.error('  FAIL: server/src/generated/problemCatalog.ts is missing. Run: npx tsx tools/gen_problem_catalog.ts');
+        errors++;
+        return;
+    }
+    const source = readFileSync(catalogPath, 'utf-8');
+    const match = source.match(/POOLS_HASH = "([0-9a-f]{64})"/);
+    if (!match) {
+        console.error('  FAIL: problemCatalog.ts carries no POOLS_HASH; regenerate it.');
+        errors++;
+        return;
+    }
+    const { createHash } = require('node:crypto') as typeof import('node:crypto');
+    const hash = createHash('sha256');
+    const mathDataDir = join(DATA_DIR, 'math');
+    for (const file of readdirSync(mathDataDir).filter((f: string) => f.endsWith('.json')).sort()) {
+        hash.update(file).update('\0').update(readFileSync(join(mathDataDir, file), 'utf-8'));
+    }
+    if (hash.digest('hex') !== match[1]) {
+        console.error('  FAIL: the analytics problem catalog is stale against godot/data/math. Run: npx tsx tools/gen_problem_catalog.ts');
+        errors++;
+    } else {
+        validated++;
+    }
+}
+validateProblemCatalogFreshness();
+// The parent report renders TextManager.t("kind_" + kind) and ("domain_" + d).
+// Those prefixes are exempt from the dead-key scanner because they are built at
+// runtime — which means a NEW kind or newly served domain without a translation
+// would silently show a raw key to a parent. Close the loop from this side:
+// every kind the catalog can emit and every owl-servable domain must have its
+// string in BOTH bundles.
+function validateAnalyticsI18nCoverage(): void {
+    const catalogPath = join(ROOT, 'server', 'src', 'generated', 'problemCatalog.ts');
+    if (!existsSync(catalogPath)) return; // freshness check above already failed
+    const source = readFileSync(catalogPath, 'utf-8');
+    const kinds = new Set<string>();
+    for (const match of source.matchAll(/"k":"(\w+)"/g)) kinds.add(match[1]!);
+
+    const npcRegistry = JSON.parse(readFileSync(join(DATA_DIR, 'npcs', 'npc_registry.json'), 'utf-8')) as {
+        npcs: Array<{ components: Array<{ type: string; problemTypes?: string[] }> }>;
+    };
+    const domains = new Set(
+        npcRegistry.npcs.flatMap(npc => npc.components)
+            .filter(c => c.type === 'math_challenge')
+            .flatMap(c => c.problemTypes ?? []),
+    );
+
+    for (const locale of ['en', 'is']) {
+        const bundle = JSON.parse(readFileSync(join(DATA_DIR, 'i18n', `strings_${locale}.json`), 'utf-8')) as Record<string, string>;
+        for (const kind of kinds) {
+            if (!(`kind_${kind}` in bundle)) {
+                console.error(`  FAIL: strings_${locale}.json is missing "kind_${kind}" — the parent report would show a raw key.`);
+                errors++;
+            }
+        }
+        for (const domain of domains) {
+            if (!(`domain_${domain}` in bundle)) {
+                console.error(`  FAIL: strings_${locale}.json is missing "domain_${domain}" — the parent report would show a raw key.`);
+                errors++;
+            }
+        }
+    }
+    validated++;
+}
+validateAnalyticsI18nCoverage();
 
 // Cross-reference validation
 validateCrossReferences();

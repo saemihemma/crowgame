@@ -292,5 +292,14 @@
   "level_select.owl_count": "x{0}",
   "game.stat_owls": "Owls home",
   "game.stat_coins": "Coins",
-  "pause.volume": "Volume: {0}%"
+  "pause.volume": "Volume: {0}%",
+  "report_source_cloud": "All play, from every device.",
+  "report_source_local": "Recent play on this device only.",
+  "report_elo_line": "Skill score: {0}",
+  "report_domain_head": "{0} - level {1} (best {2})",
+  "report_kind_line": "{0}: {1} of {2} right ({3}%)",
+  "report_domain_total": "All together: {0} of {1} right ({2}%)",
+  "kind_equation": "Straight math",
+  "kind_word_problem": "Word problems",
+  "kind_visual": "Counting pictures"
 }

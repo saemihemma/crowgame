@@ -86,6 +86,19 @@ export const config = {
 
     /** Absolute base used to build the magic link, e.g. https://crow.example.com */
     publicBaseUrl: str('CROW_PUBLIC_BASE_URL', ''),
+
+    admin: {
+        /**
+         * Bearer token for the owner's analytics surface. Unset means the whole
+         * admin surface answers 404 — the feature is off, not open. There is one
+         * owner, so a single shared secret beats building accounts nobody needs.
+         */
+        token: str('CROW_ADMIN_TOKEN', ''),
+        /** A session is a burst of attempts with no gap over this many minutes. */
+        sessionGapMinutes: int('CROW_SESSION_GAP_MINUTES', 30),
+        /** How many days of daily series the overview returns. */
+        overviewDays: int('CROW_OVERVIEW_DAYS', 28),
+    },
 } as const;
 
 export function assertDatabaseConfigured(): void {
