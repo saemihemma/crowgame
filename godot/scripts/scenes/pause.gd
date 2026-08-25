@@ -44,6 +44,7 @@ func _ready() -> void:
 	_title = title
 	_resume_btn = _button(col, TextManager.t("pause.resume"), _resume, BrandButton.Role.PRIMARY)
 	_sound_btn = _button(col, _sound_label(), _toggle_sound)
+	_volume_btn = _button(col, _volume_label(), _cycle_volume)
 	_language_btn = _button(col, TextManager.endonym(TextManager.get_locale()), _cycle_locale)
 	_add_flag(_language_btn)
 	_quit_btn = _button(col, TextManager.t("pause.quit"), _quit, BrandButton.Role.GHOST)
@@ -52,6 +53,7 @@ func _ready() -> void:
 var _title: Label
 var _resume_btn: Button
 var _sound_btn: Button
+var _volume_btn: Button
 var _language_btn: Button
 var _quit_btn: Button
 var _language_flag: FlagIcon
@@ -107,6 +109,8 @@ func _cycle_locale() -> void:
 		_quit_btn.text = TextManager.t("pause.quit")
 	if is_instance_valid(_sound_btn):
 		_sound_btn.text = _sound_label()
+	if is_instance_valid(_volume_btn):
+		_volume_btn.text = _volume_label()
 	if is_instance_valid(_language_btn):
 		_language_btn.text = TextManager.endonym(next)
 	if is_instance_valid(_language_flag):
@@ -125,6 +129,28 @@ func _sound_label() -> String:
 	var key := "sound.off" if AudioManager.is_muted() else "sound.on"
 	return TextManager.t("pause.sound", [TextManager.t(key)])
 
+
+## Volume in four steps rather than a slider.
+##
+## A slider grabber small enough to be precise is too small to hit under Gate B3,
+## and this row has to work for the same thumb that plays the game. Four steps
+## cycle on tap, exactly like the sound row above it - one idiom, one target
+## size, nothing to drag.
+const VOLUME_STEPS := [1.0, 0.66, 0.33, 0.0]
+
+func _volume_label() -> String:
+	return TextManager.t("pause.volume", [int(round(AudioManager.get_master_volume() * 100.0))])
+
+func _cycle_volume() -> void:
+	var now := AudioManager.get_master_volume()
+	var nearest := 0
+	for i in VOLUME_STEPS.size():
+		if absf(float(VOLUME_STEPS[i]) - now) < absf(float(VOLUME_STEPS[nearest]) - now):
+			nearest = i
+	AudioManager.set_master_volume(float(VOLUME_STEPS[(nearest + 1) % VOLUME_STEPS.size()]))
+	AudioManager.play_sfx("ui_click")
+	if is_instance_valid(_volume_btn):
+		_volume_btn.text = _volume_label()
 
 func _toggle_sound() -> void:
 	var now_muted := not AudioManager.is_muted()

@@ -17,6 +17,8 @@ VARIANTS="${2:-play}"
 # Window size to photograph at, e.g. 1194x834 (iPad 11" landscape). Empty keeps
 # the project default.
 SIZE="${3:-}"
+# Which owl to walk to for the maths variants (0 = the first in the level).
+OWL="${4:-}"
 
 # --resolution, not DisplayServer.window_set_size: the window has to exist at
 # the right size before the first frame, or the stretch system resolves the
@@ -28,5 +30,5 @@ if [ -n "$SIZE" ]; then
 fi
 
 xvfb-run -a --server-args="-screen 0 ${SCREEN}x24" \
-  "$GODOT" --path "$HERE" "${RES_ARG[@]}" res://tools/capture/Capture.tscn -- "$LEVELS" "$VARIANTS" "$SIZE" 2>&1 \
+  "$GODOT" --path "$HERE" "${RES_ARG[@]}" res://tools/capture/Capture.tscn -- "$LEVELS" "$VARIANTS" "$SIZE" "$OWL" 2>&1 \
   | grep -E "^\[capture\]" || true

@@ -51,7 +51,7 @@
   "cloud_offline": "Saved on this device, will sync later",
   "menu.back": "Back",
   "report_title": "How your child is doing",
-  "report_what_this_is": "Crow adjusts the questions to each child. Mistakes lower the difficulty faster than correct answers raise it, so a rough patch is meant to make the next question easier, not harder.",
+  "report_what_this_is": "Hörmann adjusts the questions to each child. Mistakes lower the difficulty faster than correct answers raise it, so a rough patch is meant to make the next question easier, not harder.",
   "report_no_children": "No child profiles on this device yet.",
   "report_not_played_yet": "No practice recorded yet.",
   "report_domain_line": "{0} - step {1}, {2}% right first try, {3} to review",
@@ -291,5 +291,6 @@
   "menu.continue_detail.one": "{world} · {owls} owl home",
   "level_select.owl_count": "x{0}",
   "game.stat_owls": "Owls home",
-  "game.stat_coins": "Coins"
+  "game.stat_coins": "Coins",
+  "pause.volume": "Volume: {0}%"
 }

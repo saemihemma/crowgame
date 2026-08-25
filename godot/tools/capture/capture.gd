@@ -38,6 +38,9 @@ const GAME_SCENE := preload("res://scenes/Game.tscn")
 ## sees stayed a flat blue page with a grey slab on it while the in-game HUD got
 ## three rebuilds.
 const SCREENS := ["login", "main_menu", "level_select"]
+## Which owl in the level to walk to, when a variant needs a particular one.
+## Set with a fourth CLI argument; defaults to the first.
+var _owl_index := 0
 ## Screens with sub-states worth photographing on their own. The login text
 ## fields only exist inside the create-a-player step, which is exactly why they
 ## sat as unstyled engine defaults for so long - no shot ever contained them.
@@ -72,6 +75,9 @@ var _requested_window := Vector2i.ZERO
 
 func _ready() -> void:
 	_apply_window_size()
+	var owl_args := OS.get_cmdline_user_args()
+	if owl_args.size() > 3 and owl_args[3] != "":
+		_owl_index = int(owl_args[3])
 	# The pause overlay pauses the whole tree, which would stop this node's own
 	# frame loop and hang the harness. Capture keeps stepping regardless of the
 	# game's pause state - it is a camera, not a participant.
@@ -215,6 +221,7 @@ func _stage(variant: String) -> bool:
 	var owl := _find_owl()
 	if owl == null:
 		return false
+	_stand_at(owl)
 	owl.interact()
 	if variant == "math":
 		return true
@@ -277,6 +284,25 @@ func _stage_overlay(variant: String) -> bool:
 	_game.call(method)
 	return true
 
+## Put the crow where a player would be standing when this board opens.
+##
+## Interacting with an owl from across the level leaves the crow back at the
+## spawn with the camera on him, which made every maths screenshot show a crow
+## comfortably clear of the board - and the board-covers-the-player bug look
+## fixed when it was not. In play the crow is at the owl and the camera is
+## centred on him, which is exactly where the board is.
+func _stand_at(owl: Node2D) -> void:
+	var player = _game.get_player()
+	if player == null or not is_instance_valid(player):
+		return
+	player.global_position = owl.global_position + Vector2(-40.0, 0.0)
+	var camera := player.get_node_or_null("Camera") as Camera2D
+	if camera != null:
+		# Skip the follow lerp: the shot is taken a fraction of a second later
+		# and a smoothed camera would still be sliding.
+		camera.reset_smoothing()
+		camera.force_update_scroll()
+
 func _wrong_index(problem: Dictionary) -> int:
 	var answer: Dictionary = problem.get("answer", {})
 	var options: Array = answer.get("options", [])
@@ -289,10 +315,13 @@ func _find_owl() -> Node2D:
 	var world := _game.get_node_or_null("World")
 	if world == null:
 		return null
+	var owls: Array[Node] = []
 	for c in world.get_children():
 		if c.scene_file_path.get_file() == "Npc.tscn":
-			return c
-	return null
+			owls.append(c)
+	if owls.is_empty():
+		return null
+	return owls[clampi(_owl_index, 0, owls.size() - 1)] as Node2D
 
 func _capture_and_advance() -> void:
 	var job := _jobs[_index]

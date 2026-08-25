@@ -49,9 +49,20 @@
             "frameWidth": 64,
             "frameHeight": 64,
             "anchor": "feet",
-            "description": "World objects that stand on the ground (owl stations, chain links at world scale).",
+            "description": "World objects that stand on the ground (owl stations). Chain links are NOT props — see `attachment`.",
             "art_notes": [
                 "Bottom edge of the frame is where it meets the floor."
+            ]
+        },
+        "attachment": {
+            "frameWidth": 32,
+            "frameHeight": 32,
+            "anchor": "center",
+            "description": "32x32 objects drawn attached to another entity rather than standing on the floor — the chain links across an owl's perch. ASSET_MANIFEST lists these at 32x32 alongside coins, not with the 64x64 owl station.",
+            "art_notes": [
+                "Centred on its attach point, not bottom-aligned.",
+                "ASSET_MANIFEST requires a link to stay countable at 22px in a row of three, which is the size npc.gd draws it at — so the silhouette has to survive being read small.",
+                "Authored at 32 and drawn at 22 is a 0.6875 downscale. The manifest asks for both; if the links ever look mushy, author at 22 rather than sharpening the 32."
             ]
         },
         "door": {

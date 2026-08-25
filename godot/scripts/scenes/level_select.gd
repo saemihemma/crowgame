@@ -47,6 +47,10 @@ func _ready() -> void:
 	# bottom of a painted screen reads as chrome from a different application.
 	scroll.get_h_scroll_bar().modulate.a = 0.0
 	add_child(scroll)
+	_scroll = scroll
+	# Snap to a card once a swipe settles. Free-scrolling leaves a world half
+	# off the edge, which on a thumb means every stop needs a correcting nudge.
+	scroll.get_h_scroll_bar().value_changed.connect(_on_scrolled)
 
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -89,6 +93,36 @@ func _ready() -> void:
 	back.offset_right = 20 + 150
 	back.offset_bottom = -18
 	add_child(back)
+
+## Settle onto the nearest card after the scroll stops moving.
+##
+## Debounced rather than snapping on every scroll event: snapping mid-swipe
+## fights the finger. The timer restarts on each movement, so it only fires once
+## the swipe is over.
+const SNAP_SETTLE_SECONDS := 0.18
+const SNAP_SECONDS := 0.22
+
+var _scroll: ScrollContainer
+var _snap_timer: SceneTreeTimer
+
+func _on_scrolled(_value: float) -> void:
+	_snap_timer = get_tree().create_timer(SNAP_SETTLE_SECONDS)
+	var mine := _snap_timer
+	await mine.timeout
+	if _snap_timer != mine or not is_instance_valid(_scroll):
+		return                                   # a newer swipe restarted the wait
+	_snap_to_nearest()
+
+func _snap_to_nearest() -> void:
+	var stride := WorldCard.SIZE.x + float(CARD_SEPARATION)
+	var bar := _scroll.get_h_scroll_bar()
+	var target: float = clampf(roundf(_scroll.scroll_horizontal / stride) * stride,
+		bar.min_value, maxf(bar.min_value, bar.max_value - bar.page))
+	if absf(target - float(_scroll.scroll_horizontal)) < 1.0:
+		return
+	var tw := create_tween()
+	tw.tween_property(_scroll, "scroll_horizontal", int(target), SNAP_SECONDS) \
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
 func _spacer() -> Control:
 	var pad := Control.new()

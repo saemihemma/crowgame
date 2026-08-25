@@ -42,23 +42,6 @@ there.
 
 ## P1 — Correctness and reachability
 
-### Confirm the intended level unlock chain
-On a fresh save only two of six levels are selectable (`level_99` and
-`level_01`); 3–6 show as locked. That is consistent with
-`unlockRequirement` in `public/data/levels/level_registry.json`, but nobody has
-stated whether a child is meant to unlock strictly one at a time.
-
-*Done when:* the intended progression is written down in `PROJECT.md` and the
-registry matches it.
-
-## P1.5 — The math experience loop
-
-The loop being built: teach → try → win → celebrate → miss → comeback →
-level up → new world → one more. Kid-safe rules bound everything here:
-rewards only ever add (no streaks, no timers, nothing to protect), game
-progress never gated by math level, one big celebration per encounter,
-teaching skippable, no dark patterns.
-
 ### Tune the ladder against real play, not intuition
 The admin session report tags accuracy against the 70-85% sweet spot. After a
 week of family play: above 85% raise the at-level/stretch share, below 70%
@@ -98,12 +81,6 @@ TouchScreenButton, which is a harness limitation and not evidence either way.
 whether the crow moves. If it does not, the fallback is to hide the controls
 unless `DisplayServer.is_touchscreen_available()`, so desktop players are not
 shown dead buttons.
-
-### Level select does not snap to rows
-`ScrollList` has momentum, clamping and a peeking next row, but a flick can rest
-mid-row. Snapping may read better for young players; it may also feel fighty.
-
-*Done when:* tried both ways on a device and one is chosen.
 
 ### The five tilesets are generated placeholders
 Each world has its own tileset and no two levels share a ground, but the five
@@ -186,17 +163,6 @@ the fallback, the same way `HealthBar` already falls back for its icons.
 frame survives a two-line prompt without distortion, and replacing one is a PNG
 swap plus insets in the theme file.
 
-### Chains have no art
-`behaviorConfig.chainLinks` is live and drives encounter length, but nothing
-draws it. A child cannot tell a one-link owl from a three-link one until they are
-already in the encounter, which defeats the point of having variants — the count
-is supposed to be readable from across the screen so they can choose to come back
-later. `brand/BRAND_SYSTEM.md` §3.4a and `brand/ASSET_MANIFEST.md` P3 carry the
-spec.
-
-*Done when:* the link count is visible on the owl before interacting, and a link
-bursts on each correct answer.
-
 ### The HUD has states no screenshot has ever seen
 `tools/theme_screenshots.mjs` now rescues an owl, so the filled ring is covered.
 Still uncovered: a lost heart (needs damage), the streak flame at 3+ (needs two
@@ -205,18 +171,6 @@ granted). Those are three designed states with no visual evidence behind them.
 
 *Done when:* the harness can drive damage and a multi-owl streak, or those states
 are checked some other way and the check is written down.
-
-### The maths board still covers the player
-The header no longer collides with the board and the scrim is now the theme's
-warm `ink`, but the board itself is centred and sits on top of Hörmann.
-
-The board is 520 wide and now grows vertically to fit its content, so on a
-two-line prompt it is close to 380 tall. Header plus board plus a strip of world
-big enough to show a 64px crow does not fit in 540 by simple stacking. The fix is
-the one `brand/BRAND_SYSTEM.md` §8.3 actually specifies: pan the GameScene camera
-before pausing it so the player renders below the board, and restore it on close.
-
-*Done when:* a child can see who they are while they think.
 
 ### Apex hang is blocked by the motion parity contract
 The jump would feel more generous with reduced gravity near the top of the arc,
@@ -292,15 +246,6 @@ at the baseline but keeps working for any NPC that raises the count.
 band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
 the rotation for older kids, or park them explicitly in Settled.
 
-### A sound setting exists but a volume one does not
-Pause offers sound on/off, which is what a parent in a waiting room reaches for.
-The underlying API in both ports has separate master, music and SFX volumes and
-nothing exposes them, so "quieter" is not reachable — only "silent".
-
-*Done when:* someone decides whether a child's game needs more than a mute. If it
-does, note the Pause panel is sized for four rows and a slider is a different
-control from a button.
-
 ### The trophy shelf has no heading
 `trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with
 the shelf but nothing ever drew it — the new dead-key guard caught it on its
@@ -311,21 +256,6 @@ changes the main menu's layout and that belongs to whoever designed the shelf.
 back with it, or the shelf is deliberately headingless and this entry goes.
 Note the main menu is already tight: the language selector's width is measured
 against the title ending at x 636.
-
-### `DialogBox` and `DialogComponent` are dead code carrying English
-Nothing calls `showGreeting`, `showSuccess` or `showFailure`, so the dialogue
-never reaches the screen — the owl goes straight to the math overlay, whose
-greeting comes from `math.greeting_*`. But `DialogComponent.buildLines()` holds
-hardcoded English ("Hoo-hoo! Hello there, little crow!"), the owl's
-`npc_registry.json` entry still configures a `dialog` component, and `DialogBox`
-is one of the seven `THEME_CHANGED` subscribers. It reads exactly like an
-untranslated surface and is not one, which cost a reviewer real time.
-
-*Done when:* either the dialogue path is wired up and its lines move into the
-bundles, or `DialogBox`, `DialogComponent` and the registry's `dialog` entry are
-deleted together. Note the web build has no hardcoded-string guard at all — the
-Godot port's `check_hardcoding.py` has no web counterpart, which is why this sat
-unnoticed.
 
 ### Only six levels exist
 `level_99` (practice) plus five real ones. More content is the main lever on how

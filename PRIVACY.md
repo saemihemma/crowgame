@@ -1,4 +1,4 @@
-# What Crow knows about your child
+# What Hörmann knows about your child
 
 Status: Supportive
 Authority: Written for parents. The behaviour it describes is implemented in
@@ -6,12 +6,12 @@ Authority: Written for parents. The behaviour it describes is implemented in
 and this page is a bug.
 Last verified against code: 2026-08-24
 
-Crow is a maths game for young children. This page says, in plain terms, what it
+Hörmann is a maths game for young children. This page says, in plain terms, what it
 stores, what leaves your device, and how to delete all of it.
 
 ## The short version
 
-- Crow works with **no account at all**. Out of the box, everything stays on the
+- Hörmann works with **no account at all**. Out of the box, everything stays on the
   device your child plays on.
 - If you turn on cloud save, the only personal detail we ask for is **one
   grown-up's email address**. That is the only piece of personal information
@@ -45,7 +45,7 @@ exists.
 
 ## What leaves your device
 
-Only three things, and only ever to Crow's own server:
+Only three things, and only ever to Hörmann's own server:
 
 **1. If you turn on cloud save** — your child's progress, so it can appear on
 another device. That is the same information listed above. It is stored against a
@@ -96,7 +96,7 @@ progress gone.
 
 Two things prevent that, and the first is free:
 
-1. **Add Crow to the Home Screen.** In Safari, tap the Share button and choose
+1. **Add Hörmann to the Home Screen.** In Safari, tap the Share button and choose
    "Add to Home Screen". Opened from that icon, the game is treated as an
    installed app and is not subject to the seven-day rule. It also opens
    fullscreen with no browser chrome, which is nicer for a child anyway.

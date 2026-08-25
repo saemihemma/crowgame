@@ -2,7 +2,7 @@
 
 Status: Supportive
 Authority: Product, audience, and design context. Runtime truth lives elsewhere.
-Last verified against code: 2026-03-22
+Last verified against code: 2026-08-25
 
 ## Purpose
 
@@ -71,6 +71,28 @@ As of 2026-03-22, the shipped surface is a playable prototype with:
 - an in-engine parent report showing, per child, curriculum step, first-attempt
   accuracy and review load
 - optional cloud save, so a child's progress follows them between devices
+
+## Progression
+
+**Worlds unlock strictly one at a time, in order.** A fresh save offers the
+Practice Arena and Emberwood Run; each of the four worlds after that unlocks
+when the one before it is completed. `unlockRequirement` in
+`godot/data/levels/level_registry.json` is the runtime expression of this, and
+`godot/tests/test_registries.gd` fails if the chain breaks.
+
+The reason is the maths, not the platforming. Each world's `mathGating` names
+the skills it teaches and the difficulty band it teaches them in, and the bands
+step upward: Emberwood is counting and addition at band 1-2, Aurora Spire is
+everything together at 2-5. Letting a child pick the fifth world first hands
+them subtraction before they have met addition, which is the one thing the
+curriculum ladder exists to prevent.
+
+The Practice Arena sits outside the chain deliberately. It is always open, it
+holds the whole owl roster at every chain length, and it is where a child goes
+to drill rather than to progress.
+
+*Open question for playtesting:* whether a child who stalls on one world should
+be offered the next anyway after N attempts. Nothing implements that today.
 
 ## Visual And Tone Direction
 

@@ -44,8 +44,6 @@ signal level_up(payload: Dictionary)
 
 # NPC
 signal npc_interact(payload: Dictionary)
-signal dialog_start(payload: Dictionary)
-signal dialog_end(payload: Dictionary)
 signal dialog_advance(payload: Dictionary)
 
 ## Emitted when a save from the cloud replaced local state, so UI showing coins,

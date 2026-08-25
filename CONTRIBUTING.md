@@ -1,11 +1,11 @@
-# Contributing to Crow
+# Contributing to Hörmann
 
 Status: Supportive
 Authority: Contribution process. The verification loop itself is
 [DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md).
 Last verified against code: 2026-08-24
 
-Crow is a maths game played by young children, including the author's own. That
+Hörmann is a maths game played by young children, including the author's own. That
 shapes what a good contribution looks like more than anything else here.
 
 ## Before you write code: which tree?

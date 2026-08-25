@@ -10,12 +10,6 @@
                     "type": "interactable"
                 },
                 {
-                    "type": "dialog",
-                    "greeting": "greeting_owl",
-                    "success": "success_owl",
-                    "failure": "failure_owl"
-                },
-                {
                     "type": "math_challenge",
                     "problemTypes": [
                         "addition",
@@ -46,12 +40,6 @@
             "components": [
                 {
                     "type": "interactable"
-                },
-                {
-                    "type": "dialog",
-                    "greeting": "greeting_owl",
-                    "success": "success_owl",
-                    "failure": "failure_owl"
                 },
                 {
                     "type": "math_challenge",
@@ -87,12 +75,6 @@
                     "type": "interactable"
                 },
                 {
-                    "type": "dialog",
-                    "greeting": "greeting_owl",
-                    "success": "success_owl",
-                    "failure": "failure_owl"
-                },
-                {
                     "type": "math_challenge",
                     "problemTypes": [
                         "addition",
@@ -124,12 +106,6 @@
             "components": [
                 {
                     "type": "interactable"
-                },
-                {
-                    "type": "dialog",
-                    "greeting": "greeting_owl",
-                    "success": "success_owl",
-                    "failure": "failure_owl"
                 },
                 {
                     "type": "math_challenge",
@@ -165,12 +141,6 @@
                     "type": "interactable"
                 },
                 {
-                    "type": "dialog",
-                    "greeting": "greeting_owl",
-                    "success": "success_owl",
-                    "failure": "failure_owl"
-                },
-                {
                     "type": "math_challenge",
                     "problemTypes": [
                         "addition",
@@ -202,12 +172,6 @@
             "components": [
                 {
                     "type": "interactable"
-                },
-                {
-                    "type": "dialog",
-                    "greeting": "greeting_owl",
-                    "success": "success_owl",
-                    "failure": "failure_owl"
                 },
                 {
                     "type": "math_challenge",

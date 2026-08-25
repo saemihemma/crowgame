@@ -61,6 +61,24 @@
             "loop": false,
             "anim": "open"
         },
+        "chain_link": {
+            "class": "attachment",
+            "path": "assets/sprites/objects/chain/chain-link-32.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "chain_link_burst": {
+            "class": "attachment",
+            "path": "assets/sprites/objects/chain/chain-link-burst-32.png",
+            "frames": 1,
+            "fps": 0.0,
+            "loop": false,
+            "anim": "idle",
+            "optional": true,
+            "fallback": "chain_link"
+        },
         "hud_owl_icon": {
             "class": "ui",
             "path": "assets/sprites/ui/hud/owl-icon-32.png",

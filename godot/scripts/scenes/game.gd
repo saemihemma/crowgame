@@ -282,6 +282,24 @@ func _unhandled_input(event: InputEvent) -> void:
 
 var _pause_overlay: CanvasLayer
 
+## Pan the view so the crow sits below the maths board, and put it back after.
+##
+## The board is centred and roughly 380 tall; the crow was directly underneath
+## it, so for the whole of every encounter a child could not see who they were.
+## brand/BRAND_SYSTEM.md §8.3 asks for exactly this: move the camera before
+## pausing, restore on close.
+##
+## A negative offset lifts the camera, which pushes the player down the screen -
+## the camera keeps following him, so this survives the crow being anywhere in
+## the level rather than assuming he is where a screenshot found him.
+func _lift_camera_for_challenge(lifted: bool) -> void:
+	if not is_instance_valid(_camera):
+		return
+	var to := -float(Config.ui("math_challenge/camera_lift", 150)) if lifted else 0.0
+	var seconds := float(Config.ui("math_challenge/camera_lift_seconds", 0.28))
+	_camera.create_tween().tween_property(_camera, "offset:y", to, seconds) \
+		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
 ## Hide the on-screen controls while an overlay owns the screen. Visibility is
 ## the whole fix: a hidden TouchScreenButton does not take input.
 func _set_touch_visible(shown: bool) -> void:
@@ -652,6 +670,7 @@ func launch_math_challenge(problem: Dictionary, opts: Dictionary) -> void:
 	add_child(_math_challenge)
 	_math_challenge.closed.connect(_on_challenge_closed)
 	_set_touch_visible(false)
+	_lift_camera_for_challenge(true)
 	if _player:
 		_player.set_physics_process(false)  # pause gameplay during the challenge
 	_math_challenge.present(problem, opts)
@@ -659,5 +678,6 @@ func launch_math_challenge(problem: Dictionary, opts: Dictionary) -> void:
 func _on_challenge_closed() -> void:
 	_math_challenge = null
 	_set_touch_visible(true)
+	_lift_camera_for_challenge(false)
 	if _player:
 		_player.set_physics_process(true)

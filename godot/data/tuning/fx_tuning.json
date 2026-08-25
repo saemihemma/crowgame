@@ -1,37 +1,38 @@
 {
-    "_comment": "Juice/FX tuning \u2014 shake, flash, particles, timings. JSON-first; colors come from the active theme palette (ThemeManager), amounts/durations from here. grounding_sink_px is the one entry here that is not juice: it is how many pixels a world actor's sprite is drawn below its collider so it reads as planted on the grass lip rather than balanced on the collision plane. It compensates the TILESET's art language, not any one character's art \u2014 do not re-tune it because a single sprite looks off, fix that sprite. Applied via SpriteSheet.anchor_offset() by player, enemy and NPC; the door and pickups take no sink.",
-    "grounding_sink_px": 4,
-    "shake": {
-        "duration": 0.15,
-        "strength": 6.0
-    },
-    "hurt_flash_duration": 0.2,
-    "muzzle_flash_duration": 0.05,
-    "death_beat": 0.8,
-    "pit_margin": 64,
-    "invuln_blinks": 5,
-    "invuln_blink_step": 0.1,
-    "burst": {
-        "coin": 20,
-        "enemy": 18,
-        "jump_dust": 8,
-        "completion": 24,
-        "default": 14,
-        "owl_saved": 30
-    },
-    "number_fly_up": {
-        "rise": 36.0,
-        "duration": 0.6
-    },
-    "completion_burst_count": 3,
-    "hurt_flash_alpha": 0.45,
-    "muzzle_flash_alpha": 0.25,
-    "dust_alpha": 0.8,
-    "laser_alpha": 0.8,
-    "focus_brightness": 1.15,
-    "streak": {
-        "_comment": "Consecutive first-attempt-correct answers needed before the owl ring catches fire, and before it goes hot. One source for both the ring art and the toast, so the two cannot describe different moments.",
-        "flame": 3,
-        "hot": 5
-    }
+  "_comment": "Juice/FX tuning — shake, flash, particles, timings. JSON-first; colors come from the active theme palette (ThemeManager), amounts/durations from here. grounding_sink_px is the one entry here that is not juice: it is how many pixels a world actor's sprite is drawn below its collider so it reads as planted on the grass lip rather than balanced on the collision plane. It compensates the TILESET's art language, not any one character's art — do not re-tune it because a single sprite looks off, fix that sprite. Applied via SpriteSheet.anchor_offset() by player, enemy and NPC; the door and pickups take no sink.",
+  "grounding_sink_px": 4,
+  "shake": {
+    "duration": 0.15,
+    "strength": 6.0
+  },
+  "hurt_flash_duration": 0.2,
+  "muzzle_flash_duration": 0.05,
+  "death_beat": 0.8,
+  "pit_margin": 64,
+  "invuln_blinks": 5,
+  "invuln_blink_step": 0.1,
+  "burst": {
+    "coin": 20,
+    "enemy": 18,
+    "jump_dust": 8,
+    "completion": 24,
+    "default": 14,
+    "owl_saved": 30,
+    "chain_link": 12
+  },
+  "number_fly_up": {
+    "rise": 36.0,
+    "duration": 0.6
+  },
+  "completion_burst_count": 3,
+  "hurt_flash_alpha": 0.45,
+  "muzzle_flash_alpha": 0.25,
+  "dust_alpha": 0.8,
+  "laser_alpha": 0.8,
+  "focus_brightness": 1.15,
+  "streak": {
+    "_comment": "Consecutive first-attempt-correct answers needed before the owl ring catches fire, and before it goes hot. One source for both the ring art and the toast, so the two cannot describe different moments.",
+    "flame": 3,
+    "hot": 5
+  }
 }
