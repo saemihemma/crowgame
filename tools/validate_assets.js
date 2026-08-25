@@ -263,18 +263,18 @@ function main() {
         process.exit(1);
     }
 
-    // Declared drop-in art slots: the code references these paths but ships a
-    // real drawn/cropped fallback until an artist supplies the file (see the
-    // README.md next to each slot). Their absence is the designed state, not a
-    // missing asset — but once a file IS dropped in, it validates like any other.
-    const OPTIONAL_DROP_IN_SLOTS = new Set([
-        'godot/assets/sprites/ui/board/board-9slice.png',
-        'godot/assets/sprites/ui/board/count-token-32.png',
-        'godot/assets/sprites/ui/hud/owl-icon-32.png',
-    ]);
-
-    const bootVisuals = extractReferencedVisualAssets()
-        .filter(assetPath => !OPTIONAL_DROP_IN_SLOTS.has(assetPath) || fs.existsSync(path.join(ROOT, assetPath)));
+    // NOTE: a second copy of the optional-slot list used to sit here, filtering
+    // absent slots out of the list entirely. It arrived from a different session
+    // in the same week as OPTIONAL_ASSET_SLOTS above, which solves the same
+    // problem — two lists of the same three paths in one file, and a file dropped
+    // into one but not the other would behave differently depending on which
+    // branch you read. Collapsed onto the single list at the top.
+    //
+    // Kept the ABSENT reporting rather than the filter, on one argument: 86 art
+    // files are still to land, and a slot you can SEE is unfilled is worth more
+    // than a slot that vanishes from the output. Both agree on the part that
+    // matters — once a file is dropped in, it validates like any other asset.
+    const bootVisuals = extractReferencedVisualAssets();
     const audioAssets = extractManifestAudioAssets();
     const compiledLevelAssets = extractCompiledLevelAssets();
     const referencedAssets = [
