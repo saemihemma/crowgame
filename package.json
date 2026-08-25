@@ -28,7 +28,8 @@
     "validate:i18n": "node tools/validate_i18n.mjs",
     "web:boot-smoke": "node godot/tools/web_boot_smoke.mjs",
     "web:build": "bash godot/tools/build_web.sh",
-    "validate:lesson-bands": "tsx tools/validate_lesson_bands.ts"
+    "validate:lesson-bands": "tsx tools/validate_lesson_bands.ts",
+    "math:ladder-weights": "tsx tools/gen_ladder_weights.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

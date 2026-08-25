@@ -704,6 +704,41 @@ function validateProblemCatalogFreshness(): void {
     }
 }
 validateProblemCatalogFreshness();
+/**
+ * The lane weights the API recommends against must be the ones the game plays
+ * with. The API image contains no godot/data (deploy/api/Dockerfile copies only
+ * `server/`), so they are generated in -- and a generated copy that nothing
+ * checks is a copy that drifts. See tools/gen_ladder_weights.ts.
+ */
+function validateLadderWeightsFreshness(): void {
+    console.log('\nLadder weights freshness:');
+    const generated = join(ROOT, 'server', 'src', 'generated', 'ladderWeights.ts');
+    if (!existsSync(generated)) {
+        console.error('  FAIL: server/src/generated/ladderWeights.ts is missing. Run: npx tsx tools/gen_ladder_weights.ts');
+        errors++;
+        return;
+    }
+    const source = readFileSync(generated, 'utf-8');
+    const match = source.match(/TUNING_HASH = "([0-9a-f]{64})"/);
+    if (!match) {
+        console.error('  FAIL: ladderWeights.ts carries no TUNING_HASH; regenerate it.');
+        errors++;
+        return;
+    }
+    const { createHash } = require('node:crypto') as typeof import('node:crypto');
+    const tuningPath = join(DATA_DIR, 'tuning', 'math_tuning.json');
+    const actual = createHash('sha256').update(readFileSync(tuningPath, 'utf-8')).digest('hex');
+    if (actual !== match[1]) {
+        console.error('  FAIL: the API\'s lane weights are stale against godot/data/tuning/math_tuning.json. '
+            + 'Run: npx tsx tools/gen_ladder_weights.ts');
+        errors++;
+    } else {
+        console.log('  OK: the API recommends against the weights the game plays with');
+        validated++;
+    }
+}
+validateLadderWeightsFreshness();
+
 // The parent report renders TextManager.t("kind_" + kind) and ("domain_" + d).
 // Those prefixes are exempt from the dead-key scanner because they are built at
 // runtime — which means a NEW kind or newly served domain without a translation

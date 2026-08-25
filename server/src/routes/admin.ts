@@ -2,6 +2,8 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { config } from '../config.js';
 import { pool } from '../db.js';
 import { requireAdmin } from '../lib/adminAuth.js';
+import { recommendLadderChange, type LaneStats } from '../lib/ladderTuning.js';
+import { LANE_WEIGHTS } from '../generated/ladderWeights.js';
 
 /**
  * The owner's read surface: business KPIs and the deduplicated error feed.
@@ -145,6 +147,92 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
                 })),
             },
         });
+    });
+
+    /**
+     * What the last week of play says to change, or why it says nothing yet.
+     *
+     * The overview tile already reports first-try accuracy against the 70-85%
+     * band. This is the next sentence: which single knob to move, in which file,
+     * from what to what, and on the strength of what measurement. The decision
+     * itself is a pure function in lib/ladderTuning.ts -- this route only
+     * gathers the numbers -- so the rule can be tested without a database and
+     * cannot quietly diverge from what the page shows.
+     *
+     * Lane weights come from a generated module rather than being restated here,
+     * because a recommendation whose "from" the game does not actually use is
+     * worse than no recommendation. They cannot be read from disk at runtime --
+     * deploy/api/Dockerfile copies only `server/`, so the tuning file is absent
+     * in the running image and this route would 500 in production while working
+     * on a developer's checkout. tools/gen_ladder_weights.ts copies them in and
+     * `npm run validate` fails if the copy drifts.
+     */
+    app.get('/api/v1/admin/ladder-tuning', auth, async (_request, reply) => {
+        const t = config.admin.ladder;
+        const days = t.windowDays;
+
+        const [overall, lanes, review] = await Promise.all([
+            pool.query<{ attempts: string; children: string; days: string; first_try: string | null }>(
+                `select count(*)::text as attempts,
+                        count(distinct child_id)::text as children,
+                        count(distinct received_at::date)::text as days,
+                        avg(case when first_attempt then (case when correct then 1.0 else 0.0 end) end)::text as first_try
+                   from attempts
+                  where received_at >= now() - make_interval(days => $1)`,
+                [days],
+            ),
+            pool.query<{ lane: string | null; attempts: string; first_try: string | null }>(
+                `select coalesce(selection_lane, 'unknown') as lane,
+                        count(*)::text as attempts,
+                        avg(case when first_attempt then (case when correct then 1.0 else 0.0 end) end)::text as first_try
+                   from attempts
+                  where received_at >= now() - make_interval(days => $1)
+                  group by coalesce(selection_lane, 'unknown')
+                  order by count(*) desc`,
+                [days],
+            ),
+            pool.query<{ attempts: string; first_try: string | null }>(
+                `select count(*)::text as attempts,
+                        avg(case when first_attempt then (case when correct then 1.0 else 0.0 end) end)::text as first_try
+                   from attempts
+                  where received_at >= now() - make_interval(days => $1)
+                    and review_item_id is not null`,
+                [days],
+            ),
+        ]);
+
+        const num = (v: string | null): number | null => (v === null ? null : Number(v));
+        const head = overall.rows[0];
+        const laneStats: LaneStats[] = lanes.rows.map(row => ({
+            lane: row.lane ?? 'unknown',
+            attempts: Number(row.attempts),
+            firstTryAccuracy: num(row.first_try),
+        }));
+
+        return reply.send(recommendLadderChange(
+            {
+                windowDays: days,
+                attempts: Number(head?.attempts ?? 0),
+                children: Number(head?.children ?? 0),
+                daysWithPlay: Number(head?.days ?? 0),
+                firstTryAccuracy: num(head?.first_try ?? null),
+                lanes: laneStats,
+                review: {
+                    attempts: Number(review.rows[0]?.attempts ?? 0),
+                    firstTryAccuracy: num(review.rows[0]?.first_try ?? null),
+                },
+            },
+            {
+                low: t.bandLow,
+                high: t.bandHigh,
+                minAttempts: t.minAttempts,
+                minChildren: t.minChildren,
+                minDaysWithPlay: t.minDaysWithPlay,
+                reviewFloor: t.reviewFloorPct,
+                step: t.step,
+            },
+            LANE_WEIGHTS,
+        ));
     });
 
     app.get(

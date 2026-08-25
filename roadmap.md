@@ -43,10 +43,23 @@ there.
 ## P1 — Correctness and reachability
 
 ### Tune the ladder against real play, not intuition
-The admin session report tags accuracy against the 70-85% sweet spot. After a
-week of family play: above 85% raise the at-level/stretch share, below 70%
-raise comfort, low comeback rate shorten the review gap. One knob at a time,
-one week per change.
+The loop is now built and only the play is missing. `/api/v1/admin/ladder-tuning`
+reads the last seven days and answers with one knob to move -- which file, from
+what to what, and the measurement behind it -- or with a refusal naming exactly
+what the sample is short of. The decision is a pure function in
+`server/src/lib/ladderTuning.ts`, pinned by nine tests, and the admin page
+renders it under the charts.
+
+It refuses today, and will keep refusing until roughly 200 answers spread over
+four separate days exist, because a rate over one enthusiastic afternoon is noise
+and a knob moved from noise leaves a system nobody can reason about. Nothing here
+is waiting on code.
+
+What remains is the tuning itself, which takes calendar time: play a week, apply
+the one change it names, play another, repeat. Note that if it recommends the
+review gap, that is `IMMEDIATE_REVIEW_MIN_GAP`/`MAX_GAP` in
+`learner_state_manager.gd` -- a Tier-1 constant, so changing it means
+regenerating the golden parity fixtures, and the recommendation says so.
 
 *Done when:* two consecutive weekly reports sit inside the sweet spot with at
 least one step-up per early session and frustration flags under 10%.

@@ -95,6 +95,7 @@ td .src { color: var(--muted); font-size: 11.5px; }
   </div>
   <div class="tiles" id="tiles"></div>
   <div class="charts" id="charts"></div>
+  <div class="errors" id="ladder"></div>
   <div class="errors">
     <div class="bar">
       <h2 style="margin:0">Errors — deduplicated</h2>
@@ -211,6 +212,49 @@ async function loadOverview() {
       r => r.value, r => r.day + ': ' + fmt(r.value) + ' events');
 }
 
+/**
+ * What the last week says to change, or why it says nothing yet.
+ *
+ * The overview tile above reports first-try accuracy against the band. This is
+ * the next sentence: one knob, one file, from what to what, and the measurement
+ * behind it. "Not enough play yet" is rendered as plainly as a recommendation,
+ * because it is the honest answer until a real week has been played and hiding
+ * it would invite tuning from noise.
+ */
+async function loadLadder() {
+  const res = await authed('/api/v1/admin/ladder-tuning');
+  if (!res.ok) throw new Error('unauthorized');
+  const d = await res.json();
+  const lanes = d.lanes.length === 0 ? '<div class="empty">No lanes served yet.</div>'
+    : '<table><thead><tr><th>Lane</th><th style="text-align:right">Answers</th>'
+      + '<th style="text-align:right">First-try</th></tr></thead><tbody>'
+      + d.lanes.map(l => '<tr><td>' + esc(l.lane) + '</td><td class="count">' + fmt(l.attempts)
+        + '</td><td class="count">' + pct(l.firstTryAccuracy) + '</td></tr>').join('')
+      + '</tbody></table>';
+
+  let verdict;
+  if (!d.sufficient) {
+    verdict = '<div class="empty">Not enough play to tune on: ' + esc(d.blockedBy) + '</div>';
+  } else if (!d.recommendation) {
+    verdict = '<div class="empty">In band at ' + pct(d.firstTryAccuracy)
+      + '. Change nothing this week.</div>';
+  } else {
+    const r = d.recommendation;
+    verdict = '<div><strong>Change one thing:</strong> ' + esc(r.knob)
+      + ' in <code>' + esc(r.file) + '</code>'
+      + (r.parityLocked ? ' <em>(Tier-1 constant: parity fixtures must be regenerated)</em>' : '')
+      + '<div class="src">' + esc(r.from) + ' &rarr; ' + esc(r.to) + '</div>'
+      + '<div class="src">' + esc(r.why) + '</div></div>';
+  }
+
+  $('ladder').innerHTML =
+    '<div class="bar"><h2 style="margin:0">Ladder tuning &mdash; last ' + fmt(d.windowDays) + ' days</h2>'
+    + '<span class="when">band ' + pct(d.band.low) + '&ndash;' + pct(d.band.high)
+    + ' &middot; ' + fmt(d.attempts) + ' answers &middot; ' + fmt(d.children) + ' kid(s) &middot; '
+    + fmt(d.daysWithPlay) + ' day(s) with play</span></div>'
+    + verdict + lanes;
+}
+
 async function loadErrors() {
   const status = $('err-status').value;
   const res = await authed('/api/v1/admin/errors?status=' + status + '&limit=200');
@@ -247,6 +291,7 @@ async function boot() {
   if (!localStorage.getItem(KEY)) { $('gate').hidden = false; return; }
   try {
     await loadOverview();
+    await loadLadder();
     await loadErrors();
     $('app').hidden = false; $('gate').hidden = true;
   } catch {
