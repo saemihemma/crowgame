@@ -126,6 +126,7 @@ func _draw_count_all() -> void:
 	var a_w := a * token + maxf(0.0, a - 1) * gap
 	var b_w := b * token + maxf(0.0, b - 1) * gap
 	var total_w := a_w + (group_gap + b_w if b > 0 else 0.0)
+	_fit(total_w, token + _tune("token_gap", 9.0))
 	var y := size.y * 0.5
 	var x := size.x * 0.5 - total_w * 0.5 + token * 0.5
 	for i in a:
@@ -149,6 +150,7 @@ func _draw_ten_frame() -> void:
 	var frame_w := FRAME_COLUMNS * cell
 	var frame_h := FRAME_ROWS * cell
 	var total_w := frames * frame_w + maxf(0.0, frames - 1) * frame_gap
+	_fit(total_w, frame_h)
 	var origin := Vector2(size.x * 0.5 - total_w * 0.5, size.y * 0.5 - frame_h * 0.5)
 	var border := _tune("frame_border", 3.0)
 	var outline := _role("outline", "ink")
@@ -236,10 +238,12 @@ func _draw_take_away() -> void:
 	for i in total:
 		colours.append(_role("token_a", "owl") if i < kept else _role("token_gone", "text_dim"))
 	var token := _tune("token_size", 26.0)
-	_token_row(total, Vector2(size.x * 0.5, size.y * 0.5 - token * 0.5), colours)
-	# Cross the taken ones after the row, so the geometry is computed once.
 	var gap := _tune("token_gap", 9.0)
 	var per_row := maxi(1, int((size.x - token) / (token + gap)))
+	var rows: int = int(ceil(float(total) / float(per_row)))
+	_fit(mini(total, per_row) * (token + gap), rows * (token + gap))
+	_token_row(total, Vector2(size.x * 0.5, size.y * 0.5 - token * 0.5), colours)
+	# Cross the taken ones after the row, so the geometry is computed once.
 	for i in range(kept, total):
 		var col := i % per_row
 		var row := i / per_row
@@ -269,14 +273,19 @@ func _draw_balance() -> void:
 	var b := _int("b")
 	var tallest: int = maxi(1, maxi(a, b))
 	var numeral_size := _tune("numeral_font_size", 26.0)
-	var available := size.y - numeral_size * 1.6
+	# The towers grow UP from a baseline, so without a top inset the tallest one
+	# butts straight against whatever sits above the visual -- the progress dots,
+	# as a screenshot showed. Taken from the same margin every other renderer
+	# fits itself to, rather than a second number to keep in sync.
+	var top_inset := _tune("fit_margin", 24.0) * 0.5
+	var available := size.y - numeral_size * 1.6 - top_inset
 	# Size the cube to the taller tower rather than clamping the count: both
 	# towers stay single file at any height the card can be given.
 	# Width is fixed and only the brick HEIGHT shrinks. Shrinking both turned a
 	# fourteen-tall tower into a 6px thread: correct, and invisible.
 	var brick_w := _tune("token_size", 26.0) * 0.9
 	var brick_h: float = clampf(available / float(tallest), 4.0, brick_w)
-	var base := available
+	var base := top_inset + available
 	var outline := _role("outline", "ink")
 	var roles := ["token_a", "token_b"]
 	var fallbacks := ["owl", "accent"]
@@ -315,6 +324,7 @@ func _draw_pattern_strip() -> void:
 	var gap := _tune("chip_gap", 10.0)
 	var slots := length + 1
 	var total_w := slots * chip + maxf(0.0, slots - 1) * gap
+	_fit(total_w, chip)
 	var y := size.y * 0.5
 	var x := size.x * 0.5 - total_w * 0.5 + chip * 0.5
 	var numeral_size := _tune("numeral_font_size", 26.0) * 0.8
@@ -386,6 +396,36 @@ func _draw_numbers() -> void:
 
 ## Equal groups, ringed. Read left to right it is multiplication; read as "share
 ## these out fairly" it is division. Same picture, and saying so is the lesson.
+## Scale the drawing to the band it has been given.
+##
+## Every renderer below computes its natural size from its own content and then
+## centres it, and nothing used to bound that. Two things went wrong, both of
+## them only visible in a screenshot:
+##
+##   too wide  -- six groups of seven drew straight past both edges of the board.
+##   too small -- six berries in a row used a quarter of the band and the rest was
+##                brown. The concrete picture is the pedagogical point of a `see`
+##                card, and it was the least prominent thing on it.
+##
+## So this scales BOTH ways, bounded by width and height together so growing
+## never pushes a picture out of its band, and capped so a two-token card does
+## not become a billboard. The scale is applied about the centre through the draw
+## transform, which means no renderer changes a single coordinate: a point p
+## becomes c + s * (p - c).
+##
+## Scaling is uniform, so relative geometry survives it -- a ten-frame that grows
+## is still five and five, which is the whole reason a ten-frame works.
+func _fit(natural_w: float, natural_h: float) -> void:
+	if natural_w <= 0.0 or natural_h <= 0.0:
+		return
+	var margin := _tune("fit_margin", 24.0)
+	var s: float = minf((size.x - margin) / natural_w, (size.y - margin) / natural_h)
+	s = clampf(s, _tune("fit_min_scale", 0.35), _tune("fit_max_scale", 1.6))
+	if is_equal_approx(s, 1.0):
+		return
+	var c := size * 0.5
+	draw_set_transform(c * (1.0 - s), 0.0, Vector2(s, s))
+
 func _draw_groups() -> void:
 	var count := _int("groups", 2)
 	var each := _int("each", 2)
@@ -397,6 +437,7 @@ func _draw_groups() -> void:
 	var ring_w := columns * (token + gap) + gap
 	var ring_h := rows * (token + gap) + gap
 	var total_w := count * ring_w + maxf(0.0, count - 1) * group_gap
+	_fit(total_w, ring_h)
 	var origin := Vector2(size.x * 0.5 - total_w * 0.5, size.y * 0.5 - ring_h * 0.5)
 	var outline := _role("outline", "ink")
 	for g in count:
@@ -426,6 +467,7 @@ func _draw_tens_and_ones() -> void:
 	var units_w := unit_columns * (unit + rod_gap)
 	var rods_w := total_rods * (rod_w + rod_gap)
 	var total_w := rods_w + (rod_gap * 2.0 if total_rods > 0 and total_units > 0 else 0.0) + units_w
+	_fit(total_w, rod_h)
 	var top := size.y * 0.5 - rod_h * 0.5
 	var x := size.x * 0.5 - total_w * 0.5
 	var outline := _role("outline", "ink")
@@ -470,6 +512,7 @@ func _draw_part_whole() -> void:
 	var cell: float = minf(_tune("token_size", 26.0) * 1.4, (span - gap * (total - 1)) / float(total))
 	var width := total * cell + gap * maxf(0.0, total - 1)
 	var height := cell * 1.5
+	_fit(width, height)
 	var origin := Vector2(size.x * 0.5 - width * 0.5, size.y * 0.5 - height * 0.5)
 	var outline := _role("outline", "ink")
 	var numeral_size := _tune("numeral_font_size", 26.0)
