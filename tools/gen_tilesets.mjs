@@ -32,8 +32,12 @@ const COLS = 4;
 const ROWS = 4;
 const SHEET = TILE * COLS;
 
-const OUT_DIRS = ['public/assets/tilesets', 'godot/assets/tilesets'];
-const MANIFEST = 'public/data/tilesets/tileset_manifest.json';
+// One tree. public/** was a byte-identical duplicate of godot/** kept alive
+// only by this generator, and two data trees that nothing syncs is not a backup
+// - it is a drift waiting to happen. It already had: the owl roster survived in
+// one and not the other through a merge.
+const OUT_DIRS = ['godot/assets/tilesets'];
+const MANIFEST = 'godot/data/tilesets/tileset_manifest.json';
 
 // ── colour ramps ────────────────────────────────────────────────────────────
 // Two tokens are not enough to shade a tile. Each material expands to a 5-step
@@ -424,7 +428,7 @@ async function build() {
 
     for (const w of WORLDS) {
         const palette = JSON.parse(
-            await readFile(`public/data/themes/theme_${w.id}.json`, 'utf8')).palette;
+            await readFile(`godot/data/themes/theme_${w.id}.json`, 'utf8')).palette;
 
         const material = {
             ramp: ramp(palette.ground_lit, palette.ground_shadow),

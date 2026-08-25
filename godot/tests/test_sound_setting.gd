@@ -35,6 +35,32 @@ func test_the_choice_is_persisted() -> void:
 	audio.set_muted(prev)
 
 
+## A fresh install has never written the key, so the loader reads null.
+##
+## The existing persistence test only ever ran the loader AFTER set_muted had
+## written a value, so it never saw that path. String(null) threw on every boot
+## of a new game -- visible in the test log as a SCRIPT ERROR that failed
+## nothing, because the throw happened inside an autoload's _ready.
+func test_loading_with_nothing_stored_does_not_throw() -> void:
+	var audio := _audio()
+	var prev: bool = audio.is_muted()
+	var stored: Variant = Persistence.get_item(audio.MUTE_KEY)
+
+	Persistence.remove_item(audio.MUTE_KEY)
+	audio._load_mute_preference()
+	assert_true(not audio.is_muted(), "an unwritten preference means unmuted, not an error")
+
+	Persistence.set_item(audio.MUTE_KEY, "1")
+	audio._load_mute_preference()
+	assert_true(audio.is_muted(), "and a stored '1' still restores muted")
+
+	if stored == null:
+		Persistence.remove_item(audio.MUTE_KEY)
+	else:
+		Persistence.set_item(audio.MUTE_KEY, String(stored))
+	audio.set_muted(prev)
+
+
 ## The label the player reads has to follow the state, in both languages.
 func test_the_pause_label_follows_the_state_in_both_locales() -> void:
 	var tm: Node = Engine.get_main_loop().root.get_node("TextManager")

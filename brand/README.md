@@ -1,7 +1,7 @@
 # Hörmann — brand and art direction
 
 Status: Supportive
-Authority: Index for the brand artifacts in this folder. Brand law is in `BRAND_SYSTEM.md`; runtime truth is in `src/**` and `public/data/**`.
+Authority: Index for the brand artifacts in this folder. Brand law is in `BRAND_SYSTEM.md`; runtime truth is in `godot/**`.
 Last verified against code: 2026-08-24
 
 | File | What it owns |
@@ -27,7 +27,7 @@ If two documents disagree, `BRAND_SYSTEM.md` wins.
 ## Status of this work
 
 **The five world themes are live.** The token files are copied into
-`public/data/themes/`, registered in `BootScene`, and selected per level from
+`godot/data/themes/`, registered in `ThemeManager.THEME_KEYS`, and selected per level from
 `level_registry.json`. The sky gradient, maths board, dialogue, HUD tint and FX
 colours all come from the active world.
 
@@ -37,10 +37,20 @@ animation set, and every art asset in [ASSET_MANIFEST.md](./ASSET_MANIFEST.md).
 Verify the live side:
 
 ```
-npm run dev                    # then, in a second shell:
-npm run themes:screenshots     # 18 shots + palette conformance, all five worlds
-cd brand/tokens && python3 verify_palettes.py
+cd brand/tokens && python3 verify_palettes.py   # 65 colour-law checks
 ```
+
+> **Note.** The screenshot walker (`themes:screenshots`) and the device audit
+> drove the Phaser build through `window.__crowGame`, which no longer exists —
+> both tools were deleted with it. The colour law below still runs, and is
+> gated in CI. For a live look at the Godot build:
+>
+> ```
+> bash godot/tools/build_web.sh
+> (cd output/web && python3 -m http.server 8060)
+> node tools/godot_play_smoke.mjs      # walks login -> menu -> level -> owl
+> node godot/tools/web_boot_smoke.mjs  # iPad viewport, boots and renders
+> ```
 
 The prioritised implementation list is BRAND_SYSTEM §14.
 

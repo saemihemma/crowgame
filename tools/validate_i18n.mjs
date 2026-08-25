@@ -36,7 +36,14 @@ const LOCALES = ['en', 'is'];
 const FALLBACK_LOCALE = 'en';
 
 /** Directories whose contents get rendered to a player. */
-const RENDERED_CODE = ['src', 'godot/scripts'];
+// godot/tests counts as rendering. A key pinned by a test is not dead:
+// game.completion_stats has no call site yet, but test_i18n.gd asserts its
+// Icelandic dative passive, and deleting the key silently deletes that
+// grammar check. Scanning only scripts reported it orphaned and this file
+// duly removed it — the suite caught the mistake, which is the only reason
+// you are reading this comment instead of losing the translation.
+const RENDERED_CODE = ['godot/scripts', 'godot/tests'];
+const GLYPH_SCAN_DIRS = ['godot/scripts'];
 const RENDERED_EXTENSIONS = ['.ts', '.gd'];
 
 /**
@@ -85,6 +92,14 @@ const BOXES = {
     'login.new_user': { size: 26, max: 320, where: 'LoginScene button 320x64' },
     'login.back': { size: 26, max: 200, where: 'LoginScene button 200x52' },
     'login.name_placeholder': { size: 28, max: 280, where: 'LoginScene DOM input width 280' },
+    // The status label expands with the column, so nothing clips -- but a
+    // message wider than the 320px button stack reads as spilling out of the
+    // card. 560 keeps a long Icelandic rejection inside that.
+    'login.wrong_pin': { size: 22, max: 560, where: 'LoginScene status label' },
+    'login.name_empty': { size: 22, max: 560, where: 'LoginScene status label' },
+    'login.name_taken': { size: 22, max: 560, where: 'LoginScene status label' },
+    'login.name_too_long': { size: 22, max: 560, where: 'LoginScene status label' },
+    'login.pin_four_digits': { size: 22, max: 560, where: 'LoginScene status label' },
     'level_select.locked': { size: 16, max: 220, where: 'Level node' },
     'level.level_01.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
     'level.level_02.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
@@ -92,9 +107,6 @@ const BOXES = {
     'level.level_04.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
     'level.level_05.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
     'level.level_99.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
-    'touch.jump': { size: 18, max: 76, where: 'Touch button 88x88 less padding' },
-    'touch.peck': { size: 18, max: 76, where: 'Touch button 88x88 less padding' },
-    'touch.zap': { size: 18, max: 76, where: 'Touch button 88x88 less padding' },
     'game.play_again': { size: 26, max: 280, where: 'Completion button' },
     'game.back_to_menu': { size: 26, max: 280, where: 'Completion button' },
     'boot.loading': { size: 20, max: 400, where: 'Boot loading bar' },
@@ -110,7 +122,6 @@ const BOXES = {
         ],
     },
     // The completion line carries two counters and a translated label.
-    'game.completion_stats': { size: 24, max: 900, where: 'GameScene completion line' },
 };
 
 /**
@@ -190,7 +201,12 @@ function walk(dir, out = []) {
     return out;
 }
 
-for (const codeDir of RENDERED_CODE) {
+// The glyph allowlist applies to strings the GAME renders, so scan scripts only.
+// Tests are in RENDERED_CODE so a key they pin is not reported dead, but their
+// own prose is never drawn by Godot's font — an em dash in a test's comment is
+// not a tofu risk, and failing on one would push contributors to write worse
+// comments to satisfy a check that does not apply to them.
+for (const codeDir of GLYPH_SCAN_DIRS) {
     for (const path of walk(join(ROOT, codeDir))) {
         const rel = relative(ROOT, path);
         readFileSync(path, 'utf8').split('\n').forEach((line, i) => {
@@ -263,6 +279,11 @@ const DYNAMIC_PREFIXES = [
 
     const dead = Object.keys(bundles[primaryDir][FALLBACK_LOCALE]).filter(key => {
         if (DYNAMIC_PREFIXES.some(d => key.startsWith(d.prefix))) return false;
+        // `.one` is appended by TextManager._plural_key() at render time, so the
+        // singular variant is never a literal anywhere. It is reachable exactly
+        // when its base key is -- and the base key IS checked, so a genuinely
+        // dead pair still gets caught on the base.
+        if (key.endsWith('.one') && sources.includes(key.slice(0, -'.one'.length))) return false;
         return !sources.includes(key);
     });
 

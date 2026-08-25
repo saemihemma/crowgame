@@ -1,118 +1,136 @@
 {
   "id": "level_05",
-  "name": "Treetop Trail",
+  "name": "Aurora Spire",
   "theme": "aurora_spire",
-  "difficulty": 2,
-  "music": "forest_theme",
+  "difficulty": 3,
+  "music": "level_05_music",
   "criticalPath": {
-    "length": "medium",
+    "length": "long",
     "motifs": [
       "flat_run",
-      "small_gap",
       "staircase_up",
       "platform_hop",
-      "descent"
+      "summit"
     ]
   },
   "platforms": [
     {
       "type": "ground",
       "x": 0,
-      "width": 12,
+      "width": 17,
       "y": 16
     },
     {
       "type": "platform",
-      "x": 6,
-      "width": 3,
+      "x": 9,
+      "width": 4,
       "y": 13
     },
     {
-      "type": "platform",
-      "x": 10,
-      "width": 3,
-      "y": 10
-    },
-    {
       "type": "ground",
-      "x": 15,
-      "width": 10,
-      "y": 16,
-      "gap_before": 3
-    },
-    {
-      "type": "platform",
-      "x": 18,
-      "width": 4,
-      "y": 12
-    },
-    {
-      "type": "platform",
-      "x": 23,
-      "width": 3,
-      "y": 9
-    },
-    {
-      "type": "ground",
-      "x": 28,
-      "width": 12,
-      "y": 16,
-      "gap_before": 3
-    },
-    {
-      "type": "platform",
-      "x": 31,
-      "width": 3,
-      "y": 13
-    },
-    {
-      "type": "platform",
-      "x": 35,
-      "width": 4,
-      "y": 10
-    },
-    {
-      "type": "platform",
-      "x": 38,
-      "width": 3,
-      "y": 7
-    },
-    {
-      "type": "ground",
-      "x": 43,
+      "x": 20,
       "width": 14,
       "y": 16,
       "gap_before": 3
     },
     {
       "type": "platform",
-      "x": 46,
-      "width": 3,
+      "x": 22,
+      "width": 4,
       "y": 13
     },
     {
       "type": "platform",
-      "x": 50,
+      "x": 27,
       "width": 4,
       "y": 10
     },
     {
+      "type": "platform",
+      "x": 32,
+      "width": 4,
+      "y": 7
+    },
+    {
       "type": "ground",
-      "x": 60,
-      "width": 10,
+      "x": 37,
+      "width": 15,
       "y": 16,
       "gap_before": 3
     },
     {
       "type": "platform",
-      "x": 63,
-      "width": 3,
-      "y": 12
+      "x": 40,
+      "width": 4,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 46,
+      "width": 4,
+      "y": 10
     },
     {
       "type": "ground",
-      "x": 73,
+      "x": 55,
+      "width": 14,
+      "y": 16,
+      "gap_before": 3
+    },
+    {
+      "type": "platform",
+      "x": 57,
+      "width": 4,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 62,
+      "width": 4,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 67,
+      "width": 4,
+      "y": 7
+    },
+    {
+      "type": "ground",
+      "x": 72,
+      "width": 15,
+      "y": 16,
+      "gap_before": 3
+    },
+    {
+      "type": "platform",
+      "x": 75,
+      "width": 4,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 81,
+      "width": 4,
+      "y": 10
+    },
+    {
+      "type": "ground",
+      "x": 90,
       "width": 17,
+      "y": 16,
+      "gap_before": 3
+    },
+    {
+      "type": "platform",
+      "x": 94,
+      "width": 5,
+      "y": 13
+    },
+    {
+      "type": "ground",
+      "x": 110,
+      "width": 16,
       "y": 16,
       "gap_before": 3
     }
@@ -124,85 +142,192 @@
     },
     "npcs": [
       {
-        "npc_id": "owl_teacher_01",
-        "x": 5,
-        "y": 16
-      },
-      {
-        "npc_id": "owl_teacher_01",
+        "npc_id": "owl_tough_01",
         "x": 30,
         "y": 16
       },
       {
-        "npc_id": "owl_teacher_01",
-        "x": 75,
+        "npc_id": "owl_triple_chain",
+        "x": 64,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 100,
         "y": 16
       }
     ],
     "collectibles": [
       {
         "type": "coin",
-        "x": 7,
-        "y": 11
+        "x": 10,
+        "y": 12
       },
       {
         "type": "coin",
         "x": 11,
-        "y": 8
+        "y": 12
       },
       {
         "type": "coin",
-        "x": 19,
-        "y": 10
+        "x": 12,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 23,
+        "y": 12
       },
       {
         "type": "coin",
         "x": 24,
-        "y": 7
-      },
-      {
-        "type": "coin",
-        "x": 32,
         "y": 11
       },
       {
         "type": "coin",
-        "x": 36,
-        "y": 8
-      },
-      {
-        "type": "coin",
-        "x": 39,
-        "y": 5
-      },
-      {
-        "type": "coin",
-        "x": 47,
-        "y": 11
-      },
-      {
-        "type": "coin",
-        "x": 51,
-        "y": 8
-      },
-      {
-        "type": "coin",
-        "x": 64,
+        "x": 25,
         "y": 10
+      },
+      {
+        "type": "coin",
+        "x": 26,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 27,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 41,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 42,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 43,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 44,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 58,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 59,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 60,
+        "y": 10
+      },
+      {
+        "type": "coin",
+        "x": 61,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 62,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 76,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 77,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 78,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 79,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 95,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 96,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 97,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 98,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 113,
+        "y": 15
+      },
+      {
+        "type": "coin",
+        "x": 114,
+        "y": 15
+      },
+      {
+        "type": "coin",
+        "x": 115,
+        "y": 15
+      },
+      {
+        "type": "coin",
+        "x": 116,
+        "y": 15
+      },
+      {
+        "type": "coin",
+        "x": 117,
+        "y": 15
       }
     ]
   },
   "hazards": [
     {
       "type": "spikes",
-      "x": 12,
+      "x": 17,
       "y": 19,
       "width": 3,
       "height": 1
     },
     {
       "type": "spikes",
-      "x": 40,
+      "x": 52,
+      "y": 19,
+      "width": 3,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 87,
       "y": 19,
       "width": 3,
       "height": 1
@@ -210,33 +335,34 @@
   ],
   "enemies": [
     {
-      "enemy_id": "cockroach_01",
-      "x": 44,
+      "enemy_id": "cockroach_basic",
+      "x": 48,
       "y": 15
     },
     {
-      "enemy_id": "cockroach_01",
-      "x": 70,
+      "enemy_id": "cockroach_basic",
+      "x": 83,
       "y": 15
     }
   ],
   "exits": [
     {
-      "x": 88,
+      "x": 122,
       "y": 16,
-      "target_level": "__complete__"
+      "target_level": "level_01"
     }
   ],
   "mathGating": {
     "skills": [
-      "number_sequence",
       "addition",
-      "subtraction"
+      "subtraction",
+      "number_sequence",
+      "pattern_matching"
     ],
     "difficultyBand": [
-      1,
-      3
+      2,
+      5
     ],
-    "teachingIntent": "What comes next: sequences resting on addition and subtraction."
+    "teachingIntent": "Everything together, at the top of the climb."
   }
 }

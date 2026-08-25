@@ -93,7 +93,10 @@ func is_muted() -> bool:
 
 ## Restore the stored choice. Called from _ready so nothing can play before it.
 func _load_mute_preference() -> void:
-	_muted = String(Persistence.get_item(MUTE_KEY)) == "1"
+	# str(), not String(): get_item mirrors localStorage and returns null when the
+	# key was never written, and String(null) is a runtime error -- so it fired on
+	# exactly the boot that has no stored choice to read, a fresh install.
+	_muted = str(Persistence.get_item(MUTE_KEY)) == "1"
 
 
 func set_master_volume(v: float) -> void:

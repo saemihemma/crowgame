@@ -238,6 +238,46 @@ function validateProblemMetadata(problem: MathProblem, file: string): void {
     }
 }
 
+/**
+ * Name what actually differs between a compiled level and its spec.
+ *
+ * The old message just said "run compile", which is only right when the spec is
+ * the newer side. It was not: level_05 and level_99 carried hand-placed owl ids
+ * (`owl_gauntlet`, `owl_twin_chain`) that the specs had flattened to
+ * `owl_teacher_01`, and recompiling would have turned a three-problem
+ * hardest-band gauntlet into one easy question. A diff you can read is the
+ * difference between fixing the drift and deleting content to silence it.
+ */
+function describeLevelDrift(actual: unknown, expected: unknown): string[] {
+    const lines: string[] = [];
+    const walk = (a: unknown, b: unknown, path: string): void => {
+        if (lines.length >= 10) {
+            return;
+        }
+        if (JSON.stringify(a) === JSON.stringify(b)) {
+            return;
+        }
+        const bothObjects = a !== null && b !== null && typeof a === 'object' && typeof b === 'object';
+        if (bothObjects && Array.isArray(a) === Array.isArray(b)) {
+            const keys = new Set([...Object.keys(a as object), ...Object.keys(b as object)]);
+            for (const key of keys) {
+                walk(
+                    (a as Record<string, unknown>)[key],
+                    (b as Record<string, unknown>)[key],
+                    path ? `${path}.${key}` : key,
+                );
+            }
+            return;
+        }
+        lines.push(`${path}: compiled has ${JSON.stringify(a)}, spec compiles to ${JSON.stringify(b)}`);
+    };
+    walk(actual, expected, '');
+    if (lines.length >= 10) {
+        lines.push('... (further differences not listed)');
+    }
+    return lines;
+}
+
 function validateCompiledLevels(): void {
     console.log('\nCompiled level freshness:');
 
@@ -264,7 +304,13 @@ function validateCompiledLevels(): void {
         const actual = loadJson(compiledPath);
 
         if (JSON.stringify(actual) !== JSON.stringify(expected)) {
-            console.error(`  FAIL: Compiled level drift detected for ${file}. Run npm.cmd run compile.`);
+            console.error(`  FAIL: Compiled level drift detected for ${file}.`);
+            for (const line of describeLevelDrift(actual, expected)) {
+                console.error(`         ${line}`);
+            }
+            console.error('         Decide which side is right BEFORE running npm run compile:');
+            console.error('         compile overwrites compiled/ from the spec, so if the compiled');
+            console.error('         file is the newer one, that erases the difference above.');
             errors++;
             continue;
         }

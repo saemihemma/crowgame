@@ -15,7 +15,7 @@ const MAX_STEP_RESULTS := 10
 const IMMEDIATE_REVIEW_MIN_GAP := 2
 const IMMEDIATE_REVIEW_MAX_GAP := 4
 # Ladder and stretch-gate numbers live in data/tuning/math_tuning.json (the
-# byte-identical twin of public/data/tuning/math_tuning.json); read via
+# the single tuning file; read via
 # _ladder_int/_ladder_float/_gate below. JSON numbers parse as float in Godot,
 # so each accessor pins the type the call sites expect.
 

@@ -71,14 +71,48 @@ that actually works:
 ```
 npm run validate          # content, docs, assets, i18n
 npx tsc --noEmit
-npm run dev               # then, in a second shell:
-npm run themes:screenshots
 ```
 
-`npm run themes:screenshots` is the one that matters for art. It walks all six
-levels, captures gameplay and the maths board in each, and checks the rendered
-pixels against that world's token file. A new asset in the wrong palette fails
-it. Screenshots land in `output/playwright/themes/`.
+> **Note.** The screenshot walker (`themes:screenshots`) and the device audit
+> drove the Phaser build through `window.__crowGame`, which no longer exists —
+> both tools were deleted with it. The colour law below still runs, and is
+> gated in CI. For a live look at the Godot build:
+>
+> ```
+> bash godot/tools/build_web.sh
+> (cd output/web && python3 -m http.server 8060)
+> node tools/godot_play_smoke.mjs      # walks login -> menu -> level -> owl
+> node godot/tools/web_boot_smoke.mjs  # iPad viewport, boots and renders
+> ```
+
+The screenshot walker used to be the gate that mattered for art: it walked all
+six levels, captured gameplay and the maths board in each, and checked the
+rendered pixels against that world's token file. It drove the Phaser build and
+went with it.
+
+Its job is now done by `godot/tests/test_world_palettes.gd`, one layer down: it
+scores each world's tileset directly against that world's theme tokens, so it
+needs no browser, no served build and no walk through the UI, and it runs in the
+headless suite on every push. A pixel counts as on-palette within an RGB
+distance of 32; at least 75% of opaque, non-neutral pixels must clear that.
+
+Two things it deliberately does not claim:
+
+- **It does not check rendered frames.** A layout bug that draws the right
+  colours in the wrong place will pass. `node tools/godot_play_smoke.mjs` and a
+  human eye still cover that.
+- **It cannot tell worlds apart.** The palettes overlap by design — shared
+  danger red, accents, text — so `geyserworks` art scores 1.000 against
+  `emberwood`'s palette. The matrix is in the test's header. What it does prove
+  is the thing that matters when new art lands: every colour in the file is one
+  its own theme actually declares.
+
+`sugarstorm` is currently waived and named as such, because its tileset uses a
+plum family (`#613049`, 1640 px, 45.6 away) that `theme_sugarstorm.json` does
+not declare. Either the art or the token file is wrong; that is an art call.
+
+`brand/tokens/verify_palettes.py` remains complementary: it proves the token
+files are internally lawful, this proves the pixels match them.
 
 ---
 
@@ -129,9 +163,10 @@ The PNG is the asset. Nothing about a tileset lives in code.
 2. Save over `godot/assets/tilesets/<world>_tiles.png`, and copy to
    `godot/assets/tilesets/`.
 3. Set `"source": "authored"` for that entry in
-   `public/data/tilesets/tileset_manifest.json`, so the generator stops being
+   `godot/data/tilesets/tileset_manifest.json`, so the generator stops being
    treated as its origin.
-4. `npm run validate && npm run dev`, then `npm run themes:screenshots`.
+4. `npm run validate`, then look at the build: `bash godot/tools/build_web.sh`
+   and `node tools/godot_play_smoke.mjs`.
 
 To **add** a world: drop a PNG in, add a manifest entry, add a theme token file,
 give a level spec that `theme`. The tileset manifest is loaded by `DataManager`, so there
@@ -201,7 +236,7 @@ only needs a retint. Adding an enemy is a registry entry plus one sheet -
 | Aurora Spire | `gloomgull_drifter` | `gloomgull.png` | `64x64` | 4 drift + 2 idle | tall, thin, three torn wings |
 
 - **Destination:** `godot/assets/sprites/characters/enemies/<name>.png`
-- **Wire in:** `public/data/enemies/enemy_registry.json`, and the `enemies` array
+- **Wire in:** `godot/data/enemies/enemy_registry.json`, and the `enemies` array
   of the level spec that uses it
 - **The ugly law applies** (BRAND_SYSTEM §3.1): asymmetric, lumpy, odd number of
   visible legs, one thing snaggled. **Yellow mismatched oversized eyes, never
@@ -372,5 +407,7 @@ Worth stating, so nobody generates something that is already handled:
 | P5 hero | 8 | the animation set and the scarf |
 
 **91 files, of which 5 are placed and 86 remain.** Nothing in P1-P5 blocks
-anything else, so they can land in any order, one file per pull request, with
-`npm run themes:screenshots` as the gate.
+anything else, so they can land in any order, one file per pull request.
+`godot/tests/test_world_palettes.gd` polices the palette of each world's tileset
+on every push; `node tools/godot_play_smoke.mjs` and a human eye cover placement
+and composition, which no pixel check can judge.

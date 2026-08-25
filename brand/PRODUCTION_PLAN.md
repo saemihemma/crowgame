@@ -119,7 +119,7 @@ rebuild has something that still runs to check against. Order:
 4. Move `src/**`, `vite/**`, `index.html`, `public/**` and the web CI into
    `archived/`.
 
-**`godot/data/**` is the data truth.** `public/data/**` was a near-mirror that
+**`godot/data/**` is the data truth.** `godot/data/**` was a near-mirror that
 nothing kept in sync — `npc_registry.json` had already diverged, and
 `godot/data/math` is a hand copy no tool writes. Anything that generates data
 repoints at the Godot tree as part of step 2.
@@ -167,10 +167,13 @@ Ordered by what unblocks what, not by what is most fun.
 
 Nothing else can be judged until this exists.
 
-**Landed:** `npm run device:audit` (`tools/device_audit.mjs`) opens iPad
-landscape, iPhone landscape and desktop with real touch emulation and device
-pixel ratios, and measures B1, B3, B4, B5, B7 and B10 **from the live scene
-graph** — never from source, because source says what was intended.
+**Was landed, now gone:** `tools/device_audit.mjs` opened iPad landscape,
+iPhone landscape and desktop with real touch emulation and device pixel
+ratios, and measured B1, B3, B4, B5, B7 and B10 from the live scene graph. It
+read that graph through `window.__crowGame`, the Phaser game object, so it
+could not survive the port and was deleted with it. `godot/tools/web_boot_smoke.mjs`
+covers the iPad viewport and how much of the screen the canvas fills; the rest
+of those measurements have no replacement yet.
 
 Baseline on today's build, which is the acceptance criterion (the harness must
 report the failures that should fail):

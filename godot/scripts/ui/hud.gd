@@ -115,7 +115,10 @@ func _on_coins_changed(c: int) -> void:
 	AudioManager.play_event("milestone")
 	var at := _coin_chip.global_position + Vector2(_coin_chip.size.x * 0.5, 16)
 	DopamineFX.burst(self, at, ThemeManager.get_color_value("coin"), 20)
-	DopamineFX.number_fly_up(self, at + Vector2(0, -12), TextManager.t("hud.coins_milestone", [c]))
+	# tp(), not t(): Icelandic inflects the noun on the numeral, so "21 myntir"
+	# has to become "21 mynt". t() has no plural path.
+	DopamineFX.number_fly_up(self, at + Vector2(0, -12),
+		TextManager.tp("hud.coins_milestone", {"n": c}, "n"))
 
 ## A curriculum step was cleared. The banner lands in the empty top centre, which
 ## is what the three-pod layout keeps free so an event reads as an event.

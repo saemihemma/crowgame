@@ -1,7 +1,7 @@
 # Hörmann — Brand & Art System
 
 Status: Supportive
-Authority: Canonical brand, art-direction and UI standard. Runtime truth still lives in `src/**`, `public/data/**` and the manifests.
+Authority: Canonical brand, art-direction and UI standard. Runtime truth still lives in `src/**`, `godot/data/**` and the manifests.
 Last verified against code: 2026-08-24
 
 This is the one brand file. If another document disagrees with this one about
@@ -203,7 +203,7 @@ question, the chain snaps, and they are running again. Quick maths and action,
 every time — that is the resting rhythm of the game, and anything slower is the
 exception rather than the norm.
 
-Longer encounters are opt-in, per NPC, from `public/data/npcs/npc_registry.json`:
+Longer encounters are opt-in, per NPC, from `godot/data/npcs/npc_registry.json`:
 
 | Registry id | Links | Band | Where it belongs |
 | --- | --- | --- | --- |
@@ -949,7 +949,7 @@ Two things from this tier were deliberately **not** done, and both are in
 ### Tier 2 — the systems this document is really about
 
 6. **Ship the five world themes.** Drop [tokens/](./tokens/) into
-   `public/data/themes/`, extend `DATA_PATHS` and `BootScene.registerThemes()`,
+   `godot/data/themes/`, extend `DataManager`'s paths and `ThemeManager.THEME_KEYS`,
    and call `ThemeManager.setTheme(spec.theme)` on level load in `GameScene`.
    `HealthBar` already falls back to generated placeholders when a themed sprite
    key has no texture, so **this lands safely before any new art exists** — five

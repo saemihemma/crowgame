@@ -290,8 +290,11 @@ func _add_hero() -> void:
 ## returning player wants is how many owls they have.
 func _continue_label() -> String:
 	var save := SaveManager.get_data()
-	return TextManager.t("menu.continue_detail", [
-		_world_name(resolve_continue_key(save)), int(save.get("owlsSaved", 0))])
+	# tp() for the owl count: one owl is "1 ugla heima", not "1 uglur heima".
+	return TextManager.tp("menu.continue_detail", {
+		"world": _world_name(resolve_continue_key(save)),
+		"owls": int(save.get("owlsSaved", 0)),
+	}, "owls")
 
 func _world_name(key: String) -> String:
 	var name_key := "level.%s.name" % key

@@ -74,13 +74,14 @@ Game:
 - `godot/data/registries/scenes.json` registers 7 scenes: `boot`, `login`, `main_menu`, `level_select`, `game`, `cloud_panel`, `parent_report`
 - `godot/data/levels/level_registry.json` contains 6 levels, including `level_99`
   (the maths practice arena)
-- `godot/data/npcs/npc_registry.json` contains 1 NPC entry (the owl)
+- `godot/data/npcs/npc_registry.json` contains 6 NPC entries (owl variants:
+  teacher, gentle, tough, twin chain, triple chain, gauntlet)
 - `godot/data/enemies/enemy_registry.json` contains 1 enemy type (the cockroach)
 - `godot/data/audio/audio_manifest.json` currently exposes 5 music tracks and 16 live SFX entries.
 - **51** `.gd` scripts under `godot/scripts/`, **24** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **286** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **293** keys, matched key-for-key by
   `strings_is.json`
 - **19** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
