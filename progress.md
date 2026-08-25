@@ -249,3 +249,81 @@ Original prompt: teach a step-by-step, skippable, click-through tutorial for eve
   anything. No artifact in this repo claims that, and this one does not either.
   The evidence cited is for the instructional pattern, not for this
   implementation of it.
+
+## 2026-08-25 - Relational equals and missing addend
+
+Original prompt: implement the highest-value absence the hardening review found - "=" is never a relation, and every addition problem is result-unknown.
+
+- Routed through LP, which collapsed three stated decisions into one and forced a
+  fourth candidate into the comparison. The winner was none of the three
+  originally proposed.
+- What made it cheap: only `problems_curriculum.json` is generator-owned
+  (`math_authoring.ts:1936`). `easy`, `gaps` and `dataset` are hand-authored, so
+  new problem content needs no generator work and no 3035-problem regeneration.
+  That single fact removed most of the projected blast radius.
+- What made it possible at all: `deriveCurriculumStep` already dispatches on
+  domain for non-arithmetic prompts, and `answer.correct` is schema-typed as
+  anything. The seams existed.
+- THE DESIGN: overlays. A concept may declare `"requires": {"skill": "..."}` and
+  is then matched by what a problem IS rather than by how hard it is.
+  `ConceptLadder.overlay_for_problem` is tried before the step ranges.
+  "5 + ? = 8" derives onto the same rung as "5 + 3 = 8" - correctly, it is the
+  same bond - so on step alone the child would have been handed the make-ten
+  lesson, which teaches nothing about where an unknown may sit.
+- Overlays never claim a step, so the ladder's "contiguous from 0" guarantee is
+  untouched. Rejected alternatives: a 9th domain (touches MathDomains, the
+  golden fixtures, the unlock graph, all six owls' problemTypes, a
+  parent-report row and a level's mathGating), and re-keying the ladder on shape
+  (destroys the partition invariant). A cross-cutting concern must not become a
+  sibling of the things it cuts across.
+- The same mechanism is what carrying will use: `requiresCarry` is on 995
+  problems, spread 40-50% across every two-digit step, and has never been
+  expressible as a step range.
+- VERIFIER INTEGRITY was the real work. `parseArithmeticPromptIndependent` is a
+  first-match scan, and on "4 + 3 = ? + 5" it returns {4,+,3} and reports 7 when
+  the answer is 2. Meanwhile `validate-content` skips both its answer check and
+  its trait check when the parse comes back null - so "5 + ? = 8" would have
+  shipped with neither its answer nor its operands ever independently
+  re-derived. Fixed three ways: `parseRelationalPrompt` with ANCHORED patterns
+  (nothing can be half-recognised); the generic parser now refuses relational
+  text outright; and `isUnrecognisedEquation` names the shapes nothing
+  understands so `validate-content` refuses them instead of verifying them
+  wrongly. Verified against all 3150 pre-existing problems: zero false positives.
+- Content: 20 problems hand-authored into `problems_gaps.json`, all totals ten
+  or under, steps 2-7, every one servable under the operand cap. Twelve
+  missing-addend ("a + ? = c", "? + b = c"), eight relational ("c = a + ?").
+  Step and traits stamped by the repo's own `math:sync-metadata`, so both are
+  DERIVED and verified rather than authored. Distractors are the actual errors:
+  the total (operator-as-command) and an off-by-one on the part.
+- Two lessons, 8 cards, EN + IS. Two new renderer pieces, each the standard
+  representation for its concept: `part_whole` (the bar model - "5 + ? = 8" is
+  eight things of which five are visible, not five things and a mystery), and
+  `equation` learning `form: "total_first"` plus an interior unknown, so
+  "9 = 4 + ?" can be drawn at all.
+- My own new guard caught my own bug: it flagged the balance try card as
+  asserting 9 when the truth was 5. It was right that something was wrong and
+  wrong about what - on the interior-unknown form `result` is the WHOLE, not the
+  answer. The check now only treats `result` as an answer-assertion when the sum
+  is complete.
+- Guard also gained: overlay minimum-content and declared-span checks, a
+  no-two-overlays-claim-one-skill check, and report attribution that mirrors the
+  runtime's overlay-then-step rule. That last one mattered - counting by raw step
+  range reported 17 phantom skill drifts the moment the first overlay landed.
+- Negative-tested: authored "4 + 3 = ? + 5" into the pool and confirmed
+  validate-content refuses it by name. That test's `git checkout` restore then
+  wiped the 20 uncommitted problems, and the two reachability tests failed
+  within seconds - which is the tests doing exactly their job.
+- Pipeline note for next time: `npm run math:materialize` is two steps.
+  `materialize_math_batches.ts` STRIPS `phrasing` from every problem and
+  `npm run math:phrasing` re-derives it. Running only the first leaves the pool
+  looking catastrophically changed (all 3035 problems "different"). After both,
+  `problems_curriculum.json` is byte-identical.
+- Verified: 180 tests across 33 suites, 6 probes, all guards, npm run validate,
+  typecheck, export rebuilt and boot-smoked with zero console errors. i18n guard
+  round-trips 8723 phrasings, up from 8683 - the 40 new ones are semantically
+  verified, not merely present.
+- NOT done, and now the whole of the roadmap entry rather than its preamble:
+  two-sided equations ("4 + 5 = ? + 6", the form Falkner et al. actually tested)
+  are refused by name until the verifier learns them; no relational problem
+  exceeds a total of ten; and subtraction has no relational or missing-part
+  shape at all.

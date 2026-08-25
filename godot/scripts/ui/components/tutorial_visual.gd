@@ -26,6 +26,7 @@ const RENDERERS := {
 	"numbers": "_draw_numbers",
 	"groups": "_draw_groups",
 	"tens_and_ones": "_draw_tens_and_ones",
+	"part_whole": "_draw_part_whole",
 	"equation": "_draw_equation",
 }
 
@@ -415,10 +416,68 @@ func _draw_tens_and_ones() -> void:
 		if i >= kept and i < ones:
 			_cross(cell.get_center(), unit * 0.36)
 
+## A whole, with one part known and one part hidden.
+##
+## The bar model, and the only honest picture of a missing addend: "5 + ? = 8"
+## is not five things and then a mystery, it is EIGHT things of which five are
+## visible. A child who has seen the whole drawn as one bar can count up inside
+## it; a child shown two separate piles cannot, because one of the piles does not
+## exist yet.
+func _draw_part_whole() -> void:
+	var total := _int("total")
+	var known := _int("known")
+	if total <= 0:
+		return
+	var gap := _tune("token_gap", 9.0) * 0.5
+	var margin := _tune("token_size", 26.0)
+	var span := maxf(1.0, size.x - margin * 2.0)
+	var cell: float = minf(_tune("token_size", 26.0) * 1.4, (span - gap * (total - 1)) / float(total))
+	var width := total * cell + gap * maxf(0.0, total - 1)
+	var height := cell * 1.5
+	var origin := Vector2(size.x * 0.5 - width * 0.5, size.y * 0.5 - height * 0.5)
+	var outline := _role("outline", "ink")
+	var numeral_size := _tune("numeral_font_size", 26.0)
+
+	for i in total:
+		var at := Rect2(Vector2(origin.x + i * (cell + gap), origin.y), Vector2(cell, height))
+		if i < known:
+			draw_rect(at, _role("token_a", "owl"))
+			draw_rect(at, outline, false, 2.0)
+		else:
+			# The hidden part is drawn as space that clearly EXISTS -- outlined,
+			# not absent. It is the difference between "some are missing" and
+			# "there is nothing there".
+			draw_rect(at, outline, false, 2.0)
+
+	# The whole, bracketed above; the known part labelled below it.
+	var top := origin.y - numeral_size * 0.7
+	draw_line(Vector2(origin.x, top), Vector2(origin.x + width, top), outline, 2.0)
+	_numeral(str(total), Vector2(origin.x + width * 0.5, top - numeral_size * 0.55), numeral_size, _role("numeral", "paper"))
+	if known > 0:
+		var known_w := known * cell + gap * maxf(0.0, known - 1)
+		_numeral(str(known), Vector2(origin.x + known_w * 0.5, origin.y + height + numeral_size * 0.7),
+			numeral_size, _role("token_a", "owl"))
+	if total > known:
+		var rest_w := (total - known) * cell + gap * maxf(0.0, total - known - 1)
+		_numeral("?", Vector2(origin.x + width - rest_w * 0.5, origin.y + height + numeral_size * 0.7),
+			numeral_size, _role("mark", "accent"))
+
 ## The abstract form, last and largest. A result of null draws the question a
 ## child is about to be asked rather than its answer.
+## The abstract form, last and largest. A missing `result` draws the question a
+## child is about to be asked rather than its answer; a missing `b` puts the
+## unknown INSIDE the sum instead of after the equals.
+##
+## `form: "total_first"` writes the whole before the equals -- "8 = 5 + 3". That
+## is not a stylistic variant: it is the sentence a child has to be able to read
+## before "=" can mean "the same amount as" rather than "compute now", and no
+## other card in the pack shows it.
 func _draw_equation() -> void:
 	var size_px := _tune("equation_font_size", 46.0)
-	var tail := str(_params["result"]) if _params.has("result") else "?"
-	var text := "%s %s %s = %s" % [str(_int("a")), String(_params.get("op", "+")), str(_int("b")), tail]
+	var op := String(_params.get("op", "+"))
+	var left := str(_int("a"))
+	var right := str(_params["b"]) if _params.has("b") else "?"
+	var whole := str(_params["result"]) if _params.has("result") else "?"
+	var text := "%s = %s %s %s" % [whole, left, op, right] if String(_params.get("form", "")) == "total_first" \
+		else "%s %s %s = %s" % [left, op, right, whole]
 	_numeral(text, Vector2(size.x * 0.5, size.y * 0.5), size_px, _role("numeral", "paper"))

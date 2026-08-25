@@ -67,6 +67,38 @@ Two rules the build enforces:
 | `addition.tens_and_ones` | 20-29 | Add the ones, keep the tens. Place value doing work. |
 | `addition.carrying` | 30-36 | When ten ones become a new ten: stop at the ten on the way. |
 
+Two more concepts sit on addition as **overlays** rather than rungs. They claim
+problems by authored skill, not by step, so they share the step range of the
+rungs above rather than owning any of it — see **Overlays** below.
+
+| Overlay | Spans | Claims | The idea |
+| --- | --- | --- | --- |
+| `addition.missing_part` | 2-6 | `missing_addend` | The unknown is a PART, not the result. Count up inside the whole to find it. |
+| `addition.balance` | 2-7 | `relational_equals` | The whole can be written first. `=` means both sides are the same amount. |
+
+### Overlays
+
+A rung answers "how hard is this". An overlay answers "what kind of thing is
+this", and the two are genuinely different axes.
+
+`5 + ? = 8` is exactly as hard as `5 + 3 = 8` — the same bond, asked from the
+other end — and the pipeline derives it onto the same rung, correctly. But it is
+not the same *idea*, and on step alone it would be handed the make-ten lesson,
+which teaches nothing about where an unknown can sit. So a concept may declare
+`"requires": {"skill": "..."}`; `ConceptLadder.overlay_for_problem` is tried
+before the step ranges, because an overlay is the more specific claim.
+
+Overlays never claim a step, so the "contiguous from 0" guarantee is untouched.
+`tools/validate_math_concepts.mjs` holds them to their own bar instead: an
+overlay must claim at least `minPerOverlay` problems, must have a tutorial, must
+declare a span its problems actually fall inside, and may not share its skill
+with another overlay in the same domain. The guard attributes every problem to a
+concept using the same overlay-then-step rule the runtime uses.
+
+The same mechanism is what carrying will use when it gets its own lesson:
+`requiresCarry` is populated on 995 problems and spread at 40-50% across *every*
+two-digit step, so it has never been expressible as a step range.
+
 ### Subtraction
 
 | Concept | Steps | The idea |
@@ -422,18 +454,22 @@ currently express.
 Named here because an absence nobody wrote down is indistinguishable from a
 decision, and these are decisions:
 
-- **Relational equals.** Nothing in thirty concepts, 120 cards or 3,150 problems
-  presents `=` as a relation. Every `equation` visual is `a op b = result`, which
-  is exactly the operator-as-command reading that Falkner, Levi and Carpenter
-  found *every* kindergartener in their study bringing to `4 + 5 = □ + 6` — and
-  which deliberate teaching fixed for 14 of 16 children inside a year. This is
-  the largest single absence and the cheapest to close.
+- **Relational equals — now partly present, and only partly.** `addition.balance`
+  teaches `=` as "both sides the same amount", and eight authored problems write
+  the whole first (`8 = 5 + ?`). What is still absent is the form Falkner, Levi
+  and Carpenter actually tested — `4 + 5 = □ + 6`, an operation on *both* sides —
+  which is the hardest and most diagnostic shape. `isUnrecognisedEquation` in
+  `tools/math_verifier.ts` refuses it by name rather than mis-verifying it, so it
+  cannot be authored by accident: the generic scan reads `4 + 3 = ? + 5` as
+  `{4,+,3}` and reports 7 when the answer is 2. Subtraction has no relational
+  form at all.
   ([Falkner, Levi & Carpenter 1999](https://eric.ed.gov/?id=EJ600209))
-- **Missing addend / change unknown.** Every addition problem in the pool is
-  result-unknown. In the CGI difficulty ordering, Join Change Unknown sits a tier
-  above Result Unknown and Start Unknown at the top, and a child who only ever
-  meets result-unknown has no route into either. It is also the prerequisite for
-  relational equals.
+- **Missing addend — now present for addition within ten.**
+  `addition.missing_part` teaches counting up inside a whole, over twelve
+  authored problems in both `a + ? = c` and `? + b = c`. In the CGI difficulty
+  ordering that covers Join Change Unknown and Start Unknown for addition only;
+  subtraction is still result-unknown throughout, and no problem yet exceeds a
+  total of ten.
   ([CGI problem types by difficulty](http://www.langfordmath.com/ECEMath/CGI/DifficultyText.html))
 - **Compare as a problem type.** The `comparison` domain compares two numerals.
   It never compares two sets and asks the difference, which is the mid-tier CGI

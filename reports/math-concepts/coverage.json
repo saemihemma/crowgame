@@ -1,11 +1,12 @@
 {
   "generatedBy": "tools/validate_math_concepts.mjs",
   "minPerStep": 6,
-  "totalProblems": 3150,
+  "totalProblems": 3170,
   "concepts": [
     {
       "id": "addition.count_all",
       "domain": "addition",
+      "overlay": null,
       "steps": [
         0,
         2
@@ -43,6 +44,7 @@
     {
       "id": "addition.count_on",
       "domain": "addition",
+      "overlay": null,
       "steps": [
         3,
         5
@@ -80,6 +82,7 @@
     {
       "id": "addition.make_ten",
       "domain": "addition",
+      "overlay": null,
       "steps": [
         6,
         9
@@ -125,6 +128,7 @@
     {
       "id": "addition.teen_numbers",
       "domain": "addition",
+      "overlay": null,
       "steps": [
         10,
         14
@@ -166,6 +170,7 @@
     {
       "id": "addition.bridge_ten",
       "domain": "addition",
+      "overlay": null,
       "steps": [
         15,
         19
@@ -207,6 +212,7 @@
     {
       "id": "addition.tens_and_ones",
       "domain": "addition",
+      "overlay": null,
       "steps": [
         20,
         29
@@ -272,6 +278,7 @@
     {
       "id": "addition.carrying",
       "domain": "addition",
+      "overlay": null,
       "steps": [
         30,
         36
@@ -321,8 +328,97 @@
       "servable": 0
     },
     {
+      "id": "addition.missing_part",
+      "domain": "addition",
+      "overlay": "missing_addend",
+      "steps": [
+        2,
+        6
+      ],
+      "tutorial": "addition.missing_part",
+      "total": 12,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 3
+        },
+        {
+          "step": 3,
+          "problems": 4
+        },
+        {
+          "step": 4,
+          "problems": 3
+        },
+        {
+          "step": 5,
+          "problems": 0
+        },
+        {
+          "step": 6,
+          "problems": 2
+        }
+      ],
+      "skillsAuthored": [
+        "missing_addend"
+      ],
+      "skillsDeclared": [
+        "missing_addend"
+      ],
+      "servable": 12
+    },
+    {
+      "id": "addition.balance",
+      "domain": "addition",
+      "overlay": "relational_equals",
+      "steps": [
+        2,
+        7
+      ],
+      "tutorial": "addition.balance",
+      "total": 8,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 1
+        },
+        {
+          "step": 3,
+          "problems": 2
+        },
+        {
+          "step": 4,
+          "problems": 2
+        },
+        {
+          "step": 5,
+          "problems": 1
+        },
+        {
+          "step": 6,
+          "problems": 1
+        },
+        {
+          "step": 7,
+          "problems": 1
+        }
+      ],
+      "skillsAuthored": [
+        "relational_equals"
+      ],
+      "skillsDeclared": [
+        "relational_equals"
+      ],
+      "servable": 8
+    },
+    {
       "id": "subtraction.take_away",
       "domain": "subtraction",
+      "overlay": null,
       "steps": [
         0,
         2
@@ -362,6 +458,7 @@
     {
       "id": "subtraction.count_back",
       "domain": "subtraction",
+      "overlay": null,
       "steps": [
         3,
         6
@@ -405,6 +502,7 @@
     {
       "id": "subtraction.bridge_back",
       "domain": "subtraction",
+      "overlay": null,
       "steps": [
         7,
         10
@@ -450,6 +548,7 @@
     {
       "id": "subtraction.teens_back",
       "domain": "subtraction",
+      "overlay": null,
       "steps": [
         11,
         16
@@ -503,6 +602,7 @@
     {
       "id": "subtraction.tens_and_ones",
       "domain": "subtraction",
+      "overlay": null,
       "steps": [
         17,
         29
@@ -585,6 +685,7 @@
     {
       "id": "subtraction.borrowing",
       "domain": "subtraction",
+      "overlay": null,
       "steps": [
         30,
         36
@@ -636,6 +737,7 @@
     {
       "id": "counting.to_five",
       "domain": "counting",
+      "overlay": null,
       "steps": [
         0,
         1
@@ -665,6 +767,7 @@
     {
       "id": "counting.to_ten",
       "domain": "counting",
+      "overlay": null,
       "steps": [
         2,
         3
@@ -696,6 +799,7 @@
     {
       "id": "counting.ten_and_more",
       "domain": "counting",
+      "overlay": null,
       "steps": [
         4,
         6
@@ -729,6 +833,7 @@
     {
       "id": "comparison.more_or_less",
       "domain": "comparison",
+      "overlay": null,
       "steps": [
         0,
         2
@@ -762,6 +867,7 @@
     {
       "id": "comparison.compare_teens",
       "domain": "comparison",
+      "overlay": null,
       "steps": [
         3,
         6
@@ -799,6 +905,7 @@
     {
       "id": "pattern_matching.ab_repeat",
       "domain": "pattern_matching",
+      "overlay": null,
       "steps": [
         0,
         2
@@ -832,6 +939,7 @@
     {
       "id": "pattern_matching.longer_core",
       "domain": "pattern_matching",
+      "overlay": null,
       "steps": [
         3,
         5
@@ -867,6 +975,7 @@
     {
       "id": "pattern_matching.tricky_core",
       "domain": "pattern_matching",
+      "overlay": null,
       "steps": [
         6,
         7
@@ -896,6 +1005,7 @@
     {
       "id": "number_sequence.one_more",
       "domain": "number_sequence",
+      "overlay": null,
       "steps": [
         0,
         2
@@ -935,6 +1045,7 @@
     {
       "id": "number_sequence.skip_two",
       "domain": "number_sequence",
+      "overlay": null,
       "steps": [
         3,
         4
@@ -966,6 +1077,7 @@
     {
       "id": "number_sequence.bigger_jumps",
       "domain": "number_sequence",
+      "overlay": null,
       "steps": [
         5,
         6
@@ -995,6 +1107,7 @@
     {
       "id": "multiplication.groups_of",
       "domain": "multiplication",
+      "overlay": null,
       "steps": [
         0,
         7
@@ -1056,6 +1169,7 @@
     {
       "id": "multiplication.tables_small",
       "domain": "multiplication",
+      "overlay": null,
       "steps": [
         8,
         12
@@ -1100,6 +1214,7 @@
     {
       "id": "multiplication.tables_large",
       "domain": "multiplication",
+      "overlay": null,
       "steps": [
         13,
         18
@@ -1145,6 +1260,7 @@
     {
       "id": "division.sharing",
       "domain": "division",
+      "overlay": null,
       "steps": [
         0,
         8
@@ -1211,6 +1327,7 @@
     {
       "id": "division.tables",
       "domain": "division",
+      "overlay": null,
       "steps": [
         9,
         14
@@ -1256,6 +1373,7 @@
     {
       "id": "division.larger",
       "domain": "division",
+      "overlay": null,
       "steps": [
         15,
         20

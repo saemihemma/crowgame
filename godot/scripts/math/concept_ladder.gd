@@ -20,12 +20,40 @@ class_name ConceptLadder
 
 ## The concept a (domain, step) pair belongs to, or an empty dictionary when the
 ## domain has no ladder or the step is off the end of it.
+##
+## Only ever returns a BASE concept. Overlays are claimed by problem shape, not
+## by difficulty, so a step on its own cannot select one -- see
+## concept_for_problem.
 static func concept_for(domain: String, step: int) -> Dictionary:
 	for entry in _concepts():
-		if String(entry.get("domain", "")) != domain:
+		if String(entry.get("domain", "")) != domain or entry.has("requires"):
 			continue
 		var steps: Array = entry.get("steps", [])
 		if steps.size() == 2 and step >= int(steps[0]) and step <= int(steps[1]):
+			return entry
+	return {}
+
+
+## The overlay this problem belongs to, if any.
+##
+## An overlay claims problems by what they ARE rather than by how hard they are.
+## "5 + ? = 8" derives to the same rung as "5 + 3 = 8" -- correctly, it is the
+## same bond -- so on step alone it would be handed the make-ten lesson, which
+## teaches the wrong thing about it entirely. Matching on the authored skill is
+## what separates the two.
+##
+## Tried BEFORE the step ranges, because an overlay is the more specific claim.
+static func overlay_for_problem(problem: Dictionary) -> Dictionary:
+	var domain := String(problem.get("domain", ""))
+	var skills: Array = problem.get("skills", [])
+	for entry in _concepts():
+		if String(entry.get("domain", "")) != domain:
+			continue
+		var requires: Variant = entry.get("requires", null)
+		if not (requires is Dictionary):
+			continue
+		var needed := String((requires as Dictionary).get("skill", ""))
+		if needed != "" and skills.has(needed):
 			return entry
 	return {}
 
@@ -36,13 +64,17 @@ static func concept_for(domain: String, step: int) -> Dictionary:
 static func concept_for_problem(problem: Dictionary) -> Dictionary:
 	if problem.is_empty():
 		return {}
+	var overlay := overlay_for_problem(problem)
+	if not overlay.is_empty():
+		return overlay
 	return concept_for(String(problem.get("domain", "")), int(problem.get("curriculumStep", 0)))
 
-## Every concept in one domain, in ladder order.
+## Every BASE concept in one domain, in ladder order. Overlays are excluded:
+## they have no place in the rung sequence, which is what callers of this want.
 static func concepts_in(domain: String) -> Array:
 	var out: Array = []
 	for entry in _concepts():
-		if String(entry.get("domain", "")) == domain:
+		if String(entry.get("domain", "")) == domain and not entry.has("requires"):
 			out.append(entry)
 	return out
 

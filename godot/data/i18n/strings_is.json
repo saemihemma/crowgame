@@ -447,5 +447,19 @@
   "tutorial.division.larger.see": "Tuttugu og einn í þrjá kassa eru sjö í hverjum. Kassarnir eru að verða of fullir til að telja.",
   "tutorial.division.larger.model": "Hættu að telja og spurðu í staðinn. Tuttugu og einn deilt með þremur er sjö, því þrisvar sinnum sjö eru tuttugu og einn.",
   "tutorial.division.larger.worked": "Fimmtíu og fjórir deilt með sex er níu. Sex sinnum níu eru fimmtíu og fjórir, svo níu er svarið.",
-  "tutorial.division.larger.try": "Sextíu deilt með sex. Hvað þarf marga sexur til að fá sextíu?"
+  "tutorial.division.larger.try": "Sextíu deilt með sex. Hvað þarf marga sexur til að fá sextíu?",
+  "math.hint.rel.how_many_more": "Þú hefur {known}. Hvað þarf að bæta við til að fá {total}?",
+  "math.hint.rel.count_up": "Eitthvað og {known} gerir {total}. Byrjaðu á {known} og teldu upp í {total}.",
+  "math.hint.rel.other_part": "{total} er heildin og {known} er einn hluti. Hver er hinn hlutinn?",
+  "math.expl.rel.parts": "{known} og {unknown} gerir {total}.",
+  "tutorial.addition.missing_part.title": "Faldi hlutinn",
+  "tutorial.addition.missing_part.see": "Átta alls. Þú sérð fimm. Spurningarmerkið er restin: þau eru til, þú þarft bara að finna hvað þau eru mörg.",
+  "tutorial.addition.missing_part.model": "Byrjaðu á fimmunni sem þú sérð og teldu upp þangað til þú nærð átta. Þrjú stökk. Þrír er faldi hlutinn.",
+  "tutorial.addition.missing_part.worked": "Fimm og þrír gerir átta, svo spurningarmerkið var alltaf þrír. Að telja upp er leiðin til að finna hluta.",
+  "tutorial.addition.missing_part.try": "Tíu alls, sex af þeim hér. Teldu upp frá sex. Hvað eru mörg falin?",
+  "tutorial.addition.balance.title": "Jafnt á báðar hliðar",
+  "tutorial.addition.balance.see": "Sömu átta, sömu fimm, sami faldi hluti. Ekkert við fjöldann breytist þegar skriftin breytist.",
+  "tutorial.addition.balance.model": "Nú er heildin skrifuð fyrst: átta er fimm og þrír. Samasemmerkið þýðir ekki að reikna. Það þýðir að hliðarnar eru jafnar.",
+  "tutorial.addition.balance.worked": "Níu er fjórir og fimm. Fjórir og fimm er níu. Lestu það í hvora áttina sem er og það er sami sanni hluturinn.",
+  "tutorial.addition.balance.try": "Níu er fjórir og eitthvað. Hvað þarf að fara í eyðuna til að hafa báðar hliðar jafnar?"
 }

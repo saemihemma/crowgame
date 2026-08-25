@@ -447,5 +447,19 @@
   "tutorial.division.larger.see": "Twenty-one in three boxes is seven each. The boxes are getting too full to count.",
   "tutorial.division.larger.model": "So stop counting and start asking. Twenty-one shared by three is seven, because three sevens are twenty-one.",
   "tutorial.division.larger.worked": "Fifty-four shared by six is nine. Six nines are fifty-four, so nine is the answer.",
-  "tutorial.division.larger.try": "Sixty shared by six. How many sixes make sixty?"
+  "tutorial.division.larger.try": "Sixty shared by six. How many sixes make sixty?",
+  "math.hint.rel.how_many_more": "You have {known}. How many more to make {total}?",
+  "math.hint.rel.count_up": "Something and {known} makes {total}. Start at {known} and count up to {total}.",
+  "math.hint.rel.other_part": "{total} is the whole, and {known} is one part. What is the other part?",
+  "math.expl.rel.parts": "{known} and {unknown} makes {total}.",
+  "tutorial.addition.missing_part.title": "The hidden part",
+  "tutorial.addition.missing_part.see": "Eight altogether. You can see five. The question mark is the rest: they are there, you just have to work out how many.",
+  "tutorial.addition.missing_part.model": "Start at the five you can see and count up until you reach eight. Three hops. Three is the hidden part.",
+  "tutorial.addition.missing_part.worked": "Five and three make eight, so the question mark was a three all along. Counting up is how you find a part.",
+  "tutorial.addition.missing_part.try": "Ten altogether, six of them here. Count up from six. How many are hidden?",
+  "tutorial.addition.balance.title": "Both sides the same",
+  "tutorial.addition.balance.see": "The same eight, the same five, the same hidden part. Nothing about the amounts changes when the writing changes.",
+  "tutorial.addition.balance.model": "Now the whole is written first: eight is five and three. Equals does not mean work it out. It means both sides match.",
+  "tutorial.addition.balance.worked": "Nine is four and five. Four and five is nine. Read it either way round and it is the same true thing.",
+  "tutorial.addition.balance.try": "Nine is four and something. What has to go in the gap to keep both sides the same?"
 }

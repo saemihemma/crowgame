@@ -8,7 +8,7 @@
   "acceptedBatchCount": 19,
   "averageAcceptedGrade": 9.85,
   "domainTotals": {
-    "addition": 1000,
+    "addition": 1020,
     "subtraction": 1000,
     "multiplication": 400,
     "division": 250,
@@ -30,28 +30,28 @@
       "addition",
       "counting"
     ],
-    "owlEligibleProblemCount": 1474,
-    "owlEligibleUniquePromptCount": 1474,
-    "owlEligibleUniqueFactCount": 595,
+    "owlEligibleProblemCount": 1494,
+    "owlEligibleUniquePromptCount": 1494,
+    "owlEligibleUniqueFactCount": 615,
     "domainCounts": {
-      "addition": 448,
+      "addition": 468,
       "counting": 125,
       "pattern_matching": 125,
       "subtraction": 526,
       "comparison": 125,
       "number_sequence": 125
     },
-    "openingUnlockedInventoryProblemCount": 573,
-    "openingUnlockedInventoryUniquePromptCount": 573,
-    "openingUnlockedInventoryUniqueFactCount": 143,
-    "freshReachableProblemCount": 53,
-    "freshReachableUniquePromptCount": 53,
-    "freshReachableUniqueFactCount": 19,
+    "openingUnlockedInventoryProblemCount": 593,
+    "openingUnlockedInventoryUniquePromptCount": 593,
+    "openingUnlockedInventoryUniqueFactCount": 163,
+    "freshReachableProblemCount": 57,
+    "freshReachableUniquePromptCount": 57,
+    "freshReachableUniqueFactCount": 23,
     "freshReachableDomainCounts": {
-      "addition": 24,
+      "addition": 28,
       "counting": 29
     },
-    "freshReachableAdditionFactCount": 11,
+    "freshReachableAdditionFactCount": 15,
     "freshReachableCountingFactCount": 8,
     "currentInteractionProblemCount": 1,
     "owlAdditionByStep": [
@@ -69,27 +69,27 @@
       },
       {
         "step": 2,
-        "rowCount": 12,
-        "uniquePromptCount": 12,
-        "uniqueFactCount": 5
-      },
-      {
-        "step": 3,
-        "rowCount": 53,
-        "uniquePromptCount": 53,
+        "rowCount": 16,
+        "uniquePromptCount": 16,
         "uniqueFactCount": 9
       },
       {
+        "step": 3,
+        "rowCount": 59,
+        "uniquePromptCount": 59,
+        "uniqueFactCount": 15
+      },
+      {
         "step": 4,
-        "rowCount": 34,
-        "uniquePromptCount": 34,
-        "uniqueFactCount": 5
+        "rowCount": 39,
+        "uniquePromptCount": 39,
+        "uniqueFactCount": 10
       },
       {
         "step": 5,
-        "rowCount": 32,
-        "uniquePromptCount": 32,
-        "uniqueFactCount": 5
+        "rowCount": 33,
+        "uniquePromptCount": 33,
+        "uniqueFactCount": 6
       }
     ]
   },
@@ -2298,26 +2298,26 @@
       "followUpSelections": 0,
       "alternateFollowUpSelections": 0,
       "followUpAlternateRate": 1,
-      "steadyFirstSubtractionUnlockAttempt": -1,
+      "steadyFirstSubtractionUnlockAttempt": 29,
       "strugglingFirstSubtractionUnlockAttempt": -1,
-      "depthProbeFirstSubtractionUnlockAttempt": 25,
+      "depthProbeFirstSubtractionUnlockAttempt": 24,
       "steadyFirstSubtractionSelectionAttempt": -1,
       "strugglingFirstSubtractionSelectionAttempt": -1,
-      "depthProbeFirstSubtractionSelectionAttempt": 36,
-      "owlEligibleProblemCount": 1474,
-      "owlEligibleUniquePromptCount": 1474,
-      "owlEligibleUniqueFactCount": 595,
-      "openingUnlockedInventoryProblemCount": 573,
-      "openingUnlockedInventoryUniquePromptCount": 573,
-      "openingUnlockedInventoryUniqueFactCount": 143,
-      "freshReachableProblemCount": 53,
-      "freshReachableUniquePromptCount": 53,
-      "freshReachableUniqueFactCount": 19,
-      "freshReachableAdditionFactCount": 11,
+      "depthProbeFirstSubtractionSelectionAttempt": 52,
+      "owlEligibleProblemCount": 1494,
+      "owlEligibleUniquePromptCount": 1494,
+      "owlEligibleUniqueFactCount": 615,
+      "openingUnlockedInventoryProblemCount": 593,
+      "openingUnlockedInventoryUniquePromptCount": 593,
+      "openingUnlockedInventoryUniqueFactCount": 163,
+      "freshReachableProblemCount": 57,
+      "freshReachableUniquePromptCount": 57,
+      "freshReachableUniqueFactCount": 23,
+      "freshReachableAdditionFactCount": 15,
       "freshReachableCountingFactCount": 8,
       "openingAdditionStep0Facts": 3,
       "openingAdditionStep1Facts": 3,
-      "openingAdditionStep2Facts": 5,
+      "openingAdditionStep2Facts": 9,
       "interactionProblemCount": 1,
       "owlDomains": "addition,counting,pattern_matching,subtraction,comparison,number_sequence",
       "openingUnlockedDomains": "addition,counting"
@@ -2346,7 +2346,7 @@
     "caveats": [
       "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
       "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1474 local-safe rows overall, while a fresh profile currently reaches 53 step-capped rows across addition, counting and 1 problems per owl interaction."
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1494 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
     ]
   }
 }

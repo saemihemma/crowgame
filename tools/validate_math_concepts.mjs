@@ -98,6 +98,8 @@ function truthOf(visual, params) {
             return params.ask === 'fewer' ? Math.min(n('a'), n('b')) : Math.max(n('a'), n('b'));
         case 'groups':
             return n('groups') * n('each');
+        case 'part_whole':
+            return n('total') - n('known');
         case 'tens_and_ones':
             return n('tens') * 10 + n('ones') + n('addTens') * 10 + n('addOnes') - n('takeOnes');
         case 'numbers': {
@@ -115,6 +117,11 @@ function truthOf(visual, params) {
             return core[Number(params.length ?? core.length) % core.length];
         }
         case 'equation': {
+            // An absent `b` means the unknown is the PART, not the result:
+            // "8 = 5 + ?" asserts 3. Only addition is meaningful in that shape.
+            if (params.b === undefined) {
+                return params.op === '+' && params.result !== undefined ? n('result') - n('a') : null;
+            }
             const [a, b] = [n('a'), n('b')];
             switch (params.op) {
                 case '+': return a + b;
@@ -131,8 +138,33 @@ function truthOf(visual, params) {
 
 // ── 2. structure ───────────────────────────────────────────────────────────
 
+/**
+ * Base concepts partition their domain's steps; overlays claim problems by
+ * authored skill instead (see _overlayComment in concept_ladder.json). Almost
+ * every check below is about the PARTITION, so it must not see overlays -- an
+ * overlay sharing a step range with a base concept is the normal case, not a
+ * contiguity break.
+ */
+const isOverlay = (concept) => Boolean(concept.requires);
+const baseConcepts = ladder.concepts.filter(c => !isOverlay(c));
+const overlays = ladder.concepts.filter(isOverlay);
+
+const MIN_PER_STEP = Number(ladder.gapPolicy?.minPerStep ?? 6);
+/** An overlay has no steps to spread across, so it is held to a total instead. */
+const MIN_OVERLAY_PROBLEMS = Number(ladder.gapPolicy?.minPerOverlay ?? 6);
+
+/**
+ * Which concept a problem belongs to, decided EXACTLY as
+ * concept_ladder.gd::concept_for_problem decides it: overlay first, then the
+ * step range. Two implementations of one rule is a bug waiting to happen, so
+ * the shape is kept deliberately parallel and check 4b asserts they agree on
+ * every authored problem.
+ */
+const overlayOf = (p) => overlays.find(
+    o => o.domain === p.domain && (p.skills ?? []).includes(o.requires?.skill));
+
 const byDomain = new Map();
-for (const concept of ladder.concepts) {
+for (const concept of baseConcepts) {
     if (!Array.isArray(concept.steps) || concept.steps.length !== 2) {
         fail(`[${concept.id}] steps must be a [low, high] pair`);
         continue;
@@ -165,6 +197,55 @@ for (const [domain, concepts] of byDomain) {
     }
 }
 
+const baseOf = (p) => (byDomain.get(p.domain) ?? []).find(
+    c => p.curriculumStep >= c.steps[0] && p.curriculumStep <= c.steps[1]);
+const conceptOf = (p) => overlayOf(p) ?? baseOf(p);
+const problemsFor = (concept) => problems.filter(p => conceptOf(p) === concept);
+
+// ── 2b. overlays ───────────────────────────────────────────────────────────
+//
+// An overlay earns its keep only if it actually claims problems and actually
+// teaches them. A declared shape with nothing authored on it is a lesson about
+// content that does not exist -- the same waste the unreachable check catches
+// from the other direction.
+for (const overlay of overlays) {
+    const skill = overlay.requires?.skill;
+    if (!skill) {
+        fail(`[${overlay.id}] has a "requires" with no "skill". That is the only matcher supported today.`);
+        continue;
+    }
+    const mine = problemsFor(overlay);
+    if (mine.length < MIN_OVERLAY_PROBLEMS) {
+        fail(
+            `[${overlay.id}] claims skill "${skill}" but only ${mine.length} problem(s) carry it `
+            + `(need ${MIN_OVERLAY_PROBLEMS}). A child cannot be given three different questions on it.`,
+        );
+    }
+    if (!overlay.tutorial) {
+        fail(`[${overlay.id}] is an overlay with no tutorial. Its whole purpose is to teach a shape the step ranges cannot see.`);
+    }
+    // The declared span is informative, not load-bearing -- but if it is wrong
+    // the coverage report lies about where the content sits.
+    const [lo, hi] = overlay.steps ?? [];
+    for (const p of mine) {
+        if (p.curriculumStep < lo || p.curriculumStep > hi) {
+            fail(
+                `[${overlay.id}] declares steps ${lo}-${hi} but ${p.id} sits on step ${p.curriculumStep}. `
+                + `Widen the declared span or move the problem.`,
+            );
+            break;
+        }
+    }
+    // Two overlays claiming one problem is ambiguous, and the runtime would
+    // silently take whichever is listed first.
+    for (const other of overlays) {
+        if (other === overlay || other.domain !== overlay.domain) continue;
+        if (other.requires?.skill === skill) {
+            fail(`[${overlay.id}] and [${other.id}] both claim skill "${skill}" in ${overlay.domain}.`);
+        }
+    }
+}
+
 const orphans = problems.filter(p => {
     const concepts = byDomain.get(p.domain) ?? [];
     return !concepts.some(c => p.curriculumStep >= c.steps[0] && p.curriculumStep <= c.steps[1]);
@@ -176,13 +257,13 @@ if (orphans.length > 10) fail(`...and ${orphans.length - 10} more problems no co
 
 // ── 3. coverage against the declared baseline ──────────────────────────────
 
-const MIN_PER_STEP = Number(ladder.gapPolicy?.minPerStep ?? 6);
+
 const countAt = (domain, step) =>
     problems.filter(p => p.domain === domain && p.curriculumStep === step).length;
 
 const actualGaps = new Map();
 const actualThin = new Map();
-for (const concept of ladder.concepts) {
+for (const concept of baseConcepts) {
     const [lo, hi] = concept.steps;
     for (let step = lo; step <= hi; step++) {
         const n = countAt(concept.domain, step);
@@ -258,10 +339,8 @@ const servable = (p) => {
 
 const actuallyUnreachable = new Set();
 for (const concept of ladder.concepts) {
-    const [lo, hi] = concept.steps;
-    const inRange = problems.filter(
-        p => p.domain === concept.domain && p.curriculumStep >= lo && p.curriculumStep <= hi);
-    if (inRange.length > 0 && !inRange.some(servable)) actuallyUnreachable.add(concept.id);
+    const mine = problemsFor(concept);
+    if (mine.length > 0 && !mine.some(servable)) actuallyUnreachable.add(concept.id);
 }
 
 {
@@ -383,8 +462,14 @@ for (const tutorial of tutorials.tutorials) {
 
         const truth = truthOf(card.visual, card.params ?? {});
 
-        // A card that states an answer must state the true one.
-        if (card.params?.result !== undefined && truth !== null && Number(card.params.result) !== truth) {
+        // A card that states an answer must state the true one -- but on the
+        // interior-unknown form ("9 = 4 + ?") `result` is the WHOLE, not the
+        // answer, so cross-checking it against the missing part is comparing two
+        // different numbers. Only treat `result` as an assertion about the answer
+        // when the sum is complete.
+        const resultIsTheAnswer = card.visual !== 'equation' || card.params?.b !== undefined;
+        if (resultIsTheAnswer && card.params?.result !== undefined && truth !== null
+            && Number(card.params.result) !== truth) {
             fail(`${where} shows the answer ${card.params.result}, but its own numbers make ${truth}.`);
         }
         if (card.params?.reveal !== undefined && truth !== null && Number(card.params.reveal) !== truth) {
@@ -495,26 +580,31 @@ for (const locale of LOCALES) {
 
 const rows = ladder.concepts.map(concept => {
     const [lo, hi] = concept.steps;
+    // Attributed the way the runtime attributes: a problem an overlay claims is
+    // NOT the base rung's, so a rung is never blamed for a skill it does not
+    // teach. Counting by raw step range instead reported 17 phantom drifts the
+    // moment the first overlay landed.
+    const mine = problemsFor(concept);
     const steps = [];
-    for (let step = lo; step <= hi; step++) steps.push({ step, problems: countAt(concept.domain, step) });
-    const authored = new Set(
-        problems
-            .filter(p => p.domain === concept.domain && p.curriculumStep >= lo && p.curriculumStep <= hi)
-            .flatMap(p => p.skills ?? []),
-    );
+    for (let step = lo; step <= hi; step++) {
+        steps.push({ step, problems: mine.filter(p => p.curriculumStep === step).length });
+    }
+    const authored = new Set(mine.flatMap(p => p.skills ?? []));
     return {
         id: concept.id,
         domain: concept.domain,
+        overlay: isOverlay(concept) ? concept.requires.skill : null,
         steps: concept.steps,
         tutorial: concept.tutorial ?? null,
-        total: steps.reduce((a, s) => a + s.problems, 0),
-        empty: steps.filter(s => s.problems === 0).map(s => s.step),
-        thin: steps.filter(s => s.problems > 0 && s.problems < MIN_PER_STEP).map(s => s.step),
+        total: mine.length,
+        // Only a rung can have an empty or thin STEP; an overlay owns no steps,
+        // so reporting them for one would invent a gap that cannot exist.
+        empty: isOverlay(concept) ? [] : steps.filter(s => s.problems === 0).map(s => s.step),
+        thin: isOverlay(concept) ? [] : steps.filter(s => s.problems > 0 && s.problems < MIN_PER_STEP).map(s => s.step),
         perStep: steps,
         skillsAuthored: [...authored].sort(),
         skillsDeclared: [...(concept.skills ?? [])].sort(),
-        servable: steps.reduce((a, st) => a + problems.filter(
-            p => p.domain === concept.domain && p.curriculumStep === st.step && servable(p)).length, 0),
+        servable: mine.filter(servable).length,
     };
 });
 

@@ -11,28 +11,28 @@
     "addition",
     "counting"
   ],
-  "owlEligibleProblemCount": 1474,
-  "owlEligibleUniquePromptCount": 1474,
-  "owlEligibleUniqueFactCount": 595,
+  "owlEligibleProblemCount": 1494,
+  "owlEligibleUniquePromptCount": 1494,
+  "owlEligibleUniqueFactCount": 615,
   "domainCounts": {
-    "addition": 448,
+    "addition": 468,
     "counting": 125,
     "pattern_matching": 125,
     "subtraction": 526,
     "comparison": 125,
     "number_sequence": 125
   },
-  "openingUnlockedInventoryProblemCount": 573,
-  "openingUnlockedInventoryUniquePromptCount": 573,
-  "openingUnlockedInventoryUniqueFactCount": 143,
-  "freshReachableProblemCount": 53,
-  "freshReachableUniquePromptCount": 53,
-  "freshReachableUniqueFactCount": 19,
+  "openingUnlockedInventoryProblemCount": 593,
+  "openingUnlockedInventoryUniquePromptCount": 593,
+  "openingUnlockedInventoryUniqueFactCount": 163,
+  "freshReachableProblemCount": 57,
+  "freshReachableUniquePromptCount": 57,
+  "freshReachableUniqueFactCount": 23,
   "freshReachableDomainCounts": {
-    "addition": 24,
+    "addition": 28,
     "counting": 29
   },
-  "freshReachableAdditionFactCount": 11,
+  "freshReachableAdditionFactCount": 15,
   "freshReachableCountingFactCount": 8,
   "currentInteractionProblemCount": 1,
   "owlAdditionByStep": [
@@ -50,27 +50,27 @@
     },
     {
       "step": 2,
-      "rowCount": 12,
-      "uniquePromptCount": 12,
-      "uniqueFactCount": 5
-    },
-    {
-      "step": 3,
-      "rowCount": 53,
-      "uniquePromptCount": 53,
+      "rowCount": 16,
+      "uniquePromptCount": 16,
       "uniqueFactCount": 9
     },
     {
+      "step": 3,
+      "rowCount": 59,
+      "uniquePromptCount": 59,
+      "uniqueFactCount": 15
+    },
+    {
       "step": 4,
-      "rowCount": 34,
-      "uniquePromptCount": 34,
-      "uniqueFactCount": 5
+      "rowCount": 39,
+      "uniquePromptCount": 39,
+      "uniqueFactCount": 10
     },
     {
       "step": 5,
-      "rowCount": 32,
-      "uniquePromptCount": 32,
-      "uniqueFactCount": 5
+      "rowCount": 33,
+      "uniquePromptCount": 33,
+      "uniqueFactCount": 6
     }
   ]
 }

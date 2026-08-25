@@ -81,19 +81,20 @@ Game:
 - **70** `.gd` scripts under `godot/scripts/`, **25** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **449** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **463** keys, matched key-for-key by
   `strings_is.json`
 - **20** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
-Maths content — `DataManager` loads 4 math pools totaling 3150 problems:
+Maths content — `DataManager` loads 4 math pools totaling 3170 problems:
 - `curriculum`: 3035
-- `gaps`: 60
+- `gaps`: 80
 - `dataset`: 40
 - `easy`: 15
 
-Those 3150 problems are grouped into **30** concepts by
-`godot/data/curriculum/concept_ladder.json`, each opening with a **4**-card
-lesson from `godot/data/curriculum/tutorials.json` — **30** lessons, **120**
+Those 3170 problems are grouped into **32** concepts by
+`godot/data/curriculum/concept_ladder.json` — **30** rungs keyed on step range
+plus **2** overlays keyed on problem shape — each opening with a **4**-card
+lesson from `godot/data/curriculum/tutorials.json` — **32** lessons, **128**
 cards. `reports/math-concepts/coverage.json` is the generated rung-by-rung
 inventory, including the **15** empty and **12** thin rungs the ladder currently
 declares. See [docs/MATH_CONCEPT_LADDER.md](./docs/MATH_CONCEPT_LADDER.md).
@@ -104,7 +105,7 @@ straight from `answer.options`.
 
 Blunt boundaries on that `3150`, because it is the number people quote wrongly:
 
-- `3150` is total shipped inventory, **not** the owl path.
+- `3170` is total shipped inventory, **not** the owl path.
 - The opening unlocked domains currently `addition` plus `counting`; pattern
   matching joins the owl-safe set later through the normal unlock rules.
 - Current shipped owl interaction length is `1` problem per owl encounter
@@ -132,7 +133,7 @@ Reference kernel:
 - **2** fixture files under `godot/tests/fixtures/**`
 
 Tests, all in:
-- **173** GDScript unit tests across **33** suites, **6** headless physics probes
+- **180** GDScript unit tests across **33** suites, **6** headless physics probes
 - **31** server tests
 - **2** browser harnesses: `web_boot_smoke.mjs` (the export boots) and
   `error_pipeline_e2e.mjs` (browser → API → Postgres)

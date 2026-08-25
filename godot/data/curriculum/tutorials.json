@@ -67,6 +67,25 @@
     },
 
     {
+      "id": "addition.missing_part",
+      "cards": [
+        { "body": "see", "visual": "part_whole", "params": { "total": 8, "known": 5 } },
+        { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 5, "hops": 3 } },
+        { "body": "worked", "visual": "equation", "params": { "a": 5, "op": "+", "b": 3, "result": 8 } },
+        { "body": "try", "visual": "part_whole", "params": { "total": 10, "known": 6 }, "choice": { "options": [4, 10, 3], "correct": 4 } }
+      ]
+    },
+    {
+      "id": "addition.balance",
+      "cards": [
+        { "body": "see", "visual": "part_whole", "params": { "total": 8, "known": 5 } },
+        { "body": "model", "visual": "equation", "params": { "a": 5, "op": "+", "b": 3, "result": 8, "form": "total_first" } },
+        { "body": "worked", "visual": "equation", "params": { "a": 4, "op": "+", "b": 5, "result": 9, "form": "total_first" } },
+        { "body": "try", "visual": "equation", "params": { "a": 4, "op": "+", "result": 9, "form": "total_first" }, "choice": { "options": [9, 5, 4], "correct": 5 } }
+      ]
+    },
+
+    {
       "id": "subtraction.take_away",
       "cards": [
         { "body": "see", "visual": "take_away", "params": { "total": 3, "gone": 1 } },

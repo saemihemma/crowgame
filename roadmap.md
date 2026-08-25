@@ -42,31 +42,30 @@ there.
 
 ## P1 — Correctness and reachability
 
-### The game teaches `=` as an instruction, never as a relation
-Every one of the 3150 problems and all 120 lesson cards put the unknown on the
-right: `7 + 3 = ?`. Nothing anywhere presents `=` as "the same amount on both
-sides", so the only meaning of the symbol a child can infer from this game is
-"compute now". Falkner, Levi and Carpenter found that reading `=` as an operator
-rather than a relation is near-universal in primary pupils and persists for
-years, and it is the documented root of later algebra failure. Needs a new
-problem shape (`8 = 5 + ?`, `4 + 3 = ? + 5`, true/false on `6 + 2 = 8`), which
-means a generator, pool entries, i18n phrasings and a `relational_equals`
-concept with its own lesson. Read `docs/MATH_CONCEPT_LADDER.md` "What is not on
-the ladder at all" first — the analysis is there, the content is not.
+### `=` is a relation for addition within ten, and nowhere else
+`addition.balance` teaches it and eight problems write the whole first
+(`8 = 5 + ?`). Three things are still missing. Subtraction has no relational
+form at all. No relational problem exceeds a total of ten, so the idea never
+scales with the child. And the form Falkner, Levi and Carpenter actually tested
+-- `4 + 5 = ? + 6`, an operation on BOTH sides, the most diagnostic shape -- is
+refused by name in `isUnrecognisedEquation` (tools/math_verifier.ts) because the
+generic scan reads `4 + 3 = ? + 5` as `{4,+,3}` and reports 7 when the answer is
+2. Teaching `parseRelationalPrompt` that shape is the prerequisite for
+authoring it.
 
-*Done when:* a child can meet at least one problem whose unknown is not on the
-right-hand side, and one lesson teaches the balance reading of `=`.
+*Done when:* two-sided equations parse and verify, and subtraction has at least
+one relational concept.
 
-### Addition is result-unknown only, so there is no missing-addend route
-`a + b = ?` is the sole addition shape in the pools. Change-unknown
-(`5 + ? = 8`) and start-unknown (`? + 3 = 8`) are absent, which closes off the
-harder CGI problem tiers entirely and removes the natural on-ramp to relational
-equals above. `addition.count_on` already tells a child to "start at the bigger
-number", which is exactly the strategy missing-addend problems develop.
-Prerequisite for the entry above; do them in one pass.
+### Missing addend stops at a total of ten, and never reaches subtraction
+`addition.missing_part` covers `a + ? = c` and `? + b = c` over twelve problems,
+all totalling ten or less. Start-unknown within twenty is unauthored, and
+subtraction is result-unknown throughout -- so Separate Change Unknown and
+Compare Difference Unknown, the mid and upper CGI tiers, have no content.
+`relationalTraits` already derives `maxOperand` from the total, so widening the
+range needs no new machinery, only problems.
 
-*Done when:* change-unknown addition exists in at least one concept's range with
-a lesson that models counting up to find the missing part.
+*Done when:* relational addition reaches totals up to twenty, and subtraction has
+a missing-part shape.
 
 ### Fill the four-rung subtraction hole, steps 17-20
 `godot/data/curriculum/concept_ladder.json` declares it, and

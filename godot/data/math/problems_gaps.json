@@ -2702,6 +2702,1086 @@
       "difficultyTraits": {
         "maxOperand": 8
       }
+    },
+    {
+      "id": "rel_missing_0001",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + ? = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          3,
+          5,
+          4
+        ]
+      },
+      "hint": "You have 2. How many more to make 5?",
+      "explanation": "2 and 3 makes 5.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 2,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 3,
+            "total": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0002",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "1 + ? = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          3,
+          2
+        ]
+      },
+      "hint": "You have 1. How many more to make 4?",
+      "explanation": "1 and 3 makes 4.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 1,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 1,
+            "unknown": 3,
+            "total": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0003",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "3 + ? = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          5,
+          3,
+          2
+        ]
+      },
+      "hint": "You have 3. How many more to make 5?",
+      "explanation": "3 and 2 makes 5.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 3,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 3,
+            "unknown": 2,
+            "total": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0004",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + ? = 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          2,
+          6,
+          3
+        ]
+      },
+      "hint": "You have 4. How many more to make 6?",
+      "explanation": "4 and 2 makes 6.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 4,
+            "total": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 2,
+            "total": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0005",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "2 + ? = 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          6,
+          4,
+          5
+        ]
+      },
+      "hint": "You have 2. How many more to make 6?",
+      "explanation": "2 and 4 makes 6.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 2,
+            "total": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 4,
+            "total": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0006",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 + ? = 8",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          8,
+          4,
+          3
+        ]
+      },
+      "hint": "You have 5. How many more to make 8?",
+      "explanation": "5 and 3 makes 8.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 5,
+            "total": 8
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 5,
+            "unknown": 3,
+            "total": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0007",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "4 + ? = 9",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          5,
+          9,
+          6
+        ]
+      },
+      "hint": "You have 4. How many more to make 9?",
+      "explanation": "4 and 5 makes 9.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 4,
+            "total": 9
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 5,
+            "total": 9
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0008",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "6 + ? = 10",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          10,
+          4,
+          5
+        ]
+      },
+      "hint": "You have 6. How many more to make 10?",
+      "explanation": "6 and 4 makes 10.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 6,
+            "total": 10
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 6,
+            "unknown": 4,
+            "total": 10
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0009",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "? + 3 = 7",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          7,
+          5,
+          4
+        ]
+      },
+      "hint": "Something and 3 makes 7. Start at 3 and count up to 7.",
+      "explanation": "3 and 4 makes 7.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 3,
+            "total": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 3,
+            "unknown": 4,
+            "total": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0010",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "? + 2 = 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          4,
+          6,
+          5
+        ]
+      },
+      "hint": "Something and 2 makes 6. Start at 2 and count up to 6.",
+      "explanation": "2 and 4 makes 6.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 2,
+            "total": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 4,
+            "total": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0011",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "? + 5 = 9",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          9,
+          4,
+          5
+        ]
+      },
+      "hint": "Something and 5 makes 9. Start at 5 and count up to 9.",
+      "explanation": "5 and 4 makes 9.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 5,
+            "total": 9
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 5,
+            "unknown": 4,
+            "total": 9
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_missing_0012",
+      "domain": "addition",
+      "skills": [
+        "missing_addend"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "? + 4 = 10",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          10,
+          7,
+          6
+        ]
+      },
+      "hint": "Something and 4 makes 10. Start at 4 and count up to 10.",
+      "explanation": "4 and 6 makes 10.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 4,
+            "total": 10
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 6,
+            "total": 10
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_balance_0013",
+      "domain": "addition",
+      "skills": [
+        "relational_equals"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "5 = 2 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          3,
+          5,
+          4
+        ]
+      },
+      "hint": "5 is the whole, and 2 is one part. What is the other part?",
+      "explanation": "2 and 3 makes 5.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 2,
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 5,
+            "known": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 3,
+            "total": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_balance_0014",
+      "domain": "addition",
+      "skills": [
+        "relational_equals"
+      ],
+      "difficulty": 1.4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "6 = 4 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          6,
+          2,
+          3
+        ]
+      },
+      "hint": "6 is the whole, and 4 is one part. What is the other part?",
+      "explanation": "4 and 2 makes 6.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 6,
+            "known": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 2,
+            "total": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_balance_0015",
+      "domain": "addition",
+      "skills": [
+        "relational_equals"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "7 = 3 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          7,
+          5,
+          4
+        ]
+      },
+      "hint": "7 is the whole, and 3 is one part. What is the other part?",
+      "explanation": "3 and 4 makes 7.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 3,
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 7,
+            "known": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 3,
+            "unknown": 4,
+            "total": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_balance_0016",
+      "domain": "addition",
+      "skills": [
+        "relational_equals"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "8 = 5 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          3,
+          8,
+          4
+        ]
+      },
+      "hint": "8 is the whole, and 5 is one part. What is the other part?",
+      "explanation": "5 and 3 makes 8.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 8,
+            "known": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 5,
+            "unknown": 3,
+            "total": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_balance_0017",
+      "domain": "addition",
+      "skills": [
+        "relational_equals"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "9 = 4 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          9,
+          5,
+          6
+        ]
+      },
+      "hint": "9 is the whole, and 4 is one part. What is the other part?",
+      "explanation": "4 and 5 makes 9.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 4,
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 9,
+            "known": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 5,
+            "total": 9
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_balance_0018",
+      "domain": "addition",
+      "skills": [
+        "relational_equals"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 = 6 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          10,
+          5,
+          4
+        ]
+      },
+      "hint": "10 is the whole, and 6 is one part. What is the other part?",
+      "explanation": "6 and 4 makes 10.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 6,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 10,
+            "known": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 6,
+            "unknown": 4,
+            "total": 10
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_balance_0019",
+      "domain": "addition",
+      "skills": [
+        "relational_equals"
+      ],
+      "difficulty": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "10 = 7 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          3,
+          10,
+          4
+        ]
+      },
+      "hint": "10 is the whole, and 7 is one part. What is the other part?",
+      "explanation": "7 and 3 makes 10.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 7,
+      "difficultyTraits": {
+        "maxOperand": 10,
+        "requiresCarry": true
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 10,
+            "known": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 7,
+            "unknown": 3,
+            "total": 10
+          }
+        }
+      }
+    },
+    {
+      "id": "rel_balance_0020",
+      "domain": "addition",
+      "skills": [
+        "relational_equals"
+      ],
+      "difficulty": 1.7,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "8 = 2 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          8,
+          6,
+          7
+        ]
+      },
+      "hint": "8 is the whole, and 2 is one part. What is the other part?",
+      "explanation": "2 and 6 makes 8.",
+      "misconceptionTags": [
+        "operator_as_command",
+        "off_by_one"
+      ],
+      "generator": null,
+      "curriculumStep": 5,
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": false
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 8,
+            "known": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 6,
+            "total": 8
+          }
+        }
+      }
     }
   ]
 }

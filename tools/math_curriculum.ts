@@ -1,4 +1,5 @@
 import type { MathProblem, ProblemDifficultyTraits } from '../math-kernel/utils/Types';
+import { parseRelationalPrompt, relationalTraits } from './math_verifier';
 import { evaluateArithmeticPrompt, parseArithmeticPromptIndependent } from './math_verifier';
 
 type ParsedArithmetic = {
@@ -17,6 +18,14 @@ export function parseArithmeticPrompt(text: string): ParsedArithmetic | null {
 }
 
 export function deriveDifficultyTraits(problem: MathProblem): ProblemDifficultyTraits | undefined {
+    // An equation with its unknown somewhere other than the right-hand side is
+    // still a fact with operands; it just is not the fact the generic scan would
+    // read out of it.
+    const relational = parseRelationalPrompt(problem.prompt.text);
+    if (relational) {
+        return relationalTraits(relational);
+    }
+
     const parsed = parseArithmeticPrompt(problem.prompt.text);
     if (!parsed) {
         return undefined;
@@ -46,6 +55,15 @@ export function deriveDifficultyTraits(problem: MathProblem): ProblemDifficultyT
 }
 
 export function deriveCurriculumStep(problem: MathProblem): number {
+    // "5 + ? = 8" is exactly as hard as "5 + 3 = 8" -- the same bond, asked from
+    // the other end -- so it earns the same rung. Deriving it from the fact
+    // rather than from the authored `difficulty` keeps the step VERIFIED: an
+    // author cannot place a relational problem wherever they like.
+    const relational = parseRelationalPrompt(problem.prompt.text);
+    if (relational) {
+        return deriveAdditionStep(relational.known, relational.unknown);
+    }
+
     const parsed = parseArithmeticPrompt(problem.prompt.text);
     if (!parsed) {
         switch (problem.domain) {

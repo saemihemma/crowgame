@@ -11,7 +11,7 @@ import {
     reviewMaterializedMathBatches,
     type MaterializationResult,
 } from './math_authoring';
-import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt } from './math_verifier';
+import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt, isUnrecognisedEquation } from './math_verifier';
 import type { MathProblem } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
@@ -191,6 +191,20 @@ function validateMathAuthoringFiles(): void {
 }
 
 function validateProblemMetadata(problem: MathProblem, file: string): void {
+    // An equation whose shape nothing recognises must never reach the checks
+    // below, because both of them SKIP when the parse comes back empty -- so an
+    // unrecognised shape would ship with neither its answer nor its operands
+    // ever independently re-derived. Refuse it instead.
+    if (isUnrecognisedEquation(problem.prompt.text)) {
+        console.error(
+            `  FAIL: Problem ${problem.id} in ${file} is an equation whose unknown is not alone `
+            + `at the end ("${problem.prompt.text}"). Nothing can verify it. Teach `
+            + `parseRelationalPrompt in tools/math_verifier.ts its shape first.`,
+        );
+        errors++;
+        return;
+    }
+
     const evaluatedAnswer = evaluateArithmeticPrompt(problem.prompt.text);
     if (evaluatedAnswer !== null && problem.answer.correct !== evaluatedAnswer) {
         console.error(

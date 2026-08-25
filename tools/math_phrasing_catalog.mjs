@@ -425,6 +425,15 @@ export const TEMPLATES = {
     // ── explanations ──────────────────────────────────────────────────────
     'math.expl.add': '{a} plus {b} makes {sum}.',
     'math.expl.add_x': '{a} plus {b} makes {sum}!',
+
+    // Relational addition: the unknown is a PART, not the result. The prompts
+    // themselves ("5 + ? = 8") are wordless and need no template; only the
+    // teaching sentences do, and all three say the same thing three ways
+    // because the three shapes ask the same question from three positions.
+    'math.hint.rel.how_many_more': 'You have {known}. How many more to make {total}?',
+    'math.hint.rel.count_up': 'Something and {known} makes {total}. Start at {known} and count up to {total}.',
+    'math.hint.rel.other_part': '{total} is the whole, and {known} is one part. What is the other part?',
+    'math.expl.rel.parts': '{known} and {unknown} makes {total}.',
     'math.expl.sub': '{a} take away {b} leaves {diff}.',
     'math.expl.sub_x': '{a} take away {b} leaves {diff}!',
     'math.expl.sub_just': '{a} take away {b} leaves just {diff}!',
@@ -766,6 +775,16 @@ export const SEMANTICS = {
     // ── explanations ──────────────────────────────────────────────────────
     'math.expl.add': (p, problem) => holds(p.a + p.b === p.sum, `${p.a}+${p.b}=${p.sum}`)
         ?? isAnswer(p.sum, problem, 'sum'),
+    // The relational families are checked twice over: the parts must actually
+    // sum to the whole, AND the part the child is asked for must be the
+    // problem's answer. A hint that quietly names the wrong total is the exact
+    // failure this catalogue exists to prevent.
+    'math.hint.rel.how_many_more': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
+    'math.hint.rel.count_up': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
+    'math.hint.rel.other_part': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
+    'math.expl.rel.parts': (p, problem) => holds(p.known + p.unknown === p.total, `${p.known}+${p.unknown}=${p.total}`)
+        ?? isAnswer(p.unknown, problem, `the missing part ${p.unknown}`),
+
     'math.expl.add_x': (p, problem) => holds(p.a + p.b === p.sum, `${p.a}+${p.b}=${p.sum}`)
         ?? isAnswer(p.sum, problem, 'sum'),
     'math.expl.add_double': (p, problem) => holds(p.a + p.b === p.sum, `${p.a}+${p.b}=${p.sum}`)
