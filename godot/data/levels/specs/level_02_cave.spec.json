@@ -63,13 +63,13 @@
       "type": "platform",
       "x": 28,
       "width": 3,
-      "y": 12
+      "y": 13
     },
     {
       "type": "platform",
       "x": 32,
       "width": 3,
-      "y": 9
+      "y": 13
     },
     {
       "type": "ground",
@@ -107,13 +107,13 @@
       "type": "platform",
       "x": 55,
       "width": 4,
-      "y": 12
+      "y": 13
     },
     {
       "type": "platform",
       "x": 60,
       "width": 3,
-      "y": 9
+      "y": 13
     },
     {
       "type": "ground",
@@ -151,19 +151,19 @@
       "type": "platform",
       "x": 84,
       "width": 4,
-      "y": 12
+      "y": 13
     },
     {
       "type": "platform",
       "x": 89,
       "width": 3,
-      "y": 9
+      "y": 13
     },
     {
       "type": "platform",
       "x": 93,
       "width": 2,
-      "y": 12
+      "y": 13
     },
     {
       "type": "ground",
@@ -185,7 +185,7 @@
         "y": 16
       },
       {
-        "npc_id": "owl_teacher_01",
+        "npc_id": "owl_tough_01",
         "x": 70,
         "y": 16
       }
@@ -219,17 +219,17 @@
       {
         "type": "coin",
         "x": 29,
-        "y": 10
+        "y": 12
       },
       {
         "type": "coin",
         "x": 30,
-        "y": 10
+        "y": 12
       },
       {
         "type": "coin",
         "x": 33,
-        "y": 7
+        "y": 12
       },
       {
         "type": "coin",
@@ -249,17 +249,17 @@
       {
         "type": "coin",
         "x": 56,
-        "y": 10
+        "y": 12
       },
       {
         "type": "coin",
         "x": 57,
-        "y": 10
+        "y": 12
       },
       {
         "type": "coin",
         "x": 61,
-        "y": 7
+        "y": 12
       },
       {
         "type": "coin",
@@ -279,17 +279,17 @@
       {
         "type": "coin",
         "x": 85,
-        "y": 10
+        "y": 12
       },
       {
         "type": "coin",
         "x": 86,
-        "y": 10
+        "y": 12
       },
       {
         "type": "coin",
         "x": 90,
-        "y": 7
+        "y": 12
       },
       {
         "type": "coin",

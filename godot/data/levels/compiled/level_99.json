@@ -12300,7 +12300,7 @@
         },
         {
           "id": 2,
-          "name": "owl_twin_chain",
+          "name": "owl_gentle_01",
           "type": "npc",
           "x": 320,
           "y": 512,
@@ -12310,7 +12310,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_twin_chain"
+              "value": "owl_gentle_01"
             }
           ]
         },
@@ -12332,41 +12332,9 @@
         },
         {
           "id": 4,
-          "name": "owl_gentle_01",
-          "type": "npc",
-          "x": 960,
-          "y": 512,
-          "width": 64,
-          "height": 64,
-          "properties": [
-            {
-              "name": "npc_id",
-              "type": "string",
-              "value": "owl_gentle_01"
-            }
-          ]
-        },
-        {
-          "id": 5,
-          "name": "owl_teacher_01",
-          "type": "npc",
-          "x": 1280,
-          "y": 512,
-          "width": 64,
-          "height": 64,
-          "properties": [
-            {
-              "name": "npc_id",
-              "type": "string",
-              "value": "owl_teacher_01"
-            }
-          ]
-        },
-        {
-          "id": 6,
           "name": "owl_tough_01",
           "type": "npc",
-          "x": 1600,
+          "x": 960,
           "y": 512,
           "width": 64,
           "height": 64,
@@ -12379,10 +12347,26 @@
           ]
         },
         {
-          "id": 7,
+          "id": 5,
+          "name": "owl_twin_chain",
+          "type": "npc",
+          "x": 1280,
+          "y": 512,
+          "width": 64,
+          "height": 64,
+          "properties": [
+            {
+              "name": "npc_id",
+              "type": "string",
+              "value": "owl_twin_chain"
+            }
+          ]
+        },
+        {
+          "id": 6,
           "name": "owl_teacher_01",
           "type": "npc",
-          "x": 1920,
+          "x": 1600,
           "y": 512,
           "width": 64,
           "height": 64,
@@ -12395,10 +12379,10 @@
           ]
         },
         {
-          "id": 8,
+          "id": 7,
           "name": "owl_triple_chain",
           "type": "npc",
-          "x": 2240,
+          "x": 1920,
           "y": 512,
           "width": 64,
           "height": 64,
@@ -12411,8 +12395,24 @@
           ]
         },
         {
+          "id": 8,
+          "name": "owl_gentle_01",
+          "type": "npc",
+          "x": 2240,
+          "y": 512,
+          "width": 64,
+          "height": 64,
+          "properties": [
+            {
+              "name": "npc_id",
+              "type": "string",
+              "value": "owl_gentle_01"
+            }
+          ]
+        },
+        {
           "id": 9,
-          "name": "owl_teacher_01",
+          "name": "owl_gauntlet",
           "type": "npc",
           "x": 2560,
           "y": 512,
@@ -12422,13 +12422,13 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_gauntlet"
             }
           ]
         },
         {
           "id": 10,
-          "name": "owl_twin_chain",
+          "name": "owl_gentle_01",
           "type": "npc",
           "x": 2880,
           "y": 512,
@@ -12438,7 +12438,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_twin_chain"
+              "value": "owl_gentle_01"
             }
           ]
         },
@@ -12460,41 +12460,9 @@
         },
         {
           "id": 12,
-          "name": "owl_gentle_01",
-          "type": "npc",
-          "x": 3520,
-          "y": 512,
-          "width": 64,
-          "height": 64,
-          "properties": [
-            {
-              "name": "npc_id",
-              "type": "string",
-              "value": "owl_gentle_01"
-            }
-          ]
-        },
-        {
-          "id": 13,
-          "name": "owl_teacher_01",
-          "type": "npc",
-          "x": 3840,
-          "y": 512,
-          "width": 64,
-          "height": 64,
-          "properties": [
-            {
-              "name": "npc_id",
-              "type": "string",
-              "value": "owl_teacher_01"
-            }
-          ]
-        },
-        {
-          "id": 14,
           "name": "owl_tough_01",
           "type": "npc",
-          "x": 4160,
+          "x": 3520,
           "y": 512,
           "width": 64,
           "height": 64,
@@ -12507,10 +12475,26 @@
           ]
         },
         {
-          "id": 15,
+          "id": 13,
+          "name": "owl_twin_chain",
+          "type": "npc",
+          "x": 3840,
+          "y": 512,
+          "width": 64,
+          "height": 64,
+          "properties": [
+            {
+              "name": "npc_id",
+              "type": "string",
+              "value": "owl_twin_chain"
+            }
+          ]
+        },
+        {
+          "id": 14,
           "name": "owl_teacher_01",
           "type": "npc",
-          "x": 4480,
+          "x": 4160,
           "y": 512,
           "width": 64,
           "height": 64,
@@ -12523,10 +12507,10 @@
           ]
         },
         {
-          "id": 16,
+          "id": 15,
           "name": "owl_triple_chain",
           "type": "npc",
-          "x": 4800,
+          "x": 4480,
           "y": 512,
           "width": 64,
           "height": 64,
@@ -12539,8 +12523,24 @@
           ]
         },
         {
+          "id": 16,
+          "name": "owl_gentle_01",
+          "type": "npc",
+          "x": 4800,
+          "y": 512,
+          "width": 64,
+          "height": 64,
+          "properties": [
+            {
+              "name": "npc_id",
+              "type": "string",
+              "value": "owl_gentle_01"
+            }
+          ]
+        },
+        {
           "id": 17,
-          "name": "owl_teacher_01",
+          "name": "owl_gauntlet",
           "type": "npc",
           "x": 5120,
           "y": 512,
@@ -12550,13 +12550,13 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_gauntlet"
             }
           ]
         },
         {
           "id": 18,
-          "name": "owl_twin_chain",
+          "name": "owl_gentle_01",
           "type": "npc",
           "x": 5440,
           "y": 512,
@@ -12566,7 +12566,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_twin_chain"
+              "value": "owl_gentle_01"
             }
           ]
         },
@@ -12588,7 +12588,7 @@
         },
         {
           "id": 20,
-          "name": "owl_gentle_01",
+          "name": "owl_tough_01",
           "type": "npc",
           "x": 6080,
           "y": 512,
@@ -12598,13 +12598,13 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_gentle_01"
+              "value": "owl_tough_01"
             }
           ]
         },
         {
           "id": 21,
-          "name": "owl_teacher_01",
+          "name": "owl_twin_chain",
           "type": "npc",
           "x": 6240,
           "y": 512,
@@ -12614,7 +12614,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_teacher_01"
+              "value": "owl_twin_chain"
             }
           ]
         },

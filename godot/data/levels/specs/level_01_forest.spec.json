@@ -44,7 +44,7 @@
       "type": "platform",
       "x": 22,
       "width": 4,
-      "y": 12
+      "y": 13
     },
     {
       "type": "ground",
@@ -101,13 +101,13 @@
       "type": "platform",
       "x": 66,
       "width": 3,
-      "y": 12
+      "y": 13
     },
     {
       "type": "platform",
       "x": 70,
       "width": 3,
-      "y": 9
+      "y": 13
     },
     {
       "type": "ground",
@@ -149,7 +149,7 @@
     },
     "npcs": [
       {
-        "npc_id": "owl_teacher_01",
+        "npc_id": "owl_gentle_01",
         "x": 24,
         "y": 16
       },
@@ -188,7 +188,7 @@
       {
         "type": "coin",
         "x": 23,
-        "y": 10
+        "y": 12
       },
       {
         "type": "coin",
@@ -223,12 +223,12 @@
       {
         "type": "coin",
         "x": 67,
-        "y": 10
+        "y": 12
       },
       {
         "type": "coin",
         "x": 71,
-        "y": 7
+        "y": 12
       },
       {
         "type": "coin",
