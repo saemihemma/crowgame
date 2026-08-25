@@ -164,3 +164,52 @@ func test_the_owl_can_actually_serve_a_relational_problem() -> void:
 			reachable += 1
 	assert_true(reachable > 0,
 		"a fresh learner can be served at least one relational problem (found %d)" % reachable)
+
+
+## The rungs no problem can ever land on.
+##
+## `subtraction` steps 17-20 and `addition` step 20 hold nothing, and the reason
+## is not that nobody authored them: no fact whose operands and result stay
+## inside twenty derives onto them at all. Step 21 upward is magnitude-derived,
+## so those rungs belong to numbers the owl's cap of 20 drops anyway.
+##
+## That makes them harmless ONLY because promotion steps over a rung with no
+## content, and only while the next rung that HAS content is inside
+## `promotionStepScanLimit`. Both halves are asserted here, because "harmless"
+## was an assumption until something checked it.
+const IMPOSSIBLE_RUNGS := {"subtraction": [17, 18, 19, 20], "addition": [20]}
+
+func _problems_on(domain: String, step: int) -> int:
+	var n := 0
+	for problem: Variant in DataManager.get_all_math_problems():
+		if String(problem.get("domain", "")) == domain and int(problem.get("curriculumStep", -1)) == step:
+			n += 1
+	return n
+
+func test_the_impossible_rungs_are_still_empty() -> void:
+	# If one of these ever fills, the derivation changed and the declaration in
+	# concept_ladder.json is now a lie. The concept guard says so too; this says
+	# it from inside the game.
+	for domain: String in IMPOSSIBLE_RUNGS:
+		for step: Variant in IMPOSSIBLE_RUNGS[domain]:
+			assert_eq(_problems_on(domain, int(step)), 0,
+				"%s step %d is structurally unreachable and still empty" % [domain, int(step)])
+
+func test_promotion_can_step_over_every_impossible_rung() -> void:
+	var tuning: Dictionary = DataManager.get_dict("MATH_TUNING").get("ladder", {})
+	var scan := int(tuning.get("promotionStepScanLimit", 20))
+	assert_true(scan > 0, "there is a scan limit to test against")
+	for domain: String in IMPOSSIBLE_RUNGS:
+		var holes: Array = IMPOSSIBLE_RUNGS[domain]
+		var from: int = int(holes[0]) - 1
+		# The rung a child sits on before the hole must have somewhere to go.
+		var landed := -1
+		for step in range(from + 1, from + scan + 1):
+			if _problems_on(domain, step) > 0:
+				landed = step
+				break
+		assert_true(landed > from,
+			"%s promotion from step %d finds content within %d steps (landed on %d)" % [domain, from, scan, landed])
+		# And it must clear the whole hole, not stop inside it.
+		assert_true(not holes.has(landed),
+			"%s promotion from step %d clears the hole entirely, landing on %d" % [domain, from, landed])

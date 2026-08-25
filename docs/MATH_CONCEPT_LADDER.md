@@ -378,11 +378,17 @@ Every gap and every unreachable concept below is quoted from its declaration in
 `concept_ladder.json`. `tools/validate_math_concepts.mjs` checks that this
 document carries each reason, so the two cannot drift apart.
 
+Note the distinction the list draws, because it changes what the fix is: some
+rungs are **unauthored** and can be filled by writing problems, and some are
+**structurally impossible** — no fact inside the age band derives onto them, so
+only changing the step derivation would close them. The second kind is harmless,
+and a test rather than an assertion says so.
+
 **Rungs with no problems authored on them**
 
-- **`addition` step 20.** The bridge from the teens to two-digit addition. Nothing generates a sum whose largest operand is exactly 20, so a child promoting off step 19 skips straight to 21.
+- **`addition` step 20.** STRUCTURALLY IMPOSSIBLE, not unauthored. No fact whose operands and result stay inside twenty derives onto step 20 at all: the rung needs maxOperand 20 WITH a carry, and 20's ones digit is zero, so no second addend can carry into it. Harmless because promotion scans ahead for a rung with content and lands on 21 - asserted by test_concept_ladder.gd::test_promotion_can_step_over_every_impossible_rung. Closing it would mean changing the step derivation, not authoring problems.
 - **`addition` steps 37, 38, 39, 40.** The gap between two-digit and multi-digit addition. Step 21 upward is magnitude-derived (21 + floor((maxOperand-21)/5)), so these four rungs are operands 101-120 - three-digit sums below 121 - and the multi-digit batches start at 121. Out of the owl path either way, since the operand cap is 20.
-- **`subtraction` steps 17, 18, 19, 20.** Four consecutive empty rungs between the teens and the twenties - the widest hole inside the owl-safe band. A child leaving step 16 lands on 21 with no intermediate practice at all.
+- **`subtraction` steps 17, 18, 19, 20.** STRUCTURALLY IMPOSSIBLE, not unauthored - the same finding as addition step 20, four rungs wide. Zero facts with operands and result inside twenty derive onto steps 17-20; everything that would reach them needs operands above 20, which the owl's cap drops anyway. Promotion steps from 16 straight to 21, well inside promotionStepScanLimit, and a test asserts it. This was previously recorded as authoring debt. It is not.
 - **`subtraction` steps 37, 38, 39, 40.** The same magnitude gap as addition, for the same reason: the multi-digit batches begin above operand 120 and nothing fills 101-120.
 - **`number_sequence` step 0.** The ladder's own first rung. Sequences start at step 1, so the gentlest possible sequence - counting on from a single number - has never been authored.
 - **`multiplication` step 11.** One rung inside the tables, skipped by the batch bands. The neighbours are dense (steps 10 and 12 both hold problems), so a promotion through 11 lands on content; it is a hole in the inventory rather than in a child's path.
@@ -393,7 +399,7 @@ document carries each reason, so the two cannot drift apart.
 
 - **`addition` step 0.** Five problems: 0+1, 1+0, 1+1 and their wordings. The set of true facts with both operands at most one is genuinely almost this small.
 - **`subtraction` step 2.** Five problems. Narrow but serviceable.
-- **`subtraction` step 15.** One problem: 20 - 10. The step derivation only yields this shape at maxOperand 20, so the rung exists as a formality.
+- **`subtraction` step 15.** Three facts exist and three is the ceiling: 20-0, 20-10 and 20-20 are the only subtractions inside twenty that derive onto step 15. One is authored. Structurally thin rather than under-authored.
 - **`number_sequence` steps 1, 3.** Two problems each. The first +1 and first +2 sequences are the two thinnest rungs a child actually meets.
 
 **Concepts no child can currently be served**
@@ -408,8 +414,6 @@ that the cap drops entirely:
 - **`subtraction.borrowing`.** Same cap as its neighbour. Nothing in steps 30-36 has an operand at or below 20.
 - **`addition.multi_digit`.** Every problem here has an operand between 121 and 4788 and the owl caps at 20. Authored for a wider audience than the owl currently serves; carries tutorial: null on purpose, because a lesson for content no child can reach is waste.
 - **`subtraction.multi_digit`.** Same as addition.multi_digit: operands far above the cap, tutorial deliberately absent.
-- **`division.tables`.** All 100 problems blocked, and NOT because the facts are hard. Division's maxOperand is max(dividend, divisor, quotient), so 24 / 3 reports 24 and fails a cap of 20 - even though a child fluent to twenty can do it, and the multiplication fact 3 x 8 that answers it IS servable. The cap treats a dividend like an addend. Deciding whether that derivation is right for division is roadmap work, not a declaration.
-- **`division.larger`.** Same derivation problem, one band up: 15 problems, none servable.
 
 Authoring against these gaps is [MATH_AUTHORING_PIPELINE.md](./MATH_AUTHORING_PIPELINE.md);
 `roadmap.md` carries them as open work.

@@ -32,9 +32,9 @@
       "addition",
       "counting"
     ],
-    "owlEligibleProblemCount": 1790,
-    "owlEligibleUniquePromptCount": 1790,
-    "owlEligibleUniqueFactCount": 686,
+    "owlEligibleProblemCount": 1843,
+    "owlEligibleUniquePromptCount": 1843,
+    "owlEligibleUniqueFactCount": 707,
     "domainCounts": {
       "addition": 468,
       "counting": 125,
@@ -43,7 +43,7 @@
       "comparison": 125,
       "number_sequence": 125,
       "multiplication": 217,
-      "division": 79
+      "division": 132
     },
     "openingUnlockedInventoryProblemCount": 593,
     "openingUnlockedInventoryUniquePromptCount": 593,
@@ -3343,9 +3343,9 @@
       "steadyFirstSubtractionSelectionAttempt": -1,
       "strugglingFirstSubtractionSelectionAttempt": -1,
       "depthProbeFirstSubtractionSelectionAttempt": 68,
-      "owlEligibleProblemCount": 1790,
-      "owlEligibleUniquePromptCount": 1790,
-      "owlEligibleUniqueFactCount": 686,
+      "owlEligibleProblemCount": 1843,
+      "owlEligibleUniquePromptCount": 1843,
+      "owlEligibleUniqueFactCount": 707,
       "openingUnlockedInventoryProblemCount": 593,
       "openingUnlockedInventoryUniquePromptCount": 593,
       "openingUnlockedInventoryUniqueFactCount": 163,
@@ -3385,7 +3385,7 @@
     "caveats": [
       "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
       "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1790 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1843 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
     ]
   }
 }

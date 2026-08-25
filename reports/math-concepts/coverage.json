@@ -1501,7 +1501,7 @@
         "division_word_problems",
         "simple_division"
       ],
-      "servable": 108
+      "servable": 268
     },
     {
       "id": "division.tables",
@@ -1555,7 +1555,7 @@
         "division_word_problems",
         "simple_division"
       ],
-      "servable": 0
+      "servable": 62
     },
     {
       "id": "division.larger",
@@ -1581,7 +1581,7 @@
       "skillsDeclared": [
         "division_two_digit"
       ],
-      "servable": 0
+      "servable": 6
     }
   ],
   "skillDrift": []

@@ -1671,7 +1671,7 @@
       "generator": null,
       "curriculumStep": 6,
       "difficultyTraits": {
-        "maxOperand": 24
+        "maxOperand": 6
       },
       "phrasing": {
         "hint": {
@@ -2034,7 +2034,7 @@
       "generator": null,
       "curriculumStep": 4,
       "difficultyTraits": {
-        "maxOperand": 30
+        "maxOperand": 6
       },
       "phrasing": {
         "hint": {
@@ -2077,7 +2077,7 @@
       "generator": null,
       "curriculumStep": 4,
       "difficultyTraits": {
-        "maxOperand": 35
+        "maxOperand": 7
       },
       "phrasing": {
         "hint": {
@@ -2385,7 +2385,7 @@
       "generator": null,
       "curriculumStep": 8,
       "difficultyTraits": {
-        "maxOperand": 36
+        "maxOperand": 6
       },
       "phrasing": {
         "hint": {
@@ -2428,7 +2428,7 @@
       "generator": null,
       "curriculumStep": 9,
       "difficultyTraits": {
-        "maxOperand": 42
+        "maxOperand": 7
       },
       "phrasing": {
         "hint": {

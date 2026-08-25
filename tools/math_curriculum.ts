@@ -46,8 +46,12 @@ export function deriveDifficultyTraits(problem: MathProblem): ProblemDifficultyT
     }
 
     if (parsed.operator === '\u00F7') {
+        // Divisor and quotient, not the dividend -- see the long note beside the
+        // same rule in tools/math_verifier.ts. These two must agree, because
+        // validate-content checks the authored traits against one and the
+        // materializer stamps them from the other.
         return {
-            maxOperand: Math.max(parsed.left, parsed.right, evaluateArithmeticPrompt(problem.prompt.text) ?? 0),
+            maxOperand: Math.max(parsed.right, evaluateArithmeticPrompt(problem.prompt.text) ?? 0),
         };
     }
 

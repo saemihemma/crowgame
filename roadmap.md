@@ -42,32 +42,6 @@ there.
 
 ## P1 — Correctness and reachability
 
-### Division went live but the operand cap blocks 72% of it
-`multiplication` and `division` are now in the owl's `problemTypes`, and
-multiplication works: 531 of its 588 problems are servable, because
-`deriveDifficultyTraits` reports `maxOperand` as `max(left, right)` and `9 x 8`
-is a nine.
-
-Division is not. Its traits use `max(dividend, divisor, quotient)`, so
-`24 / 3 = 8` reports **24** and fails the cap of 20 — even though a child fluent
-to twenty can do it, and the multiplication fact `3 x 8` that answers it IS
-served. Only 108 of 383 division problems get through, and
-`division.tables` (100 problems) and `division.larger` (15) are blocked
-entirely; both are declared in `knownUnreachable`.
-
-The decision is which number represents division's difficulty. The dividend is
-the largest but arguably the least demanding — the quotient is what the child
-produces and the divisor is what they reason with. Changing it means
-`deriveVerifiedDifficultyTraits` and `deriveDifficultyTraits` in
-`tools/math_verifier.ts` / `tools/math_curriculum.ts`, re-deriving traits and
-steps for all 383 division problems, and re-checking the two `knownUnreachable`
-entries. Do NOT raise the cap instead: it is the age band, and the comment at
-`math_challenge_component.gd` says why.
-
-*Done when:* division's difficulty is derived from a number that reflects what
-the child actually does, and `division.tables` is either reachable or
-unreachable on purpose rather than by accident.
-
 ### Two-sided equations are refused by the verifier, so the hardest form cannot be authored
 `4 + 5 = ? + 6` -- an operation on BOTH sides -- is the shape Falkner, Levi and
 Carpenter actually tested, and the most diagnostic one: a child reading `=` as
@@ -136,27 +110,29 @@ both, and doing subtraction first means writing the parser twice.
 *Done when:* subtraction has at least one overlay with a lesson and authored
 problems that verify.
 
-### Fill the four-rung subtraction hole, steps 17-20
-`godot/data/curriculum/concept_ladder.json` declares it, and
-`tools/validate_math_concepts.mjs` fails the build if it silently closes or
-widens. It sits inside `subtraction.tens_and_ones`, inside the owl-safe band, so
-a child leaving step 16 lands on step 21 with nothing in between. Author against
-`docs/MATH_AUTHORING_PIPELINE.md`; `subtraction` step 15 also holds exactly one
-problem (`20 - 10`) and wants filling in the same pass. Delete the `knownGaps`
-and `knownThin` entries when they close — the guard requires it.
+### The step derivation cannot express five rungs, and nobody decided that
+`subtraction` steps 17-20 and `addition` step 20 hold nothing, and it is not
+authoring debt: no fact whose operands and result stay inside twenty derives
+onto them at all. Addition step 20 needs maxOperand 20 with a carry, and 20's
+ones digit is zero, so nothing can carry into it. Subtraction 17-20 need
+operands above twenty, which the owl's cap drops.
 
-*Done when:* steps 15 and 17-20 each hold at least six authored subtraction
-problems and their ladder entries are gone.
+They are harmless today. `_find_next_step_with_content` scans ahead and lands on
+21, and `test_concept_ladder.gd::test_promotion_can_step_over_every_impossible_rung`
+asserts it, so no child stalls. `subtraction` step 15 is the same shape one notch
+softer: exactly three facts inside twenty derive onto it, so three is its
+ceiling.
 
-### Fill addition step 20
-Same shape, one rung wide: nothing generates a sum whose largest operand is
-exactly 20, so a child promoting off `addition.bridge_ten` skips straight to
-step 21. Also inside the owl-safe band. `addition` step 0 is thin at five
-problems, which is close to the real number of true facts with both operands at
-most one — decide whether that one is worth widening or is simply the floor.
+The open question is whether a magnitude-derived ladder with holes in it is the
+right shape at all, or whether `deriveAdditionStep` and `deriveSubtractionStep`
+should produce a dense sequence. Dense numbering would make "step 12 of 20" mean
+something to a parent report and would remove five permanent exceptions from
+`concept_ladder.json`. It would also renumber every problem in the pools and
+move every concept range, so it is not a small change and it is not urgent.
 
-*Done when:* step 20 holds at least six problems and its `knownGaps` entry is
-deleted.
+*Done when:* either the derivation produces no unreachable rungs, or a decision
+is written down that magnitude-derived numbering with declared holes is the
+intended shape.
 
 ### Tune the ladder against real play, not intuition
 The admin session report tags accuracy against the 70-85% sweet spot. After a

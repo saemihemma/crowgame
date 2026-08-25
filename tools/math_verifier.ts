@@ -184,8 +184,21 @@ export function deriveVerifiedDifficultyTraits(problem: MathProblem): ProblemDif
 
     if (parsed.operator === '\u00F7') {
         const evaluated = evaluateArithmeticPrompt(problem.prompt.text);
+        // Divisor and quotient, NOT the dividend.
+        //
+        // The dividend is the largest number in a division but the least
+        // demanding: in 24 / 3 = 8 the child reasons with the 3 and produces the
+        // 8, and the 24 is just the product they already have. Counting it made
+        // 24 / 3 read as a twenty-four, so the owl's cap of 20 dropped it --
+        // while the multiplication fact 3 x 8 that answers it sailed through at
+        // maxOperand 8. Same fact, two verdicts.
+        //
+        // deriveCurriculumStep has always agreed with this: it calls
+        // deriveDivisionStep(divisor, quotient) and never looks at the dividend.
+        // The traits were the odd one out, and 275 of 383 division problems were
+        // unreachable because of it.
         return {
-            maxOperand: Math.max(parsed.left, parsed.right, evaluated ?? 0),
+            maxOperand: Math.max(parsed.right, evaluated ?? 0),
         };
     }
 

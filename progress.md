@@ -413,3 +413,56 @@ Original prompt: implement the highest-value absence the hardening review found 
   errors, main's analytics catalog regenerated with its own tool, and main's
   server suite still green (18 pass, 0 fail; the Postgres-backed cases need a
   DATABASE_URL this environment does not have).
+
+## 2026-08-25 - Division reachability, and five rungs that were never fillable
+
+Original prompt: fix the division cap, the four-rung subtraction hole and addition step 20.
+
+- DIVISION WAS A BUG, not a decision, and the codebase already said so.
+  `deriveCurriculumStep` calls `deriveDivisionStep(divisor, quotient)` and has
+  never looked at the dividend, while `deriveDifficultyTraits` reported
+  `maxOperand` as `max(dividend, divisor, quotient)`. So `24 / 3` read as a
+  twenty-four and the owl's cap of 20 dropped it, while the multiplication fact
+  `3 x 8` that answers it sailed through at eight. Same fact, two verdicts.
+  Fixed to `max(divisor, quotient)` in both derivations. Division servability
+  went 108 -> 336 of 383 problems, and `division.tables` and `division.larger`
+  came off `knownUnreachable` - the guard demanded it, which is the discipline
+  working in the closing direction for once.
+- Checked first that this was not Tier-1: the golden fixtures contain no
+  `difficultyTraits` and no `maxOperand` at all, so the change is offline tooling
+  plus a re-derive, and `validate-content` re-checks every stamped trait.
+- THE OTHER TWO ITEMS TURNED OUT TO BE IMPOSSIBLE, and I nearly authored 24
+  problems before finding out. My first enumeration reimplemented the step
+  formula from memory and reported 20-21 available facts per rung. Calling the
+  REAL `deriveCurriculumStep` instead reported zero. Main had rewritten those
+  ladders; my copy of the formula was stale.
+- The truth: no fact whose operands and result stay inside twenty derives onto
+  `subtraction` steps 17-20 or `addition` step 20. Addition step 20 needs
+  maxOperand 20 WITH a carry, and 20's ones digit is zero, so nothing can carry
+  into it. Subtraction 17-20 need operands above twenty, which the cap drops
+  anyway. `subtraction` step 15 has exactly three possible facts, so three is its
+  ceiling rather than a shortfall.
+- So the fix was not authoring. It was: correct three declarations that recorded
+  authoring debt where there is none, and turn "harmless" from an assertion into
+  a test.
+  `test_promotion_can_step_over_every_impossible_rung` asserts that the rung
+  before each hole finds content within `promotionStepScanLimit` and that the
+  landing step clears the hole entirely - so subtraction goes 16 -> 21 and
+  addition 19 -> 21, and no child stalls.
+  `test_the_impossible_rungs_are_still_empty` fails if the derivation ever
+  changes underneath the declaration.
+- roadmap.md: the division entry is deleted because it is done. The two
+  "fill this hole" entries are replaced by the question they actually turned out
+  to be - whether a magnitude-derived ladder with permanent holes is the right
+  shape, or whether the derivation should produce a dense sequence. Dense
+  numbering would make "step 12 of 20" mean something in a parent report and
+  remove five permanent exceptions, at the cost of renumbering every problem.
+  Not small, not urgent, and now written down instead of assumed.
+- The ladder doc now marks which gaps are UNAUTHORED and which are
+  STRUCTURALLY IMPOSSIBLE, because the two need completely different fixes and
+  the previous list read as though every one of them was waiting for someone to
+  write problems.
+- Verified: 182 Godot tests, 6 probes, all guards, npm run validate, typecheck,
+  live build rebuilt and boot-smoked with zero console errors, analytics catalog
+  regenerated, server suite green (18 pass / 0 fail; Postgres-backed cases need a
+  DATABASE_URL this environment lacks).

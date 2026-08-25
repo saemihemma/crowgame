@@ -12,7 +12,7 @@
       "steps": [
         20
       ],
-      "why": "The bridge from the teens to two-digit addition. Nothing generates a sum whose largest operand is exactly 20, so a child promoting off step 19 skips straight to 21."
+      "why": "STRUCTURALLY IMPOSSIBLE, not unauthored. No fact whose operands and result stay inside twenty derives onto step 20 at all: the rung needs maxOperand 20 WITH a carry, and 20's ones digit is zero, so no second addend can carry into it. Harmless because promotion scans ahead for a rung with content and lands on 21 - asserted by test_concept_ladder.gd::test_promotion_can_step_over_every_impossible_rung. Closing it would mean changing the step derivation, not authoring problems."
     },
     {
       "domain": "addition",
@@ -32,7 +32,7 @@
         19,
         20
       ],
-      "why": "Four consecutive empty rungs between the teens and the twenties - the widest hole inside the owl-safe band. A child leaving step 16 lands on 21 with no intermediate practice at all."
+      "why": "STRUCTURALLY IMPOSSIBLE, not unauthored - the same finding as addition step 20, four rungs wide. Zero facts with operands and result inside twenty derive onto steps 17-20; everything that would reach them needs operands above 20, which the owl's cap drops anyway. Promotion steps from 16 straight to 21, well inside promotionStepScanLimit, and a test asserts it. This was previously recorded as authoring debt. It is not."
     },
     {
       "domain": "subtraction",
@@ -99,14 +99,6 @@
     {
       "concept": "subtraction.multi_digit",
       "why": "Same as addition.multi_digit: operands far above the cap, tutorial deliberately absent."
-    },
-    {
-      "concept": "division.tables",
-      "why": "All 100 problems blocked, and NOT because the facts are hard. Division's maxOperand is max(dividend, divisor, quotient), so 24 / 3 reports 24 and fails a cap of 20 - even though a child fluent to twenty can do it, and the multiplication fact 3 x 8 that answers it IS servable. The cap treats a dividend like an addend. Deciding whether that derivation is right for division is roadmap work, not a declaration."
-    },
-    {
-      "concept": "division.larger",
-      "why": "Same derivation problem, one band up: 15 problems, none servable."
     }
   ],
   "knownThin": [
@@ -129,7 +121,7 @@
       "steps": [
         15
       ],
-      "why": "One problem: 20 - 10. The step derivation only yields this shape at maxOperand 20, so the rung exists as a formality."
+      "why": "Three facts exist and three is the ceiling: 20-0, 20-10 and 20-20 are the only subtractions inside twenty that derive onto step 15. One is authored. Structurally thin rather than under-authored."
     },
     {
       "domain": "number_sequence",
