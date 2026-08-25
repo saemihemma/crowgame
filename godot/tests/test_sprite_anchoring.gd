@@ -15,9 +15,6 @@ extends TestCase
 ## Placement of the entity itself — nothing standing inside the ground — is
 ## test_entity_placement.gd. This is only about where the frame sits on the node.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _sink() -> float:
 	return SpriteSheet.grounding_sink()

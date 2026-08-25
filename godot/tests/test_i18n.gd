@@ -2,9 +2,6 @@ extends TestCase
 ## Phase 0.5: i18n integrity — Icelandic mirrors English key-for-key (lockstep),
 ## locale switching resolves through the active locale with English fallback.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _load(path: String) -> Dictionary:
 	var f := FileAccess.open(path, FileAccess.READ)

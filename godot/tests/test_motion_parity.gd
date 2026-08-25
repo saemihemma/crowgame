@@ -9,9 +9,6 @@ const TOL := 1e-6
 var _fix: Dictionary = {}
 var _tuning: Dictionary = {}
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 	if _fix.is_empty():
 		var f := FileAccess.open(FIX_PATH, FileAccess.READ)
 		_fix = JSON.parse_string(f.get_as_text())

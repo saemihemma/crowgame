@@ -3,9 +3,6 @@ extends TestCase
 ## render settings the game requires. These were originally mirrored from the
 ## Phaser config; they are now the source of truth in their own right.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func test_viewport_is_960x540() -> void:
 	assert_eq(int(ProjectSettings.get_setting("display/window/size/viewport_width")), 960, "viewport width")

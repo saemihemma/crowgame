@@ -2,9 +2,6 @@ extends TestCase
 ## Phase 0.5: data-driven registries resolve correctly — scene routing, spawn
 ## types, and sound events all point at things that actually exist.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _root() -> Node:
 	return Engine.get_main_loop().root

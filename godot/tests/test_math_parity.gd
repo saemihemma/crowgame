@@ -9,9 +9,6 @@ const ELO_TOL := 1e-6  # float tolerance: pow()/libm may differ by <1 ULP across
 
 var _fix: Dictionary = {}
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 	if _fix.is_empty():
 		var f := FileAccess.open(FIX_PATH, FileAccess.READ)
 		_fix = JSON.parse_string(f.get_as_text())

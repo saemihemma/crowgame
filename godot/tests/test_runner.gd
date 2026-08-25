@@ -35,9 +35,8 @@ func _run() -> void:
 			var mname: String = method.name
 			if not mname.begins_with("test_"):
 				continue
-			if instance.has_method("_reset"):
-				instance.call("_reset")
 			var before: int = instance.failures().size()
+			var asserts_before: int = instance.assertion_count()
 			# AWAITED, deliberately. `instance.call(mname)` alone returns at the
 			# test's first `await`, so the failure count below was read before the
 			# rest of the test had run -- every assertion after a frame boundary
@@ -50,6 +49,17 @@ func _run() -> void:
 			@warning_ignore("redundant_await")
 			await instance.call(mname)
 			var after: int = instance.failures().size()
+
+			# A test that asserts NOTHING passes, and looks identical to one that
+			# works. This repo has already been bitten by exactly that: the
+			# `await` note above describes five tests across three suites that
+			# ran their assertions after a frame boundary and were counted as
+			# passing while proving nothing. Reported, not failed, so a suite
+			# that is legitimately structural stays green while the vacuum is
+			# still visible in the log.
+			if instance.assertion_count() == asserts_before:
+				print("  [vacuous] %s::%s asserted nothing" % [suite_name, mname])
+
 			if after > before:
 				total_fail += 1
 				print("  [FAIL] %s::%s" % [suite_name, mname])

@@ -2,9 +2,6 @@ extends TestCase
 ## Slice 7c: abilities framework — defs load, grant/revoke toggles state and
 ## emits EventBus signals.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func test_defs_loaded() -> void:
 	var am := AbilityManager.new()

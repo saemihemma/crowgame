@@ -115,7 +115,19 @@ field is declared in `src/utils/Types.ts` and read by nothing.
 
 *Done when:* both are removed, or something actually uses them.
 
-### `theme_forest` and `theme_scifi` are kept alive only by the Godot tests
+### `theme_forest` and `theme_scifi` are now referenced by nothing but their own registration
+
+The test dependency is gone. `test_theme_roles.gd` used to assert role
+completeness on these two skins **and only these two**, leaving the five shipped
+worlds unchecked, and `test_theme_swap.gd` swapped between them to exercise
+ThemeManager. Both now use world themes, so the circular "kept alive only by the
+tests" argument no longer holds: no level selects either skin, `DEFAULT_THEME_ID`
+is `emberwood`, and the only remaining references are `THEME_KEYS` in
+`theme_manager.gd`, `PATHS` in `data_manager.gd`, and the two JSON files.
+
+Deleting them is now four small edits with no test to rewrite first. It touches
+`godot/data/**` and `godot/scripts/**`, so it wants an export rebuild — fold it
+in with the sweep at the end of P4.
 
 `scifi` also fails the colour law: its hazard pair clears `ground_lit` at only
 2.84 against the 3.0 floor, so a spike is not reliably distinguishable from the

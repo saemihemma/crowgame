@@ -4,9 +4,6 @@ extends TestCase
 
 const OWL_DOMAINS := ["addition", "counting", "pattern_matching", "subtraction", "comparison", "number_sequence"]
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _fresh() -> void:
 	ELOManager.initialize(null)

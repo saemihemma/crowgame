@@ -27,9 +27,6 @@ const SAFE_MARGIN := 32.0
 ## device, which means the bottom corners - not the middle of the screen.
 const THUMB_BAND := 0.45
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _mounted() -> CanvasLayer:
 	var controls: CanvasLayer = TOUCH_SCENE.instantiate()

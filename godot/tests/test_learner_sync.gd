@@ -4,9 +4,6 @@ extends TestCase
 
 const CHILD := "test-child-sync"
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 	Persistence.remove_item("crow_learner_api_base")
 	Persistence.remove_item("crow_learner_snapshot_%s" % CHILD)
 	Persistence.remove_item("crow_learner_pending_attempts_%s" % CHILD)

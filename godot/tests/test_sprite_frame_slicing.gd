@@ -12,9 +12,6 @@ extends TestCase
 ## Sizes here are driven past what the project ships, because a test that only
 ## ever sees 32 cannot tell a derived value from a hardcoded one.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _spec_size(cls: String) -> Vector2i:
 	var c: Dictionary = DataManager.get_dict("SPRITE_SPEC").get("classes", {}).get(cls, {})
