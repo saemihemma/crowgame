@@ -87,6 +87,11 @@
     "child_font_size": 30,
     "body_font_size": 22,
     "button_width": 320,
-    "button_height": 64
+    "button_height": 64,
+    "accuracy_good_min": 0.85,
+    "accuracy_ok_min": 0.7,
+    "accuracy_color_good": "#2e9e4f",
+    "accuracy_color_ok": "#c98500",
+    "accuracy_color_low": "#d05353"
   }
 }

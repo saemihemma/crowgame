@@ -146,7 +146,9 @@ substrate for any future server-authoritative reducer.
 
 ## Endpoints
 
-`POST /api/v1/errors` is anonymous. Everything else requires the device cookie.
+`POST /api/v1/errors` is anonymous. The admin surface uses a single bearer
+token (`CROW_ADMIN_TOKEN`; unset = every admin route answers 404) sent only in
+the Authorization header. Everything else requires the device cookie.
 
 | Method | Path | Auth | Purpose |
 | --- | --- | --- | --- |
@@ -165,6 +167,11 @@ substrate for any future server-authoritative reducer.
 | `POST` | `/api/v1/attempts/sync` | device | batch attempts, returns applied ids |
 | `DELETE` | `/api/v1/family` | device | hard delete, cascade |
 | `GET` | `/api/v1/family/export` | device | full data export |
+| `GET` | `/api/v1/family/children/{id}/report` | device | parent report: per-domain, per-kind accuracy rollup |
+| `GET` | `/api/v1/admin/overview` | admin bearer | owner KPIs: DAU, retention, sessions, attempts, errors |
+| `GET` | `/api/v1/admin/errors` | admin bearer | deduplicated error groups, filter by status |
+| `POST` | `/api/v1/admin/errors/{fp}/status` | admin bearer | triage: open/acknowledged/resolved/ignored |
+| `GET` | `/admin` | none (shell) | the owner dashboard page; all data behind the bearer |
 
 `DELETE /api/v1/family` and the export exist from the first release that stores
 anything. They are cheap to build now and awkward to retrofit, and for

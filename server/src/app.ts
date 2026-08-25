@@ -6,6 +6,9 @@ import { registerErrorRoutes } from './routes/errors.js';
 import { registerHealthRoutes } from './routes/health.js';
 import { registerAuthRoutes } from './routes/auth.js';
 import { registerFamilyRoutes } from './routes/family.js';
+import { registerAdminRoutes } from './routes/admin.js';
+import { registerReportRoutes } from './routes/report.js';
+import { ADMIN_PAGE } from './admin/page.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
     const app = Fastify({
@@ -38,6 +41,16 @@ export async function buildApp(): Promise<FastifyInstance> {
     await registerErrorRoutes(app);
     await registerAuthRoutes(app);
     await registerFamilyRoutes(app);
+    await registerAdminRoutes(app);
+    await registerReportRoutes(app);
+
+    // The dashboard shell. Public bytes with zero data in them — every fetch it
+    // makes is behind the admin bearer token — but still 404 when the feature
+    // is off, matching requireAdmin's off-not-open posture.
+    app.get('/admin', async (_request, reply) => {
+        if (config.admin.token === '') return reply.code(404).send({ error: 'not found' });
+        return reply.type('text/html; charset=utf-8').send(ADMIN_PAGE);
+    });
 
     app.setNotFoundHandler((_request, reply) => reply.code(404).send({ error: 'not found' }));
 

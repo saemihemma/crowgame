@@ -656,6 +656,39 @@ function validateLevelMathGating(): void {
 }
 validateLevelMathGating();
 
+// The analytics problem catalog (server/src/generated/problemCatalog.ts) maps
+// problem_id -> domain + kind for the parent report. It is generated from the
+// pools; a stale copy silently mislabels a child's accuracy matrix, so drift
+// fails validation instead.
+function validateProblemCatalogFreshness(): void {
+    const catalogPath = join(ROOT, 'server', 'src', 'generated', 'problemCatalog.ts');
+    if (!existsSync(catalogPath)) {
+        console.error('  FAIL: server/src/generated/problemCatalog.ts is missing. Run: npx tsx tools/gen_problem_catalog.ts');
+        errors++;
+        return;
+    }
+    const source = readFileSync(catalogPath, 'utf-8');
+    const match = source.match(/POOLS_HASH = "([0-9a-f]{64})"/);
+    if (!match) {
+        console.error('  FAIL: problemCatalog.ts carries no POOLS_HASH; regenerate it.');
+        errors++;
+        return;
+    }
+    const { createHash } = require('node:crypto') as typeof import('node:crypto');
+    const hash = createHash('sha256');
+    const mathDataDir = join(DATA_DIR, 'math');
+    for (const file of readdirSync(mathDataDir).filter((f: string) => f.endsWith('.json')).sort()) {
+        hash.update(file).update('\0').update(readFileSync(join(mathDataDir, file), 'utf-8'));
+    }
+    if (hash.digest('hex') !== match[1]) {
+        console.error('  FAIL: the analytics problem catalog is stale against godot/data/math. Run: npx tsx tools/gen_problem_catalog.ts');
+        errors++;
+    } else {
+        validated++;
+    }
+}
+validateProblemCatalogFreshness();
+
 // Cross-reference validation
 validateCrossReferences();
 validateCompiledLevels();
