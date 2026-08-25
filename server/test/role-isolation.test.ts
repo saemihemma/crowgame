@@ -41,11 +41,22 @@ const ROUTES_DIR = join(SRC_DIR, 'routes');
 const LIB_DIR = join(SRC_DIR, 'lib');
 
 /**
- * The two files allowed to touch the pool directly, because they are what every
- * other file goes through. `db.ts` builds the transaction helpers; `familyDb.ts`
- * builds withFamily/withAuthTables on top of them.
+ * The files allowed to touch the pool or `withTransaction` directly, each for a
+ * stated reason. Anything not on this list is a request path, and a request path
+ * that reaches the pool has opted out of RLS and of the append-only grants.
+ *
+ *   db.ts          builds the transaction helpers; it IS the pool
+ *   familyDb.ts    builds withFamily/withAuthTables on top of them
+ *   migrate.ts     DDL, and it creates the crow_app role — needs the superuser
+ *   maintenance.ts partition DDL on a cron schedule, not a request path. Note
+ *                  that retention drops partitions as the table OWNER, which is
+ *                  what lets `error_events` be pruned while crow_app holds no
+ *                  DELETE on it.
+ *
+ * The comment here used to say "the two files allowed to touch the pool", naming
+ * two of the four — an exception list that was already wrong when written.
  */
-const POOL_OWNERS = new Set(['db.ts', 'familyDb.ts']);
+const POOL_OWNERS = new Set(['db.ts', 'familyDb.ts', 'migrate.ts', 'maintenance.ts']);
 
 /**
  * The static half, which needs no database and is the check that would actually
@@ -60,17 +71,33 @@ describe('no route bypasses the app role', () => {
     // today, which is the reason to include it now rather than after it is not;
     // the retired-name ban learned the same lesson one commit earlier and this
     // gate, written before it, did not.
+    // All three source directories. This scanned routes/ alone for two rounds
+    // while every actual data access lives in lib/, and then routes/ and lib/
+    // while src/ itself held the two files that legitimately use the superuser —
+    // the directory where a mistake is least visible, because a superuser query
+    // belongs there and a request-path one does not.
     const scanned = [
         ...readdirSync(ROUTES_DIR).filter(f => f.endsWith('.ts')).map(f => ['routes', f] as const),
         ...readdirSync(LIB_DIR).filter(f => f.endsWith('.ts') && !POOL_OWNERS.has(f))
             .map(f => ['lib', f] as const),
+        ...readdirSync(SRC_DIR, { withFileTypes: true })
+            .filter(e => e.isFile() && e.name.endsWith('.ts') && !POOL_OWNERS.has(e.name))
+            .map(e => ['.', e.name] as const),
     ];
 
     it('finds the files to scan at all', () => {
         // Without this, a moved directory turns every assertion below into a
         // vacuous pass over an empty array.
-        assert.ok(scanned.length >= 9, `expected routes/ and lib/, found ${scanned.length}`);
-        assert.ok(scanned.some(([dir]) => dir === 'lib'), 'lib/ must be in scope');
+        assert.ok(scanned.length >= 11, `expected routes/, lib/ and src/, found ${scanned.length}`);
+        for (const dir of ['routes', 'lib', '.']) {
+            assert.ok(scanned.some(([d]) => d === dir), `${dir} must be in scope`);
+        }
+        // And the exception list must name files that exist, or it is silently
+        // excluding nothing while looking like it excludes something.
+        for (const owner of POOL_OWNERS) {
+            const found = [...readdirSync(LIB_DIR), ...readdirSync(SRC_DIR)].includes(owner);
+            assert.ok(found, `POOL_OWNERS names ${owner}, which no longer exists`);
+        }
     });
 
     for (const [dir, file] of scanned) {
@@ -103,10 +130,23 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         ({ pool, withAppRole } = await import('../src/db.ts'));
         ({ withFamily } = await import('../src/lib/familyDb.ts'));
 
-        // Two families, each with one child and one attempt. Distinct display
-        // names so a leak is legible in the assertion message rather than a
-        // count that happens to be right.
-        for (const tag of ['iso-A', 'iso-B']) {
+        // THREE families, each with a row in EVERY RLS-protected table.
+        //
+        // Two was not enough and one row per table was not enough, and the way
+        // that failed is the whole reason this fixture is now this long. The
+        // behavioural isolation check below passed with permissive policies on all
+        // five tables — 24 pass, 0 fail, family isolation entirely off — whenever
+        // this file ran on a database holding only its own fixtures. It
+        // discriminated in CI purely because cloudsave.test.ts happens to leave
+        // cross-family rows behind: three of the five subtests were comparing
+        // `mine = 0` against somebody else's data. A security gate that is green
+        // with RLS disabled, for reasons that live in another file's leftovers, is
+        // worse than no gate.
+        //
+        // Three, because the erasure test destroys one and the loop needs two
+        // survivors. Every protected table gets rows for more than one family, so
+        // there is always something for a broken policy to leak.
+        for (const tag of ['iso-A', 'iso-B', 'iso-C']) {
             const { rows } = await pool.query<{ id: string }>(
                 'insert into families default values returning id');
             const familyId = rows[0]!.id;
@@ -117,6 +157,23 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
             await pool.query(
                 `insert into attempts (family_id, child_id, attempt_id, problem_id, correct)
                  select $1, id, 'iso-1', 'p1', true from children where family_id = $1`,
+                [familyId]);
+            await pool.query(
+                `insert into child_saves (family_id, child_id, save, save_version, server_version)
+                 select $1, id, '{}'::jsonb, 1, 1 from children where family_id = $1`,
+                [familyId]);
+            await pool.query(
+                `insert into child_save_history (family_id, child_id, save, server_version)
+                 select $1, id, '{}'::jsonb, 1 from children where family_id = $1`,
+                [familyId]);
+            await pool.query(
+                `insert into child_aliases (family_id, legacy_child_id, child_id)
+                 select $1, 'legacy-' || $2::text, id from children where family_id = $1`,
+                [familyId, tag]);
+            await pool.query(
+                `insert into sync_conflicts
+                     (family_id, child_id, incoming_attempted, stored_attempted, outcome)
+                 select $1, id, 1, 2, 'rejected' from children where family_id = $1`,
                 [familyId]);
         }
     });
@@ -160,7 +217,7 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         const seen = (await pool.query<{ display_name: string }>(
             `select display_name from children where display_name like 'iso-%'`)).rows
             .map(r => r.display_name).sort();
-        assert.deepEqual(seen, ['iso-A', 'iso-B']);
+        assert.deepEqual(seen, ['iso-A', 'iso-B', 'iso-C']);
     });
 
     it('crow_app cannot delete an attempt', async () => {
@@ -177,6 +234,9 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         // referential-integrity actions run as the table owner. That is the
         // property that makes routing the endpoint through withFamily viable at
         // all, so it is asserted rather than assumed.
+        // Takes the LAST family (iso-C), which exists so that popping one still
+        // leaves two for the isolation loop. Popping iso-B is how that loop ended
+        // up with nothing to compare against.
         const target = families.pop()!;
         await withFamily(target, c => c.query('delete from families where id = $1', [target]));
         const { rows } = await pool.query<{ kids: string; attempts: string }>(
@@ -196,15 +256,16 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         const child = await pool.query<{ id: string }>(
             'select id from children where family_id = $1', [familyId]);
         const childId = child.rows[0]!.id;
-        await pool.query(
-            `insert into child_saves (family_id, child_id, save, save_version, server_version)
-             values ($1, $2, '{}'::jsonb, 1, 1)
-             on conflict do nothing`, [familyId, childId]);
+        // server_version 2: the fixture already put a row at 1 in every family, and
+        // the primary key is (child_id, server_version). Deleting only version 2
+        // also keeps the isolation loop's row intact, since these tests share a
+        // database and node:test gives no ordering guarantee between them.
         await pool.query(
             `insert into child_save_history (family_id, child_id, save, server_version)
-             values ($1, $2, '{}'::jsonb, 1)`, [familyId, childId]);
+             values ($1, $2, '{}'::jsonb, 2)`, [familyId, childId]);
         const deleted = await withFamily(familyId, c =>
-            c.query('delete from child_save_history where child_id = $1', [childId]));
+            c.query('delete from child_save_history where child_id = $1 and server_version = 2',
+                [childId]));
         assert.ok((deleted.rowCount ?? 0) > 0,
             'the prune must be able to delete history; if this fails, saveSync is broken');
     });
@@ -334,26 +395,34 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         // missing, misspelled, or written against the wrong column on any of the
         // other five and every test would still pass.
         const familyId = families[0]!;
-        const child = await pool.query<{ id: string }>(
-            'select id from children where family_id = $1', [familyId]);
-        const childId = child.rows[0]!.id;
 
-        // One row per protected table for the OTHER family, so a leak is visible
-        // as a count rather than inferred.
-        const other = families[1] ?? families[0]!;
         for (const table of ['child_saves', 'child_save_history', 'attempts',
                              'sync_conflicts', 'child_aliases']) {
-            const seen = await withFamily(familyId, async c =>
-                (await c.query<{ n: string }>(`select count(*)::text as n from ${table}`)).rows[0]!.n);
-            const all = (await pool.query<{ n: string }>(
-                `select count(*)::text as n from ${table}`)).rows[0]!.n;
-            const mine = (await pool.query<{ n: string }>(
-                `select count(*)::text as n from ${table} where family_id = $1`, [familyId])).rows[0]!.n;
+            const seen = Number(await withFamily(familyId, async c =>
+                (await c.query<{ n: string }>(`select count(*)::text as n from ${table}`)).rows[0]!.n));
+            const all = Number((await pool.query<{ n: string }>(
+                `select count(*)::text as n from ${table}`)).rows[0]!.n);
+            const mine = Number((await pool.query<{ n: string }>(
+                `select count(*)::text as n from ${table} where family_id = $1`,
+                [familyId])).rows[0]!.n);
+
+            // THE GUARD THAT WAS MISSING, and its absence is why this check
+            // passed with every policy set to `using (true)`. If this family owns
+            // no rows here, or nobody else does, then `seen === mine` holds
+            // whether the policy filters or not and the comparison below asserts
+            // nothing. This file already carries exactly this guard for the route
+            // scan 100 lines up; it was not applied to the security check.
+            assert.ok(mine > 0,
+                `${table}: this family owns no rows, so the isolation comparison would ` +
+                'be vacuous. Fix the fixture, do not delete the check.');
+            assert.ok(all > mine,
+                `${table}: no OTHER family owns a row (${all} total, ${mine} ours), so a ` +
+                'permissive policy would be indistinguishable from a correct one.');
+
             assert.equal(seen, mine,
                 `${table}: inside withFamily the visible row count must equal this family's ` +
                 `own (${mine}), got ${seen} of ${all} total — the policy is not filtering`);
         }
-        assert.ok(childId && other, 'fixture sanity');
     });
 
     it('health can read schema_migrations as crow_app', async () => {

@@ -65,11 +65,18 @@ features the game needs are present, which build was running, the **browser's
 user-agent line**, and a **shortened form of your network address** — the first
 three parts of it, with the rest dropped (`203.0.113.0/24`), which is enough to
 notice one source flooding the endpoint and not enough to identify a household.
-No names, no progress, and never anything your child typed — there is nowhere in
-the game for a child to type free text, and no answer or score is attached. The
-report does carry text the *game* produced about its own failure: the error
-message, where in the code it came from, and a developer stack trace, described
-below.
+No progress, no answers, no score, and **never the name your child typed.** The
+one thing a child does type in this game is that name, on the "Make a player"
+screen, and it is deliberately never attached to an error report — the report
+carries no child id and no display name at all.
+
+What the report does carry is text the *game* produced about its own failure: the
+error message, where in the code it came from, and a developer stack trace, all
+described below.
+
+(This paragraph said "no free text" until a review pointed out that the same page
+describes "your child's chosen display name" two sections up. The claim worth
+making is the narrow one, and it is the one the code actually enforces.)
 
 Those full reports are kept for 30 days and then deleted automatically, by
 dropping each day's table whole. What is kept longer is one entry per distinct
