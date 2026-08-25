@@ -183,3 +183,18 @@ Original prompt: Export tighter runtime assets and wire the game to them so game
 - 2026-08-25: Known non-blockers left on purpose: tools/godot_play_smoke.mjs predates the menu rebuild and the cloud-save POSTs and is no longer the CI gate (web_boot_smoke.mjs is, and passes); the owl-ring streak flame is celebration-only but sits in mild tension with the documented "nothing to protect" kid-safe rule - flagged for the design owner, not reverted.
 - 2026-08-25: Analytics, phase one of three audiences. Owner: a token-gated admin surface (`CROW_ADMIN_TOKEN`, off-means-404, header-only) serving `/admin` - a self-contained dashboard with KPI tiles (active kids, sessions with median length from 30-minute gap-splitting over attempts, D1/D7 retention shown as n-of-cohort, lifetime answers, first-try accuracy, open error groups) and four 28-day single-series charts, all inline SVG with hover tooltips, light/dark. Errors: the existing fingerprint-deduplicated error_groups finally have a read side - list by status, triage transitions (acknowledge/resolve/ignore) from the dashboard, so bugs are debuggable without player feedback and without spam.
 - 2026-08-25: Parent report. New device-authed, RLS-scoped `GET /api/v1/family/children/{id}/report`: every attempt the family has ever synced, rolled up per domain (with current/highest step and effective skill score from the save blob) and per problem kind - equation / word problem / visual counting - classified by a generated problem catalog (tools/gen_problem_catalog.ts) that uses math-kernel's own parseWordedArithmetic, emitted as a TS module so the API Docker build ships it untouched, with a pools-hash freshness gate in npm run validate. The in-game ParentReport scene now renders the cloud matrix colour-coded (green >=85%, amber 70-85%, red below - thresholds and hexes in ui_tuning, not code) with counts per kind, and falls back to the local recent window with an explicit "this device only" label when not enrolled. Server tests cover admin auth off/wrong/right, error triage round-trip, the rollup shape, retired-problem fallback, and family isolation (a stranger family gets 404).
+
+- 2026-08-25: Icelandic grade mapping shipped end to end. Researched primary
+  sources (lög um grunnskóla 91/2008 15. gr. school-start rule; aðalnámskrá
+  25. kafli — criteria only at grades 4/7/10; MMS Sproti 1a–4a per-grade scope)
+  into docs/GRADE_EXPECTATIONS.md and the canonical
+  godot/data/curriculum/grade_expectations.json (provenance per milestone,
+  generated into server/src/generated/gradeExpectations.ts with a freshness
+  hash). children.birth_year (YEAR only, migration 005) collected optionally at
+  profile creation and backfillable from the parent report; report endpoint now
+  derives the grade and a per-domain band verdict (ahead / on track / practice
+  together / not expected yet — leikskóli has no floor by design) from
+  highestStep, rendered color-coded in parent_report.gd. New guards: generated
+  copy freshness, every owl-served domain must have milestones, milestones must
+  point at authored ladder steps, provenance required. 42 server + 154 Godot
+  tests green, export rebuilt.

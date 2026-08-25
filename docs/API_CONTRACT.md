@@ -161,13 +161,14 @@ the Authorization header. Everything else requires the device cookie.
 | `POST` | `/api/v1/auth/pair` | device | issue a pairing code for a 2nd device |
 | `POST` | `/api/v1/auth/redeem` | none | redeem a pairing code, sets cookie |
 | `GET` | `/api/v1/family/children` | device | list children for child-picking |
-| `POST` | `/api/v1/family/children` | device | create a child, returns server id |
+| `POST` | `/api/v1/family/children` | device | create a child (optional `birthYear`), returns server id |
+| `PUT` | `/api/v1/family/children/{id}/birth-year` | device | backfill/correct a child's birth year (year only, for grade mapping) |
 | `GET` | `/api/v1/children/{id}/save` | device | fetch authoritative save |
 | `PUT` | `/api/v1/children/{id}/save` | device | upsert save, compare-and-set |
 | `POST` | `/api/v1/attempts/sync` | device | batch attempts, returns applied ids |
 | `DELETE` | `/api/v1/family` | device | hard delete, cascade |
 | `GET` | `/api/v1/family/export` | device | full data export |
-| `GET` | `/api/v1/family/children/{id}/report` | device | parent report: per-domain, per-kind accuracy rollup |
+| `GET` | `/api/v1/family/children/{id}/report` | device | parent report: per-domain, per-kind accuracy rollup + Icelandic grade verdicts when a birth year is set (docs/GRADE_EXPECTATIONS.md) |
 | `GET` | `/api/v1/admin/overview` | admin bearer | owner KPIs: DAU, retention, sessions, attempts, errors |
 | `GET` | `/api/v1/admin/errors` | admin bearer | deduplicated error groups, filter by status |
 | `POST` | `/api/v1/admin/errors/{fp}/status` | admin bearer | triage: open/acknowledged/resolved/ignored |

@@ -72,7 +72,7 @@ func _render_child(profile: Dictionary) -> void:
 	# fallback and says so — it is this device's recent window, not a lifetime.
 	var cloud: Dictionary = await CloudSync.fetch_child_report(profile)
 	if not cloud.is_empty():
-		_render_cloud_report(cloud)
+		_render_cloud_report(profile, cloud)
 		return
 
 	var snapshot := _snapshot_for(profile)
@@ -114,11 +114,25 @@ func _render_child(profile: Dictionary) -> void:
 ## The lifetime matrix: per domain a header with step and skill score, then one
 ## colour-coded line per problem kind (straight math / word problems / counting
 ## pictures) with counts — a parent sees where to help at a glance.
-func _render_cloud_report(report: Dictionary) -> void:
+func _render_cloud_report(profile: Dictionary, report: Dictionary) -> void:
 	_body(TextManager.t("report_source_cloud"))
 	var global_elo: Variant = report.get("globalElo", null)
 	if global_elo != null:
 		_body(TextManager.t("report_elo_line", [str(int(round(float(global_elo))))]))
+
+	# Icelandic school grade, derived server-side from birth year alone (lög um
+	# grunnskóla 91/2008: school starts the calendar year a child turns six).
+	# Grade 0 is leikskóli — no formal expectations exist there by design.
+	var grade_info: Variant = report.get("grade", null)
+	if grade_info is Dictionary:
+		var grade := int((grade_info as Dictionary).get("grade", 0))
+		var born := str(int((grade_info as Dictionary).get("birthYear", 0)))
+		if grade <= 0:
+			_body(TextManager.t("report_grade_leikskoli", [born]))
+		else:
+			_body(TextManager.t("report_grade_line", [str(grade), born]))
+	else:
+		_render_birth_year_prompt(profile)
 
 	for entry in report.get("domains", []):
 		if not (entry is Dictionary):
@@ -157,6 +171,82 @@ func _render_cloud_report(report: Dictionary) -> void:
 			str(domain_correct), str(domain_attempted),
 			str(int(round(100.0 * domain_correct / domain_attempted))),
 		]), float(domain_correct) / domain_attempted)
+		_render_expectation(d.get("expectation", null))
+
+## The grade verdict for one domain: where this child's ladder position sits
+## against Icelandic grade-level material (bands, never points — Iceland sets
+## no within-year pacing; docs/GRADE_EXPECTATIONS.md). Wording is deliberate:
+## "practice together" is a nudge, never a failure, and it is the only amber
+## state. Anything not yet expected at this grade is called a head start.
+func _render_expectation(expectation: Variant) -> void:
+	if not (expectation is Dictionary):
+		return
+	var e: Dictionary = expectation
+	var status := String(e.get("status", ""))
+	var ref_grade := str(int(e.get("refGrade", 0)))
+	var line := ""
+	var color_key := "accuracy_color_good"
+	match status:
+		"ahead":
+			line = TextManager.t("report_exp_ahead", [ref_grade])
+		"on_track":
+			line = TextManager.t("report_exp_on_track", [ref_grade])
+		"practice":
+			line = TextManager.t("report_exp_practice", [ref_grade])
+			color_key = "accuracy_color_ok"
+		"not_expected_yet":
+			line = TextManager.t("report_exp_not_expected", [ref_grade])
+		_:
+			return
+	var label := Label.new()
+	label.text = line
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.add_theme_font_size_override("font_size", int(Config.ui("parent_report/body_font_size", 22)))
+	label.add_theme_color_override("font_color",
+		Color.html(String(Config.ui("parent_report/" + color_key, "#2e9e4f"))))
+	_column.add_child(label)
+	var cap: Variant = e.get("scopeCappedAtGrade", null)
+	if cap != null:
+		_body(TextManager.t("report_exp_scope_cap", [str(int(cap))]))
+
+## No birth year on the server child yet: offer the backfill right here, where
+## the parent already is. Year only — a full birth date would add nothing (the
+## Icelandic grade rule uses the calendar year) and is data we refuse to hold.
+func _render_birth_year_prompt(profile: Dictionary) -> void:
+	_body(TextManager.t("report_birth_year_prompt"))
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", int(Config.ui("parent_report/separation", 12)))
+	var year_edit := LineEdit.new()
+	year_edit.placeholder_text = TextManager.t("login.birth_year_placeholder")
+	year_edit.max_length = 4
+	year_edit.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_NUMBER
+	year_edit.custom_minimum_size = Vector2(
+		Config.ui("parent_report/birth_year_field_width", 160),
+		Config.ui("parent_report/button_height", 64))
+	row.add_child(year_edit)
+	var save := Button.new()
+	save.text = TextManager.t("report_birth_year_save")
+	save.custom_minimum_size = Vector2(
+		Config.ui("parent_report/birth_year_button_width", 180),
+		Config.ui("parent_report/button_height", 64))
+	var status := Label.new()
+	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	status.add_theme_font_size_override("font_size", int(Config.ui("parent_report/body_font_size", 22)))
+	status.add_theme_color_override("font_color", ThemeManager.get_color_value("text_dim"))
+	save.pressed.connect(func() -> void:
+		var year := year_edit.text.strip_edges().to_int()
+		var this_year: int = Time.get_datetime_dict_from_system().get("year", 0)
+		if year < this_year - 17 or year > this_year:
+			status.text = TextManager.t("login.birth_year_invalid")
+			return
+		save.disabled = true
+		var ok: bool = await CloudSync.push_birth_year(profile, year)
+		status.text = TextManager.t("report_birth_year_saved" if ok else "report_birth_year_failed")
+		save.disabled = not ok)
+	UiFx.attach_focus_highlight(save)
+	row.add_child(save)
+	_column.add_child(row)
+	_column.add_child(status)
 
 ## A body line whose colour says how it is going: green comfortably right,
 ## amber in the working zone, red where a parent's help lands best. The

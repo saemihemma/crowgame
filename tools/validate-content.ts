@@ -731,6 +731,77 @@ function validateAnalyticsI18nCoverage(): void {
 }
 validateAnalyticsI18nCoverage();
 
+// The Icelandic grade-expectation mapping (godot/data/curriculum/
+// grade_expectations.json -> server/src/generated/gradeExpectations.ts) is what
+// lets the parent report say "ahead / on track / practice" against a school
+// grade. Three ways it can rot, all closed here: the generated copy drifts from
+// the source; a newly served domain has no milestones (a new math domain would
+// silently get no grade verdict); or a milestone points at a ladder step the
+// curriculum pools do not actually author (a verdict no child could ever earn).
+function validateGradeExpectations(): void {
+    const srcPath = join(DATA_DIR, 'curriculum', 'grade_expectations.json');
+    const genPath = join(ROOT, 'server', 'src', 'generated', 'gradeExpectations.ts');
+    if (!existsSync(srcPath) || !existsSync(genPath)) {
+        console.error('  FAIL: grade expectations missing. Source: godot/data/curriculum/grade_expectations.json; run: npx tsx tools/gen_grade_expectations.ts');
+        errors++;
+        return;
+    }
+    const raw = readFileSync(srcPath, 'utf-8');
+    const { createHash } = require('node:crypto') as typeof import('node:crypto');
+    const expected = createHash('sha256').update(raw).digest('hex');
+    const generated = readFileSync(genPath, 'utf-8');
+    const match = generated.match(/GRADE_EXPECTATIONS_HASH = "([0-9a-f]{64})"/);
+    if (!match || match[1] !== expected) {
+        console.error('  FAIL: gradeExpectations.ts is stale against godot/data/curriculum/grade_expectations.json. Run: npx tsx tools/gen_grade_expectations.ts');
+        errors++;
+        return;
+    }
+
+    const source = JSON.parse(raw) as {
+        meta: { sources: Array<{ id: string }> };
+        domains: Record<string, Array<{ endOfGrade: number; step: number; covers?: string; basis?: string; source?: string }>>;
+    };
+    const sourceIds = new Set(source.meta.sources.map(s => s.id));
+
+    const npcRegistry = JSON.parse(readFileSync(join(DATA_DIR, 'npcs', 'npc_registry.json'), 'utf-8')) as {
+        npcs: Array<{ components: Array<{ type: string; problemTypes?: string[] }> }>;
+    };
+    const servedDomains = new Set(
+        npcRegistry.npcs.flatMap(npc => npc.components)
+            .filter(c => c.type === 'math_challenge')
+            .flatMap(c => c.problemTypes ?? []),
+    );
+
+    const curriculumPool = JSON.parse(readFileSync(join(DATA_DIR, 'math', 'problems_curriculum.json'), 'utf-8')) as {
+        problems: Array<{ domain: string; curriculumStep: number }>;
+    };
+    const maxStep = new Map<string, number>();
+    for (const p of curriculumPool.problems) {
+        maxStep.set(p.domain, Math.max(maxStep.get(p.domain) ?? 0, p.curriculumStep));
+    }
+
+    for (const domain of servedDomains) {
+        if (!source.domains[domain] || source.domains[domain].length === 0) {
+            console.error(`  FAIL: grade_expectations.json has no milestones for served domain "${domain}" — decide which Icelandic grade its material belongs to (docs/GRADE_EXPECTATIONS.md) or the parent report cannot place it.`);
+            errors++;
+        }
+    }
+    for (const [domain, milestones] of Object.entries(source.domains)) {
+        for (const m of milestones) {
+            if (m.step > (maxStep.get(domain) ?? 0)) {
+                console.error(`  FAIL: grade_expectations.json ${domain} end-of-grade-${m.endOfGrade} milestone is step ${m.step}, but the curriculum pool only authors up to step ${maxStep.get(domain) ?? 0} — no child could ever reach the verdict.`);
+                errors++;
+            }
+            if (!m.covers || !m.basis || !m.source || !sourceIds.has(m.source)) {
+                console.error(`  FAIL: grade_expectations.json ${domain} grade-${m.endOfGrade} milestone must carry covers/basis and a source id listed in meta.sources — every claim needs provenance.`);
+                errors++;
+            }
+        }
+    }
+    validated++;
+}
+validateGradeExpectations();
+
 // Cross-reference validation
 validateCrossReferences();
 validateCompiledLevels();

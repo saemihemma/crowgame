@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { withFamily } from '../lib/familyDb.js';
 import { deviceOf, requireDevice } from '../lib/deviceAuth.js';
 import { PROBLEM_CATALOG, type CatalogEntry } from '../generated/problemCatalog.js';
+import { expectationFor, schoolGradeFor } from '../lib/grade.js';
 
 /**
  * The parent report: how is my kid actually doing, per domain and per kind of
@@ -55,8 +56,8 @@ export async function registerReportRoutes(app: FastifyInstance): Promise<void> 
             const catalog: Record<string, CatalogEntry> = PROBLEM_CATALOG;
 
             const result = await withFamily(familyId, async client => {
-                const child = await client.query<{ display_name: string }>(
-                    `select display_name from children
+                const child = await client.query<{ display_name: string; birth_year: number | null }>(
+                    `select display_name, birth_year from children
                       where id = $1 and family_id = $2 and deleted_at is null`,
                     [childId, familyId],
                 );
@@ -83,6 +84,7 @@ export async function registerReportRoutes(app: FastifyInstance): Promise<void> 
 
                 return {
                     displayName: child.rows[0]!.display_name,
+                    birthYear: child.rows[0]!.birth_year,
                     attempts: attempts.rows,
                     save: save.rows[0] ?? null,
                 };
@@ -145,6 +147,11 @@ export async function registerReportRoutes(app: FastifyInstance): Promise<void> 
                 };
             }
 
+            // Grade-vs-skill: only when the family has told us a birth year, and
+            // only for domains whose curriculum progress the save actually carries
+            // — verdicts are computed against highestStep, never guessed from ELO.
+            const grade = result.birthYear === null ? null : schoolGradeFor(result.birthYear, new Date());
+
             return reply.send({
                 childId,
                 displayName: result.displayName,
@@ -152,12 +159,16 @@ export async function registerReportRoutes(app: FastifyInstance): Promise<void> 
                 totalAttempts: result.attempts.length,
                 globalElo: eloStats?.globalELO ?? null,
                 saveUpdatedAt: result.save?.updated_at ?? null,
+                grade: grade === null ? null : { birthYear: result.birthYear, grade },
                 domains: [...domains.entries()]
                     .sort((a, b) => b[1].attempted - a[1].attempted)
                     .map(([domain, tally]) => ({
                         domain,
                         ...finish(tally),
                         progress: progress[domain] ?? null,
+                        expectation: grade === null || progress[domain] === undefined
+                            ? null
+                            : expectationFor(grade, progress[domain]!.highestStep, domain),
                         kinds: [...(kinds.get(domain) ?? new Map<string, Tally>()).entries()]
                             .sort((a, b) => b[1].attempted - a[1].attempted)
                             .map(([kind, kindTally]) => ({ kind, ...finish(kindTally) })),

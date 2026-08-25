@@ -16,6 +16,13 @@ import {
  *
  * childId appears in paths as an object reference only. It never grants access.
  */
+
+/** A birth year a grunnskóli-or-younger child could actually have right now. */
+function plausibleBirthYear(year: number): boolean {
+    const now = new Date().getUTCFullYear();
+    return year >= now - 17 && year <= now;
+}
+
 export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> {
     const auth = { preHandler: requireDevice };
     // Keyed by DEVICE, not by IP. An IP bucket would make one household — or one
@@ -74,14 +81,21 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
                     properties: {
                         displayName: { type: 'string', minLength: 1, maxLength: 40 },
                         legacyChildId: { type: 'string', maxLength: 120 },
+                        birthYear: { type: 'integer', minimum: 1990, maximum: 2100 },
                     },
                 },
             },
         },
-        async (request: FastifyRequest<{ Body: { displayName: string; legacyChildId?: string } }>, reply) => {
+        async (request: FastifyRequest<{
+            Body: { displayName: string; legacyChildId?: string; birthYear?: number };
+        }>, reply) => {
             const { familyId } = deviceOf(request);
             const displayName = request.body.displayName.trim();
             const legacyChildId = request.body.legacyChildId?.trim();
+            const birthYear = request.body.birthYear ?? null;
+            if (birthYear !== null && !plausibleBirthYear(birthYear)) {
+                return reply.code(400).send({ error: 'implausible birth year' });
+            }
 
             const result = await withFamily(familyId, async client => {
                 if (legacyChildId) {
@@ -95,12 +109,16 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
 
                 // Same display name inside a family means the same child. This is
                 // scoped to the family, so another family's Emma is unaffected.
+                // On conflict the birth year only fills a gap — a re-bind from a
+                // second device (which sends none) must not erase what a parent set.
                 const child = await client.query<{ id: string }>(
-                    `insert into children (family_id, display_name)
-                     values ($1, $2)
-                     on conflict (family_id, display_name) do update set display_name = excluded.display_name
+                    `insert into children (family_id, display_name, birth_year)
+                     values ($1, $2, $3)
+                     on conflict (family_id, display_name) do update
+                        set display_name = excluded.display_name,
+                            birth_year = coalesce(excluded.birth_year, children.birth_year)
                      returning id`,
-                    [familyId, displayName],
+                    [familyId, displayName, birthYear],
                 );
                 const remoteChildId = child.rows[0]!.id;
 
@@ -116,6 +134,50 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
             });
 
             return reply.code(result.created ? 201 : 200).send(result);
+        },
+    );
+
+    /**
+     * Set (or correct) a child's birth year after the fact — the backfill path
+     * for children created before the field existed, driven from the parent
+     * report. Same family scoping as everything else here.
+     */
+    app.put(
+        '/api/v1/family/children/:childId/birth-year',
+        {
+            ...writeLimit,
+            schema: {
+                params: {
+                    type: 'object',
+                    required: ['childId'],
+                    properties: { childId: { type: 'string', format: 'uuid' } },
+                },
+                body: {
+                    type: 'object',
+                    required: ['birthYear'],
+                    additionalProperties: false,
+                    properties: { birthYear: { type: 'integer', minimum: 1990, maximum: 2100 } },
+                },
+            },
+        },
+        async (request: FastifyRequest<{
+            Params: { childId: string }; Body: { birthYear: number };
+        }>, reply) => {
+            const { familyId } = deviceOf(request);
+            const { birthYear } = request.body;
+            if (!plausibleBirthYear(birthYear)) {
+                return reply.code(400).send({ error: 'implausible birth year' });
+            }
+            const updated = await withFamily(familyId, async client => {
+                const result = await client.query(
+                    `update children set birth_year = $1
+                      where id = $2 and family_id = $3 and deleted_at is null`,
+                    [birthYear, request.params.childId, familyId],
+                );
+                return result.rowCount === 1;
+            });
+            if (!updated) return reply.code(404).send({ error: 'unknown child' });
+            return reply.send({ ok: true, birthYear });
         },
     );
 
