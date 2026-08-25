@@ -132,6 +132,8 @@ Current keys:
 - `crow_learner_api_base`
 - `crow_learner_snapshot_<childId>`
 - `crow_learner_pending_attempts_<childId>`
+- `crow_prologue_seen` — device-wide, not per child: the opening film plays
+  before any profile exists (see `brand/CINEMATIC_DIRECTION.md` 5.2)
 
 How they are used:
 

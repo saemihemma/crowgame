@@ -1,6 +1,7 @@
 {
   "_comment": "Logical scene name -> scene path. Route via SceneRouter.goto(name); never hardcode res:// scene paths in scripts.",
   "boot": "res://scenes/Boot.tscn",
+  "cinematic": "res://scenes/Cinematic.tscn",
   "login": "res://scenes/Login.tscn",
   "main_menu": "res://scenes/MainMenu.tscn",
   "level_select": "res://scenes/LevelSelect.tscn",

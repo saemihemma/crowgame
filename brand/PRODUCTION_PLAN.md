@@ -247,6 +247,12 @@ different visual language from the game they wrap.
 - Concept all five as one flow, at device resolution, including the transitions.
 - First-run onboarding: how a child learns to move, jump and meet an owl without
   reading anything.
+- **The front of this flow has landed.** The opening film plays on a first
+  launch and dissolves into profile creation with no cut between them --
+  `brand/CINEMATIC_DIRECTION.md`, running on placeholder plates. What it does
+  *not* yet do is teach movement; that is still this phase's open half. It also
+  has no replay entry point, because that means touching `MainMenu`'s layout
+  (CINEMATIC_DIRECTION.md 5.5).
 - **Gate:** B6, B7, B8 across all five screens in all five worlds.
 
 ### Phase 3 — Art production — **the user draws it**

@@ -1,0 +1,130 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://hormann.game/schemas/cinematic.schema.json",
+    "title": "Cinematic",
+    "description": "A stills-based cinematic: painted plates, one camera move per shot, crossfades between them. Direction and the reason behind every constraint live in brand/CINEMATIC_DIRECTION.md; the story it tells lives in brand/STORY_BIBLE.md. Shape only is enforced here -- tools/validate_cinematics.mjs owns the checks that need to read the PNGs and the string bundles.",
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "shots"],
+    "properties": {
+        "$comment": { "type": "string" },
+        "id": {
+            "description": "Stable id. Matches the filename and the DataManager.PATHS key.",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "shots": {
+            "description": "Played in order. brand/CINEMATIC_DIRECTION.md caps total runtime at 60s.",
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 24,
+            "items": { "$ref": "#/definitions/shot" }
+        }
+    },
+    "definitions": {
+        "shot": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "hold", "layers", "move"],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9_]*$"
+                },
+                "hold": {
+                    "description": "Seconds this shot is on screen, transitions excluded. 3.0-7.0 is the film's range; the ceiling here is a guard, not a target.",
+                    "type": "number",
+                    "minimum": 0.5,
+                    "maximum": 12.0
+                },
+                "caption": {
+                    "description": "i18n key for the one caption line, or null for a wordless shot. Must exist in every locale bundle. Max 8 words (BRAND_SYSTEM.md 4.2) -- counted by the validator against the English bundle.",
+                    "type": ["string", "null"],
+                    "pattern": "^cine\\.[a-z0-9_]+\\.[a-z0-9_]+$"
+                },
+                "captionDelay": {
+                    "description": "Seconds into the hold before the caption arrives. Defaults to 0.4. A caption never crosses a transition, so the validator rejects one that cannot land and leave inside the hold.",
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 10.0
+                },
+                "move": {
+                    "description": "The camera: a source rect on the plate at the start of the hold, and another at the end. A held shot is a move of zero length -- from and to are the same rect -- so there is no second case for the runtime or the validator to get wrong. Both rects are 16:9 and must stay inside every layer, including the plate's camera bleed.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["from", "to"],
+                    "properties": {
+                        "from": { "$ref": "#/definitions/rect" },
+                        "to": { "$ref": "#/definitions/rect" }
+                    }
+                },
+                "layers": {
+                    "description": "Back to front. Two or three is the house style; more costs bytes and buys little.",
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 4,
+                    "items": { "$ref": "#/definitions/layer" }
+                },
+                "transition": {
+                    "description": "Crossfade out of this shot, in seconds. Defaults to the cine_fade duration, 0.9.",
+                    "type": "number",
+                    "minimum": 0.1,
+                    "maximum": 2.0
+                },
+                "music": {
+                    "description": "Music key from audio_manifest.json to cross-fade to at the top of this shot, or null to leave whatever is playing alone.",
+                    "type": ["string", "null"]
+                },
+                "sfx": {
+                    "description": "Sound-event name from sound_events.json, or null. Every sound in the film is a flourish -- a missing SFX must never cost a fact.",
+                    "type": ["string", "null"]
+                },
+                "sfxAt": {
+                    "description": "Seconds into the hold to fire `sfx`. Ignored when sfx is null.",
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 12.0
+                }
+            }
+        },
+        "layer": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["src", "size"],
+            "properties": {
+                "src": {
+                    "description": "res:// path without the prefix, as everywhere else in godot/data. Plates live under assets/cinematics/<cinematic id>/, and carry a 64px camera bleed on every side that no rect enters.",
+                    "type": "string",
+                    "pattern": "^assets/cinematics/[a-z0-9_]+/[a-z0-9_]+\\.png$"
+                },
+                "size": {
+                    "description": "Authored pixel size [w, h], verified against the real PNG. Declaring it means a plate redrawn at the wrong size fails the build instead of quietly reframing every shot it is in.",
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": { "type": "integer", "minimum": 16, "maximum": 4096 }
+                },
+                "parallax": {
+                    "description": "Share of the camera's translation this layer takes. 1.0 moves with the frame; lower lags and reads as further away. Defaults to 1.0; never above it.",
+                    "type": "number",
+                    "minimum": 0.0,
+                    "maximum": 1.0
+                },
+                "drift": {
+                    "description": "Slow sine loop [x, y] in pixels, phase-offset per layer index. Ceiling 5px: above that it stops reading as air.",
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 2,
+                    "items": { "type": "number", "minimum": -5.0, "maximum": 5.0 }
+                }
+            }
+        },
+        "rect": {
+            "description": "[x, y, w, h] in plate pixels.",
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": { "type": "number", "minimum": 0 }
+        }
+    }
+}

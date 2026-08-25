@@ -1,4 +1,11 @@
 {
+  "cine.prologue.tally": "The owls kept the count.",
+  "cine.prologue.bead": "One bead held it all.",
+  "cine.prologue.miscount": "Then the count fell.",
+  "cine.prologue.grubb": "Grubb eats what does not add up.",
+  "cine.prologue.stuck": "Now the owls are stuck.",
+  "cine.prologue.hero": "He cannot count. You can.",
+  "cine.skip": "Skip",
   "menu.title": "HÖRMANN",
   "menu.play": "PLAY",
   "menu.continue": "CONTINUE",

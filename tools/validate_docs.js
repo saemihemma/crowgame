@@ -31,6 +31,7 @@ const STORAGE_KEYS = [
     'crow_learner_api_base',
     'crow_learner_snapshot_<childId>',
     'crow_learner_pending_attempts_<childId>',
+    'crow_prologue_seen',
 ];
 
 function fail(message) {

@@ -8,6 +8,8 @@ Last verified against code: 2026-08-24
 | --- | --- |
 | [BRAND_SYSTEM.md](./BRAND_SYSTEM.md) | **The canonical brand file.** Positioning, hero and enemy design law, voice, colour architecture, typography, the HUD and maths-board specs, motion grammar, the dopamine economy, audio, accessibility |
 | [LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md) | The five worlds — palettes, tilesets, props, objects, enemies, gimmicks, music and level-design notes |
+| [STORY_BIBLE.md](./STORY_BIBLE.md) | **The canonical story file.** The Reckoning, Hörmann's reason, the Muddle's agenda, Grubb the Countless, the Great Miscount, the five worlds' story beats, and how story is delivered to a child who cannot read |
+| [CINEMATIC_DIRECTION.md](./CINEMATIC_DIRECTION.md) | The opening film: the shot list, the camera and caption grammar, the plate contract, the handoff into profile creation, and the authoring pipeline |
 | [PRODUCTION_PLAN.md](./PRODUCTION_PLAN.md) | The road to ship: the bar in numbers, where the build actually is against it, the concept-then-measure loop, and the phase order |
 | [ASSET_MANIFEST.md](./ASSET_MANIFEST.md) | The production list: every art asset still to generate, its exact pixel size, its destination path, and what to wire it into |
 | [tokens/](./tokens/) | Five `ThemeDefinition` JSON files, one per world, plus `verify_palettes.py` |
@@ -23,6 +25,10 @@ If two documents disagree, `BRAND_SYSTEM.md` wins.
   invent a hex.
 - **Wiring the themes up?** [tokens/README.md](./tokens/README.md).
 - **Wondering if something is on-brand?** BRAND_SYSTEM §13, five questions.
+- **Writing a character, a beat or a line of lore?** STORY_BIBLE, then
+  BRAND_SYSTEM §4 for the voice.
+- **Cutting or drawing a cinematic shot?** CINEMATIC_DIRECTION §2 for the cut,
+  §3 for the grammar, §7 for the five questions a shot has to survive.
 
 ## Status of this work
 

@@ -100,6 +100,16 @@ const BOXES = {
     'login.name_taken': { size: 22, max: 560, where: 'LoginScene status label' },
     'login.name_too_long': { size: 22, max: 560, where: 'LoginScene status label' },
     'login.pin_four_digits': { size: 22, max: 560, where: 'LoginScene status label' },
+    // The cinematic caption band: one line, 28px, on a 960 canvas with 40px of
+    // padding each side (brand/CINEMATIC_DIRECTION.md 3.4). It does not wrap --
+    // a caption that needs two lines is a caption doing the image's job.
+    'cine.prologue.tally': { size: 28, max: 880, where: 'Cinematic caption band' },
+    'cine.prologue.bead': { size: 28, max: 880, where: 'Cinematic caption band' },
+    'cine.prologue.miscount': { size: 28, max: 880, where: 'Cinematic caption band' },
+    'cine.prologue.grubb': { size: 28, max: 880, where: 'Cinematic caption band' },
+    'cine.prologue.stuck': { size: 28, max: 880, where: 'Cinematic caption band' },
+    'cine.prologue.hero': { size: 28, max: 880, where: 'Cinematic caption band' },
+    'cine.skip': { size: 22, max: 180, where: 'Cinematic skip control, icon plus label' },
     'level_select.locked': { size: 16, max: 220, where: 'Level node' },
     'level.level_01.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
     'level.level_02.name': { size: 20, max: 240, where: 'Level node name, label start to padlock' },
@@ -269,6 +279,7 @@ const DYNAMIC_PREFIXES = [
     { prefix: 'math.prompt.', built: "each problem's phrasing reference" },
     { prefix: 'math.hint.', built: "each problem's phrasing reference" },
     { prefix: 'math.expl.', built: "each problem's phrasing reference" },
+    { prefix: 'cine.', built: "cinematic.gd, from each shot's caption key in godot/data/cinematics/*.json" },
 ];
 
 {

@@ -48,6 +48,7 @@ REGISTRY = os.path.join(ROOT, "data", "registries", "sprite_registry.json")
 SPEC = os.path.join(ROOT, "data", "registries", "sprite_spec.json")
 TILESET_MANIFEST = os.path.join(ROOT, "data", "tilesets", "tileset_manifest.json")
 AUDIO_MANIFEST = os.path.join(ROOT, "data", "audio", "audio_manifest.json")
+CINEMATICS_DIR = os.path.join(ROOT, "data", "cinematics")
 
 # Files intentionally kept without a registry entry. Keep this list empty if you
 # can — each entry is weight in every build.
@@ -165,6 +166,19 @@ def check():
         for t in load_json(TILESET_MANIFEST).get("tilesets", []):
             tileset_claimed.add(t.get("image", ""))
 
+    # Cinematic plates are absent for the same reason: data/cinematics/*.json owns
+    # their contract (declared size, framing, parallax, drift), and
+    # tools/validate_cinematics.mjs enforces it without booting Godot. A plate no
+    # cinematic names is still an orphan and still reported.
+    cinematic_claimed = set()
+    if os.path.isdir(CINEMATICS_DIR):
+        for fn in sorted(os.listdir(CINEMATICS_DIR)):
+            if not fn.endswith(".json"):
+                continue
+            for shot in load_json(os.path.join(CINEMATICS_DIR, fn)).get("shots", []):
+                for layer in shot.get("layers", []):
+                    cinematic_claimed.add(layer.get("src", ""))
+
     claimed = set()
 
     # --- 1 + 3: registry entries point at real files with a valid grid --------
@@ -264,11 +278,12 @@ def check():
     # --- 2: no orphaned images ------------------------------------------------
     for abspath in walk(ASSETS, {".png", ".jpg", ".jpeg", ".webp"}):
         r = rel(abspath)
-        if r in claimed or r in tileset_claimed or r in ALLOW_UNREFERENCED:
+        if r in claimed or r in tileset_claimed or r in cinematic_claimed or r in ALLOW_UNREFERENCED:
             continue
         errors.append(
-            "%s is not in sprite_registry.json — register it or delete it "
-            "(export_filter is all_resources, so it ships either way)" % r
+            "%s is not in sprite_registry.json, tileset_manifest.json or a "
+            "data/cinematics/*.json — register it or delete it (export_filter is "
+            "all_resources, so it ships either way)" % r
         )
 
     # --- 4: import sidecars + pixel-art preset --------------------------------

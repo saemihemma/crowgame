@@ -1,4 +1,11 @@
 {
+  "cine.prologue.tally": "Uglurnar héldu talninguna.",
+  "cine.prologue.bead": "Ein kúla hélt öllu uppi.",
+  "cine.prologue.miscount": "Þá hrundi talningin.",
+  "cine.prologue.grubb": "Grubb étur það sem stemmir ekki.",
+  "cine.prologue.stuck": "Nú eru uglurnar fastar.",
+  "cine.prologue.hero": "Hann getur ekki talið. Þú getur.",
+  "cine.skip": "Sleppa",
   "game.back_to_menu": "Aðalvalmynd",
   "game.congratulations_title": "Til hamingju!",
   "game.play_again": "Spila aftur",

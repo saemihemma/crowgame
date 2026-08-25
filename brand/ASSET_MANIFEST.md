@@ -397,6 +397,57 @@ restyle him.** What is missing is the animation set and the scarf.
 
 ---
 
+## Priority 6 - the prologue
+
+The opening film. Direction, shot intent and the reason behind every size is
+[CINEMATIC_DIRECTION.md](./CINEMATIC_DIRECTION.md); the story it tells is
+[STORY_BIBLE.md](./STORY_BIBLE.md).
+
+**All eighteen are placed as placeholders and the film runs today.** Replacing
+one is dropping a PNG of the same size over it - no code change, no data change.
+Regenerate the placeholders with `node tools/gen_placeholder_cinematic.mjs`;
+verify a replacement with `npm run validate:cinematics`.
+
+Three rules that are different here from everywhere else in this file:
+
+- **Plates are exempt from the pixel law** (CINEMATIC_DIRECTION.md 4.2). They are
+  painted, not pixel art: they never share a frame with a sprite, never tile, and
+  they draw with linear filtering rather than the project's Nearest.
+- **Every plate carries a 64px camera bleed** on all four sides that the camera
+  never enters. Draw to the edge anyway - the bleed is where parallax lag and
+  layer drift live, and a plate whose subject stops at the frame line will show
+  its own edge when a layer lags.
+- **Budget: 400 KB per plate, 2.0 MB for the film.** `npm run validate` fails
+  over either. Over budget means fewer layers or flatter art, never a bigger
+  budget.
+
+| File (under `godot/assets/cinematics/prologue/`) | Size | Shot | What it is |
+| --- | --- | --- | --- |
+| `01_tally_sky.png` | `2048x1208` | 1 · The Tally | aurora night sky, drifts left |
+| `01_tally_spire.png` | `2048x1208` | 1 | the Spire and the Tally, counted things glowing |
+| `01_tally_rail.png` | `2048x1208` | 1 | foreground rail, two owls in silhouette |
+| `02_bead_wire.png` | `2048x1208` | 2 · The Bead | one bead on a wire, filling a third of frame |
+| `02_bead_wing.png` | `2048x1208` | 2 | an owl's wing at the edge, resting |
+| `03_claw.png` | `2048x1208` | 3 · The Claw | the claw, the bead, the dark. One plate, deliberately |
+| `04_fall_sky.png` | `2048x1208` | 4 · The Miscount | sky behind the collapse |
+| `04_fall_tally.png` | `2048x1208` | 4 | the Tally coming apart - a collapse, not an explosion |
+| `04_fall_lights.png` | `2048x1208` | 4 | the five counts leaving in five directions |
+| `05_grubb_gloom.png` | `2688x1208` | 5 · His Immensity | larder gloom behind him |
+| `05_grubb_body.png` | `2688x1208` | 5 | Grubb, partial: plated back, abacus chestplate, the bib, one eye at the edge. **Never all of him** |
+| `05_grubb_dust.png` | `2688x1208` | 5 | dust in front, which sells the scale more than anything on him |
+| `06_stuck_forest.png` | `2048x1208` | 6 · Stuck | Emberwood depth at dawn |
+| `06_stuck_owl.png` | `2048x1208` | 6 | the owl wedged in a split trunk, calm, one chain link across the perch |
+| `06_stuck_leaves.png` | `2048x1208` | 6 | foreground leaves, the closest thing to camera in the film |
+| `07_hero_sky.png` | `2048x1478` | 7 · Hörmann | dawn sky - the tilt ends on it, and it becomes the login screen |
+| `07_hero_canopy.png` | `2048x1478` | 7 | canopy |
+| `07_hero_crow.png` | `2048x1478` | 7 | Hörmann, small, on a branch, scarlet scarf streaming |
+
+The three plates to draw first, in order: `05_grubb_body.png` (the bib is the
+whole character), `03_claw.png` (the most important frame in the film), and
+`07_hero_crow.png` (it is the handoff into the child's own name).
+
+---
+
 ## What is already done and needs no art
 
 Worth stating, so nobody generates something that is already handled:
@@ -422,8 +473,9 @@ Worth stating, so nobody generates something that is already handled:
 | P3 loop objects | 19 | the moment-to-moment loop gets world identity |
 | P4 themed UI | 45 | replaces placeholders; safe one at a time |
 | P5 hero | 8 | the animation set and the scarf |
+| ~~P6 prologue~~ | ~~18~~ | **done as placeholders** - the opening film runs, so its timing, captions and handoff can be judged before any of it is painted |
 
-**91 files, of which 5 are placed and 86 remain.** Nothing in P1-P5 blocks
+**109 files, of which 23 are placed and 86 remain.** Nothing in P1-P5 blocks
 anything else, so they can land in any order, one file per pull request.
 `godot/tests/test_world_palettes.gd` polices the palette of each world's tileset
 on every push; `node tools/godot_play_smoke.mjs` and a human eye cover placement

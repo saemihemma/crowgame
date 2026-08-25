@@ -1,0 +1,108 @@
+{
+    "$comment": "The opening film. Direction, shot intent and every constraint's reason live in brand/CINEMATIC_DIRECTION.md; the story is brand/STORY_BIBLE.md; the shape is authoring/cinematics/schemas/cinematic.schema.json. Rects are [x, y, w, h] in plate pixels and are 16:9; zoom is 1920/w, capped at 1.15; every rect stays inside the plate's 64px camera bleed so parallax and drift have somewhere to go. A held shot is a move of zero length - from and to are the same rect. Hand-authored and read directly: there is no compile step, because a shot list is already the shape the runtime wants. Plates are placeholders until they are drawn over; regenerate with `node tools/gen_placeholder_cinematic.mjs`.",
+    "id": "prologue",
+    "shots": [
+        {
+            "id": "tally",
+            "hold": 6.0,
+            "caption": "cine.prologue.tally",
+            "move": {
+                "from": [64, 64, 1920, 1080],
+                "to": [152, 113, 1744, 981]
+            },
+            "layers": [
+                { "src": "assets/cinematics/prologue/01_tally_sky.png", "size": [2048, 1208], "parallax": 0.82, "drift": [-4, 0] },
+                { "src": "assets/cinematics/prologue/01_tally_spire.png", "size": [2048, 1208], "parallax": 1.0, "drift": [0, 0] },
+                { "src": "assets/cinematics/prologue/01_tally_rail.png", "size": [2048, 1208], "parallax": 1.0, "drift": [0, 2] }
+            ],
+            "music": "level_05_music"
+        },
+        {
+            "id": "bead",
+            "hold": 5.0,
+            "caption": "cine.prologue.bead",
+            "move": {
+                "from": [64, 82, 1856, 1044],
+                "to": [128, 82, 1856, 1044]
+            },
+            "layers": [
+                { "src": "assets/cinematics/prologue/02_bead_wire.png", "size": [2048, 1208], "parallax": 1.0, "drift": [0, 0] },
+                { "src": "assets/cinematics/prologue/02_bead_wing.png", "size": [2048, 1208], "parallax": 0.9, "drift": [0, 2] }
+            ]
+        },
+        {
+            "id": "claw",
+            "hold": 3.0,
+            "caption": null,
+            "move": {
+                "from": [64, 64, 1920, 1080],
+                "to": [64, 64, 1920, 1080]
+            },
+            "layers": [
+                { "src": "assets/cinematics/prologue/03_claw.png", "size": [2048, 1208], "parallax": 1.0, "drift": [0, 0] }
+            ],
+            "sfx": "answer_wrong",
+            "sfxAt": 1.4
+        },
+        {
+            "id": "miscount",
+            "hold": 5.5,
+            "caption": "cine.prologue.miscount",
+            "move": {
+                "from": [160, 118, 1728, 972],
+                "to": [64, 64, 1920, 1080]
+            },
+            "layers": [
+                { "src": "assets/cinematics/prologue/04_fall_sky.png", "size": [2048, 1208], "parallax": 0.8, "drift": [0, 0] },
+                { "src": "assets/cinematics/prologue/04_fall_tally.png", "size": [2048, 1208], "parallax": 1.0, "drift": [0, 0] },
+                { "src": "assets/cinematics/prologue/04_fall_lights.png", "size": [2048, 1208], "parallax": 1.0, "drift": [3, -3] }
+            ]
+        },
+        {
+            "id": "immensity",
+            "hold": 7.0,
+            "caption": "cine.prologue.grubb",
+            "move": {
+                "from": [64, 64, 1920, 1080],
+                "to": [704, 64, 1920, 1080]
+            },
+            "layers": [
+                { "src": "assets/cinematics/prologue/05_grubb_gloom.png", "size": [2688, 1208], "parallax": 0.78, "drift": [0, 0] },
+                { "src": "assets/cinematics/prologue/05_grubb_body.png", "size": [2688, 1208], "parallax": 1.0, "drift": [0, 0] },
+                { "src": "assets/cinematics/prologue/05_grubb_dust.png", "size": [2688, 1208], "parallax": 1.0, "drift": [3, 2] }
+            ]
+        },
+        {
+            "id": "stuck",
+            "hold": 5.5,
+            "caption": "cine.prologue.stuck",
+            "move": {
+                "from": [96, 100, 1856, 1044],
+                "to": [96, 64, 1856, 1044]
+            },
+            "layers": [
+                { "src": "assets/cinematics/prologue/06_stuck_forest.png", "size": [2048, 1208], "parallax": 0.75, "drift": [3, 0] },
+                { "src": "assets/cinematics/prologue/06_stuck_owl.png", "size": [2048, 1208], "parallax": 1.0, "drift": [0, 0] },
+                { "src": "assets/cinematics/prologue/06_stuck_leaves.png", "size": [2048, 1208], "parallax": 1.0, "drift": [5, 0] }
+            ],
+            "music": "level_01_music",
+            "sfx": "owl_greet",
+            "sfxAt": 3.0
+        },
+        {
+            "id": "hero",
+            "hold": 6.0,
+            "caption": "cine.prologue.hero",
+            "captionDelay": 3.2,
+            "move": {
+                "from": [64, 334, 1920, 1080],
+                "to": [112, 64, 1824, 1026]
+            },
+            "layers": [
+                { "src": "assets/cinematics/prologue/07_hero_sky.png", "size": [2048, 1478], "parallax": 0.7, "drift": [0, 0] },
+                { "src": "assets/cinematics/prologue/07_hero_canopy.png", "size": [2048, 1478], "parallax": 0.9, "drift": [4, 0] },
+                { "src": "assets/cinematics/prologue/07_hero_crow.png", "size": [2048, 1478], "parallax": 1.0, "drift": [0, 0] }
+            ]
+        }
+    ]
+}

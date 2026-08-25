@@ -16,11 +16,26 @@ func _ready() -> void:
 	# started but never reached a scene is still a broken game for a player.
 	_report_boot_ready()
 
-	# Route to the active profile's menu, or the login screen.
+	# Route to the active profile's menu, or the login screen -- through the
+	# prologue on a first launch.
 	if ProfileManager.get_active_user() != null:
 		SceneRouter.goto("main_menu")
+	elif _should_play_prologue():
+		SceneRouter.goto("cinematic")
 	else:
 		SceneRouter.goto("login")
+
+## The opening film plays once, before there is a profile to hang it on -- so
+## "seen" is a device fact, not a per-child one (brand/CINEMATIC_DIRECTION.md
+## 5.2). That is also the right answer for the second child on a family tablet:
+## it is a first-*launch* event, not a first-*child* event.
+##
+## Clear `crow_prologue_seen` to watch it again; ONBOARDING_AGENT.md lists it
+## with the other state-reset keys.
+func _should_play_prologue() -> bool:
+	if Persistence.has_item("crow_prologue_seen"):
+		return false
+	return SceneRouter.has_scene("cinematic")
 
 func _report_boot_ready() -> void:
 	if not OS.has_feature("web"):

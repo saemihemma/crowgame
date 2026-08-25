@@ -41,6 +41,9 @@ const PATHS := {
 	"SPRITE_SPEC": "registries/sprite_spec.json",
 	"SPRITE_REGISTRY": "registries/sprite_registry.json",
 	"SOUND_EVENTS": "audio/sound_events.json",
+	# One entry per cinematic. The key is CINEMATIC_<id upper>, which is what
+	# cinematic.gd derives from the id it is asked to play.
+	"CINEMATIC_PROLOGUE": "cinematics/prologue.json",
 }
 
 var _cache: Dictionary = {}
