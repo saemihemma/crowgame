@@ -131,6 +131,10 @@ func set_current_level(level: String) -> void:
 	if _auto_save_enabled: save()
 
 func complete_level(level_key: String) -> void:
+	# Saves written before this key existed have no completedLevels; backfill
+	# instead of crashing the first level completion on an old profile.
+	if not (_data.get("completedLevels") is Array):
+		_data["completedLevels"] = []
 	if not (_data["completedLevels"] as Array).has(level_key):
 		(_data["completedLevels"] as Array).append(level_key)
 	if _auto_save_enabled: save()
