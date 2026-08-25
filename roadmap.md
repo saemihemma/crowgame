@@ -2,7 +2,7 @@
 
 Status: Current
 Authority: The list of open work. Not a record of finished work. Runtime truth lives in the code.
-Last verified against code: 2026-08-23
+Last verified against code: 2026-08-25
 
 ## READ THIS FIRST — THIS FILE HAS ONE JOB
 

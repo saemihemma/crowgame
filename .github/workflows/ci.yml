@@ -16,18 +16,21 @@ name: CI
 # skipped run that should have failed costs far more than a redundant one.
 
 on:
+  # NO paths filter, deliberately, and that now includes output/web.
+  #
+  # Markdown is not ignored: doc validation is the check most likely to be needed
+  # by a docs-only change, and ignoring .md turned it off for exactly that case.
+  #
+  # output/web is no longer ignored either, and that was a real hole. It is the
+  # deployed artifact, and `npm run validate` carries the export-freshness gate
+  # that exists to prove it matches godot/**. Ignoring the path meant a commit
+  # touching ONLY output/web — a hand-edit, a partial copy, a re-export from the
+  # wrong tree — skipped the one check written to catch it, and left a red trunk
+  # green after a fix-by-re-export. The gate has to run on the file it guards.
   push:
     branches: [main, release]
-    # Markdown is NOT ignored: doc validation is the check most likely to be
-    # needed by a docs-only change, and ignoring .md turned it off for exactly
-    # that case. Only the committed build artifact is ignored.
-    paths-ignore: ['output/web/**']
   pull_request:
     branches: [main, release]
-    # Markdown is NOT ignored: doc validation is the check most likely to be
-    # needed by a docs-only change, and ignoring .md turned it off for exactly
-    # that case. Only the committed build artifact is ignored.
-    paths-ignore: ['output/web/**']
   workflow_dispatch:
 
 jobs:
@@ -122,7 +125,7 @@ jobs:
       - run: npm ci
       - name: Typecheck the reference kernel and the toolchain
         run: npm run typecheck
-      # Includes the colour law: 65 checks that the world palettes obey
+      # Includes the colour law: 66 checks that the world palettes obey
       # BRAND_SYSTEM §6, run against godot/data/themes because that is what the
       # game loads. It was a separate step against a duplicate copy in
       # brand/tokens/, which meant it could pass while the shipped palettes drifted.

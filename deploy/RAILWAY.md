@@ -3,7 +3,7 @@
 Status: Current
 Authority: Canonical deployment runbook. The live truth is the Railway dashboard
 plus `deploy/web/Dockerfile` and `deploy/web/Caddyfile`.
-Last verified against code: 2026-08-23
+Last verified against code: 2026-08-25
 
 ## What this is
 
@@ -57,16 +57,18 @@ That makes the cache policy simple and, more importantly, correct:
 | `index.html` | `no-store` | ~5 KB, and the only file that knows which payload belongs to this build |
 | `index.<id>.*` | `public, max-age=31536000, immutable` | the name is the content, so it can never be stale |
 
-Measured payload:
+Measured payload. **The raw column is derived from `output/web` by
+`npm run validate:docs`**, so it cannot drift from the artifact again — it had
+already drifted 2 MB before that check existed:
 
 | File | Raw | gzip |
 | --- | --- | --- |
 | `index.<id>.wasm` | 33.7 MB | 7.6 MB |
-| `index.<id>.pck` | 11.7 MB | 8.0 MB |
+| `index.<id>.pck` | 13.6 MB | 8.1 MB |
 | `index.<id>.js` + worklet | 0.3 MB | 0.1 MB |
-| **total** | **45.8 MB** | **~15.7 MB** |
+| **total** | **47.7 MB** | **~15.8 MB** |
 
-So a first launch transfers about **15.7 MB**, and a returning player transfers
+So a first launch transfers about **15.8 MB**, and a returning player transfers
 **nothing at all** for the payload — no bytes, no conditional request, no `304`.
 Only the 5 KB shell is re-fetched.
 
@@ -268,7 +270,7 @@ curl -s https://<domain>/build_info.json    # commit + build time
 ## Cost notes
 
 Railway bills egress. With a content-addressed payload served `immutable`, a
-returning player transfers ~5 KB per launch instead of ~15.7 MB. A player
+returning player transfers ~5 KB per launch instead of ~15.8 MB. A player
 launching twice a day for a month is the difference between roughly 950 MB and
 300 KB. Across a class or a family group that is the difference between egress
 being a line item and being invisible.

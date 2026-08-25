@@ -3,8 +3,8 @@
  *
  * `railway.json` -> `deploy/web/Dockerfile` copies `output/web` straight into
  * Caddy, so WHATEVER IS IN THAT DIRECTORY IS THE LIVE GAME. It is produced by
- * running `bash godot/tools/build_web.sh` by hand and committing a ~23MB pack
- * plus a ~35MB wasm, and nothing checked that it matched `godot/**`. The
+ * running `bash godot/tools/build_web.sh` by hand and committing a ~14MB pack
+ * plus a ~34MB wasm, and nothing checked that it matched `godot/**`. The
  * deployment silently drifted a whole feature behind the source once, and cost a
  * play session before anyone noticed.
  *

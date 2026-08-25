@@ -4,7 +4,7 @@ Status: Supportive
 Authority: Written for parents. The behaviour it describes is implemented in
 `godot/scripts/**` and `server/**`; if they ever disagree, the code is what runs
 and this page is a bug.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 Hörmann is a maths game for young children. This page says, in plain terms, what it
 stores, what leaves your device, and how to delete all of it.

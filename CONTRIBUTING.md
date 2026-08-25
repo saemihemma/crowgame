@@ -3,7 +3,7 @@
 Status: Supportive
 Authority: Contribution process. The verification loop itself is
 [ONBOARDING.md](./ONBOARDING.md).
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 Hörmann is a maths game played by young children, including the author's own. That
 shapes what a good contribution looks like more than anything else here.

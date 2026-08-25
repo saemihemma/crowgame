@@ -136,11 +136,12 @@ func endonym(code: String) -> String:
 ## ahead of the locale bundle, so a crow_translations value in the store still
 ## outranks every shipped string. Removing that is a behaviour change for anyone
 ## who has one, so it is a decision rather than a cleanup -- see roadmap.md.
+##
+## _save_overrides() went with the six: it was their only caller, so deleting them
+## orphaned it directly beneath a comment asserting nothing can write one.
 func _load_overrides() -> void:
 	var raw: Variant = Persistence.get_item(STORAGE_KEY)
 	if raw != null:
 		var parsed: Variant = JSON.parse_string(String(raw))
 		_overrides = parsed if parsed is Dictionary else {}
 
-func _save_overrides() -> void:
-	Persistence.set_item(STORAGE_KEY, JSON.stringify(_overrides))

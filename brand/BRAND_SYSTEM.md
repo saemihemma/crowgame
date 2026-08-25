@@ -2,7 +2,7 @@
 
 Status: Supportive
 Authority: Canonical brand, art-direction and UI standard. Runtime truth still lives in `src/**`, `godot/data/**` and the manifests.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 This is the one brand file. If another document disagrees with this one about
 colour, type, motion, tone or HUD layout, this one is right and the other one is
@@ -15,18 +15,22 @@ the exact shape `ThemeDefinition` expects.
 
 ## 0. The problem this document exists to solve
 
-Findings from the current build, 2026-08-24:
+**The founding diagnosis, 2026-08-24.** This is the problem statement the rest of
+this document was written against, kept because it is the reason the brand system
+exists. It is NOT a description of the current build: four of the six gaps are now
+closed, and the table says which. Where a row is still open it names where the
+work is tracked.
 
-| Symptom | Evidence | Consequence |
+| Symptom | Evidence at the time | Status |
 | --- | --- | --- |
-| Every level looks the same | all six `*.spec.json` declare `"theme": "forest"`, and every entry in `level_registry.json` loads the same `level1_tiles.png` | there is no sense of travel; world 5 feels like world 1 |
-| The theme system is built but unused | `ThemeManager` supports swapping, only `forest` and `scifi` are registered, and `scifi` is never selected | the most valuable art lever in the codebase is idle |
-| One enemy exists | `enemy_registry.json` contains `cockroach_basic` and nothing else | no escalation, no world identity, no reason to look up |
-| The HUD is a left-edge text stack | `HUDScene` places health at `16,16`, coins at `16,56`, owls at `16,88` | the goal metric (owls saved) has the same visual weight as a debug readout |
-| Failure is painted red | `MathBoard.showWrongFeedback()` fills the chosen button with `danger` for 400ms and flies "Try again" up in a hardcoded `#ff6666` | the most confidence-sensitive moment in the game uses the colour of damage |
-| Colour has no law | nothing measured contrast, hazard separation or the red rule; the two skins that existed were never checked against any of it | one of them still fails: `scifi` hazard vs `ground_lit` is 2.84 against a 3.0 floor |
+| Every level looks the same | all six `*.spec.json` declared `"theme": "forest"`, and every entry in `level_registry.json` loaded the same `level1_tiles.png` | **partly closed** — the six specs now declare the five worlds, and each level selects its own tileset. Every registry entry still carries a `level1_tiles.png` reference that nothing selects; tracked in `../roadmap.md` |
+| The theme system is built but unused | `ThemeManager` supported swapping, only `forest` and `scifi` were registered, and `scifi` was never selected | **closed** — the five world themes are registered and selected per level from `level_registry.json`; both legacy skins are deleted |
+| One enemy exists | `enemy_registry.json` contains `cockroach_basic` and nothing else | **open** — still one enemy |
+| The HUD is a left-edge text stack | health at `16,16`, coins at `16,56`, owls at `16,88`, all plain text | **closed** — `hud.gd` composes `HeartRow`, `CoinChip` and `OwlRing` as separate pods |
+| Failure is painted red | the chosen button filled with `danger` for 400ms and "Try again" flew up in a hardcoded `#ff6666` | **closed** — the wrong-answer beat is amber over 900ms, and `text_error` is pinned to `notyet` in every theme by the colour law |
+| Colour has no law | nothing measured contrast, hazard separation or the red rule | **closed** — `tools/verify_palettes.py` runs 66 checks inside `npm run validate`, against the palettes the game actually loads, and asserts that every registered theme is gated |
 
-Everything below is written to close those six gaps.
+Everything below was written to close those six gaps.
 
 ---
 

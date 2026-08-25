@@ -2,7 +2,7 @@
 
 Status: Supportive
 Authority: Per-world art direction. Brand law lives in `brand/BRAND_SYSTEM.md`; runtime truth lives in `godot/**`.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 Five worlds. Companion to [BRAND_SYSTEM.md](./BRAND_SYSTEM.md), which owns
 everything that does **not** change per world. Tokens in `godot/data/themes/`.
@@ -11,7 +11,7 @@ everything that does **not** change per world. Tokens in `godot/data/themes/`.
 
 ## The ladder
 
-Today all six level specs declare `"theme": "forest"` and every registry entry
+When this was written all six level specs declared `"theme": "forest"` and every registry entry
 loads the same `level1_tiles.png`. Five levels, one look. The ladder below fixes
 that, and it is sequenced so that **each world contradicts the one before it** —
 if two adjacent worlds share a hue story or an emotional register, one of them
@@ -40,7 +40,7 @@ Three deliberate structural choices:
   like a summit.
 
 **Schema note.** `level-spec.schema.json` enums `theme` to
-`["forest","cave","village","mountain","sky","underwater"]`. Replace that list
+`["forest","cave","village","mountain","sky","underwater"]` — since replaced with the five world ids. Replace that list
 with the five world ids below so a level spec's `theme`, a `ThemeManager` id and
 a token filename are the same word. Until then the safe mapping is
 forest / cave / village / mountain / sky in ladder order.
@@ -720,4 +720,4 @@ Sequenced so that something is visibly better after every step.
 
 Step 1 is a day of JSON and three small code changes, and it fixes the single
 biggest art problem in the build: **six levels that currently all declare
-`"theme": "forest"` and load the same tileset.**
+`"theme": "forest"` and loaded the same tileset. Both are now fixed: the specs name the five worlds and each selects its own tileset.**

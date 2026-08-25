@@ -2,7 +2,7 @@
 
 Status: Supportive
 Authority: Index for the brand artifacts in this folder. Brand law is in `BRAND_SYSTEM.md`; runtime truth is in `godot/**`.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 | File | What it owns |
 | --- | --- |

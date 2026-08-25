@@ -2,7 +2,7 @@
 
 Status: Supportive
 Authority: The list of art assets still to generate, with their sizes and destinations. Runtime truth is the Godot project under `godot/` - its registries, theme files and tuning JSON.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 Every art asset the five worlds need, in the order worth making them, with the
 exact pixel dimensions and the exact path each file goes to. Design intent lives

@@ -2,7 +2,7 @@
 
 Status: Supportive
 Authority: Reporting process and the current security posture.
-Last verified against code: 2026-08-24
+Last verified against code: 2026-08-25
 
 Hörmann stores learning data about young children. Please treat anything in that
 area as worth reporting even if you are unsure it is exploitable.
@@ -56,7 +56,8 @@ anything that recovers a device token from stored data.
 ## Data handling
 
 See [PRIVACY.md](./PRIVACY.md) for what is stored and for how long. In short:
-error events are deleted after 30 days by dropping day partitions; the last 20
-save versions per child are kept so a bad sync is recoverable; and a family can
+error events are deleted after 30 days by dropping day partitions
+(`CROW_ERROR_RETAIN_DAYS`); the last 20 save versions per child are kept so a bad
+sync is recoverable (`CROW_SAVE_HISTORY_DEPTH`); and a family can
 export everything or delete everything at any time, with the delete cascading
 immediately.

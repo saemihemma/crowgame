@@ -133,17 +133,34 @@ async function main() {
         });
         const distinctColors = render.distinctColors;
 
-        // How much of an iPad screen the 16:9 game actually uses. Recorded so a
-        // change to the stretch/aspect policy shows up as a number, not a vibe.
+        // How much of an iPad screen the game actually uses — gate B1.
+        //
+        // This used to compute the bars from a HARDCODED 16:9, which made it a
+        // false negative the moment the stretch policy changed. Under
+        // `stretch/aspect=expand` the viewport IS the window, so the canvas
+        // fills it and there are no bars — but the old maths reported a phantom
+        // 156px / 19.1% anyway, which is the exact figure the switch to `expand`
+        // was made to eliminate. Its own comment claimed a policy change would
+        // "show up as a number"; hardcoding the aspect is what stopped that
+        // being true.
+        //
+        // So measure what is actually on screen: the canvas box against the
+        // viewport, in both axes.
         const letterbox = await page.evaluate(() => {
             const c = document.querySelector('canvas');
             const r = c.getBoundingClientRect();
-            const usedH = (r.width * 9) / 16;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const barsH = Math.max(0, Math.round(vh - r.height));
+            const barsW = Math.max(0, Math.round(vw - r.width));
+            const usedPct = Math.round(((r.width * r.height) / (vw * vh)) * 1000) / 10;
             return {
-                cssViewport: `${Math.round(r.width)}x${Math.round(r.height)}`,
-                gameAspect: '16:9',
-                barsTotalPx: Math.max(0, Math.round(r.height - usedH)),
-                screenUsedPct: Math.round((usedH / r.height) * 1000) / 10,
+                cssViewport: `${Math.round(vw)}x${Math.round(vh)}`,
+                canvasBox: `${Math.round(r.width)}x${Math.round(r.height)}`,
+                barsTotalPx: barsH + barsW,
+                verticalBarsPx: barsH,
+                horizontalBarsPx: barsW,
+                screenUsedPct: usedPct,
             };
         });
 
@@ -166,7 +183,7 @@ async function main() {
 
         console.log(`canvas          : ${canvas.width}x${canvas.height} (css ${canvas.clientWidth}x${canvas.clientHeight})`);
         console.log(`distinct colors : ${distinctColors} (full canvas)`);
-        console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars, game uses ${letterbox.screenUsedPct}% of screen height`);
+        console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars (${letterbox.verticalBarsPx}v/${letterbox.horizontalBarsPx}h), canvas covers ${letterbox.screenUsedPct}% of the viewport`);
         console.log(`console errors  : ${consoleErrors.length}`);
         console.log(`failed requests : ${failedRequests.length}`);
         for (const e of consoleErrors.slice(0, 5)) console.log(`  ERR ${e}`);

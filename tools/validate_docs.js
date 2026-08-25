@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 /*
  * Doc validation.
@@ -29,10 +30,18 @@ const REQUIRED_DOC_STATUSES = {
     'ARCHITECTURE.md': 'Current',
     'PRODUCT.md': 'Current',
     'roadmap.md': 'Current',
+    // Governs the production deploy and was outside this map entirely, which is
+    // how its "Measured payload" table drifted 2 MB from the artifact it
+    // describes without anything noticing.
+    'deploy/RAILWAY.md': 'Current',
     'CONTRIBUTING.md': 'Supportive',
     'PRIVACY.md': 'Supportive',
     'SECURITY.md': 'Supportive',
     'LICENSE_ATTRIBUTIONS.md': 'Supportive',
+    'brand/README.md': 'Supportive',
+    'brand/BRAND_SYSTEM.md': 'Supportive',
+    'brand/LEVEL_ART_BIBLE.md': 'Supportive',
+    'brand/ASSET_MANIFEST.md': 'Supportive',
 };
 
 const STORAGE_KEYS = [
@@ -101,6 +110,70 @@ function walkFiles(relativeDirectory, allowedExtensions) {
     }
 
     return files;
+}
+
+/**
+ * A `Last verified against code:` stamp older than the file's own last commit is
+ * a lie in the header, and it is derivable — so it is checked rather than
+ * trusted. Ten of nineteen docs were stale by this measure, two of them
+ * Status: Current, because the old validator only checked that the line PARSED.
+ *
+ * On a shallow CI checkout `git log` knows only the files the head commit
+ * touched, so unknown files are skipped. That degrades to exactly the useful
+ * case: you cannot edit a doc without bumping its stamp in the same commit.
+ */
+function validateFreshnessStamps() {
+    let gitWorks = true;
+    try {
+        execFileSync('git', ['rev-parse', '--git-dir'], { cwd: root, stdio: 'ignore' });
+    } catch {
+        gitWorks = false;
+    }
+    if (!gitWorks) {
+        console.log('  (no git available — freshness stamps not checked)');
+        return;
+    }
+
+    for (const doc of walkFiles('.', new Set(['.md']))) {
+        const stamp = (readText(doc).match(/^Last verified against code:\s+(\d{4}-\d{2}-\d{2})$/m) || [])[1];
+        if (!stamp) continue;
+        let lastTouched;
+        try {
+            lastTouched = execFileSync('git', ['log', '-1', '--format=%cs', '--', doc],
+                { cwd: root, encoding: 'utf8' }).trim();
+        } catch {
+            continue;
+        }
+        if (!lastTouched) continue;
+        if (stamp < lastTouched) {
+            fail(`${doc}: "Last verified against code: ${stamp}" predates the file's own last commit `
+                + `(${lastTouched}). Re-read it against the code and bump the stamp, or do not claim it.`);
+        }
+    }
+}
+
+/**
+ * deploy/RAILWAY.md quotes the payload it will serve. Those bytes are on disk,
+ * so the table is derived rather than trusted — it had drifted 2 MB.
+ */
+function validateDeployPayloadTable() {
+    const DOC = 'deploy/RAILWAY.md';
+    const webDir = path.join(root, 'output/web');
+    if (!fs.existsSync(webDir)) return;
+
+    const mib = bytes => Math.round((bytes / 1048576) * 10) / 10;
+    const sizeOf = suffix => {
+        const hit = fs.readdirSync(webDir).find(f => f.endsWith(suffix));
+        return hit ? fs.statSync(path.join(webDir, hit)).size : 0;
+    };
+    const wasm = sizeOf('.wasm');
+    const pck = sizeOf('.pck');
+    const total = fs.readdirSync(webDir)
+        .reduce((sum, f) => sum + fs.statSync(path.join(webDir, f)).size, 0);
+
+    ensureDocContains(DOC, `| \`index.<id>.wasm\` | ${mib(wasm)} MB`, 'wasm payload size');
+    ensureDocContains(DOC, `| \`index.<id>.pck\` | ${mib(pck)} MB`, 'pck payload size');
+    ensureDocContains(DOC, `| **total** | **${mib(total)} MB**`, 'total payload size');
 }
 
 function ensureDocContains(relativePath, snippet, description) {
@@ -420,6 +493,8 @@ function main() {
     validateMathAuthoringReports();
     validateLiveSourceReferences();
     validateRoadmapHasNoCompletedItems();
+    validateFreshnessStamps();
+    validateDeployPayloadTable();
 
     if (errors.length > 0) {
         console.error('\nDocumentation validation failed:');
