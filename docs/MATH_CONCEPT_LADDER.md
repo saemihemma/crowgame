@@ -155,19 +155,34 @@ two-digit step, so it has never been expressible as a step range.
 
 ### Multiplication
 
-| Concept | Steps | The idea |
-| --- | --- | --- |
-| `multiplication.groups_of` | 0-7 | Equal groups. The times sign means "groups of". |
-| `multiplication.tables_small` | 8-12 | Counting in fives and sixes beats counting in ones. |
-| `multiplication.tables_large` | 13-14 | Lean on a fact you know to reach one you do not. |
+The step order is the measured table order -- easiest first, the 6-8 cluster last
+(MATH_AUTHORING_STANDARDS §1/§3) -- so a child meets ×1, then ×2, then ×10, ×5,
+×3, ×4, then zero and the squares, and only then the hard tables. A fact belongs
+to the EARLIEST table containing it: 6×2 is a doubling fact, not a ×6 fact.
+
+| Concept | Steps | Tables | The idea |
+| --- | --- | --- | --- |
+| `multiplication.equal_groups` | 0-1 | ×1, ×2 | Equal groups. The times sign means "groups of", and doubling is the first one. |
+| `multiplication.skip_counting` | 2-3 | ×10, ×5 | The tables that fall out of counting. You already know these. |
+| `multiplication.threes_and_fours` | 4-5 | ×3, ×4 | The first ones you learn rather than count. |
+| `multiplication.zero_and_squares` | 6-7 | ×0, n×n | Groups of nothing, and the squares the harder tables lean on. |
+| `multiplication.harder_tables` | 8-12 | ×6, ×7, ×8 | The cluster left over once the easy tables are known. |
+| `multiplication.two_digit` | 13-14 | two-digit | Split by tens and add the parts. |
 
 ### Division
 
-| Concept | Steps | The idea |
-| --- | --- | --- |
-| `division.sharing` | 0-8 | Sharing fairly. The same picture as multiplication, read backwards. |
-| `division.tables` | 9-14 | Every division is a multiplication you already know. |
-| `division.larger` | 15-15 | Stop counting, start asking which fact fits. |
+Each division rung is the multiplication rung it inverts, plus one, so the two
+ladders are the same course read in two directions -- which is the whole claim
+every division lesson here makes.
+
+| Concept | Steps | Shares | The idea |
+| --- | --- | --- | --- |
+| `division.sharing` | 0-2 | ÷1, ÷2 | Sharing fairly. The same picture as equal groups, read backwards. |
+| `division.tens_and_fives` | 3-4 | ÷10, ÷5 | Tens and fives share out as easily as they count. |
+| `division.threes_and_fours` | 5-6 | ÷3, ÷4 | Every share you can do is a times you already know. |
+| `division.zero_and_squares` | 7-8 | 0÷n, n÷n | Nothing to share, and the share that matches its own group count. |
+| `division.harder_tables` | 9-12 | ÷6, ÷7, ÷8 | Stop counting, start asking which fact fits. |
+| `division.two_digit` | 13-15 | two-digit | Bigger dividends, the same question. |
 
 ## The lesson
 

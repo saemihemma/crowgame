@@ -81,7 +81,7 @@ Game:
 - **70** `.gd` scripts under `godot/scripts/`, **25** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **552** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **582** keys, matched key-for-key by
   `strings_is.json`
 - **20** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
@@ -91,11 +91,11 @@ Maths content — `DataManager` loads 4 math pools totaling 4039 problems:
 - `dataset`: 40
 - `easy`: 15
 
-Those 4039 problems are grouped into **43** concepts by
-`godot/data/curriculum/concept_ladder.json` — **34** rungs keyed on step range
-plus **9** overlays keyed on problem shape — of which **41** open with a
-**4**-card lesson from `godot/data/curriculum/tutorials.json`: **41** lessons,
-**164** cards. The two without one are `addition.multi_digit` and
+Those 4039 problems are grouped into **49** concepts by
+`godot/data/curriculum/concept_ladder.json` — **40** rungs keyed on step range
+plus **9** overlays keyed on problem shape — of which **47** open with a
+**4**-card lesson from `godot/data/curriculum/tutorials.json`: **47** lessons,
+**188** cards. The two without one are `addition.multi_digit` and
 `subtraction.multi_digit`, deliberately, because the owl's operand cap of 20
 means no child can reach them.
 `reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,

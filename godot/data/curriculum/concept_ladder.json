@@ -512,34 +512,73 @@
       "tutorial": "number_sequence.big_skips"
     },
     {
-      "id": "multiplication.groups_of",
+      "id": "multiplication.equal_groups",
       "domain": "multiplication",
       "steps": [
         0,
+        1
+      ],
+      "skills": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "tutorial": "multiplication.equal_groups"
+    },
+    {
+      "id": "multiplication.skip_counting",
+      "domain": "multiplication",
+      "steps": [
+        2,
+        3
+      ],
+      "skills": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "tutorial": "multiplication.skip_counting"
+    },
+    {
+      "id": "multiplication.threes_and_fours",
+      "domain": "multiplication",
+      "steps": [
+        4,
+        5
+      ],
+      "skills": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "tutorial": "multiplication.threes_and_fours"
+    },
+    {
+      "id": "multiplication.zero_and_squares",
+      "domain": "multiplication",
+      "steps": [
+        6,
         7
       ],
       "skills": [
         "multiplication_tables",
         "multiplication_word_problems"
       ],
-      "tutorial": "multiplication.groups_of"
+      "tutorial": "multiplication.zero_and_squares"
     },
     {
-      "id": "multiplication.tables_small",
+      "id": "multiplication.harder_tables",
       "domain": "multiplication",
       "steps": [
         8,
         12
       ],
       "skills": [
-        "multiplication_tables",
         "multiplication_place_value",
+        "multiplication_tables",
         "multiplication_word_problems"
       ],
-      "tutorial": "multiplication.tables_small"
+      "tutorial": "multiplication.harder_tables"
     },
     {
-      "id": "multiplication.tables_large",
+      "id": "multiplication.two_digit",
       "domain": "multiplication",
       "steps": [
         13,
@@ -548,47 +587,85 @@
       "skills": [
         "multiplication_two_digit"
       ],
-      "tutorial": "multiplication.tables_large"
+      "tutorial": "multiplication.two_digit"
     },
     {
       "id": "division.sharing",
       "domain": "division",
       "steps": [
         0,
-        8
+        2
       ],
       "skills": [
-        "simple_division",
-        "division_word_problems"
+        "division_word_problems",
+        "simple_division"
       ],
       "tutorial": "division.sharing"
     },
     {
-      "id": "division.tables",
+      "id": "division.tens_and_fives",
+      "domain": "division",
+      "steps": [
+        3,
+        4
+      ],
+      "skills": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "tutorial": "division.tens_and_fives"
+    },
+    {
+      "id": "division.threes_and_fours",
+      "domain": "division",
+      "steps": [
+        5,
+        6
+      ],
+      "skills": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "tutorial": "division.threes_and_fours"
+    },
+    {
+      "id": "division.zero_and_squares",
+      "domain": "division",
+      "steps": [
+        7,
+        8
+      ],
+      "skills": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "tutorial": "division.zero_and_squares"
+    },
+    {
+      "id": "division.harder_tables",
       "domain": "division",
       "steps": [
         9,
-        14
+        12
       ],
       "skills": [
-        "simple_division",
-        "division_place_value",
-        "division_two_digit",
-        "division_word_problems"
+        "division_word_problems",
+        "simple_division"
       ],
-      "tutorial": "division.tables"
+      "tutorial": "division.harder_tables"
     },
     {
-      "id": "division.larger",
+      "id": "division.two_digit",
       "domain": "division",
       "steps": [
-        15,
+        13,
         15
       ],
       "skills": [
+        "division_place_value",
         "division_two_digit"
       ],
-      "tutorial": "division.larger"
+      "tutorial": "division.two_digit"
     },
     {
       "id": "multiplication.missing_factor",

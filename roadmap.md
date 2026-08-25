@@ -299,10 +299,14 @@ multi-problem UI (progress header, alternate-domain follow-ups) stays dormant
 at the baseline but keeps working for any NPC that raises the count.
 
 ### Multiplication and division need a fate decision
-650 authored problems sit in domains the owl never serves — not in its
-`problemTypes`, and with almost no content below step 3 (division's lowest
-band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
-the rotation for older kids, or park them explicitly in Settled.
+~1150 authored problems sit in domains the owl never serves — not in its
+`problemTypes`. The on-ramp objection is now answered: both ladders were
+re-cut into six teaching stages each, in measured table order (×1, ×2, ×10, ×5,
+×3, ×4, zero and squares, then the 6-8 cluster, then two-digit), every stage has
+its own lesson, and the lowest stages hold 121 and 64 problems respectively. So
+the remaining decision is purely whether to serve these domains at all — add
+them to the rotation for older kids, or park them explicitly in Settled. There
+is no longer any content work standing in the way of either answer.
 
 ### The trophy shelf has no heading
 `trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with

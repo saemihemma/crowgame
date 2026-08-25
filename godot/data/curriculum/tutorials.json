@@ -1351,7 +1351,7 @@
       ]
     },
     {
-      "id": "multiplication.groups_of",
+      "id": "multiplication.equal_groups",
       "cards": [
         {
           "body": "see",
@@ -1381,24 +1381,169 @@
         },
         {
           "body": "try",
-          "visual": "groups",
+          "visual": "equation",
           "params": {
-            "groups": 3,
-            "each": 4
+            "a": 2,
+            "op": "×",
+            "b": 4
           },
           "choice": {
             "options": [
-              10,
-              12,
-              14
+              6,
+              8,
+              10
             ],
-            "correct": 12
+            "correct": 8
           }
         }
       ]
     },
     {
-      "id": "multiplication.tables_small",
+      "id": "multiplication.skip_counting",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 3,
+            "each": 10
+          }
+        },
+        {
+          "body": "model",
+          "visual": "groups",
+          "params": {
+            "groups": 4,
+            "each": 5
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 4,
+            "op": "×",
+            "b": 5,
+            "result": 20
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 3,
+            "op": "×",
+            "b": 10
+          },
+          "choice": {
+            "options": [
+              13,
+              30,
+              300
+            ],
+            "correct": 30
+          }
+        }
+      ]
+    },
+    {
+      "id": "multiplication.threes_and_fours",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 3,
+            "each": 4
+          }
+        },
+        {
+          "body": "model",
+          "visual": "groups",
+          "params": {
+            "groups": 4,
+            "each": 3
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 3,
+            "op": "×",
+            "b": 7,
+            "result": 21
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 4,
+            "op": "×",
+            "b": 7
+          },
+          "choice": {
+            "options": [
+              24,
+              28,
+              32
+            ],
+            "correct": 28
+          }
+        }
+      ]
+    },
+    {
+      "id": "multiplication.zero_and_squares",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 3,
+            "each": 0
+          }
+        },
+        {
+          "body": "model",
+          "visual": "groups",
+          "params": {
+            "groups": 4,
+            "each": 4
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 4,
+            "op": "×",
+            "b": 4,
+            "result": 16
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 5,
+            "op": "×",
+            "b": 0
+          },
+          "choice": {
+            "options": [
+              0,
+              1,
+              5
+            ],
+            "correct": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "multiplication.harder_tables",
       "cards": [
         {
           "body": "see",
@@ -1448,7 +1593,7 @@
       ]
     },
     {
-      "id": "multiplication.tables_large",
+      "id": "multiplication.two_digit",
       "cards": [
         {
           "body": "see",
@@ -1546,7 +1691,151 @@
       ]
     },
     {
-      "id": "division.tables",
+      "id": "division.tens_and_fives",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 4,
+            "each": 5
+          }
+        },
+        {
+          "body": "model",
+          "visual": "groups",
+          "params": {
+            "groups": 3,
+            "each": 10
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 20,
+            "op": "÷",
+            "b": 5,
+            "result": 4
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 40,
+            "op": "÷",
+            "b": 4
+          },
+          "choice": {
+            "options": [
+              4,
+              10,
+              14
+            ],
+            "correct": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "division.threes_and_fours",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 3,
+            "each": 7
+          }
+        },
+        {
+          "body": "model",
+          "visual": "groups",
+          "params": {
+            "groups": 4,
+            "each": 6
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 21,
+            "op": "÷",
+            "b": 3,
+            "result": 7
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 24,
+            "op": "÷",
+            "b": 4
+          },
+          "choice": {
+            "options": [
+              4,
+              6,
+              8
+            ],
+            "correct": 6
+          }
+        }
+      ]
+    },
+    {
+      "id": "division.zero_and_squares",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "groups",
+          "params": {
+            "groups": 4,
+            "each": 0
+          }
+        },
+        {
+          "body": "model",
+          "visual": "groups",
+          "params": {
+            "groups": 5,
+            "each": 5
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 0,
+            "op": "÷",
+            "b": 4,
+            "result": 0
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 25,
+            "op": "÷",
+            "b": 5
+          },
+          "choice": {
+            "options": [
+              4,
+              5,
+              6
+            ],
+            "correct": 5
+          }
+        }
+      ]
+    },
+    {
+      "id": "division.harder_tables",
       "cards": [
         {
           "body": "see",
@@ -1596,7 +1885,7 @@
       ]
     },
     {
-      "id": "division.larger",
+      "id": "division.two_digit",
       "cards": [
         {
           "body": "see",

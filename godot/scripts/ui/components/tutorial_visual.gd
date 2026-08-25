@@ -432,7 +432,10 @@ func _draw_groups() -> void:
 	var token := _tune("token_size", 26.0) * 0.8
 	var gap := _tune("token_gap", 9.0) * 0.8
 	var group_gap := _tune("group_gap", 24.0)
-	var columns: int = maxi(1, int(ceil(sqrt(float(each)))))
+	# Rows of five, for the same reason the ten-frame is five and five: a group
+	# of ten laid out four-four-two has to be counted, and one laid out five and
+	# five is READ. A squarish sqrt block looked tidier and taught less.
+	var columns: int = clampi(each, 1, FRAME_COLUMNS)
 	var rows: int = maxi(1, int(ceil(float(each) / float(columns))))
 	var ring_w := columns * (token + gap) + gap
 	var ring_h := rows * (token + gap) + gap
