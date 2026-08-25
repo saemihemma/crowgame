@@ -54,7 +54,7 @@ class HttpMailer implements Mailer {
             body: JSON.stringify({
                 from: this.from,
                 to: [to],
-                subject: 'Your Crow sign-in link',
+                subject: 'Your Hörmann sign-in link',
                 text: [
                     'Open this link on the device your child plays on:',
                     '',
