@@ -120,15 +120,22 @@ jobs:
     name: Content and docs validation
     runs-on: ubuntu-latest
     steps:
-      # depth 2, blobs filtered. The doc validator dates each `Last verified
-      # against code:` stamp against git history, and at depth 1 there is one
-      # grafted commit so EVERY file looks like HEAD touched it — which made the
-      # check demand today's date on every doc and fail on four that were
-      # correct. Two commits is enough to diff HEAD against its parent and tell
-      # the difference; `blob:none` keeps that from refetching the 47 MB export.
+      # FULL history, blobs filtered.
+      #
+      # The doc validator dates each `Last verified against code:` stamp against
+      # git history, and it can only judge a file whose real last-touch commit is
+      # in the clone. This was `fetch-depth: 2`, which meant it judged only the
+      # `.md` files changed in the tip commit and declined every other one — 0 of
+      # 19 on a commit that touched no docs, and a stale stamp introduced in any
+      # commit but the last of a push was invisible.
+      #
+      # The depth was chosen to avoid refetching the 47 MB export, which confused
+      # depth with blob filtering. Measured on this repo: commits and trees are
+      # ~1 MB of the object graph, blobs are ~907 MB. `filter: 'blob:none'` is
+      # what controls the cost; the depth controls how much of the gate works.
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
           filter: 'blob:none'
       - uses: actions/setup-node@v4
         with:
@@ -200,7 +207,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm --prefix server ci
-      # No Godot needed: output/web is committed, so this exercises the exact
-      # bytes that get deployed.
+      # No Godot needed for either step: output/web is committed, so both
+      # exercise the exact bytes that get deployed.
       - name: Run the pipeline end to end
         run: npm run e2e:errors
+
+      # ONBOARDING.md calls this "not optional for a shipping change" and names
+      # "trusting the source suite about the export" as a known failure mode of
+      # this project — and it was on the honour system, referenced nowhere in CI.
+      # It needs only the committed export and a browser, both of which this job
+      # already has, so it costs one step. It gates the render (>=256 distinct
+      # canvas colours; a working build measures ~2700) and the geometry (0px of
+      # letterbox, which stretch/aspect=expand guarantees), so a blank frame or a
+      # return of the 19.1% letterbox fails here rather than printing a number
+      # nobody reads.
+      - name: The exported build must boot and render
+        run: npm run web:boot-smoke

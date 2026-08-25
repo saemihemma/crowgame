@@ -23,6 +23,7 @@
         "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js && node tools/validate_i18n.mjs && node tools/validate_export.mjs && python3 tools/verify_palettes.py",
         "validate:assets": "node tools/validate_assets.js",
         "validate:docs": "node tools/validate_docs.js",
+        "validate:docs-test": "bash tools/test_validate_docs.sh",
         "validate:i18n": "node tools/validate_i18n.mjs",
         "web:boot-smoke": "node godot/tools/web_boot_smoke.mjs",
         "web:build": "bash godot/tools/build_web.sh"

@@ -82,6 +82,24 @@ would have.
 Some things still need a human: movement feel, difficulty pacing, whether a moment
 lands for a child. Say in your PR what you played and what you saw.
 
+## The doc gate, and what your clone can see
+
+`npm run validate` dates every `Last verified against code:` stamp against git
+history, so editing a doc without bumping its stamp fails the build. That check
+can only judge a file whose real last-touch commit is in your clone — on a
+truncated history it declines, and if it can judge NOTHING it fails rather than
+passing quietly. Worth knowing because agent checkouts are often shallow.
+
+If you touch `tools/validate_docs.js` or any checkout depth, run:
+
+```bash
+npm run validate:docs-test     # clones itself at three depths and mutates docs
+```
+
+That gate has shipped broken three times, every time because the clone the author
+stood in differed from the clone CI stood in. The harness exists so the fourth
+time is caught before the push.
+
 ## Docs are part of the change
 
 If you change a count, a storage key, an answer mode, or anything on the wire,

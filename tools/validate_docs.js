@@ -193,6 +193,20 @@ function validateFreshnessStamps() {
     // reads like the hole it was.
     console.log(`  freshness stamps: ${judged} of ${stamped} stamped doc(s) dated against git history`
         + (declined ? `, ${declined} declined (last touch is the shallow boundary)` : ''));
+
+    // And a floor, because the denominator alone was not enough. Twice now this
+    // gate has degraded to near-zero enforcement while exiting 0: first judging
+    // 4 of 19 on a bad discriminator, then 0 of 19 on a shallow CI checkout. Both
+    // times it printed a cheerful number and passed. Observability was the wrong
+    // fix for a defect that called for enforcement — a gate that judges nothing
+    // has to fail, or the next person tuning a checkout for speed silently turns
+    // it off again.
+    if (stamped > 0 && judged === 0) {
+        fail(`freshness stamps: ${stamped} doc(s) carry a "Last verified against code:" line and NONE `
+            + 'could be dated, so this check enforced nothing. Git history is too shallow to see any '
+            + "doc's last-touch commit — check out with fetch-depth: 0 (keep filter: 'blob:none'; "
+            + 'the blobs, not the depth, are what cost anything).');
+    }
 }
 
 /**
@@ -221,9 +235,20 @@ function validateDeployPayloadTable() {
     const total = fs.readdirSync(webDir)
         .reduce((sum, f) => sum + fs.statSync(path.join(webDir, f)).size, 0);
 
+    // The .js row and the gzip TOTAL were the two figures left ungated, and the
+    // egress arithmetic below the table is computed from the total.
+    const jsFiles = fs.readdirSync(webDir).filter(f => f.endsWith('.js'));
+    const sum = (files, fn) => files.reduce((acc, f) => acc + fn(path.join(webDir, f)), 0);
+    const jsRaw = sum(jsFiles, f => fs.statSync(f).size);
+    const jsGzip = sum(jsFiles, f => zlib.gzipSync(fs.readFileSync(f), { level: 9 }).length);
+    const payload = fs.readdirSync(webDir).filter(f => /\.(wasm|pck|js)$/.test(f));
+    const gzipTotal = sum(payload, f => zlib.gzipSync(fs.readFileSync(f), { level: 9 }).length);
+
     ensureDocContains(DOC, `| \`index.<id>.wasm\` | ${mib(wasm)} MB | ${mib(gzipOf('.wasm'))} MB |`, 'wasm payload row');
     ensureDocContains(DOC, `| \`index.<id>.pck\` | ${mib(pck)} MB | ${mib(gzipOf('.pck'))} MB |`, 'pck payload row');
-    ensureDocContains(DOC, `| **total** | **${mib(total)} MB**`, 'total payload size');
+    ensureDocContains(DOC, `| \`index.<id>.js\` + worklet | ${mib(jsRaw)} MB | ${mib(jsGzip)} MB |`, 'js payload row');
+    ensureDocContains(DOC, `| **total** | **${mib(total)} MB** | **~${mib(gzipTotal)} MB** |`, 'payload totals');
+    ensureDocContains(DOC, `a first launch transfers about **${mib(gzipTotal)} MB**`, 'first-launch transfer figure');
 }
 
 function ensureDocContains(relativePath, snippet, description) {

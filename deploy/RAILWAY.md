@@ -69,9 +69,9 @@ by a few tenths of a MB:
 | `index.<id>.wasm` | 33.7 MB | 7.7 MB |
 | `index.<id>.pck` | 13.6 MB | 8.1 MB |
 | `index.<id>.js` + worklet | 0.3 MB | 0.1 MB |
-| **total** | **47.7 MB** | **~15.8 MB** |
+| **total** | **47.7 MB** | **~15.9 MB** |
 
-So a first launch transfers about **15.8 MB**, and a returning player transfers
+So a first launch transfers about **15.9 MB**, and a returning player transfers
 **nothing at all** for the payload — no bytes, no conditional request, no `304`.
 Only the 5 KB shell is re-fetched.
 
