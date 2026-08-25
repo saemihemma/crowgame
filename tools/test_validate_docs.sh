@@ -19,11 +19,20 @@
 #      where the only judgeable docs are those changed in the tip commit. On a
 #      commit touching no docs it judged 0 of 19 and passed.
 #
-# All three were one failure: the clone the author stood in differed from the
-# clone CI stood in. So this tests the DEPLOYED CONFIGURATION — including that a
-# depth regression breaks the build — in the clone shapes that actually occur,
-# and it asserts WHY a run failed rather than merely that it did. A suite that
-# accepts any non-zero exit reports "ok" for a validator too broken to parse.
+#   4. And then this harness itself, which cloned the repo to build its clone
+#      shapes. CI checks out with `filter: 'blob:none'` — a PARTIAL clone — so
+#      `git clone file://.` asks it to serve blobs it never fetched:
+#        remote: fatal: could not fetch <sha> from promisor remote
+#      Fifteen of seventeen cases died. The artifact written to stop the author's
+#      environment differing from CI's was itself built on an assumption about
+#      the author's environment.
+#
+# All four were one failure: something assumed a clone shape. So this builds its
+# OWN repository from the working tree — no dependency on how the host checkout
+# was fetched — and derives every clone shape from that. It tests the DEPLOYED
+# CONFIGURATION, including that a depth regression breaks the build, and it
+# asserts WHY a run failed rather than merely that it did: a suite that accepts
+# any non-zero exit reports "ok" for a validator too broken to parse.
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -33,14 +42,35 @@ trap 'rm -rf "$WORK"' EXIT
 pass=0
 fail=0
 
-# Test the WORKING TREE, not the last commit. `git clone` copies committed state,
-# so the harness would validate the very bug you are trying to fix. It did that
-# twice while being written: first reporting the uncommitted zero-enforcement
-# floor as broken, then failing the clean-tree case because the validator's new
-# payload assertions described an uncommitted doc. A gate and the docs it gates
-# change together, so overlay every tracked file onto the clone's real history.
-seed() { # dir
+# One self-contained repository built from the WORKING TREE, with real history.
+#
+# Not a clone of $ROOT: that inherits whatever shape the host was fetched with,
+# which is the bug above. Not a copy without git either — the gate under test
+# reads git history, so it needs commits. Two of them, the second touching one
+# doc, which is what makes the depth-2 shape meaningful.
+#
+# Tracked files only, so the fixture matches what CI checks out.
+build_fixture() { # dir
+	mkdir -p "$1"
 	(cd "$ROOT" && git ls-files -z | tar -cf - --null -T -) | (cd "$1" && tar -xf -)
+	git -C "$1" init --quiet -b main
+	# The commits are DATED, and that matters. Committed "now", every file's
+	# last-touch is today, so any doc whose stamp is older than today reads as
+	# stale — three small READMEs carry 2026-08-2x stamps that are correct in the
+	# real repo, and the fixture failed them. Backdating the bulk commit to before
+	# every stamp keeps the honest docs honest; the mutation cases below use a date
+	# older still, so they are genuinely in the past relative to it.
+	local base='2026-01-01T00:00:00Z'
+	local tip='2026-08-25T00:00:00Z'
+	git -C "$1" -c user.email=h@x -c user.name=h add -A
+	GIT_AUTHOR_DATE="$base" GIT_COMMITTER_DATE="$base" \
+		git -C "$1" -c user.email=h@x -c user.name=h commit --quiet -m 'fixture: the working tree'
+	# A second, later commit touching exactly one doc, so a depth-2 clone of this
+	# fixture has one judgeable doc and declines the rest — the shape that used to
+	# pass while hiding stale stamps.
+	printf '\n' >> "$1/PRODUCT.md"
+	GIT_AUTHOR_DATE="$tip" GIT_COMMITTER_DATE="$tip" \
+		git -C "$1" -c user.email=h@x -c user.name=h commit --quiet -am 'fixture: touch one doc'
 }
 
 run_validator() { # dir, [env assignments...]
@@ -85,15 +115,18 @@ expect_fail() { # description, needle, dir, [env...]
 
 stale() { sed -i "s/^Last verified against code: .*/Last verified against code: $2/" "$1"; }
 
+FIXTURE="$WORK/fixture"
+build_fixture "$FIXTURE"
+
 echo "=== full history: every stamped doc is judged ==="
 DEEP="$WORK/deep"
-git clone --quiet "file://$ROOT" "$DEEP"; seed "$DEEP"
+git clone --quiet "file://$FIXTURE" "$DEEP"
 run_validator "$DEEP" | grep -E '^  freshness stamps:' | sed 's/^/  /'
 expect_pass "clean tree passes" "$DEEP"
 expect_pass "clean tree passes under CI too" "$DEEP" CI=true
 
 for doc in ARCHITECTURE.md ONBOARDING.md README.md PRODUCT.md roadmap.md brand/BRAND_SYSTEM.md deploy/RAILWAY.md; do
-	cp "$DEEP/$doc" "$WORK/bak"; stale "$DEEP/$doc" 2026-01-01
+	cp "$DEEP/$doc" "$WORK/bak"; stale "$DEEP/$doc" 2020-01-01
 	expect_fail "stale stamp in $doc" "predates the file's own last commit" "$DEEP"
 	cp "$WORK/bak" "$DEEP/$doc"
 done
@@ -104,20 +137,21 @@ echo "=== the deployed configuration: partial coverage must fail in CI ==="
 # 0 with five Status: Current docs carrying stale stamps — so a regression to
 # fetch-depth: 2 was invisible, and only a literal `0` in ci.yml plus a sentence
 # in CONTRIBUTING.md stood between this gate and irrelevance. Note the shapes are
-# built with file:// clones because --depth is ignored for local path clones.
+# built with file:// clones of the fixture, because --depth is ignored for a
+# plain local-path clone.
 D2="$WORK/d2"
-git clone --quiet --depth 2 "file://$ROOT" "$D2"; seed "$D2"
+git clone --quiet --depth 2 "file://$FIXTURE" "$D2"
 expect_fail "depth-2 checkout fails in CI even with every doc honest" \
 	'could not be dated because their' "$D2" CI=true
 for doc in ARCHITECTURE.md ONBOARDING.md README.md PRODUCT.md roadmap.md; do
-	stale "$D2/$doc" 2026-01-01
+	stale "$D2/$doc" 2020-01-01
 done
 expect_fail "depth-2 clone hiding stale NON-tip docs fails in CI" \
 	'could not be dated because their' "$D2" CI=true
 
 echo "=== a clone that can judge nothing fails, CI or not ==="
 D1="$WORK/d1"
-git clone --quiet --depth 1 "file://$ROOT" "$D1"; seed "$D1"
+git clone --quiet --depth 1 "file://$FIXTURE" "$D1"
 expect_fail "depth-1 clone fails loudly" "enforced nothing" "$D1"
 expect_fail "depth-1 clone fails under CI as well" "enforced nothing" "$D1" CI=true
 
@@ -139,7 +173,7 @@ cp "$WORK/bak" "$DEEP/deploy/RAILWAY.md"
 
 echo "=== a validator too broken to parse must not read as success ==="
 BROKEN="$WORK/broken"
-git clone --quiet "file://$ROOT" "$BROKEN"; seed "$BROKEN"
+git clone --quiet "file://$FIXTURE" "$BROKEN"
 printf '\nthis is not valid javascript(((\n' >> "$BROKEN/tools/validate_docs.js"
 expect_fail "a syntax error is not mistaken for a caught defect" \
 	'SyntaxError' "$BROKEN"
