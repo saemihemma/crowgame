@@ -181,6 +181,42 @@ Original prompt: Export tighter runtime assets and wire the game to them so game
 - 2026-08-25: Post-restructure audit of main after the multi-agent merge wave (Phaser tree removed, math truth moved to math-kernel, board/HUD/menus rebuilt, owl roster + streak added). Verdict on the math-experience systems built here: everything survived with behavioural parity, verified by running, not by reading - 120 unit tests green including the golden-roll/ladder/ELO parity fixtures, the owl probe drives demo -> answer -> owl_saved with the identical ELO delta (150 -> 155.60), and the rebuilt board still carries the tuning-paced teaching beats, progress pips, golden frame and golden coin multipliers; the menus still carry the recap and trophy shelf; gating still keeps the level's headline order.
 - 2026-08-25: Fixed what the audit found red or noisy on trunk. The two mechanical validate reds: compiled-level drift for levels 05/99 (recompiled) and the stale committed export (rebuilt; the new freshness guard and the boot smoke both pass). Two boot-time script errors: String(null) crash loading the mute preference (str() now), and complete_level crashing on saves that predate completedLevels (backfilled). Post-rebuild debris: 21 dead i18n keys deleted from both bundles (including hud.level/hud.level_up/login.delete/login.delete_confirm, which closes the old four-dead-keys roadmap item), 4 stale fit-budget rows removed, ONBOARDING count snapshots synced (6 NPCs, 287 keys), required doc headers added to the two new asset-slot READMEs, and validate_assets now understands declared drop-in art slots (board-9slice, count-token-32, owl-icon-32) whose absence is the designed state.
 - 2026-08-25: Known non-blockers left on purpose: tools/godot_play_smoke.mjs predates the menu rebuild and the cloud-save POSTs and is no longer the CI gate (web_boot_smoke.mjs is, and passes); the owl-ring streak flame is celebration-only but sits in mild tension with the documented "nothing to protect" kid-safe rule - flagged for the design owner, not reverted.
+- 2026-08-25: Analytics, phase one of three audiences. Owner: a token-gated admin surface (`CROW_ADMIN_TOKEN`, off-means-404, header-only) serving `/admin` - a self-contained dashboard with KPI tiles (active kids, sessions with median length from 30-minute gap-splitting over attempts, D1/D7 retention shown as n-of-cohort, lifetime answers, first-try accuracy, open error groups) and four 28-day single-series charts, all inline SVG with hover tooltips, light/dark. Errors: the existing fingerprint-deduplicated error_groups finally have a read side - list by status, triage transitions (acknowledge/resolve/ignore) from the dashboard, so bugs are debuggable without player feedback and without spam.
+- 2026-08-25: Parent report. New device-authed, RLS-scoped `GET /api/v1/family/children/{id}/report`: every attempt the family has ever synced, rolled up per domain (with current/highest step and effective skill score from the save blob) and per problem kind - equation / word problem / visual counting - classified by a generated problem catalog (tools/gen_problem_catalog.ts) that uses math-kernel's own parseWordedArithmetic, emitted as a TS module so the API Docker build ships it untouched, with a pools-hash freshness gate in npm run validate. The in-game ParentReport scene now renders the cloud matrix colour-coded (green >=85%, amber 70-85%, red below - thresholds and hexes in ui_tuning, not code) with counts per kind, and falls back to the local recent window with an explicit "this device only" label when not enrolled. Server tests cover admin auth off/wrong/right, error triage round-trip, the rollup shape, retired-problem fallback, and family isolation (a stranger family gets 404).
+
+- 2026-08-25: Icelandic grade mapping shipped end to end. Researched primary
+  sources (lög um grunnskóla 91/2008 15. gr. school-start rule; aðalnámskrá
+  25. kafli — criteria only at grades 4/7/10; MMS Sproti 1a–4a per-grade scope)
+  into docs/GRADE_EXPECTATIONS.md and the canonical
+  godot/data/curriculum/grade_expectations.json (provenance per milestone,
+  generated into server/src/generated/gradeExpectations.ts with a freshness
+  hash). children.birth_year (YEAR only, migration 005) collected optionally at
+  profile creation and backfillable from the parent report; report endpoint now
+  derives the grade and a per-domain band verdict (ahead / on track / practice
+  together / not expected yet — leikskóli has no floor by design) from
+  highestStep, rendered color-coded in parent_report.gd. New guards: generated
+  copy freshness, every owl-served domain must have milestones, milestones must
+  point at authored ladder steps, provenance required. 42 server + 154 Godot
+  tests green, export rebuilt.
+
+- 2026-08-25: Grade 3-4 math coverage shipped through the authoring pipeline.
+  Research-based step redesign documented in docs/MATH_AUTHORING_STANDARDS.md
+  (fluency phases, one-difficulty-factor-per-step, regrouping-load ordering,
+  measured times-table order, CGI word-problem taxonomy). Ladders extended:
+  addition/subtraction steps 41-46 (3- and 4-digit by carry/borrow count,
+  frozen tiers untouched), multiplication rebuilt on the table-order ladder
+  0-14 (legal: never served), division as fact families (mult step + 1),
+  comparison to step 9 (ordering past 1000), sequence to step 9 (skip counting
+  by 10/25/50/100). ~700 new problems via 9 new batches + 10 new bands; two
+  new word-problem shapes (equal-groups nests x, sharing berries division)
+  wired through the kernel parser, phrasing catalog and both locales, with a
+  new strictVariants template flag so story-only templates stay stories.
+  Multiplication/division now servable: added to all owl problemTypes
+  (unlock-gated by addition mastery) and to level_05 + level_99 gating
+  (difficultyBand to [1,5]). grade_expectations.json now anchors grades 3-4
+  in every extended domain. 43 server + 154 Godot tests green, full validate
+  clean, export rebuilt. Deferred with roadmap entries: remainders (needs a
+  new answer mode), fractions/negatives (new domains).
 
 ## 2026-08-25 — Concept ladder and click-through lessons
 
@@ -327,3 +363,53 @@ Original prompt: implement the highest-value absence the hardening review found 
   are refused by name until the verifier learns them; no relational problem
   exceeds a total of ten; and subtraction has no relational or missing-part
   shape at all.
+
+## 2026-08-25 - Merging the concept ladder with the grade 3-4 work
+
+- Two sessions landed on the same files in parallel: the grade 3-4 ladder
+  (~700 problems, mult/div live, three-digit and four-digit arithmetic) and the
+  concept ladder with its lessons. Merged deliberately rather than by picking a
+  side, and nothing was dropped from either.
+- The i18n bundles were a clean union: 169 keys only in mine, 33 only in main's,
+  294 identical, ZERO where both sides changed the same key, and nothing deleted
+  by either. Checked with a real three-way diff before merging rather than
+  trusting the conflict markers. Result 506 keys per locale.
+- `problems_gaps.json` auto-merged and kept both: main's 60 plus the 20
+  relational problems. `progress.md` kept both logs. `roadmap.md` kept all 25 of
+  main's entries plus 8 new. Generated files (`output/web/**`,
+  `reports/math-batches/**`) were regenerated rather than resolved by hand.
+- THE LADDER NEEDED REAL EXTENSION, and the guard is what said so precisely:
+  addition and subtraction now reach step 46 (four-digit), comparison and
+  number_sequence reach 9 (three-digit). Four new rungs authored to cover them.
+  `multiplication.tables_large` and `division.larger` were SHRUNK to 13-14 and
+  15-15, because main's content stops before my declared ranges did and a rung
+  with nothing on it is a rung nothing can teach.
+- The gap declarations were rewritten from measurement, not edited. Main's work
+  CLOSED multiplication steps 0-5 and division 1, 2, 4, 5 - the guard listed
+  every one of them as "declared but no longer is", which is exactly the
+  discipline it was built for. New holes at addition/subtraction 37-40,
+  multiplication 11, division 7 and 12.
+- Two of the four new rungs got lessons (`comparison.compare_larger`,
+  `number_sequence.big_skips`). The multi-digit pair carries `tutorial: null`
+  ON PURPOSE: every problem in them has an operand between 121 and 4788 and the
+  owl caps at 20, so a lesson there would be the same waste the hardening review
+  found four of.
+- FINDING WORTH ACTING ON: division went live but the cap blocks 72% of it.
+  Multiplication is fine (531/588 servable, because its maxOperand is
+  `max(left, right)`), but division's is `max(dividend, divisor, quotient)`, so
+  `24 / 3` reports 24 and is dropped - while the multiplication fact `3 x 8`
+  that answers it is served. `division.tables` and `division.larger` are
+  entirely unreachable. Declared, documented, and in `roadmap.md` as a decision
+  about which number represents division's difficulty. Not silently changed:
+  re-deriving traits for 383 problems is main's territory.
+- The answer-position guard caught me a second time: all three two-option
+  guided tries had the correct answer in the same slot. Fixed.
+- The doc's gap and unreachable sections are now GENERATED from the
+  declarations in `concept_ladder.json`, quoting each reason verbatim, because
+  hand-paraphrasing them is how the doc and the data drift apart - and the guard
+  was already failing on exactly that.
+- Verified on the merged tree: 180 Godot tests, 6 probes, all guards,
+  npm run validate, typecheck, export rebuilt and boot-smoked with zero console
+  errors, main's analytics catalog regenerated with its own tool, and main's
+  server suite still green (18 pass, 0 fail; the Postgres-backed cases need a
+  DATABASE_URL this environment does not have).

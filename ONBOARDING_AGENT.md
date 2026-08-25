@@ -81,31 +81,35 @@ Game:
 - **70** `.gd` scripts under `godot/scripts/`, **25** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **463** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **506** keys, matched key-for-key by
   `strings_is.json`
 - **20** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
-Maths content — `DataManager` loads 4 math pools totaling 3170 problems:
-- `curriculum`: 3035
+Maths content — `DataManager` loads 4 math pools totaling 3871 problems:
+- `curriculum`: 3736
 - `gaps`: 80
 - `dataset`: 40
 - `easy`: 15
 
-Those 3170 problems are grouped into **32** concepts by
-`godot/data/curriculum/concept_ladder.json` — **30** rungs keyed on step range
-plus **2** overlays keyed on problem shape — each opening with a **4**-card
-lesson from `godot/data/curriculum/tutorials.json` — **32** lessons, **128**
-cards. `reports/math-concepts/coverage.json` is the generated rung-by-rung
-inventory, including the **15** empty and **12** thin rungs the ladder currently
-declares. See [docs/MATH_CONCEPT_LADDER.md](./docs/MATH_CONCEPT_LADDER.md).
+Those 3871 problems are grouped into **36** concepts by
+`godot/data/curriculum/concept_ladder.json` — **34** rungs keyed on step range
+plus **2** overlays keyed on problem shape — of which **34** open with a
+**4**-card lesson from `godot/data/curriculum/tutorials.json`: **34** lessons,
+**136** cards. The two without one are `addition.multi_digit` and
+`subtraction.multi_digit`, deliberately, because the owl's operand cap of 20
+means no child can reach them.
+`reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,
+including the **18** empty and **5** thin rungs, and the **8** concepts the cap
+puts out of reach — all declared.
+See [docs/MATH_CONCEPT_LADDER.md](./docs/MATH_CONCEPT_LADDER.md).
 
 Math UI is currently MCQ-only: every problem is answered by picking one of the
 offered options, and `godot/scripts/ui/math_challenge.gd` builds its buttons
 straight from `answer.options`.
 
-Blunt boundaries on that `3150`, because it is the number people quote wrongly:
+Blunt boundaries on that `3851`, because it is the number people quote wrongly:
 
-- `3170` is total shipped inventory, **not** the owl path.
+- `3871` is total shipped inventory, **not** the owl path.
 - The opening unlocked domains currently `addition` plus `counting`; pattern
   matching joins the owl-safe set later through the normal unlock rules.
 - Current shipped owl interaction length is `1` problem per owl encounter
@@ -125,7 +129,7 @@ difficulty curve suits a particular child — no artifact in this repo claims th
 
 Server:
 - **17** TypeScript sources under `server/src/**`
-- **2** migrations: `001_errors.sql`, `002_family_and_save.sql`
+- **5** migrations: `001_errors.sql`, `002_family_and_save.sql`, `003_error_partition_selfheal.sql`, `004_attempts_received_index.sql`, `005_children_birth_year.sql`
 - **31** tests, run against a real Postgres
 
 Reference kernel:

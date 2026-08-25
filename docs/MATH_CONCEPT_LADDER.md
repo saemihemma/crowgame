@@ -66,6 +66,7 @@ Two rules the build enforces:
 | `addition.bridge_ten` | 15-19 | Getting to the next ten, and asking how far away it is. |
 | `addition.tens_and_ones` | 20-29 | Add the ones, keep the tens. Place value doing work. |
 | `addition.carrying` | 30-36 | When ten ones become a new ten: stop at the ten on the way. |
+| `addition.multi_digit` | 37-46 | Hundreds and thousands: the same two moves, in wider columns. |
 
 Two more concepts sit on addition as **overlays** rather than rungs. They claim
 problems by authored skill, not by step, so they share the step range of the
@@ -109,6 +110,7 @@ two-digit step, so it has never been expressible as a step range.
 | `subtraction.teens_back` | 11-16 | Taking a bite bigger than the ones you have. |
 | `subtraction.tens_and_ones` | 17-29 | Take from the ones, keep the tens. |
 | `subtraction.borrowing` | 30-36 | When the ones run out, break a ten. |
+| `subtraction.multi_digit` | 37-46 | The same borrow, across more columns and past zeros. |
 
 ### Counting
 
@@ -124,6 +126,7 @@ two-digit step, so it has never been expressible as a step range.
 | --- | --- | --- |
 | `comparison.more_or_less` | 0-2 | Taller pile, greater number, further along the line. |
 | `comparison.compare_teens` | 3-6 | When the tens match, the ones decide. |
+| `comparison.compare_larger` | 7-9 | Longer numbers: count the digits, then compare left to right. |
 
 ### Pattern matching
 
@@ -140,6 +143,7 @@ two-digit step, so it has never been expressible as a step range.
 | `number_sequence.one_more` | 0-2 | Counting, written down with the end missing. |
 | `number_sequence.skip_two` | 3-4 | Measure the gap once, then take it again. |
 | `number_sequence.bigger_jumps` | 5-6 | Same move, longer stride. |
+| `number_sequence.big_skips` | 7-9 | Small jumps inside big numbers, straight past a hundred. |
 
 ### Multiplication
 
@@ -147,7 +151,7 @@ two-digit step, so it has never been expressible as a step range.
 | --- | --- | --- |
 | `multiplication.groups_of` | 0-7 | Equal groups. The times sign means "groups of". |
 | `multiplication.tables_small` | 8-12 | Counting in fives and sixes beats counting in ones. |
-| `multiplication.tables_large` | 13-18 | Lean on a fact you know to reach one you do not. |
+| `multiplication.tables_large` | 13-14 | Lean on a fact you know to reach one you do not. |
 
 ### Division
 
@@ -155,7 +159,7 @@ two-digit step, so it has never been expressible as a step range.
 | --- | --- | --- |
 | `division.sharing` | 0-8 | Sharing fairly. The same picture as multiplication, read backwards. |
 | `division.tables` | 9-14 | Every division is a multiplication you already know. |
-| `division.larger` | 15-20 | Stop counting, start asking which fact fits. |
+| `division.larger` | 15-15 | Stop counting, start asking which fact fits. |
 
 ## The lesson
 
@@ -370,127 +374,42 @@ build on an **undeclared** empty or thin rung — and equally on a declared one
 that has since been filled. A gap can only be closed by deleting its entry, and
 a new one can never appear quietly.
 
-Fifteen rungs currently have no problems on them:
+Every gap and every unreachable concept below is quoted from its declaration in
+`concept_ladder.json`. `tools/validate_math_concepts.mjs` checks that this
+document carries each reason, so the two cannot drift apart.
 
-- **`addition` step 20.** The bridge from the teens to two-digit addition.
-  Nothing generates a sum whose largest operand is exactly 20, and step 21
-  upwards is over the owl's operand cap, so step 19 is the top of addition as a
-  child experiences it.
-- **`subtraction` steps 17-20.** Four consecutive empty rungs between the teens
-  and the twenties — the widest hole in the ladder. It is a wall rather than a
-  hole: step 21 and everything above it is over the owl's operand cap, so a
-  child leaving step 16 never lands anywhere, and subtraction.teens_back is the
-  last subtraction they are ever taught.
-- **`number_sequence` step 0.** The ladder's own first rung. Sequences start at
-  step 1, so the gentlest possible sequence — counting on from a single number —
-  has never been authored.
-- **`multiplication` steps 0, 1, 2, 4.** Multiplication has no foundation rungs.
-  Its first authored problem sits at step 3, so the concept opens mid-ladder.
-  Out of the owl path today (operand cap 20), which is why it has stayed empty.
-- **`division` steps 0, 1, 2, 4, 5.** Same shape as multiplication, one rung
-  wider. Sharing into two and three groups — the whole concrete foundation of
-  division — is unauthored.
+**Rungs with no problems authored on them**
 
-Twelve more are thin (fewer than six problems, which is not enough to give a
-child three different questions on the rung the ladder is promoting them
-through): `addition` 0, `subtraction` 2 and 15, `number_sequence` 1 and 3,
-`multiplication` 3, 5, 11 and 12, `division` 3, 6 and 19. `subtraction` step 15
-holds a single problem, `20 - 10`.
+- **`addition` step 20.** The bridge from the teens to two-digit addition. Nothing generates a sum whose largest operand is exactly 20, so a child promoting off step 19 skips straight to 21.
+- **`addition` steps 37, 38, 39, 40.** The gap between two-digit and multi-digit addition. Step 21 upward is magnitude-derived (21 + floor((maxOperand-21)/5)), so these four rungs are operands 101-120 - three-digit sums below 121 - and the multi-digit batches start at 121. Out of the owl path either way, since the operand cap is 20.
+- **`subtraction` steps 17, 18, 19, 20.** Four consecutive empty rungs between the teens and the twenties - the widest hole inside the owl-safe band. A child leaving step 16 lands on 21 with no intermediate practice at all.
+- **`subtraction` steps 37, 38, 39, 40.** The same magnitude gap as addition, for the same reason: the multi-digit batches begin above operand 120 and nothing fills 101-120.
+- **`number_sequence` step 0.** The ladder's own first rung. Sequences start at step 1, so the gentlest possible sequence - counting on from a single number - has never been authored.
+- **`multiplication` step 11.** One rung inside the tables, skipped by the batch bands. The neighbours are dense (steps 10 and 12 both hold problems), so a promotion through 11 lands on content; it is a hole in the inventory rather than in a child's path.
+- **`division` step 0.** Division's first rung. Sharing into a single group is trivially true and arguably not worth authoring, but nothing has decided that on purpose.
+- **`division` steps 7, 12.** Two rungs the batch bands step over. Both have dense neighbours, so like multiplication step 11 these are inventory holes rather than breaks in a child's progression.
 
-None of them are what matters most for a child playing today. The rungs above
-them are unreachable for a different reason, and that is the next section.
+**Rungs with fewer than six problems**
 
-## What no child can reach
+- **`addition` step 0.** Five problems: 0+1, 1+0, 1+1 and their wordings. The set of true facts with both operands at most one is genuinely almost this small.
+- **`subtraction` step 2.** Five problems. Narrow but serviceable.
+- **`subtraction` step 15.** One problem: 20 - 10. The step derivation only yields this shape at maxOperand 20, so the rung exists as a formality.
+- **`number_sequence` steps 1, 3.** Two problems each. The first +1 and first +2 sequences are the two thinnest rungs a child actually meets.
 
-Coverage above asks whether problems were **written**. It says nothing about
-whether the owl can hand one over, and that turned out to be the bigger
-question.
+**Concepts no child can currently be served**
 
-`math_challenge_component.gd` builds every selection with `"maxOperand": 20`,
-and both `math_problem_manager.gd` and `problem_pool_manager.gd` drop any
-problem whose `difficultyTraits.maxOperand` exceeds it. Every problem from
-`addition` step 21 and `subtraction` step 21 upwards has an operand above 20.
-So four concepts — a third of the addition and subtraction ladder, 1,155
-authored problems, four lessons, forty cards and eighty strings per locale — sit
-on maths no child can be served:
+The owl caps `maxOperand` at 20 -- the age band, documented at the line that
+sets it in `math_challenge_component.gd`. These concepts have authored content
+that the cap drops entirely:
 
-- **`addition.tens_and_ones`.** Every problem from addition step 21 up has an
-  operand above 20, so the owl's cap drops all 445 of them. A child tops out at
-  addition.bridge_ten.
-- **`addition.carrying`.** Same cap, one concept further on. Nothing in steps
-  30-36 has an operand at or below 20.
-- **`subtraction.tens_and_ones`.** Steps 17-20 have no problems at all and steps
-  21-29 are all above the operand cap, so the concept is empty on both counts. A
-  child tops out at subtraction.teens_back.
-- **`subtraction.borrowing`.** Same cap as its neighbour. Nothing in steps 30-36
-  has an operand at or below 20.
-
-`multiplication` and `division` are reachable by operand but gated shut by the
-domain unlock rules, so in practice a child today meets twenty of the thirty
-concepts at most.
-
-This is declared in `knownUnreachable` in `concept_ladder.json` under the same
-two-way discipline as the gaps: the guard reads the cap out of
-`math_challenge_component.gd` rather than restating it, fails on an undeclared
-unreachable concept, and fails equally on a declared one that has become
-reachable. Raising the cap to 100 is a one-line change and a large product
-decision — it opens 1,155 problems and four lessons at once, none of which have
-ever been played — so it is a decision this document records rather than makes.
-
-The honest reading of the two-digit half of the ladder is worse than "unplayed".
-Carry and borrow problems are spread across **every** step from 21 to 36 at
-roughly 40-50% of each rung, so the boundary between `tens_and_ones` and
-`carrying`/`borrowing` does not track regrouping at all — it tracks magnitude
-(20-49 against 50-99). The two `tens_and_ones` lessons used to state "keep the
-tens" as a flat rule, which is false for 219 of the 445 problems in addition's
-range and 152 of 424 in subtraction's; they now scope it ("the tens only move if
-the ones fill past ten"). `difficultyTraits.requiresCarry` and `requiresBorrow`
-are populated on 995 problems, so a ladder that split on the actual property is
-possible. It would not be a step range, which is the only shape the ladder can
-currently express.
-
-## What is not on the ladder at all
-
-Named here because an absence nobody wrote down is indistinguishable from a
-decision, and these are decisions:
-
-- **Relational equals — now partly present, and only partly.** `addition.balance`
-  teaches `=` as "both sides the same amount", and eight authored problems write
-  the whole first (`8 = 5 + ?`). What is still absent is the form Falkner, Levi
-  and Carpenter actually tested — `4 + 5 = □ + 6`, an operation on *both* sides —
-  which is the hardest and most diagnostic shape. `isUnrecognisedEquation` in
-  `tools/math_verifier.ts` refuses it by name rather than mis-verifying it, so it
-  cannot be authored by accident: the generic scan reads `4 + 3 = ? + 5` as
-  `{4,+,3}` and reports 7 when the answer is 2. Subtraction has no relational
-  form at all.
-  ([Falkner, Levi & Carpenter 1999](https://eric.ed.gov/?id=EJ600209))
-- **Missing addend — now present for addition within ten.**
-  `addition.missing_part` teaches counting up inside a whole, over twelve
-  authored problems in both `a + ? = c` and `? + b = c`. In the CGI difficulty
-  ordering that covers Join Change Unknown and Start Unknown for addition only;
-  subtraction is still result-unknown throughout, and no problem yet exceeds a
-  total of ten.
-  ([CGI problem types by difficulty](http://www.langfordmath.com/ECEMath/CGI/DifficultyText.html))
-- **Compare as a problem type.** The `comparison` domain compares two numerals.
-  It never compares two sets and asks the difference, which is the mid-tier CGI
-  Compare Difference Unknown.
-- **Subitizing as its own rung.** The ten-frame is justified below by subitizing,
-  and `counting.to_five` says "after a while you will see five without counting
-  it at all" — but no concept, lesson or problem ever asks a child to see a
-  quantity without counting it. Clements and Sarama treat conceptual subitizing
-  as instructable; here it is an aside in one card.
-- **Zero and identity, and commutativity.** `addition.count_on` *instructs*
-  "start at the bigger number and count on", which is only valid because addition
-  commutes, and that is never said. The pool holds `1 + 3` and `3 + 1` as
-  separate problems. Nothing anywhere says adding zero changes nothing.
-- **Numeral formation** is correctly absent: this is a tap-only game.
-
-What the decomposition gets right and should not be disturbed: `pattern_matching`
-covers repeating patterns and `number_sequence` covers arithmetic growing
-sequences, which is the split the patterning literature supports — unit-of-repeat
-work is the thing that predicts later success with growing patterns rather than a
-lesser version of it.
-([Papic, Mulligan & Mitchelmore](https://researchers.mq.edu.au/en/publications/assessing-the-development-of-preschoolers-mathematical-patterning/))
+- **`addition.tens_and_ones`.** Every problem from addition step 21 up has an operand above 20, so the owl's cap drops all 445 of them. A child tops out at addition.bridge_ten.
+- **`addition.carrying`.** Same cap, one concept further on. Nothing in steps 30-36 has an operand at or below 20.
+- **`subtraction.tens_and_ones`.** Steps 17-20 have no problems at all and steps 21-29 are all above the operand cap, so the concept is empty on both counts. A child tops out at subtraction.teens_back.
+- **`subtraction.borrowing`.** Same cap as its neighbour. Nothing in steps 30-36 has an operand at or below 20.
+- **`addition.multi_digit`.** Every problem here has an operand between 121 and 4788 and the owl caps at 20. Authored for a wider audience than the owl currently serves; carries tutorial: null on purpose, because a lesson for content no child can reach is waste.
+- **`subtraction.multi_digit`.** Same as addition.multi_digit: operands far above the cap, tutorial deliberately absent.
+- **`division.tables`.** All 100 problems blocked, and NOT because the facts are hard. Division's maxOperand is max(dividend, divisor, quotient), so 24 / 3 reports 24 and fails a cap of 20 - even though a child fluent to twenty can do it, and the multiplication fact 3 x 8 that answers it IS servable. The cap treats a dividend like an addend. Deciding whether that derivation is right for division is roadmap work, not a declaration.
+- **`division.larger`.** Same derivation problem, one band up: 15 problems, none servable.
 
 Authoring against these gaps is [MATH_AUTHORING_PIPELINE.md](./MATH_AUTHORING_PIPELINE.md);
 `roadmap.md` carries them as open work.

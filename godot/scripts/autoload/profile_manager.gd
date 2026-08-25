@@ -49,7 +49,11 @@ func get_active_save_key() -> String:
 ## all four of these were sitting unused in both bundles. A key rather than a
 ## sentence also keeps the wording out of an autoload that has no business
 ## owning copy.
-func create_profile(username: String, pin: String) -> Variant:
+## birth_year is optional (0 = unknown): the grade comparison in the parent
+## report needs only the YEAR, because Icelandic school grade is a function of
+## birth year alone (see docs/GRADE_EXPECTATIONS.md). Never required — a family
+## that skips it just gets no grade section.
+func create_profile(username: String, pin: String, birth_year: int = 0) -> Variant:
 	var trimmed := username.strip_edges()
 	if trimmed.is_empty():
 		return "login.name_empty"
@@ -60,13 +64,16 @@ func create_profile(username: String, pin: String) -> Variant:
 	for p in _profiles:
 		if String(p.get("username", "")).to_lower() == trimmed.to_lower():
 			return "login.name_taken"
-	_profiles.append({
+	var profile := {
 		"username": trimmed,
 		"pinHash": _hash_pin(trimmed, pin),
 		"createdAt": _now_ms(),
 		"childId": _generate_id("child"),
 		"familyId": _get_or_create_family_id(),
-	})
+	}
+	if birth_year > 0:
+		profile["birthYear"] = birth_year
+	_profiles.append(profile)
 	_save()
 	return true
 

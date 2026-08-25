@@ -42,6 +42,32 @@ there.
 
 ## P1 — Correctness and reachability
 
+### Division went live but the operand cap blocks 72% of it
+`multiplication` and `division` are now in the owl's `problemTypes`, and
+multiplication works: 531 of its 588 problems are servable, because
+`deriveDifficultyTraits` reports `maxOperand` as `max(left, right)` and `9 x 8`
+is a nine.
+
+Division is not. Its traits use `max(dividend, divisor, quotient)`, so
+`24 / 3 = 8` reports **24** and fails the cap of 20 — even though a child fluent
+to twenty can do it, and the multiplication fact `3 x 8` that answers it IS
+served. Only 108 of 383 division problems get through, and
+`division.tables` (100 problems) and `division.larger` (15) are blocked
+entirely; both are declared in `knownUnreachable`.
+
+The decision is which number represents division's difficulty. The dividend is
+the largest but arguably the least demanding — the quotient is what the child
+produces and the divisor is what they reason with. Changing it means
+`deriveVerifiedDifficultyTraits` and `deriveDifficultyTraits` in
+`tools/math_verifier.ts` / `tools/math_curriculum.ts`, re-deriving traits and
+steps for all 383 division problems, and re-checking the two `knownUnreachable`
+entries. Do NOT raise the cap instead: it is the age band, and the comment at
+`math_challenge_component.gd` says why.
+
+*Done when:* division's difficulty is derived from a number that reflects what
+the child actually does, and `division.tables` is either reachable or
+unreachable on purpose rather than by accident.
+
 ### Two-sided equations are refused by the verifier, so the hardest form cannot be authored
 `4 + 5 = ? + 6` -- an operation on BOTH sides -- is the shape Falkner, Levi and
 Carpenter actually tested, and the most diagnostic one: a child reading `=` as
@@ -140,6 +166,43 @@ one week per change.
 
 *Done when:* two consecutive weekly reports sit inside the sweet spot with at
 least one step-up per early session and frustration flags under 10%.
+
+### Sessions are derived from math attempts, so math-free play is invisible
+The admin overview splits attempt timestamps on a 30-minute gap to get session
+counts and lengths. A child who runs and jumps without meeting an owl leaves no
+trace in it. A lightweight client heartbeat (session start + a ping every few
+minutes, batched into the existing API) would make session length honest for
+all play, not just math play.
+
+*Done when:* the overview's session numbers come from heartbeats, and the
+`derivedFromAttempts` label is gone from `/api/v1/admin/overview`.
+
+### Four grade milestones are approximate alignments, not sourced scope
+The Icelandic grade mapping (docs/GRADE_EXPECTATIONS.md) anchors addition,
+subtraction, counting, multiplication and division milestones to official
+sources (aðalnámskrá end-of-grade-4 criteria, MMS Sproti per-grade scope). The
+comparison, number_sequence and pattern_matching milestones are marked
+`"basis": "approx"` in `godot/data/curriculum/grade_expectations.json` because
+no official number-range anchor exists for them — they were placed by
+judgement against the Sproti topic lists. Contingency: a practising
+grunnskólakennari reviewing that one JSON file (eight domains, sixteen rows)
+would either confirm or correct them in minutes. The grade-2 content ceiling
+is closed: the ladders now run to grade-4 material (3- and 4-digit
+add/subtract by regrouping load, the full table-order multiplication ladder,
+fact-family division, ordering and skip counting into the thousands — see
+docs/MATH_AUTHORING_STANDARDS.md). The `approx` rows now also include the
+number_sequence grade-3/4 milestones.
+
+*Done when:* every milestone's `basis` is `law`/`curriculum`/`material`, or an
+educator has signed off the `approx` rows in the JSON's provenance notes.
+
+### Division with remainders needs a new answer mode
+The MCQ answer format is a single number, so "deiling með afgangi" (Sproti 4)
+cannot be asked honestly — division content stops at exact division. A
+quotient+remainder answer widget (or a two-part question) unlocks it.
+
+*Done when:* a remainder answer mode exists and a `division` band authored
+with remainders passes the materialize review gate.
 
 ## P2 — Experience decisions that need making
 

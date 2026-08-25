@@ -7,12 +7,12 @@
   "templateReview": {
     "category": {
       "grade": 9.8,
-      "summary": "Template coverage is stable: 10 templates, 10 families, steps 13-18.",
+      "summary": "Template coverage is stable: 10 templates, 10 families, steps 1-10.",
       "metrics": {
         "templateCount": 10,
         "familyCount": 10,
-        "minStep": 13,
-        "maxStep": 18,
+        "minStep": 1,
+        "maxStep": 10,
         "promptVariantCount": 22,
         "averageProblemsPerTemplate": 15
       }
@@ -75,9 +75,9 @@
         "steadyChildGrade": 10,
         "strugglingChildGrade": 10,
         "strongChildGrade": 10,
-        "openingProbeStep": 13,
-        "middleProbeStep": 15,
-        "upperProbeStep": 18,
+        "openingProbeStep": 1,
+        "middleProbeStep": 5,
+        "upperProbeStep": 10,
         "uniqueStartAnchors": 3,
         "probeCount": 9,
         "exhaustionWarnings": 0
@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
-    "6 × 10 =",
     "Solve: 6 × 10",
     "6 × 5 equals ?",
     "What is 6 × 6?",
-    "What is 6 × 3?"
+    "What is 6 × 3?",
+    "What is 6 × 8?"
   ]
 }

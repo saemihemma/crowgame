@@ -1,0 +1,225 @@
+{
+  "_comment": "Icelandic grade-level expectations mapped onto this game's curriculum ladder. Canonical file: the server build generates server/src/generated/gradeExpectations.ts from this (tools/gen_grade_expectations.ts) and CI fails if they drift. Every milestone carries its basis: 'law' and 'curriculum' entries are normative Icelandic sources; 'material' entries derive from the state-published MMS textbook sequence (Sproti), which is the finest official per-grade granularity that exists — the national curriculum itself only defines criteria at the end of grades 4, 7 and 10; 'approx' marks alignments that required judgement. Full research notes with quotes: docs/GRADE_EXPECTATIONS.md.",
+  "meta": {
+    "schoolYearBoundaryMonth": 8,
+    "gradeRule": "grade = schoolYearStartYear - birthYear - 5; values <= 0 mean leikskoli (pre-school), values are clamped to 10",
+    "gradeRuleBasis": {
+      "basis": "law",
+      "text": "Skólaskylda barns hefst að jafnaði við upphaf skólaárs á því almanaksári sem barnið verður sex ára.",
+      "source": "Lög um grunnskóla nr. 91/2008, 15. gr. 2. mgr.",
+      "url": "https://www.althingi.is/lagas/nuna/2008091.html"
+    },
+    "leikskoliNote": "Aðalnámskrá leikskóla (2011) defines NO mathematics attainment criteria — pre-school learning is play-based. A leikskóli-age child therefore has no floor: nothing they have not done is 'behind', and grade-1 material reached early is a head start.",
+    "sources": [
+      {
+        "id": "curriculum-g4",
+        "title": "Aðalnámskrá grunnskóla, 25. kafli Stærðfræði (2024): hæfniviðmið við lok 4. bekkjar",
+        "url": "https://www.adalnamskra.is/grunnskoli/kafli-25-staerdfraedi-2024",
+        "notes": "Criteria exist only at end of grades 4/7/10. End of grade 4: raðað náttúrulegum tölum eftir stærð; tugakerfisritháttur og sætiskerfi; námundun; nýtt sér grunnreikniaðgerðirnar fjórar og reiknað með náttúrulegum tölum."
+      },
+      {
+        "id": "sproti-1",
+        "title": "MMS: Sproti 1a/1b (1. bekkur)",
+        "url": "https://mms.is/namsefni/sproti-1a-nemendabok",
+        "notes": "Tölur 1–10 og talnabilið 10–20; talnaskilningur, röð talna, talnalína, sætisgildi; samlagning og frádráttur (innan 20)."
+      },
+      {
+        "id": "sproti-2",
+        "title": "MMS: Sproti 2a/2b (2. bekkur)",
+        "url": "https://mms.is/namsefni/sproti-2b-nemendabok",
+        "notes": "Tölur upp í 100; samlagning og frádráttur upp í 100; tvöfalt meira / helmingi minna; sléttar tölur og oddatölur. Engin formleg margföldun eða deiling."
+      },
+      {
+        "id": "sproti-3",
+        "title": "MMS: Sproti 3a/3b (3. bekkur)",
+        "url": "https://mms.is/namsefni/sproti-3a-nemendabok",
+        "notes": "Þriggja stafa tölur; margföldun 1; deiling; tími, rúmmál og flatarmál; samhverfa."
+      },
+      {
+        "id": "sproti-4",
+        "title": "MMS: Sproti 4a (4. bekkur)",
+        "url": "https://mms.is/namsefni/sproti-4a-nemendabok",
+        "notes": "Tölur stærri en 1000 og minni en 0; samlagning og frádráttur; margföldun og deiling; hnitakerfi; mynstur."
+      }
+    ]
+  },
+  "domains": {
+    "addition": [
+      {
+        "endOfGrade": 1,
+        "step": 15,
+        "covers": "samlagning á talnabilinu 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 36,
+        "covers": "samlagning með tölum upp í 100",
+        "basis": "material",
+        "source": "sproti-2"
+      },
+      {
+        "endOfGrade": 3,
+        "step": 43,
+        "covers": "þriggja stafa samlagning, allt að tvöfaldri geymslu",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 46,
+        "covers": "samlagning yfir 1000; grunnreikniaðgerðirnar fjórar við lok 4. bekkjar",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
+    ],
+    "subtraction": [
+      {
+        "endOfGrade": 1,
+        "step": 15,
+        "covers": "frádráttur á talnabilinu 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 36,
+        "covers": "frádráttur með tölum upp í 100",
+        "basis": "material",
+        "source": "sproti-2"
+      },
+      {
+        "endOfGrade": 3,
+        "step": 43,
+        "covers": "þriggja stafa frádráttur, einnig yfir núll (t.d. 500-263)",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 46,
+        "covers": "frádráttur yfir 1000; grunnreikniaðgerðirnar fjórar við lok 4. bekkjar",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
+    ],
+    "counting": [
+      {
+        "endOfGrade": 1,
+        "step": 6,
+        "covers": "talning og talnaskilningur 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      }
+    ],
+    "comparison": [
+      {
+        "endOfGrade": 1,
+        "step": 4,
+        "covers": "röð talna á talnabilinu 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 6,
+        "covers": "raðað tölum eftir stærð (stiginn nær 30; efni 2. bekkjar nær 100)",
+        "basis": "approx",
+        "source": "sproti-2"
+      },
+      {
+        "endOfGrade": 3,
+        "step": 8,
+        "covers": "raðað þriggja stafa tölum eftir stærð",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 9,
+        "covers": "raðað náttúrulegum tölum, einnig yfir 1000 (hæfniviðmið við lok 4. bekkjar)",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
+    ],
+    "number_sequence": [
+      {
+        "endOfGrade": 1,
+        "step": 4,
+        "covers": "talnaröð og talnalína 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 6,
+        "covers": "talnarunur upp í 100",
+        "basis": "approx",
+        "source": "sproti-2"
+      },
+      {
+        "endOfGrade": 3,
+        "step": 8,
+        "covers": "talið í 10 og 25 skrefum upp í hundruð",
+        "basis": "approx",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 9,
+        "covers": "talnarunur í 50 og 100 skrefum upp að 1000",
+        "basis": "approx",
+        "source": "sproti-4"
+      }
+    ],
+    "pattern_matching": [
+      {
+        "endOfGrade": 1,
+        "step": 3,
+        "covers": "einföld mynstur",
+        "basis": "approx",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 7,
+        "covers": "regla í mynstrum",
+        "basis": "approx",
+        "source": "sproti-2"
+      }
+    ],
+    "multiplication": [
+      {
+        "endOfGrade": 3,
+        "step": 7,
+        "covers": "margföldun kynnt: léttu töflurnar (1, 2, 10, 5, 3, 4), núll og ferningstölur",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 14,
+        "covers": "allar margföldunartöflur og tveggja stafa sinnum eins stafs; grunnreikniaðgerðirnar fjórar",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
+    ],
+    "division": [
+      {
+        "endOfGrade": 3,
+        "step": 8,
+        "covers": "deiling kynnt: skipting og andhverfur léttu taflnanna",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 15,
+        "covers": "deiling innan og rétt út fyrir töflurnar (án afgangs, sniðmörk svarforms)",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
+    ]
+  }
+}

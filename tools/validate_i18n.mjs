@@ -264,6 +264,7 @@ for (const dir of otherDirs) {
 const DYNAMIC_PREFIXES = [
     { prefix: 'domain.', built: 'HUDScene.ts / hud.gd, from a problem domain' },
     { prefix: 'domain_', built: 'parent_report.gd, from a domain in the learner summary' },
+    { prefix: 'kind_', built: 'parent_report.gd, from a problem kind in the analytics report' },
     { prefix: 'level.', built: 'LevelSelectScene.ts / level_select.gd, from a level key' },
     { prefix: 'theme.', built: 'pause.gd, from the active theme id' },
     { prefix: 'math.prompt.', built: "each problem's phrasing reference" },

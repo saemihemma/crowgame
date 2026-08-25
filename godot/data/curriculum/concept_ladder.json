@@ -7,260 +7,610 @@
     "minPerStep": 6
   },
   "knownGaps": [
-    { "domain": "addition", "steps": [20], "why": "The bridge from the teens to two-digit addition. Nothing generates a sum whose largest operand is exactly 20, and step 21 upwards is over the owl's operand cap, so step 19 is the top of addition as a child experiences it." },
-    { "domain": "subtraction", "steps": [17, 18, 19, 20], "why": "Four consecutive empty rungs between the teens and the twenties - the widest hole in the ladder. It is a wall rather than a hole: step 21 and everything above it is over the owl's operand cap, so a child leaving step 16 never lands anywhere, and subtraction.teens_back is the last subtraction they are ever taught." },
-    { "domain": "number_sequence", "steps": [0], "why": "The ladder's own first rung. Sequences start at step 1, so the gentlest possible sequence - counting on from a single number - has never been authored." },
-    { "domain": "multiplication", "steps": [0, 1, 2, 4], "why": "Multiplication has no foundation rungs. Its first authored problem sits at step 3, so the concept opens mid-ladder. Out of the owl path today (operand cap 20), which is why it has stayed empty." },
-    { "domain": "division", "steps": [0, 1, 2, 4, 5], "why": "Same shape as multiplication, one rung wider. Sharing into two and three groups - the whole concrete foundation of division - is unauthored." }
+    {
+      "domain": "addition",
+      "steps": [
+        20
+      ],
+      "why": "The bridge from the teens to two-digit addition. Nothing generates a sum whose largest operand is exactly 20, so a child promoting off step 19 skips straight to 21."
+    },
+    {
+      "domain": "addition",
+      "steps": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "why": "The gap between two-digit and multi-digit addition. Step 21 upward is magnitude-derived (21 + floor((maxOperand-21)/5)), so these four rungs are operands 101-120 - three-digit sums below 121 - and the multi-digit batches start at 121. Out of the owl path either way, since the operand cap is 20."
+    },
+    {
+      "domain": "subtraction",
+      "steps": [
+        17,
+        18,
+        19,
+        20
+      ],
+      "why": "Four consecutive empty rungs between the teens and the twenties - the widest hole inside the owl-safe band. A child leaving step 16 lands on 21 with no intermediate practice at all."
+    },
+    {
+      "domain": "subtraction",
+      "steps": [
+        37,
+        38,
+        39,
+        40
+      ],
+      "why": "The same magnitude gap as addition, for the same reason: the multi-digit batches begin above operand 120 and nothing fills 101-120."
+    },
+    {
+      "domain": "number_sequence",
+      "steps": [
+        0
+      ],
+      "why": "The ladder's own first rung. Sequences start at step 1, so the gentlest possible sequence - counting on from a single number - has never been authored."
+    },
+    {
+      "domain": "multiplication",
+      "steps": [
+        11
+      ],
+      "why": "One rung inside the tables, skipped by the batch bands. The neighbours are dense (steps 10 and 12 both hold problems), so a promotion through 11 lands on content; it is a hole in the inventory rather than in a child's path."
+    },
+    {
+      "domain": "division",
+      "steps": [
+        0
+      ],
+      "why": "Division's first rung. Sharing into a single group is trivially true and arguably not worth authoring, but nothing has decided that on purpose."
+    },
+    {
+      "domain": "division",
+      "steps": [
+        7,
+        12
+      ],
+      "why": "Two rungs the batch bands step over. Both have dense neighbours, so like multiplication step 11 these are inventory holes rather than breaks in a child's progression."
+    }
   ],
   "_unreachableComment": "A concept every one of whose problems the owl filters out. The cap that does it is `maxOperand` in godot/scripts/entities/npc/math_challenge_component.gd, and tools/validate_math_concepts.mjs reads it from there rather than restating it: raise the cap and these entries must be deleted, lower it and new ones must be added. Distinct from knownGaps, which is about whether problems were WRITTEN. These were written, and are unservable.",
   "knownUnreachable": [
-    { "concept": "addition.tens_and_ones", "why": "Every problem from addition step 21 up has an operand above 20, so the owl's cap drops all 445 of them. A child tops out at addition.bridge_ten." },
-    { "concept": "addition.carrying", "why": "Same cap, one concept further on. Nothing in steps 30-36 has an operand at or below 20." },
-    { "concept": "subtraction.tens_and_ones", "why": "Steps 17-20 have no problems at all and steps 21-29 are all above the operand cap, so the concept is empty on both counts. A child tops out at subtraction.teens_back." },
-    { "concept": "subtraction.borrowing", "why": "Same cap as its neighbour. Nothing in steps 30-36 has an operand at or below 20." }
+    {
+      "concept": "addition.tens_and_ones",
+      "why": "Every problem from addition step 21 up has an operand above 20, so the owl's cap drops all 445 of them. A child tops out at addition.bridge_ten."
+    },
+    {
+      "concept": "addition.carrying",
+      "why": "Same cap, one concept further on. Nothing in steps 30-36 has an operand at or below 20."
+    },
+    {
+      "concept": "subtraction.tens_and_ones",
+      "why": "Steps 17-20 have no problems at all and steps 21-29 are all above the operand cap, so the concept is empty on both counts. A child tops out at subtraction.teens_back."
+    },
+    {
+      "concept": "subtraction.borrowing",
+      "why": "Same cap as its neighbour. Nothing in steps 30-36 has an operand at or below 20."
+    },
+    {
+      "concept": "addition.multi_digit",
+      "why": "Every problem here has an operand between 121 and 4788 and the owl caps at 20. Authored for a wider audience than the owl currently serves; carries tutorial: null on purpose, because a lesson for content no child can reach is waste."
+    },
+    {
+      "concept": "subtraction.multi_digit",
+      "why": "Same as addition.multi_digit: operands far above the cap, tutorial deliberately absent."
+    },
+    {
+      "concept": "division.tables",
+      "why": "All 100 problems blocked, and NOT because the facts are hard. Division's maxOperand is max(dividend, divisor, quotient), so 24 / 3 reports 24 and fails a cap of 20 - even though a child fluent to twenty can do it, and the multiplication fact 3 x 8 that answers it IS servable. The cap treats a dividend like an addend. Deciding whether that derivation is right for division is roadmap work, not a declaration."
+    },
+    {
+      "concept": "division.larger",
+      "why": "Same derivation problem, one band up: 15 problems, none servable."
+    }
   ],
   "knownThin": [
-    { "domain": "addition", "steps": [0], "why": "Five problems: 0+1, 1+0, 1+1 and their wordings. The set of true facts with both operands at most one is genuinely almost this small." },
-    { "domain": "subtraction", "steps": [2], "why": "Five problems. Narrow but serviceable." },
-    { "domain": "subtraction", "steps": [15], "why": "One problem: 20 - 10. The step derivation only yields this shape at maxOperand 20, so the rung exists as a formality." },
-    { "domain": "number_sequence", "steps": [1, 3], "why": "Two problems each. The first +1 and first +2 sequences are the two thinnest rungs a child actually meets." },
-    { "domain": "multiplication", "steps": [3, 5, 11, 12], "why": "Table coverage is uneven: some products have many wordings authored and some have one." },
-    { "domain": "division", "steps": [3, 6, 19], "why": "Same unevenness as multiplication. Step 3 and step 6 are one problem each." }
+    {
+      "domain": "addition",
+      "steps": [
+        0
+      ],
+      "why": "Five problems: 0+1, 1+0, 1+1 and their wordings. The set of true facts with both operands at most one is genuinely almost this small."
+    },
+    {
+      "domain": "subtraction",
+      "steps": [
+        2
+      ],
+      "why": "Five problems. Narrow but serviceable."
+    },
+    {
+      "domain": "subtraction",
+      "steps": [
+        15
+      ],
+      "why": "One problem: 20 - 10. The step derivation only yields this shape at maxOperand 20, so the rung exists as a formality."
+    },
+    {
+      "domain": "number_sequence",
+      "steps": [
+        1,
+        3
+      ],
+      "why": "Two problems each. The first +1 and first +2 sequences are the two thinnest rungs a child actually meets."
+    }
   ],
   "concepts": [
     {
       "id": "addition.count_all",
       "domain": "addition",
-      "steps": [0, 2],
-      "skills": ["basic_addition", "single_digit_addition"],
+      "steps": [
+        0,
+        2
+      ],
+      "skills": [
+        "basic_addition",
+        "single_digit_addition"
+      ],
       "tutorial": "addition.count_all"
     },
     {
       "id": "addition.count_on",
       "domain": "addition",
-      "steps": [3, 5],
-      "skills": ["basic_addition", "single_digit_addition", "single_digit_with_carry"],
+      "steps": [
+        3,
+        5
+      ],
+      "skills": [
+        "basic_addition",
+        "single_digit_addition",
+        "single_digit_with_carry"
+      ],
       "tutorial": "addition.count_on"
     },
     {
       "id": "addition.make_ten",
       "domain": "addition",
-      "steps": [6, 9],
-      "skills": ["basic_addition", "single_digit_addition", "single_digit_with_carry", "teens_addition", "addition_with_carry"],
+      "steps": [
+        6,
+        9
+      ],
+      "skills": [
+        "basic_addition",
+        "single_digit_addition",
+        "single_digit_with_carry",
+        "teens_addition",
+        "addition_with_carry"
+      ],
       "tutorial": "addition.make_ten"
     },
     {
       "id": "addition.teen_numbers",
       "domain": "addition",
-      "steps": [10, 14],
-      "skills": ["teens_addition"],
+      "steps": [
+        10,
+        14
+      ],
+      "skills": [
+        "teens_addition"
+      ],
       "tutorial": "addition.teen_numbers"
     },
     {
       "id": "addition.bridge_ten",
       "domain": "addition",
-      "steps": [15, 19],
-      "skills": ["teens_addition"],
+      "steps": [
+        15,
+        19
+      ],
+      "skills": [
+        "teens_addition"
+      ],
       "tutorial": "addition.bridge_ten"
     },
     {
       "id": "addition.tens_and_ones",
       "domain": "addition",
-      "steps": [20, 29],
-      "skills": ["two_digit_addition", "addition_with_carry"],
+      "steps": [
+        20,
+        29
+      ],
+      "skills": [
+        "two_digit_addition",
+        "addition_with_carry"
+      ],
       "tutorial": "addition.tens_and_ones"
     },
     {
       "id": "addition.carrying",
       "domain": "addition",
-      "steps": [30, 36],
-      "skills": ["two_digit_addition", "addition_with_carry"],
+      "steps": [
+        30,
+        36
+      ],
+      "skills": [
+        "two_digit_addition",
+        "addition_with_carry"
+      ],
       "tutorial": "addition.carrying"
     },
-
+    {
+      "id": "addition.multi_digit",
+      "domain": "addition",
+      "steps": [
+        37,
+        46
+      ],
+      "skills": [
+        "multi_digit_addition"
+      ],
+      "tutorial": null
+    },
     {
       "id": "addition.missing_part",
       "domain": "addition",
-      "steps": [2, 6],
-      "requires": { "skill": "missing_addend" },
-      "skills": ["missing_addend"],
+      "steps": [
+        2,
+        6
+      ],
+      "requires": {
+        "skill": "missing_addend"
+      },
+      "skills": [
+        "missing_addend"
+      ],
       "tutorial": "addition.missing_part"
     },
     {
       "id": "addition.balance",
       "domain": "addition",
-      "steps": [2, 7],
-      "requires": { "skill": "relational_equals" },
-      "skills": ["relational_equals"],
+      "steps": [
+        2,
+        7
+      ],
+      "requires": {
+        "skill": "relational_equals"
+      },
+      "skills": [
+        "relational_equals"
+      ],
       "tutorial": "addition.balance"
     },
-
     {
       "id": "subtraction.take_away",
       "domain": "subtraction",
-      "steps": [0, 2],
-      "skills": ["basic_subtraction", "single_digit_subtraction", "harder_subtraction"],
+      "steps": [
+        0,
+        2
+      ],
+      "skills": [
+        "basic_subtraction",
+        "single_digit_subtraction",
+        "harder_subtraction"
+      ],
       "tutorial": "subtraction.take_away"
     },
     {
       "id": "subtraction.count_back",
       "domain": "subtraction",
-      "steps": [3, 6],
-      "skills": ["basic_subtraction", "single_digit_subtraction", "harder_subtraction", "subtraction_with_borrow"],
+      "steps": [
+        3,
+        6
+      ],
+      "skills": [
+        "basic_subtraction",
+        "single_digit_subtraction",
+        "harder_subtraction",
+        "subtraction_with_borrow"
+      ],
       "tutorial": "subtraction.count_back"
     },
     {
       "id": "subtraction.bridge_back",
       "domain": "subtraction",
-      "steps": [7, 10],
-      "skills": ["subtraction_with_borrow", "single_digit_subtraction", "harder_subtraction", "teens_subtraction", "two_digit_subtraction"],
+      "steps": [
+        7,
+        10
+      ],
+      "skills": [
+        "subtraction_with_borrow",
+        "single_digit_subtraction",
+        "harder_subtraction",
+        "teens_subtraction",
+        "two_digit_subtraction"
+      ],
       "tutorial": "subtraction.bridge_back"
     },
     {
       "id": "subtraction.teens_back",
       "domain": "subtraction",
-      "steps": [11, 16],
-      "skills": ["subtraction_with_borrow", "teens_subtraction", "single_digit_subtraction", "two_digit_subtraction"],
+      "steps": [
+        11,
+        16
+      ],
+      "skills": [
+        "subtraction_with_borrow",
+        "teens_subtraction",
+        "single_digit_subtraction",
+        "two_digit_subtraction"
+      ],
       "tutorial": "subtraction.teens_back"
     },
     {
       "id": "subtraction.tens_and_ones",
       "domain": "subtraction",
-      "steps": [17, 29],
-      "skills": ["two_digit_subtraction", "subtraction_with_borrow", "teens_subtraction"],
+      "steps": [
+        17,
+        29
+      ],
+      "skills": [
+        "two_digit_subtraction",
+        "subtraction_with_borrow",
+        "teens_subtraction"
+      ],
       "tutorial": "subtraction.tens_and_ones"
     },
     {
       "id": "subtraction.borrowing",
       "domain": "subtraction",
-      "steps": [30, 36],
-      "skills": ["two_digit_subtraction", "subtraction_with_borrow"],
+      "steps": [
+        30,
+        36
+      ],
+      "skills": [
+        "two_digit_subtraction",
+        "subtraction_with_borrow"
+      ],
       "tutorial": "subtraction.borrowing"
     },
-
+    {
+      "id": "subtraction.multi_digit",
+      "domain": "subtraction",
+      "steps": [
+        37,
+        46
+      ],
+      "skills": [
+        "multi_digit_subtraction"
+      ],
+      "tutorial": null
+    },
     {
       "id": "counting.to_five",
       "domain": "counting",
-      "steps": [0, 1],
-      "skills": ["counting_objects"],
+      "steps": [
+        0,
+        1
+      ],
+      "skills": [
+        "counting_objects"
+      ],
       "tutorial": "counting.to_five"
     },
     {
       "id": "counting.to_ten",
       "domain": "counting",
-      "steps": [2, 3],
-      "skills": ["counting_objects", "counting"],
+      "steps": [
+        2,
+        3
+      ],
+      "skills": [
+        "counting_objects",
+        "counting"
+      ],
       "tutorial": "counting.to_ten"
     },
     {
       "id": "counting.ten_and_more",
       "domain": "counting",
-      "steps": [4, 6],
-      "skills": ["counting_objects"],
+      "steps": [
+        4,
+        6
+      ],
+      "skills": [
+        "counting_objects"
+      ],
       "tutorial": "counting.ten_and_more"
     },
-
     {
       "id": "comparison.more_or_less",
       "domain": "comparison",
-      "steps": [0, 2],
-      "skills": ["number_comparison"],
+      "steps": [
+        0,
+        2
+      ],
+      "skills": [
+        "number_comparison"
+      ],
       "tutorial": "comparison.more_or_less"
     },
     {
       "id": "comparison.compare_teens",
       "domain": "comparison",
-      "steps": [3, 6],
-      "skills": ["number_comparison"],
+      "steps": [
+        3,
+        6
+      ],
+      "skills": [
+        "number_comparison"
+      ],
       "tutorial": "comparison.compare_teens"
     },
-
+    {
+      "id": "comparison.compare_larger",
+      "domain": "comparison",
+      "steps": [
+        7,
+        9
+      ],
+      "skills": [
+        "number_comparison"
+      ],
+      "tutorial": "comparison.compare_larger"
+    },
     {
       "id": "pattern_matching.ab_repeat",
       "domain": "pattern_matching",
-      "steps": [0, 2],
-      "skills": ["simple_patterns"],
+      "steps": [
+        0,
+        2
+      ],
+      "skills": [
+        "simple_patterns"
+      ],
       "tutorial": "pattern_matching.ab_repeat"
     },
     {
       "id": "pattern_matching.longer_core",
       "domain": "pattern_matching",
-      "steps": [3, 5],
-      "skills": ["simple_patterns", "number_patterns"],
+      "steps": [
+        3,
+        5
+      ],
+      "skills": [
+        "simple_patterns",
+        "number_patterns"
+      ],
       "tutorial": "pattern_matching.longer_core"
     },
     {
       "id": "pattern_matching.tricky_core",
       "domain": "pattern_matching",
-      "steps": [6, 7],
-      "skills": ["simple_patterns"],
+      "steps": [
+        6,
+        7
+      ],
+      "skills": [
+        "simple_patterns"
+      ],
       "tutorial": "pattern_matching.tricky_core"
     },
-
     {
       "id": "number_sequence.one_more",
       "domain": "number_sequence",
-      "steps": [0, 2],
-      "skills": ["number_ordering", "simple_sequences"],
+      "steps": [
+        0,
+        2
+      ],
+      "skills": [
+        "number_ordering",
+        "simple_sequences"
+      ],
       "tutorial": "number_sequence.one_more"
     },
     {
       "id": "number_sequence.skip_two",
       "domain": "number_sequence",
-      "steps": [3, 4],
-      "skills": ["number_ordering"],
+      "steps": [
+        3,
+        4
+      ],
+      "skills": [
+        "number_ordering"
+      ],
       "tutorial": "number_sequence.skip_two"
     },
     {
       "id": "number_sequence.bigger_jumps",
       "domain": "number_sequence",
-      "steps": [5, 6],
-      "skills": ["number_ordering"],
+      "steps": [
+        5,
+        6
+      ],
+      "skills": [
+        "number_ordering"
+      ],
       "tutorial": "number_sequence.bigger_jumps"
     },
-
+    {
+      "id": "number_sequence.big_skips",
+      "domain": "number_sequence",
+      "steps": [
+        7,
+        9
+      ],
+      "skills": [
+        "skip_counting"
+      ],
+      "tutorial": "number_sequence.big_skips"
+    },
     {
       "id": "multiplication.groups_of",
       "domain": "multiplication",
-      "steps": [0, 7],
-      "skills": ["multiplication_tables"],
+      "steps": [
+        0,
+        7
+      ],
+      "skills": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
       "tutorial": "multiplication.groups_of"
     },
     {
       "id": "multiplication.tables_small",
       "domain": "multiplication",
-      "steps": [8, 12],
-      "skills": ["multiplication_tables"],
+      "steps": [
+        8,
+        12
+      ],
+      "skills": [
+        "multiplication_tables",
+        "multiplication_place_value",
+        "multiplication_word_problems"
+      ],
       "tutorial": "multiplication.tables_small"
     },
     {
       "id": "multiplication.tables_large",
       "domain": "multiplication",
-      "steps": [13, 18],
-      "skills": ["multiplication_tables"],
+      "steps": [
+        13,
+        14
+      ],
+      "skills": [
+        "multiplication_two_digit"
+      ],
       "tutorial": "multiplication.tables_large"
     },
-
     {
       "id": "division.sharing",
       "domain": "division",
-      "steps": [0, 8],
-      "skills": ["simple_division"],
+      "steps": [
+        0,
+        8
+      ],
+      "skills": [
+        "simple_division",
+        "division_word_problems"
+      ],
       "tutorial": "division.sharing"
     },
     {
       "id": "division.tables",
       "domain": "division",
-      "steps": [9, 14],
-      "skills": ["simple_division"],
+      "steps": [
+        9,
+        14
+      ],
+      "skills": [
+        "simple_division",
+        "division_place_value",
+        "division_two_digit",
+        "division_word_problems"
+      ],
       "tutorial": "division.tables"
     },
     {
       "id": "division.larger",
       "domain": "division",
-      "steps": [15, 20],
-      "skills": ["simple_division"],
+      "steps": [
+        15,
+        15
+      ],
+      "skills": [
+        "division_two_digit"
+      ],
       "tutorial": "division.larger"
     }
   ]

@@ -7,12 +7,12 @@
   "templateReview": {
     "category": {
       "grade": 9.7,
-      "summary": "Template coverage is stable: 13 templates, 7 families, steps 0-10.",
+      "summary": "Template coverage is stable: 13 templates, 7 families, steps 0-7.",
       "metrics": {
         "templateCount": 13,
         "familyCount": 7,
         "minStep": 0,
-        "maxStep": 10,
+        "maxStep": 7,
         "promptVariantCount": 26,
         "averageProblemsPerTemplate": 11.5
       }
@@ -69,15 +69,15 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.7,
+      "grade": 9.8,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
         "steadyChildGrade": 9.7,
-        "strugglingChildGrade": 9.9,
+        "strugglingChildGrade": 10,
         "strongChildGrade": 9.6,
         "openingProbeStep": 0,
-        "middleProbeStep": 5,
-        "upperProbeStep": 10,
+        "middleProbeStep": 3,
+        "upperProbeStep": 7,
         "uniqueStartAnchors": 3,
         "probeCount": 9,
         "exhaustionWarnings": 0
@@ -96,7 +96,7 @@
       },
       {
         "role": "role-qa-engineer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],

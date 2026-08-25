@@ -7,12 +7,12 @@
   "templateReview": {
     "category": {
       "grade": 9.8,
-      "summary": "Template coverage is stable: 10 templates, 10 families, steps 5-10.",
+      "summary": "Template coverage is stable: 10 templates, 10 families, steps 0-7.",
       "metrics": {
         "templateCount": 10,
         "familyCount": 10,
-        "minStep": 5,
-        "maxStep": 10,
+        "minStep": 0,
+        "maxStep": 7,
         "promptVariantCount": 22,
         "averageProblemsPerTemplate": 15
       }
@@ -75,9 +75,9 @@
         "steadyChildGrade": 10,
         "strugglingChildGrade": 10,
         "strongChildGrade": 10,
-        "openingProbeStep": 5,
-        "middleProbeStep": 7,
-        "upperProbeStep": 10,
+        "openingProbeStep": 0,
+        "middleProbeStep": 3,
+        "upperProbeStep": 7,
         "uniqueStartAnchors": 3,
         "probeCount": 9,
         "exhaustionWarnings": 0
@@ -109,7 +109,7 @@
     "What is 2 × 3?",
     "What is 2 × 4?",
     "What is 2 × 5?",
-    "2 × 2 equals ?",
-    "Complete: 2 × 1 = ?"
+    "2 × 9 =",
+    "2 × 9 equals ?"
   ]
 }
