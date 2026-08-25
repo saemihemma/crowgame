@@ -117,7 +117,16 @@ jobs:
     name: Content and docs validation
     runs-on: ubuntu-latest
     steps:
+      # depth 2, blobs filtered. The doc validator dates each `Last verified
+      # against code:` stamp against git history, and at depth 1 there is one
+      # grafted commit so EVERY file looks like HEAD touched it — which made the
+      # check demand today's date on every doc and fail on four that were
+      # correct. Two commits is enough to diff HEAD against its parent and tell
+      # the difference; `blob:none` keeps that from refetching the 47 MB export.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          filter: 'blob:none'
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

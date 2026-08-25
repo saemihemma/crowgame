@@ -118,38 +118,59 @@ function walkFiles(relativeDirectory, allowedExtensions) {
  * trusted. Ten of nineteen docs were stale by this measure, two of them
  * Status: Current, because the old validator only checked that the line PARSED.
  *
- * On a shallow CI checkout `git log` knows only the files the head commit
- * touched, so unknown files are skipped. That degrades to exactly the useful
- * case: you cannot edit a doc without bumping its stamp in the same commit.
+ * THE SHALLOW-CLONE TRAP, learned the hard way. The first version compared each
+ * stamp to `git log -1 --format=%cs -- <file>` and assumed a shallow checkout
+ * would return nothing for files it did not know. It does the opposite: at
+ * `fetch-depth: 1` there is one grafted commit, so EVERY file reports that
+ * commit as its last touch, and the check demanded every doc carry today's date.
+ * It failed CI on four READMEs whose stamps were provably correct.
+ *
+ * So a file is only judged when we can tell "HEAD really touched this" from
+ * "history is too short to say". `git diff HEAD~1 HEAD` gives that, which is why
+ * the content job checks out with `fetch-depth: 2`. Where even that is missing
+ * the check declines to judge rather than guessing — a gate that cries wolf gets
+ * switched off, and then it guards nothing.
  */
 function validateFreshnessStamps() {
-    let gitWorks = true;
-    try {
-        execFileSync('git', ['rev-parse', '--git-dir'], { cwd: root, stdio: 'ignore' });
-    } catch {
-        gitWorks = false;
-    }
-    if (!gitWorks) {
+    const git = (args) => {
+        try {
+            return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+        } catch {
+            return null;
+        }
+    };
+
+    if (git(['rev-parse', '--git-dir']) === null) {
         console.log('  (no git available — freshness stamps not checked)');
         return;
     }
 
+    const headDate = git(['log', '-1', '--format=%cs', 'HEAD']);
+    if (git(['rev-parse', '--verify', 'HEAD~1']) === null) {
+        console.log('  (history too shallow to date files — freshness stamps not checked)');
+        return;
+    }
+    const changedInHead = new Set((git(['diff', '--name-only', 'HEAD~1', 'HEAD']) || '').split('\n').filter(Boolean));
+
+    let judged = 0;
     for (const doc of walkFiles('.', new Set(['.md']))) {
         const stamp = (readText(doc).match(/^Last verified against code:\s+(\d{4}-\d{2}-\d{2})$/m) || [])[1];
         if (!stamp) continue;
-        let lastTouched;
-        try {
-            lastTouched = execFileSync('git', ['log', '-1', '--format=%cs', '--', doc],
-                { cwd: root, encoding: 'utf8' }).trim();
-        } catch {
-            continue;
-        }
+
+        const lastTouched = git(['log', '-1', '--format=%cs', '--', doc]);
         if (!lastTouched) continue;
+
+        // On a shallow clone every file looks like HEAD touched it. Only trust
+        // that when the diff agrees.
+        if (lastTouched === headDate && !changedInHead.has(doc)) continue;
+
+        judged += 1;
         if (stamp < lastTouched) {
             fail(`${doc}: "Last verified against code: ${stamp}" predates the file's own last commit `
                 + `(${lastTouched}). Re-read it against the code and bump the stamp, or do not claim it.`);
         }
     }
+    console.log(`  freshness stamps: ${judged} doc(s) dated against git history`);
 }
 
 /**
