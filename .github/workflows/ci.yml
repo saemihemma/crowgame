@@ -130,9 +130,14 @@ jobs:
       # commit but the last of a push was invisible.
       #
       # The depth was chosen to avoid refetching the 47 MB export, which confused
-      # depth with blob filtering. Measured on this repo: commits and trees are
-      # ~1 MB of the object graph, blobs are ~907 MB. `filter: 'blob:none'` is
-      # what controls the cost; the depth controls how much of the gate works.
+      # depth with blob filtering. Measured on this repo as PACKED bytes — what
+      # actually crosses the wire, `%(objectsize:disk)` rather than the inflated
+      # `%(objectsize)` an earlier version of this comment quoted: commits 0.2 MB,
+      # trees 0.2 MB, blobs 140 MB. So `filter: 'blob:none'` is what controls the
+      # cost and the depth controls how much of the gate works — two orders of
+      # magnitude apart either way you measure it. Note the filter only skips
+      # HISTORICAL blobs; the ~66 MB any checkout must materialize for HEAD is
+      # unavoidable.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -150,6 +155,16 @@ jobs:
       # brand/tokens/, which meant it could pass while the shipped palettes drifted.
       - name: Validate content, docs, assets and palettes
         run: npm run validate
+
+      # The gate above is only as good as this job's checkout depth, and the
+      # depth is defended by nothing except the literal 0 above — which is the
+      # honour system that let the same gate ship broken three times. This proves
+      # the deployed configuration: it builds full-depth, depth-2 and depth-1
+      # clones, asserts a depth regression FAILS rather than quietly narrowing,
+      # and asserts each failure's reason so a validator too broken to parse
+      # cannot read as a caught defect.
+      - name: The doc gate must actually gate
+        run: npm run validate:docs-test
 
   api:
     name: API (server tests against Postgres)

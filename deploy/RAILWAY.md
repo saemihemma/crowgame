@@ -71,6 +71,14 @@ by a few tenths of a MB:
 | `index.<id>.js` + worklet | 0.3 MB | 0.1 MB |
 | **total** | **47.7 MB** | **~15.9 MB** |
 
+**One field is deliberately outside the fingerprint:** `build_info.json` carries
+a timestamp and the commit the build was made from, and it is excluded so a
+rebuild does not stale the export for a reason that is not a source change. The
+consequence is that its `commit` can name an earlier commit than the one whose
+tree the bytes were built from, which matters because production error triage
+keys on that field. Read it as "built from this source", not "shipped in this
+commit".
+
 So a first launch transfers about **15.9 MB**, and a returning player transfers
 **nothing at all** for the payload — no bytes, no conditional request, no `304`.
 Only the 5 KB shell is re-fetched.
@@ -274,7 +282,9 @@ curl -s https://<domain>/build_info.json    # commit + build time
 
 Railway bills egress. With a content-addressed payload served `immutable`, a
 returning player transfers ~5 KB per launch instead of ~15.8 MB. A player
-launching twice a day for a month is the difference between roughly 950 MB and
+launching twice a day for a month is the difference between roughly 950 MB
+(60 launches at the derived ~15.9 MB, done by hand — this figure is NOT gated,
+unlike the table above) and
 300 KB. Across a class or a family group that is the difference between egress
 being a line item and being invisible.
 

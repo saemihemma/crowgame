@@ -207,6 +207,26 @@ function validateFreshnessStamps() {
             + "doc's last-touch commit — check out with fetch-depth: 0 (keep filter: 'blob:none'; "
             + 'the blobs, not the depth, are what cost anything).');
     }
+
+    // And in CI, ANY declined doc is a failure — not just all of them.
+    //
+    // `judged === 0` turned out to be a narrower predicate than the defect. A
+    // depth-2 clone whose tip commit happens to touch one doc judges 2 of 19 and
+    // exits 0, with five Status: Current docs free to carry stale stamps. The
+    // earlier run judged 0 only because its tip commit touched no docs at all;
+    // one line of difference and the floor above would have waved it through.
+    //
+    // So the thing that keeps this gate honest cannot be a literal `0` in a
+    // workflow file plus a sentence in CONTRIBUTING.md — that is the honour
+    // system this whole exercise exists to remove. Under CI, partial coverage
+    // fails, which means the next person tuning a checkout for speed breaks the
+    // build instead of quietly hollowing out the check.
+    if (process.env['CI'] && declined > 0) {
+        fail(`freshness stamps: ${declined} of ${stamped} doc(s) could not be dated because their `
+            + 'last-touch commit is outside this clone, so their stamps went unverified. In CI that is '
+            + 'a failure rather than a warning: check out with fetch-depth: 0 and keep '
+            + "filter: 'blob:none'.");
+    }
 }
 
 /**
