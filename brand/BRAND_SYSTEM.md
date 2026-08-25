@@ -8,7 +8,7 @@ This is the one brand file. If another document disagrees with this one about
 colour, type, motion, tone or HUD layout, this one is right and the other one is
 stale. Per-world art detail lives in its companion, [LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md).
 
-Machine-readable palette tokens for every world live in [tokens/](./tokens/) in
+Machine-readable palette tokens for every world live in `godot/data/themes/` in
 the exact shape `ThemeDefinition` expects.
 
 ---
@@ -24,7 +24,7 @@ Findings from the current build, 2026-08-24:
 | One enemy exists | `enemy_registry.json` contains `cockroach_basic` and nothing else | no escalation, no world identity, no reason to look up |
 | The HUD is a left-edge text stack | `HUDScene` places health at `16,16`, coins at `16,56`, owls at `16,88` | the goal metric (owls saved) has the same visual weight as a debug readout |
 | Failure is painted red | `MathBoard.showWrongFeedback()` fills the chosen button with `danger` for 400ms and flies "Try again" up in a hardcoded `#ff6666` | the most confidence-sensitive moment in the game uses the colour of damage |
-| Colour has no law | palette keys are duplicated verbatim between `theme_forest.json` and `theme_scifi.json` | "themes" currently differ in four colours out of twenty-four |
+| Colour has no law | nothing measured contrast, hazard separation or the red rule; the two skins that existed were never checked against any of it | one of them still fails: `scifi` hazard vs `ground_lit` is 2.84 against a 3.0 floor |
 
 Everything below is written to close those six gaps.
 
@@ -392,11 +392,11 @@ Everything else is a world variable. Each world owns:
 
 Full tables, tilesets, props and object lists are in
 [LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md). Copy-paste tokens are in
-[tokens/](./tokens/).
+`godot/data/themes/`.
 
 ### 6.5 Contrast floor
 
-These are checked, not asserted. [tokens/verify_palettes.py](./tokens/verify_palettes.py)
+These are checked, not asserted. [tools/verify_palettes.py](../tools/verify_palettes.py)
 runs all of them across all five worlds and exits non-zero on a violation. Two
 of the rules below exist because the first draft of the tokens failed them.
 
@@ -948,7 +948,7 @@ Two things from this tier were deliberately **not** done, and both are in
 
 ### Tier 2 — the systems this document is really about
 
-6. **Ship the five world themes.** Drop [tokens/](./tokens/) into
+6. **Ship the five world themes.** Drop the palettes into
    `godot/data/themes/`, extend `DataManager`'s paths and `ThemeManager.THEME_KEYS`,
    and call `ThemeManager.setTheme(spec.theme)` on level load in `GameScene`.
    `HealthBar` already falls back to generated placeholders when a themed sprite

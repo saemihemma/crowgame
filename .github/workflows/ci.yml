@@ -122,15 +122,12 @@ jobs:
       - run: npm ci
       - name: Typecheck the reference kernel and the toolchain
         run: npm run typecheck
-      - name: Validate content, docs and assets
+      # Includes the colour law: 65 checks that the world palettes obey
+      # BRAND_SYSTEM §6, run against godot/data/themes because that is what the
+      # game loads. It was a separate step against a duplicate copy in
+      # brand/tokens/, which meant it could pass while the shipped palettes drifted.
+      - name: Validate content, docs, assets and palettes
         run: npm run validate
-      # Rescued from web-ci.yml. That workflow gated the retired Phaser build and
-      # could never pass, but this step was real and passing: 65 checks that the
-      # brand palettes obey their own colour laws. Deleting the workflow dropped
-      # it, so it lives here now, where the rest of the gates actually run.
-      - name: Colour law
-        working-directory: brand/tokens
-        run: python3 verify_palettes.py
 
   api:
     name: API (server tests against Postgres)

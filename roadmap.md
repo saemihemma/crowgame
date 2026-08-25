@@ -116,6 +116,19 @@ field is declared in `src/utils/Types.ts` and read by nothing.
 *Done when:* both are removed, or something actually uses them.
 
 ### `theme_forest` and `theme_scifi` are kept alive only by the Godot tests
+
+`scifi` also fails the colour law: its hazard pair clears `ground_lit` at only
+2.84 against the 3.0 floor, so a spike is not reliably distinguishable from the
+tile it sits on. This went unseen because the law used to run against a
+duplicate copy of the palettes in `brand/tokens/` that did not include either
+legacy skin; it now runs against `godot/data/themes/` and reports the finding on
+every `npm run validate`, ungated.
+
+That gives the retirement decision a measured reason rather than a tidiness
+argument. If they stay, `scifi`'s hazard or `ground_lit` needs retuning and the
+skin should be brought under the law in `tools/verify_palettes.py`. Either way it
+is a palette edit under `godot/data/**`, so it stales the export and wants a
+rebuild — see the note at the end of P4.
 `godot/tests/test_theme_roles.gd` and `test_theme_swap.gd` assert on the
 `forest` and `scifi` ids by path. Once the five world themes land in Godot those
 two skins have no other reason to exist.

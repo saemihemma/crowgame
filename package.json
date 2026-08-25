@@ -20,7 +20,7 @@
         "math:sync-metadata": "tsx tools/sync_math_problem_metadata.ts",
         "process:audio": "node tools/process_audio.js",
         "typecheck": "tsc --noEmit",
-        "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js && node tools/validate_i18n.mjs && node tools/validate_export.mjs",
+        "validate": "tsx tools/validate-content.ts && node tools/validate_docs.js && node tools/validate_assets.js && node tools/validate_i18n.mjs && node tools/validate_export.mjs && python3 tools/verify_palettes.py",
         "validate:assets": "node tools/validate_assets.js",
         "validate:docs": "node tools/validate_docs.js",
         "validate:i18n": "node tools/validate_i18n.mjs",

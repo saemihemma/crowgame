@@ -111,7 +111,7 @@ Two things it deliberately does not claim:
 plum family (`#613049`, 1640 px, 45.6 away) that `theme_sugarstorm.json` does
 not declare. Either the art or the token file is wrong; that is an art call.
 
-`brand/tokens/verify_palettes.py` remains complementary: it proves the token
+`tools/verify_palettes.py` remains complementary: it proves the token
 files are internally lawful, this proves the pixels match them.
 
 ---
