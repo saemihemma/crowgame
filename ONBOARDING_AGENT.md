@@ -81,12 +81,12 @@ Game:
 - **51** `.gd` scripts under `godot/scripts/`, **24** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **317** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **327** keys, matched key-for-key by
   `strings_is.json`
 - **19** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 
-Maths content — `DataManager` loads 4 math pools totaling 3150 problems:
-- `curriculum`: 3035
+Maths content — `DataManager` loads 4 math pools totaling 3851 problems:
+- `curriculum`: 3736
 - `gaps`: 60
 - `dataset`: 40
 - `easy`: 15
@@ -95,9 +95,9 @@ Math UI is currently MCQ-only: every problem is answered by picking one of the
 offered options, and `godot/scripts/ui/math_challenge.gd` builds its buttons
 straight from `answer.options`.
 
-Blunt boundaries on that `3150`, because it is the number people quote wrongly:
+Blunt boundaries on that `3851`, because it is the number people quote wrongly:
 
-- `3150` is total shipped inventory, **not** the owl path.
+- `3851` is total shipped inventory, **not** the owl path.
 - The opening unlocked domains currently `addition` plus `counting`; pattern
   matching joins the owl-safe set later through the normal unlock rules.
 - Current shipped owl interaction length is `1` problem per owl encounter

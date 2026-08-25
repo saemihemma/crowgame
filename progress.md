@@ -198,3 +198,22 @@ Original prompt: Export tighter runtime assets and wire the game to them so game
   copy freshness, every owl-served domain must have milestones, milestones must
   point at authored ladder steps, provenance required. 42 server + 154 Godot
   tests green, export rebuilt.
+
+- 2026-08-25: Grade 3-4 math coverage shipped through the authoring pipeline.
+  Research-based step redesign documented in docs/MATH_AUTHORING_STANDARDS.md
+  (fluency phases, one-difficulty-factor-per-step, regrouping-load ordering,
+  measured times-table order, CGI word-problem taxonomy). Ladders extended:
+  addition/subtraction steps 41-46 (3- and 4-digit by carry/borrow count,
+  frozen tiers untouched), multiplication rebuilt on the table-order ladder
+  0-14 (legal: never served), division as fact families (mult step + 1),
+  comparison to step 9 (ordering past 1000), sequence to step 9 (skip counting
+  by 10/25/50/100). ~700 new problems via 9 new batches + 10 new bands; two
+  new word-problem shapes (equal-groups nests x, sharing berries division)
+  wired through the kernel parser, phrasing catalog and both locales, with a
+  new strictVariants template flag so story-only templates stay stories.
+  Multiplication/division now servable: added to all owl problemTypes
+  (unlock-gated by addition mastery) and to level_05 + level_99 gating
+  (difficultyBand to [1,5]). grade_expectations.json now anchors grades 3-4
+  in every extended domain. 43 server + 154 Godot tests green, full validate
+  clean, export rebuilt. Deferred with roadmap entries: remainders (needs a
+  new answer mode), fractions/negatives (new domains).

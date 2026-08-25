@@ -45,35 +45,181 @@
   },
   "domains": {
     "addition": [
-      { "endOfGrade": 1, "step": 15, "covers": "samlagning á talnabilinu 0–20", "basis": "material", "source": "sproti-1" },
-      { "endOfGrade": 2, "step": 36, "covers": "samlagning með tölum upp í 100", "basis": "material", "source": "sproti-2" }
+      {
+        "endOfGrade": 1,
+        "step": 15,
+        "covers": "samlagning á talnabilinu 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 36,
+        "covers": "samlagning með tölum upp í 100",
+        "basis": "material",
+        "source": "sproti-2"
+      },
+      {
+        "endOfGrade": 3,
+        "step": 43,
+        "covers": "þriggja stafa samlagning, allt að tvöfaldri geymslu",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 46,
+        "covers": "samlagning yfir 1000; grunnreikniaðgerðirnar fjórar við lok 4. bekkjar",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
     ],
     "subtraction": [
-      { "endOfGrade": 1, "step": 15, "covers": "frádráttur á talnabilinu 0–20", "basis": "material", "source": "sproti-1" },
-      { "endOfGrade": 2, "step": 36, "covers": "frádráttur með tölum upp í 100", "basis": "material", "source": "sproti-2" }
+      {
+        "endOfGrade": 1,
+        "step": 15,
+        "covers": "frádráttur á talnabilinu 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 36,
+        "covers": "frádráttur með tölum upp í 100",
+        "basis": "material",
+        "source": "sproti-2"
+      },
+      {
+        "endOfGrade": 3,
+        "step": 43,
+        "covers": "þriggja stafa frádráttur, einnig yfir núll (t.d. 500-263)",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 46,
+        "covers": "frádráttur yfir 1000; grunnreikniaðgerðirnar fjórar við lok 4. bekkjar",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
     ],
     "counting": [
-      { "endOfGrade": 1, "step": 6, "covers": "talning og talnaskilningur 0–20", "basis": "material", "source": "sproti-1" }
+      {
+        "endOfGrade": 1,
+        "step": 6,
+        "covers": "talning og talnaskilningur 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      }
     ],
     "comparison": [
-      { "endOfGrade": 1, "step": 4, "covers": "röð talna á talnabilinu 0–20", "basis": "material", "source": "sproti-1" },
-      { "endOfGrade": 2, "step": 6, "covers": "raðað tölum eftir stærð (stiginn nær 30; efni 2. bekkjar nær 100)", "basis": "approx", "source": "sproti-2" }
+      {
+        "endOfGrade": 1,
+        "step": 4,
+        "covers": "röð talna á talnabilinu 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 6,
+        "covers": "raðað tölum eftir stærð (stiginn nær 30; efni 2. bekkjar nær 100)",
+        "basis": "approx",
+        "source": "sproti-2"
+      },
+      {
+        "endOfGrade": 3,
+        "step": 8,
+        "covers": "raðað þriggja stafa tölum eftir stærð",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 9,
+        "covers": "raðað náttúrulegum tölum, einnig yfir 1000 (hæfniviðmið við lok 4. bekkjar)",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
     ],
     "number_sequence": [
-      { "endOfGrade": 1, "step": 4, "covers": "talnaröð og talnalína 0–20", "basis": "material", "source": "sproti-1" },
-      { "endOfGrade": 2, "step": 6, "covers": "talnarunur upp í 100", "basis": "approx", "source": "sproti-2" }
+      {
+        "endOfGrade": 1,
+        "step": 4,
+        "covers": "talnaröð og talnalína 0–20",
+        "basis": "material",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 6,
+        "covers": "talnarunur upp í 100",
+        "basis": "approx",
+        "source": "sproti-2"
+      },
+      {
+        "endOfGrade": 3,
+        "step": 8,
+        "covers": "talið í 10 og 25 skrefum upp í hundruð",
+        "basis": "approx",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 9,
+        "covers": "talnarunur í 50 og 100 skrefum upp að 1000",
+        "basis": "approx",
+        "source": "sproti-4"
+      }
     ],
     "pattern_matching": [
-      { "endOfGrade": 1, "step": 3, "covers": "einföld mynstur", "basis": "approx", "source": "sproti-1" },
-      { "endOfGrade": 2, "step": 7, "covers": "regla í mynstrum", "basis": "approx", "source": "sproti-2" }
+      {
+        "endOfGrade": 1,
+        "step": 3,
+        "covers": "einföld mynstur",
+        "basis": "approx",
+        "source": "sproti-1"
+      },
+      {
+        "endOfGrade": 2,
+        "step": 7,
+        "covers": "regla í mynstrum",
+        "basis": "approx",
+        "source": "sproti-2"
+      }
     ],
     "multiplication": [
-      { "endOfGrade": 3, "step": 10, "covers": "margföldun kynnt, litlar töflur", "basis": "material", "source": "sproti-3" },
-      { "endOfGrade": 4, "step": 18, "covers": "margföldunartöflur; grunnreikniaðgerðirnar fjórar við lok 4. bekkjar", "basis": "curriculum", "source": "curriculum-g4" }
+      {
+        "endOfGrade": 3,
+        "step": 7,
+        "covers": "margföldun kynnt: léttu töflurnar (1, 2, 10, 5, 3, 4), núll og ferningstölur",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 14,
+        "covers": "allar margföldunartöflur og tveggja stafa sinnum eins stafs; grunnreikniaðgerðirnar fjórar",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
     ],
     "division": [
-      { "endOfGrade": 3, "step": 10, "covers": "deiling kynnt", "basis": "material", "source": "sproti-3" },
-      { "endOfGrade": 4, "step": 20, "covers": "deiling innan margföldunartaflna; grunnreikniaðgerðirnar fjórar við lok 4. bekkjar", "basis": "curriculum", "source": "curriculum-g4" }
+      {
+        "endOfGrade": 3,
+        "step": 8,
+        "covers": "deiling kynnt: skipting og andhverfur léttu taflnanna",
+        "basis": "material",
+        "source": "sproti-3"
+      },
+      {
+        "endOfGrade": 4,
+        "step": 15,
+        "covers": "deiling innan og rétt út fyrir töflurnar (án afgangs, sniðmörk svarforms)",
+        "basis": "curriculum",
+        "source": "curriculum-g4"
+      }
     ]
   }
 }

@@ -354,15 +354,16 @@
   ],
   "mathGating": {
     "skills": [
+      "number_sequence",
       "addition",
       "subtraction",
-      "number_sequence",
-      "pattern_matching"
+      "multiplication",
+      "division"
     ],
     "difficultyBand": [
-      2,
+      1,
       5
     ],
-    "teachingIntent": "Everything together, at the top of the climb."
+    "teachingIntent": "Everything together, at the top of the climb. Multiplication and division appear here once earned (unlock-gated by addition mastery)."
   }
 }

@@ -44,6 +44,17 @@ describe('expectationFor', () => {
         assert.equal(expectationFor(1, 12, 'multiplication')?.status, 'ahead');
     });
 
+    it('grades 3-4 measure against the extended ladders', () => {
+        // Grade 3 in addition: below the END of grade 2 (step 36) is the nudge.
+        assert.equal(expectationFor(3, 30, 'addition')?.status, 'practice');
+        assert.equal(expectationFor(3, 40, 'addition')?.status, 'on_track');
+        assert.equal(expectationFor(3, 43, 'addition')?.status, 'ahead');
+        // Grade 4 multiplication: the full-tables milestone is step 14.
+        assert.equal(expectationFor(4, 7, 'multiplication')?.status, 'on_track');
+        assert.equal(expectationFor(4, 14, 'multiplication')?.status, 'ahead');
+        assert.equal(expectationFor(4, 5, 'multiplication')?.status, 'practice');
+    });
+
     it('leikskóli has no floor: exploring or ahead, never practice', () => {
         assert.equal(expectationFor(0, 0, 'addition')?.status, 'not_expected_yet');
         assert.equal(expectationFor(0, 15, 'addition')?.status, 'ahead');
@@ -51,10 +62,10 @@ describe('expectationFor', () => {
     });
 
     it('grades past the game scope are capped, and say so', () => {
-        const g5 = expectationFor(5, 36, 'addition');
+        const g5 = expectationFor(5, 46, 'addition');
         assert.equal(g5?.status, 'ahead');
-        assert.equal(g5?.scopeCappedAtGrade, 2);
-        assert.equal(g5?.refGrade, 2);
+        assert.equal(g5?.scopeCappedAtGrade, 4);
+        assert.equal(g5?.refGrade, 4);
     });
 
     it('unknown domains have no verdict', () => {

@@ -1,31 +1,31 @@
 {
-  "batchId": "batch_16_subtraction_50_100_borrow",
-  "title": "Subtraction 50-100 with borrow plus lighter-domain variance",
+  "batchId": "batch_28_comparison_sequence_big",
+  "title": "Big-number ordering and skip counting",
   "accepted": true,
   "averageGrade": 9.8,
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.4,
-      "summary": "Template coverage is stable: 14 templates, 5 families, steps 2-36.",
+      "grade": 9.5,
+      "summary": "Template coverage is stable: 8 templates, 2 families, steps 7-9.",
       "metrics": {
-        "templateCount": 14,
-        "familyCount": 5,
-        "minStep": 2,
-        "maxStep": 36,
-        "promptVariantCount": 32,
-        "averageProblemsPerTemplate": 10.7
+        "templateCount": 8,
+        "familyCount": 2,
+        "minStep": 7,
+        "maxStep": 9,
+        "promptVariantCount": 16,
+        "averageProblemsPerTemplate": 10
       }
     },
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.4,
+        "grade": 9.5,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.4,
+        "grade": 9.6,
         "rationale": "Families and wording variants support replay and gentle pacing."
       },
       {
@@ -40,7 +40,7 @@
       "grade": 10,
       "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
       "metrics": {
-        "problemCount": 150,
+        "problemCount": 80,
         "arithmeticErrors": 0,
         "metadataErrors": 0,
         "optionErrors": 0,
@@ -69,15 +69,15 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.9,
+      "grade": 10,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.9,
+        "steadyChildGrade": 10,
         "strugglingChildGrade": 10,
-        "strongChildGrade": 9.9,
-        "openingProbeStep": 2,
-        "middleProbeStep": 27,
-        "upperProbeStep": 36,
+        "strongChildGrade": 10,
+        "openingProbeStep": 7,
+        "middleProbeStep": 8,
+        "upperProbeStep": 9,
         "uniqueStartAnchors": 3,
         "probeCount": 9,
         "exhaustionWarnings": 0
@@ -86,12 +86,12 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
-    "How much is 53 - 8?",
-    "How much is 53 - 6?",
-    "52 - 7 equals ?",
-    "54 - 9 equals ?",
-    "53 - 7 equals ?"
+    "Which number is greater: 44 or 99?",
+    "Which number is greater: 44 or 98?",
+    "Which number is greater: 42 or 88?",
+    "Which number is greater: 42 or 89?",
+    "Pick the greater number: 41 or 98"
   ]
 }

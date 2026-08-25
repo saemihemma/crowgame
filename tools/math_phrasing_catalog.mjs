@@ -85,6 +85,7 @@ export const PLURAL_PARAM = {
     'math.prompt.word.birds_fly': 'a',
     'math.prompt.word.berries_find': 'a',
     'math.prompt.word.berries_eat': 'a',
+    'math.prompt.word.berries_shared': 'a',
     'math.hint.groups': 'a',
     'math.hint.groups_makes': 'a',
     'math.expl.mul': 'a',
@@ -289,6 +290,12 @@ export const TEMPLATES = {
     'math.prompt.word.berries_find.one': 'You have {a} berry. You find {b} more. How many berries?',
     'math.prompt.word.berries_eat': 'You have {a} berries. You eat {b}. How many are left?',
     'math.prompt.word.berries_eat.one': 'You have {a} berry. You eat {b}. How many are left?',
+    // Multiplicative stories (equal groups, partitive sharing). Both operands
+    // are authored >= 2, so only the shared-berries count can hit an Icelandic
+    // singular-agreement number (21, 31, ...) — hence its plural param.
+    'math.prompt.word.nests_eggs': 'There are {a} nests. Each nest has {b} eggs. How many eggs in all?',
+    'math.prompt.word.berries_shared': '{a} berries are shared by {b} birds. How many berries does each bird get?',
+    'math.prompt.word.berries_shared.one': '{a} berry is shared by {b} birds. How many berries does each bird get?',
 
     // ── prompts: sequences and patterns ───────────────────────────────────
     'math.prompt.seq.next_number_pattern': 'What comes next in the number pattern: {seq}',
@@ -313,6 +320,10 @@ export const TEMPLATES = {
     'math.hint.touch_each': 'Touch each one once as you count.',
     'math.hint.more_value': 'Look at which number has more value.',
     'math.hint.repeating': 'See which numbers are repeating in order.',
+    // Grade 3-4 place-value strategies (multi-digit tiers and beyond-tables).
+    'math.hint.place_add': 'Add the hundreds, then the tens, then the ones.',
+    'math.hint.place_sub': 'Take away the hundreds, then the tens, then the ones.',
+    'math.hint.split_tens': 'Multiply the tens, multiply the ones, then add the two parts.',
 
     // Bridging through ten, and two-step subtraction.
     'math.hint.bridge_add': '{a} + {b} = {sum}, then add {c} more!',
@@ -432,6 +443,11 @@ export const TEMPLATES = {
     'math.expl.mul.one': '{a} group of {b} makes {product}.',
     'math.expl.div': '{a} split into groups of {b} makes {n} groups.',
     'math.expl.div.one': '{a} split into groups of {b} makes {n} group.',
+    // Grade 3-4 place-value and sharing explanations.
+    'math.expl.place_add': 'Add each place, hundreds to ones. The answer is {total}.',
+    'math.expl.place_sub': 'Take away place by place. The answer is {n}.',
+    'math.expl.split_tens': 'Multiply the tens by {b}, then the ones, and add the parts. The answer is {product}.',
+    'math.expl.share_each': '{a} shared into {b} equal groups gives {n} each.',
     'math.expl.add_double': '{a} plus {b} makes {sum}! Double {a} is {sum}!',
     'math.expl.sub_half': '{a} take away {b} leaves {diff}! Half of {a} is {diff}!',
     'math.expl.all_fingers': '{a} plus {b} makes {sum}! That is all your fingers!',
@@ -645,6 +661,9 @@ export const SEMANTICS = {
     // Word problems: the narrative names which way the arithmetic runs.
     'math.prompt.word.birds_land': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
     'math.prompt.word.berries_find': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
+    'math.prompt.word.nests_eggs': (p, problem) => isAnswer(p.a * p.b, problem, `${p.a}×${p.b}`),
+    'math.prompt.word.berries_shared': (p, problem) => isAnswer(p.a / p.b, problem, `${p.a}÷${p.b}`),
+    'math.expl.share_each': (p) => holds(p.a / p.b === p.n, `${p.a}÷${p.b}=${p.n}`),
     'math.prompt.word.birds_fly': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
     'math.prompt.word.berries_eat': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
 
@@ -838,6 +857,8 @@ const SAME_ORDER = new Set([
     "math.prompt.word.birds_fly",
     "math.prompt.word.berries_find",
     "math.prompt.word.berries_eat",
+    "math.prompt.word.nests_eggs",
+    "math.prompt.word.berries_shared",
         "math.hint.count_on",
         "math.expl.add",
         "math.hint.count_back",
