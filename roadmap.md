@@ -42,6 +42,32 @@ there.
 
 ## P1 — Correctness and reachability
 
+### The game teaches `=` as an instruction, never as a relation
+Every one of the 3150 problems and all 120 lesson cards put the unknown on the
+right: `7 + 3 = ?`. Nothing anywhere presents `=` as "the same amount on both
+sides", so the only meaning of the symbol a child can infer from this game is
+"compute now". Falkner, Levi and Carpenter found that reading `=` as an operator
+rather than a relation is near-universal in primary pupils and persists for
+years, and it is the documented root of later algebra failure. Needs a new
+problem shape (`8 = 5 + ?`, `4 + 3 = ? + 5`, true/false on `6 + 2 = 8`), which
+means a generator, pool entries, i18n phrasings and a `relational_equals`
+concept with its own lesson. Read `docs/MATH_CONCEPT_LADDER.md` "What is not on
+the ladder at all" first — the analysis is there, the content is not.
+
+*Done when:* a child can meet at least one problem whose unknown is not on the
+right-hand side, and one lesson teaches the balance reading of `=`.
+
+### Addition is result-unknown only, so there is no missing-addend route
+`a + b = ?` is the sole addition shape in the pools. Change-unknown
+(`5 + ? = 8`) and start-unknown (`? + 3 = 8`) are absent, which closes off the
+harder CGI problem tiers entirely and removes the natural on-ramp to relational
+equals above. `addition.count_on` already tells a child to "start at the bigger
+number", which is exactly the strategy missing-addend problems develop.
+Prerequisite for the entry above; do them in one pass.
+
+*Done when:* change-unknown addition exists in at least one concept's range with
+a lesson that models counting up to find the missing part.
+
 ### Fill the four-rung subtraction hole, steps 17-20
 `godot/data/curriculum/concept_ladder.json` declares it, and
 `tools/validate_math_concepts.mjs` fails the build if it silently closes or

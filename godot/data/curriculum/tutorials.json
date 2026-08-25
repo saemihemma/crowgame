@@ -8,7 +8,7 @@
         { "body": "see", "visual": "count_all", "params": { "a": 2, "b": 1 } },
         { "body": "model", "visual": "ten_frame", "params": { "filled": 2, "second": 1 } },
         { "body": "worked", "visual": "equation", "params": { "a": 2, "op": "+", "b": 1, "result": 3 } },
-        { "body": "try", "visual": "count_all", "params": { "a": 1, "b": 2 }, "choice": { "options": [2, 3, 4], "correct": 3 } }
+        { "body": "try", "visual": "count_all", "params": { "a": 1, "b": 2 }, "choice": { "options": [3, 2, 4], "correct": 3 } }
       ]
     },
     {
@@ -35,7 +35,7 @@
         { "body": "see", "visual": "ten_frame", "params": { "filled": 10, "second": 3 } },
         { "body": "model", "visual": "tens_and_ones", "params": { "tens": 1, "ones": 3 } },
         { "body": "worked", "visual": "equation", "params": { "a": 13, "op": "+", "b": 2, "result": 15 } },
-        { "body": "try", "visual": "tens_and_ones", "params": { "tens": 1, "ones": 1, "addOnes": 2 }, "choice": { "options": [12, 13, 14], "correct": 13 } }
+        { "body": "try", "visual": "tens_and_ones", "params": { "tens": 1, "ones": 1, "addOnes": 2 }, "choice": { "options": [13, 12, 14], "correct": 13 } }
       ]
     },
     {
@@ -44,7 +44,7 @@
         { "body": "see", "visual": "ten_frame", "params": { "filled": 16, "second": 4 } },
         { "body": "model", "visual": "number_line", "params": { "from": 10, "to": 20, "start": 16, "hops": 4 } },
         { "body": "worked", "visual": "equation", "params": { "a": 16, "op": "+", "b": 4, "result": 20 } },
-        { "body": "try", "visual": "number_line", "params": { "from": 10, "to": 20, "start": 17, "hops": 3 }, "choice": { "options": [19, 20, 21], "correct": 20 } }
+        { "body": "try", "visual": "number_line", "params": { "from": 10, "to": 20, "start": 17, "hops": 3 }, "choice": { "options": [19, 21, 20], "correct": 20 } }
       ]
     },
     {
@@ -62,7 +62,7 @@
         { "body": "see", "visual": "tens_and_ones", "params": { "tens": 6, "ones": 8, "addOnes": 5 } },
         { "body": "model", "visual": "number_line", "params": { "from": 60, "to": 80, "start": 68, "hops": 5, "mark": 70 } },
         { "body": "worked", "visual": "equation", "params": { "a": 68, "op": "+", "b": 5, "result": 73 } },
-        { "body": "try", "visual": "number_line", "params": { "from": 70, "to": 90, "start": 77, "hops": 9, "mark": 80 }, "choice": { "options": [85, 86, 87], "correct": 86 } }
+        { "body": "try", "visual": "number_line", "params": { "from": 70, "to": 90, "start": 77, "hops": 9, "mark": 80 }, "choice": { "options": [86, 85, 87], "correct": 86 } }
       ]
     },
 
@@ -81,7 +81,7 @@
         { "body": "see", "visual": "take_away", "params": { "total": 8, "gone": 3 } },
         { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 8, "hops": -3 } },
         { "body": "worked", "visual": "equation", "params": { "a": 8, "op": "-", "b": 3, "result": 5 } },
-        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 9, "hops": -4 }, "choice": { "options": [4, 5, 6], "correct": 5 } }
+        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 9, "hops": -4 }, "choice": { "options": [4, 6, 5], "correct": 5 } }
       ]
     },
     {
@@ -90,7 +90,7 @@
         { "body": "see", "visual": "take_away", "params": { "total": 13, "gone": 5 } },
         { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 13, "hops": -5, "mark": 10 } },
         { "body": "worked", "visual": "equation", "params": { "a": 13, "op": "-", "b": 5, "result": 8 } },
-        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 14, "hops": -6, "mark": 10 }, "choice": { "options": [7, 8, 9], "correct": 8 } }
+        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 14, "hops": -6, "mark": 10 }, "choice": { "options": [8, 7, 9], "correct": 8 } }
       ]
     },
     {
@@ -99,7 +99,7 @@
         { "body": "see", "visual": "ten_frame", "params": { "filled": 16 } },
         { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 16, "hops": -8, "mark": 10 } },
         { "body": "worked", "visual": "equation", "params": { "a": 16, "op": "-", "b": 8, "result": 8 } },
-        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 17, "hops": -8, "mark": 10 }, "choice": { "options": [8, 9, 10], "correct": 9 } }
+        { "body": "try", "visual": "number_line", "params": { "from": 0, "to": 20, "start": 17, "hops": -8, "mark": 10 }, "choice": { "options": [8, 10, 9], "correct": 9 } }
       ]
     },
     {
@@ -114,10 +114,10 @@
     {
       "id": "subtraction.borrowing",
       "cards": [
-        { "body": "see", "visual": "tens_and_ones", "params": { "tens": 8, "ones": 4, "takeOnes": 7 } },
+        { "body": "see", "visual": "tens_and_ones", "params": { "tens": 8, "ones": 4, "takeOnes": 4 } },
         { "body": "model", "visual": "number_line", "params": { "from": 70, "to": 90, "start": 84, "hops": -7, "mark": 80 } },
         { "body": "worked", "visual": "equation", "params": { "a": 84, "op": "-", "b": 7, "result": 77 } },
-        { "body": "try", "visual": "number_line", "params": { "from": 80, "to": 100, "start": 94, "hops": -8, "mark": 90 }, "choice": { "options": [85, 86, 87], "correct": 86 } }
+        { "body": "try", "visual": "number_line", "params": { "from": 80, "to": 100, "start": 94, "hops": -8, "mark": 90 }, "choice": { "options": [86, 85, 87], "correct": 86 } }
       ]
     },
 
@@ -136,7 +136,7 @@
         { "body": "see", "visual": "count_all", "params": { "a": 5, "b": 2 } },
         { "body": "model", "visual": "ten_frame", "params": { "filled": 7 } },
         { "body": "worked", "visual": "ten_frame", "params": { "filled": 8 } },
-        { "body": "try", "visual": "ten_frame", "params": { "filled": 9 }, "choice": { "options": [8, 9, 10], "correct": 9 } }
+        { "body": "try", "visual": "ten_frame", "params": { "filled": 9 }, "choice": { "options": [8, 10, 9], "correct": 9 } }
       ]
     },
     {
@@ -145,7 +145,7 @@
         { "body": "see", "visual": "ten_frame", "params": { "filled": 10, "second": 3 } },
         { "body": "model", "visual": "tens_and_ones", "params": { "tens": 1, "ones": 3 } },
         { "body": "worked", "visual": "ten_frame", "params": { "filled": 13 } },
-        { "body": "try", "visual": "ten_frame", "params": { "filled": 16 }, "choice": { "options": [15, 16, 17], "correct": 16 } }
+        { "body": "try", "visual": "ten_frame", "params": { "filled": 16 }, "choice": { "options": [16, 15, 17], "correct": 16 } }
       ]
     },
 
@@ -155,7 +155,7 @@
         { "body": "see", "visual": "balance", "params": { "a": 2, "b": 5 } },
         { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 10, "marks": [2, 5] } },
         { "body": "worked", "visual": "balance", "params": { "a": 8, "b": 10 } },
-        { "body": "try", "visual": "balance", "params": { "a": 7, "b": 9 }, "choice": { "options": [7, 9], "correct": 9 } }
+        { "body": "try", "visual": "balance", "params": { "a": 7, "b": 9, "ask": "fewer" }, "choice": { "options": [7, 9], "correct": 7 } }
       ]
     },
     {
@@ -164,7 +164,7 @@
         { "body": "see", "visual": "balance", "params": { "a": 14, "b": 13 } },
         { "body": "model", "visual": "number_line", "params": { "from": 10, "to": 20, "marks": [13, 14] } },
         { "body": "worked", "visual": "balance", "params": { "a": 14, "b": 18 } },
-        { "body": "try", "visual": "balance", "params": { "a": 14, "b": 10 }, "choice": { "options": [10, 14], "correct": 14 } }
+        { "body": "try", "visual": "balance", "params": { "a": 14, "b": 10, "ask": "more" }, "choice": { "options": [14, 10], "correct": 14 } }
       ]
     },
 
@@ -174,7 +174,7 @@
         { "body": "see", "visual": "pattern_strip", "params": { "core": [1, 2], "length": 4 } },
         { "body": "model", "visual": "pattern_strip", "params": { "core": [1, 2], "length": 5 } },
         { "body": "worked", "visual": "pattern_strip", "params": { "core": [4, 3], "length": 5, "reveal": 3 } },
-        { "body": "try", "visual": "pattern_strip", "params": { "core": [7, 6], "length": 5 }, "choice": { "options": [5, 6, 7], "correct": 6 } }
+        { "body": "try", "visual": "pattern_strip", "params": { "core": [7, 6], "length": 5 }, "choice": { "options": [5, 7, 6], "correct": 6 } }
       ]
     },
     {
@@ -202,7 +202,7 @@
         { "body": "see", "visual": "numbers", "params": { "values": [1, 2, 3, 4] } },
         { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 10, "start": 4, "hops": 1 } },
         { "body": "worked", "visual": "numbers", "params": { "values": [3, 4, 5, 6], "reveal": 7 } },
-        { "body": "try", "visual": "numbers", "params": { "values": [4, 5, 6, 7] }, "choice": { "options": [7, 8, 9], "correct": 8 } }
+        { "body": "try", "visual": "numbers", "params": { "values": [4, 5, 6, 7] }, "choice": { "options": [7, 9, 8], "correct": 8 } }
       ]
     },
     {
@@ -220,7 +220,7 @@
         { "body": "see", "visual": "numbers", "params": { "values": [1, 4, 7, 10] } },
         { "body": "model", "visual": "number_line", "params": { "from": 0, "to": 16, "start": 10, "hops": 3 } },
         { "body": "worked", "visual": "numbers", "params": { "values": [3, 6, 9, 12], "reveal": 15 } },
-        { "body": "try", "visual": "numbers", "params": { "values": [5, 8, 11, 14] }, "choice": { "options": [16, 17, 18], "correct": 17 } }
+        { "body": "try", "visual": "numbers", "params": { "values": [5, 8, 11, 14] }, "choice": { "options": [17, 16, 18], "correct": 17 } }
       ]
     },
 
@@ -239,7 +239,7 @@
         { "body": "see", "visual": "groups", "params": { "groups": 4, "each": 5 } },
         { "body": "model", "visual": "equation", "params": { "a": 4, "op": "×", "b": 5, "result": 20 } },
         { "body": "worked", "visual": "equation", "params": { "a": 3, "op": "×", "b": 6, "result": 18 } },
-        { "body": "try", "visual": "equation", "params": { "a": 5, "op": "×", "b": 7 }, "choice": { "options": [30, 35, 40], "correct": 35 } }
+        { "body": "try", "visual": "equation", "params": { "a": 5, "op": "×", "b": 7 }, "choice": { "options": [30, 40, 35], "correct": 35 } }
       ]
     },
     {
@@ -248,7 +248,7 @@
         { "body": "see", "visual": "groups", "params": { "groups": 6, "each": 5 } },
         { "body": "model", "visual": "equation", "params": { "a": 6, "op": "×", "b": 5, "result": 30 } },
         { "body": "worked", "visual": "equation", "params": { "a": 7, "op": "×", "b": 8, "result": 56 } },
-        { "body": "try", "visual": "equation", "params": { "a": 9, "op": "×", "b": 8 }, "choice": { "options": [63, 72, 81], "correct": 72 } }
+        { "body": "try", "visual": "equation", "params": { "a": 9, "op": "×", "b": 8 }, "choice": { "options": [72, 63, 81], "correct": 72 } }
       ]
     },
 
@@ -258,7 +258,7 @@
         { "body": "see", "visual": "groups", "params": { "groups": 2, "each": 3 } },
         { "body": "model", "visual": "groups", "params": { "groups": 3, "each": 2 } },
         { "body": "worked", "visual": "equation", "params": { "a": 6, "op": "÷", "b": 2, "result": 3 } },
-        { "body": "try", "visual": "equation", "params": { "a": 8, "op": "÷", "b": 2 }, "choice": { "options": [3, 4, 5], "correct": 4 } }
+        { "body": "try", "visual": "equation", "params": { "a": 8, "op": "÷", "b": 2 }, "choice": { "options": [3, 5, 4], "correct": 4 } }
       ]
     },
     {
@@ -267,7 +267,7 @@
         { "body": "see", "visual": "groups", "params": { "groups": 4, "each": 5 } },
         { "body": "model", "visual": "equation", "params": { "a": 20, "op": "÷", "b": 4, "result": 5 } },
         { "body": "worked", "visual": "equation", "params": { "a": 24, "op": "÷", "b": 3, "result": 8 } },
-        { "body": "try", "visual": "equation", "params": { "a": 32, "op": "÷", "b": 4 }, "choice": { "options": [6, 7, 8], "correct": 8 } }
+        { "body": "try", "visual": "equation", "params": { "a": 32, "op": "÷", "b": 4 }, "choice": { "options": [8, 6, 7], "correct": 8 } }
       ]
     },
     {

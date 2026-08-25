@@ -135,7 +135,7 @@ order because that is the order the evidence supports for a novice — see
 | --- | --- | --- |
 | `see` | concrete | The idea as objects. No symbols yet. |
 | `model` | pictorial | The same idea in the model that carries it: ten-frame, number line, base-ten rods, equal groups. |
-| `worked` | abstract | The equation, already solved, with the reasoning stated. |
+| `worked` | abstract | The equation, already solved, with the reasoning stated. In the eleven lessons with no equation to state — counting, comparison, patterns, sequences — it is the same picture again with the reasoning stated, and that is a shape rather than a CRA claim. See **Why it is shaped like this**. |
 | `try` | guided | One question, with the picture still on screen. The child acts. |
 
 Then the owl asks the real question, as a freebie: a win records normally, a
@@ -213,17 +213,34 @@ the nav row walks off the bottom of the screen.
 
 The ten representations `tutorial_visual.gd` can draw: `count_all`,
 `ten_frame`, `number_line`, `take_away`, `balance`, `pattern_strip`, `numbers`,
-`groups`, `tens_and_ones`, `equation`.
+`groups`, `tens_and_ones`, `equation`. None of them can draw a **regroup** — ten
+ones becoming a ten, or a ten broken back into ones — which is why
+`addition.carrying` and `subtraction.borrowing` teach bridging through a landmark
+ten on a number line instead of the thing they are named after, and why
+`tens_and_ones` may not be given a `takeOnes` larger than its `ones` (the
+renderer crosses the units it has and stops, so the drawing and the guard's model
+of the drawing would disagree).
 
 ## Why it is shaped like this
 
 The four beats are not a house style. Each one is doing a specific job.
 
-**Concrete first, then pictorial, then abstract.** The CRA sequence is rated as
-having strong evidence in the IES What Works Clearinghouse practice guide for
-mathematics intervention, and a 2025 meta-analysis of CRA single-case research
-reports a large overall effect. Every lesson here starts with objects and ends
-with a symbol, in that order.
+**Concrete first, then pictorial, then abstract — where CRA applies.** The CRA
+sequence is rated as having strong evidence in the IES What Works Clearinghouse
+practice guide for mathematics intervention, and a 2025 meta-analysis of CRA
+single-case research reports a large overall effect. Two honest limits on that,
+because the template is applied to all thirty concepts and the evidence does not
+stretch that far. First, the CRA intervention literature is about *procedural*
+topics — single-digit operations, place value, regrouping, fractions, algebra —
+and largely about learners with mathematics difficulties; there is no CRA
+evidence base for pattern-finding, comparison or counting. Second, the pack
+already breaks its own template there: `worked` is an `equation` in nineteen of
+thirty lessons, but in `counting`, `comparison`, `pattern_matching` and
+`number_sequence` it is another instance of the same picture, so eleven lessons
+have three concrete-or-pictorial beats and no abstract one. Where CRA is doing
+real work is the four addition, four subtraction, three multiplication and three
+division lessons. Elsewhere the four beats are a consistent shape, which is
+worth having, and not a claim about evidence.
 ([meta-analysis](https://journals.sagepub.com/doi/10.1177/09388982241292299),
 [PaTTAN practitioner guide](https://www.pattan.net/getmedia/9059e5f0-7edc-4391-8c8e-ebaf8c3c95d6/CRA_Methods0117),
 [Edutopia summary](https://www.edutopia.org/article/using-cra-framework-elementary-math/))
@@ -237,12 +254,48 @@ principle. The third card is always the solved case.
 [NSW CESE research summary](https://education.nsw.gov.au/content/dam/main-education/about-us/educational-data/cese/2017-cognitive-load-theory.pdf),
 [example-problem pairs](https://www.sciencedirect.com/science/article/abs/pii/S0361476X1000055X))
 
-**Then fade the guidance.** Faded worked examples remove support step by step
-until the learner is solving unaided, and the expertise-reversal effect says the
-support must come off as competence arrives or it becomes redundant. The fourth
-card keeps the picture but takes back the answer; the owl's real question keeps
-neither.
-([fading and working memory, 2026](https://bpspsychub.onlinelibrary.wiley.com/doi/full/10.1111/bjep.12781))
+**Then hand over, once.** What the fourth card and the owl's question form is an
+*example-problem pair*: study one solved case, then do one, then do one with no
+picture. Called by its right name, because the fading literature distinguishes
+that from what it actually recommends — Atkinson, Renkl and Merrill found that
+successively fading worked-out solution steps beats example-problem pairs on near
+transfer, and pairs are the control condition rather than the treatment. The
+reason this pack stays on the pair is that fading needs multi-step solutions to
+fade steps out of, and a lesson whose answer is one number has no intermediate
+steps to withhold. If these lessons ever grow a multi-step beat, backward fading
+is the change to make, and `validate_math_concepts.mjs` currently forbids it: it
+fails any tutorial that asks a question before the last card. That guard is
+right for today's four-card shape and is the first thing to revisit, not a law.
+([Atkinson, Renkl & Merrill 2003](https://asu.elsevierpure.com/en/publications/transitioning-from-studying-examples-to-solving-problems-effects-/),
+[fading and working memory, 2026](https://bpspsychub.onlinelibrary.wiley.com/doi/full/10.1111/bjep.12781))
+
+**The number line is the most-used model and the least-supported one here.** It
+is the `model` beat in fifteen of thirty lessons and appears on twenty-four of
+the 120 cards, which makes it the pack's default picture. The best available
+kindergarten comparison found the opposite of a default: counting training
+improved arithmetic, counting and symbolic number-line estimation, while number
+line training produced no such gains, and young children struggle with the line
+because its points are dimensionless and they need units they can count. The
+ten-frame and the object rows are the better-supported models at 5-7, and the
+number line's honest job here is the *bridging* lessons, where the landmark ten
+is the thing being taught. Where it is standing in for a counting model — the
+first subtraction lesson, `number_sequence.one_more` — it is a candidate for
+replacement rather than a settled choice.
+([counting vs number line training in kindergarten](https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2018.00975/full))
+
+**Both directions of a comparison, and no tappable answer position.** Forty-two
+per cent of the comparison pool asks for the *smaller* number, and both
+comparison lessons used to only ever model and ask "greater" — while the
+`balance` visual highlighted the greater tower on every card, which on a question
+card meant highlighting the answer. A balance card now declares `ask` ("more" or
+"fewer"), which selects the direction and turns the highlight off, and the guard
+requires it on any balance question and forbids it on any statement.
+Separately: the guided try is a row of buttons in the authored order, and it used
+to be sorted ascending with the answer in the middle in twenty-five of the
+twenty-eight three-option lessons. A child who always tapped the middle button
+scored twenty-five of twenty-eight and got the full celebration each time, having
+done no arithmetic. Positions are now spread and the guard caps any single slot,
+because a fixed answer position is a strategy that beats doing the maths.
 
 **Ten-frames and equal groups, not decoration.** Subitizing — seeing a small
 quantity without counting it — is among the strongest early predictors of later
@@ -288,11 +341,14 @@ a new one can never appear quietly.
 Fifteen rungs currently have no problems on them:
 
 - **`addition` step 20.** The bridge from the teens to two-digit addition.
-  Nothing generates a sum whose largest operand is exactly 20, so a child
-  promoting off step 19 skips straight to 21.
+  Nothing generates a sum whose largest operand is exactly 20, and step 21
+  upwards is over the owl's operand cap, so step 19 is the top of addition as a
+  child experiences it.
 - **`subtraction` steps 17-20.** Four consecutive empty rungs between the teens
-  and the twenties — the widest hole in the ladder. A child leaving step 16
-  lands on 21 with no intermediate practice at all.
+  and the twenties — the widest hole in the ladder. It is a wall rather than a
+  hole: step 21 and everything above it is over the owl's operand cap, so a
+  child leaving step 16 never lands anywhere, and subtraction.teens_back is the
+  last subtraction they are ever taught.
 - **`number_sequence` step 0.** The ladder's own first rung. Sequences start at
   step 1, so the gentlest possible sequence — counting on from a single number —
   has never been authored.
@@ -309,10 +365,96 @@ through): `addition` 0, `subtraction` 2 and 15, `number_sequence` 1 and 3,
 `multiplication` 3, 5, 11 and 12, `division` 3, 6 and 19. `subtraction` step 15
 holds a single problem, `20 - 10`.
 
-The two that matter most for a child playing today are the four-rung subtraction
-hole and `addition` step 20, because both sit inside the owl-safe band. The
-multiplication and division foundations matter later — those domains are locked
-behind unlock rules and the operand cap, so no child currently reaches them.
+None of them are what matters most for a child playing today. The rungs above
+them are unreachable for a different reason, and that is the next section.
+
+## What no child can reach
+
+Coverage above asks whether problems were **written**. It says nothing about
+whether the owl can hand one over, and that turned out to be the bigger
+question.
+
+`math_challenge_component.gd` builds every selection with `"maxOperand": 20`,
+and both `math_problem_manager.gd` and `problem_pool_manager.gd` drop any
+problem whose `difficultyTraits.maxOperand` exceeds it. Every problem from
+`addition` step 21 and `subtraction` step 21 upwards has an operand above 20.
+So four concepts — a third of the addition and subtraction ladder, 1,155
+authored problems, four lessons, forty cards and eighty strings per locale — sit
+on maths no child can be served:
+
+- **`addition.tens_and_ones`.** Every problem from addition step 21 up has an
+  operand above 20, so the owl's cap drops all 445 of them. A child tops out at
+  addition.bridge_ten.
+- **`addition.carrying`.** Same cap, one concept further on. Nothing in steps
+  30-36 has an operand at or below 20.
+- **`subtraction.tens_and_ones`.** Steps 17-20 have no problems at all and steps
+  21-29 are all above the operand cap, so the concept is empty on both counts. A
+  child tops out at subtraction.teens_back.
+- **`subtraction.borrowing`.** Same cap as its neighbour. Nothing in steps 30-36
+  has an operand at or below 20.
+
+`multiplication` and `division` are reachable by operand but gated shut by the
+domain unlock rules, so in practice a child today meets twenty of the thirty
+concepts at most.
+
+This is declared in `knownUnreachable` in `concept_ladder.json` under the same
+two-way discipline as the gaps: the guard reads the cap out of
+`math_challenge_component.gd` rather than restating it, fails on an undeclared
+unreachable concept, and fails equally on a declared one that has become
+reachable. Raising the cap to 100 is a one-line change and a large product
+decision — it opens 1,155 problems and four lessons at once, none of which have
+ever been played — so it is a decision this document records rather than makes.
+
+The honest reading of the two-digit half of the ladder is worse than "unplayed".
+Carry and borrow problems are spread across **every** step from 21 to 36 at
+roughly 40-50% of each rung, so the boundary between `tens_and_ones` and
+`carrying`/`borrowing` does not track regrouping at all — it tracks magnitude
+(20-49 against 50-99). The two `tens_and_ones` lessons used to state "keep the
+tens" as a flat rule, which is false for 219 of the 445 problems in addition's
+range and 152 of 424 in subtraction's; they now scope it ("the tens only move if
+the ones fill past ten"). `difficultyTraits.requiresCarry` and `requiresBorrow`
+are populated on 995 problems, so a ladder that split on the actual property is
+possible. It would not be a step range, which is the only shape the ladder can
+currently express.
+
+## What is not on the ladder at all
+
+Named here because an absence nobody wrote down is indistinguishable from a
+decision, and these are decisions:
+
+- **Relational equals.** Nothing in thirty concepts, 120 cards or 3,150 problems
+  presents `=` as a relation. Every `equation` visual is `a op b = result`, which
+  is exactly the operator-as-command reading that Falkner, Levi and Carpenter
+  found *every* kindergartener in their study bringing to `4 + 5 = □ + 6` — and
+  which deliberate teaching fixed for 14 of 16 children inside a year. This is
+  the largest single absence and the cheapest to close.
+  ([Falkner, Levi & Carpenter 1999](https://eric.ed.gov/?id=EJ600209))
+- **Missing addend / change unknown.** Every addition problem in the pool is
+  result-unknown. In the CGI difficulty ordering, Join Change Unknown sits a tier
+  above Result Unknown and Start Unknown at the top, and a child who only ever
+  meets result-unknown has no route into either. It is also the prerequisite for
+  relational equals.
+  ([CGI problem types by difficulty](http://www.langfordmath.com/ECEMath/CGI/DifficultyText.html))
+- **Compare as a problem type.** The `comparison` domain compares two numerals.
+  It never compares two sets and asks the difference, which is the mid-tier CGI
+  Compare Difference Unknown.
+- **Subitizing as its own rung.** The ten-frame is justified below by subitizing,
+  and `counting.to_five` says "after a while you will see five without counting
+  it at all" — but no concept, lesson or problem ever asks a child to see a
+  quantity without counting it. Clements and Sarama treat conceptual subitizing
+  as instructable; here it is an aside in one card.
+- **Zero and identity, and commutativity.** `addition.count_on` *instructs*
+  "start at the bigger number and count on", which is only valid because addition
+  commutes, and that is never said. The pool holds `1 + 3` and `3 + 1` as
+  separate problems. Nothing anywhere says adding zero changes nothing.
+- **Numeral formation** is correctly absent: this is a tap-only game.
+
+What the decomposition gets right and should not be disturbed: `pattern_matching`
+covers repeating patterns and `number_sequence` covers arithmetic growing
+sequences, which is the split the patterning literature supports — unit-of-repeat
+work is the thing that predicts later success with growing patterns rather than a
+lesser version of it.
+([Papic, Mulligan & Mitchelmore](https://researchers.mq.edu.au/en/publications/assessing-the-development-of-preschoolers-mathematical-patterning/))
 
 Authoring against these gaps is [MATH_AUTHORING_PIPELINE.md](./MATH_AUTHORING_PIPELINE.md);
 `roadmap.md` carries them as open work.

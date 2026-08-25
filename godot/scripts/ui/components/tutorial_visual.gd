@@ -256,6 +256,13 @@ func _draw_take_away() -> void:
 ## columns to make it fit, which is exactly the wrong thing to do here -- five
 ## drawn as one-then-two-then-two is no longer taller than two, and the card's
 ## own words ("you can see which pile is taller") stopped being true.
+##
+## `ask` is what makes this safe to ask a question on. Without it the card is a
+## statement, and the tower the card is ABOUT gets the highlight colour. With it
+## the card is a question -- "more" or "fewer" -- and nothing is highlighted,
+## because the highlight was the answer. Comparison lessons used to hand the
+## guided try its own answer in colour; validate_math_concepts.mjs now requires
+## `ask` on any balance card that asks, and forbids it on any card that does not.
 func _draw_balance() -> void:
 	var a := _int("a")
 	var b := _int("b")
@@ -272,7 +279,11 @@ func _draw_balance() -> void:
 	var outline := _role("outline", "ink")
 	var roles := ["token_a", "token_b"]
 	var fallbacks := ["owl", "accent"]
-	var winner: int = 0 if a >= b else 1
+	# A statement points at one tower; a question must point at neither.
+	var ask := String(_params.get("ask", ""))
+	var winner: int = -1
+	if ask == "":
+		winner = 0 if a >= b else 1
 	for c in 2:
 		var count: int = a if c == 0 else b
 		var x := size.x * (0.35 if c == 0 else 0.65)

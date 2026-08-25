@@ -18,13 +18,18 @@
  *  3. COVERAGE, against a declared baseline. A rung with no problems on it must
  *     be listed in knownGaps with a reason; a listed gap that has since been
  *     filled must be deleted. Same for thin rungs. A new hole cannot appear
- *     quietly and a closed one cannot linger as a lie.
+ *     quietly and a closed one cannot linger as a lie. Then the same discipline
+ *     for REACHABILITY: a concept whose every problem is filtered out by the
+ *     owl's own operand cap must be declared in knownUnreachable, because a
+ *     lesson no child can be served is a lesson that is not being reviewed.
  *  4. WIRING. Every concept's tutorial exists, every tutorial belongs to a
  *     concept, and every card names a visual tutorial_visual.gd can draw.
  *  5. WORDS. Every card and title has a string in every locale, and no
  *     tutorial.* string is left over from a card that no longer exists.
  *  6. FIT. Every string is measured against the box tutorial_tuning.json puts
  *     it in, so a layout change re-checks the copy that has to live in it.
+ *  8. THE ANSWER'S POSITION. The guided try is a row of buttons in the authored
+ *     order, so a fixed answer slot is a strategy that beats doing the maths.
  *
  * Also writes reports/math-concepts/coverage.json: the ladder, rung by rung,
  * with what is authored on each. That report is the answer to "what maths is
@@ -86,7 +91,11 @@ function truthOf(visual, params) {
             if (params.start === undefined) return null;
             return n('start') + n('hops');
         case 'balance':
-            return Math.max(n('a'), n('b'));
+            // A comparison card declares which way it is asking. Without `ask` the
+            // card is a statement about the greater number, which is what every
+            // balance card used to be -- and why "which is fewer" was unauthorable
+            // even though 42% of the comparison pool asks exactly that.
+            return params.ask === 'fewer' ? Math.min(n('a'), n('b')) : Math.max(n('a'), n('b'));
         case 'groups':
             return n('groups') * n('each');
         case 'tens_and_ones':
@@ -218,6 +227,73 @@ checkDeclared('knownGaps', ladder.knownGaps, actualGaps,
 checkDeclared('knownThin', ladder.knownThin, actualThin,
     `Author it up to ${MIN_PER_STEP} problems, or add it to knownThin in concept_ladder.json with a reason.`);
 
+// ── 3b. can a child actually be given this concept? ───────────────────────
+//
+// Coverage above asks whether problems are AUTHORED on a rung. It never asked
+// whether the owl can hand one over. The owl's selection config caps operand
+// size, and math_problem_manager.gd / problem_pool_manager.gd drop any problem
+// whose difficultyTraits.maxOperand exceeds it. Four concepts -- both two-digit
+// concepts in addition and both in subtraction -- had a full lesson, ten strings
+// per locale and a drawn representation, on maths no child can be served. The
+// cap is read out of the component rather than restated, so raising it here
+// closes these concepts and lowering it opens new ones, either way loudly.
+const OWL_MAX_OPERAND = (() => {
+    const src = readFileSync(join(ROOT, 'godot', 'scripts', 'entities', 'npc', 'math_challenge_component.gd'), 'utf8');
+    const found = [...src.matchAll(/"maxOperand"\s*:\s*(\d+)/g)];
+    if (found.length !== 1) {
+        fail(
+            `expected exactly one "maxOperand" literal in math_challenge_component.gd, found ${found.length}. `
+            + 'The reachability check cannot tell which cap the owl uses, so it is not running.',
+        );
+        return Infinity;
+    }
+    return Number(found[0][1]);
+})();
+
+/** Whether the owl's operand cap lets this problem through at all. */
+const servable = (p) => {
+    const cap = p.difficultyTraits?.maxOperand;
+    return cap === undefined || cap === null || Number(cap) <= OWL_MAX_OPERAND;
+};
+
+const actuallyUnreachable = new Set();
+for (const concept of ladder.concepts) {
+    const [lo, hi] = concept.steps;
+    const inRange = problems.filter(
+        p => p.domain === concept.domain && p.curriculumStep >= lo && p.curriculumStep <= hi);
+    if (inRange.length > 0 && !inRange.some(servable)) actuallyUnreachable.add(concept.id);
+}
+
+{
+    const declared = new Map();
+    for (const entry of ladder.knownUnreachable ?? []) {
+        if (!entry.why || String(entry.why).trim() === '') {
+            fail(`knownUnreachable entry for ${entry.concept} has no "why". An unteachable lesson without a reason is just waste nobody wrote down.`);
+        }
+        declared.set(entry.concept, entry);
+        if (!ladder.concepts.some(c => c.id === entry.concept)) {
+            fail(`knownUnreachable names [${entry.concept}], which is not a concept.`);
+        }
+    }
+    for (const id of actuallyUnreachable) {
+        if (!declared.has(id)) {
+            fail(
+                `[${id}] has problems authored but not one of them survives the owl's operand cap of `
+                + `${OWL_MAX_OPERAND}, so its lesson can never fire. Raise the cap, author problems inside it, `
+                + `or declare it in knownUnreachable in concept_ladder.json with a reason.`,
+            );
+        }
+    }
+    for (const id of declared.keys()) {
+        if (!actuallyUnreachable.has(id) && ladder.concepts.some(c => c.id === id)) {
+            fail(
+                `[${id}] is declared knownUnreachable but a child can now be served it. `
+                + `Delete it from concept_ladder.json -- a lesson that reaches children must not stay on the list.`,
+            );
+        }
+    }
+}
+
 // ── 4. wiring ──────────────────────────────────────────────────────────────
 
 const tutorialById = new Map(tutorials.tutorials.map(t => [t.id, t]));
@@ -315,6 +391,32 @@ for (const tutorial of tutorials.tutorials) {
             fail(`${where} reveals ${card.params.reveal}, but its own numbers make ${truth}.`);
         }
 
+        // takeOnes greater than ones is a picture the renderer cannot draw: it
+        // crosses the units it has and stops, so the drawing shows a bigger number
+        // than the card's own parameters claim. Regrouping has no representation in
+        // the set at all (see docs/MATH_CONCEPT_LADDER.md), so a card has to stay
+        // inside one. Checked here rather than by returning a null truth, because a
+        // null truth means "asserts nothing" and skips the result check entirely.
+        if (card.visual === 'tens_and_ones' && Number(card.params?.takeOnes ?? 0) > Number(card.params?.ones ?? 0)) {
+            fail(
+                `${where} takes ${card.params.takeOnes} ones from ${card.params.ones ?? 0}. `
+                + `tens_and_ones cannot draw a broken rod, so it would show `
+                + `${Number(card.params.tens ?? 0) * 10} and assert something else.`,
+            );
+        }
+
+        // A balance card highlights the tower it is ABOUT. On a question that is
+        // the answer in colour, so a question must declare `ask` (which turns the
+        // highlight off in tutorial_visual.gd) and a statement must not.
+        if (card.visual === 'balance') {
+            if (card.choice && !['more', 'fewer'].includes(card.params?.ask)) {
+                fail(`${where} asks a balance question without params.ask ("more" or "fewer"). Without it the picture highlights its own answer.`);
+            }
+            if (!card.choice && card.params?.ask !== undefined) {
+                fail(`${where} is a balance statement but declares params.ask. Only a question declares a direction.`);
+            }
+        }
+
         if (!card.choice) continue;
         const { options = [], correct } = card.choice;
         if (options.length < 2) fail(`${where} asks a question with fewer than two options.`);
@@ -341,6 +443,43 @@ for (const tutorial of tutorials.tutorials) {
     }
     if (cards.slice(0, -1).some(c => c.choice)) {
         fail(`tutorial [${tutorial.id}] asks a question before the last card. Guided practice comes after the worked example, not during it.`);
+    }
+}
+
+// ── 8. where the right answer sits ────────────────────────────────────────
+//
+// The guided try is the one moment in a lesson the child acts, and it is a row
+// of buttons in the authored order. It used to be sorted ascending with the
+// answer in the middle in 25 of 28 three-option lessons: a child who always
+// tapped the middle button scored 25/28 and got the full celebration each time,
+// having done no arithmetic. Position is a strategy, so it has to be a guard.
+{
+    const byWidth = new Map();
+    for (const tutorial of tutorials.tutorials) {
+        const cards = tutorial.cards ?? [];
+        const choice = cards[cards.length - 1]?.choice;
+        if (!choice) continue;
+        const options = choice.options ?? [];
+        const index = options.map(String).indexOf(String(choice.correct));
+        if (index < 0) continue;
+        if (!byWidth.has(options.length)) byWidth.set(options.length, []);
+        byWidth.get(options.length).push(index);
+    }
+    for (const [width, indices] of byWidth) {
+        // Allow real slack for a small set -- this is a "no tappable strategy"
+        // floor, not a demand for a uniform distribution.
+        const share = 0.55;
+        const cap = Math.max(2, Math.ceil(indices.length * share));
+        for (let slot = 0; slot < width; slot++) {
+            const n = indices.filter(i => i === slot).length;
+            if (n > cap) {
+                fail(
+                    `${n} of ${indices.length} guided tries with ${width} options put the correct answer `
+                    + `in position ${slot + 1}, over the ${cap} allowed. Reorder some options in `
+                    + `tutorials.json -- a fixed answer position is a strategy that beats the maths.`,
+                );
+            }
+        }
     }
 }
 
@@ -374,6 +513,8 @@ const rows = ladder.concepts.map(concept => {
         perStep: steps,
         skillsAuthored: [...authored].sort(),
         skillsDeclared: [...(concept.skills ?? [])].sort(),
+        servable: steps.reduce((a, st) => a + problems.filter(
+            p => p.domain === concept.domain && p.curriculumStep === st.step && servable(p)).length, 0),
     };
 });
 
@@ -429,6 +570,18 @@ const LADDER_DOC = 'docs/MATH_CONCEPT_LADDER.md';
             );
         }
     }
+    // Same for an unreachable concept: the most surprising fact about the ladder
+    // is that four of its lessons cannot be shown, and a doc that omits it is
+    // the reason nobody noticed for a whole session.
+    for (const entry of ladder.knownUnreachable ?? []) {
+        const firstSentence = flat(entry.why).split(/(?<=\.)\s/)[0];
+        if (!doc.includes(firstSentence)) {
+            fail(
+                `${LADDER_DOC} does not carry the reason declared for [${entry.concept}] being unreachable `
+                + `(looking for "${firstSentence}").`,
+            );
+        }
+    }
 }
 
 // ── result ─────────────────────────────────────────────────────────────────
@@ -446,4 +599,7 @@ console.log(
     + `${measured} strings measured)`,
 );
 console.log(`  ${gapCount} empty rungs and ${thinCount} thin rungs, all declared -- see reports/math-concepts/coverage.json`);
+console.log(
+    `  operand cap ${OWL_MAX_OPERAND}: ${actuallyUnreachable.size} of ${ladder.concepts.length} concepts `
+    + `cannot be served to a child, all declared`);
 if (skillDrift.length > 0) console.log(`  ${skillDrift.length} skill-tag drifts reported (not fatal)`);

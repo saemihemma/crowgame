@@ -6,11 +6,18 @@
     "minPerStep": 6
   },
   "knownGaps": [
-    { "domain": "addition", "steps": [20], "why": "The bridge from the teens to two-digit addition. Nothing generates a sum whose largest operand is exactly 20, so a child promoting off step 19 skips straight to 21." },
-    { "domain": "subtraction", "steps": [17, 18, 19, 20], "why": "Four consecutive empty rungs between the teens and the twenties - the widest hole in the ladder. A child leaving step 16 lands on 21 with no intermediate practice at all." },
+    { "domain": "addition", "steps": [20], "why": "The bridge from the teens to two-digit addition. Nothing generates a sum whose largest operand is exactly 20, and step 21 upwards is over the owl's operand cap, so step 19 is the top of addition as a child experiences it." },
+    { "domain": "subtraction", "steps": [17, 18, 19, 20], "why": "Four consecutive empty rungs between the teens and the twenties - the widest hole in the ladder. It is a wall rather than a hole: step 21 and everything above it is over the owl's operand cap, so a child leaving step 16 never lands anywhere, and subtraction.teens_back is the last subtraction they are ever taught." },
     { "domain": "number_sequence", "steps": [0], "why": "The ladder's own first rung. Sequences start at step 1, so the gentlest possible sequence - counting on from a single number - has never been authored." },
     { "domain": "multiplication", "steps": [0, 1, 2, 4], "why": "Multiplication has no foundation rungs. Its first authored problem sits at step 3, so the concept opens mid-ladder. Out of the owl path today (operand cap 20), which is why it has stayed empty." },
     { "domain": "division", "steps": [0, 1, 2, 4, 5], "why": "Same shape as multiplication, one rung wider. Sharing into two and three groups - the whole concrete foundation of division - is unauthored." }
+  ],
+  "_unreachableComment": "A concept every one of whose problems the owl filters out. The cap that does it is `maxOperand` in godot/scripts/entities/npc/math_challenge_component.gd, and tools/validate_math_concepts.mjs reads it from there rather than restating it: raise the cap and these entries must be deleted, lower it and new ones must be added. Distinct from knownGaps, which is about whether problems were WRITTEN. These were written, and are unservable.",
+  "knownUnreachable": [
+    { "concept": "addition.tens_and_ones", "why": "Every problem from addition step 21 up has an operand above 20, so the owl's cap drops all 445 of them. A child tops out at addition.bridge_ten." },
+    { "concept": "addition.carrying", "why": "Same cap, one concept further on. Nothing in steps 30-36 has an operand at or below 20." },
+    { "concept": "subtraction.tens_and_ones", "why": "Steps 17-20 have no problems at all and steps 21-29 are all above the operand cap, so the concept is empty on both counts. A child tops out at subtraction.teens_back." },
+    { "concept": "subtraction.borrowing", "why": "Same cap as its neighbour. Nothing in steps 30-36 has an operand at or below 20." }
   ],
   "knownThin": [
     { "domain": "addition", "steps": [0], "why": "Five problems: 0+1, 1+0, 1+1 and their wordings. The set of true facts with both operands at most one is genuinely almost this small." },

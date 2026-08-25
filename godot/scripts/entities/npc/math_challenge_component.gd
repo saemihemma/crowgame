@@ -220,6 +220,27 @@ func _selection_config() -> Dictionary:
 		"domains": allowed,
 		"difficultyRange": effective_range,
 		"maxCurriculumStep": maxi(0, int(round(float(effective_range[1]) * 10.0))),
+		# THE AGE BAND, AS A NUMBER. Do not raise this to unlock content.
+		#
+		# Horman teaches 5-7 year olds, and the Icelandic first-year curriculum
+		# works inside 0-20: number sense, writing the numerals 0-20, and meeting
+		# addition and subtraction within that range. Twenty is that boundary,
+		# not a placeholder.
+		#
+		# It is load-bearing in a way that is easy to miss. Every problem from
+		# addition step 20 and subtraction step 17 upward has an operand above
+		# 20, so this one number decides whether four whole concepts --
+		# addition.tens_and_ones, addition.carrying, subtraction.tens_and_ones,
+		# subtraction.borrowing, 1024 authored problems and four lessons -- are
+		# reachable at all. They are declared in `knownUnreachable` in
+		# data/curriculum/concept_ladder.json, and
+		# tools/validate_math_concepts.mjs reads THIS LINE to check that
+		# declaration: change the number and the build tells you what you just
+		# handed a six-year-old.
+		#
+		# Raising it is a product decision about who the game is for, not a
+		# content unlock. MATH_SYSTEM_ARCHITECTURE.md and
+		# docs/MATH_CONCEPT_LADDER.md both carry the reasoning.
 		"maxOperand": 20,
 		"primaryDomain": allowed[0],
 	}

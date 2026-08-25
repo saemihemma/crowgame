@@ -37,7 +37,8 @@
       "skillsDeclared": [
         "basic_addition",
         "single_digit_addition"
-      ]
+      ],
+      "servable": 24
     },
     {
       "id": "addition.count_on",
@@ -73,7 +74,8 @@
         "basic_addition",
         "single_digit_addition",
         "single_digit_with_carry"
-      ]
+      ],
+      "servable": 119
     },
     {
       "id": "addition.make_ten",
@@ -117,7 +119,8 @@
         "single_digit_addition",
         "single_digit_with_carry",
         "teens_addition"
-      ]
+      ],
+      "servable": 206
     },
     {
       "id": "addition.teen_numbers",
@@ -157,7 +160,8 @@
       ],
       "skillsDeclared": [
         "teens_addition"
-      ]
+      ],
+      "servable": 58
     },
     {
       "id": "addition.bridge_ten",
@@ -197,7 +201,8 @@
       ],
       "skillsDeclared": [
         "teens_addition"
-      ]
+      ],
+      "servable": 41
     },
     {
       "id": "addition.tens_and_ones",
@@ -261,7 +266,8 @@
       "skillsDeclared": [
         "addition_with_carry",
         "two_digit_addition"
-      ]
+      ],
+      "servable": 0
     },
     {
       "id": "addition.carrying",
@@ -311,7 +317,8 @@
       "skillsDeclared": [
         "addition_with_carry",
         "two_digit_addition"
-      ]
+      ],
+      "servable": 0
     },
     {
       "id": "subtraction.take_away",
@@ -349,7 +356,8 @@
         "basic_subtraction",
         "harder_subtraction",
         "single_digit_subtraction"
-      ]
+      ],
+      "servable": 35
     },
     {
       "id": "subtraction.count_back",
@@ -391,7 +399,8 @@
         "harder_subtraction",
         "single_digit_subtraction",
         "subtraction_with_borrow"
-      ]
+      ],
+      "servable": 151
     },
     {
       "id": "subtraction.bridge_back",
@@ -435,7 +444,8 @@
         "subtraction_with_borrow",
         "teens_subtraction",
         "two_digit_subtraction"
-      ]
+      ],
+      "servable": 114
     },
     {
       "id": "subtraction.teens_back",
@@ -487,7 +497,8 @@
         "subtraction_with_borrow",
         "teens_subtraction",
         "two_digit_subtraction"
-      ]
+      ],
+      "servable": 228
     },
     {
       "id": "subtraction.tens_and_ones",
@@ -568,7 +579,8 @@
         "subtraction_with_borrow",
         "teens_subtraction",
         "two_digit_subtraction"
-      ]
+      ],
+      "servable": 0
     },
     {
       "id": "subtraction.borrowing",
@@ -618,7 +630,8 @@
       "skillsDeclared": [
         "subtraction_with_borrow",
         "two_digit_subtraction"
-      ]
+      ],
+      "servable": 0
     },
     {
       "id": "counting.to_five",
@@ -646,7 +659,8 @@
       ],
       "skillsDeclared": [
         "counting_objects"
-      ]
+      ],
+      "servable": 17
     },
     {
       "id": "counting.to_ten",
@@ -676,7 +690,8 @@
       "skillsDeclared": [
         "counting",
         "counting_objects"
-      ]
+      ],
+      "servable": 32
     },
     {
       "id": "counting.ten_and_more",
@@ -708,7 +723,8 @@
       ],
       "skillsDeclared": [
         "counting_objects"
-      ]
+      ],
+      "servable": 76
     },
     {
       "id": "comparison.more_or_less",
@@ -740,7 +756,8 @@
       ],
       "skillsDeclared": [
         "number_comparison"
-      ]
+      ],
+      "servable": 45
     },
     {
       "id": "comparison.compare_teens",
@@ -776,7 +793,8 @@
       ],
       "skillsDeclared": [
         "number_comparison"
-      ]
+      ],
+      "servable": 80
     },
     {
       "id": "pattern_matching.ab_repeat",
@@ -808,7 +826,8 @@
       ],
       "skillsDeclared": [
         "simple_patterns"
-      ]
+      ],
+      "servable": 32
     },
     {
       "id": "pattern_matching.longer_core",
@@ -842,7 +861,8 @@
       "skillsDeclared": [
         "number_patterns",
         "simple_patterns"
-      ]
+      ],
+      "servable": 68
     },
     {
       "id": "pattern_matching.tricky_core",
@@ -870,7 +890,8 @@
       ],
       "skillsDeclared": [
         "simple_patterns"
-      ]
+      ],
+      "servable": 25
     },
     {
       "id": "number_sequence.one_more",
@@ -908,7 +929,8 @@
       "skillsDeclared": [
         "number_ordering",
         "simple_sequences"
-      ]
+      ],
+      "servable": 13
     },
     {
       "id": "number_sequence.skip_two",
@@ -938,7 +960,8 @@
       ],
       "skillsDeclared": [
         "number_ordering"
-      ]
+      ],
+      "servable": 21
     },
     {
       "id": "number_sequence.bigger_jumps",
@@ -966,7 +989,8 @@
       ],
       "skillsDeclared": [
         "number_ordering"
-      ]
+      ],
+      "servable": 91
     },
     {
       "id": "multiplication.groups_of",
@@ -1026,7 +1050,8 @@
       ],
       "skillsDeclared": [
         "multiplication_tables"
-      ]
+      ],
+      "servable": 70
     },
     {
       "id": "multiplication.tables_small",
@@ -1069,7 +1094,8 @@
       ],
       "skillsDeclared": [
         "multiplication_tables"
-      ]
+      ],
+      "servable": 122
     },
     {
       "id": "multiplication.tables_large",
@@ -1113,7 +1139,8 @@
       ],
       "skillsDeclared": [
         "multiplication_tables"
-      ]
+      ],
+      "servable": 208
     },
     {
       "id": "division.sharing",
@@ -1178,7 +1205,8 @@
       ],
       "skillsDeclared": [
         "simple_division"
-      ]
+      ],
+      "servable": 28
     },
     {
       "id": "division.tables",
@@ -1222,7 +1250,8 @@
       ],
       "skillsDeclared": [
         "simple_division"
-      ]
+      ],
+      "servable": 39
     },
     {
       "id": "division.larger",
@@ -1268,7 +1297,8 @@
       ],
       "skillsDeclared": [
         "simple_division"
-      ]
+      ],
+      "servable": 3
     }
   ],
   "skillDrift": []
