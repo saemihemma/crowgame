@@ -12,6 +12,17 @@ export interface OwlSelectionConfig extends Omit<ELOSelectionOptions, 'excludedR
     domainWeights?: Partial<Record<MathDomain, number>>;
     /** feature_flags.json `math/retire_exhausted_domains`. */
     retireExhaustedDomains?: boolean;
+    /**
+     * feature_flags.json `math/representation_floor`, resolved to a number by the
+     * caller: the largest quantity this particular child may still be asked to
+     * count one at a time, or undefined for no cap.
+     *
+     * Resolved outside the kernel on purpose. Whether a child can compose a ten
+     * is a curriculum question answered by concept_ladder.json, and the kernel
+     * does not read files -- the same division of labour as maxOperand and
+     * domainWeights, both of which arrive already decided.
+     */
+    maxUngroupedCount?: number;
 }
 
 type OwlDomainPlan = {
@@ -136,6 +147,7 @@ export function selectOwlProblem(
             difficultyRange: config.difficultyRange,
             maxCurriculumStep: config.maxCurriculumStep,
             maxOperand: config.maxOperand,
+            maxUngroupedCount: config.maxUngroupedCount,
             primaryDomain: plan.primaryDomain,
         });
         if (problem) {
@@ -153,6 +165,7 @@ export function selectOwlProblem(
                     LearnerStateManager.getInstance().getCurrentStep(domain),
                 ),
                 maxOperand: config.maxOperand,
+                maxUngroupedCount: config.maxUngroupedCount,
             });
             if (problem) {
                 return problem;

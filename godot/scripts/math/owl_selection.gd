@@ -99,26 +99,38 @@ static func select_owl_problem(manager: Node, config: Dictionary, previous_domai
 	var plans := build_owl_domain_plans(allowed, previous_domain, primary)
 
 	for plan in plans:
-		var problem = manager.get_next_problem_elo_aware(plan["domains"], {
+		var elo_options := {
 			"difficultyRange": config.get("difficultyRange", [1, 2]),
 			"maxCurriculumStep": config.get("maxCurriculumStep", 20),
 			"maxOperand": config.get("maxOperand", 20),
 			"primaryDomain": plan["primaryDomain"],
-		})
+		}
+		# ABSENT means no cap, and it has to stay absent. A sentinel here would be
+		# actively harmful: the filter rejects a glyph row whose answer exceeds the
+		# cap, so a -1 "no cap" would reject EVERY counting row instead of none.
+		_apply_ungrouped_cap(elo_options, config)
+		var problem = manager.get_next_problem_elo_aware(plan["domains"], elo_options)
 		if problem != null:
 			return problem
 
 	for plan in plans:
 		for domain in _order_fallback_domains(plan["domains"], plan["primaryDomain"]):
-			var problem = manager.get_next_problem({
+			var options := {
 				"domains": [domain],
 				"difficultyRange": config.get("difficultyRange", [1, 2]),
 				"maxCurriculumStep": mini(int(config.get("maxCurriculumStep", 20)), LearnerStateManager.get_current_step(String(domain))),
 				"maxOperand": config.get("maxOperand", 20),
-			})
+			}
+			_apply_ungrouped_cap(options, config)
+			var problem = manager.get_next_problem(options)
 			if problem != null:
 				return problem
 	return null
+
+## Copy the representation floor across, only when the caller set one.
+static func _apply_ungrouped_cap(options: Dictionary, config: Dictionary) -> void:
+	if config.has("maxUngroupedCount") and config["maxUngroupedCount"] != null:
+		options["maxUngroupedCount"] = config["maxUngroupedCount"]
 
 static func _order_fallback_domains(domains: Array, primary_domain: Variant) -> Array:
 	var unique: Array = []

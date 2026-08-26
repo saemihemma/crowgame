@@ -225,7 +225,7 @@ func _selection_config() -> Dictionary:
 			allowed.append(d)
 	if allowed.is_empty():
 		allowed = ["addition"] if configured.has("addition") else [configured[0]]
-	return {
+	var config_out := {
 		"domains": allowed,
 		"difficultyRange": effective_range,
 		"maxCurriculumStep": maxi(0, int(round(float(effective_range[1]) * 10.0))),
@@ -260,3 +260,34 @@ func _selection_config() -> Dictionary:
 		# actually does.
 		"retireExhaustedDomains": bool(Config.flag("math/retire_exhausted_domains", true)),
 	}
+	# The representation floor. Resolved HERE rather than in the selector because
+	# it takes a curriculum question -- can this child compose a ten yet? -- and
+	# the selector deals in caps it has already been handed, like maxOperand above.
+	var floor_cap: Variant = _ungrouped_count_cap()
+	if floor_cap != null:
+		config_out["maxUngroupedCount"] = floor_cap
+	return config_out
+
+## The largest quantity this child may still be asked to count one at a time, or
+## null for no cap.
+##
+## Switches on at the first rung of `addition.teen_numbers` -- the lesson that
+## says thirteen is one ten and three ones. Before it, counting fourteen marks is
+## honest work; after it, the same question asks the child to do by ones the exact
+## thing they were just taught to stop doing, which is the contradiction a
+## playtester reported as being told "again, to count amount of dots".
+##
+## The rung is read from the ladder rather than written down, so re-banding
+## concept_ladder.json moves the floor with it.
+const UNGROUPED_COUNT_CEILING := 10
+
+func _ungrouped_count_cap() -> Variant:
+	if not bool(Config.flag("math/representation_floor", true)):
+		return null
+	var teen: Dictionary = ConceptLadder.by_id("addition.teen_numbers")
+	var steps: Variant = teen.get("steps", null)
+	if not (steps is Array) or (steps as Array).is_empty():
+		return null
+	if LearnerStateManager.get_current_step("addition") < int((steps as Array)[0]):
+		return null
+	return UNGROUPED_COUNT_CEILING

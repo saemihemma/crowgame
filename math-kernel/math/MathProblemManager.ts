@@ -18,6 +18,8 @@ export interface ProblemFilter {
     difficultyRange?: [number, number];
     maxCurriculumStep?: number;
     maxOperand?: number;
+    /** See AdaptiveProblemSelectionOptions.maxUngroupedCount. */
+    maxUngroupedCount?: number;
 }
 
 export interface ELOSelectionOptions extends AdaptiveProblemSelectionOptions {
@@ -144,6 +146,19 @@ export class MathProblemManager {
                 problem.difficultyTraits?.maxOperand === undefined ||
                 problem.difficultyTraits.maxOperand <= filter.maxOperand!,
             );
+        }
+
+        // The representation floor. This is the RANDOM path, which the owl only
+        // reaches when the ELO-aware lanes come up empty -- but "the lanes found
+        // nothing" is no reason to hand a child a row of nineteen marks to count,
+        // so the cap has to be applied on both paths or the fallback quietly
+        // undoes it.
+        if (filter?.maxUngroupedCount !== undefined) {
+            candidates = candidates.filter(problem => {
+                if (problem.phrasing?.prompt?.params?.glyphs === undefined) return true;
+                const answer = Number(problem.answer?.correct);
+                return !Number.isFinite(answer) || answer <= filter.maxUngroupedCount!;
+            });
         }
 
         if (candidates.length === 0) {

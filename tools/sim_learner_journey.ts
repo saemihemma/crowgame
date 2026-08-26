@@ -80,6 +80,27 @@ function loadOwl(): { domains: MathDomain[]; difficultyRange: [number, number]; 
 /** The age-band cap, mirrored from math_challenge_component.gd. */
 const MAX_OPERAND = 20;
 
+/**
+ * The rung at which a child starts composing tens, read from the ladder rather
+ * than written down here.
+ *
+ * `addition.teen_numbers` is the lesson that says thirteen is one ten and three
+ * ones. Once a child is on it, being handed thirteen ungrouped marks to count is
+ * a contradiction rather than practice -- so its first step is where the
+ * representation floor switches on. Reading it from concept_ladder.json means
+ * re-banding the ladder moves the floor with it.
+ */
+function teenRung(): number {
+    const ladder = read(join(ROOT, 'godot', 'data', 'curriculum', 'concept_ladder.json')) as {
+        concepts: Array<{ id: string; steps?: number[] }>;
+    };
+    const teen = ladder.concepts.find(c => c.id === 'addition.teen_numbers');
+    return teen?.steps?.[0] ?? Number.POSITIVE_INFINITY;
+}
+
+/** The quantity above which counting one at a time stops being the lesson. */
+const UNGROUPED_COUNT_CEILING = 10;
+
 // Deterministic, including the selector's own coin flips.
 //
 // buildDomainAttemptOrder calls Math.random to decide whether the preferred
@@ -121,6 +142,8 @@ export interface JourneyResult {
     conceptsNeverMet: string[];
     lessonsOpened: number;
     uniqueProblemsServed: number;
+    /** Times a tens-composing child was still handed an ungrouped row over ten. */
+    floorViolations: number;
 }
 
 export function runJourney(profile: string, successRate: number, attempts: number): JourneyResult {
@@ -182,7 +205,15 @@ function runJourneyInner(profile: string, successRate: number, attempts: number)
         retireExhaustedDomains: read(
             join(ROOT, 'godot', 'data', 'tuning', 'feature_flags.json'),
         ).math?.retire_exhausted_domains ?? false,
+        // Recomputed per attempt in the loop below: it depends on where the
+        // child currently is, not on where they started.
+        maxUngroupedCount: undefined as number | undefined,
     };
+    const floorOn: boolean = read(
+        join(ROOT, 'godot', 'data', 'tuning', 'feature_flags.json'),
+    ).math?.representation_floor ?? false;
+    const teenStep = teenRung();
+    let floorViolations = 0;
 
     for (let attempt = 1; attempt <= attempts; attempt++) {
         // UNLOCKING IS NOT A ONE-WAY DOOR.
@@ -216,8 +247,28 @@ function runJourneyInner(profile: string, successRate: number, attempts: number)
             stepTrace.push({ at: attempt, steps: Object.fromEntries(
                 owl.domains.map(d => [d, snap.curriculumProgress[d]?.currentStep ?? -1])) });
         }
+        const composesTens = LearnerStateManager.getInstance().getCurrentStep('addition') >= teenStep;
+        config.maxUngroupedCount = floorOn && composesTens ? UNGROUPED_COUNT_CEILING : undefined;
+
         const problem = selectOwlProblem(manager, config, inEncounter > 0 ? previousDomain : null);
         if (!problem) { exhaustedAt = attempt; break; }
+
+        // THE REGRESSION GATE for the representation floor. A child who composes
+        // tens must never be handed an ungrouped row longer than ten to count --
+        // that is the whole defect, and asserting it here is what stops it coming
+        // back through a lane nobody thought about.
+        // Counted whether or not the flag is on. With it off this is the size of
+        // the original defect, which is worth printing; with it on it must be
+        // zero, and the guard below only FAILS in that case. Counting only when
+        // enabled would make the assertion unable to prove its own counter works.
+        if (composesTens) {
+            const glyphs = (problem as { phrasing?: { prompt?: { params?: Record<string, unknown> } } })
+                .phrasing?.prompt?.params?.glyphs;
+            const answer = Number(problem.answer?.correct);
+            if (glyphs !== undefined && Number.isFinite(answer) && answer > UNGROUPED_COUNT_CEILING) {
+                floorViolations += 1;
+            }
+        }
 
         servedProblems += 1;
         seenIds.add(problem.id);
@@ -255,6 +306,7 @@ function runJourneyInner(profile: string, successRate: number, attempts: number)
         conceptsNeverMet: withLesson.filter(c => !conceptsMet.has(c.id)).map(c => c.id),
         lessonsOpened: [...conceptsMet.keys()].filter(id => withLesson.some(c => c.id === id)).length,
         uniqueProblemsServed: seenIds.size,
+        floorViolations,
     };
 }
 
@@ -340,6 +392,29 @@ if (process.argv[1] && process.argv[1].endsWith('sim_learner_journey.ts')) {
     if (thriving.uniqueProblemsServed < MIN_DISTINCT_FOR_THRIVING) {
         failures.push(`a thriving child saw only ${thriving.uniqueProblemsServed} distinct problems `
             + `(floor ${MIN_DISTINCT_FOR_THRIVING}). Coverage has collapsed.`);
+    }
+
+    const floorEnabled: boolean = read(
+        join(ROOT, 'godot', 'data', 'tuning', 'feature_flags.json'),
+    ).math?.representation_floor ?? false;
+
+    // THE REPRESENTATION FLOOR, asserted rather than trusted.
+    //
+    // This is the defect the playtest reported as "i was taught 10 and 3 make
+    // thirteen ... but next math example is telling me, again, to count amount of
+    // dots". It is a contradiction rather than a difficulty bug, so it cannot be
+    // caught by any threshold on how HARD the questions are -- only by checking
+    // that a child who composes tens is never handed a long ungrouped row again.
+    // Zero, not a small number: one such question undoes the lesson.
+    for (const r of results) {
+        console.log(`  ${r.profile}: ${r.floorViolations} ungrouped row(s) over `
+            + `${UNGROUPED_COUNT_CEILING} served after the teen rung`
+            + `${floorEnabled ? '' : '  (floor OFF -- this is the defect, not a failure)'}`);
+        if (floorEnabled && r.floorViolations > 0) {
+            failures.push(`[${r.profile}] was handed ${r.floorViolations} ungrouped row(s) longer than `
+                + `${UNGROUPED_COUNT_CEILING} to count AFTER reaching addition step ${teenRung()}, where the `
+                + `ladder teaches that a teen is one ten and some ones. The representation floor is not holding.`);
+        }
     }
 
     if (failures.length > 0) {

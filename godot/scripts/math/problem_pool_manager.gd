@@ -130,4 +130,25 @@ func _passes_common_constraints(problem: Dictionary, exclude_ids: Array, constra
 	if constraints.has("excludedReplayKeys"):
 		if (constraints["excludedReplayKeys"] as Array).has(ProblemReplayKey.build(problem)):
 			return false
+	if constraints.has("maxUngroupedCount") and is_ungrouped_count_row(problem):
+		var answer: Variant = problem.get("answer", {}).get("correct", null)
+		if answer is float or answer is int:
+			if int(answer) > int(constraints["maxUngroupedCount"]):
+				return false
 	return true
+
+## Does this problem ask the child to count things one at a time?
+##
+## Identified by the glyph row its prompt interpolates -- phrasing.prompt.params.glyphs
+## -- and deliberately NOT by its domain. The representation is what the floor is
+## about: all 123 of these sit in `counting` today, but a worded problem that drew
+## a row of berries would be the same ask and has to be caught by the same rule.
+static func is_ungrouped_count_row(problem: Dictionary) -> bool:
+	var phrasing: Variant = problem.get("phrasing", null)
+	if not (phrasing is Dictionary):
+		return false
+	var prompt: Variant = (phrasing as Dictionary).get("prompt", null)
+	if not (prompt is Dictionary):
+		return false
+	var params: Variant = (prompt as Dictionary).get("params", null)
+	return params is Dictionary and (params as Dictionary).has("glyphs")
