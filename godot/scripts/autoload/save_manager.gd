@@ -165,6 +165,34 @@ func record_math_attempt(attempt: Dictionary) -> void:
 	if _auto_save_enabled: save()
 
 
+## What a level's best run left behind: which big coins were banked, and the most
+## owls ever freed there.
+##
+## Keyed by level, and NOT part of `coins`. An ordinary coin goes into a lifetime
+## purse that only rises; these are a third of a level's progress each, and they
+## are the thing the completion percentage is built out of.
+##
+## A missing level reads as an empty record rather than an error, so a save
+## written before this existed needs no migration - the shallow merge in
+## load_save() supplies the empty dictionary.
+func get_level_record(level_key: String) -> Dictionary:
+	var records: Variant = _data.get("levelRecords", {})
+	if not (records is Dictionary):
+		return {}
+	var one: Variant = (records as Dictionary).get(level_key, {})
+	return one if one is Dictionary else {}
+
+## Has this child already banked this particular big coin in this level?
+##
+## By id, never by index: the id comes from the level spec, so moving a coin or
+## reordering the spawns cannot silently wipe a record.
+func has_big_coin(level_key: String, coin_id: String) -> bool:
+	if coin_id == "":
+		return false
+	var found: Variant = get_level_record(level_key).get("bigCoins", [])
+	return found is Array and (found as Array).has(coin_id)
+
+
 ## Which tutorials this child has seen: id -> {"skipped": bool, "at": ms}.
 ##
 ## A skipped tutorial still counts as seen -- a child who taps Skip has told us
@@ -218,6 +246,9 @@ func _create_default_save() -> Dictionary:
 		"playerLevel": 1,
 		"inventory": [],
 		"activeAbilities": [],
+		# level key -> { bigCoins: [id, ...], owls: int }. Best run only, and only
+		# written when a level is FINISHED - see Game.transition_to_level.
+		"levelRecords": {},
 		"mathStats": {"totalCorrect": 0, "totalWrong": 0, "bySkill": {}},
 		"telemetry": {"hintUsage": 0, "problemsAttempted": 0, "answeredProblemIds": []},
 		# Which concept tutorials this child has already been shown, and whether

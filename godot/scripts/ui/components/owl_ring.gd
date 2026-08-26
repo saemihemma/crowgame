@@ -98,6 +98,7 @@ func _ready() -> void:
 
 	EventBus.level_owls.connect(_on_level_owls)
 	EventBus.owl_saved.connect(_on_owl_saved)
+	EventBus.door_refused.connect(_on_door_refused)
 	EventBus.streak_changed.connect(_on_streak_changed)
 	ThemeManager.theme_changed.connect(func(_id): _apply_theme(); queue_redraw())
 
@@ -164,6 +165,17 @@ func _on_owl_saved() -> void:
 	tw.tween_method(_set_sweep, _sweep, float(_filled) / float(_segments), SWEEP_SECONDS) \
 		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tw.tween_callback(func(): UiFx.icon_pop(self))
+
+## The player just walked into a shut door. The card the door puts up says how
+## many owls are left; this says where that number lives from now on, which is
+## the half a child has to learn once and then never be told again.
+##
+## Deliberately the same pop a rescue gets rather than a shake or a flash: this
+## ring is where progress happens, and the one thing it must never do is look
+## like it is scolding.
+func _on_door_refused(_still_needed: int) -> void:
+	UiFx.icon_pop(self, 0.26)
+
 
 func _set_sweep(value: float) -> void:
 	_sweep = value

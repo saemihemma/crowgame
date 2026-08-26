@@ -9,7 +9,14 @@
   },
   "hurt_flash_duration": 0.2,
   "muzzle_flash_duration": 0.05,
-  "death_beat": 0.8,
+  "_death_comment": "The beat after a child loses the crow. HOW LONG it lasts is not here -- it is `death.hold_ms` in feature_flags.json, because the right length for a five-year-old is an open question rather than a tuned constant. These are the things that do not depend on the answer. The fade in and out are each a fifth of the total and the hold is the rest, derived rather than tuned, so the beat always adds up to what hold_ms says.",
+  "death": {
+      "layer": 22,
+      "font_size": 48,
+      "shadow_offset": 3,
+      "shade_alpha": 0.55,
+      "text_rise_px": 28.0
+  },
   "pit_margin": 64,
   "invuln_blinks": 5,
   "invuln_blink_step": 0.1,

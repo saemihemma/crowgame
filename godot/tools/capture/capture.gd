@@ -29,6 +29,7 @@ extends Node
 ##               objects rather than a row of asterisks
 ##   pause       the pause overlay over a live level
 ##   complete    the run-complete celebration
+##   death       the death beat, half way through, on the lives-remaining path
 ##   hud-hurt    the HUD with a heart spent
 ##   hud-streak  the HUD with the streak flame lit
 ##   hud-ability the HUD with an ability chip in its slot
@@ -89,6 +90,12 @@ func _ready() -> void:
 	var owl_args := OS.get_cmdline_user_args()
 	if owl_args.size() > 3 and owl_args[3] != "":
 		_owl_index = int(owl_args[3])
+	# Which language to photograph in. Icelandic is the language this game is
+	# FOR, and until this existed every shot in output/godot-shots was English -
+	# so the locale whose words are longer, and whose grammar changes with the
+	# number in the sentence, was the one nobody ever looked at.
+	if owl_args.size() > 4 and owl_args[4] != "":
+		TextManager.set_locale(owl_args[4])
 	# The pause overlay pauses the whole tree, which would stop this node's own
 	# frame loop and hang the harness. Capture keeps stepping regardless of the
 	# game's pause state - it is a camera, not a participant.
@@ -189,6 +196,13 @@ func _load_next() -> void:
 			_load_next()
 			return
 	else:
+		# Before instantiate, deliberately. A banked big coin decides it is a
+		# ghost in its own _ready(), so a record written at staging time -- which
+		# runs after the level has spawned -- would photograph a live coin and
+		# claim it was the returning-player state.
+		if String(_jobs[_index]["variant"]) == "bigcoins-ghost":
+			var data: Dictionary = SaveManager.get_data()
+			data["levelRecords"] = {key: {"bigCoins": ["c1"]}}
 		_game = GAME_SCENE.instantiate()
 		_game.level_key = key
 	add_child(_game)
@@ -232,7 +246,22 @@ func _physics_process(_delta: float) -> void:
 	_capture_and_advance()
 
 func _hold_frames(variant: String) -> int:
-	return WRONG_HOLD_FRAMES if variant == "math-wrong" else BOARD_SETTLE_FRAMES
+	if variant == "math-wrong":
+		return WRONG_HOLD_FRAMES
+	if variant == "death":
+		return _death_hold_frames()
+	return BOARD_SETTLE_FRAMES
+
+## Where inside the death beat to photograph it.
+##
+## The beat fades in over a fifth of `death.hold_ms` and out over the last fifth,
+## so a shot taken at either end catches a transparent overlay and reports the
+## feature as missing. Half way through is the frame a child actually reads.
+##
+## Derived from the flag rather than fixed: change hold_ms and the shot follows
+## it, instead of the harness quietly starting to photograph the fade.
+static func _death_hold_frames() -> int:
+	return maxi(2, int(DeathBeat.hold_seconds() * 60.0 * 0.5))
 
 ## Drive the game into the state this variant is meant to photograph. Returns
 ## false if the level cannot reach it (a level with no owl has no maths board).
@@ -241,6 +270,34 @@ func _stage(variant: String) -> bool:
 	# level with no NPC still has a pause menu and can still be completed.
 	if variant == "pause" or variant == "complete":
 		return _stage_overlay(variant)
+	# The locked door, staged through Game's own entry point - the same call the
+	# door makes when the player walks into it with owls still in chains. No owl
+	# is needed: a fresh level has freed none, so the card is already truthful.
+	# The big coins. `bigcoins` is one waiting to be found; `bigcoins-ghost` is
+	# the same coin already banked, which is what a child sees on their second
+	# visit -- and the whole reason to come back, so it is worth a shot of its own.
+	# The record for the ghost is written in _load_next, before the level spawns.
+	if variant.begins_with("bigcoins"):
+		var coin := _find_big_coin()
+		if coin == null:
+			printerr("[capture] %s holds no big coins" % LevelManager.get_current_level_key())
+			return false
+		_stand_at(coin)
+		return true
+	if variant.begins_with("door-locked"):
+		if not _game.has_method("refuse_door"):
+			printerr("[capture] Game has no refuse_door()")
+			return false
+		# door-locked-part frees one owl first, through the same signal a real
+		# rescue fires. Zero-freed and part-freed are the two shots worth having:
+		# the first shows the row of empty sockets, the second is the only one
+		# that proves gold-versus-empty reads as progress rather than as decoration.
+		if variant == "door-locked-part":
+			EventBus.owl_saved.emit()
+		_game.call("refuse_door")
+		return true
+	if variant == "death":
+		return _stage_death()
 	if variant.begins_with("hud-"):
 		return _stage_hud(variant)
 	var owl := _find_owl()
@@ -308,6 +365,20 @@ func _represent_from_domain(owl: Node2D, domain: String) -> bool:
 ##   hud-ability EventBus.ability_granted, which is what the HUD listens to.
 ##               There is no manager to ask: gameplay/ability_manager.gd is not
 ##               wired to anything, and the signal is the whole contract.
+## The death beat, over a live level.
+##
+## Driven through hurt_player() rather than by building the overlay directly: a
+## shot has to be evidence about the real game, and the interesting half of this
+## feature is that the LIVES-REMAINING path shows a beat at all -- it used to
+## teleport the crow with no acknowledgement. Spending one heart of three
+## reaches that path, which is the one a child hits.
+func _stage_death() -> bool:
+	if not _game.has_method("hurt_player"):
+		printerr("[capture] Game has no hurt_player()")
+		return false
+	_game.call("hurt_player")
+	return true
+
 func _stage_hud(variant: String) -> bool:
 	if variant == "hud-hurt":
 		if not _game.has_method("hurt_player"):
@@ -385,6 +456,17 @@ func _find_owl() -> Node2D:
 	if owls.is_empty():
 		return null
 	return owls[clampi(_owl_index, 0, owls.size() - 1)] as Node2D
+
+## The first big coin in the level, so the shot is of a real spawned one rather
+## than of a node the harness built for the photograph.
+func _find_big_coin() -> Node2D:
+	var world := _game.get_node_or_null("World")
+	if world == null:
+		return null
+	for c in world.get_children():
+		if c.scene_file_path.get_file() == "BigCoin.tscn":
+			return c as Node2D
+	return null
 
 func _capture_and_advance() -> void:
 	var job := _jobs[_index]

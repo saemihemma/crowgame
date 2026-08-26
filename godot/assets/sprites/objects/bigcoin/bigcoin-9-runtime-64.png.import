@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bnu7gec6s8jw0"
-path="res://.godot/imported/count-token-32.png-19b0289f41fe2f07b78d8898ea89d040.ctex"
+uid="uid://bxhkdm7ckne82"
+path="res://.godot/imported/bigcoin-9-runtime-64.png-ac9944c6d889cb226de4046f63734d70.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/ui/board/count-token-32.png"
-dest_files=["res://.godot/imported/count-token-32.png-19b0289f41fe2f07b78d8898ea89d040.ctex"]
+source_file="res://assets/sprites/objects/bigcoin/bigcoin-9-runtime-64.png"
+dest_files=["res://.godot/imported/bigcoin-9-runtime-64.png-ac9944c6d889cb226de4046f63734d70.ctex"]
 
 [params]
 

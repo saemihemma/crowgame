@@ -70,7 +70,7 @@ func _count_owls(key: String) -> int:
 	var entry: Variant = get_level(key)
 	if entry == null:
 		return 0
-	var path := "res://%s" % String(entry.get("mapFile", ""))
+	var path := "res://%s" % map_file(key)
 	if not FileAccess.file_exists(path):
 		return 0
 	var f := FileAccess.open(path, FileAccess.READ)
@@ -99,5 +99,58 @@ func _count_owls(key: String) -> int:
 				count += 1
 	return count
 
+## How many owls the magic door asks for before it opens.
+##
+## Freeing the basic owls is what CLEARS a level - the door is the reward for
+## doing the work, not a shortcut past it. But "all of them" is not always the
+## right bar: a level can hold a hard-to-reach owl meant to be revisited later
+## with a better crow, and that owl must not lock the level behind it. So the
+## registry may name a smaller number, and omitting the field means "all the
+## owls in this level", which is what a story level wants.
+##
+## Clamped to the level's actual owl count: a registry asking for six owls in a
+## three-owl level would otherwise make the door permanently unopenable, and
+## that failure mode is silent - the player just walks into a door forever.
+func owls_required_for_door(key: String) -> int:
+	var entry: Variant = get_level(key)
+	if entry == null:
+		return 0
+	return required_for_door(entry as Dictionary, owl_count(key))
+
+
+## The decision, with the registry lookup taken out of it, so the cases that
+## matter can be fed directly - including the two the shipped registry does not
+## contain (a requirement above the owl count, and a level with no owls at all).
+static func required_for_door(entry: Dictionary, total: int) -> int:
+	if not entry.has("owlsRequiredForDoor"):
+		return total
+	return clampi(int(entry.get("owlsRequiredForDoor", total)), 0, total)
+
+
 func has_level(key: String) -> bool:
 	return get_level(key) != null
+
+## Which compiled map file a level actually loads.
+##
+## `levels.wide_gap_pass` off swaps in `<name>.classic.json` -- a frozen snapshot
+## of the geometry as it shipped before the gap-vocabulary pass. So the two
+## layouts can be compared by toggling in the grown-up panel and re-entering the
+## level, rather than by reading a diff or reverting a commit, which is the only
+## way a question like "is this too hard for a five-year-old" gets answered.
+##
+## The snapshots have no spec and are never recompiled, which is the point: a
+## baseline that moves is not a baseline. tools/validate-content.ts walks specs
+## rather than compiled files, so they sit alongside without being checked
+## against anything.
+##
+## Falls through to the authored path when a snapshot is missing, so deleting the
+## snapshots degrades to "the new geometry, always" instead of to a blank level.
+func map_file(key: String) -> String:
+	var entry: Variant = get_level(key)
+	if entry == null:
+		return ""
+	var authored := String((entry as Dictionary).get("mapFile", ""))
+	if bool(Config.flag("levels/wide_gap_pass", true)):
+		return authored
+	var classic := authored.replace(".json", ".classic.json")
+	return classic if FileAccess.file_exists("res://%s" % classic) else authored

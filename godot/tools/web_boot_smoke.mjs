@@ -249,6 +249,101 @@ async function main() {
             };
         });
 
+        // Whether a touch device can type at all — gate B2.
+        //
+        // This build shipped with html/experimental_virtual_keyboard=false, and
+        // on an iPad that means creating an account is impossible. Godot draws
+        // its LineEdits into the canvas, iOS Safari never raises a keyboard for
+        // a <canvas>, and the engine's virtual-keyboard bridge — the one thing
+        // that focuses a real DOM <input> when a LineEdit takes focus — was the
+        // switched-off flag. The front door was locked on the owner's primary
+        // device class for as long as it stayed false.
+        //
+        // Nothing here caught it, and the reason is worth keeping: the flow
+        // above types with page.keyboard.type(), which fires synthetic key
+        // events straight at the canvas and works perfectly on a machine with no
+        // keyboard in existence. This harness emulates an iPad VIEWPORT — which
+        // is why the letterbox gate exists at all — but a viewport is not an
+        // input method, and every assertion here was about pixels.
+        //
+        // Two things are gated, both deterministic and both layout-independent.
+        // experimentalVK must be on. And an <input> must be SELECTABLE: the
+        // export's head_include sets `user-select:none` on html,body to stop a
+        // child dragging the canvas around, an injected input inherits it, and
+        // iOS will not raise a keyboard for a field it believes cannot be
+        // selected — so the CSS fix and the flag are one gate, not two.
+        //
+        // What this does NOT prove is that iOS Safari actually shows the
+        // keyboard; only a device can. Same caveat as whatThisIsNot below.
+        const vk = await page.evaluate(() => {
+            const probe = document.createElement('input');
+            probe.type = 'text';
+            document.body.appendChild(probe);
+            const css = getComputedStyle(probe);
+            const selectable = css.userSelect !== 'none' && css.webkitUserSelect !== 'none';
+            probe.remove();
+            return {
+                // A top-level `const` in a classic script is a global lexical
+                // binding, not a property of window — so this reads the bare
+                // name rather than window.GODOT_CONFIG, which is undefined.
+                experimentalVK: typeof GODOT_CONFIG !== 'undefined' && GODOT_CONFIG.experimentalVK === true,
+                inputSelectable: selectable,
+            };
+        });
+
+        // Whether the keyboard survives focus leaving the canvas — gate B3.
+        //
+        // Godot 4.3's web export binds keydown and keyup to the CANVAS element,
+        // and only ever hands focus back to the canvas from a pointer or touch
+        // event that landed ON the canvas. So the instant focus goes elsewhere
+        // with nothing holding it, every key press after that is dropped: the
+        // maths board stays on screen, the question stays on it, and answering it
+        // becomes impossible. A playtester met this as "when i click out of it,
+        // (the browser), it leaves the math problem or does something wierd".
+        //
+        // A tab switch is NOT the case that breaks — the browser hands focus back
+        // to the element that had it, measured at 2.5s and 8s by
+        // godot/tools/focus_loss_repro.mjs. What breaks is focus landing NOWHERE,
+        // which is what Godot's own virtual-keyboard <input> leaves behind:
+        // GodotDisplayVK.hide() calls elem.blur() and never refocuses the canvas,
+        // and gate B2 above requires that input to exist. So B2 and B3 are two
+        // halves of one thing — turning the touch keyboard on is what made a
+        // dropped focus reachable in ordinary play.
+        //
+        // canvas.blur() models it exactly and introduces nothing synthetic. The
+        // second half of the gate is the constraint the fix must not violate: a
+        // real text field has to KEEP focus, or a child cannot type their name.
+        const focusLoss = await (async () => {
+            await page.evaluate(() => {
+                const c = document.getElementById('canvas') || document.querySelector('canvas');
+                window.__crowCanvasKeys = 0;
+                c.addEventListener('keydown', () => { window.__crowCanvasKeys += 1; });
+                c.blur();
+            });
+            await page.waitForTimeout(500);
+            const droppedTo = await page.evaluate(() => {
+                const a = document.activeElement;
+                return a ? (a.id || a.tagName) : 'none';
+            });
+            await page.keyboard.press('ArrowRight');
+            await page.waitForTimeout(300);
+            const keysReachCanvas = await page.evaluate(() => window.__crowCanvasKeys > 0);
+
+            // And a field must be left alone.
+            const textFieldKeepsFocus = await page.evaluate(async () => {
+                const field = document.createElement('input');
+                field.type = 'text';
+                field.style.cssText = 'position:fixed;left:-300px;top:0';
+                document.body.appendChild(field);
+                field.focus();
+                await new Promise(r => setTimeout(r, 500));
+                const kept = document.activeElement === field;
+                field.remove();
+                return kept;
+            });
+            return { droppedTo, keysReachCanvas, textFieldKeepsFocus };
+        })();
+
         const result = {
             // GATED, not merely recorded. `distinctColors > 1` accepted a
             // two-colour frame as a render, and nothing checked the geometry at
@@ -261,7 +356,11 @@ async function main() {
                 && canvas.width > 0
                 && distinctColors >= MIN_DISTINCT_COLORS
                 && letterbox.barsTotalPx <= MAX_LETTERBOX_PX
-                && letterbox.offscreenTotalPx <= MAX_OFFSCREEN_PX,
+                && letterbox.offscreenTotalPx <= MAX_OFFSCREEN_PX
+                && vk.experimentalVK
+                && vk.inputSelectable
+                && focusLoss.keysReachCanvas
+                && focusLoss.textFieldKeepsFocus,
             kind: 'web_export_boot_smoke',
             whatThisIs: 'Exported output/web build booted in Chromium at an iPad landscape viewport with touch enabled.',
             whatThisIsNot: 'Not real iPad Safari verification. WebKit audio unlock, memory ceilings and WASM limits are unproven here.',
@@ -269,6 +368,8 @@ async function main() {
             canvas,
             distinctCanvasColors: distinctColors,
             letterbox,
+            virtualKeyboard: vk,
+            focusLoss,
             consoleErrors,
             failedRequests,
             screenshot: 'output/playwright/web-boot-smoke/ipad-boot.png',
@@ -281,6 +382,8 @@ async function main() {
         console.log(`distinct colors : ${distinctColors} (full canvas)`);
         console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars (${letterbox.verticalBarsPx}v/${letterbox.horizontalBarsPx}h), ${letterbox.offscreenTotalPx}px offscreen (${letterbox.verticalOffscreenPx}v/${letterbox.horizontalOffscreenPx}h), canvas covers ${letterbox.screenUsedPct}% of the viewport`);
         console.log(`flow steps      : ${flow.length} (clicks and keys after boot)`);
+        console.log(`touch keyboard  : experimentalVK=${vk.experimentalVK}, input selectable=${vk.inputSelectable}`);
+        console.log(`focus recovery  : after canvas.blur() focus went to ${focusLoss.droppedTo}, keys reach canvas=${focusLoss.keysReachCanvas}, text field keeps focus=${focusLoss.textFieldKeepsFocus}`);
         console.log(`console errors  : ${consoleErrors.length}`);
         if (distinctColors < MIN_DISTINCT_COLORS) {
             console.error(`FAIL: only ${distinctColors} distinct colours (floor ${MIN_DISTINCT_COLORS}) — the build booted but did not render`);
@@ -290,6 +393,25 @@ async function main() {
         }
         if (letterbox.offscreenTotalPx > MAX_OFFSCREEN_PX) {
             console.error(`FAIL: ${letterbox.offscreenTotalPx}px of canvas is off screen (floor ${MAX_OFFSCREEN_PX}) at ${letterbox.screenUsedPct}% coverage — the frame is being cropped, not letterboxed`);
+        }
+        if (!vk.experimentalVK) {
+            console.error("FAIL: experimentalVK is off — a touch device cannot type, so no child can create an account. "
+                + "Set html/experimental_virtual_keyboard=true in godot/export_presets.cfg and re-export.");
+        }
+        if (!focusLoss.keysReachCanvas) {
+            console.error("FAIL: after focus left the canvas, key presses no longer reach it — gate B3. "
+                + "A child who ends up with focus nowhere (Godot's virtual keyboard closing does exactly that) "
+                + "gets a maths board they cannot answer. deploy/web/crow-focus.js is the fix; check it is copied "
+                + "by build_web.sh and referenced from html/head_include.");
+        }
+        if (!focusLoss.textFieldKeepsFocus) {
+            console.error("FAIL: focus was pulled off a real <input> — gate B3. The login name and PIN are served "
+                + "by an injected input on a touch build, so stealing its focus dismisses the on-screen keyboard "
+                + "mid-word. crow-focus.js must leave text fields alone.");
+        }
+        if (!vk.inputSelectable) {
+            console.error("FAIL: an injected <input> computes user-select:none, inherited from the export's head_include. "
+                + "iOS will not raise a keyboard for it. Allow input,textarea to be selectable.");
         }
         console.log(`failed requests : ${failedRequests.length}`);
         for (const e of consoleErrors.slice(0, 5)) console.log(`  ERR ${e}`);

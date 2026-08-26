@@ -79,7 +79,7 @@ export interface LevelSpec {
     spawns: {
         player: { x: number; y: number };
         npcs?: Array<{ npc_id: string; x: number; y: number }>;
-        collectibles?: Array<{ type: string; x: number; y: number }>;
+        collectibles?: Array<{ type: string; x: number; y: number; id?: string }>;
     };
     hazards?: Array<{ type: string; x: number; y: number; width?: number; height?: number }>;
     enemies?: Array<{ enemy_id: string; x: number; y: number }>;
@@ -229,17 +229,30 @@ export function compileLevel(spec: LevelSpec): TiledMap {
     }
 
     for (const col of spec.spawns.collectibles || []) {
+        // A big coin is its OWN object type, not a collectible with a label.
+        // spawn_registry.json maps a Tiled object type to a scene, and these two
+        // are different objects: an ordinary coin drops into a lifetime purse,
+        // and a big coin is a third of a level's progress that has to remember
+        // whether this child already has it.
+        //
+        // `id` travels with it and is required for big coins (validated in
+        // validate-content.ts). It is what the save records, so moving a coin or
+        // reordering the spawns cannot silently wipe a child's record the way a
+        // positional index would.
+        const isBig = col.type === 'big_coin';
+        const properties: Array<{ name: string; type: string; value: string }> = [
+            { name: 'collectible_type', type: 'string', value: col.type },
+        ];
+        if (isBig) properties.push({ name: 'coin_id', type: 'string', value: col.id ?? '' });
         objects.push({
             id: objectId++,
             name: col.type,
-            type: 'collectible',
+            type: isBig ? 'big_coin' : 'collectible',
             x: col.x * TILE_SIZE,
             y: col.y * TILE_SIZE,
             width: TILE_SIZE,
             height: TILE_SIZE,
-            properties: [
-                { name: 'collectible_type', type: 'string', value: col.type },
-            ],
+            properties,
         });
     }
 

@@ -327,8 +327,17 @@ func _render_controls(card: Dictionary) -> void:
 			button.pressed.connect(func(): choose(index))
 			_controls.add_child(button)
 			_options.append(button)
-		if _options.size() > 0:
-			_options[0].grab_focus()
+		# NO grab_focus() here, and that is a fix rather than an omission.
+		#
+		# This called _options[0].grab_focus() on an AnswerButton, whose
+		# focus_mode is FOCUS_NONE -- so Godot logged "This control can't grab
+		# focus" on every guided-try card that has ever rendered, and the card was
+		# unreachable by keyboard entirely: nothing focused, so Enter and Space did
+		# nothing. A browser harness driving the game hit it as a hard wall and
+		# could not get past the first owl.
+		#
+		# _unhandled_input below is the keyboard path, by digit, matching the
+		# board's.
 		return
 
 	_back = BrandButton.new()
@@ -348,6 +357,25 @@ func _render_controls(card: Dictionary) -> void:
 	_next.pressed.connect(advance)
 	_controls.add_child(_next)
 	_next.grab_focus()
+
+## The guided-try card, answerable from the keyboard by position. Same contract
+## as the board's: digits only, because they carry no movement meaning.
+##
+## Only the choice cards take a digit. On a card that has a Next, ui_accept
+## already works because BrandButton does take focus -- the FOCUS_NONE problem
+## was only ever the AnswerButton options.
+func _unhandled_input(event: InputEvent) -> void:
+	if _options.is_empty():
+		return
+	for i in mini(_options.size(), 4):
+		if not event.is_action_pressed("answer_%d" % (i + 1)):
+			continue
+		if _options[i].disabled:
+			get_viewport().set_input_as_handled()
+			return
+		choose(i)
+		get_viewport().set_input_as_handled()
+		return
 
 ## Every string on the card, in the active locale. Split out from _render so a
 ## language change mid-lesson re-letters the card in place instead of restarting

@@ -122,7 +122,6 @@ function formatAssetLabel(relativePath) {
  */
 const OPTIONAL_ASSET_SLOTS = new Set([
     'godot/assets/sprites/ui/board/board-9slice.png',
-    'godot/assets/sprites/ui/board/count-token-32.png',
     'godot/assets/sprites/ui/hud/owl-icon-32.png',
 ]);
 

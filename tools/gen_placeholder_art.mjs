@@ -84,17 +84,21 @@ function owlIcon() {
     return c;
 }
 
-/** 32x32 counting token. Must not read as a coin: no face, no shine. */
-function countToken() {
-    const c = new Canvas(32, 32);
-    c.disc(16, 16, 13, OWL);
-    c.ring(16, 16, 13, 3, INK);
-    // A plain cross notch, so a row of these is still countable when they
-    // overlap slightly and so it is obviously not currency.
-    c.rect(15, 10, 2, 12, INK, 90);
-    c.rect(10, 15, 12, 2, INK, 90);
-    return c;
-}
+/*
+ * There was a countToken() here and it is deliberately gone.
+ *
+ * It drew a disc with a cross notch through it, which rendered as a PLUS SIGN
+ * INSIDE A CIRCLE -- and every one of the 123 counting problems drew that same
+ * token, so the twelve-way symbol variety the curriculum encodes was thrown away
+ * one layer before the child, and what they were handed to count was the
+ * addition operator. A playtester reported both halves of that in one sentence.
+ *
+ * Counting tokens are now six drawn shapes in scripts/ui/components/count_row.gd,
+ * picked from the prompt's own symbol and coloured from the live theme, which a
+ * static PNG cannot be. Per-shape art is still optional and still welcome: see
+ * godot/assets/sprites/ui/board/README.md for the keys. Do not regenerate one
+ * token for all of them.
+ */
 
 /**
  * 96x96 nine-slice board. The 24px corners are what the inset in
@@ -151,7 +155,6 @@ function chainLinkBurst() {
 await mkdir('godot/assets/sprites/ui/hud', { recursive: true });
 console.log('placeholder art (Fixed Nine, exact runtime sizes):');
 await owlIcon().write('godot/assets/sprites/ui/hud/owl-icon-32.png');
-await countToken().write('godot/assets/sprites/ui/board/count-token-32.png');
 await boardNineSlice().write('godot/assets/sprites/ui/board/board-9slice.png');
 await chainLink().write('godot/assets/sprites/objects/chain/chain-link-32.png');
 await chainLinkBurst().write('godot/assets/sprites/objects/chain/chain-link-burst-32.png');

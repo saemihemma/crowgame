@@ -151,7 +151,7 @@ Redrawing them by hand is the highest-value art work available.
 *Done when:* every entry in `godot/data/tilesets/tileset_manifest.json` reads
 `"source": "authored"`, and `tools/gen_tilesets.mjs` can be deleted.
 
-### Reduced gravity at the apex is an unmade design decision, not a blocked one
+### The crow has no air poses, and no longer needs an apex-gravity decision
 An earlier version of this entry said the port had "constant gravity and no input
 grace". Half of that was wrong: coyote time and the jump buffer have always been
 in `player_motion.gd`, read from `player_base.json`, and pinned by
@@ -165,16 +165,63 @@ sprite states as well, and there is no crow art for any of them: the only frames
 that exist are a one-frame idle and a nine-frame walk. Those belong to the art
 pass, not here.
 
-What is genuinely open is whether GRAVITY should be reduced near the apex on top
-of the shape change. Note that §2.4's `apex` is an animation state held while
-`|vy| < 60`, not a gravity scale -- the physics reading is an interpretation
-nobody has committed to, and `PlayerMotion` is parity-locked, so committing to it
-means the same change in `tools/golden/gen_motion_fixtures.ts` and regenerated
-fixtures.
+Reduced gravity near the apex is no longer an open question on its own: the
+answer is that the crow should not float by default, and anything that changes
+how it moves through the air arrives as an ABILITY the child earns. See "Crow
+abilities" below. What is left here is only the art -- §2.4 lists `jump_rise`,
+`apex` and `fall` as sprite states and there is no crow art for any of them, only
+a one-frame idle and a nine-frame walk. That belongs to the art pass.
 
-*Done when:* somebody plays it with the shape change alone and says whether the
-jump still wants more float -- or the idea is dropped, because shape may well
-have been what "floaty" meant.
+*Done when:* the three air poses exist as art, or the art pass declares the pose
+scaling sufficient without them.
+
+### Crow abilities: the framework exists and nothing is wired to it
+`godot/data/tuning/abilities.json` declares three abilities (`double_jump`,
+`wall_slide`, `dash`), all `persistent: false`, all `grantedBy` pickups that do
+not exist. `godot/scripts/gameplay/ability_manager.gd` is a `RefCounted` class
+that nothing instantiates -- it is not an autoload and has no call site anywhere
+in `godot/scripts`. `EventBus.ability_granted`/`ability_revoked` exist, the HUD
+reacts to them, and `SaveManager.grant_ability` persists an id into
+`activeAbilities`. So the plumbing is real and the pipe is not connected at
+either end: nothing grants, and `player_motion.gd` never asks `has_ability`.
+
+Settled by the owner: abilities are a MIX of permanent unlocks and timed
+pickups (a Mario star), and they are earned by CLEARING MAPS. Double jump and
+gliding are the two named. Anything that changes how the crow moves through the
+air lands here rather than in the base jump.
+
+Four things this needs that the scaffold does not have:
+- An owner. `AbilityManager` has to become an autoload or belong to `Game`, and
+  something has to grant on `EventBus.level_complete`.
+- A read. `player_motion.gd` is parity-locked against
+  `tools/golden/gen_motion_fixtures.ts`, so an ability that changes motion means
+  the same change in the TS kernel and regenerated fixtures in the same commit.
+- A duration for the timed kind, plus a HUD countdown -- and care that a timed
+  ability does NOT go through `SaveManager.grant_ability`, which appends to
+  `activeAbilities` and would silently make it permanent across a reload.
+- Real ids for `requiresAbility` to point at, which is how the bonus owl at the
+  end of a map declares that it is deliberately out of reach for now.
+
+*Done when:* clearing a level grants an ability the crow can still use in the
+next level, a timed one visibly expires, and a bonus owl declared
+`requiresAbility: double_jump` becomes reachable once the child has it.
+
+### Email: provider, welcome mail, and the CLM journey
+Nothing in this repository depends on this, and no code is blocked by it: it is
+account setup plus DNS plus copy. It is here because it is the last thing
+standing between a family signing up and hearing anything back.
+
+Blocked on two answers from the owner, and neither can be guessed:
+1. **The sending domain.** Which domain the mail goes out from, because SPF,
+   DKIM and DMARC records have to be added to whatever DNS hosts it, and picking
+   the wrong one means re-doing the whole chain.
+2. **Transactional only, or transactional plus an opt-in weekly digest.** Only
+   the second one needs code -- a scheduled job reading
+   `/api/v1/admin`-shaped aggregates per family and an unsubscribe route -- and
+   it also changes what has to be said in `PRIVACY.md`, which is gated.
+
+*Done when:* a real signup receives a welcome mail from a domain that passes
+DMARC, and the answer to (2) is either "no digest" or a shipped digest.
 
 ### Five board materials are wired and undrawn
 `math_challenge.gd::_board_face()` now reads the active world's
@@ -300,8 +347,9 @@ The baseline owl asks exactly one problem, and every dial that makes one owl
 different from another is on the owl: `problemCount`, `difficultyRange` and
 `problemTypes`, documented in `npc_registry.json`'s own `fields` block. So a new
 variant is a registry entry plus the `npc_id` a level spawns — no code change.
-What is left is content and design: a visually distinct sprite, a bigger reward,
-and a decision about where it appears (level gates? bonus areas?). The
+Where it appears is settled: one hard-to-reach bonus owl at the end of each map,
+outside the door's requirement so it can never lock a level. What is left is
+content -- a visually distinct sprite and a reward worth the climb. The
 multi-problem UI (progress header, alternate-domain follow-ups) stays dormant at
 the baseline but keeps working for any NPC that raises the count.
 

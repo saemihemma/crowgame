@@ -518,6 +518,69 @@ export class LearnerStateManager {
     }
 
     /**
+     * Has this child finished everything this domain can teach them?
+     *
+     * True when they have earned promotion off the top rung and there is nothing
+     * above it -- exactly the condition findNextStepWithContent above already
+     * detects and then silently swallows. The ladder parks them there for good;
+     * owlSelection needs to know so it can stop dealing a subject that has run
+     * out of things to say.
+     *
+     * Deliberately NOT `currentStep >= someCeiling`. currentStep is CAPPED at the
+     * ceiling by that same function, so a step comparison can never fire -- which
+     * is the trap this method exists to avoid, and the reason counting sat at step
+     * 6 while being served 530 times in 1200 attempts to a struggling child.
+     *
+     * And deliberately not the bare "nothing above me" either: a child who has
+     * only just arrived at the top rung still has that rung's problems to
+     * practise, and cutting them off would be taking away content they have not
+     * done. It is arriving at the top AND mastering it that means finished, so
+     * this reuses promotionWinTarget rather than inventing a second threshold.
+     *
+     * Reads the same stepContentProvider the ladder uses, so a domain's ceiling
+     * is wherever the authored problems actually stop. Note the provider does not
+     * know about the owl's maxOperand cap, which makes this conservative in the
+     * safe direction: addition has authored problems up to step 46 and so never
+     * reads as exhausted, even though only the steps below 20 can be served.
+     */
+    isDomainExhausted(domain: MathDomain): boolean {
+        const progress = this.snapshot?.curriculumProgress?.[domain];
+        if (!progress) return false;
+        if (progress.winsAtCurrentStep < ladder().promotionWinTarget) return false;
+        return this.findNextStepWithContent(domain, progress.currentStep) === progress.currentStep;
+    }
+
+    /**
+     * Exhausted AND safe to stop serving. This, not isDomainExhausted, is what
+     * the selector should ask.
+     *
+     * The distinction is neither academic nor obvious, and it cost a real
+     * regression to find. computeUnlockState gates a domain on its PREREQUISITE
+     * having at least twenty attempts at ninety percent first-try accuracy --
+     * and pattern_matching's prerequisite is counting, whose entire ladder is
+     * seven rungs deep. Retiring counting the moment it is mastered starves that
+     * gate: measured on tools/sim_learner_journey.ts, counting fell to fifteen
+     * lifetime attempts and pattern_matching NEVER unlocked for either the
+     * thriving or the steady child, taking 125 problems and four concepts out of
+     * the game permanently.
+     *
+     * A finished domain therefore keeps its turn for as long as it is
+     * load-bearing for something still locked, and retires once that job is
+     * done. Read from DOMAIN_PREREQUISITES rather than a hand-listed exception
+     * for counting, so adding a prerequisite edge cannot quietly reintroduce the
+     * deadlock somewhere else.
+     */
+    isDomainRetirable(domain: MathDomain): boolean {
+        if (!this.isDomainExhausted(domain)) return false;
+        for (const dependent of ALL_MATH_DOMAINS) {
+            const prerequisites = DOMAIN_PREREQUISITES[dependent] ?? [];
+            if (!prerequisites.includes(domain)) continue;
+            if (!this.isDomainUnlocked(dependent)) return false;
+        }
+        return true;
+    }
+
+    /**
      * Wire in a pool-backed "does this step have problems" check.
      * Also reconciles domains whose starting step sits below the first
      * authored step (e.g. a domain whose content starts at step 1).

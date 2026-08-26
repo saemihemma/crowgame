@@ -60,7 +60,55 @@ func tutorial_for_problem(problem: Dictionary) -> Dictionary:
 		return {}
 	if not _learner_has_reached(concept):
 		return {}
+	if _is_behind(concept) and String(Config.flag("math/tutorial_below_level", DEPTH_BRIEF)) == BELOW_OFF:
+		return {}
 	return get_tutorial(tutorial_id)
+
+## Teaching depth for a lesson that is about to open on a specific problem.
+##
+## Callers with a problem in hand should prefer this over depth_for(): the gate
+## above lets a below-level lesson through, and this is what stops it arriving as
+## the full four-card treatment.
+func depth_for_problem(problem: Dictionary, tutorial_id: String) -> String:
+	var concept := ConceptLadder.concept_for_problem(problem)
+	if not concept.is_empty() and _is_behind(concept):
+		if String(Config.flag("math/tutorial_below_level", DEPTH_BRIEF)) == DEPTH_BRIEF:
+			return DEPTH_BRIEF
+	return depth_for(tutorial_id)
+
+## `math/tutorial_below_level` value meaning "do not teach it at all". The other
+## two values are DEPTH_FULL and DEPTH_BRIEF, which is why they are not restated:
+## the flag says what a below-level lesson LOOKS like, and "nothing" is the third
+## option rather than a separate axis.
+const BELOW_OFF := "off"
+
+## Is this concept entirely behind where the learner now stands?
+##
+## The gate in tutorial_for_problem is one-sided, and that asymmetry was the bug.
+## It refuses to teach a concept ABOVE the learner, for a good reason spelled out
+## above -- the stretch lane deals a reach and a lesson for it would be a lesson
+## nobody earned. Nothing guarded the other direction, and the other direction is
+## where 60% of the questions come from: comfort is 40% and review another 20%,
+## both drawing at or below the current rung.
+##
+## Combined with placement that seeds a child forward from their birth year and
+## then moves them a WHOLE CONCEPT per answer for three answers, a child can be
+## carried past rungs 3 to 5 without one problem ever being served from them.
+## Every rung skipped that way is a landmine: the first time the comfort lane
+## deals a problem from it, its concept is unseen, `_learner_has_reached` is
+## trivially satisfied, and a four-card lesson opens mid-run for an idea the child
+## left behind long ago. That is the playtest note about "að telja áfram" -- the
+## counting-on lesson -- arriving unmotivated and out of order.
+##
+## Behind means the concept's LAST rung is below the learner's current step, not
+## its first. A concept the learner is standing inside is the one they are working
+## on, and teaching that is the whole point of the system.
+func _is_behind(concept: Dictionary) -> bool:
+	var domain := String(concept.get("domain", ""))
+	var steps: Variant = concept.get("steps", null)
+	if domain == "" or not (steps is Array) or (steps as Array).size() < 2:
+		return false
+	return LearnerStateManager.get_current_step(domain) > int((steps as Array)[1])
 
 ## Has the learner's ladder actually arrived at this concept's first rung?
 ##
