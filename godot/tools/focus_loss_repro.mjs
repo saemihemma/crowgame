@@ -129,6 +129,18 @@ async function boot(page) {
         return c && c.width > 0 && c.height > 0;
     }, { timeout: 240_000 });
     await wait(page, 9000);
+    // The title screen (boot.gd) takes any key once its preload bar is full, and
+    // the bar's floor is MIN_VISIBLE_SECONDS = 0.9s -- long past by now. Exactly
+    // one press: boot.gd routes straight to login when there is no active
+    // profile, and login.gd focuses its first button, so a second Enter would
+    // press "New player" and put the form where the click below expects the menu.
+    //
+    // This is here because it BROKE. The title screen landed on main after this
+    // harness was written, the login coordinates stopped meaning anything, and the
+    // run failed with "no active user" -- the profile had never been created. A
+    // coordinate-driven harness is only as current as the flow it walks.
+    await page.keyboard.press('Enter');
+    await wait(page, 2500);
 }
 
 async function createProfile(page) {
