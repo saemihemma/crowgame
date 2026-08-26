@@ -37,10 +37,13 @@ The attack surface is small on purpose:
 - **Device-scoped auth.** The credential is an opaque random token in an
   `HttpOnly; Secure; SameSite=Lax` cookie, stored server-side as SHA-256 only. It
   resolves to a device, which belongs to a family.
-- **Family isolation is enforced in Postgres**, via row-level security, on the
-  six child-data tables — `children`, `child_saves`, `child_save_history`,
-  `attempts`, `sync_conflicts`, `child_aliases` — with both `ENABLE` and `FORCE`,
-  in addition to explicit predicates in every query.
+- **Family isolation is enforced in Postgres**, via row-level security, on every
+  child-data table — `children`, `child_saves`, `child_save_history`, `attempts`,
+  `sync_conflicts`, `child_aliases`, `play_pings` — with both `ENABLE` and
+  `FORCE`, in addition to explicit predicates in every query. The set is not a
+  list anyone maintains: it is derived by walking foreign keys to `families`, so a
+  new table joins it the moment it is migrated, and
+  `server/test/role-isolation.test.ts` fails until it actually isolates.
 
   **The auth tables are deliberately outside that.** `parents`, `devices`,
   `device_tokens` and `login_codes` carry no policy, because resolving a token to

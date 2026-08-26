@@ -448,6 +448,19 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
                 `select child_id, incoming_attempted, stored_attempted, outcome, created_at
                    from sync_conflicts where family_id = $1`,
                 [familyId]);
+            // Play heartbeats, raw and per row, like attempts above.
+            //
+            // PRIVACY.md promises a parent "everything held about your family",
+            // and this table is held about their child — so it is exported, not
+            // summarised. A summary would be a judgement about what a parent is
+            // allowed to see, made by us, and the honest form of a heartbeat log
+            // is the heartbeats. role-isolation.test.ts is what noticed the
+            // omission: the table landed with the sessions feature and the export
+            // did not grow with it.
+            const playPings = await client.query(
+                `select child_id, received_at
+                   from play_pings where family_id = $1 order by child_id, received_at`,
+                [familyId]);
             return {
                 exportedAt: new Date().toISOString(),
                 notIncluded: {
@@ -462,6 +475,7 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
                 attempts: attempts.rows,
                 saveHistory: saveHistory.rows,
                 syncConflicts: syncConflicts.rows,
+                playPings: playPings.rows,
             };
         });
         return reply

@@ -493,9 +493,9 @@ Every read and write resolves `token → device → family`, then scopes
 `WHERE child.id = $1 AND child.family_id = $token.family_id`. `childId` may
 appear in a path as an object reference; it never grants anything.
 
-Family isolation is enforced twice on the six child-data tables (`children`,
+Family isolation is enforced twice on every child-data table (`children`,
 `child_saves`, `child_save_history`, `attempts`, `sync_conflicts`,
-`child_aliases`): an explicit `family_id` predicate in every query, and Postgres
+`child_aliases`, `play_pings`): an explicit `family_id` predicate in every query, and Postgres
 row-level security — `ENABLE` plus `FORCE` — with `SET LOCAL app.family_id` per
 transaction. The set is derived from `pg_class` and asserted in
 `server/test/role-isolation.test.ts`, rather than trusted from the migration's

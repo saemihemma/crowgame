@@ -1,9 +1,9 @@
 /**
  * The two database defences the schema provides, asserted by running them.
  *
- * `migrations/002` enables and FORCEs row-level security on the six child-data
- * tables, and deliberately withholds DELETE on `attempts` so the record of what a
- * child answered cannot be rewritten. Both defences depend entirely on one
+ * `migrations/002` enables and FORCEs row-level security on the child-data tables
+ * (`006` added `play_pings` to them), and deliberately withholds DELETE on
+ * `attempts` so the record of what a child answered cannot be rewritten. Both defences depend entirely on one
  * statement — `set local role crow_app` — because a superuser bypasses RLS
  * outright and holds every privilege.
  *
@@ -80,8 +80,10 @@ const AUTH_TABLES_WITHOUT_RLS = ['device_tokens', 'devices', 'login_codes', 'par
  * in it readable inside any `withFamily` transaction.
  *
  * So the denominator is the FK walk: every table whose foreign keys reach
- * `families`, minus the four above. Today that is exactly the six the migration
- * protects, so this passes unchanged — and the seventh table fails it.
+ * `families`, minus the four above. It has already earned that shape: `play_pings`
+ * arrived with the sessions feature and joined the protected set automatically,
+ * which is how the same run caught that the family export had not grown with it.
+ * A count here would have gone stale instead — so there is no count.
  */
 async function familyScopedTables(
     pool: typeof import('../src/db.ts').pool,
@@ -152,11 +154,41 @@ describe('no route bypasses the app role', () => {
                 `${dir}/${file} imports withTransaction, which runs as the superuser and ` +
                 'bypasses RLS. Use withAppRole, or withFamily for family-scoped data.',
             );
-            assert.ok(
-                !/\bpool\s*\.\s*query\b/.test(code),
-                `${dir}/${file} queries the pool directly, which connects as the superuser. ` +
-                'Use withAppRole, or withFamily for family-scoped data.',
-            );
+
+            // THE OWNER'S SURFACE IS THE ONE PLACE THE BARE POOL IS CORRECT.
+            //
+            // This rule was written when every route served one family, and it
+            // said flatly that nothing may touch the pool. Then the owner
+            // dashboard arrived: it aggregates ACROSS families, which is exactly
+            // what RLS FORCE on `crow_app` prevents, so `withAppRole` cannot
+            // serve it and `withFamily` is meaningless for it. The rule was too
+            // broad, not the code wrong.
+            //
+            // So the exemption is conditional, not a name on a skip list: a file
+            // may use the pool only if EVERY route it registers is behind
+            // `requireAdmin`. Add an admin route without owner auth, or reach for
+            // the pool from a device-authorized file, and this still fails —
+            // which is the property the blanket ban was really protecting.
+            if (/\bpool\s*\.\s*query\b/.test(code)) {
+                const routes = code.match(/app\.(get|post|put|delete|patch)\s*\(/g) ?? [];
+                const adminGuards = code.match(/preHandler:\s*requireAdmin\b/g) ?? [];
+                assert.ok(
+                    routes.length > 0 && adminGuards.length > 0,
+                    `${dir}/${file} queries the pool directly, which connects as the superuser. ` +
+                    'Use withAppRole, or withFamily for family-scoped data. Only a surface where ' +
+                    'every route is behind requireAdmin may read across families on the pool.',
+                );
+                // One `const auth = { preHandler: requireAdmin }` reused by every
+                // route is the shape admin.ts uses, so the guard count does not
+                // have to match the route count — but every route must take it.
+                const guarded = code.match(/\b(auth|adminAuth)\b\s*,/g) ?? [];
+                assert.ok(
+                    guarded.length >= routes.length,
+                    `${dir}/${file} uses the bare pool and registers ${routes.length} route(s), ` +
+                    `but only ${guarded.length} pass the admin preHandler. Every route on a ` +
+                    'pool-using surface has to be behind owner auth.',
+                );
+            }
         });
     }
 });
@@ -187,6 +219,14 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         // Three, because the erasure test destroys one and the loop needs two
         // survivors. Every protected table gets rows for more than one family, so
         // there is always something for a broken policy to leak.
+        //
+        // A NEW FAMILY-SCOPED TABLE HAS TO BE SEEDED HERE. The protected set is
+        // derived by walking foreign keys to `families`, so a new table joins the
+        // isolation loop the moment it is migrated — and the loop refuses to run
+        // vacuously on a table with no rows. That is deliberate: `play_pings`
+        // arrived with the sessions feature, the loop went red rather than
+        // quietly passing over an empty table, and the same red caught the
+        // family export not growing with it either.
         for (const tag of ['iso-A', 'iso-B', 'iso-C']) {
             const { rows } = await pool.query<{ id: string }>(
                 'insert into families default values returning id');
@@ -215,6 +255,10 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
                 `insert into sync_conflicts
                      (family_id, child_id, incoming_attempted, stored_attempted, outcome)
                  select $1, id, 1, 2, 'rejected' from children where family_id = $1`,
+                [familyId]);
+            await pool.query(
+                `insert into play_pings (family_id, child_id)
+                 select $1, id from children where family_id = $1`,
                 [familyId]);
         }
     });
@@ -383,7 +427,7 @@ describe('database-level isolation', { skip: HAS_DB ? false : 'DATABASE_URL not 
         }
     });
 
-    it('RLS is enabled AND forced on exactly the six child-data tables', async () => {
+    it('RLS is enabled AND forced on exactly the derived child-data set', async () => {
         // Nothing asserted RLS was switched on at all until round 7 of review.
         // The protected set was a hardcoded six-element array in migration 002
         // with no gate, and the only behavioural assertion covered `children`, so
