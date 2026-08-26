@@ -116,6 +116,24 @@ func test_player_never_spawns_inside_the_ground() -> void:
 ## The other direction. A fix that simply subtracted a constant would satisfy
 ## every check above while leaving the owls hovering in mid-air, so the distance
 ## from an NPC's feet down to the ground is bounded too.
+##
+## THIS TEST USED TO BE UNABLE TO FAIL. It walked down from the feet looking for
+## ground, and then:
+##
+##     if drop > MAX_HOVER:
+##         continue          # "an NPC over an intentional pit is left alone"
+##     assert_true(drop <= MAX_HOVER, ...)
+##
+## The `continue` skipped precisely the case the assert existed to catch, so by
+## the time the assertion ran its condition was already guaranteed. Verified by
+## lifting an owl ten tiles into open sky: the suite reported 240 passed, 0
+## failed. Every owl in the game happened to be placed correctly, which is the
+## only reason this never showed.
+##
+## The exemption was wrong on its own terms as well. There is no such thing as an
+## NPC legitimately suspended over a pit - an owl a child cannot walk up to is
+## the bug, whether the emptiness under it is one tile or the bottom of the
+## level. So a search that finds no ground now fails instead of passing quietly.
 func test_npcs_do_not_hover() -> void:
 	var checked := 0
 	for key in _level_keys():
@@ -131,16 +149,14 @@ func test_npcs_do_not_hover() -> void:
 				if node.scene_file_path.get_file() != "Npc.tscn":
 					continue
 				var at: Vector2 = (node as Node2D).global_position
+				# Walk down from the feet until ground appears. Nothing found
+				# inside the bound is a floating owl, and it is reported as one.
 				var drop := 0.0
-				# Walk down from the feet until ground appears. An NPC over an
-				# intentional pit finds none, and is left alone.
 				while drop <= MAX_HOVER and not _solid_at(level, at.x, at.y + drop):
 					drop += 4.0
-				if drop > MAX_HOVER:
-					continue
 				checked += 1
 				assert_true(drop <= MAX_HOVER,
-					"%s: NPC at (%d, %d) hovers %d px above the ground" % [
-						key, int(at.x), int(at.y), int(drop)])
+					"%s: NPC at (%d, %d) has no ground within %dpx below it - it is floating" % [
+						key, int(at.x), int(at.y), int(MAX_HOVER)])
 		game.free()
 	assert_true(checked >= 20, "every level's NPCs were checked for hovering")

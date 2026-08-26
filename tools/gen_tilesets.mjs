@@ -526,7 +526,7 @@ async function build() {
             + 'a 4x4 sheet of 32px tiles. Indices 0-2 are the surface, fill and platform; '
             + '3-6 are the left/right end caps of a ground or platform run; 7-9 are '
             + 'transparent scatter marks for the decoration layer. '
-            + 'Replace a PNG in place to reskin a world; add an entry here plus a PNG to add one. '
+            + 'Replace a PNG in place to reskin a world; add an entry here plus a PNG to add one. A sheet with worldSkin false is not a world skin and no level may name it. '
             + 'The loader reads every entry, so neither needs a code change. Generated entries come '
             + 'from tools/gen_tilesets.mjs - edit that, not this file. See brand/ASSET_MANIFEST.md.',
         tileWidth: TILE,
@@ -572,15 +572,25 @@ async function build() {
 
     // Authored tilesets the generator does not produce. They belong in the
     // manifest anyway, or the loader ends up with two ways to load a tileset.
-    const GRID_ROLES = ROLES.map(({ index, role, collides }) => ({ index, role, collides }));
+    //
+    // forest_tiles gets the roles it ACTUALLY HAS, not the roles the generator
+    // paints. It is a hand-assembled Kenney sheet with three tiles in it, and
+    // when ROLES grew from 3 to 10 it was being handed the full generated list
+    // -- which declared four empty cells as colliding. A sheet that says an
+    // invisible tile is solid is an invisible wall waiting for the first level
+    // that names it. Slice, do not assume.
+    const AUTHORED_FOREST_ROLES = 3;
 
     manifest.tilesets.push({
         key: 'forest_tiles',
         theme: 'forest',
         image: 'assets/tilesets/forest_tiles.png',
         source: 'authored',
-        note: 'Base ground skin. level_loader.gd bakes a TileSet from whichever sheet a compiled level names; the per-world sheets dress over this one.',
-        tiles: GRID_ROLES,
+        worldSkin: false,
+        note: 'Legacy three-tile ground skin (Kenney, CC0). It predates the end caps and '
+            + 'decoration scatter the compiler now places, so it cannot dress a world: '
+            + 'worldSkin false, and validate-content asserts no compiled level names it.',
+        tiles: ROLES.slice(0, AUTHORED_FOREST_ROLES).map(({ index, role, collides }) => ({ index, role, collides })),
     });
     manifest.tilesets.push({
         key: 'spike_hazards',

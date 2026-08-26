@@ -902,13 +902,14 @@ function validateLevelTileUse(): void {
     }
 
     const manifest = loadJson(join(DATA_DIR, 'tilesets', 'tileset_manifest.json')) as {
-        tilesets: Array<{ key: string; tiles: Array<{ index: number; role: string; collides: boolean }> }>;
+        tilesets: Array<{ key: string; worldSkin?: boolean; tiles: Array<{ index: number; role: string; collides: boolean }> }>;
     };
     const scatterGids = new Set<number>(GID.scatter as unknown as number[]);
     const collidingGids = new Set(COLLIDING_TILE_IDS.map(id => id + 1));
 
     let checkedRuns = 0;
     let checkedScatter = 0;
+    const usedByALevel = new Set<string>();
 
     for (const file of readdirSync(specsDir).filter(f => f.endsWith('.json'))) {
         const spec = loadJson(join(specsDir, file)) as LevelSpec;
@@ -917,8 +918,9 @@ function validateLevelTileUse(): void {
         const compiled = loadJson(compiledPath) as {
             width: number;
             layers: Array<{ name: string; type: string; data?: number[] }>;
-            tilesets: Array<{ tilecount: number }>;
+            tilesets: Array<{ tilecount: number; name?: string }>;
         };
+        for (const t of compiled.tilesets) if (t.name) usedByALevel.add(t.name);
         const width = compiled.width;
         const layer = (name: string) => compiled.layers.find(l => l.name === name && l.type === 'tilelayer');
         const ground = layer('ground')?.data;
@@ -1001,8 +1003,22 @@ function validateLevelTileUse(): void {
 
     // The sheet has to declare everything the compiler places, with the same
     // collision answer. Two files, sixteen numbers, one contract.
+    //
+    // The exemption is `worldSkin: false`, not a hard-coded key. It used to be
+    // `|| tileset.key === 'forest_tiles'`, which is how that sheet came to
+    // declare four empty cells as colliding without anything noticing: the
+    // manifest handed it the full generated role list, and the one check that
+    // would have caught the mismatch had its name written into a skip. A sheet
+    // is exempt only by declaring that it cannot dress a world -- and then it
+    // has to actually not dress one, which is the next loop.
     for (const tileset of manifest.tilesets) {
-        if (!tileset.key.endsWith('_tiles') || tileset.key === 'forest_tiles') continue;
+        if (tileset.worldSkin === false && usedByALevel.has(tileset.key)) {
+            console.error(`  FAIL: ${tileset.key} is declared worldSkin false but a compiled level names it`);
+            errors++;
+        }
+    }
+    for (const tileset of manifest.tilesets) {
+        if (!tileset.key.endsWith('_tiles') || tileset.worldSkin === false) continue;
         const declared = new Map(tileset.tiles.map(t => [t.index, t]));
         for (const id of COLLIDING_TILE_IDS) {
             const entry = declared.get(id);
