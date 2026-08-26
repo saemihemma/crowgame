@@ -18,7 +18,7 @@
     {
       "type": "ground",
       "x": 0,
-      "width": 15,
+      "width": 16,
       "y": 16
     },
     {
@@ -36,7 +36,7 @@
     {
       "type": "ground",
       "x": 18,
-      "width": 12,
+      "width": 4,
       "y": 16,
       "gap_before": 3
     },
@@ -48,8 +48,14 @@
     },
     {
       "type": "ground",
+      "x": 25,
+      "width": 5,
+      "y": 16
+    },
+    {
+      "type": "ground",
       "x": 33,
-      "width": 10,
+      "width": 11,
       "y": 16,
       "gap_before": 3
     },
@@ -265,7 +271,14 @@
   "hazards": [
     {
       "type": "spikes",
-      "x": 15,
+      "x": 16,
+      "y": 19,
+      "width": 2,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 22,
       "y": 19,
       "width": 3,
       "height": 1
@@ -279,9 +292,9 @@
     },
     {
       "type": "spikes",
-      "x": 43,
+      "x": 44,
       "y": 19,
-      "width": 3,
+      "width": 2,
       "height": 1
     },
     {
@@ -294,13 +307,6 @@
     {
       "type": "spikes",
       "x": 75,
-      "y": 19,
-      "width": 3,
-      "height": 1
-    },
-    {
-      "type": "spikes",
-      "x": 93,
       "y": 19,
       "width": 3,
       "height": 1

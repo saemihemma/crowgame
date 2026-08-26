@@ -65,11 +65,12 @@ REWRITE
 	printf '%s\n' "$id" > "$OUT/build_id.txt"
 }
 
-# The client error reporter is not a Godot resource, so the export does not
-# emit it. Copy it in beside the shell that references it from <head>.
+# The <head> scripts are not Godot resources, so the export does not emit them.
+# Copy them in beside the shell that references them.
 stamp_build_id
 
 cp "$ROOT/deploy/web/crow-errors.js" "$OUT/crow-errors.js"
+cp "$ROOT/deploy/web/crow-focus.js" "$OUT/crow-focus.js"
 
 # Portrait hint. The game is landscape-only (project.godot orientation=0, stretch
 # keep), so a child holding the iPad upright gets a letterboxed strip and no

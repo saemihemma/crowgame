@@ -28,6 +28,7 @@ const PATHS := {
 	"FX_TUNING": "tuning/fx_tuning.json",
 	"MATH_TUNING": "tuning/math_tuning.json",
 	"TUTORIAL_TUNING": "tuning/tutorial_tuning.json",
+	"FEATURE_FLAGS": "tuning/feature_flags.json",
 	"THEME_EMBERWOOD": "themes/theme_emberwood.json",
 	"THEME_PRISM_HOLLOW": "themes/theme_prism_hollow.json",
 	"THEME_SUGARSTORM": "themes/theme_sugarstorm.json",

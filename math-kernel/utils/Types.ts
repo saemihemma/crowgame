@@ -249,6 +249,20 @@ export interface AdaptiveProblemSelectionOptions {
     maxCurriculumStep?: number;
     maxOperand?: number;
     excludedReplayKeys?: string[];
+    /**
+     * The largest quantity a child may be asked to count one thing at a time.
+     *
+     * Not a difficulty cap -- a REPRESENTATION cap, and the difference is the
+     * whole point. `addition.teen_numbers` teaches that thirteen is one ten and
+     * three ones, using a ten-frame and then a bar and cubes; a child who has
+     * been taught that and is then shown thirteen identical ungrouped marks with
+     * the hint "count each dot carefully" is being asked to do, by ones, the
+     * exact thing the lesson just told them to stop doing.
+     *
+     * Undefined means no cap, which is right for a child who cannot yet compose
+     * a ten: counting fourteen marks is honest work for them.
+     */
+    maxUngroupedCount?: number;
 }
 
 export interface CurriculumStepResult {

@@ -29,6 +29,7 @@ extends Node
 ##               objects rather than a row of asterisks
 ##   pause       the pause overlay over a live level
 ##   complete    the run-complete celebration
+##   death       the death beat, half way through, on the lives-remaining path
 ##   hud-hurt    the HUD with a heart spent
 ##   hud-streak  the HUD with the streak flame lit
 ##   hud-ability the HUD with an ability chip in its slot
@@ -232,7 +233,22 @@ func _physics_process(_delta: float) -> void:
 	_capture_and_advance()
 
 func _hold_frames(variant: String) -> int:
-	return WRONG_HOLD_FRAMES if variant == "math-wrong" else BOARD_SETTLE_FRAMES
+	if variant == "math-wrong":
+		return WRONG_HOLD_FRAMES
+	if variant == "death":
+		return _death_hold_frames()
+	return BOARD_SETTLE_FRAMES
+
+## Where inside the death beat to photograph it.
+##
+## The beat fades in over a fifth of `death.hold_ms` and out over the last fifth,
+## so a shot taken at either end catches a transparent overlay and reports the
+## feature as missing. Half way through is the frame a child actually reads.
+##
+## Derived from the flag rather than fixed: change hold_ms and the shot follows
+## it, instead of the harness quietly starting to photograph the fade.
+static func _death_hold_frames() -> int:
+	return maxi(2, int(DeathBeat.hold_seconds() * 60.0 * 0.5))
 
 ## Drive the game into the state this variant is meant to photograph. Returns
 ## false if the level cannot reach it (a level with no owl has no maths board).
@@ -241,6 +257,8 @@ func _stage(variant: String) -> bool:
 	# level with no NPC still has a pause menu and can still be completed.
 	if variant == "pause" or variant == "complete":
 		return _stage_overlay(variant)
+	if variant == "death":
+		return _stage_death()
 	if variant.begins_with("hud-"):
 		return _stage_hud(variant)
 	var owl := _find_owl()
@@ -308,6 +326,20 @@ func _represent_from_domain(owl: Node2D, domain: String) -> bool:
 ##   hud-ability EventBus.ability_granted, which is what the HUD listens to.
 ##               There is no manager to ask: gameplay/ability_manager.gd is not
 ##               wired to anything, and the signal is the whole contract.
+## The death beat, over a live level.
+##
+## Driven through hurt_player() rather than by building the overlay directly: a
+## shot has to be evidence about the real game, and the interesting half of this
+## feature is that the LIVES-REMAINING path shows a beat at all -- it used to
+## teleport the crow with no acknowledgement. Spending one heart of three
+## reaches that path, which is the one a child hits.
+func _stage_death() -> bool:
+	if not _game.has_method("hurt_player"):
+		printerr("[capture] Game has no hurt_player()")
+		return false
+	_game.call("hurt_player")
+	return true
+
 func _stage_hud(variant: String) -> bool:
 	if variant == "hud-hurt":
 		if not _game.has_method("hurt_player"):

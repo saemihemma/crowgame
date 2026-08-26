@@ -18,8 +18,14 @@
     {
       "type": "ground",
       "x": 0,
-      "width": 14,
+      "width": 11,
       "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 13,
+      "width": 2,
+      "y": 17
     },
     {
       "type": "ground",
@@ -351,21 +357,21 @@
   "hazards": [
     {
       "type": "spikes",
-      "x": 14,
+      "x": 12,
       "y": 19,
       "width": 3,
       "height": 1
     },
     {
       "type": "spikes",
-      "x": 47,
+      "x": 28,
       "y": 19,
       "width": 6,
       "height": 1
     },
     {
       "type": "spikes",
-      "x": 87,
+      "x": 48,
       "y": 19,
       "width": 3,
       "height": 1

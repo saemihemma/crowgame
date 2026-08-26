@@ -16,6 +16,19 @@
 import { AdaptiveProblemSelectionOptions, MathProblem, MathDomain, ProblemELORating } from '../utils/Types';
 import { buildProblemReplayKey } from './problemReplayKey';
 
+/**
+ * Does this problem ask the child to count things one at a time?
+ *
+ * Identified by the glyph row its prompt interpolates -- `phrasing.prompt.params.glyphs`
+ * -- and deliberately not by its domain. The REPRESENTATION is what
+ * maxUngroupedCount is about: all 123 of these happen to sit in `counting`
+ * today, but a worded problem that drew a row of berries would be the same ask
+ * and has to be caught by the same rule.
+ */
+function isUngroupedCountRow(problem: MathProblem): boolean {
+    return problem.phrasing?.prompt?.params?.glyphs !== undefined;
+}
+
 export class ProblemPoolManager {
     private problemsByDomain: Map<MathDomain, MathProblem[]>;
     private problemELORatings: Map<string, ProblemELORating>;
@@ -234,6 +247,13 @@ export class ProblemPoolManager {
             problem.difficultyTraits.maxOperand > constraints.maxOperand
         ) {
             return false;
+        }
+
+        if (constraints?.maxUngroupedCount !== undefined && isUngroupedCountRow(problem)) {
+            const answer = Number(problem.answer?.correct);
+            if (Number.isFinite(answer) && answer > constraints.maxUngroupedCount) {
+                return false;
+            }
         }
 
         if (constraints?.excludedReplayKeys?.includes(buildProblemReplayKey(problem))) {
