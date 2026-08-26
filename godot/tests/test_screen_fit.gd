@@ -25,7 +25,11 @@ const VIEWPORTS := [
 ## different contract and lives in test_scrolling_lists.gd: login and level
 ## select scroll, because a family can add children and a registry can add
 ## worlds, and shrinking a list to fit is the wrong answer to that.
-const ROUTES := ["main_menu", "cloud_panel"]
+## `boot` is here for two reasons. Its column carries a 96px wordmark, so it is a
+## fit case like the others — and mounting it is the only headless thing that
+## loads boot.gd at all. A parse error in it used to reach a browser before
+## anything noticed, because no test had ever instantiated the title screen.
+const ROUTES := ["boot", "main_menu", "cloud_panel"]
 
 const PAUSE_SCENE := preload("res://scenes/Pause.tscn")
 

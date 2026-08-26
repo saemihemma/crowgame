@@ -134,6 +134,10 @@ SOUNDS = {
     # One link off an owl's chain. Short and metallic; it fires up to three
     # times in a row on a gauntlet owl, so it must not outstay its beat.
     "chain_break": mix(tone(1180, 0.09, 0.35, "square", decay=12.0), noise(0.05, 0.20, decay=14.0)),
+    # The focus ring moving between menu buttons. Quieter and higher than the
+    # click, because it fires on every arrow press and a sound at click volume
+    # would turn holding Down into a machine gun.
+    "button_focus": tone(1320, 0.035, 0.22, "sine", decay=18.0),
 }
 
 if __name__ == "__main__":

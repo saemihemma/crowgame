@@ -58,6 +58,16 @@ func play_music(key: String, _crossfade_ms: float = 500.0) -> void:
 	_music_player.play()
 	_current_music_key = key
 
+## Which track is playing, or "" for silence.
+##
+## Exposed because "the title music keeps playing into the menu" is an invariant
+## a test has to be able to state. AudioManager outlives every scene, so
+## continuity is the DEFAULT -- and that is exactly the kind of thing that breaks
+## silently the first time someone adds a play_music call to a menu.
+func current_music_key() -> String:
+	return _current_music_key if is_instance_valid(_music_player) and _music_player.playing else ""
+
+
 func stop_music(_fade_ms: float = 500.0) -> void:
 	_music_player.stop()
 	_current_music_key = ""

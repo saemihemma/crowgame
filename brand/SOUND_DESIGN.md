@@ -80,10 +80,38 @@ The **Fires** column is the code that plays it; that is the authority on *when*.
 | Run complete | `level_complete` | `scenes/game.gd` | The five-note fanfare. Once per run; it can afford to be the longest thing here. |
 | Ability unlocked | `ability` | `ui/hud.gd` | A rising sweep. Something you can do now that you could not before. |
 | Level-up / streak | `milestone` | `ui/hud.gd`, `scenes/game.gd`, `scenes/main_menu.gd` | Three rising notes. Shorter than a win, brighter than a click. |
+| Focus moves between buttons | `button_focus` | `ui/components/brand_button.gd` | A tick above the click and quieter. It fires on every arrow press, so at click volume holding Down is a machine gun. |
 | Any button pressed | `button` | `ui/components/brand_button.gd`, `ui/language_toggle.gd`, `scenes/pause.gd` | A single dry tick. The shortest sound in the game. |
 
-There is no music brief here yet. `audio_manifest.json` has a `music` section and
-`AudioManager.play_music()` reads it; what plays where is a level property.
+## Music
+
+Same two hops as an effect, and the same swap procedure — `cp` a file over the
+old one. The keys:
+
+| Key | File | Plays |
+| --- | --- | --- |
+| `title_music` | `assets/audio/music/title.mp3` | the title screen, and it keeps playing through login, the menu and level select |
+| `level_01_music` … `level_05_music` | `assets/audio/music/level_0N.mp3` | a level, named by that level's registry entry |
+
+**The title track has its own file on purpose.** It started life as a copy of
+`level_01.mp3` so there was something to hear, and it is a separate key so
+replacing it does not change what a level plays.
+
+Two things about it are load-bearing:
+
+- **It starts on the press, not on load.** Browsers refuse to start audio before
+  a real user gesture, so the press on the title screen is the only unlock the
+  game gets. A title screen that advanced on a timer would hand the player a
+  permanently silent game, and nothing would error.
+- **Nothing between the title screen and a level touches it.** `AudioManager` is
+  an autoload, so the track survives every scene change for free — continuity is
+  the default, and the way to break it is for a menu to call `play_music` or
+  `stop_music`. `godot/tests/test_title_music.gd` fails if one does, and it
+  keeps the list of files that legitimately move the transport: `boot.gd` starts
+  it, `game.gd` takes over per level and stops it on the completion screen.
+
+`loop` is honoured for MP3 (`AudioStreamMP3.loop`), so a track that should not
+repeat sets `"loop": false`.
 
 ## The one rule the build enforces
 

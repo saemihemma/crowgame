@@ -48,12 +48,23 @@ func _pressed() -> void:
 	if clicks:
 		AudioManager.play_event("button")
 
+
+## The focus ring arriving is its own moment, quieter than the press.
+##
+## Menus were navigable by keyboard and silent while you navigated: a child
+## holding Down heard nothing until they committed. Connected in _ready rather
+## than overridden, because Control has no _focus_entered to override.
+func _on_focus() -> void:
+	if clicks:
+		AudioManager.play_event("button_focus")
+
 func _ready() -> void:
 	custom_minimum_size.y = maxf(custom_minimum_size.y, MIN_HEIGHT)
 	focus_mode = Control.FOCUS_ALL
 	add_theme_font_size_override("font_size", 30 if role == Role.PRIMARY else 26)
 	_restyle()
 	ThemeManager.theme_changed.connect(func(_id): _restyle())
+	focus_entered.connect(_on_focus)
 	if pulse:
 		_start_pulse.call_deferred()
 

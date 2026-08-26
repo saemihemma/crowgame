@@ -80,9 +80,19 @@
       "file": "assets/audio/sfx/chain_break.wav",
       "volume": 0.5,
       "pool": 3
+    },
+    "button_focus": {
+      "file": "assets/audio/sfx/button_focus.wav",
+      "volume": 0.3,
+      "pool": 3
     }
   },
   "music": {
+    "title_music": {
+      "file": "assets/audio/music/title.mp3",
+      "volume": 0.35,
+      "loop": true
+    },
     "level_01_music": {
       "file": "assets/audio/music/level_01.mp3",
       "volume": 0.4,
