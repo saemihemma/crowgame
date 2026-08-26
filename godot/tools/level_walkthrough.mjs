@@ -13,9 +13,10 @@
  * screenshot cannot fail a build, and it cannot tell you a gap is three tiles
  * wide — the compiled map JSON in godot/data/levels/compiled/ is the authority
  * for that, and this script reads it only to decide how far it has to walk. Nor
- * is it a play-test: the walk is a dumb hold-right-and-jump heuristic, so where
- * it stalls tells you a level has a shape a robot cannot solve, and where it
- * sails through tells you nothing about whether a six-year-old enjoys it.
+ * is it a play-test: the walk is a blind rhythm, not a player, so where it stalls
+ * tells you a level has a shape no fixed rhythm solves, and where it sails
+ * through tells you nothing about whether a six-year-old enjoys it. Expect a
+ * level's strip to cover its opening well and its far end poorly — see note 3.
  *
  * Usage:
  *   node godot/tools/level_walkthrough.mjs
@@ -27,7 +28,7 @@
  * latest run rather than an accumulating pile — that is what makes it safe to
  * point a reviewer at a path and re-run behind them.
  *
- * ── Three things here are not obvious, and all three were learned the hard way.
+ * ── Four things here are not obvious, and all four were learned the hard way.
  *
  * 1. LEVEL SELECT HIDES LOCKED LEVELS, so you cannot photograph level 8 from a
  *    fresh save. `level_select.gd::_is_unlocked()` gates on
@@ -60,7 +61,12 @@
  *    budgets generously (WALK_MARGIN) rather than assuming a clean run, and the
  *    contact sheet is expected to contain repeats. Repeats are themselves a
  *    finding: a level whose strip loops back to the spawn three times is a level
- *    that punishes one mistake with the whole level.
+ *    that punishes one mistake with the whole level. In practice that caps this
+ *    tool's honest reach at roughly the opening third of most levels; the far end
+ *    of a level needs a human or a real solver, and a strip that never gets there
+ *    should be reported as uncovered rather than assumed to look like the rest.
+ *
+ * 4. RIGHT CANNOT SIMPLY BE HELD DOWN — see DRIVE_PATTERNS.
  */
 import { existsSync, readdirSync, readFileSync } from 'fs';
 import { spawn } from 'child_process';
