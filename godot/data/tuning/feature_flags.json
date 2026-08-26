@@ -26,6 +26,9 @@
         "wide_gap_pass": true,
         "_wide_gap_pass": "The revised geometry for levels 2-5. Measured before writing it: every jumpable gap in all eight levels is three tiles, against a jump that reaches 5.9 -- so there is no distance challenge anywhere, and the wide spacings in levels 1/3/4/5 are descents where gravity does the work. Levels 6-8 differ only in platform WIDTH (one-tile pads) and in chaining hops without a rest. OFF restores the shipped layouts so a level can be A/B'd by reloading rather than by reading a diff.",
 
+        "sprint_gaps_from": 6,
+        "_sprint_gaps_from": "The first level allowed to contain a gap that needs a wound-up run. Below it every gap is built inside walk reach -- 5.9 tiles measured, designed to 4 with margin -- because requiring a held run key to survive is too hardcore for a child still learning to jump. From this level up the budget rises to the sprint reach of 9.8 tiles, designed to 8. A number, not a boolean, because 'how early is too early' is the actual question and 6 is a guess: lower it to let one gap in level 5 want a run, raise it to give the key longer to become a habit. Whether 6 reads as a step up or as a wall depends on whether the optional sprint reward earlier in the game actually taught it.",
+
         "practice_arena_in_grid": false,
         "_practice_arena_in_grid": "Whether level_99, the Math Practice Arena, appears as a card in the child's level grid. It held order:1, which put a flat 200-tile run of nineteen owls in the first slot and left every other card sitting one position ahead of its own level number -- so the fourth card was level three. The ordering is fixed outright; this is only about whether the arena is in the grid at all. OFF loses the one place a child can drill without platforming, which is a real cost: if it stays off, free practice needs an entry point a grown-up can find."
     },
