@@ -30,11 +30,14 @@ class_name TouchControls
 ## undiscovered - the run-width gaps in levels 6 and 8 have a walk route only
 ## because the reachability guard insists on one.
 ##
-## It sits with the DIRECTIONS, not with jump, because it modifies movement and
-## because of the hands: see TouchPad.make_latching for why it latches. And it is
-## built only when input/space_is_sprint is on. A pad for an action the flag has
-## switched off would press and light up and lead nowhere, which is the peck
-## button again with a different icon.
+## It sits NEXT TO JUMP, the way B sits next to A, so one thumb can cover both or
+## leave sprint for the instant it takes to press jump -- see layout_for. It is
+## momentary for the same reason; TouchPad.make_latching is still there behind
+## input/sprint_pad_latches for a child who cannot manage the roll.
+##
+## And it is built only when input/space_is_sprint is on. A pad for an action the
+## flag has switched off would press and light up and lead nowhere, which is the
+## peck button again with a different icon.
 ##
 ## brand/BRAND_SYSTEM.md §8.1, §12. Gates B3 (88px targets), B4 (32px safe
 ## area) and B10 (thumb reach) in brand/BRAND_SYSTEM.md §14.
@@ -124,21 +127,30 @@ func layout_for(view: Vector2) -> void:
 	var right_x := MARGIN + BTN + GAP
 	_place("move_right", Vector2(right_x, left_row_y))
 
-	# Sprint is the third pad on the SAME ROW, outboard of move_right: the left
-	# thumb slides off the direction onto it, taps once, and slides back.
+	# Right thumb, in the order that thumb reaches them: jump in the corner where
+	# it rests, SPRINT immediately inboard of it, zap furthest out.
 	#
-	# It was above move_right first, and a screenshot of the exported build killed
-	# that: stacked, the pad sits at the crow's own height and covers him and the
-	# coins beside him. The floor row costs a longer reach for the pad used least,
-	# which is the right thing to spend, and leaves the play area alone. Still well
-	# inside gate B10 -- its far edge is 336 of 960, against a 620px thumb arc.
-	_place("sprint", Vector2(right_x + BTN + GAP, left_row_y))
-
-	# Right thumb: jump in the corner where the thumb rests, zap beside it - the
-	# one used less often is the one further to reach.
+	# Sprint is here, and not with the directions, because of the Game Boy. A and B
+	# sit side by side: one thumb either covers both or leaves B for the instant it
+	# takes to press A, and the run survives that instant. Sprint on the left
+	# cluster made that roll impossible -- the two buttons were on opposite sides
+	# of the screen, so the only way to sprint and jump was a third finger, which
+	# is what made a latch look necessary. Adjacent, a momentary pad is enough.
+	#
+	# Measured against the 6-tile gaps in levels 6 and 8: sprint held through the
+	# jump reaches 9.83 tiles, letting go and jumping at once reaches 6.55, and a
+	# quarter-second of hesitation reaches 6.00. The roll clears the gap; a slow
+	# thumb is what does not, and sprintDecelPerSec is the number that decides how
+	# slow is too slow.
+	#
+	# Zap moving outboard is the right cost: it is the pad pressed least. Jump is
+	# taller than the others, so sharing the floor line already gives the pair the
+	# slight diagonal a Game Boy has.
 	var jump_x := view.x - MARGIN - JUMP_BTN
 	_place("jump", Vector2(jump_x, floor_y - JUMP_BTN))
-	_place("shoot", Vector2(jump_x - GAP - BTN, floor_y - BTN))
+	var sprint_x := jump_x - GAP - BTN
+	_place("sprint", Vector2(sprint_x, floor_y - BTN))
+	_place("shoot", Vector2(sprint_x - GAP - BTN, floor_y - BTN))
 	for pad in _pads:
 		pad.queue_redraw()
 

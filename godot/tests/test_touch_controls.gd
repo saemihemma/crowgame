@@ -100,15 +100,49 @@ func test_every_touch_button_has_a_hit_shape_covering_its_panel() -> void:
 ## enough for a child's finger.
 
 
-## The latch, tested where it can be: TouchScreenButton does its own
-## screen-to-canvas hit testing and a headless tree has no canvas for it, which is
-## why the press test above is gone. The latch is not that -- it is a state
-## machine, and this drives it.
-func test_the_sprint_pad_holds_the_action_until_it_is_tapped_again() -> void:
+## Sprint has to be REACHABLE BY THE JUMP THUMB, which is the whole reason it is
+## momentary. On the Game Boy A and B are adjacent: one thumb covers both, or
+## leaves B for the instant it takes to press A. Sprint on the left cluster put
+## the two on opposite sides of the screen, so sprinting and jumping needed a
+## third finger -- which is what made a latch look necessary in the first place.
+##
+## Adjacency is a layout fact, so it is checked as one: the gap between the sprint
+## and jump pads must be small enough for one thumb, at every aspect.
+func test_sprint_sits_within_a_thumb_of_jump() -> void:
+	var root := _mount()
+	for view: Vector2 in [Vector2(960, 540), Vector2(960, 671), Vector2(960, 720), Vector2(1171, 540)]:
+		root.layout_for(view)
+		var sprint: TouchPad = root.pad_for("sprint")
+		var jump: TouchPad = root.pad_for("jump")
+		assert_true(sprint != null and jump != null, "both pads exist")
+		var s_rect := Rect2(sprint.position, (sprint.shape as RectangleShape2D).size)
+		var j_rect := Rect2(jump.position, (jump.shape as RectangleShape2D).size)
+		# Edge to edge, not centre to centre: the thumb rolls across the gap.
+		var edge_gap: float = j_rect.position.x - s_rect.end.x
+		assert_true(edge_gap >= 0.0 and edge_gap <= 24.0,
+			"[%.0fx%.0f] sprint and jump are %.0fpx apart, too far for one thumb to roll"
+				% [view.x, view.y, edge_gap])
+		assert_true(absf(s_rect.end.y - j_rect.end.y) <= 1.0,
+			"[%.0fx%.0f] sprint and jump do not share the floor line" % [view.x, view.y])
+	_teardown(root)
+
+func test_the_sprint_pad_is_momentary_by_default() -> void:
 	var root := _mount()
 	var pad: TouchPad = root.pad_for("sprint")
 	assert_true(pad != null, "a sprint pad was built")
-	assert_true(pad.is_latching(), "the sprint pad latches by default")
+	assert_true(not pad.is_latching(),
+		"sprint is a plain button by default: adjacent to jump, so the roll is enough")
+	assert_eq(pad.action, "sprint", "so the engine drives the action directly")
+	_teardown(root)
+
+## The latch is still available behind input/sprint_pad_latches, so it stays
+## tested. Built directly rather than through a flag override: no test in this
+## suite writes an override, and one that did would leave it in the real save for
+## every test after it.
+func test_a_latching_sprint_pad_holds_the_action_until_it_is_tapped_again() -> void:
+	var pad := TouchPad.make_latching("sprint", TouchPad.Icon.SPRINT, Vector2.ZERO, 92.0)
+	Engine.get_main_loop().root.add_child(pad)
+	assert_true(pad.is_latching(), "latching pad latches")
 	assert_true(not Input.is_action_pressed("sprint"), "sprint starts up")
 
 	pad.toggle_latch()
@@ -117,20 +151,21 @@ func test_the_sprint_pad_holds_the_action_until_it_is_tapped_again() -> void:
 
 	pad.toggle_latch()
 	assert_true(not Input.is_action_pressed("sprint"), "a second tap lets it go")
-	_teardown(root)
+	Engine.get_main_loop().root.remove_child(pad)
+	pad.free()
 
 ## A latched action lives in the global Input state, not in the node, so a pad
 ## freed while latched would leave the crow sprinting through every level after
 ## this one. The pads are freed on every level change.
 func test_a_latched_pad_releases_the_action_when_it_leaves_the_tree() -> void:
-	var root := _mount()
-	var pad: TouchPad = root.pad_for("sprint")
+	var pad := TouchPad.make_latching("sprint", TouchPad.Icon.SPRINT, Vector2.ZERO, 92.0)
+	Engine.get_main_loop().root.add_child(pad)
 	pad.toggle_latch()
 	assert_true(Input.is_action_pressed("sprint"), "latched before teardown")
-	root.get_parent().remove_child(root)
-	root.free()
+	Engine.get_main_loop().root.remove_child(pad)
+	pad.free()
 	assert_true(not Input.is_action_pressed("sprint"),
-		"freeing the controls released the latched action")
+		"freeing the pad released the latched action")
 
 ## The other half of input/sprint_pad_latches, built directly rather than through
 ## a flag override: no test in this suite writes an override, and one that did
