@@ -142,6 +142,14 @@ func _arrive() -> void:
 		_prompt.visible = true
 		UiFx.elastic_entrance(_prompt)
 		_pulse(_prompt)
+	# HERE, not on the press. This beacon is the boot funnel's DENOMINATOR -- it
+	# is what lets an empty errors table mean "nobody came" rather than
+	# "everyone's game failed to load". Firing it on the press instead made a
+	# visitor who loaded the game and walked away indistinguishable from a
+	# visitor whose game never loaded, which corrupts the one metric it exists
+	# for. "The game is ready" is a fact about the build; "someone pressed" is a
+	# different measurement and not this one.
+	_report_boot_ready()
 
 
 ## Anything at all, once the bar is full. `_input` rather than `_unhandled_input`:
@@ -171,7 +179,6 @@ func _start() -> void:
 	# this key, so the track is unbroken across the transition.
 	AudioManager.play_music(TITLE_MUSIC)
 	AudioManager.play_event("button")
-	_report_boot_ready()
 	if ProfileManager.get_active_user() != null:
 		SceneRouter.goto("main_menu")
 	else:
@@ -185,9 +192,9 @@ func _report_boot_ready() -> void:
 	# would reveal browser storage eviction wiping a child's progress: a cohort
 	# whose repeat launches always report no save is the eviction signature.
 	#
-	# Moved from the old auto-advance to the press. It is the boot funnel's
-	# denominator, and "the game is ready for a child" is now a screen a person
-	# has actually acted on rather than a timer that elapsed.
+	# Called from _arrive(), so it means "the title screen is up and waiting for
+	# a player" -- the same thing it meant when the old screen auto-advanced.
+	# error_pipeline_e2e.mjs asserts this beacon lands, and it presses nothing.
 	var had_save := "true" if SaveManager.has_save() else "false"
 	JavaScriptBridge.eval(
 		"window.crowBootReady && window.crowBootReady({hadExistingSave:%s})" % had_save, true)
