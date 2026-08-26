@@ -53,3 +53,10 @@ output/tutorial-captures/
 # the working tree. Nothing reads it back.
 __pycache__/
 *.pyc
+
+# Level contact sheets from godot/tools/level_walkthrough.mjs -- one PNG per
+# screen-width of every level, ~190 images and 13MB per run. Same reasoning as
+# output/playwright/ above: a review aid regenerated on demand, nothing reads it
+# back, and the script overwrites the same filenames, so tracking it would put
+# 13MB of binary churn in every commit that followed a capture run.
+output/level-shots/
