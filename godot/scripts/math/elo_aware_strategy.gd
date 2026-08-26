@@ -52,9 +52,49 @@ func select(domain: String, exclude_ids: Array, constraints: Dictionary = {}) ->
 
 	var lane := _pick_lane(available, lane_weights)
 	var candidates: Array = lane_candidates[lane]
-	var selected: Dictionary = candidates[randi() % candidates.size()]
+	var selected: Dictionary = _pick_candidate(candidates, learner.get_effective_selection_elo(domain))
 	_last_meta = {"lane": lane, "reviewItemId": selected["reviewItemId"]}
 	return selected["problem"]
+
+## Which problem, once the lane is chosen.
+##
+## This was `candidates[randi() % candidates.size()]`, which is why the effective
+## selection ELO this strategy computes was logged and never used: the lane
+## decided the rung and then the question came out of a hat. Two problems on the
+## same rung are not equally well aimed -- one may sit 200 points off the
+## learner's edge -- and nothing preferred the nearer one.
+##
+## A SOFTMAX, not an argmin, and a deliberately wide one. Always picking the
+## nearest candidate would collapse coverage: tools/sim_learner_journey.ts exists
+## because a thriving child once saw 335 problems out of 4039, and it holds a
+## floor of 450 distinct. So closeness is a lean, not a rule -- every candidate
+## on the rung keeps real probability, and the guard is what says whether the
+## lean has gone too far.
+func _pick_candidate(candidates: Array, target_elo: float) -> Dictionary:
+	if candidates.size() == 1:
+		return candidates[0]
+	var spread := float((DataManager.get_dict("MATH_TUNING").get("selection", {}) as Dictionary)
+		.get("withinLaneEloSpread", 0.0))
+	if spread <= 0.0:
+		return candidates[randi() % candidates.size()]
+
+	var weights: Array = []
+	var total := 0.0
+	for c in candidates:
+		var problem_elo := float(_pool.get_problem_elo(String((c as Dictionary)["problem"].get("id", ""))))
+		var w: float = exp(-absf(problem_elo - target_elo) / spread)
+		weights.append(w)
+		total += w
+	if total <= 0.0:
+		return candidates[randi() % candidates.size()]
+
+	var roll := randf() * total
+	var cumulative := 0.0
+	for i in candidates.size():
+		cumulative += float(weights[i])
+		if roll <= cumulative:
+			return candidates[i]
+	return candidates[candidates.size() - 1]
 
 func consume_last_selection_meta() -> Variant:
 	var m: Variant = _last_meta

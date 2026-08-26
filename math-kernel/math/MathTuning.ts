@@ -37,6 +37,13 @@ export interface MathTuningData {
         at_level: number;
         stretch: number;
     };
+    selection: {
+        withinLaneEloSpread: number;
+    };
+    reviewBacklog: {
+        maxDuePerDomain: number;
+        staleAfterDays: number;
+    };
     golden: {
         rate: number;
         firstTryCoinMultiplier: number;

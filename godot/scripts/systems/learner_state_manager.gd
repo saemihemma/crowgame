@@ -194,6 +194,23 @@ func can_use_stretch_lane(domain: String) -> bool:
 	var rate := float(correct) / recent.size()
 	return rate >= float(gate["minAccuracy"]) and get_confidence_offset(domain) >= float(gate["minConfidence"])
 
+## The review items the selector may draw from, most urgent first.
+##
+## Capped, and stale-aware. The SRS schedules at day_1/day_3/day_7, which assumes
+## a child who plays most days; one who skips a week returns with everything due
+## at once, and an uncapped list means the review lane samples uniformly out of a
+## pile -- so the item they missed first can sit unasked for a long stretch while
+## fresher ones come up. The cap makes the backlog a queue.
+##
+## Staleness is the other half. Sorting is by stage first, so a day_7 item nine
+## days overdue queued behind every day_1 item -- which is exactly backwards:
+## nine days past a seven-day review means a fortnight without practice, and its
+## spacing has stopped meaning anything. Those sort as if they were immediate.
+##
+## READ-TIME ONLY. Nothing here edits a review item, so the snapshot the golden
+## parity fixtures assert on is untouched. A version that demoted stale items
+## would be the same idea and a Tier-1 change, and would need a deterministic
+## clock in the fixture generator to be testable at all.
 func get_due_review_items(domain: String = "") -> Array:
 	var snapshot := get_snapshot()
 	var current_attempt_count := int(snapshot["mastery"]["problemsAttempted"])
@@ -211,14 +228,39 @@ func get_due_review_items(domain: String = "") -> Array:
 			due = now >= int(item["dueAt"])
 		if due:
 			items.append(item)
+	var stale_ms := _backlog_int("staleAfterDays", 9) * DAY_MS
+	var urgency := func(item: Dictionary) -> int:
+		# A schedule broken by this much is not a schedule. Front of the queue.
+		if item.get("dueAt", null) != null and now - int(item["dueAt"]) >= stale_ms:
+			return _get_stage_rank("immediate")
+		return _get_stage_rank(String(item["stage"]))
 	items.sort_custom(func(a, b):
-		var sr := _get_stage_rank(a["stage"]) - _get_stage_rank(b["stage"])
+		var sr: int = urgency.call(a) - urgency.call(b)
 		if sr != 0:
 			return sr < 0
 		var a_due = a.get("dueAt", null) if a.get("dueAt", null) != null else (a.get("dueAfterAttempt", 0) if a.get("dueAfterAttempt", null) != null else 0)
 		var b_due = b.get("dueAt", null) if b.get("dueAt", null) != null else (b.get("dueAfterAttempt", 0) if b.get("dueAfterAttempt", null) != null else 0)
 		return int(a_due) < int(b_due))
-	return items
+
+	# Per domain, not overall: capping the whole list would let one loud domain
+	# starve the others' reviews entirely.
+	var cap := _backlog_int("maxDuePerDomain", 3)
+	if cap <= 0:
+		return items
+	var taken := {}
+	var capped: Array = []
+	for item in items:
+		var d := String(item["domain"])
+		var n: int = int(taken.get(d, 0))
+		if n >= cap:
+			continue
+		taken[d] = n + 1
+		capped.append(item)
+	return capped
+
+func _backlog_int(key: String, fallback: int) -> int:
+	var section := _tuning_section("reviewBacklog")
+	return int(section.get(key, fallback))
 
 func record_attempt(attempt: Dictionary) -> Dictionary:
 	if not _initialized:

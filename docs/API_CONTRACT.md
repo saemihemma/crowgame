@@ -166,6 +166,7 @@ the Authorization header. Everything else requires the device cookie.
 | `GET` | `/api/v1/children/{id}/save` | device | fetch authoritative save |
 | `PUT` | `/api/v1/children/{id}/save` | device | upsert save, compare-and-set |
 | `POST` | `/api/v1/attempts/sync` | device | batch attempts, returns applied ids |
+| `POST` | `/api/v1/play/pings` | device | `{childId, count}` — N intervals of play, returns `acceptedPings` |
 | `DELETE` | `/api/v1/family` | device | hard delete, cascade |
 | `GET` | `/api/v1/family/export` | device | full data export |
 | `GET` | `/api/v1/family/children/{id}/report` | device | parent report: per-domain, per-kind accuracy rollup + Icelandic grade verdicts when a birth year is set (docs/GRADE_EXPECTATIONS.md) |
@@ -200,6 +201,7 @@ These are part of the contract because they protect the server from the client.
 | --- | --- | --- |
 | Save upload | debounce ~20 s, plus on `APPLICATION_PAUSED`, plus on scene change | `SaveManager._register_listeners()` wires `coins_changed → save()`, so every coin pickup is a local save. Uploading per save would melt the API. Do not rely on page-unload on the web. |
 | Attempt batches | ≤100 attempts, ≤256 KB | bounded work per request |
+| Play pings | `count` ≤ 60 per request | a ping is one integer; the cap bounds a long offline stretch |
 | Save blob | ≤512 KB | it is a JSON document, not a filesystem |
 | Error events | ≤10/session, ≤1 per fingerprint/session, ≤20 KB each, ring buffer that drops when full, honour `429` + `Retry-After` | errors are droppable; attempts are not |
 | Writes | ≤6/min/device | server-enforced too |

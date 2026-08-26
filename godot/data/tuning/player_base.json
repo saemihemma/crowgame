@@ -6,5 +6,20 @@
     "coyoteMs": 80,
     "jumpBufferMs": 100,
     "gravityScale": 1.0,
-    "terminalVelocity": 500
+    "terminalVelocity": 500,
+    "_feelComment": "brand/BRAND_SYSTEM.md §2.4 specifies the crow's squash and stretch. `land` is called out there as \"code, not frames\", and so is the rest of it in practice: the only crow art that exists is a one-frame idle and a nine-frame walk, so jump_rise, apex and fall have no sprites to hold and are scale states on the pose the game already has. apexVy is the doc's own |vy| < 60 threshold. Set squash/stretch to 1.0 to switch the whole thing off without touching code.",
+    "feel": {
+        "apexVy": 60.0,
+        "riseScaleY": 1.12,
+        "riseScaleX": 0.92,
+        "fallScaleY": 1.08,
+        "fallScaleX": 0.95,
+        "landSquashY": 0.82,
+        "landSquashX": 1.18,
+        "landSquashMs": 80,
+        "landOvershootY": 1.06,
+        "landOvershootX": 0.96,
+        "landSettleMs": 120,
+        "shapeLerp": 18.0
+    }
 }

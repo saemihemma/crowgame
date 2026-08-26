@@ -36,12 +36,32 @@ const REMOTE_CHILD_KEY := "remoteChildId"
 @onready var FLUSH_DEBOUNCE: float = Config.ui("cloud/flush_debounce_seconds", 20.0)
 @onready var REQUEST_TIMEOUT: float = Config.ui("cloud/request_timeout_seconds", 15.0)
 @onready var MAX_BATCH: int = int(Config.ui("cloud/max_attempts_per_batch", 100))
+## How long a child has to be in a level before it counts as a ping, and how
+## many unsent pings we are willing to hold.
+##
+## A ping is the only evidence the analytics have that a child was playing at
+## all: sessions used to be a gap-split over ATTEMPTS, so running, jumping and
+## collecting coins without meeting an owl left no trace, and "median session
+## minutes" meant "median minutes spent on maths".
+##
+## One every two minutes is enough to close a thirty-minute gap-split without
+## being chatty, and the cap is what stops a long offline stretch turning into
+## one enormous request.
+@onready var PING_INTERVAL: float = Config.ui("cloud/play_ping_seconds", 120.0)
+@onready var MAX_PING_BATCH: int = int(Config.ui("cloud/max_pings_per_batch", 60))
 
 var _enrolled := false
 var _dirty := false
 var _since_dirty := 0.0
 var _in_flight := false
 var _remote_child_id := ""
+## Pings earned but not yet accepted by the server. Kept as a COUNT, not as
+## timestamps: the server stamps its own received_at (a tablet with a wrong date
+## would otherwise move the owner's dashboard), so the only thing worth carrying
+## is how many intervals of play happened.
+var _pending_pings := 0
+var _since_ping := 0.0
+var _playing := false
 
 func _ready() -> void:
 	set_process(false)
@@ -54,7 +74,30 @@ func _ready() -> void:
 		push_warning("[CloudSync] could not resolve the page origin; cloud save stays off")
 		return
 	EventBus.math_challenge_complete.connect(_on_challenge_complete)
+	EventBus.level_owls.connect(_on_level_started)
+	EventBus.level_complete.connect(_on_level_ended)
 	await _refresh_session()
+
+## A level just built itself, which is the earliest reliable "a child is playing"
+## signal the event bus carries -- level_owls is emitted once per load with the
+## owl count. The first ping is immediate rather than after the interval, so a
+## session that ends before two minutes still exists in the numbers.
+func _on_level_started(_owls: int) -> void:
+	_playing = true
+	_since_ping = 0.0
+	_earn_ping()
+
+func _on_level_ended(_payload: Dictionary) -> void:
+	_playing = false
+	_earn_ping()
+
+## One interval of play. Coalesced rather than sent immediately: pings ride along
+## with the next save flush, so ordinary play makes no extra requests at all.
+func _earn_ping() -> void:
+	if not _enrolled or _remote_child_id == "":
+		return
+	_pending_pings = mini(MAX_PING_BATCH, _pending_pings + 1)
+	mark_dirty()
 
 ## True when this device has a family credential.
 func is_enrolled() -> bool:
@@ -196,6 +239,11 @@ func mark_dirty() -> void:
 
 func _process(delta: float) -> void:
 	_since_dirty += delta
+	if _playing:
+		_since_ping += delta
+		if _since_ping >= PING_INTERVAL:
+			_since_ping = 0.0
+			_earn_ping()
 	if _dirty and not _in_flight and _since_dirty >= FLUSH_DEBOUNCE:
 		flush_now()
 
@@ -240,6 +288,11 @@ func flush_now() -> void:
 	# Clear ONLY the attempts the server confirmed durable.
 	LearnerSyncService.confirm_attempts(local_child_id, body.get("appliedAttemptIds", []))
 
+	# Pings ride along AFTER the save, on the same flush, so ordinary play costs
+	# no extra request cadence -- and if this one fails they stay pending, which
+	# is the same contract the attempt queue has.
+	await _flush_pings()
+
 	if String(body.get("outcome", "")) == "rejected":
 		# Another device has seen more of this child's answers. Adopt its save;
 		# our attempts are already recorded server-side either way.
@@ -247,6 +300,28 @@ func flush_now() -> void:
 		if state is Dictionary:
 			SaveManager.adopt_remote_save(state.get("save", {}))
 	sync_finished.emit(true)
+
+## Hand the accrued play intervals to the server.
+##
+## A count, not timestamps: received_at is the server's clock for every other
+## analytics column and there is no reason for this to be the exception. A batch
+## of six pings is six intervals of play, wherever the device thought it was.
+func _flush_pings() -> void:
+	if _pending_pings <= 0 or _remote_child_id == "":
+		return
+	var sending := _pending_pings
+	var res := await _request(HTTPClient.METHOD_POST, "/play/pings", {
+		"childId": _remote_child_id,
+		"count": sending,
+	})
+	if res["ok"]:
+		_pending_pings = maxi(0, _pending_pings - sending)
+		return
+	# Left pending, and the next flush retries. Pings are droppable in a way
+	# attempts are not, so a full queue quietly stops growing rather than
+	# displacing anything that matters.
+	_dirty = true
+	set_process(true)
 
 func _on_challenge_complete(_payload: Dictionary) -> void:
 	mark_dirty()

@@ -1,18 +1,143 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "PlayerTuning",
-    "description": "Data-driven physics parameters for the player character",
-    "type": "object",
-    "required": ["accel", "drag", "maxSpeed", "jumpVelocity", "coyoteMs", "jumpBufferMs", "gravityScale", "terminalVelocity"],
-    "properties": {
-        "accel": { "type": "number", "minimum": 0, "description": "Horizontal acceleration (pixels/sec²)" },
-        "drag": { "type": "number", "minimum": 0, "description": "Horizontal drag when no input (pixels/sec²)" },
-        "maxSpeed": { "type": "number", "minimum": 0, "description": "Maximum horizontal speed (pixels/sec)" },
-        "jumpVelocity": { "type": "number", "minimum": 0, "description": "Initial upward velocity on jump (pixels/sec)" },
-        "coyoteMs": { "type": "number", "minimum": 0, "description": "Grace period after leaving edge (ms)" },
-        "jumpBufferMs": { "type": "number", "minimum": 0, "description": "Jump input buffer window (ms)" },
-        "gravityScale": { "type": "number", "minimum": 0, "description": "Gravity multiplier (1.0 = normal)" },
-        "terminalVelocity": { "type": "number", "minimum": 0, "description": "Maximum fall speed (pixels/sec)" }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PlayerTuning",
+  "description": "Data-driven physics parameters for the player character",
+  "type": "object",
+  "required": [
+    "accel",
+    "drag",
+    "maxSpeed",
+    "jumpVelocity",
+    "coyoteMs",
+    "jumpBufferMs",
+    "gravityScale",
+    "terminalVelocity"
+  ],
+  "properties": {
+    "accel": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Horizontal acceleration (pixels/sec²)"
     },
-    "additionalProperties": false
+    "drag": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Horizontal drag when no input (pixels/sec²)"
+    },
+    "maxSpeed": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Maximum horizontal speed (pixels/sec)"
+    },
+    "jumpVelocity": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Initial upward velocity on jump (pixels/sec)"
+    },
+    "coyoteMs": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Grace period after leaving edge (ms)"
+    },
+    "jumpBufferMs": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Jump input buffer window (ms)"
+    },
+    "gravityScale": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Gravity multiplier (1.0 = normal)"
+    },
+    "terminalVelocity": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Maximum fall speed (pixels/sec)"
+    },
+    "_feelComment": {
+      "type": "string"
+    },
+    "feel": {
+      "type": "object",
+      "description": "Squash and stretch (brand/BRAND_SYSTEM.md §2.4). Read by player.gd only; PlayerMotion never sees it, so none of this can move the golden motion fixtures.",
+      "required": [
+        "apexVy",
+        "riseScaleY",
+        "riseScaleX",
+        "fallScaleY",
+        "fallScaleX",
+        "landSquashY",
+        "landSquashX",
+        "landSquashMs",
+        "landOvershootY",
+        "landOvershootX",
+        "landSettleMs",
+        "shapeLerp"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "apexVy": {
+          "type": "number",
+          "minimum": 0,
+          "description": "|vy| below which the crow is at its apex and stops stretching (px/sec)"
+        },
+        "riseScaleY": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Vertical stretch while ascending"
+        },
+        "riseScaleX": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Horizontal squeeze while ascending"
+        },
+        "fallScaleY": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Vertical stretch while descending"
+        },
+        "fallScaleX": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Horizontal squeeze while descending"
+        },
+        "landSquashY": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Vertical squash on the landing frame"
+        },
+        "landSquashX": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Horizontal spread on the landing frame"
+        },
+        "landSquashMs": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Squash-to-overshoot duration (ms)"
+        },
+        "landOvershootY": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Vertical overshoot past neutral"
+        },
+        "landOvershootX": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Horizontal overshoot past neutral"
+        },
+        "landSettleMs": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Overshoot-to-neutral duration (ms)"
+        },
+        "shapeLerp": {
+          "type": "number",
+          "minimum": 0,
+          "description": "How fast the airborne shape eases toward its target (per second)"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
 }

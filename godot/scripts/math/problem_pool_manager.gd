@@ -78,7 +78,21 @@ func get_problem_elo(problem_id: String) -> int:
 	var rating: Dictionary = _ratings.get(problem_id, {})
 	return int(rating["eloRating"]) if not rating.is_empty() else 150
 
-func update_problem_rating(problem_id: String, success: bool) -> void:
+## Record what happened on a problem. Attempts and success rate only.
+##
+## NOT a difficulty update, which is what this was called (`update_problem_rating`)
+## for as long as it has existed while never touching `eloRating`. Renamed rather
+## than made true, because making it true here is the wrong place: `_ratings` is
+## built from scratch by initialize() on every boot and is never saved, and a
+## child answers perhaps fifty problems out of 3,736 in a session -- so nearly
+## every entry would calibrate from zero or one observation, which is not
+## calibration, it is noise with a confident name.
+##
+## Item difficulty has to be calibrated across children, and the attempts are
+## already going somewhere that can: every one is submitted to the API with its
+## problem id and outcome. That belongs in the admin analytics beside
+## /api/v1/admin/ladder-tuning, not in a per-session map.
+func record_problem_outcome(problem_id: String, success: bool) -> void:
 	var rating: Dictionary = _ratings.get(problem_id, {})
 	if rating.is_empty():
 		return

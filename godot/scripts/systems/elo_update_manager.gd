@@ -56,7 +56,7 @@ func _on_challenge_complete(data: Dictionary) -> void:
 
 	var pool: ProblemPoolManager = MathProblemManager.get_pool_manager()
 	if pool != null:
-		pool.update_problem_rating(String(data.get("problemId", _problem_id)), correct)
+		pool.record_problem_outcome(String(data.get("problemId", _problem_id)), correct)
 
 	var attempt := _build_attempt(data)
 	var step_before: int = LearnerStateManager.get_current_step(String(_domain))

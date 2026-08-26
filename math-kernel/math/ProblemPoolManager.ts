@@ -153,7 +153,22 @@ export class ProblemPoolManager {
         return rating ? rating.eloRating : 150;
     }
 
-    public updateProblemRating(problemId: string, success: boolean): void {
+    /**
+     * Record what happened on a problem. Attempts and success rate only.
+     *
+     * NOT a difficulty update, which is what this was called
+     * (`updateProblemRating`) for as long as it has existed while never touching
+     * `eloRating`. Renamed rather than made true, because making it true here is
+     * the wrong place: the ratings map is rebuilt by initialize() on every boot
+     * and never saved, and a child answers perhaps fifty problems out of 3,736 in
+     * a session -- so nearly every entry would calibrate from zero or one
+     * observation, which is not calibration.
+     *
+     * Item difficulty has to be calibrated across children, and the attempts
+     * already go somewhere that can: every one is submitted to the API with its
+     * problem id and outcome.
+     */
+    public recordProblemOutcome(problemId: string, success: boolean): void {
         const rating = this.problemELORatings.get(problemId);
         if (!rating) return;
 

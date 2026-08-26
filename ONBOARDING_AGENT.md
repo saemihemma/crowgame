@@ -72,7 +72,7 @@ Refresh it here, and nowhere else, when a count changes.
 
 Game:
 - `godot/data/registries/scenes.json` registers 7 scenes: `boot`, `login`, `main_menu`, `level_select`, `game`, `cloud_panel`, `parent_report`
-- `godot/data/levels/level_registry.json` contains 6 levels, including `level_99`
+- `godot/data/levels/level_registry.json` contains 9 levels, including `level_99`
   (the maths practice arena)
 - `godot/data/npcs/npc_registry.json` contains 6 NPC entries (owl variants:
   teacher, gentle, tough, twin chain, triple chain, gauntlet)
@@ -131,7 +131,7 @@ difficulty curve suits a particular child — no artifact in this repo claims th
 
 Server:
 - **17** TypeScript sources under `server/src/**`
-- **5** migrations: `001_errors.sql`, `002_family_and_save.sql`, `003_error_partition_selfheal.sql`, `004_attempts_received_index.sql`, `005_children_birth_year.sql`
+- **6** migrations: `001_errors.sql`, `002_family_and_save.sql`, `003_error_partition_selfheal.sql`, `004_attempts_received_index.sql`, `005_children_birth_year.sql`, `006_play_pings.sql`
 - **31** tests, run against a real Postgres
 
 Reference kernel:

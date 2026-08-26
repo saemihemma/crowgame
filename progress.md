@@ -694,3 +694,131 @@ Verification: 227 GDScript tests pass, typecheck and validate clean, export
 rebuilt. `perf_probe` failed twice under container contention (29.6ms, 15.9ms
 against a 12ms budget) and measured 3.2/3.4/3.6/4.1ms on four isolated runs --
 environmental, but a wall-clock probe in a shared container will say that again.
+
+## 2026-08-26 (third pass) — The rest of the doable roadmap
+
+Original prompt: go do the remaining batch — apex hang and coyote time, the level
+compiler's tile caps and decoration scatter, session heartbeats, division with
+remainders, review-backlog decay, within-lane weighting, difficulty/step
+unification, more levels.
+
+**Tile caps and decoration (P2, closed).** The sheet is a 4x4 of 32px tiles and
+only three cells had anything in them, so a ground run was one tile repeated and
+a three-wide ledge had no ends. `gen_tilesets.mjs` now paints four end caps and
+three transparent scatter marks; `level_compiler.ts` selects caps for any run of
+two or more and scatters marks on the row above a surface, seeded from the level
+id so two compiles are byte-identical. A new `validateLevelTileUse()` in
+`validate-content.ts` derives the runs from the SPEC rather than from the
+compiler and checks 103 capped runs and 61 scatter marks against what the
+generator declared — the two files have to agree on the same sixteen numbers and
+for a long time they agreed on three.
+
+`test_level_loader.gd::test_collide_ids` failed on this, correctly: it asserted
+the literal `[0, 1, 2]`, which was the compiler's answer rather than the
+requirement. It now asserts the property — every gid the ground layer places
+collides, and nothing in the decoration layer does.
+
+**Coyote time and jump buffer were already there.** My own roadmap rewrite last
+pass said the port had "no input grace"; that was wrong, both have always been in
+`player_motion.gd`. What §2.4 actually specifies and the port lacked is the squash
+and stretch, and the doc says `land` is "code, not frames" — which is true of the
+rest of it too, because the only crow art that exists is a one-frame idle and a
+nine-frame walk. Rise, apex, fall and the three-beat landing are now scale on the
+existing pose, tuned from `player_base.json`'s `feel` block.
+
+Reduced gravity at the apex was deliberately NOT done. §2.4's `apex` is an
+animation state held while `|vy| < 60`, not a gravity scale — the physics reading
+is an interpretation nobody committed to, and `PlayerMotion` is parity-locked.
+The roadmap entry now says that instead of calling it blocked.
+
+**Review backlog (P3, closed).** A cap of three due items per domain and a
+staleness rule: an item nine days past its `dueAt` sorts as if immediate, because
+sorting by stage put a badly overdue `day_7` behind every fresh `day_1`, which is
+backwards. Both read-time in both ports, so the snapshot the golden fixtures
+assert on is untouched — a version that demoted stale items would be the same
+idea and a Tier-1 change needing a deterministic clock in the fixture generator.
+
+**Within-lane selection (P3).** No longer uniform: a wide softmax toward the
+learner's edge, so the effective selection ELO the strategy computes and logs is
+finally used. `updateProblemRating` is renamed `recordProblemOutcome` because
+that is what it did — it never touched `eloRating` — and calibrating it on the
+client is the wrong place: the map is rebuilt every boot and a child answers ~50
+of 3,736 problems in a session, so nearly every entry would calibrate from one
+observation.
+
+This one is worth reading as a process note. At spread 220 the journey guard
+failed with "[struggling] multiplication unlocked at 161 but was not served until
+557 — 396 attempts of earned content withheld". I guessed a cause (a thin rung
+fully excluded by the recent-answers window), wrote a fix for it, and the guard
+still failed — so I reverted the fix rather than keep code justified by a
+disproved hypothesis. Instrumenting the sim showed the truth: multiplication had
+unlocked at 161 and RE-LOCKED, and the guard latched the first unlock and never
+cleared it, so it was measuring a gap from a moment that had been undone. The
+guard was wrong, not the selection. It now tracks the unlock that is still
+standing and reports gates that flicker, which is worth knowing on its own.
+Non-monotonic failure (200 fine, 220-280 failing, 300+ fine) was the tell.
+
+**Difficulty scalar vs curriculum step — ATTEMPTED AND REVERTED.** I dropped the
+band filter from the adaptive path, and it worked by the measure I was watching:
+a thriving child's distinct problems went from 517 to 579. Then
+`reviewMaterializedMathBatches` failed it — the selector smoke counts a problem
+outside the owl's `difficultyRange` as a `selectorCapBreach` (7 of them) and its
+`recentWindowFallbackPreserved` probe is built on options that are only
+impossible *because* that filter exists. The band is a safety rail on the
+adaptive path by deliberate design, and 62 more distinct problems does not buy a
+rail. Reverted, and the roadmap entry now records that dropping it is not
+available and the only remaining option is deriving `difficulty` from the step —
+which moves problem ELO and therefore the golden fixtures.
+
+Two reverts in one pass, both because a guard disagreed with me after the code
+was written. That is the guards working; it is also a reminder that "the metric I
+chose improved" is not the same as "the change is good".
+
+**Session heartbeats (P1).** The admin overview derived sessions by gap-splitting
+attempt timestamps, so a child who ran, jumped and collected coins without
+opening a maths board left no trace: "session length" meant "time spent doing
+maths", which for a platformer is a different number. `play_pings` is one row
+saying someone was playing at a moment — no event type, no payload, and no room
+for one, because the moment it becomes a telemetry sink it acquires a schema
+nobody owns. The client batches a count, never a timestamp; the server stamps
+`received_at` from our clock, the same rule every other analytics column follows.
+The overview unions pings and attempts before the gap split and now reports its
+`source` per row, so a session derived from pings alone is legible as such.
+
+**More levels (P2).** `level_06`–`level_08`: a second lap through the first three
+worlds at a band with no comfort content in it. Authored by a motif walker, not
+by typing coordinates — the sequence is the design and the geometry follows from
+the crow's measured envelope — and that is the part worth recording, because the
+first draft was wrong three separate ways and each guard caught a different one.
+
+The reachability checker reported "23 coin(s) out of reach". That framing sent me
+looking at the coin helper, which was fine: the door was unreachable too, and the
+checker just happened to look at collectibles first. The real fault was that both
+of the walker's constants were being read as the wrong kind of number. `MAX_GAP`
+of 4 meant four empty columns, which is a cell-to-cell displacement of five
+against a four-tile envelope — every wide gap in all three levels was uncrossable.
+Then `stair_down` emitted its highest step first, so approached from the ground it
+asked for a six-row climb; a descent is only ever the back half of a climb, and it
+is now a `summit` that goes up, lands, and comes back down. Gaps of four became
+stepping-stone chasms rather than being shrunk to three, so a real drop still
+reads as a decision.
+
+The third fault no guard about geometry could see: owls and cockroaches were
+hand-typed x positions, and when the motif sequence changed underneath them, one
+owl and three enemies ended up standing on open air. They are derived from the
+floor now, interior columns only — an owl on the last column before a gap is an
+owl a child has to stand on the lip of a drop to talk to.
+
+And the one that only the test suite caught: `player.y = GROUND_Y - 1` buries the
+crow's feet in the tile it is standing on. `check_level_reachability.py` snaps the
+spawn to the nearest standable cell, so it will never see this; `test_entity_placement`
+does. Four faults, four different instruments, none of which was me reading the
+diff. The walker is committed as `tools/author_second_lap.py` so the specs are
+reproducible and the constants are somewhere a person can argue with them.
+
+Nine levels does not mean the content lever is pulled. Nobody has played 06–08 —
+the guards prove they can be finished, not that any of it is fun — and the roadmap
+entry says so.
+
+**Division with remainders (P1) — SCOPED, NOT BUILT.** Written up in the roadmap
+with its two real blockers rather than half-built.
