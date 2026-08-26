@@ -3,5 +3,5 @@
 // The selection lane weights the game actually ships, copied in at build
 // time because the API image does not contain godot/data. `npm run validate`
 // fails if this drifts from godot/data/tuning/math_tuning.json.
-export const TUNING_HASH = "11dfad51ebc1788030d5bcfee777794dcf43ae911f1bbcec9dc12ce8dccfb957";
+export const TUNING_HASH = "a944aa9b27231cf6377a5878c2c3b62f39788c7b82cfab5c27e71b0b8d949b3d";
 export const LANE_WEIGHTS: Record<string, number> = {"comfort":0.4,"review":0.2,"at_level":0.3,"stretch":0.1};

@@ -243,4 +243,8 @@ func _selection_config() -> Dictionary:
 		# docs/MATH_CONCEPT_LADDER.md both carry the reasoning.
 		"maxOperand": 20,
 		"primaryDomain": allowed[0],
+		# How often each subject comes due. Data, so "how much addition does a
+		# child meet" is a designer's dial rather than an accident of the order
+		# problemTypes happens to list.
+		"domainWeights": DataManager.get_dict("MATH_TUNING").get("domainWeights", {}),
 	}
