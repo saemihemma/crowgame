@@ -121,9 +121,11 @@ func _launch() -> bool:
 			_pending_problem = problem
 			_pending_freebie_domain = problem["domain"]
 			# FULL the first time this child is taught anything in this domain,
-			# BRIEF for every rung after that (TutorialManager.depth_for).
+			# BRIEF for every rung after that -- and BRIEF regardless for a concept
+			# the child has already climbed past, which is what depth_for_problem
+			# adds over depth_for.
 			game.launch_math_tutorial(lesson, _on_tutorial_closed,
-				TutorialManager.depth_for(String(lesson.get("id", ""))))
+				TutorialManager.depth_for_problem(problem, String(lesson.get("id", ""))))
 			return true
 
 	var reward_amount := int(npc.reward_amount)
