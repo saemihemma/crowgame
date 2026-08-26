@@ -61,7 +61,7 @@ Add these when the change touches them:
 ```bash
 npm run compile                        # after editing a level spec
 bash godot/tools/build_web.sh          # after any change that ships to players
-node godot/tools/web_boot_smoke.mjs    # the EXPORT, not the source
+node godot/tools/web_boot_smoke.mjs    # the EXPORT, not the source (--shots <dir> to see every screen)
 
 DATABASE_URL=postgres://... npm --prefix server run migrate
 DATABASE_URL=postgres://... npm --prefix server test
@@ -83,6 +83,12 @@ that broke an autoload entirely — both invisible to every other check here.
 Some things still need a human: movement feel, difficulty pacing, whether a
 moment lands for a child. Say in your PR what you played and what you saw.
 
+**Play it at 16:9 as well as on a tablet.** `stretch/aspect=expand` never makes
+the viewport smaller than 960x540, but on a 16:9 or wider display it is exactly
+540 tall — the tightest the game ever gets, and the shape the daily iPad never
+shows you. Full-screen cards go in a `FitBox` for that reason, and
+`godot/tests/test_screen_fit.gd` gates it.
+
 ## Task routing
 
 | I want to… | Do this |
@@ -90,7 +96,7 @@ moment lands for a child. Say in your PR what you played and what you saw.
 | change a number a player feels | edit `godot/data/tuning/*.json`. Never a `.gd`. |
 | add or change a string | edit BOTH `strings_en.json` and `strings_is.json` |
 | add a level object type | one entry in `spawn_registry.json` + a scene with `setup_from_spawn(spawn)`. No `game.gd` change. |
-| add a sound | `tools/gen_sfx.py` or drop a file → `audio_manifest.json` → `sound_events.json` → `AudioManager.play_event()` |
+| add or replace a sound | [brand/SOUND_DESIGN.md](./brand/SOUND_DESIGN.md) — moment → `sound_events.json` → `audio_manifest.json` → the file |
 | add a sprite | `python3 godot/tools/check_assets.py --spec`, then [the sprite contract](./ARCHITECTURE.md#the-sprite-contract) |
 | change ELO/learner/movement constants | edit `math-kernel/**`, regenerate fixtures, keep Godot parity green, all in one commit |
 | add curriculum content | [the authoring pipeline](./ARCHITECTURE.md#the-math-authoring-pipeline), then `npm run math:materialize` |

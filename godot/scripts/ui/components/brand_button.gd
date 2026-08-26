@@ -25,6 +25,14 @@ var role: int = Role.SECONDARY
 ## A primary action breathes so the eye lands on it without needing an arrow or
 ## a "click here". Off for the others: three pulsing buttons is a fairground.
 var pulse := false
+## Every button acknowledges the press. Set false only where the row's own
+## callback plays something better placed than the click would be.
+##
+## This lives here because "a button was pressed" is one moment, not thirty. The
+## click used to be fired by hand at three call sites, so PLAY, every world card,
+## every login row and both grown-up panels were silent, and nobody had a list of
+## which ones were missing it.
+var clicks := true
 
 static func make(text: String, button_role: int, on_press: Callable) -> BrandButton:
 	var b := BrandButton.new()
@@ -34,6 +42,11 @@ static func make(text: String, button_role: int, on_press: Callable) -> BrandBut
 	if on_press.is_valid():
 		b.pressed.connect(on_press)
 	return b
+
+
+func _pressed() -> void:
+	if clicks:
+		AudioManager.play_event("button")
 
 func _ready() -> void:
 	custom_minimum_size.y = maxf(custom_minimum_size.y, MIN_HEIGHT)

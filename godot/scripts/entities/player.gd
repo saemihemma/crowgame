@@ -21,9 +21,11 @@ var _laser_speed := 400.0
 var _laser_cooldown := 1.0
 
 @onready var _sprite: AnimatedSprite2D = $Sprite
+@onready var _body: CollisionShape2D = $CollisionShape2D
 
 func _ready() -> void:
 	add_to_group("player")
+	_size_body()
 	_tuning = DataManager.get_dict("PLAYER_TUNING")
 	if _tuning.is_empty():
 		_tuning = {"accel": 600, "drag": 800, "maxSpeed": 160, "jumpVelocity": 475,
@@ -32,6 +34,28 @@ func _ready() -> void:
 	var combat := DataManager.get_dict("COMBAT_TUNING")
 	_laser_speed = float(combat.get("laser_speed", 400))
 	_laser_cooldown = float(combat.get("laser_cooldown_ms", 1000)) / 1000.0
+
+## Fit the collider to the drawing, from sprite_spec.json.
+##
+## The scene used to state it: a 40x56 box at y = -28. The crow is drawn 47-51px
+## tall in a 64px frame, so up to 9 of those 56 pixels were above its head —
+## which is why a jump stopped a visible gap short of every platform's underside.
+## The number was never measured; it was half the frame height, the same literal
+## SpriteSheet already exists to keep out of scene files.
+##
+## A fresh shape rather than resizing the scene's: sub-resources are shared
+## between instances of a PackedScene, and this is the kind of edit that quietly
+## reaches through one.
+func _size_body() -> void:
+	var box := SpriteSheet.body_box(WALK_SPRITE_KEY)
+	if _body == null or box == Vector2.ZERO:
+		return
+	var shape := RectangleShape2D.new()
+	shape.size = box
+	_body.shape = shape
+	# Grown upward from the feet, which sit on the node origin.
+	_body.position = Vector2(0.0, -box.y * 0.5)
+
 
 func _build_animations() -> void:
 	if _sprite == null:

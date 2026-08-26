@@ -1,4 +1,5 @@
 extends CanvasLayer
+class_name TouchControls
 ## TouchControls — the on-screen gamepad.
 ##
 ## Each pad is a TouchScreenButton bound to an InputMap action, so touch drives
@@ -26,10 +27,26 @@ extends CanvasLayer
 
 var _pads: Array[TouchPad] = []
 
+
+## Does this machine have a finger to press these with?
+##
+## It used to be `is_touchscreen_available() or has_feature("web") or
+## has_feature("mobile")`, and the middle term is why the owner got a five-button
+## thumb gamepad laid over the level on a desktop PC: every web export is
+## "web", including the one running in a browser on a laptop. There is no such
+## thing as a web device class - the browser knows whether it has a touchscreen,
+## and Godot asks it.
+##
+## This is only honest with `input_devices/pointing/emulate_touch_from_mouse` off
+## (project.godot): that setting makes the engine answer yes on any machine with
+## a mouse, which is exactly the answer that was wrong.
+static func supported() -> bool:
+	return DisplayServer.is_touchscreen_available() or OS.has_feature("mobile")
+
+
 func _ready() -> void:
 	layer = 8
-	# Hide on non-touch desktop to avoid clutter (keyboard still works).
-	if not (DisplayServer.is_touchscreen_available() or OS.has_feature("web") or OS.has_feature("mobile")):
+	if not supported():
 		visible = false
 	_build()
 	# The viewport is `expand` now, so its size depends on the device's aspect

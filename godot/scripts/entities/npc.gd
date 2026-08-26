@@ -187,6 +187,7 @@ func _break_link() -> void:
 	var burst := SpriteSheet.texture(CHAIN_BURST_SPRITE)
 	if burst != null:
 		link.texture = burst
+	AudioManager.play_event("chain_break")
 	DopamineFX.burst(get_parent(), link.global_position,
 		ThemeManager.get_color_value("enemy_pop"), int(Config.fx("burst/chain_link", 12)))
 	var tw := link.create_tween().set_parallel(true)

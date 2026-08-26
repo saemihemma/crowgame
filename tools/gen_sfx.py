@@ -7,9 +7,14 @@ friendly; the "wrong" cue is gentle and low (never a harsh buzzer — pedagogy
 rail: mistakes are not punished).
 
 Run: python3 tools/gen_sfx.py
-Writes the 15 WAVs to godot/assets/audio/sfx/. They are committed, because
-godot/data/audio/audio_manifest.json declares them as required assets and
-tools/validate_assets.js fails without them.
+Writes one WAV per entry in SOUNDS to godot/assets/audio/sfx/. They are
+committed, because godot/data/audio/audio_manifest.json declares them as
+required assets and tools/validate_assets.js fails without them.
+
+These are PLACEHOLDERS with the right shape, not final sound design. Every one
+of them is meant to be replaced by dropping a real file over it — same name,
+same folder — with no code, manifest or registry change. brand/SOUND_DESIGN.md
+is the brief: what each moment is, when it fires, and how it should sound.
 """
 import math, os, struct, wave
 
@@ -119,6 +124,16 @@ SOUNDS = {
     # Golden problem arrival: a fast, high shimmer distinct from the win
     # sounds — it announces the problem, it is not the reward itself.
     "golden": arp([1319, 1568, 1976, 2637], 0.06, 0.5),
+    # The crow goes down: a short fall, not a game-over sting. Losing a life
+    # costs the coins from this level and nothing else, and the sound should
+    # say "again" rather than "you failed".
+    "player_die": chirp(560, 180, 0.30, 0.45, "sine"),
+    # Stepping through the door into the next level. Rising, and distinct from
+    # `door` (getting close), which is the low wooden open.
+    "level_enter": arp([392, 523, 659], 0.10, 0.5),
+    # One link off an owl's chain. Short and metallic; it fires up to three
+    # times in a row on a gauntlet owl, so it must not outstay its beat.
+    "chain_break": mix(tone(1180, 0.09, 0.35, "square", decay=12.0), noise(0.05, 0.20, decay=14.0)),
 }
 
 if __name__ == "__main__":

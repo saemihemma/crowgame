@@ -12,7 +12,15 @@
  * behaviour (audio-context unlock rules, memory ceilings, Safari's WASM
  * compilation limits) still needs a device check.
  *
- * Usage: node godot/tools/web_boot_smoke.mjs [--port 8061]
+ * Usage: node godot/tools/web_boot_smoke.mjs [--port 8061] [--shots <dir>]
+ *
+ * `--shots <dir>` also writes a PNG of every step of the walk. That is not part
+ * of the gate — a screenshot cannot fail a build — but "what does each screen
+ * actually look like right now, at a size nobody plays on" is the question that
+ * found the UI being cut off on every 16:9 display, and it is worth being one
+ * flag away rather than a script somebody writes again each time. The gate for
+ * that defect is godot/tests/test_screen_fit.gd, which is deterministic and
+ * headless; this is the human's version of it.
  */
 import { existsSync, readdirSync } from 'fs';
 import { spawn } from 'child_process';
@@ -24,6 +32,7 @@ import { chromium } from 'playwright-core';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const WEB_DIR = resolve(ROOT, 'output/web');
 const PORT = Number(process.argv.includes('--port') ? process.argv[process.argv.indexOf('--port') + 1] : 8061);
+const SHOT_DIR = process.argv.includes('--shots') ? process.argv[process.argv.indexOf('--shots') + 1] : null;
 
 const EXECUTABLE_CANDIDATES = [
     process.env.CHROMIUM_PATH,
@@ -143,12 +152,19 @@ async function main() {
                 await page.keyboard.up('ArrowRight');
             }],
         ];
+        if (SHOT_DIR) await mkdir(SHOT_DIR, { recursive: true });
+        let step = 0;
         for (const [label, act] of flow) {
             const before = consoleErrors.length;
             await act();
             await page.waitForTimeout(1200);
             if (consoleErrors.length > before) {
                 consoleErrors.push(`(the ${consoleErrors.length - before} error(s) above appeared while: ${label})`);
+            }
+            if (SHOT_DIR) {
+                step += 1;
+                const name = `${String(step).padStart(2, '0')}-${label.replace(/\W+/g, '-')}.png`;
+                await page.screenshot({ path: resolve(SHOT_DIR, name) });
             }
         }
 

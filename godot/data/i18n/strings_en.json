@@ -69,6 +69,7 @@
   "cloud_delivery_unavailable": "Cloud save is not switched on yet on our side. Add Hörmann to your Home Screen for now - that keeps progress safer.",
   "level.level_99.name": "Practice Arena",
   "math.progress": "Problem {0} of {1}",
+  "math.pips": "{0} of {1} to the next level",
   "level.level_01.name": "Emberwood Run",
   "level.level_02.name": "Prism Hollow",
   "level.level_03.name": "Sugarstorm",

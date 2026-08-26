@@ -29,13 +29,13 @@ func _ready() -> void:
 	add_child(ScreenBackdrop.new())
 	_add_hero()
 
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
+	# Fitted, not centred: the wordmark plus up to five Gate-B3 rows is taller
+	# than the 540 a 16:9 display leaves, and this column grows by a row when a
+	# save exists, when a profile exists and when the build is on the web.
 	var col := VBoxContainer.new()
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
 	col.add_theme_constant_override("separation", COLUMN_SEPARATION)
-	center.add_child(col)
+	add_child(FitBox.around(col))
 
 	_build_wordmark(col)
 

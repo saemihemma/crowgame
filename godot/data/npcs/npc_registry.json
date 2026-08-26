@@ -1,4 +1,17 @@
 {
+    "$comment": "Every owl in the game, and the whole of what makes one different from another. Adding a variant is an edit HERE plus the npc_id a level spawns - never a code change. scripts/entities/npc/math_challenge_component.gd reads these fields and nothing else.",
+    "fields": {
+        "id": "what a level spec's npc_id points at",
+        "spriteKey": "sprite_registry.json key; the path and frame grid live there",
+        "behavior": "which component set to build; 'math_challenger' is the only one",
+        "components[math_challenge].problemCount": "how many questions this owl asks before it is freed. MUST equal behaviorConfig.chainLinks - the chain across the perch is how a child reads the cost from across the screen, and test_owl_chains.gd enforces the pair.",
+        "components[math_challenge].difficultyRange": "[low, high] band this owl draws from - the easier/harder dial. Intersected with the level's mathGating band; the curriculum ladder still owns how hard within it.",
+        "components[math_challenge].problemTypes": "which operations this owl may ask about at all. Intersected with the level's gated skills.",
+        "components[math_challenge].teaches": "opt-in: open with one worked example the first time the child meets a domain, then hand over a freebie try. Default false. Only put this on an owl whose job is teaching - on a roadside owl it turns 'one question' into two boards.",
+        "behaviorConfig.chainLinks": "how many links are drawn across the perch. See problemCount.",
+        "behaviorConfig.rewardType / rewardAmount": "what breaking the last link pays out",
+        "note": "why this variant exists, for whoever places it"
+    },
     "npcs": [
         {
             "id": "owl_teacher_01",
@@ -23,14 +36,16 @@
                         1,
                         3
                     ],
-                    "problemCount": 1
+                    "problemCount": 1,
+                    "teaches": true
                 }
             ],
             "behaviorConfig": {
                 "rewardType": "stars",
                 "rewardAmount": 1,
                 "chainLinks": 1
-            }
+            },
+            "note": "The teaching owl. One answer, mid band, and the only variant that demonstrates a worked example on first contact with a new domain. Every other owl asks its questions and nothing else."
         },
         {
             "id": "owl_gentle_01",

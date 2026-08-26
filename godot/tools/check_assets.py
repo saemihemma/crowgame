@@ -233,6 +233,30 @@ def read_frames(path, fw, fh, count):
     return out
 
 
+def opaque_extent(frame, fw, fh):
+    """(height, width) of the drawn pixels in one RGBA frame buffer.
+
+    Height is measured from the frame's BOTTOM edge up to the topmost drawn row,
+    not as the bounding box: `anchor: feet` puts the bottom edge on the ground
+    contact line, so that is where a collider grows from. Alpha > 8 counts as
+    drawn — a stray 1/255 pixel from a lossy round-trip is not a silhouette.
+    """
+    top, left, right = None, fw, -1
+    for y in range(fh):
+        row = frame[y * fw * 4:(y + 1) * fw * 4]
+        for x in range(fw):
+            if row[x * 4 + 3] > 8:
+                if top is None:
+                    top = y
+                if x < left:
+                    left = x
+                if x > right:
+                    right = x
+    if top is None:
+        return 0, 0
+    return fh - top, right - left + 1
+
+
 def check():
     errors = []
     warnings = []
@@ -451,6 +475,47 @@ def check():
                 "sprite '%s' has identical frames %s — either the export duplicated them "
                 "or the frame count is too high" % (key, dupes))
 
+    # --- 5b: a declared collider fits inside the drawing ---------------------
+    #
+    # A class may declare `body`: the collision box, in frame pixels, grown up
+    # from the frame's bottom edge. It is the collider the game builds at
+    # runtime (SpriteSheet.body_box), and it has to be INSIDE the silhouette in
+    # every frame — a box taller than the art is a character that collides with
+    # a ceiling it has visibly not touched, which is exactly what shipped: 56px
+    # of collider on a crow drawn 47.
+    for key, raw in sorted(sprites.items()):
+        cls = spec.get("classes", {}).get(raw.get("class", ""), {})
+        body = cls.get("body")
+        if not isinstance(body, dict):
+            continue
+        abspath = os.path.join(ROOT, raw.get("path", ""))
+        if not raw.get("path") or not os.path.exists(abspath):
+            continue
+        fw = int(raw.get("frameWidth", cls.get("frameWidth", 0)))
+        fh = int(raw.get("frameHeight", cls.get("frameHeight", 0)))
+        if fw <= 0 or fh <= 0:
+            continue
+        try:
+            frames = read_frames(abspath, fw, fh, int(raw.get("frames", 1)))
+        except Exception as exc:                       # pragma: no cover
+            errors.append("sprite '%s': could not measure for its body box (%s)" % (key, exc))
+            continue
+        for i, frame in enumerate(frames):
+            drawn_h, drawn_w = opaque_extent(frame, fw, fh)
+            if drawn_h == 0:
+                continue
+            if int(body.get("height", 0)) > drawn_h:
+                errors.append(
+                    "sprite '%s' frame %d is drawn %dpx tall, but its class declares a "
+                    "%dpx body box — the collider sticks out of the top of the art, so the "
+                    "character stops short of every ceiling it jumps at."
+                    % (key, i, drawn_h, int(body["height"])))
+            if int(body.get("width", 0)) > drawn_w:
+                errors.append(
+                    "sprite '%s' frame %d is drawn %dpx wide, but its class declares a "
+                    "%dpx body box — the collider is wider than the character."
+                    % (key, i, drawn_w, int(body["width"])))
+
     # --- 6: audio is manifest-claimed ----------------------------------------
     if os.path.exists(AUDIO_MANIFEST):
         manifest_text = json.dumps(load_json(AUDIO_MANIFEST))
@@ -481,6 +546,32 @@ def selftest():
     if bad:
         return 1
     print("check_assets selftest: %d/%d grid cases OK" % (len(cases), len(cases)))
+
+    # And prove the body-box measurement measures what it claims. The whole
+    # point of it is that a 64px frame is not a 64px character: build a frame
+    # with a known amount of clear margin above the head and check the number
+    # that comes back is the drawing, not the frame.
+    fw = fh = 8
+    body_cases = [
+        # (top_pad, left_pad, right_pad, expected_h, expected_w)
+        (0, 0, 0, 8, 8),      # fills the frame
+        (3, 0, 0, 5, 8),      # 3px of sky above the head — the shipped case
+        (8, 0, 0, 0, 0),      # nothing drawn at all
+        (2, 2, 1, 6, 5),      # inset on three sides
+    ]
+    for top, left, right, want_h, want_w in body_cases:
+        frame = bytearray(fw * fh * 4)
+        for y in range(top, fh):
+            for x in range(left, fw - right):
+                frame[(y * fw + x) * 4 + 3] = 255
+        got_h, got_w = opaque_extent(frame, fw, fh)
+        if (got_h, got_w) != (want_h, want_w):
+            print("  selftest FAIL: pad(t%d l%d r%d) -> %dx%d, expected %dx%d"
+                  % (top, left, right, got_w, got_h, want_w, want_h))
+            bad += 1
+    if bad:
+        return 1
+    print("check_assets selftest: %d/%d body-box cases OK" % (len(body_cases), len(body_cases)))
     return 0
 
 

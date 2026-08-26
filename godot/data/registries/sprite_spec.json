@@ -11,13 +11,19 @@
         "no_antialiasing": "Hard pixel edges only. If the generator softened the edges the asset is not usable — re-do it, do not sharpen it afterwards. Measured as `soft%` by tools/audit_pixel_art.py.",
         "author_at_1x": "Never generate at 4x and downscale; it produces the muddy edges PROJECT.md warns against. Measured as `native` by tools/audit_pixel_art.py.",
         "outline": "1px outline in the world's ink_world on anything in the play layer; none on sky/far/mid.",
-        "sheet_layout": "Frames read left-to-right, top-to-bottom, no padding and no margin. A single horizontal strip is the preferred layout for new art; SpriteSheet also reads the square grids the shipped crow/coin/door sheets use, deriving columns from the sheet width."
+        "sheet_layout": "Frames read left-to-right, top-to-bottom, no padding and no margin. A single horizontal strip is the preferred layout for new art; SpriteSheet also reads the square grids the shipped crow/coin/door sheets use, deriving columns from the sheet width.",
+        "body_box": "A class's `body` is the collider, and it must fit INSIDE the drawn silhouette in every frame - never the frame size. Measured by tools/check_assets.py."
     },
     "classes": {
         "character": {
             "frameWidth": 64,
             "frameHeight": 64,
             "anchor": "feet",
+            "body": {
+                "width": 40,
+                "height": 46,
+                "why": "The collider, in frame pixels, measured up from the frame's bottom edge - which `anchor: feet` puts on the ground contact line. It is NOT the frame: a 64px character frame carries clear margin above the head (this class asks for 2-3px and the shipped crow has 13-17), and a collider sized to the frame sticks out of the top of the drawing. That is what made ceilings feel wrong - the crow stopped a third of a tile below a platform it had visibly not touched. The shortest silhouette in the shipped walk cycle is 47px, so 46 sits inside the art in every frame; check_assets.py measures the art and fails if it ever isn't."
+            },
             "description": "The player. SPRITE_SIZE, matching the shipped crow.",
             "art_notes": [
                 "Leave 2-3px of clear margin inside the frame left, right and top so the silhouette is never clipped.",

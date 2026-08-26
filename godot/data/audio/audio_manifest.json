@@ -67,6 +67,19 @@
     "golden": {
       "file": "assets/audio/sfx/golden.wav",
       "volume": 0.65
+    },
+    "player_die": {
+      "file": "assets/audio/sfx/player_die.wav",
+      "volume": 0.55
+    },
+    "level_enter": {
+      "file": "assets/audio/sfx/level_enter.wav",
+      "volume": 0.6
+    },
+    "chain_break": {
+      "file": "assets/audio/sfx/chain_break.wav",
+      "volume": 0.5,
+      "pool": 3
     }
   },
   "music": {

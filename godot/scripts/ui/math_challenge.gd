@@ -169,15 +169,12 @@ func _finish(correct: bool, first_attempt: bool) -> void:
 
 ## Hand the board back for the second try. The wrong option stays marked: it is
 ## a fact about what has already been tried, and clearing it would invite the
-## same tap again.
+## same tap again. Nothing is focused - see AnswerButton on why these options do
+## not take keyboard focus at all.
 func _reenable_for_retry() -> void:
 	if _done:
 		return
 	_set_buttons_enabled(true)
-	for b in _buttons:
-		if b.get_state() == AnswerButton.State.IDLE:
-			b.grab_focus()
-			break
 
 func _result(correct: bool, first_attempt: bool) -> Dictionary:
 	var has_hint: bool = String(current_problem.get("hint", "")) != "" and _wrong_attempts > 0
@@ -211,7 +208,6 @@ func _reveal_answer() -> void:
 		if is_correct_button:
 			_buttons[i].disabled = false
 			_buttons[i].add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
-			_buttons[i].grab_focus()
 		else:
 			_buttons[i].modulate.a = 0.35
 	var explanation := _localised("explanation")
@@ -233,14 +229,6 @@ func _build_ui(opts: Dictionary) -> void:
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(dim)
 
-	# Centred in the upper part of the screen, not the whole of it. The camera
-	# lifts the crow into the strip this leaves free (game.gd), so the two moves
-	# together are what let a child see themselves while they think.
-	var center := CenterContainer.new()
-	center.anchor_right = 1.0
-	center.anchor_bottom = float(Config.ui("math_challenge/board_screen_share", 0.78))
-	dim.add_child(center)
-
 	# THE BOARD. There wasn't one: the question and the options were loose labels
 	# floating on a dimmed level, with grass tiles visible through the answer
 	# buttons. A surface is what separates "the game, paused" from "the thing you
@@ -252,6 +240,14 @@ func _build_ui(opts: Dictionary) -> void:
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_theme_constant_override("separation", 16)
 	_board.add_child(vbox)
+	# The card the fitter owns: the gold frame when there is one, the board
+	# otherwise. Fitted rather than centred, in the upper part of the screen and
+	# not the whole of it - the camera lifts the crow into the strip this leaves
+	# free (game.gd), so the two moves together are what let a child see
+	# themselves while they think. A long word problem with a hint under it is
+	# taller than the 540 a 16:9 display leaves, and the answer row is the part
+	# that would fall off.
+	var card: Control = _board
 	if _is_golden:
 		# Golden arrival: a pulsing gold frame around the board (mirrors
 		# MathChallengeScene.decorateGolden). Announcement, not reward — the
@@ -264,13 +260,14 @@ func _build_ui(opts: Dictionary) -> void:
 		frame_style.set_corner_radius_all(20)
 		frame_style.set_content_margin_all(24)
 		frame.add_theme_stylebox_override("panel", frame_style)
-		center.add_child(frame)
 		frame.add_child(_board)
+		card = frame
 		var tw := frame.create_tween().set_loops()
 		tw.tween_property(frame, "self_modulate:a", 0.45, 0.65).set_trans(Tween.TRANS_SINE)
 		tw.tween_property(frame, "self_modulate:a", 1.0, 0.65).set_trans(Tween.TRANS_SINE)
-	else:
-		center.add_child(_board)
+	var fitter := FitBox.around(card)
+	fitter.anchor_bottom = float(Config.ui("math_challenge/board_screen_share", 0.78))
+	dim.add_child(fitter)
 
 	var name_str := String(opts.get("npcName", ""))
 	var greet := String(opts.get("npcGreeting", ""))
@@ -303,7 +300,7 @@ func _build_ui(opts: Dictionary) -> void:
 		vbox.add_child(head)
 
 	# Progress pips: wins already banked toward the next level-up in this
-	# problem's domain. The third pip is the step-up moment itself.
+	# problem's domain. The last pip is the step-up moment itself.
 	if not _is_demo:
 		vbox.add_child(_build_pips())
 
@@ -367,8 +364,6 @@ func _build_ui(opts: Dictionary) -> void:
 		b.pressed.connect(func(): submit_answer(idx))
 		row.add_child(b)
 		_buttons.append(b)
-	if _buttons.size() > 0:
-		_buttons[0].grab_focus()
 	# Elastic pop-in once the layout has computed sizes.
 	_pop_in.call_deferred(vbox)
 
@@ -437,7 +432,17 @@ func _pop_in(node: Control) -> void:
 
 ## Small circles drawn in code (no glyphs — UI primitives are drawn, per the
 ## i18n house rules): filled = wins banked, outlined = wins still to earn.
+##
+## The caption is not decoration. Three unexplained yellow dots above a sum,
+## sometimes filled and sometimes hollow, is a puzzle inside the puzzle: the
+## first person to play this asked what they were, and neither the game nor any
+## doc answered. They are the only place the learner model is visible to the
+## person it is modelling, so they say so in words.
 func _build_pips() -> Control:
+	var column := VBoxContainer.new()
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", 4)
+
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 10)
@@ -457,7 +462,15 @@ func _build_pips() -> Control:
 			style.border_color = accent
 		pip.add_theme_stylebox_override("panel", style)
 		row.add_child(pip)
-	return row
+
+	var caption := Label.new()
+	caption.text = TextManager.t("math.pips", [wins, target])
+	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	caption.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/pips_font_size", 14)))
+	caption.add_theme_color_override("font_color", accent)
+	column.add_child(row)
+	column.add_child(caption)
+	return column
 
 ## Disabled options have to LOOK disabled.
 ##

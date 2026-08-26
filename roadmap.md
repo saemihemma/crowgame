@@ -152,16 +152,16 @@ because once the crow reaches the owl the encounter overlay opens and captures
 input, after which every later probe reads as dead including a keyboard control.
 A gate needs a fresh level per probe, or a level with no owl near the spawn.
 
-*Mouse:* untested. `godot/scripts/ui/touch_controls.gd` shows the d-pad whenever
-`OS.has_feature("web")` is true, which includes desktop browsers where the player
-has a mouse, and `pointing/emulate_touch_from_mouse` is enabled as the documented
-fix but has never been confirmed — Playwright's synthetic mouse does not reach a
-TouchScreenButton, which is a harness limitation and not evidence either way.
+*Mouse:* no longer a question, because the pads are no longer there. Owner
+playtest: a desktop PC got the five-button thumb gamepad laid over the level.
+`TouchControls.supported()` now asks `DisplayServer.is_touchscreen_available()`
+alone, and `pointing/emulate_touch_from_mouse` is off — it had to be, because it
+is an input of that same call and made the engine answer "yes, touch" on any
+machine with a mouse. Confirmed in a browser both ways: pads present with touch
+emulation on, absent without.
 
-*Done when:* someone clicks a pad with a real mouse in a desktop browser and says
-whether the crow moves. If it does not, the fallback is to hide the controls
-unless `DisplayServer.is_touchscreen_available()`, so desktop players are not
-shown dead buttons.
+*Done when:* the touch half above has a repeatable assertion. The mouse half is
+closed.
 
 ### The five tilesets are generated placeholders
 Each world has its own tileset and no two levels share a ground, but the five
@@ -298,13 +298,17 @@ from the derived step (one source of truth), or drop the difficulty filter
 from the adaptive path once step data is fully trusted.
 
 ### A gated "padlock owl" variant that asks for more than one answer
-The baseline owl asks exactly one problem. `problemCount` is already per-NPC
-config in `npc_registry.json` and both ports' components loop until it is met,
-so the remaining work is content and design, not plumbing: a visually distinct
-NPC variant, a registry entry with `problemCount` 2-3 and a bigger reward, and
-a decision about where it appears (level gates? bonus areas?). The
-multi-problem UI (progress header, alternate-domain follow-ups) stays dormant
-at the baseline but keeps working for any NPC that raises the count.
+Every dial is on the owl now — `problemCount`, `difficultyRange`, `problemTypes`
+and `teaches`, all read from `npc_registry.json` and documented in its `fields`
+block — so a new variant is a registry entry plus the `npc_id` a level spawns.
+What is left is content and design, not plumbing: a visually distinct sprite, a
+bigger reward, and a decision about where it appears (level gates? bonus areas?).
+
+The plumbing claim this entry used to make was not quite true. An owl asking one
+question could still show two boards, because the worked example was a global
+behaviour rather than a property of the owl: any owl meeting a domain the child
+had never attempted demonstrated first. That is `teaches` now, and only
+`owl_teacher_01` has it.
 
 ### Multiplication and division need a fate decision
 650 authored problems sit in domains the owl never serves — not in its
@@ -426,12 +430,17 @@ tuning-driven logic that decides when they appear (`math_tuning.json`
 the drawn primitives as the shipped look — for badges, pips, the golden
 frame, and the recap panel, wired in both `src/` and `godot/`.
 
-### Web SFX are generated, not authored
-`tools/gen_sfx.py` synthesizes all 16 effects procedurally and writes them to
-both runtimes. They are committed and they work, but they are placeholders in
-tone.
+### The SFX are generated, not authored
+`tools/gen_sfx.py` synthesizes every effect procedurally. They are committed and
+they work, but they are placeholders in tone.
 
-*Done when:* someone decides whether these are the shipping sounds.
+The brief now exists: `brand/SOUND_DESIGN.md` lists every moment in the game,
+where it fires from, and how it should sound, and the swap procedure is copying
+a file over the old one — no code, manifest or registry change. So this is a
+commission, not an engineering task.
+
+*Done when:* someone decides whether these are the shipping sounds, and if not,
+whose they are.
 
 ---
 

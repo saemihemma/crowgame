@@ -31,15 +31,13 @@ func _ready() -> void:
 	shade.anchor_bottom = 1.0
 	add_child(shade)
 
-	var center := CenterContainer.new()
-	center.anchor_right = 1.0
-	center.anchor_bottom = 1.0
-	add_child(center)
-
+	# Fitted, not centred, like every other fixed card here: this panel declares a
+	# minimum size in tuning JSON and grows a row per enrolment state, and a
+	# 16:9 display gives it a 960x540 viewport to sit in.
 	var panel := PanelContainer.new()
 	panel.custom_minimum_size = Vector2(
 		Config.ui("cloud_panel/width", 720), Config.ui("cloud_panel/min_height", 420))
-	center.add_child(panel)
+	add_child(FitBox.around(panel))
 
 	_column = VBoxContainer.new()
 	_column.add_theme_constant_override("separation", int(Config.ui("cloud_panel/separation", 16)))

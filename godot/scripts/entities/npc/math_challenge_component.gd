@@ -1,14 +1,31 @@
 extends NpcComponent
 class_name MathChallengeComponent
-## Port of MathChallengeComponent: the owl flow. On interaction, presents up to
-## `problem_count` problems (owl-selected). Correct -> next problem; on the final
-## correct -> owl_saved; any encounter end -> end interaction + fly away.
-## Baseline owl asks 1 problem; problem_count stays per-NPC config so a future
-## gated variant (e.g. a padlock owl) can demand more.
+## The owl flow. On interaction, presents `problem_count` problems (owl-selected).
+## Correct -> next problem; on the final correct -> owl_saved; any encounter end
+## -> end interaction + fly away.
+##
+## EVERY DIAL ON AN OWL IS ON THE OWL
+## ----------------------------------
+## The four fields below are the whole of what makes one owl different from
+## another, and all four come from that owl's entry in npc_registry.json. Adding
+## a variant is a registry edit: no code here changes, and no level changes
+## beyond the npc_id it spawns.
+##
+##   problem_count    how many boards this owl asks for (its chain length)
+##   difficulty_range which band it draws from - the "easier"/"harder" dial
+##   problem_types    which operations it may ask about at all
+##   teaches          whether it opens with a worked example, once per new domain
+##
+## `teaches` is here because it used to be implicit and global: ANY owl meeting a
+## domain the child had never attempted demonstrated one problem first, then
+## handed over. That made a roadside owl configured for exactly one question show
+## two boards, and there was no way to author an owl that never does it. It is
+## now a property of the owl, so a one-question owl asks one question.
 
 var problem_types: Array = []
 var difficulty_range: Array = [1, 3]
 var problem_count := 1
+var teaches := false
 
 var _problems_completed := 0
 var _last_domain: Variant = null
@@ -22,6 +39,7 @@ func _init(config: Dictionary = {}) -> void:
 	problem_types = config.get("problemTypes", [])
 	difficulty_range = config.get("difficultyRange", [1, 3])
 	problem_count = int(config.get("problemCount", 1))
+	teaches = bool(config.get("teaches", false))
 
 func init_component(owner_npc: Node) -> void:
 	npc = owner_npc
@@ -47,9 +65,10 @@ func _launch() -> void:
 	var config := _selection_config()
 
 	# Teaching window: if this level's gating includes a domain the child has
-	# never attempted, the owl demonstrates one worked example first, then
-	# hands over a freebie try in the same domain.
-	if _pending_freebie_domain == null and _problems_completed == 0:
+	# never attempted, a TEACHING owl demonstrates one worked example first, then
+	# hands over a freebie try in the same domain. Owls without `teaches` skip
+	# this entirely and ask exactly `problem_count` questions, always.
+	if teaches and _pending_freebie_domain == null and _problems_completed == 0:
 		for domain in config["domains"]:
 			if LearnerStateManager.get_total_attempts(String(domain)) == 0 and not _demo_shown_for.has(domain):
 				_demo_shown_for[domain] = true

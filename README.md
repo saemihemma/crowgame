@@ -46,6 +46,7 @@ toolchain — is in [ONBOARDING.md](./ONBOARDING.md) under "The loop".
 | [roadmap.md](./roadmap.md) | open work only — finished items are deleted, and `npm run validate` enforces that |
 | [deploy/RAILWAY.md](./deploy/RAILWAY.md) | staging, prod, promotion, rollback |
 | [brand/](./brand/) | art direction, the pixel law, and the level art bible |
+| [brand/SOUND_DESIGN.md](./brand/SOUND_DESIGN.md) | every sound the game makes, what it is for, and how to swap the file |
 
 For parents: **[PRIVACY.md](./PRIVACY.md)** says in plain language what the game
 stores about a child, what leaves the device, and how to delete all of it. To

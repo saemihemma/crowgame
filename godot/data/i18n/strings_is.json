@@ -69,6 +69,7 @@
   "cloud_delivery_unavailable": "Netvistun er ekki komin í gang hjá okkur enn. Settu Hörmann á heimaskjáinn í bili - það varðveitir framvinduna betur.",
   "level.level_99.name": "Æfingasvæði",
   "math.progress": "Verkefni {0} af {1}",
+  "math.pips": "{0} af {1} að næsta þrepi",
   "level.level_01.name": "Emberskógur",
   "level.level_02.name": "Prismahellir",
   "level.level_03.name": "Sykurstormur",
