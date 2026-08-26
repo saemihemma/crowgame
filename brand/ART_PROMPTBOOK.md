@@ -146,12 +146,22 @@ refs: []
 ---
 Wide night shot of a tall wooden tower of counted things — stacked abacus
 frames, wires and beads — standing on a cold mountaintop, seen from slightly
-above and far away, small in a huge sky. Aurora ribbons #A97BFF and #7CF5C4
-across a #1B223E night sky. Mountains #3A6EA8 below. Warm #FFC93C and #FFE9A8
-points of light all through the tower's frame.
-A dark foreground ridge with a low wooden rail across the bottom quarter of the
-frame. Empty: no people, no birds, no creatures anywhere.
-Three clean depth planes. Cold outside, warm inside.
+above, small in a huge sky. Aurora ribbons #A97BFF and #7CF5C4 across a #1B223E
+night sky, thin and uneven and translucent rather than solid bands. A dark
+foreground ridge with a low wooden rail across the bottom quarter of the frame.
+
+VALUE HIERARCHY, and it matters more than anything else here: the warm
+#FFC93C and #FFE9A8 glow inside the tower's frame is the BRIGHTEST and most
+saturated thing in the whole image. The mountain is a DARK, desaturated, cool
+#2A4A6E silhouette — moonlit at most, never bright ice-blue, and never brighter
+than the tower. Nothing competes with the warm interior light.
+
+Every bead in the tower is warm — amber, honey, cream. No blue beads, no red
+beads, no multicoloured beads.
+The tower fills about a third of the frame's height and is the unmistakable
+subject. Empty: no people, no birds, no creatures anywhere.
+Three clean depth planes. Cold outside, warm inside — that contrast is the
+entire point of the picture.
 ```
 
 ---
@@ -492,20 +502,28 @@ standing on the branch. No creatures, no birds in the plate itself.
 
 ### Foreground atmosphere layers
 
-Thin, mostly-empty transparent overlays that drift in front of everything. They
-are what make a still image feel like a place.
+Thin, mostly-empty transparent overlays that drift in front of everything at a
+different rate from the background. They are what make a still image feel like a
+place.
+
+**These must never duplicate something the background already draws.** The first
+version of this file had aurora in both `bg.tally` and a drifting front layer,
+which would have painted it twice in shot 1 at two different parallax rates —
+visible as a double sky. The sky owns the aurora; the drifting layer is snow.
 
 ```art
-id: fx.aurora
+id: fx.snow
 kind: character
 size: 1536x1024
 background: transparent
-refs: [bg.tally]
+refs: []
 ---
-Thin sparse ribbons of aurora light, #A97BFF and #7CF5C4, sweeping diagonally
-across an otherwise completely empty transparent frame. Soft flat translucent
-bands, not glowing gas, not photographic. Around fifteen percent coverage — the
-frame is mostly empty. Nothing else at all.
+A sparse scatter of fine drifting ice crystals and small flecks of blown snow,
+pale #FFF8E7 and cool #BBD4EE, across an otherwise completely empty transparent
+frame. Flat painted dots and short dashes of varying size, larger and softer
+toward the bottom of the frame as though closer to the camera.
+Around six percent coverage — the frame is almost entirely empty. No aurora, no
+ribbons, no clouds, no creatures, nothing else at all.
 ```
 
 ```art
@@ -551,7 +569,7 @@ plate: 01_tally
 size: 2048x1208
 layers:
   - out: 01_tally_sky.png    from: bg.tally     fit: cover
-  - out: 01_tally_spire.png  from: fx.aurora    fit: cover
+  - out: 01_tally_spire.png  from: fx.snow    fit: cover
   - out: 01_tally_rail.png   from: char.vala.behind  w: 0.06  x: 0.34  y: 0.78  anchor: bottom
 ```
 
@@ -578,7 +596,7 @@ plate: 04_fall
 size: 2048x1208
 layers:
   - out: 04_fall_sky.png     from: bg.miscount  fit: cover
-  - out: 04_fall_tally.png   from: fx.aurora    fit: cover
+  - out: 04_fall_tally.png   from: fx.snow    fit: cover
   - out: 04_fall_lights.png  from: fx.dust      fit: cover
 ```
 
