@@ -142,6 +142,76 @@
         "teachingIntent": "Everything together, at the top of the climb. Multiplication and division appear here once earned (unlock-gated by addition mastery)."
       },
       "theme": "aurora_spire"
+    },
+    {
+      "key": "level_06",
+      "name": "Emberwood Deep",
+      "mapFile": "data/levels/compiled/level_06_emberwood_deep.json",
+      "music": "level_01_music",
+      "unlockRequirement": {
+        "level": "level_05",
+        "minStars": 0
+      },
+      "order": 7,
+      "mathGating": {
+        "skills": [
+          "addition",
+          "subtraction"
+        ],
+        "difficultyBand": [
+          3,
+          5
+        ],
+        "teachingIntent": "Back to the first wood, with the easy sums gone: addition and subtraction with no comfort rung to fall back on."
+      },
+      "theme": "emberwood"
+    },
+    {
+      "key": "level_07",
+      "name": "Crystal Depths",
+      "mapFile": "data/levels/compiled/level_07_crystal_depths.json",
+      "music": "level_02_music",
+      "unlockRequirement": {
+        "level": "level_06",
+        "minStars": 0
+      },
+      "order": 8,
+      "mathGating": {
+        "skills": [
+          "multiplication",
+          "addition"
+        ],
+        "difficultyBand": [
+          2,
+          5
+        ],
+        "teachingIntent": "Equal groups underground: multiplication carried on the addition a child already trusts."
+      },
+      "theme": "prism_hollow"
+    },
+    {
+      "key": "level_08",
+      "name": "Meadow Heights",
+      "mapFile": "data/levels/compiled/level_08_meadow_heights.json",
+      "music": "level_03_music",
+      "unlockRequirement": {
+        "level": "level_07",
+        "minStars": 0
+      },
+      "order": 9,
+      "mathGating": {
+        "skills": [
+          "division",
+          "multiplication",
+          "subtraction"
+        ],
+        "difficultyBand": [
+          3,
+          5
+        ],
+        "teachingIntent": "Sharing out, up high: division against the multiplication it undoes, with subtraction underneath."
+      },
+      "theme": "sugarstorm"
     }
   ]
 }

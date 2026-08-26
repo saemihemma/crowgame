@@ -77,6 +77,15 @@ export const config = {
         writesPerMinutePerDevice: int('CROW_SAVE_WRITES_PER_MIN', 6),
     },
 
+    play: {
+        /**
+         * How many play pings one request may carry. A ping is a timestamp and
+         * nothing else, and the client only makes one every few minutes, so a
+         * batch this size covers a couple of hours of offline play.
+         */
+        maxPingsPerBatch: int('CROW_PLAY_MAX_PING_BATCH', 60),
+    },
+
     mail: {
         driver: str('CROW_MAIL_DRIVER', 'log'),
         endpoint: str('CROW_MAIL_ENDPOINT', ''),

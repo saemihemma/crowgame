@@ -602,6 +602,7 @@ record: the answer to "did my child's work get lost".
 | `GET` | `/api/v1/family/export` | device | full data export |
 | `PUT` | `/api/v1/family/children/{childId}/birth-year` | device | set/clear birth year for the grade comparison |
 | `GET` | `/api/v1/family/children/{childId}/report` | device | the parent report, per domain |
+| `POST` | `/api/v1/play/pings` | device | heartbeat batch, so session length counts play that met no owl |
 | `GET` | `/api/v1/admin/overview` | **admin** | owner KPIs |
 | `GET` | `/api/v1/admin/ladder-tuning` | **admin** | current ladder weights |
 | `GET` | `/api/v1/admin/errors` | **admin** | grouped client errors |

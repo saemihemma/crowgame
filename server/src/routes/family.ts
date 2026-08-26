@@ -344,6 +344,62 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
         },
     );
 
+    // ── play pings ───────────────────────────────────────────────────────────
+    //
+    // "This child was playing at this moment." One timestamp, nothing else.
+    //
+    // It exists because the admin overview derived sessions from ATTEMPT
+    // timestamps, so a child who ran and jumped and never opened a maths board
+    // was invisible in the one number that claims to say how long they played.
+    // The client sends one on level start and every few minutes after, and
+    // batches whatever it could not send.
+    //
+    // The timestamps the client sends are deliberately IGNORED for storage:
+    // received_at is our clock, like every other analytics column, because a
+    // tablet with a wrong date would otherwise move the owner's dashboard. The
+    // count is what carries information -- a batch of six pings is six intervals
+    // of play, wherever the device thinks it happened.
+    app.post(
+        '/api/v1/play/pings',
+        {
+            ...writeLimit,
+            schema: {
+                body: {
+                    type: 'object',
+                    required: ['childId', 'count'],
+                    additionalProperties: false,
+                    properties: {
+                        childId: { type: 'string', maxLength: 64 },
+                        count: { type: 'integer', minimum: 1, maximum: config.play.maxPingsPerBatch },
+                    },
+                },
+            },
+        },
+        async (
+            request: FastifyRequest<{ Body: { childId: string; count: number } }>,
+            reply,
+        ) => {
+            const { familyId } = deviceOf(request);
+            const accepted = await withFamily(familyId, async client => {
+                const owned = await client.query(
+                    'select 1 from children where id = $1 and family_id = $2 and deleted_at is null',
+                    [request.body.childId, familyId],
+                );
+                if (owned.rowCount === 0) return null;
+                // generate_series rather than a client-side loop: one round trip,
+                // and the row count is bounded by the schema above.
+                await client.query(
+                    `insert into play_pings (child_id, family_id)
+                     select $1, $2 from generate_series(1, $3)`,
+                    [request.body.childId, familyId, request.body.count],
+                );
+                return request.body.count;
+            });
+            if (accepted === null) return reply.code(404).send({ error: 'unknown child' });
+            return reply.send({ acceptedPings: accepted });
+        },
+    );
+
     // ── data rights ──────────────────────────────────────────────────────────
     //
     // Export and delete exist from the first release that stores anything. They

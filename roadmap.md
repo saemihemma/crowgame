@@ -63,16 +63,6 @@ regenerating the golden parity fixtures, and the recommendation says so.
 *Done when:* two consecutive weekly reports sit inside the sweet spot with at
 least one step-up per early session and frustration flags under 10%.
 
-### Sessions are derived from math attempts, so math-free play is invisible
-The admin overview splits attempt timestamps on a 30-minute gap to get session
-counts and lengths. A child who runs and jumps without meeting an owl leaves no
-trace in it. A lightweight client heartbeat (session start + a ping every few
-minutes, batched into the existing API) would make session length honest for
-all play, not just math play.
-
-*Done when:* the overview's session numbers come from heartbeats, and the
-`derivedFromAttempts` label is gone from `/api/v1/admin/overview`.
-
 ### Four grade milestones are approximate alignments, not sourced scope
 The Icelandic grade mapping (docs/GRADE_EXPECTATIONS.md) anchors addition,
 subtraction, counting, multiplication and division milestones to official
@@ -92,13 +82,32 @@ number_sequence grade-3/4 milestones.
 *Done when:* every milestone's `basis` is `law`/`curriculum`/`material`, or an
 educator has signed off the `approx` rows in the JSON's provenance notes.
 
-### Division with remainders needs a new answer mode
-The MCQ answer format is a single number, so "deiling með afgangi" (Sproti 4)
-cannot be asked honestly — division content stops at exact division. A
-quotient+remainder answer widget (or a two-part question) unlocks it.
+### Division with remainders: two blockers, and neither is the UI
+"Deiling með afgangi" is Sproti 4 material and division content stops at exact
+division. Scoped properly, because a first look assumed the hard part was a
+two-part answer widget and it is not:
 
-*Done when:* a remainder answer mode exists and a `division` band authored
-with remainders passes the materialize review gate.
+**Already there.** `forceDivisible: false` is a template flag the generator
+honours (`math_authoring.ts`), so producing non-divisible pairs needs no
+generator work. And the maths board already stringifies every option
+(`b.text = str(options[value_index])`, and grading compares strings), so an
+option of `"3 og 2 í afgang"` renders and grades today with no UI change at all.
+
+**The two real blockers.**
+
+1. `tools/math_verifier.ts` assumes exact division everywhere it evaluates a
+   prompt -- `c / a`, `c / b` -- so a remainder prompt derives a non-integer and
+   its traits come out wrong. That file is what the golden fixtures compare byte
+   for byte, so this is a Tier-1 change: the verifier, the fixtures, and a
+   re-materialize of all 4,039 problems.
+2. `reviewMaterializedMathBatches` gates on
+   `answer.mode !== 'mcq' || !options.includes(correct as number)`, so any new
+   mode fails the review gate as an option error until the gate knows the shape.
+   `math-problem.schema.json`'s mode enum needs the new value too.
+
+*Done when:* the verifier evaluates `a ÷ b` with a remainder, the review gate
+accepts the new mode, a `division` band authored with `forceDivisible: false`
+passes materialize, and the golden math fixtures are regenerated.
 
 ## P2 — Experience decisions that need making
 
@@ -142,37 +151,30 @@ Redrawing them by hand is the highest-value art work available.
 *Done when:* every entry in `godot/data/tilesets/tileset_manifest.json` reads
 `"source": "authored"`, and `tools/gen_tilesets.mjs` can be deleted.
 
-### The compiler places three tiles and emits an empty decoration layer
-`tools/level_compiler.ts` only ever writes GIDs 1, 2 and 3 — ground surface,
-ground fill, platform — into the ground layer. Indices 3-15 of every tileset are
-unused, and the `decoration` layer is created full of zeros and never populated.
+### Reduced gravity at the apex is an unmade design decision, not a blocked one
+An earlier version of this entry said the port had "constant gravity and no input
+grace". Half of that was wrong: coyote time and the jump buffer have always been
+in `player_motion.gd`, read from `player_base.json`, and pinned by
+`test_motion_parity.gd`.
 
-Two consequences worth fixing together. A platform run is the same tile repeated,
-so a 3-wide ledge has no left or right cap and reads as a slab. And because there
-is one tile per role, tile texture has to stay non-figurative or it tiles into
-wallpaper — which means distinctive marks have nowhere to live.
+The squash and stretch §2.4 asks for is now in too, as scale on the pose the game
+already has -- rise, apex, fall and the three-beat landing (squash, overshoot,
+settle), all tuned from `player_base.json`'s `feel` block. That is the whole of
+what §2.4 specifies as code. `jump_rise`, `apex` and `fall` are listed there as
+sprite states as well, and there is no crow art for any of them: the only frames
+that exist are a one-frame idle and a nine-frame walk. Those belong to the art
+pass, not here.
 
-*Done when:* the compiler selects left/middle/right caps for platform runs, and
-scatters decoration tiles into the layer it already emits.
+What is genuinely open is whether GRAVITY should be reduced near the apex on top
+of the shape change. Note that §2.4's `apex` is an animation state held while
+`|vy| < 60`, not a gravity scale -- the physics reading is an interpretation
+nobody has committed to, and `PlayerMotion` is parity-locked, so committing to it
+means the same change in `tools/golden/gen_motion_fixtures.ts` and regenerated
+fixtures.
 
-### The feel pass is the last thing the Phaser prototype proved and Godot lacks
-The rest of that list has landed. Five world themes with per-level selection, the
-themed two-stop sky (`game.gd::_paint_sky`), the five per-world tilesets named by
-every compiled map, the wrong-answer choreography, the board that measures its
-own question and grows, the three-pod HUD with the owl ring, the streak flame,
-and the one-answer owl roster -- `owl_probe` solves exactly the one problem the
-registry says the owl asks.
-
-What is left is the feel pass itself: `brand/BRAND_SYSTEM.md` §2.4 asks for coyote
-time, jump buffering and the apex hold, and the port has constant gravity and no
-input grace. The apex hold has its own entry below because the motion parity
-contract blocks it specifically; coyote time and jump buffering do not touch the
-gravity model and are the cheaper half.
-
-*Done when:* `player_motion.gd` carries coyote time and a jump buffer from
-`data/tuning/player_base.json`, and `test_motion_parity.gd` still passes -- both
-are input-timing windows, not gravity, so the golden fixtures should not move. If
-they do, the fixtures are asserting more than the motion model.
+*Done when:* somebody plays it with the shape change alone and says whether the
+jump still wants more float -- or the idea is dropped, because shape may well
+have been what "floaty" meant.
 
 ### Five board materials are wired and undrawn
 `math_challenge.gd::_board_face()` now reads the active world's
@@ -209,18 +211,6 @@ overlay but not the state behind it.
 *Done when:* those two are variants too, or are checked some other way and the
 check is written down.
 
-### Apex hang is blocked by the motion parity contract
-The jump would feel more generous with reduced gravity near the top of the arc,
-which `brand/BRAND_SYSTEM.md` §2.4 calls for as the `apex` hold. It was left out
-of the feel pass deliberately: `godot/tests/test_motion_parity.gd` asserts the
-Godot port matches golden fixtures generated from the web motion model
-(`tools/golden/gen_motion_fixtures.ts`), and that model has one constant gravity.
-Changing it on the web side alone silently breaks parity, and Godot cannot be
-exercised from the container this was written in.
-
-*Done when:* apex damping exists in the shared model, both runtimes implement it
-and the fixtures are regenerated — or the idea is dropped on purpose.
-
 ## P3 — Content and localisation
 
 ### Visual and richer worded prompts
@@ -232,12 +222,23 @@ the spirit of counting's dot strings). Every new worded shape needs a matching
 pattern in `math-kernel/math/wordedArithmetic.ts` — that table is what keeps steps,
 traits, and replay keys honest.
 
-### Misconception tags are authored but nothing consumes them
-Every problem carries `misconceptionTags` (off-by-one, counting-back errors,
-…) and MCQ distractors are constructed, yet the runtime never looks at *which*
-wrong option a child picked. Mapping distractor → misconception in
-`ELOUpdateManager` would let review items target the actual confusion instead
-of just the skill, and let hints speak to the specific error.
+### Review items target the skill, not the confusion
+The hint half is done: `math_misconception.gd` reads a problem's
+`misconceptionTags` and names a miss when the arithmetic identifies it, so a
+child who was one away hears about being one away. `math_challenge.gd` shows that
+instead of the generic authored hint.
+
+What is still open is the queue. `_apply_review_update` schedules a review item
+per (domain, skill), so two children who miss the same problem for opposite
+reasons -- one counting back wrong, one slipping a place value -- get the same
+review. Carrying the identified misconception onto the review item would let the
+scheduled return target the confusion.
+
+*Done when:* a review item carries the misconception it was born from, in both
+ports, and the selector prefers a problem that can reproduce it. Note this one is
+a snapshot shape change in `learner_state_manager.gd`, which is parity-locked, so
+it needs the same field in `math-kernel/systems/LearnerStateManager.ts` and
+regenerated golden fixtures -- which is why the hint half went first.
 
 ### Response time is recorded but unused as a learning signal
 `responseMs` is now honest time-to-first-answer, but nothing distinguishes
@@ -246,27 +247,53 @@ right) is the real mastery bar — consider a soft fluency component in the
 promotion gate, and retune the frustration `responseTimeSpike` threshold in
 `LearnerStateManager.buildSummary` against real session data.
 
-### Within-lane selection is uniform random and problem ELO never learns
-`ELOAwareStrategy` picks uniformly inside the chosen lane; the effective
-selection ELO it computes is unused. Weighting lane candidates toward the
-learner's edge would sharpen targeting inside a step. Relatedly,
-`ProblemPoolManager.updateProblemRating` records per-problem success rates but
-never adjusts `eloRating` — either calibrate item difficulty from that
-telemetry or rename the method to what it does.
+### Item difficulty is not calibrated, and cannot be calibrated on the client
+Within-lane selection is no longer uniform: `ELOAwareStrategy` now leans toward
+the candidate nearest the learner's edge with a wide softmax
+(`selection.withinLaneEloSpread`), so the effective selection ELO it computes is
+finally used for something. Deliberately wide -- `tools/sim_learner_journey.ts`
+measures a thriving child at 517 distinct problems against a floor of 450, and a
+greedier temperature spends that margin.
 
-### Review backlog has no decay or cap policy
-`day_1`/`day_3`/`day_7` review items assume steady play. A child who skips a
-week comes back to a stacked, all-due backlog that crowds the 20-25% review
-lane for a long stretch. Decide a cap per domain and a staleness policy in
-`LearnerStateManager.applyReviewUpdate` / `getDueReviewItems`.
+`updateProblemRating` is renamed `recordProblemOutcome`, because that is what it
+did: it counted attempts and a success rate and never touched `eloRating`. It was
+not made true, because the client is the wrong place for it -- the ratings map is
+rebuilt on every boot and never saved, and a child answers perhaps fifty problems
+out of 3,736 in a session, so nearly every entry would calibrate from zero or one
+observation.
 
-### Difficulty scalar and curriculum step are two separate scales
-`difficulty` comes from authoring band ELO targets, `curriculumStep` from the
-structural derivation in `tools/math_curriculum.ts`; the owl's difficulty band
+What is open is the real version. Every attempt already reaches the API with its
+problem id and outcome, so the observations exist across children; nothing reads
+them back as difficulty.
+
+*Done when:* an admin surface beside `/api/v1/admin/ladder-tuning` reports which
+authored problems are measurably harder or easier than their band claims, with
+enough observations behind each to be worth acting on.
+
+### Difficulty and curriculum step are two scales, and one of them is a rail
+`difficulty` comes from an authoring band's ELO target; `curriculumStep` comes
+from the structural derivation in `tools/math_curriculum.ts`. The owl's band
 filter sits on the first while the ladder climbs the second, which is how
-comparison got stalled before the band was widened. Unify: derive `difficulty`
-from the derived step (one source of truth), or drop the difficulty filter
-from the adaptive path once step data is fully trusted.
+comparison stalled before its band was widened.
+
+**Dropping the band filter from the adaptive path is NOT available**, which cost
+an attempt to find out. It measurably helps -- `tools/sim_learner_journey.ts` put
+a thriving child at 579 distinct problems instead of 517 -- and then
+`reviewMaterializedMathBatches` fails it: the selector smoke counts a problem
+outside the owl's `difficultyRange` as a `selectorCapBreach` (7 of them), and its
+`recentWindowFallbackPreserved` probe is built on `impossibleOptions` that are
+only impossible *because* the band filter exists. That gate is a deliberate
+statement that the band is a safety rail on the adaptive path, not decoration,
+and 62 more distinct problems is not worth removing a rail.
+
+So the remaining option is the other one: derive `difficulty` FROM the derived
+step, so the two scales cannot disagree in the first place and the rail and the
+ladder become the same rail.
+
+*Done when:* `difficulty` is a function of `curriculumStep` in the authoring
+pipeline, every pool is re-materialized through it, and the golden math fixtures
+are regenerated -- problem ELO is assigned from `difficulty`, so this moves
+Tier-1 numbers and cannot be done piecemeal.
 
 ### A gated "padlock owl" variant that asks for more than one answer
 The baseline owl asks exactly one problem, and every dial that makes one owl
@@ -295,9 +322,18 @@ stipulated.
 *Done when:* a real week of play says the pace is right, or says which way to
 move the weights.
 
-### Only six levels exist
-`level_99` (practice) plus five real ones. More content is the main lever on how
-long a child stays with the game.
+### The second lap has never been played by a person
+`level_06`--`level_08` were authored by walking a motif sequence rather than by
+typing coordinates, so their geometry follows from the crow's measured jump
+envelope and both guards pass: every standable cell is reachable and nothing
+spawns inside a tile. What no guard can tell us is whether the three of them are
+any *fun* -- whether the chasm stepping-stones read as a decision, whether the
+single-tile hops are too tight for a six-year-old, whether a summit is worth
+climbing. Nine levels is also not a finish line; content stays the main lever on
+how long a child keeps playing.
+
+*Done when:* a child has played 06 through 08 and someone has watched, and
+either the motifs are kept or the walker's constants change.
 
 ## P4 — Build and tooling
 

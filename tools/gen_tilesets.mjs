@@ -151,7 +151,7 @@ class Sheet {
  *   a tall ground column comes from the value drop between the two tiles, and
  *   the first pass had them nearly identical.
  */
-function paintTile(sheet, index, m, kind) {
+function paintTile(sheet, index, m, kind, cap = null, mark = null) {
     const ox = (index % COLS) * TILE;
     const oy = Math.floor(index / COLS) * TILE;
     const px = (x, y, c, a) => sheet.set(ox + x, oy + y, c, a);
@@ -159,6 +159,11 @@ function paintTile(sheet, index, m, kind) {
     const r = m.ramp;
     const ink = hex(m.ink);
     const accent = hex(m.accent);
+
+    if (kind === 'scatter') {
+        paintScatter(px, mark, r, ink, accent, m.seed);
+        return;
+    }
 
     const isFill = kind === 'fill';
     const isPlatform = kind === 'platform';
@@ -213,6 +218,83 @@ function paintTile(sheet, index, m, kind) {
 
     m.detail({ px, kind, isFill, isPlatform, r, ink, accent, bandEnd, undersideTop,
                seed: m.seed, shade, mix, clump, hash });
+
+    if (cap) paintCap(px, cap, r, ink, isPlatform);
+}
+
+/**
+ * Turn a surface or platform tile into the END of a run.
+ *
+ * Applied AFTER the detail hook, so a world's own edge character is drawn first
+ * and then cut -- otherwise a cap would be the one tile in the sheet with no
+ * material identity. The outer columns go to ink for the same reason the top row
+ * does: it is the silhouette that tells a player where the ledge stops, and a
+ * ledge whose end is the same value as its middle has no end.
+ */
+function paintCap(px, side, r, ink, isPlatform) {
+    const outer = x => (side === 'left' ? x : TILE - 1 - x);
+    const floor = isPlatform ? TILE : TILE;
+    for (let i = 0; i < CAP_EDGE; i++) {
+        const x = outer(i);
+        for (let y = 0; y < floor; y++) {
+            // The very outside is ink; the column inside it is one ramp step
+            // down, so the edge has a thickness rather than being a drawn line.
+            px(x, y, i === 0 ? ink : mix(r.deep, ink, 0.45));
+        }
+    }
+    // Cut the outer top corner away so the end reads as rounded rather than
+    // sawn. Transparent, not dark: a dark notch looks like damage.
+    for (let i = 0; i < CAP_BITE; i++) {
+        for (let y = 0; y < CAP_BITE - i; y++) {
+            px(outer(i), y, [0, 0, 0], 0);
+        }
+    }
+}
+
+/**
+ * One small mark at the bottom of an otherwise transparent tile.
+ *
+ * These go in the decoration layer, one row above a surface, which is why every
+ * mark is anchored to the bottom edge: it has to look like it is growing out of
+ * the ground below rather than floating over it.
+ */
+function paintScatter(px, mark, r, ink, accent, seed) {
+    for (let x = 0; x < TILE; x++) for (let y = 0; y < TILE; y++) px(x, y, [0, 0, 0], 0);
+
+    const base = TILE - 1;
+    if (mark === 'tuft') {
+        // Three blades of different heights, leaning apart.
+        const blades = [{ x: 12, h: 9, lean: -1 }, { x: 16, h: 13, lean: 0 }, { x: 20, h: 8, lean: 1 }];
+        for (const b of blades) {
+            for (let i = 0; i < b.h; i++) {
+                const x = b.x + Math.round((i / b.h) * b.lean * 3);
+                px(x, base - i, i > b.h - 3 ? accent : r.lit);
+                px(x + 1, base - i, r.mid);
+            }
+        }
+        return;
+    }
+    if (mark === 'stone') {
+        // A squat rounded lump. Wider than tall so it reads as resting.
+        const w = 11, h = 6;
+        for (let dy = 0; dy < h; dy++) {
+            const inset = Math.round((dy / h) ** 2 * 3);
+            for (let dx = inset; dx < w - inset; dx++) {
+                const x = 11 + dx;
+                const y = base - (h - 1) + dy;
+                px(x, y, dy === 0 ? r.hi : dy < h - 2 ? r.mid : r.deep);
+            }
+        }
+        for (let dx = 0; dx < w; dx++) px(11 + dx, base, ink);
+        return;
+    }
+    // sprout: a stem with one leaf either side.
+    const stemX = 16;
+    for (let i = 0; i < 11; i++) px(stemX, base - i, i > 7 ? accent : r.lit);
+    for (let i = 0; i < 4; i++) {
+        px(stemX - 1 - i, base - 5 - i, r.lit);
+        px(stemX + 1 + i, base - 7 - i, r.lit);
+    }
 }
 
 // ── per-world material detail ───────────────────────────────────────────────
@@ -406,16 +488,44 @@ const WORLDS = [
     { id: 'aurora_spire', boundary: 'ragged',   seed: 71 },
 ];
 
+/*
+ * The sheet is 4x4 and only three cells had anything in them, so a ground run
+ * was one tile repeated and a three-wide ledge had no left or right end -- it
+ * read as a slab cut out of nothing. Caps and scatter fill the rest.
+ *
+ * `cap` is the side the tile ends on: the outer three columns lose their lit
+ * band to ink and the top outer corner is cut away, so a run terminates instead
+ * of stopping. It is the same art otherwise, which is the point -- a cap is an
+ * edge, not a different material.
+ *
+ * `scatter` tiles are transparent except for one small mark at the BOTTOM of the
+ * cell, because the compiler places them on the row ABOVE a surface: the mark
+ * has to sit on the ground it decorates. These are the one place a figurative
+ * mark is safe, because they are placed sparsely and never in a run.
+ */
 const ROLES = [
-    { index: 0, role: 'ground_surface', kind: 'surface',  collides: true },
-    { index: 1, role: 'ground_fill',    kind: 'fill',     collides: true },
-    { index: 2, role: 'platform',       kind: 'platform', collides: true },
+    { index: 0, role: 'ground_surface',     kind: 'surface',  collides: true },
+    { index: 1, role: 'ground_fill',        kind: 'fill',     collides: true },
+    { index: 2, role: 'platform',           kind: 'platform', collides: true },
+    { index: 3, role: 'ground_cap_left',    kind: 'surface',  collides: true,  cap: 'left' },
+    { index: 4, role: 'ground_cap_right',   kind: 'surface',  collides: true,  cap: 'right' },
+    { index: 5, role: 'platform_cap_left',  kind: 'platform', collides: true,  cap: 'left' },
+    { index: 6, role: 'platform_cap_right', kind: 'platform', collides: true,  cap: 'right' },
+    { index: 7, role: 'scatter_tuft',       kind: 'scatter',  collides: false, mark: 'tuft' },
+    { index: 8, role: 'scatter_stone',      kind: 'scatter',  collides: false, mark: 'stone' },
+    { index: 9, role: 'scatter_sprout',     kind: 'scatter',  collides: false, mark: 'sprout' },
 ];
+
+/** How wide a cap's inked edge is, and how much of its outer corner is cut. */
+const CAP_EDGE = 3;
+const CAP_BITE = 4;
 
 async function build() {
     const manifest = {
         $comment: 'Live tileset contract. Grid geometry is fixed by tools/level_compiler.ts: '
-            + 'a 4x4 sheet of 32px tiles, of which only indices 0/1/2 are ever placed. '
+            + 'a 4x4 sheet of 32px tiles. Indices 0-2 are the surface, fill and platform; '
+            + '3-6 are the left/right end caps of a ground or platform run; 7-9 are '
+            + 'transparent scatter marks for the decoration layer. '
             + 'Replace a PNG in place to reskin a world; add an entry here plus a PNG to add one. '
             + 'The loader reads every entry, so neither needs a code change. Generated entries come '
             + 'from tools/gen_tilesets.mjs - edit that, not this file. See brand/ASSET_MANIFEST.md.',
@@ -440,7 +550,9 @@ async function build() {
         };
 
         const sheet = new Sheet();
-        for (const r of ROLES) paintTile(sheet, r.index, material, r.kind);
+        for (const role of ROLES) {
+            paintTile(sheet, role.index, material, role.kind, role.cap ?? null, role.mark ?? null);
+        }
 
         const png = await sheet.toPng();
         for (const dir of OUT_DIRS) {

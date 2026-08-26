@@ -42,6 +42,8 @@ const IMMEDIATE_REVIEW_MAX_GAP = 4;
 // (shared byte-identical with the Godot port); read them via ladder()/gate().
 const ladder = () => mathTuning().ladder;
 const stretchGate = () => mathTuning().stretchGate;
+const reviewBacklog = () => mathTuning().reviewBacklog;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 const DOMAIN_PREREQUISITES: Partial<Record<MathDomain, MathDomain[]>> = {
     addition: [],
@@ -249,12 +251,34 @@ export class LearnerStateManager {
         return correctRate >= gate.minAccuracy && this.getConfidenceOffset(domain) >= gate.minConfidence;
     }
 
+    /**
+     * The review items the selector may draw from, most urgent first.
+     *
+     * Capped, and stale-aware. The SRS schedules at day_1/day_3/day_7, which
+     * assumes a child who plays most days; one who skips a week returns with
+     * everything due at once, and an uncapped list means the review lane samples
+     * uniformly out of a pile -- so the item they missed first can sit unasked
+     * while fresher ones keep coming up. The cap makes the backlog a queue.
+     *
+     * Staleness is the other half. Sorting by stage first put a day_7 item nine
+     * days overdue behind every day_1 item, which is backwards: nine days past a
+     * seven-day review is a fortnight without practice and its spacing has
+     * stopped meaning anything. Those sort as if immediate.
+     *
+     * READ-TIME ONLY, in both ports. Nothing here edits a review item, so the
+     * snapshot the golden fixtures assert on is untouched.
+     */
     getDueReviewItems(domain?: MathDomain): ReviewItem[] {
         const snapshot = this.getSnapshot();
         const currentAttemptCount = snapshot.mastery.problemsAttempted;
         const now = Date.now();
+        const staleMs = reviewBacklog().staleAfterDays * DAY_MS;
+        const urgency = (item: ReviewItem): number =>
+            item.dueAt !== null && now - item.dueAt >= staleMs
+                ? this.getStageRank('immediate')
+                : this.getStageRank(item.stage);
 
-        return snapshot.reviewItems
+        const due = snapshot.reviewItems
             .filter(item => item.stage !== 'graduated')
             .filter(item => !domain || item.domain === domain)
             .filter(item => {
@@ -267,12 +291,24 @@ export class LearnerStateManager {
                 return false;
             })
             .sort((a, b) => {
-                const stageRank = this.getStageRank(a.stage) - this.getStageRank(b.stage);
+                const stageRank = urgency(a) - urgency(b);
                 if (stageRank !== 0) return stageRank;
                 const aDue = a.dueAt ?? a.dueAfterAttempt ?? 0;
                 const bDue = b.dueAt ?? b.dueAfterAttempt ?? 0;
                 return aDue - bDue;
             });
+
+        // Per domain, not overall: capping the whole list would let one loud
+        // domain starve every other domain's reviews.
+        const cap = reviewBacklog().maxDuePerDomain;
+        if (cap <= 0) return due;
+        const taken = new Map<MathDomain, number>();
+        return due.filter(item => {
+            const n = taken.get(item.domain) ?? 0;
+            if (n >= cap) return false;
+            taken.set(item.domain, n + 1);
+            return true;
+        });
     }
 
     recordAttempt(attempt: LearnerAttemptSubmission): LearnerSnapshot {

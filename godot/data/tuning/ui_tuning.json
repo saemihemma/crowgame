@@ -58,6 +58,8 @@
         "flush_debounce_seconds": 20.0,
         "request_timeout_seconds": 15.0,
         "max_attempts_per_batch": 100,
+        "play_ping_seconds": 120,
+        "max_pings_per_batch": 60,
         "retry_backoff_seconds": [
             5.0,
             15.0,

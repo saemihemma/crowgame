@@ -2,7 +2,7 @@ import Ajv2020 from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
-import { compileLevel, type LevelSpec } from './level_compiler';
+import { compileLevel, GID, COLLIDING_TILE_IDS, type LevelSpec } from './level_compiler';
 import { deriveCurriculumStep, deriveDifficultyTraits } from './math_curriculum';
 import {
     computeInitialProblemELO,
@@ -854,6 +854,163 @@ validateGradeExpectations();
 // Cross-reference validation
 validateCrossReferences();
 validateCompiledLevels();
+
+/**
+ * The tile contract, checked against the SPEC rather than against the compiler.
+ *
+ * Compiled-level freshness above re-runs the compiler and compares, so it agrees
+ * with whatever the compiler currently does -- including doing it wrong. This
+ * derives the runs from the spec independently and asserts the properties a
+ * player can see: a run of two or more begins and ends with a cap, decoration
+ * never carries collision, and nothing is placed outside the sheet.
+ *
+ * Worth a guard because the sheet and the compiler are two files that have to
+ * agree on the same sixteen numbers, and for a long time they agreed only on
+ * three of them.
+ */
+function validateLevelTileUse(): void {
+    console.log('\nLevel tile contract:');
+
+    const specsDir = join(DATA_DIR, 'levels', 'specs');
+    const compiledDir = join(DATA_DIR, 'levels', 'compiled');
+    if (!existsSync(specsDir) || !existsSync(compiledDir)) {
+        console.log('  SKIP: specs or compiled directory missing');
+        return;
+    }
+
+    const manifest = loadJson(join(DATA_DIR, 'tilesets', 'tileset_manifest.json')) as {
+        tilesets: Array<{ key: string; tiles: Array<{ index: number; role: string; collides: boolean }> }>;
+    };
+    const scatterGids = new Set<number>(GID.scatter as unknown as number[]);
+    const collidingGids = new Set(COLLIDING_TILE_IDS.map(id => id + 1));
+
+    let checkedRuns = 0;
+    let checkedScatter = 0;
+
+    for (const file of readdirSync(specsDir).filter(f => f.endsWith('.json'))) {
+        const spec = loadJson(join(specsDir, file)) as LevelSpec;
+        const compiledPath = join(compiledDir, file.replace('.spec.json', '.json'));
+        if (!existsSync(compiledPath)) continue;
+        const compiled = loadJson(compiledPath) as {
+            width: number;
+            layers: Array<{ name: string; type: string; data?: number[] }>;
+            tilesets: Array<{ tilecount: number }>;
+        };
+        const width = compiled.width;
+        const layer = (name: string) => compiled.layers.find(l => l.name === name && l.type === 'tilelayer');
+        const ground = layer('ground')?.data;
+        const decoration = layer('decoration')?.data;
+        if (!ground || !decoration) {
+            console.error(`  FAIL: ${file} has no ground or decoration tile layer`);
+            errors++;
+            continue;
+        }
+        const tilecount = compiled.tilesets[0]?.tilecount ?? 0;
+        const at = (data: number[], x: number, y: number) => data[y * width + x] ?? 0;
+
+        // Every gid placed has to exist in the sheet.
+        for (const [name, data] of [['ground', ground], ['decoration', decoration]] as const) {
+            for (const gid of data) {
+                if (gid !== 0 && (gid < 1 || gid > tilecount)) {
+                    console.error(`  FAIL: ${file} ${name} layer places gid ${gid}, outside 1..${tilecount}`);
+                    errors++;
+                    break;
+                }
+            }
+        }
+
+        // Decoration must never collide, and the ground must never be scatter.
+        for (const gid of decoration) {
+            if (gid !== 0 && collidingGids.has(gid)) {
+                console.error(`  FAIL: ${file} puts colliding gid ${gid} in the decoration layer`);
+                errors++;
+                break;
+            }
+        }
+        for (const gid of ground) {
+            if (scatterGids.has(gid)) {
+                console.error(`  FAIL: ${file} puts scatter gid ${gid} in the ground layer`);
+                errors++;
+                break;
+            }
+        }
+
+        for (const platform of spec.platforms) {
+            const isGround = platform.type === 'ground';
+            const last = platform.x + platform.width - 1;
+            if (platform.width < 2 || platform.x < 0 || last >= width) continue;
+            checkedRuns++;
+            const wantLeft = isGround ? GID.groundCapLeft : GID.platformCapLeft;
+            const wantRight = isGround ? GID.groundCapRight : GID.platformCapRight;
+            const gotLeft = at(ground, platform.x, platform.y);
+            const gotRight = at(ground, last, platform.y);
+            if (gotLeft !== wantLeft) {
+                console.error(`  FAIL: ${file} run at (${platform.x},${platform.y}) w${platform.width} `
+                    + `starts with gid ${gotLeft}, expected the left cap ${wantLeft}`);
+                errors++;
+            }
+            if (gotRight !== wantRight) {
+                console.error(`  FAIL: ${file} run at (${platform.x},${platform.y}) w${platform.width} `
+                    + `ends with gid ${gotRight}, expected the right cap ${wantRight}`);
+                errors++;
+            }
+            // A tuft hanging over the end of a ledge looks like it is falling off.
+            for (const x of [platform.x, last]) {
+                if (platform.y - 1 >= 0 && at(decoration, x, platform.y - 1) !== 0) {
+                    console.error(`  FAIL: ${file} scatters over the capped cell (${x},${platform.y - 1})`);
+                    errors++;
+                }
+            }
+        }
+
+        for (let i = 0; i < decoration.length; i++) {
+            if (decoration[i] === 0) continue;
+            checkedScatter++;
+            const x = i % width;
+            const y = Math.floor(i / width);
+            // Every mark has to be sitting on something.
+            if (!collidingGids.has(at(ground, x, y + 1))) {
+                console.error(`  FAIL: ${file} scatters at (${x},${y}) with no ground beneath it`);
+                errors++;
+            }
+        }
+    }
+
+    // The sheet has to declare everything the compiler places, with the same
+    // collision answer. Two files, sixteen numbers, one contract.
+    for (const tileset of manifest.tilesets) {
+        if (!tileset.key.endsWith('_tiles') || tileset.key === 'forest_tiles') continue;
+        const declared = new Map(tileset.tiles.map(t => [t.index, t]));
+        for (const id of COLLIDING_TILE_IDS) {
+            const entry = declared.get(id);
+            if (!entry) {
+                console.error(`  FAIL: ${tileset.key} does not declare tile ${id}, which the compiler places`);
+                errors++;
+            } else if (!entry.collides) {
+                console.error(`  FAIL: ${tileset.key} declares tile ${id} (${entry.role}) as non-colliding, `
+                    + 'but the compiler places it in the ground layer');
+                errors++;
+            }
+        }
+        for (const gid of GID.scatter as unknown as number[]) {
+            const entry = declared.get(gid - 1);
+            if (!entry) {
+                console.error(`  FAIL: ${tileset.key} does not declare scatter tile ${gid - 1}`);
+                errors++;
+            } else if (entry.collides) {
+                console.error(`  FAIL: ${tileset.key} declares scatter tile ${gid - 1} as colliding`);
+                errors++;
+            }
+        }
+    }
+
+    if (errors === 0) {
+        console.log(`  OK: ${checkedRuns} capped run(s) and ${checkedScatter} scatter mark(s) `
+            + 'match the sheet the generator wrote');
+        validated++;
+    }
+}
+validateLevelTileUse();
 const materialized = validateMaterializedCurriculum();
 validateMathReviewReports(materialized);
 

@@ -1,5 +1,5 @@
 {
-    "$comment": "Live tileset contract. Grid geometry is fixed by tools/level_compiler.ts: a 4x4 sheet of 32px tiles, of which only indices 0/1/2 are ever placed. Replace a PNG in place to reskin a world; add an entry here plus a PNG to add one. The loader reads every entry, so neither needs a code change. Generated entries come from tools/gen_tilesets.mjs - edit that, not this file. See brand/ASSET_MANIFEST.md.",
+    "$comment": "Live tileset contract. Grid geometry is fixed by tools/level_compiler.ts: a 4x4 sheet of 32px tiles. Indices 0-2 are the surface, fill and platform; 3-6 are the left/right end caps of a ground or platform run; 7-9 are transparent scatter marks for the decoration layer. Replace a PNG in place to reskin a world; add an entry here plus a PNG to add one. The loader reads every entry, so neither needs a code change. Generated entries come from tools/gen_tilesets.mjs - edit that, not this file. See brand/ASSET_MANIFEST.md.",
     "tileWidth": 32,
     "tileHeight": 32,
     "columns": 4,
@@ -25,6 +25,41 @@
                     "index": 2,
                     "role": "platform",
                     "collides": true
+                },
+                {
+                    "index": 3,
+                    "role": "ground_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 4,
+                    "role": "ground_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 5,
+                    "role": "platform_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 6,
+                    "role": "platform_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 7,
+                    "role": "scatter_tuft",
+                    "collides": false
+                },
+                {
+                    "index": 8,
+                    "role": "scatter_stone",
+                    "collides": false
+                },
+                {
+                    "index": 9,
+                    "role": "scatter_sprout",
+                    "collides": false
                 }
             ]
         },
@@ -48,6 +83,41 @@
                     "index": 2,
                     "role": "platform",
                     "collides": true
+                },
+                {
+                    "index": 3,
+                    "role": "ground_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 4,
+                    "role": "ground_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 5,
+                    "role": "platform_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 6,
+                    "role": "platform_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 7,
+                    "role": "scatter_tuft",
+                    "collides": false
+                },
+                {
+                    "index": 8,
+                    "role": "scatter_stone",
+                    "collides": false
+                },
+                {
+                    "index": 9,
+                    "role": "scatter_sprout",
+                    "collides": false
                 }
             ]
         },
@@ -71,6 +141,41 @@
                     "index": 2,
                     "role": "platform",
                     "collides": true
+                },
+                {
+                    "index": 3,
+                    "role": "ground_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 4,
+                    "role": "ground_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 5,
+                    "role": "platform_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 6,
+                    "role": "platform_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 7,
+                    "role": "scatter_tuft",
+                    "collides": false
+                },
+                {
+                    "index": 8,
+                    "role": "scatter_stone",
+                    "collides": false
+                },
+                {
+                    "index": 9,
+                    "role": "scatter_sprout",
+                    "collides": false
                 }
             ]
         },
@@ -94,6 +199,41 @@
                     "index": 2,
                     "role": "platform",
                     "collides": true
+                },
+                {
+                    "index": 3,
+                    "role": "ground_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 4,
+                    "role": "ground_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 5,
+                    "role": "platform_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 6,
+                    "role": "platform_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 7,
+                    "role": "scatter_tuft",
+                    "collides": false
+                },
+                {
+                    "index": 8,
+                    "role": "scatter_stone",
+                    "collides": false
+                },
+                {
+                    "index": 9,
+                    "role": "scatter_sprout",
+                    "collides": false
                 }
             ]
         },
@@ -117,6 +257,41 @@
                     "index": 2,
                     "role": "platform",
                     "collides": true
+                },
+                {
+                    "index": 3,
+                    "role": "ground_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 4,
+                    "role": "ground_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 5,
+                    "role": "platform_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 6,
+                    "role": "platform_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 7,
+                    "role": "scatter_tuft",
+                    "collides": false
+                },
+                {
+                    "index": 8,
+                    "role": "scatter_stone",
+                    "collides": false
+                },
+                {
+                    "index": 9,
+                    "role": "scatter_sprout",
+                    "collides": false
                 }
             ]
         },
@@ -141,6 +316,41 @@
                     "index": 2,
                     "role": "platform",
                     "collides": true
+                },
+                {
+                    "index": 3,
+                    "role": "ground_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 4,
+                    "role": "ground_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 5,
+                    "role": "platform_cap_left",
+                    "collides": true
+                },
+                {
+                    "index": 6,
+                    "role": "platform_cap_right",
+                    "collides": true
+                },
+                {
+                    "index": 7,
+                    "role": "scatter_tuft",
+                    "collides": false
+                },
+                {
+                    "index": 8,
+                    "role": "scatter_stone",
+                    "collides": false
+                },
+                {
+                    "index": 9,
+                    "role": "scatter_sprout",
+                    "collides": false
                 }
             ]
         },
@@ -149,7 +359,7 @@
             "theme": null,
             "image": "assets/tilesets/spike_hazards.png",
             "source": "authored",
-            "note": "Variable-width hazard frames, sliced at load time. Not a 32px grid.",
+            "note": "Variable-width hazard frames, sliced by SpriteSheet. Not a 32px grid.",
             "tiles": []
         }
     ]

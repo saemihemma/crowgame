@@ -112,7 +112,7 @@ export class ELOAwareStrategy {
 
         const lane = this.pickLane(availableLanes, laneWeights);
         const candidates = laneCandidates[lane];
-        const selected = candidates[Math.floor(Math.random() * candidates.length)];
+        const selected = this.pickCandidate(candidates, playerELO);
 
         this.lastSelectionMeta = {
             lane,
@@ -210,6 +210,38 @@ export class ELOAwareStrategy {
         }
 
         return null;
+    }
+
+    /**
+     * Which problem, once the lane is chosen.
+     *
+     * This was a uniform pick, which is why the effective selection ELO computed
+     * above was logged and never used: the lane decided the rung and then the
+     * question came out of a hat. Two problems on the same rung are not equally
+     * well aimed -- one may sit 200 points off the learner's edge -- and nothing
+     * preferred the nearer one.
+     *
+     * A SOFTMAX, not an argmin, and a deliberately wide one. Always picking the
+     * nearest candidate would collapse coverage: tools/sim_learner_journey.ts
+     * exists because a thriving child once saw 335 problems out of 4039, and it
+     * holds a floor of 450 distinct. Closeness is a lean, not a rule.
+     */
+    private pickCandidate<T extends { problem: MathProblem }>(candidates: T[], targetELO: number): T {
+        if (candidates.length === 1) return candidates[0];
+        const spread = mathTuning().selection.withinLaneEloSpread;
+        if (spread <= 0) return candidates[Math.floor(Math.random() * candidates.length)];
+
+        const weights = candidates.map(c =>
+            Math.exp(-Math.abs(this.poolManager.getProblemELO(c.problem.id) - targetELO) / spread));
+        const total = weights.reduce((a, b) => a + b, 0);
+        if (total <= 0) return candidates[Math.floor(Math.random() * candidates.length)];
+
+        let roll = Math.random() * total;
+        for (let i = 0; i < candidates.length; i++) {
+            roll -= weights[i];
+            if (roll <= 0) return candidates[i];
+        }
+        return candidates[candidates.length - 1];
     }
 
     private pickLane(lanes: SelectionLane[], weights: Record<SelectionLane, number>): SelectionLane {

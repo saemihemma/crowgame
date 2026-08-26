@@ -100,10 +100,13 @@ const withSeededRandom = <T>(fn: () => T): T => {
 
 export interface DomainJourney {
     domain: string;
+    /** The unlock that is still standing, or null if the gate closed again. */
     unlockedAt: number | null;
     firstServedAt: number | null;
     served: number;
     maxStep: number;
+    /** Times this domain opened and closed again before it was ever served. */
+    unlockFlickers?: number;
 }
 export interface JourneyResult {
     profile: string;
@@ -126,7 +129,7 @@ export function runJourney(profile: string, successRate: number, attempts: numbe
 
 function runJourneyInner(profile: string, successRate: number, attempts: number): JourneyResult {
     // The kernel reads its ladder and lane knobs from the shipped tuning file.
-    // BootScene does this in the browser; a Node tool has to do it itself.
+    // The Godot boot path does this at runtime; a Node tool has to do it itself.
     MathTuning.initialize(read(join(ROOT, 'godot', 'data', 'tuning', 'math_tuning.json')));
     const problems = loadPools();
     const owl = loadOwl();
@@ -174,9 +177,29 @@ function runJourneyInner(profile: string, successRate: number, attempts: number)
     };
 
     for (let attempt = 1; attempt <= attempts; attempt++) {
+        // UNLOCKING IS NOT A ONE-WAY DOOR.
+        //
+        // A domain opens behind an accuracy gate over its own recent history, so
+        // a child hovering around that gate crosses it in both directions. This
+        // used to latch the FIRST unlock and never clear it, which made the gap
+        // check below measure from a moment that had since been undone: the
+        // struggling profile unlocked multiplication at attempt 161, re-locked a
+        // few attempts later, and the guard then reported 396 attempts of
+        // "withheld earned content" for a domain the child had not, at that
+        // point, earned. It found that only when an unrelated selection change
+        // moved the flicker, which is how a latch bug hides.
+        //
+        // So track the unlock that is still standing, and count the flickers --
+        // a domain that oscillates is worth knowing about on its own.
         for (const d of owl.domains) {
-            if (state[d].unlockedAt === null && LearnerStateManager.getInstance().isDomainUnlocked(d)) {
+            const unlocked = LearnerStateManager.getInstance().isDomainUnlocked(d);
+            if (unlocked && state[d].unlockedAt === null) {
                 state[d].unlockedAt = attempt;
+            } else if (!unlocked && state[d].unlockedAt !== null && state[d].firstServedAt === null) {
+                // Opened and closed again without ever being served. That is not
+                // withheld content, it is a gate the child has not held.
+                state[d].unlockedAt = null;
+                state[d].unlockFlickers = (state[d].unlockFlickers ?? 0) + 1;
             }
         }
 
@@ -242,6 +265,11 @@ if (process.argv[1] && process.argv[1].endsWith('sim_learner_journey.ts')) {
         console.log(`\n=== ${r.profile} (${(r.successRate * 100).toFixed(0)}% correct, ${r.attempts} attempts) ===`);
         if (r.exhaustedAt) console.log(`  EXHAUSTED at attempt ${r.exhaustedAt}: the owl ran out of problems.`);
         console.log(`  ${r.servedProblems} served, ${r.uniqueProblemsServed} distinct, ${r.lessonsOpened} lessons opened`);
+        const flickering = r.domains.filter(d => (d.unlockFlickers ?? 0) > 0);
+        if (flickering.length > 0) {
+            console.log('  gates that opened and closed again before being served: '
+                + flickering.map(d => `${d.domain} x${d.unlockFlickers}`).join(', '));
+        }
         console.log('  domain            unlocked  first served   gap   served  top step');
         for (const d of r.domains) {
             const gap = d.unlockedAt !== null && d.firstServedAt !== null ? d.firstServedAt - d.unlockedAt

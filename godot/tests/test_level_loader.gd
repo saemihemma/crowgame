@@ -33,9 +33,38 @@ func test_tile_layers() -> void:
 		if l["name"] == "ground":
 			assert_eq((l["data"] as Array).size(), 112 * 20, "ground data length")
 
+## Every tile the ground layer places has to collide, and nothing in the
+## decoration layer may.
+##
+## This used to assert the literal list [0, 1, 2], which is the compiler's answer
+## rather than the requirement -- so the day the compiler learned to place end
+## caps, a correct change failed a test that was describing an old fact. Assert
+## the property instead: whatever the ground layer holds, the loader must have
+## baked collision onto it.
 func test_collide_ids() -> void:
-	assert_eq(_parsed["tileset"]["collide_ids"], [0, 1, 2], "collide ids (gids 1/2/3)")
+	var collide: Array = _parsed["tileset"]["collide_ids"]
+	var firstgid: int = int(_parsed["tileset"]["firstgid"])
+	assert_true(collide.size() > 0, "some tiles collide")
 	assert_true(LevelLoader.count_collision_cells(_parsed) > 0, "some collision cells exist")
+
+	var ground_ids := {}
+	var decoration_ids := {}
+	for l in _parsed["tile_layers"]:
+		var into: Dictionary = ground_ids if l["name"] == "ground" else decoration_ids
+		if l["name"] != "ground" and l["name"] != "decoration":
+			continue
+		for gid in l["data"]:
+			if int(gid) != 0:
+				into[int(gid) - firstgid] = true
+
+	assert_true(ground_ids.size() > 0, "the ground layer places something")
+	for id in ground_ids:
+		assert_true(collide.has(id),
+			"ground tile %d collides -- a ledge a player can stand through is not a ledge" % id)
+	assert_true(decoration_ids.size() > 0, "the decoration layer places something")
+	for id in decoration_ids:
+		assert_true(not collide.has(id),
+			"decoration tile %d does not collide -- a tuft of grass is not a wall" % id)
 
 func test_object_spawns() -> void:
 	var types := {}

@@ -1,0 +1,426 @@
+{
+  "id": "level_07",
+  "name": "Crystal Depths",
+  "theme": "prism_hollow",
+  "difficulty": 4,
+  "music": "level_02_music",
+  "criticalPath": {
+    "length": "long",
+    "motifs": [
+      "staircase_up",
+      "gap_jump",
+      "platform_hop",
+      "narrow_ledge",
+      "descent"
+    ]
+  },
+  "platforms": [
+    {
+      "type": "ground",
+      "x": 0,
+      "width": 12,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 12,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 16,
+      "width": 3,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 20,
+      "width": 3,
+      "y": 7
+    },
+    {
+      "type": "ground",
+      "x": 24,
+      "width": 10,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 36,
+      "width": 2,
+      "y": 14
+    },
+    {
+      "type": "ground",
+      "x": 40,
+      "width": 10,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 50,
+      "width": 1,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 54,
+      "width": 1,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 58,
+      "width": 1,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 62,
+      "width": 1,
+      "y": 13
+    },
+    {
+      "type": "ground",
+      "x": 66,
+      "width": 12,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 81,
+      "width": 5,
+      "y": 13
+    },
+    {
+      "type": "ground",
+      "x": 86,
+      "width": 14,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 100,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 104,
+      "width": 3,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 108,
+      "width": 3,
+      "y": 7
+    },
+    {
+      "type": "platform",
+      "x": 112,
+      "width": 5,
+      "y": 7
+    },
+    {
+      "type": "platform",
+      "x": 117,
+      "width": 3,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 121,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "ground",
+      "x": 125,
+      "width": 12,
+      "y": 16
+    }
+  ],
+  "spawns": {
+    "player": {
+      "x": 2,
+      "y": 14
+    },
+    "npcs": [
+      {
+        "npc_id": "owl_teacher_01",
+        "x": 9,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_tough_01",
+        "x": 88,
+        "y": 16
+      }
+    ],
+    "collectibles": [
+      {
+        "type": "coin",
+        "x": 0,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 3,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 6,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 9,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 12,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 16,
+        "y": 8
+      },
+      {
+        "type": "coin",
+        "x": 20,
+        "y": 5
+      },
+      {
+        "type": "coin",
+        "x": 24,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 27,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 30,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 33,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 36,
+        "y": 12
+      },
+      {
+        "type": "coin",
+        "x": 40,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 43,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 46,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 49,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 50,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 54,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 58,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 62,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 66,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 69,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 72,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 75,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 81,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 84,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 86,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 89,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 92,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 95,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 98,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 100,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 104,
+        "y": 8
+      },
+      {
+        "type": "coin",
+        "x": 108,
+        "y": 5
+      },
+      {
+        "type": "coin",
+        "x": 112,
+        "y": 5
+      },
+      {
+        "type": "coin",
+        "x": 115,
+        "y": 5
+      },
+      {
+        "type": "coin",
+        "x": 117,
+        "y": 8
+      },
+      {
+        "type": "coin",
+        "x": 121,
+        "y": 11
+      },
+      {
+        "type": "coin",
+        "x": 125,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 128,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 131,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 134,
+        "y": 14
+      }
+    ]
+  },
+  "hazards": [
+    {
+      "type": "spikes",
+      "x": 34,
+      "y": 19,
+      "width": 6,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 78,
+      "y": 19,
+      "width": 3,
+      "height": 1
+    }
+  ],
+  "enemies": [
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 43,
+      "y": 15
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 71,
+      "y": 15
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 97,
+      "y": 15
+    }
+  ],
+  "exits": [
+    {
+      "x": 135,
+      "y": 16,
+      "target_level": "level_08"
+    }
+  ],
+  "mathGating": {
+    "skills": [
+      "multiplication",
+      "addition"
+    ],
+    "difficultyBand": [
+      2,
+      5
+    ],
+    "teachingIntent": "Equal groups underground: multiplication carried on the addition a child already trusts."
+  }
+}
