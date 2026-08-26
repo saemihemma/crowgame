@@ -30,6 +30,7 @@
   "game.back_to_menu": "Back to Menu",
   "game.play_again": "Play Again",
   "npc.professor_hoot": "Professor Hoot",
+  "npc.owl_questions": "{0} - {1} questions",
   "game.oops": "Oops!",
   "login.hi": "Hi, {0}!",
   "login.pick_pin": "Pick a 4-digit PIN",

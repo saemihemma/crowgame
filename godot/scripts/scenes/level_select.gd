@@ -13,6 +13,9 @@ extends Control
 ## A level is unlocked when it has no unlockRequirement or its required level is
 ## completed. Selecting one sets the current level and starts the game.
 
+## The Math Practice Arena, which is not a world.
+const PRACTICE_ARENA_KEY := "level_99"
+
 const TITLE_TOP := 18.0
 const TITLE_H := 58.0
 const CARD_SEPARATION := 20
@@ -62,10 +65,23 @@ func _ready() -> void:
 	# against the screen edge when the row is scrolled to a stop.
 	row.add_child(_spacer())
 
+	## The Math Practice Arena: a flat 200-tile run of nineteen owls and no
+	## platforming. It held `order: 1`, which put it in the FIRST card slot and
+	## left every other card sitting one position ahead of its own level number --
+	## the fourth card was level three, which is what a playtester reported as "i
+	## can play like level 4 now but not 3". The order is fixed in the registry;
+	## this is the separate question of whether it belongs in a child's grid at
+	## all, and by default it does not.
+	##
+	## It is still reachable: nothing here deletes it, and the flag is in the
+	## grown-up panel. If it stays hidden, free practice wants an entry point a
+	## parent can find -- that decision is open.
 	var completed: Array = SaveManager.get_data().get("completedLevels", [])
 	var first: WorldCard = null
 	for level in LevelManager.get_levels():
 		var key := String(level.get("key", ""))
+		if key == PRACTICE_ARENA_KEY and not bool(Config.flag("levels/practice_arena_in_grid", false)):
+			continue
 		var unlocked := _is_unlocked(level, completed)
 		var card := WorldCard.make(key, level, unlocked, completed.has(key), _play.bind(key))
 		row.add_child(card)

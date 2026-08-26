@@ -36,6 +36,27 @@ func test_sound_events_map_to_manifest() -> void:
 ## world's mathGating steps its difficulty band upward, so a child who reaches
 ## the fifth world first meets subtraction before addition. A doc that states a
 ## rule nothing enforces is a doc that goes stale quietly.
+## The card a child taps is the level it says it is.
+##
+## level_99 held `order: 1`, so the practice arena took the FIRST slot in level
+## select and every world sat one position ahead of its own number -- the fourth
+## card was level three. A playtester read that as broken unlocking: "i can play
+## like level 4 now but not 3". Nothing enforced it, because `order` is only ever
+## compared against itself.
+##
+## Pins the mapping rather than the number: world N is the Nth world card, in
+## registry order, whatever `order` values are used to get there.
+func test_world_card_position_matches_its_number() -> void:
+	var position := 0
+	for level in LevelManager.get_levels():
+		var key := String(level.get("key", ""))
+		if key == "level_99":
+			continue
+		position += 1
+		var number := key.trim_prefix("level_").to_int()
+		assert_eq(number, position,
+			"%s is world card %d, so its number must be %d" % [key, position, position])
+
 func test_worlds_unlock_one_at_a_time() -> void:
 	var levels: Array = LevelManager.get_levels()
 	var worlds: Array = []
