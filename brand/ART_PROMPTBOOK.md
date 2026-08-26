@@ -93,30 +93,41 @@ If a shot can't say which row it is, it doesn't belong in the film.
 
 ---
 
-## 4. The style block
+## 4. The style blocks
 
-Injected verbatim at the top of **every** prompt by `tools/gen_art.mjs`. It is
-defined in this file and nowhere else — edit it here and the whole film changes
-together.
+**Two blocks, and the order is the point.** `stylelead` goes in front of every
+prompt and `styletail` goes behind it, so the per-image subject sits between
+them rather than under 700 characters of house style.
 
-```style
-Children's storybook illustration for a video game for five to eight year olds.
-Flat painted shapes with clean hard edges. Bold, instantly readable silhouettes.
-Limited palette with strong value contrast. Warm, hand-made, slightly rough
-brush character. Cinematic wide composition with a clear focal point.
-Absolutely not: photorealism, 3D render, plastic shading, airbrush gradients,
-lens flare, bloom, motion blur, chromatic aberration, anime, chibi, cute
-mascot styling.
+This is the single biggest prompt-craft lever here. The first version of this
+file injected one long style block at the top; the subject and the value
+hierarchy landed 770 characters down the prompt and got outranked by "warm,
+hand-made, slightly rough brush character". Image models weight early tokens
+hardest. **Lead with the look in one line, put the subject next, and bury the
+negatives at the end where they cost nothing.**
+
+```stylelead
+Flat-painted children's storybook illustration for a video game. Hard clean
+edges, no gradients, limited palette, strong value contrast.
+```
+
+```styletail
+Not photorealistic, not a 3D render. No airbrush or plastic shading, no
+gradients across large areas, no lens flare, no motion blur, no anime or chibi
+styling, no cute mascot look.
+A soft painted halo of warm light around a light source IS wanted — glow spilling
+onto nearby surfaces, painted as flat translucent shapes. What is not wanted is
+photographic bloom over the whole frame.
 Never frightening for a small child: no blood, no gore, no skulls, no bared
 teeth at the camera, no glowing red eyes, nothing lunging toward the viewer.
-No text, no letters, no numbers, no words, no signage copy, no watermark, no
-signature, no border, no frame, no UI elements, no user interface.
+No text, letters, numbers or words anywhere. No signage copy, no watermark, no
+signature, no border, no frame, no UI elements.
 ```
 
 ### Palette
 
-Stated as hex in each prompt that needs it, because colour words drift and hex
-doesn't. These are `BRAND_SYSTEM.md` §6.
+Stated as hex wherever it matters, because colour words drift and hex doesn't.
+These are `BRAND_SYSTEM.md` §6.
 
 ```palette
 ink       #1A1420   outlines, deep shadow
@@ -124,9 +135,9 @@ paper     #FFF8E7   highlight, light
 coin      #FFC93C   a thing counted correctly, glowing
 owl       #FFE9A8   owl feathers, warm interior light
 hero      #E23B3B   Hörmann's face mask and scarf. The only red in the film.
-spire     #3A6EA8 with #A97BFF aurora and #1B223E night sky   (shots 1-4)
-hollow    #2B2A5E with #4DE3FF glints on #16142E gloom        (shot 5)
-ember     #3F8F5B ground under a #F6C092 peach dawn           (shots 6-7)
+spire     #131A2E night sky, #1E2E4A dark mountain, #A97BFF aurora  (shots 1-4)
+hollow    #2B2A5E with #4DE3FF glints on #16142E gloom              (shot 5)
+ember     #3F8F5B ground under a #F6C092 peach dawn                 (shots 6-7)
 roach     #6B3F16 rust-brown carapace, #8A7A2E grimy plating
 ```
 
@@ -144,24 +155,32 @@ kind: plate
 size: 1536x1024
 refs: []
 ---
-Wide night shot of a tall wooden tower of counted things — stacked abacus
-frames, wires and beads — standing on a cold mountaintop, seen from slightly
-above, small in a huge sky. Aurora ribbons #A97BFF and #7CF5C4 across a #1B223E
-night sky, thin and uneven and translucent rather than solid bands. A dark
-foreground ridge with a low wooden rail across the bottom quarter of the frame.
+ONE WARM THING IN A COLD WORLD. That is the entire picture, and every other
+decision serves it.
 
-VALUE HIERARCHY, and it matters more than anything else here: the warm
-#FFC93C and #FFE9A8 glow inside the tower's frame is the BRIGHTEST and most
-saturated thing in the whole image. The mountain is a DARK, desaturated, cool
-#2A4A6E silhouette — moonlit at most, never bright ice-blue, and never brighter
-than the tower. Nothing competes with the warm interior light.
+The brightest, warmest, most saturated thing in the frame is the light glowing
+inside a tall wooden tower — amber and honey, #FFC93C and #FFE9A8 — lit from
+within like a lantern. Everything else is dark and cool and falls away from it.
 
-Every bead in the tower is warm — amber, honey, cream. No blue beads, no red
-beads, no multicoloured beads.
-The tower fills about a third of the frame's height and is the unmistakable
-subject. Empty: no people, no birds, no creatures anywhere.
-Three clean depth planes. Cold outside, warm inside — that contrast is the
-entire point of the picture.
+The tower: tall and narrow, built from stacked wooden abacus frames, wires and
+rows of round wooden beads, standing alone on a mountain summit. Every bead is
+warm — amber, honey, cream. Warm light spills out between the frames. It fills
+about a third of the frame's height, a little right of centre.
+
+The mountain it stands on is a DARK navy silhouette, #1E2E4A, barely lighter
+than the foreground. No lit snow. No bright ice-blue. No highlights on it at
+all. It is a shape against the sky, not a lit surface.
+
+Sky: deep night #131A2E, a scatter of small stars, and two thin aurora ribbons
+#A97BFF and #7CF5C4 — faint, uneven, translucent light, not solid painted bands.
+
+Foreground: a near-black ridge across the bottom third, with a low wooden rail
+running along it in silhouette.
+
+Three flat depth planes: sky, dark mountain carrying the glowing tower,
+near-black foreground.
+
+Empty of life: no people, no birds, no animals, no creatures anywhere.
 ```
 
 ---

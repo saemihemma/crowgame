@@ -14,9 +14,12 @@
  *
  * Two things this does that matter:
  *
- *  - THE STYLE BLOCK IS INJECTED, never copied. Every prompt gets the ```style
- *    block prepended here, so someone editing one prompt in the middle of the
- *    document cannot accidentally drop the house style from one image.
+ *  - THE STYLE IS INJECTED AROUND THE SUBJECT, never copied into it. The short
+ *    ```stylelead goes in front and the long ```styletail goes behind, so the
+ *    per-image subject sits between them. Order matters more than wording here:
+ *    the first version prepended one 770-character block and the subject landed
+ *    so far down the prompt that the house style outranked it. Injecting also
+ *    means someone editing one prompt cannot drop the style from one image.
  *
  *  - IT IS IDEMPOTENT. Beside every output sits a .meta.json holding a hash of
  *    the exact request that produced it. Re-running costs nothing and only the
@@ -88,8 +91,12 @@ function parseBlock(text) {
 
 function loadBook() {
     const md = readFileSync(BOOK, 'utf8');
-    const style = fences(md, 'style');
-    if (style.length !== 1) throw new Error(`expected exactly one \`\`\`style block, found ${style.length}`);
+    const one = (lang) => {
+        const f = fences(md, lang);
+        if (f.length !== 1) throw new Error(`expected exactly one \`\`\`${lang} block, found ${f.length}`);
+        return f[0].trim();
+    };
+    const style = { lead: one('stylelead'), tail: one('styletail') };
     const blocks = fences(md, 'art').map(parseBlock);
 
     const seen = new Set();
@@ -101,7 +108,7 @@ function loadBook() {
         if (b.background === 'transparent' && b.kind === 'plate')
             throw new Error(`${b.id}: a plate is the opaque bottom of a shot; it cannot be transparent`);
     }
-    return { style: style[0].trim(), blocks };
+    return { style, blocks };
 }
 
 const outPath = (id) => join(OUT_DIR, `${id}.png`);
@@ -124,7 +131,7 @@ function refPath(ref, byId) {
 
 function buildRequest(block, style, byId) {
     const refs = Array.isArray(block.refs) ? block.refs : block.refs ? [block.refs] : [];
-    const prompt = `${style}\n\n${block.prompt}`;
+    const prompt = `${style.lead}\n\n${block.prompt}\n\n${style.tail}`;
     const req = {
         id: block.id,
         prompt,
