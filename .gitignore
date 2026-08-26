@@ -60,3 +60,8 @@ __pycache__/
 # back, and the script overwrites the same filenames, so tracking it would put
 # 13MB of binary churn in every commit that followed a capture run.
 output/level-shots/
+
+# Frames from godot/tools/focus_loss_repro.mjs. Same category as
+# output/playwright/: a harness writes them on demand to show its own work, and
+# nothing reads them back.
+output/focus-repro/
