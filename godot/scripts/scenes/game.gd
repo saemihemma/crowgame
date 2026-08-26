@@ -262,6 +262,41 @@ func _paint_parallax() -> void:
 		parallax.queue_free()
 		return
 	add_child(parallax)
+	_paint_valley(world)
+
+## What a pit opens onto.
+##
+## The ranges hang *above* the horizon, so anywhere the level floor has a gap
+## the sky gradient showed straight through it - a bright blue hole punched in
+## the bottom of a mountain range, which read as a rendering bug rather than as
+## a drop. This fills everything below the horizon with the near range's own
+## base tone, so a pit reads as the valley floor continuing away from the
+## camera.
+##
+## The colour is sampled from the bottom row of the near strip rather than
+## recomputed here: that pixel already went through the generator's haze and
+## lightness ramp, and deriving it twice is how the two drift apart.
+func _paint_valley(world: String) -> void:
+	var path := "res://assets/parallax/%s_near.png" % world
+	if not ResourceLoader.exists(path):
+		return
+	var image: Image = (load(path) as Texture2D).get_image()
+	if image == null:
+		return
+	var layer := CanvasLayer.new()
+	layer.name = "Valley"
+	# Behind the ranges, in front of the sky. They do not overlap - the ranges
+	# stop at the horizon and this starts there - but the order has to be
+	# defined or a rounding difference shows a one-pixel seam of sky.
+	layer.layer = PARALLAX_LAYER - 1
+	var fill := ColorRect.new()
+	fill.color = image.get_pixel(0, image.get_height() - 1)
+	fill.anchor_right = 1.0
+	fill.anchor_bottom = 1.0
+	fill.offset_top = _horizon_y()
+	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(fill)
+	add_child(layer)
 
 ## Where the ranges' base sits, down the screen.
 ##

@@ -117,14 +117,26 @@ func _apply_window_size() -> void:
 	_requested_window = size
 
 func _resolve_levels() -> PackedStringArray:
-	var args := OS.get_cmdline_user_args()
-	if args.size() > 0 and args[0] != "":
-		return args[0].split(",", false)
-
-	var out := PackedStringArray()
+	var known := PackedStringArray()
 	for entry in LevelManager.get_levels():
-		out.append(entry.get("key", ""))
-	return out
+		known.append(entry.get("key", ""))
+
+	var args := OS.get_cmdline_user_args()
+	if args.size() == 0 or args[0] == "":
+		return known
+
+	# A key nobody has has to be an error, not an empty picture. Asking for a
+	# level that does not exist used to load nothing and photograph the result:
+	# bare sky, no ground, no crow, the HUD floating over it. That shot is
+	# indistinguishable from a level that failed to build, and it cost a real
+	# investigation before anyone noticed the level had never existed.
+	var wanted := args[0].split(",", false)
+	for key in wanted:
+		if not known.has(key):
+			printerr("[capture] no such level '%s'; have: %s" % [key, ", ".join(known)])
+			get_tree().quit(1)
+			return PackedStringArray()
+	return wanted
 
 func _resolve_variants() -> PackedStringArray:
 	var args := OS.get_cmdline_user_args()

@@ -30,6 +30,24 @@ const hex = (s) => [parseInt(s.slice(1, 3), 16), parseInt(s.slice(3, 5), 16), pa
 const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
 
 /**
+ * Rec. 709 luminance, 0..1. Not a perceptual space - it only has to order and
+ * separate the three bands, and it does that with one multiply per channel.
+ */
+const lum = (c) => (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255;
+
+/**
+ * Move a colour to an exact luminance by mixing toward white or black, which
+ * keeps its hue while it travels. Luminance is linear under a mix, so the
+ * fraction that lands on the target is a closed form rather than a search.
+ */
+function setLuminance(c, target) {
+    const have = lum(c);
+    if (target > have) return mix(c, [255, 255, 255], have >= 1 ? 0 : (target - have) / (1 - have));
+    return mix(c, [0, 0, 0], have <= 0 ? 0 : (have - target) / have);
+}
+
+
+/**
  * Deterministic value noise. Math.random() would give a different mountain on
  * every run, so a regenerated asset would show up as a diff with no change in
  * intent - and nobody could reproduce a range they liked.
@@ -73,9 +91,12 @@ function ridge(seed, baseline, amplitude, peaks) {
  * than as a flat cut-out.
  */
 function layer(colour, sky, seed, opts) {
-    const { baseline, amplitude, peaks, rimLift, shade, haze, darken } = opts;
-    // Distance drains colour toward the sky; nearness adds weight.
-    colour = mix(mix(colour, sky, haze), [0, 0, 0], darken);
+    const { baseline, amplitude, peaks, rimLift, shade, haze, lightness } = opts;
+    // Two separate jobs, and conflating them is what made half the worlds
+    // unreadable. `haze` is hue only: distance washes a mountain toward the
+    // colour of the air in front of it. `lightness` is the absolute value the
+    // band has to land on, measured against the sky at the horizon.
+    colour = setLuminance(mix(colour, sky, haze), lightness);
     const buf = Buffer.alloc(W * H * 4, 0);
     const line = ridge(seed, baseline, amplitude, peaks);
     const rim = mix(colour, [255, 255, 255], rimLift);
@@ -107,46 +128,69 @@ async function write(buf, path) {
 // Far is highest, palest and flattest; near is lowest, darkest and sharpest.
 // That ordering is what makes the three read as distance rather than as three
 // mountain ranges that happen to overlap.
-// `haze` is the fraction of the sky colour mixed into the band.
 //
-// This is what makes three ranges read as distance rather than as one mass:
-// air between you and a mountain washes it toward the colour of the sky, and
-// without it the far range came out exactly as loud as the platforms the crow
-// is standing on. The near band gets almost none - it is nearly in the level.
-//
-// Amplitudes fall toward the viewer for the same reason the first version
-// looked wrong: a spiky near range punched up past the platforms and read as
-// foreground clutter instead of as background.
 // All three bands come from ONE hue - the world's `mid` role - and are separated
 // by a forced lightness ramp rather than by picking three palette entries.
 //
 // Picking three was the first attempt and it does not work: the roles are named
 // for the tileset's depth, not for brightness, so in Sugarstorm `mid` is a hot
 // magenta and `far` is a darker purple. Hazing them still left the middle range
-// the loudest thing on screen, reading as *in front of* the level. A ramp is
-// correct in every world by construction.
+// the loudest thing on screen, reading as *in front of* the level.
 //
-// `haze` washes toward the sky (aerial perspective, so distance drains colour);
-// `darken` pulls toward black (so nearer mass is heavier). Amplitudes stay low
-// toward the viewer - a spiky near range punches past the platforms and becomes
-// foreground clutter.
+// A *relative* ramp was the second attempt and it does not work either. Mixing
+// each band a fixed fraction toward the sky assumes the mountain and the sky
+// start far apart in value, and in half these worlds they do not: Geyserworks'
+// `mid` is 0.28 against a 0.20 sky, Aurora Spire's is 0.29 against 0.28. The
+// bands came out the same brown or the same navy as the air behind them and the
+// whole frame read as one mush. The ramp below is absolute - each band is
+// pushed to an exact luminance derived from this world's own horizon - so the
+// separation is the same in every world by construction.
+//
+// `haze` survives, but only as hue: distance washes a mountain toward the
+// colour of the air in front of it. Amplitudes stay low toward the viewer - a
+// spiky near range punches past the platforms and becomes foreground clutter.
 const BANDS = [
-    { file: 'far',  baseline: H * 0.30, amplitude: 11, peaks: 2, rimLift: 0.22, shade: 0.18, haze: 0.66, darken: 0.00, seed: 11 },
-    { file: 'mid',  baseline: H * 0.52, amplitude: 12, peaks: 3, rimLift: 0.16, shade: 0.24, haze: 0.44, darken: 0.20, seed: 29 },
-    { file: 'near', baseline: H * 0.72, amplitude: 11, peaks: 5, rimLift: 0.12, shade: 0.30, haze: 0.22, darken: 0.42, seed: 47 },
+    { file: 'far',  baseline: H * 0.30, amplitude: 11, peaks: 2, rimLift: 0.22, shade: 0.18, haze: 0.66, step: 0, seed: 11 },
+    { file: 'mid',  baseline: H * 0.52, amplitude: 12, peaks: 3, rimLift: 0.16, shade: 0.24, haze: 0.44, step: 1, seed: 29 },
+    { file: 'near', baseline: H * 0.72, amplitude: 11, peaks: 5, rimLift: 0.12, shade: 0.30, haze: 0.22, step: 2, seed: 47 },
 ];
 
+// How far the far range sits from the sky at the horizon, and how much darker
+// each range is than the one behind it.
+const FAR_OFFSET = 0.16;
+const BAND_STEP = 0.11;
+// A band at 0.0 is a black hole in the frame and one at 1.0 is a white one;
+// both lose the world's hue entirely.
+const FLOOR = 0.05;
+const CEILING = 0.82;
+
+/**
+ * The absolute luminance each band lands on, for one world.
+ *
+ * Only the far range is ever seen against the sky, so only it is placed
+ * relative to the sky: lighter than a dark horizon (the classic night skyline,
+ * where the glow is at the bottom), darker than a bright one (a daylit ridge
+ * against open sky). Everything after it steps down from there, because mid is
+ * read against far and near against mid - never against the air.
+ */
+function ramp(sky) {
+    const horizon = lum(sky);
+    const far = horizon + (horizon > 0.45 ? -FAR_OFFSET : FAR_OFFSET);
+    return BANDS.map((b) => Math.min(CEILING, Math.max(FLOOR, far - b.step * BAND_STEP)));
+}
+
 const themes = readdirSync('godot/data/themes').filter((f) => f.endsWith('.json'));
-console.log('parallax ranges (960x420, nearest-upscaled from 240x105):');
+console.log(`parallax ranges (${W * SCALE}x${H * SCALE}, nearest-upscaled from ${W}x${H}):`);
 for (const file of themes) {
     const theme = JSON.parse(await readFile(`godot/data/themes/${file}`, 'utf8'));
     const id = theme.id;
-    for (const band of BANDS) {
+    const sky = hex(theme.palette.sky_bottom);
+    const lightness = ramp(sky);
+    for (const [i, band] of BANDS.entries()) {
         const colour = hex(theme.palette.mid);
-        const sky = hex(theme.palette.sky_bottom);
         // Each world gets its own seeds, so no two ranges share a skyline.
         const seed = band.seed * 131 + [...id].reduce((a, ch) => a + ch.charCodeAt(0), 0);
-        await write(layer(colour, sky, seed, band), `godot/assets/parallax/${id}_${band.file}.png`);
+        await write(layer(colour, sky, seed, { ...band, lightness: lightness[i] }), `godot/assets/parallax/${id}_${band.file}.png`);
     }
-    console.log(`  ${id.padEnd(14)} far/mid/near`);
+    console.log(`  ${id.padEnd(14)} sky ${lum(sky).toFixed(2)} -> ${lightness.map((v) => v.toFixed(2)).join(' / ')}`);
 }
