@@ -51,7 +51,7 @@ func test_touch_controls_expose_the_expected_actions() -> void:
 	for child in root.get_children():
 		if child is TouchScreenButton:
 			found.append((child as TouchScreenButton).action)
-	for action in ["move_left", "move_right", "jump", "interact", "shoot"]:
+	for action in ["move_left", "move_right", "jump", "shoot"]:
 		assert_true(found.has(action), "on-screen control exists for '%s'" % action)
 	_teardown(root)
 

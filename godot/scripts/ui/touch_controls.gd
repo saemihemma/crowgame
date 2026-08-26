@@ -13,6 +13,17 @@ class_name TouchControls
 ##    corners and floated in the middle of the screen.
 ## 2. Three of the five carried their meaning in a word. See TouchPad.
 ##
+## There were five. The fifth was `interact`, drawn as Hörmann pecking, and it
+## did nothing: no script has ever read that action. Owl encounters fire on
+## proximity - Npc._on_body_entered calls interact() when the player enters the
+## zone, and _process re-offers on a cooldown while they stand there - so the
+## button was a 92px target in the thumb corner, wearing the game's own mascot,
+## that pressed and lit up and led nowhere. Two tests asserted the action into
+## the InputMap without ever checking that something read it, which is how it
+## stayed green for as long as it did. If interaction ever needs a button, the
+## proximity trigger has to come out at the same time; a control that duplicates
+## something the game already does for you is the same bug again.
+##
 ## brand/BRAND_SYSTEM.md §8.1, §12. Gates B3 (88px targets), B4 (32px safe
 ## area) and B10 (thumb reach) in brand/BRAND_SYSTEM.md §14.
 
@@ -60,7 +71,6 @@ func _build() -> void:
 	_pads.append(TouchPad.make("move_left", TouchPad.Icon.LEFT, Vector2.ZERO, BTN))
 	_pads.append(TouchPad.make("move_right", TouchPad.Icon.RIGHT, Vector2.ZERO, BTN))
 	_pads.append(TouchPad.make("shoot", TouchPad.Icon.ZAP, Vector2.ZERO, BTN))
-	_pads.append(TouchPad.make("interact", TouchPad.Icon.PECK, Vector2.ZERO, BTN))
 	_pads.append(TouchPad.make("jump", TouchPad.Icon.JUMP, Vector2.ZERO, JUMP_BTN))
 	for pad in _pads:
 		add_child(pad)
@@ -76,7 +86,7 @@ func _layout() -> void:
 ## supports rather than only at whatever size the test runner happens to use -
 ## and it is the aspects that differ that broke this in the first place.
 func layout_for(view: Vector2) -> void:
-	if _pads.size() < 5:
+	if _pads.size() < 4:
 		return
 	var floor_y := view.y - MARGIN
 
@@ -84,13 +94,11 @@ func layout_for(view: Vector2) -> void:
 	_pads[0].position = Vector2(MARGIN, floor_y - BTN)
 	_pads[1].position = Vector2(MARGIN + BTN + GAP, floor_y - BTN)
 
-	# Right thumb: jump in the corner where the thumb rests, with zap beside it
-	# and peck above - the two used less often are the two further to reach.
+	# Right thumb: jump in the corner where the thumb rests, zap beside it - the
+	# one used less often is the one further to reach.
 	var jump_x := view.x - MARGIN - JUMP_BTN
-	_pads[4].position = Vector2(jump_x, floor_y - JUMP_BTN)
-	var stack_x := jump_x - GAP - BTN
-	_pads[2].position = Vector2(stack_x, floor_y - BTN)
-	_pads[3].position = Vector2(stack_x, floor_y - BTN - GAP - BTN)
+	_pads[3].position = Vector2(jump_x, floor_y - JUMP_BTN)
+	_pads[2].position = Vector2(jump_x - GAP - BTN, floor_y - BTN)
 	for pad in _pads:
 		pad.queue_redraw()
 

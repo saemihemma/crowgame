@@ -63,8 +63,7 @@
   },
   "controls": {
     "dpadSprite": "ui_sugarstorm_dpad",
-    "jumpBtnSprite": "ui_sugarstorm_jump",
-    "peckBtnSprite": "ui_sugarstorm_peck"
+    "jumpBtnSprite": "ui_sugarstorm_jump"
   },
   "door": {
     "sprite": "door_sugarstorm",

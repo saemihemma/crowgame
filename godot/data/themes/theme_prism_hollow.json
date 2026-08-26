@@ -63,8 +63,7 @@
   },
   "controls": {
     "dpadSprite": "ui_prism_hollow_dpad",
-    "jumpBtnSprite": "ui_prism_hollow_jump",
-    "peckBtnSprite": "ui_prism_hollow_peck"
+    "jumpBtnSprite": "ui_prism_hollow_jump"
   },
   "door": {
     "sprite": "door_prism_hollow",

@@ -63,8 +63,7 @@
   },
   "controls": {
     "dpadSprite": "ui_geyserworks_dpad",
-    "jumpBtnSprite": "ui_geyserworks_jump",
-    "peckBtnSprite": "ui_geyserworks_peck"
+    "jumpBtnSprite": "ui_geyserworks_jump"
   },
   "door": {
     "sprite": "door_geyserworks",
