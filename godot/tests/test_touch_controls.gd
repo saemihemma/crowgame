@@ -87,7 +87,7 @@ func test_every_touch_button_has_a_hit_shape_covering_its_panel() -> void:
 ## arranging the test fixes that.
 ##
 ## So the press is verified where the event path is real instead of synthetic:
-## tools/godot_play_smoke.mjs taps the exported build with genuine DOM touch
+## godot/tools/web_boot_smoke.mjs taps the exported build with genuine DOM touch
 ## events in a browser context created with hasTouch. That is the same technique
 ## that verified the web port's touch labels; that port and its checker are gone.
 ##

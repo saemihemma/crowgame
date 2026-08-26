@@ -117,19 +117,47 @@ func _on_body_exited(body: Node) -> void:
 	if body.is_in_group("player"):
 		_player_in_range = false
 
+## How long an NPC waits before offering again after a normal encounter ends,
+## and after one that never started. The second is shorter because nothing
+## happened: a maths board belonging to a NEARBY owl is the usual reason, the
+## player cannot walk away while it is up, and the owl they are standing on
+## should be ready the moment it closes.
+const COOLDOWN_MS := 2000
+const DECLINED_BACKOFF_MS := 750
+
+## Start an encounter, IF a component will actually take it.
+##
+## The flag, the greeting and the hidden prompt used to be set before any
+## component was asked. A component that could not open anything -- because
+## another owl's board was still on screen, or the level was mid-reload -- then
+## left this NPC flagged mid-encounter with nothing to end it: the prompt stays
+## hidden, the re-trigger loop in _process skips it, completion events are
+## ignored, and standing on the owl does nothing for the rest of the level. That
+## is the "the maths problem does not open" report.
+##
+## So the commit is now conditional. Nothing is announced until something has
+## said yes, and a declined offer rolls all the way back and simply tries again
+## shortly -- silently, because an owl greeting every couple of seconds behind
+## somebody else's lesson is its own bug.
 func interact() -> void:
 	if _interacting or _flown:
 		return
 	if Time.get_ticks_msec() < _cooldown_until:
 		return
 	_interacting = true
-	AudioManager.play_event("owl_greet")
+	var accepted := false
 	for c in _components:
-		c.on_interact()
+		if c.on_interact():
+			accepted = true
+	if not accepted:
+		_interacting = false
+		_cooldown_until = Time.get_ticks_msec() + DECLINED_BACKOFF_MS
+		return
+	AudioManager.play_event("owl_greet")
 
 func end_interaction() -> void:
 	_interacting = false
-	_cooldown_until = Time.get_ticks_msec() + 2000
+	_cooldown_until = Time.get_ticks_msec() + COOLDOWN_MS
 
 # ─── Chains (brand/BRAND_SYSTEM.md §3.4a) ──────────────────
 ## One link per answer this owl still wants. Drawn across the perch rather than
@@ -153,10 +181,23 @@ const CHAIN_PERCH_Y := -5.0
 
 var _chain_links: Array[Sprite2D] = []
 
+## A chain is a COUNT, and one link counts nothing.
+##
+## chainLinks mirrors problemCount (tools/validate-content.ts enforces it), and
+## most owls ask exactly one question -- so most owls were wearing a single 22px
+## ring hovering at their feet with nothing beside it to be one *of*. A player
+## asked what it was, which is the whole answer: a set of one communicates no
+## size, so it reads as debris rather than as "this owl wants one answer".
+##
+## Two or more still earns the row, and still breaks link by link. The owl
+## sprite is already drawn in chains holding a padlock, so "locked" was never
+## resting on this either way.
+const MIN_VISIBLE_CHAIN_LINKS := 2
+
 func _build_chains() -> void:
 	var count := int(definition.get("behaviorConfig", {}).get("chainLinks", 0))
 	var texture := SpriteSheet.texture(CHAIN_SPRITE)
-	if count <= 0 or texture == null:
+	if count < MIN_VISIBLE_CHAIN_LINKS or texture == null:
 		return
 	var span := float(count - 1) * CHAIN_SPACING
 	for i in count:

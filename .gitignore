@@ -24,17 +24,32 @@ dist-ssr
 *.sln
 *.sw?
 
-# Build and run artifacts. The one exception is output/web, which IS committed:
-# it holds the exact bytes that get deployed, and the error-pipeline e2e test
-# exercises them. Everything else here is a diagnostic that nothing reads back.
+# Local Godot desktop test builds (mobile Web build under output/web is committed)
 /output/linux/
+
+# Godot export build artifacts (web build itself is tracked under output/web)
 /output/*.zip
+/output/linux/
+
+# Precompressed payload is generated in the Docker image build, never committed.
 output/web/*.gz
 output/web/*.br
-output/godot-shots/
-output/playwright/
+
+# Boot-smoke report is a CI check result, not a gated artifact.
 reports/web/
 
-# Python bytecode, left behind whenever the asset guard imports audit_pixel_art.
+# Playwright run artifacts. web_boot_smoke.mjs writes these as diagnostics —
+# its boot frame always, and every screen of the walk under --shots — and nothing
+# reads them back, so they are not baselines. Tracking them meant every local
+# smoke run dirtied the working tree. CI uploads what it needs as job artifacts.
+output/playwright/
+
+# Lesson contact sheets from godot/tools/capture_tutorials.sh -- a review aid,
+# regenerated on demand, 120 PNGs per locale.
+output/tutorial-captures/
+
+# Python bytecode. The asset guard imports audit_pixel_art as a module, so every
+# run of tools/check_assets.py writes a __pycache__ next to the tools and dirties
+# the working tree. Nothing reads it back.
 __pycache__/
 *.pyc

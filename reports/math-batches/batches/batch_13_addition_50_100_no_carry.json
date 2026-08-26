@@ -7,11 +7,11 @@
   "templateReview": {
     "category": {
       "grade": 9.4,
-      "summary": "Template coverage is stable: 11 templates, 4 families, steps 5-36.",
+      "summary": "Template coverage is stable: 11 templates, 4 families, steps 1-36.",
       "metrics": {
         "templateCount": 11,
         "familyCount": 4,
-        "minStep": 5,
+        "minStep": 1,
         "maxStep": 36,
         "promptVariantCount": 26,
         "averageProblemsPerTemplate": 13.6
@@ -74,9 +74,9 @@
       "metrics": {
         "steadyChildGrade": 9.9,
         "strugglingChildGrade": 9.9,
-        "strongChildGrade": 10,
-        "openingProbeStep": 5,
-        "middleProbeStep": 28,
+        "strongChildGrade": 9.9,
+        "openingProbeStep": 1,
+        "middleProbeStep": 27,
         "upperProbeStep": 36,
         "uniqueStartAnchors": 3,
         "probeCount": 9,
@@ -86,7 +86,7 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 10,
+        "grade": 9.9,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {

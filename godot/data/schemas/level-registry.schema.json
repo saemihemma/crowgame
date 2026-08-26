@@ -15,7 +15,6 @@
                     "key",
                     "name",
                     "mapFile",
-                    "tilesetImages",
                     "order"
                 ],
                 "properties": {
@@ -29,12 +28,6 @@
                     },
                     "mapFile": {
                         "type": "string"
-                    },
-                    "tilesetImages": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
                     },
                     "theme": {
                         "description": "ThemeManager id this level is dressed in. Distinct from LevelSpec.theme, which selects a tileset filename.",

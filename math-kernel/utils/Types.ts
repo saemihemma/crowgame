@@ -6,7 +6,6 @@ export interface LevelRegistryEntry {
     key: string;
     name: string;
     mapFile: string;
-    tilesetImages: Record<string, string>;
     /**
      * ThemeManager id this level is dressed in. Distinct from `LevelSpec.theme`,
      * which the level compiler uses to pick a tileset filename and which cannot
@@ -306,6 +305,19 @@ export interface LearnerAttemptRecord {
 
 export interface LearnerDomainHistory {
     backlogHistory: number[];
+    /**
+     * This domain's OWN last attempts, independent of the global recent-attempt
+     * window.
+     *
+     * Unlocking a domain asks "did the child do well at its prerequisite?", and
+     * that has to be a fact about the prerequisite -- not about how large a share
+     * of recent play it happened to occupy. Reading it out of the shared 40-deep
+     * window meant a domain had to own HALF of all recent attempts before
+     * anything downstream of it could unlock, which no domain but the dominant
+     * one ever does. pattern_matching and division were unreachable for that
+     * reason alone, in every simulated journey, at every accuracy.
+     */
+    attemptHistory: Array<{ correct: boolean; firstAttempt: boolean }>;
 }
 
 export type LearnerDomainHistoryMap = Record<MathDomain, LearnerDomainHistory>;

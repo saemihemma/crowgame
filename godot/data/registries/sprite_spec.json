@@ -6,10 +6,10 @@
         "note": "TILE_SIZE. Every sprite size below is a whole multiple of it, except doors, which the manifest lists as a deliberate 88x96."
     },
     "rules": {
-        "$comment": "The per-file rules from the same table. audit_pixel_art.py measures the two that can be measured; the rest are review items.",
+        "$comment": "The per-file rules from the same table. tools/check_assets.py measures what can be measured; the rest are review items.",
         "format": "PNG, RGBA, transparent background. No baked background colour.",
-        "no_antialiasing": "Hard pixel edges only. If the generator softened the edges the asset is not usable — re-do it, do not sharpen it afterwards. Measured as `soft%` by tools/audit_pixel_art.py.",
-        "author_at_1x": "Never generate at 4x and downscale; it produces the muddy edges PROJECT.md warns against. Measured as `native` by tools/audit_pixel_art.py.",
+        "no_antialiasing": "Hard pixel edges only. If the generator softened the edges the asset is not usable — re-do it, do not sharpen it afterwards. Review item: no tool measures softness.",
+        "author_at_1x": "Never generate at 4x and downscale; it produces muddy edges. Review item: no tool measures this.",
         "outline": "1px outline in the world's ink_world on anything in the play layer; none on sky/far/mid.",
         "sheet_layout": "Frames read left-to-right, top-to-bottom, no padding and no margin. A single horizontal strip is the preferred layout for new art; SpriteSheet also reads the square grids the shipped crow/coin/door sheets use, deriving columns from the sheet width.",
         "body_box": "A class's `body` is the collider, and it must fit INSIDE the drawn silhouette in every frame - never the frame size. Measured by tools/check_assets.py."
@@ -99,6 +99,18 @@
             "art_notes": [
                 "Must stay legible at 1x on a phone; no detail finer than 2px.",
                 "A head crop, not a shrunk full body, when derived from a world sprite."
+            ]
+        },
+        "parallax": {
+            "frameWidth": 960,
+            "frameHeight": 576,
+            "anchor": "feet",
+            "description": "Background mountain ranges, three per world. One screen wide and 18 tiles tall, tiled horizontally by a ParallaxLayer.",
+            "art_notes": [
+                "Transparent above the ridge line. The sky gradient shows through it, so a baked background colour would cover the sky the strip is supposed to sit in.",
+                "Bottom edge is the horizon - `feet`, like anything else that stands on a line.",
+                "Tileable on x: the ridge height at column 0 must equal the height one past the right edge, or the seam walks across the screen every time the strip repeats.",
+                "No outline. sprite_spec's outline rule already exempts sky/far/mid, and an ink line here would pull the range forward into the play layer."
             ]
         }
     }

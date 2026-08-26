@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://qnid7im1tr60"
-path="res://.godot/imported/level1_tiles.png-9072fd51982a732766d291875c6e46af.ctex"
+uid="uid://b51r8rtv0agbd"
+path="res://.godot/imported/forest_far.png-bbadbb1cf4c4051d65732d9921abc649.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/tilesets/level1_tiles.png"
-dest_files=["res://.godot/imported/level1_tiles.png-9072fd51982a732766d291875c6e46af.ctex"]
+source_file="res://assets/parallax/forest_far.png"
+dest_files=["res://.godot/imported/forest_far.png-bbadbb1cf4c4051d65732d9921abc649.ctex"]
 
 [params]
 

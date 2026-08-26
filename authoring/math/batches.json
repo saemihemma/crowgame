@@ -5589,6 +5589,1499 @@
           "requireBorrow": false
         }
       ]
+    },
+    {
+      "id": "batch_20_multiplication_ladder_fill",
+      "title": "Multiplication ladder fill",
+      "theme": "identity, zero, tens and equal-groups stories across the table ladder",
+      "targetCount": 128,
+      "templates": [
+        {
+          "id": "times_1",
+          "kind": "multiplication",
+          "family": "table_1",
+          "bandId": "mult_ladder_fill",
+          "count": 8,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "identity_confusion"
+          ],
+          "leftValues": [
+            1
+          ],
+          "rightRange": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "times_1_reverse",
+          "kind": "multiplication",
+          "family": "table_1",
+          "bandId": "mult_ladder_fill",
+          "count": 8,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "solve"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "identity_confusion"
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightValues": [
+            1
+          ]
+        },
+        {
+          "id": "times_0",
+          "kind": "multiplication",
+          "family": "table_0",
+          "bandId": "mult_ladder_fill",
+          "count": 10,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "zero_property"
+          ],
+          "leftValues": [
+            0
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "allowZero": true
+        },
+        {
+          "id": "times_0_reverse",
+          "kind": "multiplication",
+          "family": "table_0",
+          "bandId": "mult_ladder_fill",
+          "count": 10,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "solve"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "zero_property"
+          ],
+          "leftRange": [
+            1,
+            9
+          ],
+          "rightValues": [
+            0
+          ],
+          "allowZero": true
+        },
+        {
+          "id": "times_10_forward",
+          "kind": "multiplication",
+          "family": "table_10",
+          "bandId": "mult_ladder_fill",
+          "count": 10,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "leftValues": [
+            10
+          ],
+          "rightRange": [
+            1,
+            10
+          ]
+        },
+        {
+          "id": "times_10_reverse",
+          "kind": "multiplication",
+          "family": "table_10",
+          "bandId": "mult_ladder_fill",
+          "count": 8,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "how_much"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "leftRange": [
+            1,
+            9
+          ],
+          "rightValues": [
+            10
+          ]
+        },
+        {
+          "id": "story_nests_easy",
+          "kind": "multiplication",
+          "family": "equal_groups_story",
+          "bandId": "mult_ladder_fill",
+          "count": 25,
+          "skill": "multiplication_word_problems",
+          "promptVariants": [
+            "story_nests"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "added_instead"
+          ],
+          "leftRange": [
+            2,
+            5
+          ],
+          "rightRange": [
+            2,
+            9
+          ],
+          "strictVariants": true
+        },
+        {
+          "id": "story_nests_hard",
+          "kind": "multiplication",
+          "family": "equal_groups_story",
+          "bandId": "mult_ladder_fill",
+          "count": 25,
+          "skill": "multiplication_word_problems",
+          "promptVariants": [
+            "story_nests"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "added_instead"
+          ],
+          "leftRange": [
+            6,
+            9
+          ],
+          "rightRange": [
+            2,
+            9
+          ],
+          "strictVariants": true
+        },
+        {
+          "id": "times_tens",
+          "kind": "multiplication",
+          "family": "tens_multiples",
+          "bandId": "mult_ladder_fill",
+          "count": 20,
+          "skill": "multiplication_place_value",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "split_tens",
+          "explanationStrategy": "product_split",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "leftValues": [
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90
+          ],
+          "rightRange": [
+            2,
+            9
+          ]
+        },
+        {
+          "id": "hard_pair_89",
+          "kind": "multiplication",
+          "family": "table_8_9_pair",
+          "bandId": "mult_ladder_fill",
+          "count": 4,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals",
+            "mental_math",
+            "quick_check"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "leftValues": [
+            8,
+            9
+          ],
+          "rightValues": [
+            8,
+            9
+          ],
+          "distinctOperands": true
+        }
+      ]
+    },
+    {
+      "id": "batch_21_multiplication_beyond_tables",
+      "title": "Two-digit by one-digit",
+      "theme": "distributive split of two-digit factors, no carry then carry",
+      "targetCount": 60,
+      "templates": [
+        {
+          "id": "twodigit_no_carry",
+          "kind": "multiplication",
+          "family": "beyond_tables",
+          "bandId": "mult_beyond_tables",
+          "count": 30,
+          "skill": "multiplication_two_digit",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "split_tens",
+          "explanationStrategy": "product_split",
+          "misconceptionTags": [
+            "forgot_carry",
+            "place_value_slip"
+          ],
+          "leftValues": [
+            12,
+            13,
+            21,
+            23,
+            24,
+            31,
+            32,
+            34,
+            41,
+            42,
+            43,
+            44
+          ],
+          "rightValues": [
+            2,
+            3,
+            4
+          ],
+          "templateStepRange": [
+            13,
+            13
+          ]
+        },
+        {
+          "id": "twodigit_carry",
+          "kind": "multiplication",
+          "family": "beyond_tables",
+          "bandId": "mult_beyond_tables",
+          "count": 30,
+          "skill": "multiplication_two_digit",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "split_tens",
+          "explanationStrategy": "product_split",
+          "misconceptionTags": [
+            "forgot_carry",
+            "place_value_slip"
+          ],
+          "leftValues": [
+            15,
+            16,
+            17,
+            18,
+            19,
+            25,
+            26,
+            27,
+            28,
+            29,
+            36,
+            37,
+            38,
+            39,
+            45,
+            46,
+            47,
+            48
+          ],
+          "rightValues": [
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "templateStepRange": [
+            14,
+            14
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_22_division_ladder_fill",
+      "title": "Division ladder fill",
+      "theme": "sharing stories, tens fact families, dividing by ten",
+      "targetCount": 93,
+      "templates": [
+        {
+          "id": "div_by_10",
+          "kind": "division",
+          "family": "divide_by_10",
+          "bandId": "div_ladder_fill",
+          "count": 8,
+          "skill": "simple_division",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "leftRange": [
+            20,
+            100
+          ],
+          "rightValues": [
+            10
+          ],
+          "forceDivisible": true
+        },
+        {
+          "id": "story_share_easy",
+          "kind": "division",
+          "family": "sharing_story",
+          "bandId": "div_ladder_fill",
+          "count": 30,
+          "skill": "division_word_problems",
+          "promptVariants": [
+            "story_share"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "subtracted_instead"
+          ],
+          "leftRange": [
+            4,
+            50
+          ],
+          "rightValues": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "forceDivisible": true,
+          "strictVariants": true
+        },
+        {
+          "id": "story_share_hard",
+          "kind": "division",
+          "family": "sharing_story",
+          "bandId": "div_ladder_fill",
+          "count": 30,
+          "skill": "division_word_problems",
+          "promptVariants": [
+            "story_share"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "subtracted_instead"
+          ],
+          "leftRange": [
+            12,
+            90
+          ],
+          "rightValues": [
+            6,
+            7,
+            8,
+            9
+          ],
+          "forceDivisible": true,
+          "strictVariants": true
+        },
+        {
+          "id": "div_tens",
+          "kind": "division",
+          "family": "tens_dividends",
+          "bandId": "div_ladder_fill",
+          "count": 25,
+          "skill": "division_place_value",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "leftValues": [
+            40,
+            60,
+            80,
+            90,
+            100,
+            120,
+            140,
+            150,
+            160,
+            180,
+            200,
+            210,
+            240,
+            250,
+            270,
+            280,
+            300,
+            320,
+            350,
+            360
+          ],
+          "rightValues": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "forceDivisible": true,
+          "templateStepRange": [
+            12,
+            13
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_23_division_beyond_tables",
+      "title": "Two-digit quotients",
+      "theme": "dividends past the tables, exact division only",
+      "targetCount": 40,
+      "templates": [
+        {
+          "id": "twodigit_quotients",
+          "kind": "division",
+          "family": "beyond_tables",
+          "bandId": "div_beyond_tables",
+          "count": 40,
+          "skill": "division_two_digit",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "misconceptionTags": [
+            "forgot_carry",
+            "place_value_slip"
+          ],
+          "leftValues": [
+            26,
+            28,
+            33,
+            36,
+            39,
+            44,
+            46,
+            48,
+            52,
+            55,
+            64,
+            66,
+            68,
+            69,
+            72,
+            75,
+            77,
+            78,
+            84,
+            88,
+            91,
+            92,
+            93,
+            95,
+            96,
+            98,
+            99
+          ],
+          "rightValues": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "forceDivisible": true,
+          "templateStepRange": [
+            14,
+            15
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_24_addition_3digit",
+      "title": "Three-digit addition",
+      "theme": "place-value addition graded by regrouping load",
+      "targetCount": 90,
+      "templates": [
+        {
+          "id": "add3_no_carry",
+          "kind": "addition",
+          "family": "three_digit_addition",
+          "bandId": "add_3digit",
+          "count": 30,
+          "skill": "multi_digit_addition",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "leftValues": [
+            121,
+            132,
+            214,
+            231,
+            243,
+            312,
+            325,
+            341,
+            413,
+            424,
+            432,
+            514,
+            523,
+            541,
+            613,
+            621,
+            634,
+            712,
+            723,
+            731
+          ],
+          "rightValues": [
+            11,
+            23,
+            34,
+            42,
+            53,
+            105,
+            112,
+            123,
+            134,
+            143,
+            203,
+            214,
+            232,
+            241,
+            253
+          ],
+          "templateStepRange": [
+            41,
+            41
+          ]
+        },
+        {
+          "id": "add3_one_carry",
+          "kind": "addition",
+          "family": "three_digit_addition",
+          "bandId": "add_3digit",
+          "count": 30,
+          "skill": "multi_digit_addition",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "leftValues": [
+            125,
+            137,
+            146,
+            158,
+            164,
+            178,
+            183,
+            196,
+            217,
+            228,
+            236,
+            249,
+            257,
+            268,
+            275,
+            289
+          ],
+          "rightValues": [
+            14,
+            26,
+            35,
+            47,
+            56,
+            68,
+            73,
+            88,
+            109,
+            118,
+            127,
+            136,
+            145,
+            157,
+            166,
+            175
+          ],
+          "templateStepRange": [
+            42,
+            42
+          ]
+        },
+        {
+          "id": "add3_multi_carry",
+          "kind": "addition",
+          "family": "three_digit_addition",
+          "bandId": "add_3digit",
+          "count": 30,
+          "skill": "multi_digit_addition",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "misconceptionTags": [
+            "forgot_carry",
+            "place_value_slip"
+          ],
+          "leftValues": [
+            156,
+            168,
+            177,
+            189,
+            257,
+            268,
+            279,
+            288,
+            347,
+            359,
+            368,
+            377,
+            458,
+            467,
+            476,
+            489,
+            567,
+            578,
+            587,
+            599
+          ],
+          "rightValues": [
+            45,
+            56,
+            67,
+            78,
+            86,
+            95,
+            145,
+            156,
+            167,
+            178,
+            186,
+            195,
+            245,
+            256,
+            267,
+            278
+          ],
+          "templateStepRange": [
+            43,
+            43
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_25_addition_4digit",
+      "title": "Four-digit addition",
+      "theme": "crossing one thousand, then four-digit regrouping",
+      "targetCount": 60,
+      "templates": [
+        {
+          "id": "add4_no_carry",
+          "kind": "addition",
+          "family": "four_digit_addition",
+          "bandId": "add_4digit",
+          "count": 20,
+          "skill": "multi_digit_addition",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "leftValues": [
+            1123,
+            1214,
+            1332,
+            2123,
+            2241,
+            2314,
+            3122,
+            3231,
+            4213,
+            4321,
+            5132,
+            5241
+          ],
+          "rightValues": [
+            234,
+            352,
+            423,
+            534,
+            612,
+            1203,
+            1312,
+            1421,
+            2130,
+            2214
+          ],
+          "templateStepRange": [
+            44,
+            44
+          ]
+        },
+        {
+          "id": "add4_one_carry",
+          "kind": "addition",
+          "family": "four_digit_addition",
+          "bandId": "add_4digit",
+          "count": 20,
+          "skill": "multi_digit_addition",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "leftValues": [
+            1136,
+            1248,
+            1357,
+            2149,
+            2258,
+            2367,
+            3159,
+            3268,
+            4157,
+            4269
+          ],
+          "rightValues": [
+            216,
+            327,
+            438,
+            516,
+            628,
+            1237,
+            1346,
+            1418,
+            2129,
+            2238
+          ],
+          "templateStepRange": [
+            45,
+            45
+          ]
+        },
+        {
+          "id": "add4_multi_carry",
+          "kind": "addition",
+          "family": "four_digit_addition",
+          "bandId": "add_4digit",
+          "count": 20,
+          "skill": "multi_digit_addition",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "misconceptionTags": [
+            "forgot_carry",
+            "place_value_slip"
+          ],
+          "leftValues": [
+            1268,
+            1379,
+            1489,
+            2578,
+            2689,
+            2797,
+            3588,
+            3699,
+            4679,
+            4788
+          ],
+          "rightValues": [
+            345,
+            456,
+            567,
+            678,
+            789,
+            1456,
+            1567,
+            1678,
+            1789,
+            1895
+          ],
+          "templateStepRange": [
+            46,
+            46
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_26_subtraction_3digit",
+      "title": "Three-digit subtraction",
+      "theme": "place-value subtraction graded by borrow load, across zeros last",
+      "targetCount": 90,
+      "templates": [
+        {
+          "id": "sub3_no_borrow",
+          "kind": "subtraction",
+          "family": "three_digit_subtraction",
+          "bandId": "sub_3digit",
+          "count": 30,
+          "skill": "multi_digit_subtraction",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "leftValues": [
+            245,
+            356,
+            467,
+            578,
+            689,
+            798,
+            847,
+            958,
+            976,
+            865,
+            754,
+            643,
+            532,
+            987,
+            876
+          ],
+          "rightValues": [
+            12,
+            23,
+            34,
+            41,
+            52,
+            103,
+            112,
+            121,
+            132,
+            143,
+            203,
+            212,
+            221,
+            232,
+            241
+          ],
+          "templateStepRange": [
+            41,
+            41
+          ]
+        },
+        {
+          "id": "sub3_one_borrow",
+          "kind": "subtraction",
+          "family": "three_digit_subtraction",
+          "bandId": "sub_3digit",
+          "count": 30,
+          "skill": "multi_digit_subtraction",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "leftValues": [
+            241,
+            352,
+            463,
+            574,
+            685,
+            796,
+            832,
+            943,
+            921,
+            853,
+            742,
+            631,
+            524,
+            915,
+            872
+          ],
+          "rightValues": [
+            15,
+            27,
+            38,
+            46,
+            59,
+            118,
+            127,
+            136,
+            149,
+            157,
+            218,
+            226,
+            237,
+            248,
+            255
+          ],
+          "templateStepRange": [
+            42,
+            42
+          ]
+        },
+        {
+          "id": "sub3_across_zeros",
+          "kind": "subtraction",
+          "family": "three_digit_subtraction",
+          "bandId": "sub_3digit",
+          "count": 30,
+          "skill": "multi_digit_subtraction",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "misconceptionTags": [
+            "borrow_slip",
+            "across_zero"
+          ],
+          "leftValues": [
+            300,
+            400,
+            500,
+            600,
+            700,
+            800,
+            900,
+            412,
+            523,
+            634,
+            745,
+            856,
+            911,
+            822,
+            733
+          ],
+          "rightValues": [
+            156,
+            167,
+            178,
+            189,
+            234,
+            245,
+            256,
+            267,
+            278,
+            289,
+            345,
+            356,
+            367,
+            378,
+            389
+          ],
+          "templateStepRange": [
+            43,
+            43
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_27_subtraction_4digit",
+      "title": "Four-digit subtraction",
+      "theme": "four-digit differences, across thousands last",
+      "targetCount": 60,
+      "templates": [
+        {
+          "id": "sub4_no_borrow",
+          "kind": "subtraction",
+          "family": "four_digit_subtraction",
+          "bandId": "sub_4digit",
+          "count": 20,
+          "skill": "multi_digit_subtraction",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "leftValues": [
+            2345,
+            3456,
+            4567,
+            5678,
+            6789,
+            7895,
+            8756,
+            9867,
+            5987,
+            4876
+          ],
+          "rightValues": [
+            123,
+            234,
+            312,
+            421,
+            1123,
+            1234,
+            2132,
+            2341,
+            3120,
+            3212
+          ],
+          "templateStepRange": [
+            44,
+            44
+          ]
+        },
+        {
+          "id": "sub4_one_borrow",
+          "kind": "subtraction",
+          "family": "four_digit_subtraction",
+          "bandId": "sub_4digit",
+          "count": 20,
+          "skill": "multi_digit_subtraction",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "leftValues": [
+            2341,
+            3452,
+            4563,
+            5674,
+            6785,
+            7891,
+            8752,
+            9863,
+            5981,
+            4872
+          ],
+          "rightValues": [
+            125,
+            236,
+            347,
+            418,
+            1129,
+            1237,
+            2148,
+            2359,
+            3125,
+            3236
+          ],
+          "templateStepRange": [
+            45,
+            45
+          ]
+        },
+        {
+          "id": "sub4_across_zeros",
+          "kind": "subtraction",
+          "family": "four_digit_subtraction",
+          "bandId": "sub_4digit",
+          "count": 20,
+          "skill": "multi_digit_subtraction",
+          "promptVariants": [
+            "question",
+            "complete",
+            "solve",
+            "how_much",
+            "equals"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "misconceptionTags": [
+            "borrow_slip",
+            "across_zero"
+          ],
+          "leftValues": [
+            2000,
+            3000,
+            4000,
+            5000,
+            6000,
+            7000,
+            8000,
+            9000,
+            4321,
+            5432
+          ],
+          "rightValues": [
+            1234,
+            1345,
+            1456,
+            1567,
+            1678,
+            1789,
+            2345,
+            2456,
+            2567,
+            2678
+          ],
+          "templateStepRange": [
+            46,
+            46
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_28_comparison_sequence_big",
+      "title": "Big-number ordering and skip counting",
+      "theme": "ordering into the thousands, skip counting by 10/25/50/100",
+      "targetCount": 80,
+      "templates": [
+        {
+          "id": "comp_tens",
+          "kind": "comparison",
+          "family": "comparison",
+          "bandId": "comparison_big",
+          "count": 10,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "pick",
+            "which"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "magnitude_slip"
+          ],
+          "leftRange": [
+            31,
+            60
+          ],
+          "rightRange": [
+            61,
+            99
+          ],
+          "relation": "greater"
+        },
+        {
+          "id": "comp_hundreds",
+          "kind": "comparison",
+          "family": "comparison",
+          "bandId": "comparison_big",
+          "count": 10,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "pick",
+            "which"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "magnitude_slip"
+          ],
+          "leftRange": [
+            131,
+            160
+          ],
+          "rightRange": [
+            161,
+            199
+          ],
+          "relation": "smaller"
+        },
+        {
+          "id": "comp_hundreds_wide",
+          "kind": "comparison",
+          "family": "comparison",
+          "bandId": "comparison_big",
+          "count": 10,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "pick",
+            "which"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "magnitude_slip"
+          ],
+          "leftRange": [
+            501,
+            530
+          ],
+          "rightRange": [
+            531,
+            569
+          ],
+          "relation": "greater"
+        },
+        {
+          "id": "comp_thousands",
+          "kind": "comparison",
+          "family": "comparison",
+          "bandId": "comparison_big",
+          "count": 10,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "pick",
+            "which"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "magnitude_slip"
+          ],
+          "leftRange": [
+            1001,
+            1030
+          ],
+          "rightRange": [
+            1031,
+            1069
+          ],
+          "relation": "smaller"
+        },
+        {
+          "id": "seq_by_10",
+          "kind": "number_sequence",
+          "family": "skip_counting",
+          "bandId": "sequence_big",
+          "count": 10,
+          "skill": "skip_counting",
+          "promptVariants": [
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "step_slip"
+          ],
+          "startRange": [
+            100,
+            300
+          ],
+          "stepChoices": [
+            10
+          ],
+          "length": 4
+        },
+        {
+          "id": "seq_by_25",
+          "kind": "number_sequence",
+          "family": "skip_counting",
+          "bandId": "sequence_big",
+          "count": 10,
+          "skill": "skip_counting",
+          "promptVariants": [
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "step_slip"
+          ],
+          "startRange": [
+            100,
+            400
+          ],
+          "stepChoices": [
+            25
+          ],
+          "length": 4
+        },
+        {
+          "id": "seq_by_50",
+          "kind": "number_sequence",
+          "family": "skip_counting",
+          "bandId": "sequence_big",
+          "count": 10,
+          "skill": "skip_counting",
+          "promptVariants": [
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "step_slip"
+          ],
+          "startRange": [
+            200,
+            500
+          ],
+          "stepChoices": [
+            50
+          ],
+          "length": 4
+        },
+        {
+          "id": "seq_by_100",
+          "kind": "number_sequence",
+          "family": "skip_counting",
+          "bandId": "sequence_big",
+          "count": 10,
+          "skill": "skip_counting",
+          "promptVariants": [
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "step_slip"
+          ],
+          "startRange": [
+            100,
+            600
+          ],
+          "stepChoices": [
+            100
+          ],
+          "length": 3
+        }
+      ]
     }
   ]
 }

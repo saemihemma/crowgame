@@ -21,6 +21,7 @@ var _scroll: ScrollContainer
 var _col: VBoxContainer
 var _pin_edit: LineEdit
 var _name_edit: LineEdit
+var _birth_year_edit: LineEdit
 var _status: Label
 
 func _ready() -> void:
@@ -135,7 +136,20 @@ func _show_new_player() -> void:
 	_name_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_col.add_child(_name_edit)
 	_title(TextManager.t("login.pick_pin"), 22)
+	# Already parented by _make_pin_edit() — see the PIN screen above.
 	_pin_edit = _make_pin_edit()
+	# Birth YEAR, optional, for the parent report's grade comparison. A year and
+	# not a date on purpose: Icelandic school grade depends only on the calendar
+	# year of birth (docs/GRADE_EXPECTATIONS.md), so a date would be data about a
+	# child collected for nothing. Skipping it just skips the grade section.
+	_title(TextManager.t("login.birth_year_label"), 22)
+	_birth_year_edit = LineEdit.new()
+	_birth_year_edit.placeholder_text = TextManager.t("login.birth_year_placeholder")
+	_birth_year_edit.max_length = 4
+	_birth_year_edit.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_NUMBER
+	_birth_year_edit.custom_minimum_size = Vector2(280, 48)
+	_birth_year_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_col.add_child(_birth_year_edit)
 	_status = _make_status()
 	_col.add_child(_status)
 	_action_button(TextManager.t("login.create"), _try_create, BrandButton.Role.PRIMARY)
@@ -251,7 +265,17 @@ func _try_login(username: String, pin: String) -> void:
 		_pin_edit.text = ""
 
 func _try_create() -> void:
-	var res = ProfileManager.create_profile(_name_edit.text, _pin_edit.text)
+	# Optional: empty passes, a typed year must be plausible for a school-age
+	# child so a typo cannot silently poison the grade comparison.
+	var birth_year := 0
+	var raw_year := _birth_year_edit.text.strip_edges()
+	if not raw_year.is_empty():
+		var this_year: int = Time.get_datetime_dict_from_system().get("year", 0)
+		birth_year = raw_year.to_int()
+		if birth_year < this_year - 17 or birth_year > this_year:
+			_status.text = TextManager.t("login.birth_year_invalid")
+			return
+	var res = ProfileManager.create_profile(_name_edit.text, _pin_edit.text, birth_year)
 	if res == true:
 		ProfileManager.login(_name_edit.text, _pin_edit.text)
 		_finish_login()
@@ -269,6 +293,12 @@ func _finish_login() -> void:
 	var save := SaveManager.get_data()
 	ELOManager.initialize(save.get("eloStats", null))
 	LearnerStateManager.initialize(ProfileManager.get_active_profile(), save.get("learnerState", null), ELOManager.get_stats())
+	# Where this child STARTS, from the birth year already on the profile. Before
+	# LearnerSyncService.init so the snapshot it caches is the seeded one, and
+	# after initialize so there is a snapshot to seed. A no-op for a returning
+	# child, for a leikskóli child and for a profile with no birth year on file
+	# (MathPlacement.apply_seed).
+	MathPlacement.apply_seed(ProfileManager.get_active_profile())
 	LearnerSyncService.init(LearnerStateManager.get_snapshot())
 	MathProblemManager.hydrate_recent_problems(save.get("telemetry", {}).get("answeredProblemIds", []))
 	SceneRouter.goto("main_menu")

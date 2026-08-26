@@ -85,6 +85,7 @@ export const PLURAL_PARAM = {
     'math.prompt.word.birds_fly': 'a',
     'math.prompt.word.berries_find': 'a',
     'math.prompt.word.berries_eat': 'a',
+    'math.prompt.word.berries_shared': 'a',
     'math.hint.groups': 'a',
     'math.hint.groups_makes': 'a',
     'math.expl.mul': 'a',
@@ -96,6 +97,9 @@ export const PLURAL_PARAM = {
     // author, and "Það eru 1 punktar" is the same bug as the 55 already fixed.
     'math.expl.stars': 'n',
     'math.expl.dots': 'n',
+    // Same reason: "1 hópar" would be the same bug. No authored problem drives
+    // this to one today, and the variant costs nothing.
+    'math.expl.rel.grouped': 'groups',
 };
 
 /** CLDR-style category per locale. Only 'one' and 'other' are needed here. */
@@ -289,6 +293,12 @@ export const TEMPLATES = {
     'math.prompt.word.berries_find.one': 'You have {a} berry. You find {b} more. How many berries?',
     'math.prompt.word.berries_eat': 'You have {a} berries. You eat {b}. How many are left?',
     'math.prompt.word.berries_eat.one': 'You have {a} berry. You eat {b}. How many are left?',
+    // Multiplicative stories (equal groups, partitive sharing). Both operands
+    // are authored >= 2, so only the shared-berries count can hit an Icelandic
+    // singular-agreement number (21, 31, ...) — hence its plural param.
+    'math.prompt.word.nests_eggs': 'There are {a} nests. Each nest has {b} eggs. How many eggs in all?',
+    'math.prompt.word.berries_shared': '{a} berries are shared by {b} birds. How many berries does each bird get?',
+    'math.prompt.word.berries_shared.one': '{a} berry is shared by {b} birds. How many berries does each bird get?',
 
     // ── prompts: sequences and patterns ───────────────────────────────────
     'math.prompt.seq.next_number_pattern': 'What comes next in the number pattern: {seq}',
@@ -313,6 +323,10 @@ export const TEMPLATES = {
     'math.hint.touch_each': 'Touch each one once as you count.',
     'math.hint.more_value': 'Look at which number has more value.',
     'math.hint.repeating': 'See which numbers are repeating in order.',
+    // Grade 3-4 place-value strategies (multi-digit tiers and beyond-tables).
+    'math.hint.place_add': 'Add the hundreds, then the tens, then the ones.',
+    'math.hint.place_sub': 'Take away the hundreds, then the tens, then the ones.',
+    'math.hint.split_tens': 'Multiply the tens, multiply the ones, then add the two parts.',
 
     // Bridging through ten, and two-step subtraction.
     'math.hint.bridge_add': '{a} + {b} = {sum}, then add {c} more!',
@@ -425,6 +439,48 @@ export const TEMPLATES = {
     // ── explanations ──────────────────────────────────────────────────────
     'math.expl.add': '{a} plus {b} makes {sum}.',
     'math.expl.add_x': '{a} plus {b} makes {sum}!',
+
+    // Relational addition: the unknown is a PART, not the result. The prompts
+    // themselves ("5 + ? = 8") are wordless and need no template; only the
+    // teaching sentences do, and all three say the same thing three ways
+    // because the three shapes ask the same question from three positions.
+    'math.hint.rel.how_many_more': 'You have {known}. How many more to make {total}?',
+    'math.hint.rel.count_up': 'Something and {known} makes {total}. Start at {known} and count up to {total}.',
+    'math.hint.rel.other_part': '{total} is the whole, and {known} is one part. What is the other part?',
+    'math.expl.rel.parts': '{known} and {unknown} makes {total}.',
+
+    // Relational subtraction: the unknown is the part that WENT, or the amount
+    // there was to start with. Separate wording from the addition family because
+    // "how many more to make eight" and "how many went" are different questions
+    // and a child should not have to translate between them.
+    'math.hint.rel.how_many_went': 'You had {start}. Now there are {left}. How many went?',
+    'math.hint.rel.how_many_started': 'Something lost {gone} and {left} were left. How many were there to start?',
+    'math.hint.rel.left_after': '{left} is what is left when you take some away from {start}. How many were taken?',
+    'math.expl.rel.taken': '{start} take away {gone} leaves {left}.',
+
+    // Relational multiplication and division: the times fact and the share fact
+    // asked from an end other than the result. Four hints because four different
+    // questions are being asked -- how big is a group, how many groups, how many
+    // groups fit, how many were there to start -- and a child should not have to
+    // translate between them any more than between "how many more" and "how many
+    // went". The explanations reuse math.expl.mul and math.expl.share_each,
+    // because once the missing number is found the sentence is the plain fact.
+    'math.hint.rel.each_group_size': '{known} groups make {total} altogether. How many in each group?',
+    'math.hint.rel.how_many_groups': 'Groups of {known} make {total} altogether. How many groups?',
+    'math.hint.rel.shared_into': '{known} shared out gives {total} in each group. How many groups?',
+    'math.hint.rel.how_many_shared': 'Shared into {known} groups it gives {total} each. How many were there to start?',
+    // Deliberately NOT math.expl.mul. That template's verifier ties `product` to
+    // answer.correct, which is right for "3 x 4 = ?" and wrong for "3 x ? = 12",
+    // where the answer is the missing factor. Same split, and the same reason,
+    // as math.expl.rel.taken against math.expl.sub. The wording differs too, so
+    // the generated matchers stay unambiguous.
+    'math.expl.rel.grouped': '{groups} groups of {each} makes {total} in all.',
+    'math.expl.rel.grouped.one': '{groups} group of {each} makes {total} in all.',
+
+    // Both sides carry an operation. The sentence has to say the balance out
+    // loud, because the whole point of the shape is that "=" is not an
+    // instruction to compute the left side.
+    'math.hint.rel.both_sides': 'This side makes {total}. The other side has {known}, so it needs enough to reach {total} too.',
     'math.expl.sub': '{a} take away {b} leaves {diff}.',
     'math.expl.sub_x': '{a} take away {b} leaves {diff}!',
     'math.expl.sub_just': '{a} take away {b} leaves just {diff}!',
@@ -432,6 +488,11 @@ export const TEMPLATES = {
     'math.expl.mul.one': '{a} group of {b} makes {product}.',
     'math.expl.div': '{a} split into groups of {b} makes {n} groups.',
     'math.expl.div.one': '{a} split into groups of {b} makes {n} group.',
+    // Grade 3-4 place-value and sharing explanations.
+    'math.expl.place_add': 'Add each place, hundreds to ones. The answer is {total}.',
+    'math.expl.place_sub': 'Take away place by place. The answer is {n}.',
+    'math.expl.split_tens': 'Multiply the tens by {b}, then the ones, and add the parts. The answer is {product}.',
+    'math.expl.share_each': '{a} shared into {b} equal groups gives {n} each.',
     'math.expl.add_double': '{a} plus {b} makes {sum}! Double {a} is {sum}!',
     'math.expl.sub_half': '{a} take away {b} leaves {diff}! Half of {a} is {diff}!',
     'math.expl.all_fingers': '{a} plus {b} makes {sum}! That is all your fingers!',
@@ -645,6 +706,9 @@ export const SEMANTICS = {
     // Word problems: the narrative names which way the arithmetic runs.
     'math.prompt.word.birds_land': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
     'math.prompt.word.berries_find': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
+    'math.prompt.word.nests_eggs': (p, problem) => isAnswer(p.a * p.b, problem, `${p.a}×${p.b}`),
+    'math.prompt.word.berries_shared': (p, problem) => isAnswer(p.a / p.b, problem, `${p.a}÷${p.b}`),
+    'math.expl.share_each': (p) => holds(p.a / p.b === p.n, `${p.a}÷${p.b}=${p.n}`),
     'math.prompt.word.birds_fly': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
     'math.prompt.word.berries_eat': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
 
@@ -766,6 +830,48 @@ export const SEMANTICS = {
     // ── explanations ──────────────────────────────────────────────────────
     'math.expl.add': (p, problem) => holds(p.a + p.b === p.sum, `${p.a}+${p.b}=${p.sum}`)
         ?? isAnswer(p.sum, problem, 'sum'),
+    // The relational families are checked twice over: the parts must actually
+    // sum to the whole, AND the part the child is asked for must be the
+    // problem's answer. A hint that quietly names the wrong total is the exact
+    // failure this catalogue exists to prevent.
+    'math.hint.rel.how_many_more': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
+    'math.hint.rel.count_up': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
+    'math.hint.rel.other_part': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
+    'math.hint.rel.how_many_went': (p, problem) => isAnswer(p.start - p.left, problem, `${p.start}-${p.left}`),
+    'math.hint.rel.how_many_started': (p, problem) => isAnswer(p.left + p.gone, problem, `${p.left}+${p.gone}`),
+    'math.hint.rel.left_after': (p, problem) => isAnswer(p.start - p.left, problem, `${p.start}-${p.left}`),
+    'math.hint.rel.both_sides': (p, problem) => isAnswer(p.total - p.known, problem, `${p.total}-${p.known}`),
+    // Internal arithmetic only, deliberately: which of the three numbers is the
+    // ANSWER depends on the shape ("12 - ? = 5" answers 7, "? - 3 = 9" answers
+    // 12), so tying this to answer.correct would be wrong for two of the three.
+    // The hint families above each tie to the answer, so every problem still has
+    // one phrasing checked against it.
+    'math.expl.rel.taken': (p) => holds(p.start - p.gone === p.left, `${p.start}-${p.gone}=${p.left}`),
+
+    // Every multiplicative relational hint names the two numbers a child can
+    // see, so the answer is forced and can be checked against answer.correct --
+    // the same grounding the additive families get.
+    'math.hint.rel.each_group_size': (p, problem) =>
+        holds(p.known !== 0, `${p.total} in ${p.known} groups`)
+        ?? isAnswer(p.total / p.known, problem, `${p.total}/${p.known}`),
+    'math.hint.rel.how_many_groups': (p, problem) =>
+        holds(p.known !== 0, `${p.total} in groups of ${p.known}`)
+        ?? isAnswer(p.total / p.known, problem, `${p.total}/${p.known}`),
+    'math.hint.rel.shared_into': (p, problem) =>
+        holds(p.total !== 0, `${p.known} shared ${p.total} at a time`)
+        ?? isAnswer(p.known / p.total, problem, `${p.known}/${p.total}`),
+    'math.hint.rel.how_many_shared': (p, problem) =>
+        isAnswer(p.known * p.total, problem, `${p.known}x${p.total}`),
+    // Internal arithmetic only, for the reason math.expl.rel.taken gives: which
+    // of the three numbers is the ANSWER depends on the shape. The hint above it
+    // ties to answer.correct, so every one of these problems still has one
+    // phrasing checked against its own answer.
+    'math.expl.rel.grouped': (p) =>
+        holds(p.groups * p.each === p.total, `${p.groups}x${p.each}=${p.total}`),
+
+    'math.expl.rel.parts': (p, problem) => holds(p.known + p.unknown === p.total, `${p.known}+${p.unknown}=${p.total}`)
+        ?? isAnswer(p.unknown, problem, `the missing part ${p.unknown}`),
+
     'math.expl.add_x': (p, problem) => holds(p.a + p.b === p.sum, `${p.a}+${p.b}=${p.sum}`)
         ?? isAnswer(p.sum, problem, 'sum'),
     'math.expl.add_double': (p, problem) => holds(p.a + p.b === p.sum, `${p.a}+${p.b}=${p.sum}`)
@@ -838,6 +944,8 @@ const SAME_ORDER = new Set([
     "math.prompt.word.birds_fly",
     "math.prompt.word.berries_find",
     "math.prompt.word.berries_eat",
+    "math.prompt.word.nests_eggs",
+    "math.prompt.word.berries_shared",
         "math.hint.count_on",
         "math.expl.add",
         "math.hint.count_back",

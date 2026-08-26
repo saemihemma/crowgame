@@ -68,21 +68,28 @@ func _build() -> void:
 	_owl_ring.offset_bottom = m + OwlRing.EXTENT * 2.0
 	add_child(_owl_ring)
 
-# ─── AbilitySlots (top-right, AbilitySlots.ts) ─────────────
+# ─── Ability slots ─────────────────────────────────────────
 var _ability_row: HBoxContainer
 var _ability_chips: Dictionary = {}  # abilityId -> Label
 
+## Under the coin chip, in the LEFT pod.
+##
+## It used to anchor to the bottom right, on the reasoning that the top right
+## belongs to the owl ring -- which is true, and skipped the question of what was
+## already in the bottom right. The jump and shoot buttons are, and the first
+## screenshot ever taken of a granted ability (godot/tools/capture.sh hud-ability)
+## shows "Double Jump" printed across the jump button. Nothing had ever drawn a
+## chip and a control at the same time.
+##
+## The left pod is where it belonged anyway: hearts, coins and abilities are all
+## answers to "what do I have", and §8.2 gives that column to exactly that. The
+## gap is derived from the two things above it rather than guessed, so resizing a
+## heart or the chip cannot leave the three crowding.
 func _build_ability_row() -> void:
 	_ability_row = HBoxContainer.new()
 	_ability_row.add_theme_constant_override("separation", 8)
-	# Bottom right: the top right belongs to the owl ring, and two chips there
-	# would compete with it.
-	_ability_row.anchor_left = 1.0
-	_ability_row.anchor_right = 1.0
-	_ability_row.anchor_top = 1.0
-	_ability_row.anchor_bottom = 1.0
-	_ability_row.offset_left = -176
-	_ability_row.offset_top = -96
+	_ability_row.position = Vector2(_margin(),
+		_margin() + HeartRow.HEART + POD_GAP + CoinChip.HEIGHT + POD_GAP)
 	_ability_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_ability_row)
 

@@ -60,6 +60,9 @@ func _on_challenge_complete(data: Dictionary) -> void:
 
 	var attempt := _build_attempt(data)
 	var step_before: int = LearnerStateManager.get_current_step(String(_domain))
+	# Read BEFORE record_attempt, which increments it. The placement window is
+	# defined on answers already given, not on this one.
+	var calibrating := MathPlacement.is_calibrating(LearnerStateManager.get_lifetime_attempt_count())
 	# Comeback: this attempt answers a review item born from a miss. Getting
 	# it right now is the redemption story, celebrated harder than a win.
 	var is_comeback := false
@@ -69,6 +72,24 @@ func _on_challenge_complete(data: Dictionary) -> void:
 				is_comeback = true
 				break
 	LearnerStateManager.record_attempt(attempt)
+	# THE PLACEMENT WINDOW. For a child's first few answers the ordinary ladder is
+	# too slow to be a placement: three first-try wins at 80% accuracy to clear one
+	# step, with most questions drawn from at or below the rung they are already on.
+	# A seven-year-old seeded slightly low would spend thirty questions climbing out
+	# of it, and a four-year-old seeded high would spend as long falling. Inside the
+	# window one answer moves one whole concept, either way (MathPlacement), so the
+	# birth-year guess is corrected in about three questions -- and the child never
+	# sees a test, only owls.
+	#
+	# Applied AFTER record_attempt, so the attempt is filed against the rung it was
+	# actually asked on and the ladder's own promotion runs first. This only ever
+	# moves the position.
+	if calibrating:
+		var domain := String(_domain)
+		var placed := MathPlacement.calibrated_step(
+			domain, LearnerStateManager.get_current_step(domain), correct, first_attempt)
+		LearnerStateManager.replace_snapshot(
+			MathPlacement.place_snapshot(LearnerStateManager.get_snapshot(), domain, placed))
 	var step_after: int = LearnerStateManager.get_current_step(String(_domain))
 	if is_comeback:
 		EventBus.math_comeback.emit({"domain": _domain, "skills": attempt["skills"]})

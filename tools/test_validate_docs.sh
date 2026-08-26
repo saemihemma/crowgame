@@ -102,9 +102,9 @@ mutate "a registered route with no row" "has no row for it" \
 
 echo "=== the derived payload figures track the artifact ==="
 mutate "drifted raw payload total" "payload totals" \
-	deploy/RAILWAY.md 's/\*\*47.8 MB\*\*/**40.0 MB**/'
+	deploy/RAILWAY.md 's/\*\*49.3 MB\*\*/**40.0 MB**/'
 mutate "drifted first-launch transfer figure" "first-launch transfer figure" \
-	deploy/RAILWAY.md 's/transfers about \*\*16 MB\*\*/transfers about **12.0 MB**/'
+	deploy/RAILWAY.md 's/transfers about \*\*16.1 MB\*\*/transfers about **12.0 MB**/'
 
 echo "=== references must not dangle ==="
 mutate "a doc pointing at the retired Phaser tree" "retired Phaser tree" \

@@ -63,7 +63,7 @@ made a decision from it. The decision — is a first launch acceptable on home w
 
 | | Raw | gzip |
 | --- | --- | --- |
-| **whole payload** | **47.8 MB** | **~16 MB** |
+| **whole payload** | **49.3 MB** | **~16.1 MB** |
 
 Gzip is node's zlib at level 9; a server's own encoder will differ by a few
 tenths. Per-file sizes are `ls -la output/web` when you need them.
@@ -76,7 +76,7 @@ tree the bytes were built from, which matters because production error triage
 keys on that field. Read it as "built from this source", not "shipped in this
 commit".
 
-So a first launch transfers about **16 MB**, and a returning player transfers
+So a first launch transfers about **16.1 MB**, and a returning player transfers
 **nothing at all** for the payload — no bytes, no conditional request, no `304`.
 Only the 5 KB shell is re-fetched.
 
@@ -296,7 +296,7 @@ curl -s https://<domain>/build_info.json    # commit + build time
 Railway bills egress. With a content-addressed payload served `immutable`, a
 returning player transfers ~5 KB per launch instead of ~15.8 MB. A player
 launching twice a day for a month is the difference between roughly 950 MB
-(60 launches at the derived ~16 MB, done by hand — this figure is NOT gated,
+(60 launches at the derived ~16.1 MB, done by hand — this figure is NOT gated,
 unlike the table above) and
 300 KB. Across a class or a family group that is the difference between egress
 being a line item and being invisible.

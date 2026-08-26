@@ -13,6 +13,13 @@ func ui(path: String, default: Variant = null) -> Variant:
 func fx(path: String, default: Variant = null) -> Variant:
 	return _lookup("FX_TUNING", path, default)
 
+## The maths tutorial's own tuning file. Separate from ui_tuning.json on purpose:
+## it is the surface a UI/UX pass owns end to end (layout, pacing, and the map
+## from each drawn part to a palette role), and keeping it in one file means a
+## designer can retune the whole lesson without reading anything else.
+func tutorial(path: String, default: Variant = null) -> Variant:
+	return _lookup("TUTORIAL_TUNING", path, default)
+
 ## Generic access to any loaded tuning file by DataManager key (player_base,
 ## camera_tuning, combat_tuning, enemy_tuning, npc_tuning, leveling, ...).
 func get_value(data_key: String, path: String, default: Variant = null) -> Variant:

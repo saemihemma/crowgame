@@ -15,18 +15,18 @@ or need to do. Nothing else belongs here.
    it. Delete the lines. An item that is finished has no business in a list of
    open work, and a roadmap that accumulates finished items stops being read.
 2. **Never add an entry describing something you just did.** That is what the
-   commit message is for. If you finished it, it goes in git history and it
-   comes *out* of here.
+   commit message is for. If you finished it, it comes *out* of here and the
+   record of it is in git history.
 3. **If you finish part of an item, rewrite the item to describe only what is
    left.** Do not annotate it with what you did.
 4. **This file is not a changelog, a status report, a diary, or a design
    document.** No dates on entries. No author names. No "as of" notes. No
    history. If you want to explain a decision, put it in the commit message or
-   `ARCHITECTURE.md` and link to it.
+   an architecture doc and link to it.
 5. **Every entry must be actionable and specific enough to start on.** Name the
    file, the behaviour, or the question to answer. "Improve UX" is not an entry.
 6. **Deleting an item you did not finish requires a reason** written into the
-   commit message. Silent removal of open work is worse than leaving it.
+   commit that removes it. Silent removal of open work is worse than leaving it.
 
 If you are an agent working in this repository: you are expected to leave this
 file *shorter* than you found it whenever you complete something. Adding to it
@@ -42,98 +42,66 @@ there.
 ## P1 — Correctness and reachability
 
 ### Tune the ladder against real play, not intuition
-The admin session report tags accuracy against the 70-85% sweet spot. After a
-week of family play: above 85% raise the at-level/stretch share, below 70%
-raise comfort, low comeback rate shorten the review gap. One knob at a time,
-one week per change.
+The loop is now built and only the play is missing. `/api/v1/admin/ladder-tuning`
+reads the last seven days and answers with one knob to move -- which file, from
+what to what, and the measurement behind it -- or with a refusal naming exactly
+what the sample is short of. The decision is a pure function in
+`server/src/lib/ladderTuning.ts`, pinned by nine tests, and the admin page
+renders it under the charts.
+
+It refuses today, and will keep refusing until roughly 200 answers spread over
+four separate days exist, because a rate over one enthusiastic afternoon is noise
+and a knob moved from noise leaves a system nobody can reason about. Nothing here
+is waiting on code.
+
+What remains is the tuning itself, which takes calendar time: play a week, apply
+the one change it names, play another, repeat. Note that if it recommends the
+review gap, that is `IMMEDIATE_REVIEW_MIN_GAP`/`MAX_GAP` in
+`learner_state_manager.gd` -- a Tier-1 constant, so changing it means
+regenerating the golden parity fixtures, and the recommendation says so.
 
 *Done when:* two consecutive weekly reports sit inside the sweet spot with at
 least one step-up per early session and frustration flags under 10%.
 
+### Sessions are derived from math attempts, so math-free play is invisible
+The admin overview splits attempt timestamps on a 30-minute gap to get session
+counts and lengths. A child who runs and jumps without meeting an owl leaves no
+trace in it. A lightweight client heartbeat (session start + a ping every few
+minutes, batched into the existing API) would make session length honest for
+all play, not just math play.
+
+*Done when:* the overview's session numbers come from heartbeats, and the
+`derivedFromAttempts` label is gone from `/api/v1/admin/overview`.
+
+### Four grade milestones are approximate alignments, not sourced scope
+The Icelandic grade mapping (docs/GRADE_EXPECTATIONS.md) anchors addition,
+subtraction, counting, multiplication and division milestones to official
+sources (aðalnámskrá end-of-grade-4 criteria, MMS Sproti per-grade scope). The
+comparison, number_sequence and pattern_matching milestones are marked
+`"basis": "approx"` in `godot/data/curriculum/grade_expectations.json` because
+no official number-range anchor exists for them — they were placed by
+judgement against the Sproti topic lists. Contingency: a practising
+grunnskólakennari reviewing that one JSON file (eight domains, sixteen rows)
+would either confirm or correct them in minutes. The grade-2 content ceiling
+is closed: the ladders now run to grade-4 material (3- and 4-digit
+add/subtract by regrouping load, the full table-order multiplication ladder,
+fact-family division, ordering and skip counting into the thousands — see
+docs/MATH_AUTHORING_STANDARDS.md). The `approx` rows now also include the
+number_sequence grade-3/4 milestones.
+
+*Done when:* every milestone's `basis` is `law`/`curriculum`/`material`, or an
+educator has signed off the `approx` rows in the JSON's provenance notes.
+
+### Division with remainders needs a new answer mode
+The MCQ answer format is a single number, so "deiling með afgangi" (Sproti 4)
+cannot be asked honestly — division content stops at exact division. A
+quotient+remainder answer widget (or a two-part question) unlocks it.
+
+*Done when:* a remainder answer mode exists and a `division` band authored
+with remainders passes the materialize review gate.
+
 ## P2 — Experience decisions that need making
 
-
-### Character sprites break the no-anti-aliasing rule
-`brand/ASSET_MANIFEST.md` states hard pixel edges only, and several shipped
-sprites do not meet it: measured soft-alpha was ~34% on `crow_walk`, ~41% on
-`cockroach`, ~30% on `crow_idle`. All are correctly authored at 1x; it is the
-edges that are soft.
-
-Nothing gates this. The tool that measured it (`audit_pixel_art.py`) was deleted
-in the same pass that recorded this entry — it was unwired, printed rather than
-failed, and 357 lines to restate a rule already written down. Re-measuring is a
-few lines of Pillow against the alpha histogram if the rule is worth enforcing.
-
-*Done when:* the sprites are redrawn with hard edges and a check fails on soft
-ones, or `ASSET_MANIFEST.md` admits soft edges for character art on purpose.
-
-### One enemy exists
-`enemy_registry.json` contains `cockroach_basic` and nothing else, so every
-threat in every world is the same creature. `brand/BRAND_SYSTEM.md` §3.3 already
-specifies a roster and §3.1 the ugly law they have to satisfy; `spawn_registry`
-plus `setup_from_spawn` means a new enemy is data plus a scene, not a `game.gd`
-change.
-
-*Done when:* each world has at least one threat that is not the cockroach, or the
-roster in §3.3 is cut down to what is actually intended.
-
-### Four limits of the maths ladder
-None of these is decided, and they share one cause: the ladder was derived before
-the owl path existed.
-
-- **Two-digit addition and subtraction stay out of the owl's local path
-  deliberately.** Whether that holds once a child clears the existing bands is a
-  content decision nobody has taken.
-- **Subtraction step 5 is structurally sparse** under the current derivation, so
-  it ships as a tiny bridge rather than a full band. Either the derivation widens
-  it or the band should be merged into its neighbour.
-- **Review is queued on failed challenges, not on first wrong attempts** that the
-  child then corrects within the same challenge. The second is arguably the more
-  useful signal and is currently discarded.
-- **Pool ELO ratings are still initialized from legacy static difficulty.** Local
-  selection obeys curriculum steps instead, so this does not affect what a child
-  is asked — but the telemetry-facing ELO layer is coarse, and any future
-  analysis that trusts it will be reading a number nothing maintains.
-
-*Done when:* each is either implemented, or written into PRODUCT.md as a decision
-taken on purpose.
-
-### A forgotten PIN locks a child out, and there is no way back
-`ProfileManager.login()` really does compare the typed PIN against the stored one
-and returns false on a mismatch; `login.gd` renders "Wrong PIN!". There is no
-"forgot my PIN" screen, no adult override, and `delete_profile()` exists in
-`profile_manager.gd` with no caller anywhere in the UI. So the only route out is
-clearing the site's data, which erases every player on the device.
-
-For a 5-to-7-year-old choosing a 4-digit number, forgetting it is the expected
-case rather than the edge case, and the cost is another child's progress. Three
-plausible shapes, none obviously right: an adult-gated reset on the login screen,
-a "this is not a password" affordance that lets any PIN through after N failures,
-or wiring `delete_profile()` to a per-player remove that keeps the others. The
-first is the most work and the most correct; the second matches what `PRIVACY.md`
-tells parents the PIN is for.
-
-`PRIVACY.md` documents the lockout now, so nobody sets a PIN without knowing. It
-is still a bad end state.
-
-*Done when:* a child who has forgotten their PIN can get back to their own
-progress without destroying anyone else's, or the PIN stops gating entry at all.
-
-### Should an unloseable streak exist at all?
-The game keeps an in-level streak: a counter, a HUD flame, an "ON FIRE" state, and
-the rule that a wrong answer PAUSES it rather than resetting it. Only leaving the
-level clears the count.
-
-**For, as built:** a streak that cannot be lost puts no punishment on the single
-most confidence-sensitive moment a child has, and children replaying a level to
-protect one are children doing more maths.
-
-**Against:** it is still a thing to protect, while `PRODUCT.md` also says there
-should be nothing a child can feel anxious about protecting. Both positions are in
-that file, which is honest and unresolved rather than settled.
-
-*Done when:* the mechanic is kept, changed or removed on purpose, and `PRODUCT.md`
-states one position instead of two.
 
 ### The on-screen controls are gated on geometry, not on input
 `godot/tests/test_touch_gates.gd` now checks every pad at four real device
@@ -157,8 +125,8 @@ playtest: a desktop PC got the five-button thumb gamepad laid over the level.
 `TouchControls.supported()` now asks `DisplayServer.is_touchscreen_available()`
 alone, and `pointing/emulate_touch_from_mouse` is off — it had to be, because it
 is an input of that same call and made the engine answer "yes, touch" on any
-machine with a mouse. Confirmed in a browser both ways: pads present with touch
-emulation on, absent without.
+machine with a mouse. Confirmed in a browser both ways: pads present under touch
+emulation, absent without.
 
 *Done when:* the touch half above has a repeatable assertion. The mouse half is
 closed.
@@ -187,55 +155,59 @@ wallpaper — which means distinctive marks have nowhere to live.
 *Done when:* the compiler selects left/middle/right caps for platform runs, and
 scatters decoration tiles into the layer it already emits.
 
-### `level1_tiles.png` is registered but never selected
-It is entry `level1_tiles` in `godot/data/tilesets/tileset_manifest.json`, but no
-compiled map reaches it: `level_loader.gd` takes the tileset out of the level's
-own `tilesets[0]` and resolves the image by filename, so the manifest entry is
-never consulted. It is 32x64, two tiles, and predates the current compiler.
+### The feel pass is the last thing the Phaser prototype proved and Godot lacks
+The rest of that list has landed. Five world themes with per-level selection, the
+themed two-stop sky (`game.gd::_paint_sky`), the five per-world tilesets named by
+every compiled map, the wrong-answer choreography, the board that measures its
+own question and grows, the three-pod HUD with the owl ring, the streak flame,
+and the one-answer owl roster -- `owl_probe` solves exactly the one problem the
+registry says the owl asks.
 
-`LevelRegistryEntry.tilesetImages` is a near-miss of the same story and costs
-more to remove than it looks. The field is declared in
-`math-kernel/utils/Types.ts`, nothing reads its value — and it is in the
-`required` list of `godot/data/schemas/level-registry.schema.json`, so all six
-registry entries carry it and dropping it means a schema change plus a
-re-emit of the registry, not a delete.
+What is left is the feel pass itself: `brand/BRAND_SYSTEM.md` §2.4 asks for coyote
+time, jump buffering and the apex hold, and the port has constant gravity and no
+input grace. The apex hold has its own entry below because the motion parity
+contract blocks it specifically; coyote time and jump buffering do not touch the
+gravity model and are the cheaper half.
 
-*Done when:* the manifest entry is gone, and `tilesetImages` is either removed
-from the schema, the type and all six entries together, or something reads it.
+*Done when:* `player_motion.gd` carries coyote time and a jump buffer from
+`data/tuning/player_base.json`, and `test_motion_parity.gd` still passes -- both
+are input-timing windows, not gravity, so the golden fixtures should not move. If
+they do, the fixtures are asserting more than the motion model.
 
-### The maths board is themed by colour only, not by material
-Every theme file declares `mathBoard.frameSprite`, `mathBoard.bgSprite` and
-`mathBoard.optionSprite`, and none has ever had a texture behind it. A world
-changes the board's *colour* and nothing else. Emberwood and Geyserworks should
-not be the same rounded rectangle in different browns.
+### Five board materials are wired and undrawn
+`math_challenge.gd::_board_face()` now reads the active world's
+`mathBoard.frameSprite` before the shared `board_panel` slot, and falls back to
+the drawn `StyleBoxFlat` when neither has art -- so dropping a PNG into the
+registry under the name a theme already declares changes that world's board and
+nothing else. It is a nine-slice (`StyleBoxTexture` with texture margins), which
+is what the growing board needs: it measures its question and can reach ~380
+tall, and a fixed-size PNG would smear its corners.
 
-`brand/BRAND_SYSTEM.md` §8.3 owns the intent: the board is made of the world's
-material — bark, crystal, candy, iron, sky-stone — while its geometry, button
-grid and timings stay identical in all five. Skin changes, layout never does.
-`brand/ASSET_MANIFEST.md` P4 lists the files.
+`brand/BRAND_SYSTEM.md` §8.3 owns the intent -- bark, crystal, candy, iron,
+sky-stone, with the geometry, button grid and timings identical in all five.
+`brand/ASSET_MANIFEST.md` P4 lists the five files. This is now purely an art
+dependency; there is no code left to write.
 
-**The machinery is already in; this is an art task.** `math_challenge.gd` checks
-`SpriteSheet.has_art("board_panel")` and builds a `StyleBoxTexture` nine-slice
-when a texture exists, falling back to the drawn panel when it does not — which
-matters because the board is not a fixed `520x280`: it measures its question,
-options and hint and grows, so on a two-line prompt it is close to 380 tall. A
-fixed-size PNG would stretch and smear its corners. So each asset is a nine-slice
-source plus its border insets, and dropping one in needs no code change.
+*Done when:* the five frames exist and each world's board is visibly made of that
+world's material.
 
-*Done when:* each world's board is visibly made of that world's material, and the
-frame survives a two-line prompt without distortion.
+### The HUD's uncovered states are covered, and found two bugs
+`godot/tools/capture.sh` now has `hud-hurt`, `hud-streak` and `hud-ability`
+variants, driven through the game's own entry points (`Game.hurt_player`,
+`EventBus.math_answer_submitted`, `EventBus.ability_granted`) rather than by
+writing to the HUD, so a shot is evidence about a state the game can reach.
 
-### The HUD has states no screenshot has ever seen
-Three designed states have no visual evidence behind them: a lost heart (needs
-damage), the streak flame at 3+ (needs two owls answered perfectly in sequence),
-and the ability slots (needs an ability granted).
+The first run of them showed a lit streak with no flame on the ring at all, and
+"Double Jump" printed across the jump button. Both are fixed and both are now
+arithmetic assertions in `godot/tests/test_hud_pods.gd`, which is the kind of
+check that would have caught them without a renderer.
 
-The harness that used to cover this was `tools/theme_screenshots.mjs`, which
-drove the Phaser build through `window.__crowGame` and was deleted with it. What
-cannot yet drive damage or a multi-owl streak.
+What is still uncovered is the DEATH and respawn sequence, and the completion
+screen with a full owl ring rather than an empty one -- `complete` stages the
+overlay but not the state behind it.
 
-*Done when:* the capture tool can reach those three states, or they are checked
-some other way and the check is written down.
+*Done when:* those two are variants too, or are checked some other way and the
+check is written down.
 
 ### Apex hang is blocked by the motion parity contract
 The jump would feel more generous with reduced gravity near the top of the arc,
@@ -243,9 +215,8 @@ which `brand/BRAND_SYSTEM.md` §2.4 calls for as the `apex` hold. It was left ou
 of the feel pass deliberately: `godot/tests/test_motion_parity.gd` asserts the
 Godot port matches golden fixtures generated from the web motion model
 (`tools/golden/gen_motion_fixtures.ts`), and that model has one constant gravity.
-Changing it on the web side alone silently breaks parity, so the apex hold has to
-land as a matched pair: the motion model and the Godot port in one commit, with
-regenerated fixtures.
+Changing it on the web side alone silently breaks parity, and Godot cannot be
+exercised from the container this was written in.
 
 *Done when:* apex damping exists in the shared model, both runtimes implement it
 and the fixtures are regenerated — or the idea is dropped on purpose.
@@ -298,121 +269,37 @@ from the derived step (one source of truth), or drop the difficulty filter
 from the adaptive path once step data is fully trusted.
 
 ### A gated "padlock owl" variant that asks for more than one answer
-Every dial is on the owl now — `problemCount`, `difficultyRange`, `problemTypes`
-and `teaches`, all read from `npc_registry.json` and documented in its `fields`
-block — so a new variant is a registry entry plus the `npc_id` a level spawns.
-What is left is content and design, not plumbing: a visually distinct sprite, a
-bigger reward, and a decision about where it appears (level gates? bonus areas?).
+The baseline owl asks exactly one problem, and every dial that makes one owl
+different from another is on the owl: `problemCount`, `difficultyRange` and
+`problemTypes`, documented in `npc_registry.json`'s own `fields` block. So a new
+variant is a registry entry plus the `npc_id` a level spawns — no code change.
+What is left is content and design: a visually distinct sprite, a bigger reward,
+and a decision about where it appears (level gates? bonus areas?). The
+multi-problem UI (progress header, alternate-domain follow-ups) stays dormant at
+the baseline but keeps working for any NPC that raises the count.
 
-The plumbing claim this entry used to make was not quite true. An owl asking one
-question could still show two boards, because the worked example was a global
-behaviour rather than a property of the owl: any owl meeting a domain the child
-had never attempted demonstrated first. That is `teaches` now, and only
-`owl_teacher_01` has it.
+### Multiplication and division reach a child late
+Both are served now: they are in every owl's `problemTypes`, they unlock off the
+accuracy gate, and `tools/sim_learner_journey.ts` measures a thriving child
+unlocking multiplication at attempt 44 and division at 179, with both offered on
+the next question after unlocking. (An earlier version of this entry claimed they
+were "not in problemTypes". That was never true.)
 
-### Multiplication and division need a fate decision
-650 authored problems sit in domains the owl never serves — not in its
-`problemTypes`, and with almost no content below step 3 (division's lowest
-band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
-the rotation for older kids, or park them explicitly in Settled.
+What remains is pace. Both plateau around step 8 of 14 and 9 of 15 even after
+4000 problems, because their ELO grows only from their own attempts and they open
+late in a journey. `domainWeights` in `math_tuning.json` is the dial, and
+`/api/v1/admin/ladder-tuning` is the instrument that should decide where to set
+it -- from real play rather than from a simulation whose success rates are
+stipulated.
 
-### The trophy shelf has no heading
-`trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with
-the shelf but nothing ever drew it — the new dead-key guard caught it on its
-first merge. The key is deleted rather than wired up, because adding a heading
-changes the main menu's layout and that belongs to whoever designed the shelf.
-
-*Done when:* either a heading is drawn above the badge row and the key comes
-back with it, or the shelf is deliberately headingless and this entry goes.
-Note the main menu is already tight: the language selector's width is measured
-against the title ending at x 636.
+*Done when:* a real week of play says the pace is right, or says which way to
+move the weights.
 
 ### Only six levels exist
 `level_99` (practice) plus five real ones. More content is the main lever on how
 long a child stays with the game.
 
 ## P4 — Build and tooling
-
-### Decide: build the export in CI, or keep committing it
-`output/web` is the live game — `railway.json` copies it straight into Caddy — and
-it is committed by hand. That is ~48 MB of artifact in the tree, re-written on
-every rebuild, and `.git` has grown accordingly.
-
-**The fact that should decide this, measured 2026-08-25: the pck is not
-byte-reproducible.** Two consecutive `build_web.sh` runs on an unchanged tree
-produce pck files of identical size and different content, ~197 KB of 14.3 MB
-differing. The embedded Godot caches are byte-stable, so the variation is in the
-packing itself. So *every* rebuild churns the artifact whether or not anything
-changed — "rebuild to be safe" is never free, and the cost is worse than the
-directory size suggests.
-
-**A correction to what was previously recorded here.** An earlier pass concluded
-that GDScript comment text reaches the pck bytes, and therefore that normalizing
-comments out of the export fingerprint would make the fingerprint lie. That was
-inferred from editing a comment, rebuilding, and seeing the pck hash change — an
-experiment the nondeterminism above invalidates, because the hash changes on a
-no-op rebuild too. **Whether comments reach the bytes is unknown.** Answering it
-needs extracting two pcks and diffing the stored files, not comparing hashes. So
-the option of a comment-insensitive fingerprint is NOT eliminated; it is
-unevaluated.
-
-The three options, then: build in CI and stop committing the artifact; keep
-committing it and accept the churn; or narrow the fingerprint so fewer edits
-force a rebuild, which needs the deterministic comparison done first.
-
-*Done when:* one of the three is chosen and the reasoning is written into
-`deploy/RAILWAY.md`, where the deploy path is described.
-
-### `error_groups` grows without bound, while `error_events` is bounded
-Retention is asymmetric, and only one half was designed. `error_events` is
-daily-partitioned and dropped whole past `CROW_ERROR_RETAIN_DAYS` (30), which is
-the mechanism the runbook and `SECURITY.md` both describe. `error_groups` has no
-retention job and no cap on distinct fingerprints, and it is the table that keeps
-the `message` plus a `{context, stack}` sample indefinitely.
-
-The fingerprint is a hash of the normalized message, so a caller varying the
-message mints a new permanent row. `POST /api/v1/errors` is anonymous and rate
-limited to 20/min/IP with up to 10 events a request, so a single address can add
-durable rows at roughly a few MB a minute, indefinitely. Nothing prunes them and
-nothing alerts on the row count.
-
-This is not the endpoint being insecure — it is body-capped, sanitized, reflects
-nothing back, and stores no player-typed text — it is retention that was only
-half specified. `SECURITY.md` now names it rather than leaving it to be
-discovered.
-
-*Done when:* groups have either a last-seen retention window, a distinct-
-fingerprint cap with a documented eviction rule, or a stated decision that
-unbounded growth is acceptable at this scale with the arithmetic to back it.
-
-### Dead public API under `godot/scripts/`
-The `text_manager.gd` half of this is done: the six functions that made up the
-`admin.html` translation editor's API — `set_translation`, `import_translations`,
-`export_translations`, `get_override`, `get_default` and `get_all_keys` — are
-deleted. They were lines 127-158 of a 158-line file with no caller anywhere in
-the tree.
-
-**The read path was deliberately kept, and is still a live question.** `t()`
-consults `_overrides` ahead of the locale bundle and the defaults, and
-`_load_overrides()` runs at init, so a `crow_translations` value in the store
-still outranks every shipped string — with nothing in the game able to write one.
-Removing that is a behaviour change for anyone who has such a value, and it would
-drop a storage key from the contract in `ARCHITECTURE.md`. Decide it; do not
-drift into it.
-
-Still unexamined, and to be checked individually rather than swept — several are
-probably reachable in ways a name search cannot see:
-`problem_pool_manager.gd` (4 unused query helpers), `save_manager.gd`
-(`add_stars`, `increment_owls_saved`, `complete_level`, `grant_ability`,
-`set_learner_state`, `load_save`), `level_manager.gd` (`get_next_level`,
-`get_next_level_key`), `cloud_sync.gd` (`sign_out`, `pull_save`, `mark_dirty` —
-check the panel's signals first), `learner_state_manager.gd`
-(`get_confidence_offset`, `get_effective_selection_elo`,
-`reconcile_curriculum_floors` — parity-locked, so read the fixtures first),
-`game.gd` (`respawn_player`), `brand_button.gd` (`set_role`).
-
-*Watch out:* every one of these lives under the export fingerprint, so a removal
-means rebuilding `output/web` in the same commit.
 
 ### Code-drawn UI stand-ins need a real art pass
 Several load-bearing math-experience surfaces render with primitives drawn in
@@ -435,7 +322,7 @@ frame, and the recap panel, wired in both `src/` and `godot/`.
 they work, but they are placeholders in tone.
 
 The brief now exists: `brand/SOUND_DESIGN.md` lists every moment in the game,
-where it fires from, and how it should sound, and the swap procedure is copying
+which file fires it, and how it should sound, and the swap procedure is copying
 a file over the old one — no code, manifest or registry change. So this is a
 commission, not an engineering task.
 
@@ -443,40 +330,6 @@ commission, not an engineering task.
 whose they are.
 
 ---
-
-### Five of the ten quality gates cannot be measured at all
-`brand/BRAND_SYSTEM.md` §14 lists ten gates. B1 is met and asserted by
-`test_project_config.gd`; B8 is partly automated by `test_world_palettes.gd`.
-B3, B4, B5 and B10 — touch-target size, safe-area clearance, time to first
-accepted input, and one-thumb reach — are unmeasurable because nothing in the
-suite opens a device viewport and audits the live scene graph. B2 and B9,
-sustained 60fps on a throttled profile and reduced-motion behaviour, have never
-been measured on any profile.
-
-The device audit that used to do some of this drove the retired Phaser build
-through `window.__crowGame` and was deleted with it.
-
-*Done when:* a headless harness can open the four device profiles already listed
-in `test_project_config.gd`, walk the real scene graph, and report B3, B4 and B10
-per screen. B2 and B9 need a frame trace and a reduced-motion flag; they are
-worth splitting out once the viewport harness exists.
-
-### No first-run teaching of any mechanic
-A child arriving for the first time is shown a level and left to work out
-movement, jumping, shooting and the owl interaction on their own. The maths side
-has a teaching window — a worked example on first contact with a new domain — but
-the platforming has no equivalent.
-
-*Done when:* a decision exists on whether first-run teaching is in scope at all,
-and if it is, which mechanics get it. This is a design question before it is an
-implementation one.
-
-### Is the five-level progression the shipping scope, or a vertical slice?
-Carried over from the production plan's open decisions, because it changes how
-much each world is worth investing in: whether "Only six levels exist" above is
-a gap to close or the intended shape of the finished game.
-
-*Done when:* answered. It gates how much art and level content each world gets.
 
 ## Settled — do not re-open
 
@@ -492,6 +345,12 @@ of completed tasks.** Do not add finished work here.
 - **Answer-feedback pacing lives in `data/tuning/math_tuning.json`.** It was
   hardcoded in one port and in `ui_tuning.json` in the other, so the two
   disagreed about how long a child waits after a miss.
+- **The trophy shelf is deliberately headingless.** Every badge already carries
+  its own domain label underneath it, so a heading would be the one item on that
+  row that names nothing -- and the row is anchored to the bottom strip under the
+  buttons, where it reads as a status shelf rather than a titled section. The
+  `trophy.title` key stays deleted. The band is 84px and a badge plus its label
+  already fills it, so adding one would also have to move the menu.
 - **A held control must look held.** The options dim to 0.45 while input is
   locked out. Use `self_modulate`, not `modulate` -- the focus highlight owns
   `modulate` and will otherwise leave the focused option lit.
@@ -514,11 +373,14 @@ of completed tasks.** Do not add finished work here.
   an extra affordance for a child who cannot read yet, never the identifier. The
   word stays, and stays untranslated. 🇺🇸 was chosen for English over 🇬🇧 as the
   owner's call.
-  They are vector geometry (`godot/scripts/ui/flag_icon.gd`), not emoji, for the same reason the PIN dots
+  They are vector geometry (`godot/scripts/ui/flag_icon.gd`), not emoji, for
+  the same reason the PIN dots
   and the tick are: a flag emoji is a regional-indicator pair far outside
   Latin-1, Windows ships no flag glyphs so Chrome there renders it as the
   letters "US"/"IS", and the Godot export's bundled font has no emoji at all --
   which is exactly the tofu this whole localisation pass started from.
+- **The dated review documents under `docs/` still say "Crow".** They are
+  historical records; rewriting them would be revisionist.
 - **`prompt.text`, `hint` and `explanation` stay canonical English.** Four
   things read them and would break if they became Icelandic:
   `tools/math_verifier.ts` recomputes every answer by parsing operands out of

@@ -1,12 +1,15 @@
 extends Node
 ## ThemeManager — ported from the retired Phaser build; this is now the only implementation.
-## Holds the registered world theme definitions and the active theme, and
+## Holds registered theme definitions (one per world) and the active theme, and
 ## exposes palette colors. Slice 8 promotes this to the full SkinPack swap system
 ## (Tier 3); for now it loads the JSON themes and serves colors.
 
 signal theme_changed(theme_id: String)
 
-## Every theme DataManager can serve, in registration order.
+## Every theme DataManager can serve, in registration order. One per world, and
+## nothing else: `theme_forest` and `theme_scifi` predated the worlds and were
+## kept alive only by two tests asserting on their ids, which now assert on the
+## worlds instead.
 const THEME_KEYS: PackedStringArray = [
 	"THEME_EMBERWOOD",
 	"THEME_PRISM_HOLLOW",

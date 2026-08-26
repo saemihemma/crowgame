@@ -5,34 +5,38 @@
     "pattern_matching",
     "subtraction",
     "comparison",
-    "number_sequence"
+    "number_sequence",
+    "multiplication",
+    "division"
   ],
   "openingUnlockedDomains": [
     "addition",
     "counting"
   ],
-  "owlEligibleProblemCount": 1474,
-  "owlEligibleUniquePromptCount": 1474,
-  "owlEligibleUniqueFactCount": 595,
+  "owlEligibleProblemCount": 1955,
+  "owlEligibleUniquePromptCount": 1955,
+  "owlEligibleUniqueFactCount": 807,
   "domainCounts": {
-    "addition": 448,
+    "addition": 496,
     "counting": 125,
     "pattern_matching": 125,
-    "subtraction": 526,
+    "subtraction": 544,
     "comparison": 125,
-    "number_sequence": 125
+    "number_sequence": 143,
+    "multiplication": 233,
+    "division": 164
   },
-  "openingUnlockedInventoryProblemCount": 573,
-  "openingUnlockedInventoryUniquePromptCount": 573,
-  "openingUnlockedInventoryUniqueFactCount": 143,
-  "freshReachableProblemCount": 53,
-  "freshReachableUniquePromptCount": 53,
-  "freshReachableUniqueFactCount": 19,
+  "openingUnlockedInventoryProblemCount": 621,
+  "openingUnlockedInventoryUniquePromptCount": 621,
+  "openingUnlockedInventoryUniqueFactCount": 179,
+  "freshReachableProblemCount": 57,
+  "freshReachableUniquePromptCount": 57,
+  "freshReachableUniqueFactCount": 23,
   "freshReachableDomainCounts": {
-    "addition": 24,
+    "addition": 28,
     "counting": 29
   },
-  "freshReachableAdditionFactCount": 11,
+  "freshReachableAdditionFactCount": 15,
   "freshReachableCountingFactCount": 8,
   "currentInteractionProblemCount": 1,
   "owlAdditionByStep": [
@@ -50,27 +54,27 @@
     },
     {
       "step": 2,
-      "rowCount": 12,
-      "uniquePromptCount": 12,
-      "uniqueFactCount": 5
-    },
-    {
-      "step": 3,
-      "rowCount": 53,
-      "uniquePromptCount": 53,
+      "rowCount": 16,
+      "uniquePromptCount": 16,
       "uniqueFactCount": 9
     },
     {
+      "step": 3,
+      "rowCount": 60,
+      "uniquePromptCount": 60,
+      "uniqueFactCount": 15
+    },
+    {
       "step": 4,
-      "rowCount": 34,
-      "uniquePromptCount": 34,
-      "uniqueFactCount": 5
+      "rowCount": 41,
+      "uniquePromptCount": 41,
+      "uniqueFactCount": 10
     },
     {
       "step": 5,
-      "rowCount": 32,
-      "uniquePromptCount": 32,
-      "uniqueFactCount": 5
+      "rowCount": 34,
+      "uniquePromptCount": 34,
+      "uniqueFactCount": 6
     }
   ]
 }

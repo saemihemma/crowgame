@@ -600,10 +600,23 @@ record: the answer to "did my child's work get lost".
 | `POST` | `/api/v1/attempts/sync` | device | batch attempts, returns applied ids |
 | `DELETE` | `/api/v1/family` | device | hard delete, cascade |
 | `GET` | `/api/v1/family/export` | device | full data export |
+| `PUT` | `/api/v1/family/children/{childId}/birth-year` | device | set/clear birth year for the grade comparison |
+| `GET` | `/api/v1/family/children/{childId}/report` | device | the parent report, per domain |
+| `GET` | `/api/v1/admin/overview` | **admin** | owner KPIs |
+| `GET` | `/api/v1/admin/ladder-tuning` | **admin** | current ladder weights |
+| `GET` | `/api/v1/admin/errors` | **admin** | grouped client errors |
+| `POST` | `/api/v1/admin/errors/{fingerprint}/status` | **admin** | triage an error group |
 
 The delete and export paths exist from the first release that stores anything.
 They are cheap now and awkward to retrofit, and for children's data a delete path
 is not optional.
+
+The `admin` rows are a different subject from every other row in this table. They
+authorize the **owner**, not a device and not a parent — `server/src/lib/adminAuth.ts`
+— and they are the one surface that reads across families. Nothing in the game
+calls them; they exist for `server/src/admin/page.ts`. Birth year is optional and
+year-only on purpose: Icelandic school grade depends only on the calendar year of
+birth, so a full date would be data about a child collected for nothing.
 
 ### Schema shape
 

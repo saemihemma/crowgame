@@ -1,92 +1,97 @@
 {
-  "_comment": "UI/layout tuning — sizes, delays, thresholds for menus/HUD/touch/math board. JSON-first: edit here, never hardcode in .gd. (Tier-1 math/learner constants intentionally live in code, not here.)",
-  "touch": {
-    "button_size": 92,
-    "gap": 14,
-    "_comment": "On-screen gamepad. safe_margin is Gate B4 (nothing interactive within 32px of an edge); button_size is Gate B3's 88px floor with a little headroom.",
-    "safe_margin": 32,
-    "jump_button_size": 112
-  },
-  "math_challenge": {
-    "correct_delay": 1.5,
-    "fail_delay": 0.8,
-    "retry_lockout": 0.6,
-    "option_min_w": 116,
-    "option_min_h": 88,
-    "option_font_size": 32,
-    "question_font_size": 40,
-    "header_font_size": 22,
-    "teach_delay": 3.0,
-    "question_font_size_medium": 30,
-    "question_font_size_long": 24,
-    "question_wrap_width": 520,
-    "hint_font_size": 20,
-    "board_min_w": 560,
-    "camera_lift": 150,
-    "camera_lift_seconds": 0.28,
-    "board_screen_share": 0.78
-  },
-  "player": {
-    "walk_speed_threshold": 10.0
-  },
-  "door": {
-    "proximity": 100.0
-  },
-  "enemy": {
-    "edge_probe_x": 28.0
-  },
-  "hud": {
-    "coin_milestones": [
-      10,
-      25,
-      50,
-      100
-    ],
-    "font_size": 22,
-    "margin_left": 16,
-    "margin_top": 12
-  },
-  "npc": {
-    "prompt_offset_y": -96,
-    "prompt_width": 96
-  },
-  "menu": {
-    "button_min_w": 280,
-    "button_min_h": 72,
-    "title_font_size": 96
-  },
-  "cloud": {
-    "_comment": "Cloud-save cadence. The flush is a SEPARATE debounce layered above SaveManager: SaveManager saves locally on every coin pickup (EventBus.coins_changed -> save()), which is correct locally and would melt the API if uploaded per save.",
-    "flush_debounce_seconds": 20.0,
-    "request_timeout_seconds": 15.0,
-    "max_attempts_per_batch": 100,
-    "retry_backoff_seconds": [
-      5.0,
-      15.0,
-      60.0
-    ]
-  },
-  "cloud_panel": {
-    "layer": 20,
-    "width": 720,
-    "min_height": 420,
-    "separation": 16,
-    "title_font_size": 40,
-    "body_font_size": 24,
-    "field_width": 520,
-    "field_height": 64,
-    "button_width": 420,
-    "button_height": 72
-  },
-  "parent_report": {
-    "layer": 21,
-    "margin": 48,
-    "width": 860,
-    "separation": 12,
-    "title_font_size": 40,
-    "child_font_size": 30,
-    "body_font_size": 22,
-    "button_width": 320,
-    "button_height": 64
-  }
+    "_comment": "UI/layout tuning — sizes, delays, thresholds for menus/HUD/touch/math board. JSON-first: edit here, never hardcode in .gd. (Tier-1 math/learner constants intentionally live in code, not here.)",
+    "touch": {
+        "button_size": 92,
+        "gap": 14,
+        "_comment": "On-screen gamepad. safe_margin is Gate B4 (nothing interactive within 32px of an edge); button_size is Gate B3's 88px floor with a little headroom.",
+        "safe_margin": 32,
+        "jump_button_size": 112
+    },
+    "math_challenge": {
+        "correct_delay": 1.5,
+        "fail_delay": 0.8,
+        "retry_lockout": 0.6,
+        "option_min_w": 116,
+        "option_min_h": 88,
+        "option_font_size": 32,
+        "question_font_size": 40,
+        "header_font_size": 22,
+        "teach_delay": 3.0,
+        "question_font_size_medium": 30,
+        "question_font_size_long": 24,
+        "question_wrap_width": 520,
+        "hint_font_size": 20,
+        "board_min_w": 560,
+        "board_screen_share": 1.0
+    },
+    "player": {
+        "walk_speed_threshold": 10.0
+    },
+    "door": {
+        "proximity": 100.0
+    },
+    "enemy": {
+        "edge_probe_x": 28.0
+    },
+    "hud": {
+        "coin_milestones": [
+            10,
+            25,
+            50,
+            100
+        ],
+        "font_size": 22,
+        "margin_left": 16,
+        "margin_top": 12
+    },
+    "npc": {
+        "prompt_offset_y": -96,
+        "prompt_width": 96
+    },
+    "menu": {
+        "button_min_w": 280,
+        "button_min_h": 72,
+        "title_font_size": 96
+    },
+    "cloud": {
+        "_comment": "Cloud-save cadence. The flush is a SEPARATE debounce layered above SaveManager: SaveManager saves locally on every coin pickup (EventBus.coins_changed -> save()), which is correct locally and would melt the API if uploaded per save.",
+        "flush_debounce_seconds": 20.0,
+        "request_timeout_seconds": 15.0,
+        "max_attempts_per_batch": 100,
+        "retry_backoff_seconds": [
+            5.0,
+            15.0,
+            60.0
+        ]
+    },
+    "cloud_panel": {
+        "layer": 20,
+        "width": 720,
+        "min_height": 420,
+        "separation": 16,
+        "title_font_size": 40,
+        "body_font_size": 24,
+        "field_width": 520,
+        "field_height": 64,
+        "button_width": 420,
+        "button_height": 72
+    },
+    "parent_report": {
+        "layer": 21,
+        "margin": 48,
+        "width": 860,
+        "separation": 12,
+        "title_font_size": 40,
+        "child_font_size": 30,
+        "body_font_size": 22,
+        "button_width": 320,
+        "button_height": 64,
+        "accuracy_good_min": 0.85,
+        "accuracy_ok_min": 0.7,
+        "accuracy_color_good": "#2e9e4f",
+        "accuracy_color_ok": "#c98500",
+        "accuracy_color_low": "#d05353",
+        "birth_year_field_width": 160,
+        "birth_year_button_width": 180
+    }
 }

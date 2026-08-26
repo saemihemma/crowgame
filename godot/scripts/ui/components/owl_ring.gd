@@ -20,11 +20,30 @@ const BEZEL_RADIUS_OFFSET := 1.5
 ## size, which meant the ring had no bright outer edge and the whole pod sank
 ## into any world lighter than the bezel.
 const RIM := 2.0
+## Where the streak flame sits, measured out from the rim rather than in from
+## RADIUS.
+##
+## IT USED TO BE DRAWN INSIDE THE BEZEL, AND WAS THEREFORE INVISIBLE. The dashes
+## went at RADIUS + 6 = 38px, and the bezel is an 11px band covering 28 to 39
+## with the paper rim on top of it at 37.5 to 39.5 -- so a 1.5px dash at 45%
+## alpha was laid over the two widest, darkest strokes the ring draws. The first
+## screenshot ever taken of a lit streak (godot/tools/capture.sh hud-streak) shows
+## a ring with no flame on it at all, which is what that entire capture variant
+## was added to find out.
+##
+## Outside the rim, thicker and near-opaque: the flame is an announcement, and
+## brand/BRAND_SYSTEM.md §10.2 gives it its own visual register rather than a
+## tint of the ring's.
+const FLAME_GAP := 4.0
+const FLAME_THICKNESS := 3.0
+const FLAME_RADIUS := RADIUS + BEZEL * 0.5 + BEZEL_RADIUS_OFFSET + RIM + FLAME_GAP
+
 ## How far the outermost ink reaches from the centre. The control box is sized
 ## from this rather than from RADIUS: the first build laid out a 61px box around
 ## 64px of drawing, so the bezel spilled outside its own bounds and the anchored
-## right edge sat a few pixels off the margin it claimed to honour.
-const EXTENT := RADIUS + BEZEL * 0.5 + BEZEL_RADIUS_OFFSET + RIM
+## right edge sat a few pixels off the margin it claimed to honour. The flame is
+## now the outermost thing, so it is what this measures.
+const EXTENT := FLAME_RADIUS + FLAME_THICKNESS * 0.5
 
 ## Unlit segments are a fixed blend of owl toward ink rather than owl at an
 ## alpha. Alpha takes its result from whatever is behind it, which on the dawn
@@ -216,5 +235,6 @@ func _draw() -> void:
 		var dashes := 16 if hot else 12
 		for i in dashes:
 			var a := top + (float(i) / float(dashes)) * TAU
-			draw_arc(c, RADIUS + 6.0, a, a + (TAU / float(dashes)) * 0.5, 6,
-				Color(flame, (0.7 if hot else 0.45) * dim), 2.0 if hot else 1.5)
+			draw_arc(c, FLAME_RADIUS, a, a + (TAU / float(dashes)) * 0.5, 6,
+				Color(flame, (1.0 if hot else 0.85) * dim),
+				FLAME_THICKNESS if hot else FLAME_THICKNESS - 0.5)

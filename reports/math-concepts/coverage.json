@@ -1,0 +1,2119 @@
+{
+  "generatedBy": "tools/validate_math_concepts.mjs",
+  "minPerStep": 6,
+  "totalProblems": 4039,
+  "concepts": [
+    {
+      "id": "addition.count_all",
+      "domain": "addition",
+      "overlay": null,
+      "steps": [
+        0,
+        2
+      ],
+      "tutorial": "addition.count_all",
+      "total": 24,
+      "empty": [],
+      "thin": [
+        0
+      ],
+      "perStep": [
+        {
+          "step": 0,
+          "problems": 5
+        },
+        {
+          "step": 1,
+          "problems": 7
+        },
+        {
+          "step": 2,
+          "problems": 12
+        }
+      ],
+      "skillsAuthored": [
+        "basic_addition",
+        "single_digit_addition"
+      ],
+      "skillsDeclared": [
+        "basic_addition",
+        "single_digit_addition"
+      ],
+      "servable": 24
+    },
+    {
+      "id": "addition.count_on",
+      "domain": "addition",
+      "overlay": null,
+      "steps": [
+        3,
+        5
+      ],
+      "tutorial": "addition.count_on",
+      "total": 119,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 53
+        },
+        {
+          "step": 4,
+          "problems": 34
+        },
+        {
+          "step": 5,
+          "problems": 32
+        }
+      ],
+      "skillsAuthored": [
+        "basic_addition",
+        "single_digit_addition",
+        "single_digit_with_carry"
+      ],
+      "skillsDeclared": [
+        "basic_addition",
+        "single_digit_addition",
+        "single_digit_with_carry"
+      ],
+      "servable": 119
+    },
+    {
+      "id": "addition.make_ten",
+      "domain": "addition",
+      "overlay": null,
+      "steps": [
+        6,
+        9
+      ],
+      "tutorial": "addition.make_ten",
+      "total": 206,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 6,
+          "problems": 44
+        },
+        {
+          "step": 7,
+          "problems": 36
+        },
+        {
+          "step": 8,
+          "problems": 31
+        },
+        {
+          "step": 9,
+          "problems": 95
+        }
+      ],
+      "skillsAuthored": [
+        "addition_with_carry",
+        "basic_addition",
+        "single_digit_addition",
+        "single_digit_with_carry",
+        "teens_addition"
+      ],
+      "skillsDeclared": [
+        "addition_with_carry",
+        "basic_addition",
+        "single_digit_addition",
+        "single_digit_with_carry",
+        "teens_addition"
+      ],
+      "servable": 206
+    },
+    {
+      "id": "addition.teen_numbers",
+      "domain": "addition",
+      "overlay": null,
+      "steps": [
+        10,
+        14
+      ],
+      "tutorial": "addition.teen_numbers",
+      "total": 58,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 10,
+          "problems": 12
+        },
+        {
+          "step": 11,
+          "problems": 14
+        },
+        {
+          "step": 12,
+          "problems": 9
+        },
+        {
+          "step": 13,
+          "problems": 13
+        },
+        {
+          "step": 14,
+          "problems": 10
+        }
+      ],
+      "skillsAuthored": [
+        "teens_addition"
+      ],
+      "skillsDeclared": [
+        "teens_addition"
+      ],
+      "servable": 58
+    },
+    {
+      "id": "addition.bridge_ten",
+      "domain": "addition",
+      "overlay": null,
+      "steps": [
+        15,
+        19
+      ],
+      "tutorial": "addition.bridge_ten",
+      "total": 41,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 15,
+          "problems": 9
+        },
+        {
+          "step": 16,
+          "problems": 7
+        },
+        {
+          "step": 17,
+          "problems": 9
+        },
+        {
+          "step": 18,
+          "problems": 8
+        },
+        {
+          "step": 19,
+          "problems": 8
+        }
+      ],
+      "skillsAuthored": [
+        "teens_addition"
+      ],
+      "skillsDeclared": [
+        "teens_addition"
+      ],
+      "servable": 41
+    },
+    {
+      "id": "addition.tens_and_ones",
+      "domain": "addition",
+      "overlay": null,
+      "steps": [
+        20,
+        29
+      ],
+      "tutorial": "addition.tens_and_ones",
+      "total": 405,
+      "empty": [
+        20
+      ],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 20,
+          "problems": 0
+        },
+        {
+          "step": 21,
+          "problems": 62
+        },
+        {
+          "step": 22,
+          "problems": 46
+        },
+        {
+          "step": 23,
+          "problems": 68
+        },
+        {
+          "step": 24,
+          "problems": 41
+        },
+        {
+          "step": 25,
+          "problems": 62
+        },
+        {
+          "step": 26,
+          "problems": 31
+        },
+        {
+          "step": 27,
+          "problems": 43
+        },
+        {
+          "step": 28,
+          "problems": 29
+        },
+        {
+          "step": 29,
+          "problems": 23
+        }
+      ],
+      "skillsAuthored": [
+        "addition_with_carry",
+        "two_digit_addition"
+      ],
+      "skillsDeclared": [
+        "addition_with_carry",
+        "two_digit_addition"
+      ],
+      "servable": 0
+    },
+    {
+      "id": "addition.carrying",
+      "domain": "addition",
+      "overlay": null,
+      "steps": [
+        30,
+        36
+      ],
+      "tutorial": "addition.carrying",
+      "total": 147,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 30,
+          "problems": 11
+        },
+        {
+          "step": 31,
+          "problems": 20
+        },
+        {
+          "step": 32,
+          "problems": 15
+        },
+        {
+          "step": 33,
+          "problems": 20
+        },
+        {
+          "step": 34,
+          "problems": 14
+        },
+        {
+          "step": 35,
+          "problems": 46
+        },
+        {
+          "step": 36,
+          "problems": 21
+        }
+      ],
+      "skillsAuthored": [
+        "addition_with_carry",
+        "two_digit_addition"
+      ],
+      "skillsDeclared": [
+        "addition_with_carry",
+        "two_digit_addition"
+      ],
+      "servable": 0
+    },
+    {
+      "id": "addition.multi_digit",
+      "domain": "addition",
+      "overlay": null,
+      "steps": [
+        37,
+        46
+      ],
+      "tutorial": null,
+      "total": 178,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 37,
+          "problems": 7
+        },
+        {
+          "step": 38,
+          "problems": 7
+        },
+        {
+          "step": 39,
+          "problems": 7
+        },
+        {
+          "step": 40,
+          "problems": 7
+        },
+        {
+          "step": 41,
+          "problems": 30
+        },
+        {
+          "step": 42,
+          "problems": 30
+        },
+        {
+          "step": 43,
+          "problems": 30
+        },
+        {
+          "step": 44,
+          "problems": 20
+        },
+        {
+          "step": 45,
+          "problems": 20
+        },
+        {
+          "step": 46,
+          "problems": 20
+        }
+      ],
+      "skillsAuthored": [
+        "multi_digit_addition"
+      ],
+      "skillsDeclared": [
+        "multi_digit_addition"
+      ],
+      "servable": 0
+    },
+    {
+      "id": "addition.missing_part",
+      "domain": "addition",
+      "overlay": "missing_addend",
+      "steps": [
+        2,
+        9
+      ],
+      "tutorial": "addition.missing_part",
+      "total": 22,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 3
+        },
+        {
+          "step": 3,
+          "problems": 4
+        },
+        {
+          "step": 4,
+          "problems": 3
+        },
+        {
+          "step": 5,
+          "problems": 0
+        },
+        {
+          "step": 6,
+          "problems": 3
+        },
+        {
+          "step": 7,
+          "problems": 1
+        },
+        {
+          "step": 8,
+          "problems": 3
+        },
+        {
+          "step": 9,
+          "problems": 5
+        }
+      ],
+      "skillsAuthored": [
+        "missing_addend"
+      ],
+      "skillsDeclared": [
+        "missing_addend"
+      ],
+      "servable": 22
+    },
+    {
+      "id": "addition.balance",
+      "domain": "addition",
+      "overlay": "relational_equals",
+      "steps": [
+        2,
+        12
+      ],
+      "tutorial": "addition.balance",
+      "total": 14,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 1
+        },
+        {
+          "step": 3,
+          "problems": 2
+        },
+        {
+          "step": 4,
+          "problems": 2
+        },
+        {
+          "step": 5,
+          "problems": 1
+        },
+        {
+          "step": 6,
+          "problems": 1
+        },
+        {
+          "step": 7,
+          "problems": 2
+        },
+        {
+          "step": 8,
+          "problems": 1
+        },
+        {
+          "step": 9,
+          "problems": 2
+        },
+        {
+          "step": 10,
+          "problems": 0
+        },
+        {
+          "step": 11,
+          "problems": 1
+        },
+        {
+          "step": 12,
+          "problems": 1
+        }
+      ],
+      "skillsAuthored": [
+        "relational_equals"
+      ],
+      "skillsDeclared": [
+        "relational_equals"
+      ],
+      "servable": 14
+    },
+    {
+      "id": "subtraction.missing_part",
+      "domain": "subtraction",
+      "overlay": "missing_subtrahend",
+      "steps": [
+        3,
+        11
+      ],
+      "tutorial": "subtraction.missing_part",
+      "total": 6,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 1
+        },
+        {
+          "step": 4,
+          "problems": 1
+        },
+        {
+          "step": 5,
+          "problems": 0
+        },
+        {
+          "step": 6,
+          "problems": 1
+        },
+        {
+          "step": 7,
+          "problems": 0
+        },
+        {
+          "step": 8,
+          "problems": 1
+        },
+        {
+          "step": 9,
+          "problems": 0
+        },
+        {
+          "step": 10,
+          "problems": 1
+        },
+        {
+          "step": 11,
+          "problems": 1
+        }
+      ],
+      "skillsAuthored": [
+        "missing_subtrahend"
+      ],
+      "skillsDeclared": [
+        "missing_subtrahend"
+      ],
+      "servable": 6
+    },
+    {
+      "id": "subtraction.start_unknown",
+      "domain": "subtraction",
+      "overlay": "missing_minuend",
+      "steps": [
+        6,
+        13
+      ],
+      "tutorial": "subtraction.start_unknown",
+      "total": 6,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 6,
+          "problems": 1
+        },
+        {
+          "step": 7,
+          "problems": 1
+        },
+        {
+          "step": 8,
+          "problems": 1
+        },
+        {
+          "step": 9,
+          "problems": 1
+        },
+        {
+          "step": 10,
+          "problems": 0
+        },
+        {
+          "step": 11,
+          "problems": 0
+        },
+        {
+          "step": 12,
+          "problems": 1
+        },
+        {
+          "step": 13,
+          "problems": 1
+        }
+      ],
+      "skillsAuthored": [
+        "missing_minuend"
+      ],
+      "skillsDeclared": [
+        "missing_minuend"
+      ],
+      "servable": 6
+    },
+    {
+      "id": "subtraction.balance",
+      "domain": "subtraction",
+      "overlay": "subtraction_relational",
+      "steps": [
+        4,
+        13
+      ],
+      "tutorial": "subtraction.balance",
+      "total": 6,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 4,
+          "problems": 1
+        },
+        {
+          "step": 5,
+          "problems": 0
+        },
+        {
+          "step": 6,
+          "problems": 0
+        },
+        {
+          "step": 7,
+          "problems": 1
+        },
+        {
+          "step": 8,
+          "problems": 0
+        },
+        {
+          "step": 9,
+          "problems": 1
+        },
+        {
+          "step": 10,
+          "problems": 1
+        },
+        {
+          "step": 11,
+          "problems": 0
+        },
+        {
+          "step": 12,
+          "problems": 1
+        },
+        {
+          "step": 13,
+          "problems": 1
+        }
+      ],
+      "skillsAuthored": [
+        "subtraction_relational"
+      ],
+      "skillsDeclared": [
+        "subtraction_relational"
+      ],
+      "servable": 6
+    },
+    {
+      "id": "addition.both_sides",
+      "domain": "addition",
+      "overlay": "both_sides_equals",
+      "steps": [
+        3,
+        9
+      ],
+      "tutorial": "addition.both_sides",
+      "total": 12,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 1
+        },
+        {
+          "step": 4,
+          "problems": 2
+        },
+        {
+          "step": 5,
+          "problems": 1
+        },
+        {
+          "step": 6,
+          "problems": 2
+        },
+        {
+          "step": 7,
+          "problems": 0
+        },
+        {
+          "step": 8,
+          "problems": 3
+        },
+        {
+          "step": 9,
+          "problems": 3
+        }
+      ],
+      "skillsAuthored": [
+        "both_sides_equals"
+      ],
+      "skillsDeclared": [
+        "both_sides_equals"
+      ],
+      "servable": 12
+    },
+    {
+      "id": "subtraction.take_away",
+      "domain": "subtraction",
+      "overlay": null,
+      "steps": [
+        0,
+        2
+      ],
+      "tutorial": "subtraction.take_away",
+      "total": 35,
+      "empty": [],
+      "thin": [
+        2
+      ],
+      "perStep": [
+        {
+          "step": 0,
+          "problems": 22
+        },
+        {
+          "step": 1,
+          "problems": 8
+        },
+        {
+          "step": 2,
+          "problems": 5
+        }
+      ],
+      "skillsAuthored": [
+        "basic_subtraction",
+        "harder_subtraction",
+        "single_digit_subtraction"
+      ],
+      "skillsDeclared": [
+        "basic_subtraction",
+        "harder_subtraction",
+        "single_digit_subtraction"
+      ],
+      "servable": 35
+    },
+    {
+      "id": "subtraction.count_back",
+      "domain": "subtraction",
+      "overlay": null,
+      "steps": [
+        3,
+        6
+      ],
+      "tutorial": "subtraction.count_back",
+      "total": 151,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 48
+        },
+        {
+          "step": 4,
+          "problems": 31
+        },
+        {
+          "step": 5,
+          "problems": 12
+        },
+        {
+          "step": 6,
+          "problems": 60
+        }
+      ],
+      "skillsAuthored": [
+        "basic_subtraction",
+        "harder_subtraction",
+        "single_digit_subtraction",
+        "subtraction_with_borrow"
+      ],
+      "skillsDeclared": [
+        "basic_subtraction",
+        "harder_subtraction",
+        "single_digit_subtraction",
+        "subtraction_with_borrow"
+      ],
+      "servable": 151
+    },
+    {
+      "id": "subtraction.bridge_back",
+      "domain": "subtraction",
+      "overlay": null,
+      "steps": [
+        7,
+        10
+      ],
+      "tutorial": "subtraction.bridge_back",
+      "total": 114,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 7,
+          "problems": 23
+        },
+        {
+          "step": 8,
+          "problems": 19
+        },
+        {
+          "step": 9,
+          "problems": 28
+        },
+        {
+          "step": 10,
+          "problems": 44
+        }
+      ],
+      "skillsAuthored": [
+        "harder_subtraction",
+        "single_digit_subtraction",
+        "subtraction_with_borrow",
+        "teens_subtraction",
+        "two_digit_subtraction"
+      ],
+      "skillsDeclared": [
+        "harder_subtraction",
+        "single_digit_subtraction",
+        "subtraction_with_borrow",
+        "teens_subtraction",
+        "two_digit_subtraction"
+      ],
+      "servable": 114
+    },
+    {
+      "id": "subtraction.teens_back",
+      "domain": "subtraction",
+      "overlay": null,
+      "steps": [
+        11,
+        16
+      ],
+      "tutorial": "subtraction.teens_back",
+      "total": 228,
+      "empty": [],
+      "thin": [
+        15
+      ],
+      "perStep": [
+        {
+          "step": 11,
+          "problems": 33
+        },
+        {
+          "step": 12,
+          "problems": 52
+        },
+        {
+          "step": 13,
+          "problems": 50
+        },
+        {
+          "step": 14,
+          "problems": 62
+        },
+        {
+          "step": 15,
+          "problems": 1
+        },
+        {
+          "step": 16,
+          "problems": 30
+        }
+      ],
+      "skillsAuthored": [
+        "single_digit_subtraction",
+        "subtraction_with_borrow",
+        "teens_subtraction",
+        "two_digit_subtraction"
+      ],
+      "skillsDeclared": [
+        "single_digit_subtraction",
+        "subtraction_with_borrow",
+        "teens_subtraction",
+        "two_digit_subtraction"
+      ],
+      "servable": 228
+    },
+    {
+      "id": "subtraction.tens_and_ones",
+      "domain": "subtraction",
+      "overlay": null,
+      "steps": [
+        17,
+        29
+      ],
+      "tutorial": "subtraction.tens_and_ones",
+      "total": 370,
+      "empty": [
+        17,
+        18,
+        19,
+        20
+      ],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 17,
+          "problems": 0
+        },
+        {
+          "step": 18,
+          "problems": 0
+        },
+        {
+          "step": 19,
+          "problems": 0
+        },
+        {
+          "step": 20,
+          "problems": 0
+        },
+        {
+          "step": 21,
+          "problems": 70
+        },
+        {
+          "step": 22,
+          "problems": 39
+        },
+        {
+          "step": 23,
+          "problems": 61
+        },
+        {
+          "step": 24,
+          "problems": 42
+        },
+        {
+          "step": 25,
+          "problems": 52
+        },
+        {
+          "step": 26,
+          "problems": 45
+        },
+        {
+          "step": 27,
+          "problems": 32
+        },
+        {
+          "step": 28,
+          "problems": 16
+        },
+        {
+          "step": 29,
+          "problems": 13
+        }
+      ],
+      "skillsAuthored": [
+        "subtraction_with_borrow",
+        "teens_subtraction",
+        "two_digit_subtraction"
+      ],
+      "skillsDeclared": [
+        "subtraction_with_borrow",
+        "teens_subtraction",
+        "two_digit_subtraction"
+      ],
+      "servable": 0
+    },
+    {
+      "id": "subtraction.borrowing",
+      "domain": "subtraction",
+      "overlay": null,
+      "steps": [
+        30,
+        36
+      ],
+      "tutorial": "subtraction.borrowing",
+      "total": 102,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 30,
+          "problems": 11
+        },
+        {
+          "step": 31,
+          "problems": 15
+        },
+        {
+          "step": 32,
+          "problems": 6
+        },
+        {
+          "step": 33,
+          "problems": 10
+        },
+        {
+          "step": 34,
+          "problems": 17
+        },
+        {
+          "step": 35,
+          "problems": 27
+        },
+        {
+          "step": 36,
+          "problems": 16
+        }
+      ],
+      "skillsAuthored": [
+        "subtraction_with_borrow",
+        "two_digit_subtraction"
+      ],
+      "skillsDeclared": [
+        "subtraction_with_borrow",
+        "two_digit_subtraction"
+      ],
+      "servable": 0
+    },
+    {
+      "id": "subtraction.multi_digit",
+      "domain": "subtraction",
+      "overlay": null,
+      "steps": [
+        37,
+        46
+      ],
+      "tutorial": null,
+      "total": 178,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 37,
+          "problems": 7
+        },
+        {
+          "step": 38,
+          "problems": 7
+        },
+        {
+          "step": 39,
+          "problems": 7
+        },
+        {
+          "step": 40,
+          "problems": 7
+        },
+        {
+          "step": 41,
+          "problems": 30
+        },
+        {
+          "step": 42,
+          "problems": 30
+        },
+        {
+          "step": 43,
+          "problems": 30
+        },
+        {
+          "step": 44,
+          "problems": 20
+        },
+        {
+          "step": 45,
+          "problems": 20
+        },
+        {
+          "step": 46,
+          "problems": 20
+        }
+      ],
+      "skillsAuthored": [
+        "multi_digit_subtraction"
+      ],
+      "skillsDeclared": [
+        "multi_digit_subtraction"
+      ],
+      "servable": 0
+    },
+    {
+      "id": "counting.to_five",
+      "domain": "counting",
+      "overlay": null,
+      "steps": [
+        0,
+        1
+      ],
+      "tutorial": "counting.to_five",
+      "total": 17,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 0,
+          "problems": 11
+        },
+        {
+          "step": 1,
+          "problems": 6
+        }
+      ],
+      "skillsAuthored": [
+        "counting_objects"
+      ],
+      "skillsDeclared": [
+        "counting_objects"
+      ],
+      "servable": 17
+    },
+    {
+      "id": "counting.to_ten",
+      "domain": "counting",
+      "overlay": null,
+      "steps": [
+        2,
+        3
+      ],
+      "tutorial": "counting.to_ten",
+      "total": 32,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 12
+        },
+        {
+          "step": 3,
+          "problems": 20
+        }
+      ],
+      "skillsAuthored": [
+        "counting",
+        "counting_objects"
+      ],
+      "skillsDeclared": [
+        "counting",
+        "counting_objects"
+      ],
+      "servable": 32
+    },
+    {
+      "id": "counting.ten_and_more",
+      "domain": "counting",
+      "overlay": null,
+      "steps": [
+        4,
+        6
+      ],
+      "tutorial": "counting.ten_and_more",
+      "total": 76,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 4,
+          "problems": 18
+        },
+        {
+          "step": 5,
+          "problems": 31
+        },
+        {
+          "step": 6,
+          "problems": 27
+        }
+      ],
+      "skillsAuthored": [
+        "counting_objects"
+      ],
+      "skillsDeclared": [
+        "counting_objects"
+      ],
+      "servable": 76
+    },
+    {
+      "id": "comparison.more_or_less",
+      "domain": "comparison",
+      "overlay": null,
+      "steps": [
+        0,
+        2
+      ],
+      "tutorial": "comparison.more_or_less",
+      "total": 45,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 0,
+          "problems": 17
+        },
+        {
+          "step": 1,
+          "problems": 11
+        },
+        {
+          "step": 2,
+          "problems": 17
+        }
+      ],
+      "skillsAuthored": [
+        "number_comparison"
+      ],
+      "skillsDeclared": [
+        "number_comparison"
+      ],
+      "servable": 45
+    },
+    {
+      "id": "comparison.compare_teens",
+      "domain": "comparison",
+      "overlay": null,
+      "steps": [
+        3,
+        6
+      ],
+      "tutorial": "comparison.compare_teens",
+      "total": 80,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 9
+        },
+        {
+          "step": 4,
+          "problems": 18
+        },
+        {
+          "step": 5,
+          "problems": 20
+        },
+        {
+          "step": 6,
+          "problems": 33
+        }
+      ],
+      "skillsAuthored": [
+        "number_comparison"
+      ],
+      "skillsDeclared": [
+        "number_comparison"
+      ],
+      "servable": 80
+    },
+    {
+      "id": "comparison.compare_larger",
+      "domain": "comparison",
+      "overlay": null,
+      "steps": [
+        7,
+        9
+      ],
+      "tutorial": "comparison.compare_larger",
+      "total": 40,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 7,
+          "problems": 10
+        },
+        {
+          "step": 8,
+          "problems": 10
+        },
+        {
+          "step": 9,
+          "problems": 20
+        }
+      ],
+      "skillsAuthored": [
+        "number_comparison"
+      ],
+      "skillsDeclared": [
+        "number_comparison"
+      ],
+      "servable": 40
+    },
+    {
+      "id": "pattern_matching.ab_repeat",
+      "domain": "pattern_matching",
+      "overlay": null,
+      "steps": [
+        0,
+        2
+      ],
+      "tutorial": "pattern_matching.ab_repeat",
+      "total": 32,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 0,
+          "problems": 7
+        },
+        {
+          "step": 1,
+          "problems": 11
+        },
+        {
+          "step": 2,
+          "problems": 14
+        }
+      ],
+      "skillsAuthored": [
+        "simple_patterns"
+      ],
+      "skillsDeclared": [
+        "simple_patterns"
+      ],
+      "servable": 32
+    },
+    {
+      "id": "pattern_matching.longer_core",
+      "domain": "pattern_matching",
+      "overlay": null,
+      "steps": [
+        3,
+        5
+      ],
+      "tutorial": "pattern_matching.longer_core",
+      "total": 68,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 14
+        },
+        {
+          "step": 4,
+          "problems": 42
+        },
+        {
+          "step": 5,
+          "problems": 12
+        }
+      ],
+      "skillsAuthored": [
+        "number_patterns",
+        "simple_patterns"
+      ],
+      "skillsDeclared": [
+        "number_patterns",
+        "simple_patterns"
+      ],
+      "servable": 68
+    },
+    {
+      "id": "pattern_matching.tricky_core",
+      "domain": "pattern_matching",
+      "overlay": null,
+      "steps": [
+        6,
+        7
+      ],
+      "tutorial": "pattern_matching.tricky_core",
+      "total": 25,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 6,
+          "problems": 19
+        },
+        {
+          "step": 7,
+          "problems": 6
+        }
+      ],
+      "skillsAuthored": [
+        "simple_patterns"
+      ],
+      "skillsDeclared": [
+        "simple_patterns"
+      ],
+      "servable": 25
+    },
+    {
+      "id": "number_sequence.one_more",
+      "domain": "number_sequence",
+      "overlay": null,
+      "steps": [
+        0,
+        2
+      ],
+      "tutorial": "number_sequence.one_more",
+      "total": 26,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 0,
+          "problems": 7
+        },
+        {
+          "step": 1,
+          "problems": 8
+        },
+        {
+          "step": 2,
+          "problems": 11
+        }
+      ],
+      "skillsAuthored": [
+        "number_ordering",
+        "simple_sequences"
+      ],
+      "skillsDeclared": [
+        "number_ordering",
+        "simple_sequences"
+      ],
+      "servable": 26
+    },
+    {
+      "id": "number_sequence.skip_two",
+      "domain": "number_sequence",
+      "overlay": null,
+      "steps": [
+        3,
+        4
+      ],
+      "tutorial": "number_sequence.skip_two",
+      "total": 26,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 7
+        },
+        {
+          "step": 4,
+          "problems": 19
+        }
+      ],
+      "skillsAuthored": [
+        "number_ordering"
+      ],
+      "skillsDeclared": [
+        "number_ordering"
+      ],
+      "servable": 26
+    },
+    {
+      "id": "number_sequence.bigger_jumps",
+      "domain": "number_sequence",
+      "overlay": null,
+      "steps": [
+        5,
+        6
+      ],
+      "tutorial": "number_sequence.bigger_jumps",
+      "total": 91,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 5,
+          "problems": 55
+        },
+        {
+          "step": 6,
+          "problems": 36
+        }
+      ],
+      "skillsAuthored": [
+        "number_ordering"
+      ],
+      "skillsDeclared": [
+        "number_ordering"
+      ],
+      "servable": 91
+    },
+    {
+      "id": "number_sequence.big_skips",
+      "domain": "number_sequence",
+      "overlay": null,
+      "steps": [
+        7,
+        9
+      ],
+      "tutorial": "number_sequence.big_skips",
+      "total": 40,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 7,
+          "problems": 7
+        },
+        {
+          "step": 8,
+          "problems": 16
+        },
+        {
+          "step": 9,
+          "problems": 17
+        }
+      ],
+      "skillsAuthored": [
+        "skip_counting"
+      ],
+      "skillsDeclared": [
+        "skip_counting"
+      ],
+      "servable": 40
+    },
+    {
+      "id": "multiplication.equal_groups",
+      "domain": "multiplication",
+      "overlay": null,
+      "steps": [
+        0,
+        1
+      ],
+      "tutorial": "multiplication.equal_groups",
+      "total": 121,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 0,
+          "problems": 34
+        },
+        {
+          "step": 1,
+          "problems": 87
+        }
+      ],
+      "skillsAuthored": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "skillsDeclared": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "servable": 121
+    },
+    {
+      "id": "multiplication.skip_counting",
+      "domain": "multiplication",
+      "overlay": null,
+      "steps": [
+        2,
+        3
+      ],
+      "tutorial": "multiplication.skip_counting",
+      "total": 134,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 68
+        },
+        {
+          "step": 3,
+          "problems": 66
+        }
+      ],
+      "skillsAuthored": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "skillsDeclared": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "servable": 134
+    },
+    {
+      "id": "multiplication.threes_and_fours",
+      "domain": "multiplication",
+      "overlay": null,
+      "steps": [
+        4,
+        5
+      ],
+      "tutorial": "multiplication.threes_and_fours",
+      "total": 100,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 4,
+          "problems": 52
+        },
+        {
+          "step": 5,
+          "problems": 48
+        }
+      ],
+      "skillsAuthored": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "skillsDeclared": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "servable": 100
+    },
+    {
+      "id": "multiplication.zero_and_squares",
+      "domain": "multiplication",
+      "overlay": null,
+      "steps": [
+        6,
+        7
+      ],
+      "tutorial": "multiplication.zero_and_squares",
+      "total": 70,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 6,
+          "problems": 20
+        },
+        {
+          "step": 7,
+          "problems": 50
+        }
+      ],
+      "skillsAuthored": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "skillsDeclared": [
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "servable": 70
+    },
+    {
+      "id": "multiplication.harder_tables",
+      "domain": "multiplication",
+      "overlay": null,
+      "steps": [
+        8,
+        12
+      ],
+      "tutorial": "multiplication.harder_tables",
+      "total": 103,
+      "empty": [
+        11
+      ],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 8,
+          "problems": 39
+        },
+        {
+          "step": 9,
+          "problems": 27
+        },
+        {
+          "step": 10,
+          "problems": 17
+        },
+        {
+          "step": 11,
+          "problems": 0
+        },
+        {
+          "step": 12,
+          "problems": 20
+        }
+      ],
+      "skillsAuthored": [
+        "multiplication_place_value",
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "skillsDeclared": [
+        "multiplication_place_value",
+        "multiplication_tables",
+        "multiplication_word_problems"
+      ],
+      "servable": 88
+    },
+    {
+      "id": "multiplication.two_digit",
+      "domain": "multiplication",
+      "overlay": null,
+      "steps": [
+        13,
+        14
+      ],
+      "tutorial": "multiplication.two_digit",
+      "total": 60,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 13,
+          "problems": 30
+        },
+        {
+          "step": 14,
+          "problems": 30
+        }
+      ],
+      "skillsAuthored": [
+        "multiplication_two_digit"
+      ],
+      "skillsDeclared": [
+        "multiplication_two_digit"
+      ],
+      "servable": 18
+    },
+    {
+      "id": "division.sharing",
+      "domain": "division",
+      "overlay": null,
+      "steps": [
+        0,
+        2
+      ],
+      "tutorial": "division.sharing",
+      "total": 64,
+      "empty": [
+        0
+      ],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 0,
+          "problems": 0
+        },
+        {
+          "step": 1,
+          "problems": 7
+        },
+        {
+          "step": 2,
+          "problems": 57
+        }
+      ],
+      "skillsAuthored": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "skillsDeclared": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "servable": 64
+    },
+    {
+      "id": "division.tens_and_fives",
+      "domain": "division",
+      "overlay": null,
+      "steps": [
+        3,
+        4
+      ],
+      "tutorial": "division.tens_and_fives",
+      "total": 90,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 3,
+          "problems": 31
+        },
+        {
+          "step": 4,
+          "problems": 59
+        }
+      ],
+      "skillsAuthored": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "skillsDeclared": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "servable": 90
+    },
+    {
+      "id": "division.threes_and_fours",
+      "domain": "division",
+      "overlay": null,
+      "steps": [
+        5,
+        6
+      ],
+      "tutorial": "division.threes_and_fours",
+      "total": 79,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 5,
+          "problems": 46
+        },
+        {
+          "step": 6,
+          "problems": 33
+        }
+      ],
+      "skillsAuthored": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "skillsDeclared": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "servable": 79
+    },
+    {
+      "id": "division.zero_and_squares",
+      "domain": "division",
+      "overlay": null,
+      "steps": [
+        7,
+        8
+      ],
+      "tutorial": "division.zero_and_squares",
+      "total": 43,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 7,
+          "problems": 8
+        },
+        {
+          "step": 8,
+          "problems": 35
+        }
+      ],
+      "skillsAuthored": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "skillsDeclared": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "servable": 43
+    },
+    {
+      "id": "division.harder_tables",
+      "domain": "division",
+      "overlay": null,
+      "steps": [
+        9,
+        12
+      ],
+      "tutorial": "division.harder_tables",
+      "total": 50,
+      "empty": [
+        12
+      ],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 9,
+          "problems": 28
+        },
+        {
+          "step": 10,
+          "problems": 15
+        },
+        {
+          "step": 11,
+          "problems": 7
+        },
+        {
+          "step": 12,
+          "problems": 0
+        }
+      ],
+      "skillsAuthored": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "skillsDeclared": [
+        "division_word_problems",
+        "simple_division"
+      ],
+      "servable": 50
+    },
+    {
+      "id": "division.two_digit",
+      "domain": "division",
+      "overlay": null,
+      "steps": [
+        13,
+        15
+      ],
+      "tutorial": "division.two_digit",
+      "total": 65,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 13,
+          "problems": 25
+        },
+        {
+          "step": 14,
+          "problems": 25
+        },
+        {
+          "step": 15,
+          "problems": 15
+        }
+      ],
+      "skillsAuthored": [
+        "division_place_value",
+        "division_two_digit"
+      ],
+      "skillsDeclared": [
+        "division_place_value",
+        "division_two_digit"
+      ],
+      "servable": 18
+    },
+    {
+      "id": "multiplication.missing_factor",
+      "domain": "multiplication",
+      "overlay": "missing_factor",
+      "steps": [
+        1,
+        7
+      ],
+      "tutorial": "multiplication.missing_factor",
+      "total": 16,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 1,
+          "problems": 6
+        },
+        {
+          "step": 2,
+          "problems": 0
+        },
+        {
+          "step": 3,
+          "problems": 4
+        },
+        {
+          "step": 4,
+          "problems": 4
+        },
+        {
+          "step": 5,
+          "problems": 0
+        },
+        {
+          "step": 6,
+          "problems": 0
+        },
+        {
+          "step": 7,
+          "problems": 2
+        }
+      ],
+      "skillsAuthored": [
+        "missing_factor"
+      ],
+      "skillsDeclared": [
+        "missing_factor"
+      ],
+      "servable": 16
+    },
+    {
+      "id": "division.missing_groups",
+      "domain": "division",
+      "overlay": "missing_divisor",
+      "steps": [
+        2,
+        8
+      ],
+      "tutorial": "division.missing_groups",
+      "total": 12,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 4
+        },
+        {
+          "step": 3,
+          "problems": 0
+        },
+        {
+          "step": 4,
+          "problems": 3
+        },
+        {
+          "step": 5,
+          "problems": 3
+        },
+        {
+          "step": 6,
+          "problems": 0
+        },
+        {
+          "step": 7,
+          "problems": 0
+        },
+        {
+          "step": 8,
+          "problems": 2
+        }
+      ],
+      "skillsAuthored": [
+        "missing_divisor"
+      ],
+      "skillsDeclared": [
+        "missing_divisor"
+      ],
+      "servable": 12
+    },
+    {
+      "id": "division.start_unknown",
+      "domain": "division",
+      "overlay": "missing_dividend",
+      "steps": [
+        2,
+        8
+      ],
+      "tutorial": "division.start_unknown",
+      "total": 12,
+      "empty": [],
+      "thin": [],
+      "perStep": [
+        {
+          "step": 2,
+          "problems": 4
+        },
+        {
+          "step": 3,
+          "problems": 0
+        },
+        {
+          "step": 4,
+          "problems": 3
+        },
+        {
+          "step": 5,
+          "problems": 3
+        },
+        {
+          "step": 6,
+          "problems": 0
+        },
+        {
+          "step": 7,
+          "problems": 0
+        },
+        {
+          "step": 8,
+          "problems": 2
+        }
+      ],
+      "skillsAuthored": [
+        "missing_dividend"
+      ],
+      "skillsDeclared": [
+        "missing_dividend"
+      ],
+      "servable": 12
+    }
+  ],
+  "skillDrift": []
+}

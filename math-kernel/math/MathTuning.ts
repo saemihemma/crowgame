@@ -2,8 +2,9 @@
  * MathTuning
  *
  * The one shared home for every tunable math-experience number: ladder
- * promotion/demotion, the stretch-lane gate, selection lane weights, the
- * teaching-window pacing, and the golden-problem economy. The values live in
+ * promotion/demotion, the stretch-lane gate, selection lane weights, answer
+ * feedback pacing, per-domain due weighting, and the golden-problem economy.
+ * The values live in
  * `data/tuning/math_tuning.json`, which is byte-identical between
  * `godot/data` (the only copy), so tuning
  * a number is a one-line JSON edit that both ports pick up together.
@@ -35,12 +36,6 @@ export interface MathTuningData {
         review: number;
         at_level: number;
         stretch: number;
-    };
-    teaching: {
-        hintMs: number;
-        revealMs: number;
-        handoverMs: number;
-        closeMs: number;
     };
     golden: {
         rate: number;
