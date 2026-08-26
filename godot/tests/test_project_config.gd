@@ -52,5 +52,5 @@ func test_gravity_is_800() -> void:
 	assert_almost_eq(float(ProjectSettings.get_setting("physics/2d/default_gravity")), 800.0, 0.001, "gravity")
 
 func test_input_actions_exist() -> void:
-	for action in ["move_left", "move_right", "jump", "interact", "shoot", "pause"]:
+	for action in ["move_left", "move_right", "jump", "shoot", "pause"]:
 		assert_true(InputMap.has_action(action), "input action %s" % action)

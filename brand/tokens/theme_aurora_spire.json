@@ -62,8 +62,7 @@
   },
   "controls": {
     "dpadSprite": "ui_aurora_spire_dpad",
-    "jumpBtnSprite": "ui_aurora_spire_jump",
-    "peckBtnSprite": "ui_aurora_spire_peck"
+    "jumpBtnSprite": "ui_aurora_spire_jump"
   },
   "door": {
     "sprite": "door_aurora_spire",

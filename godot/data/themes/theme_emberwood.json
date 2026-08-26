@@ -62,8 +62,7 @@
   },
   "controls": {
     "dpadSprite": "ui_emberwood_dpad",
-    "jumpBtnSprite": "ui_emberwood_jump",
-    "peckBtnSprite": "ui_emberwood_peck"
+    "jumpBtnSprite": "ui_emberwood_jump"
   },
   "door": {
     "sprite": "door_emberwood",

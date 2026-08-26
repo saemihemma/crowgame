@@ -8,13 +8,16 @@ class_name TouchPad
 ## (§12) that icons must carry every essential meaning. Two more used text glyphs
 ## as UI primitives, which this project has already been bitten by twice.
 ##
+## PECK is gone entirely, icon and action both: it was drawn well and bound to
+## nothing. See TouchControls.
+##
 ## Icons are drawn from geometry rather than shipped as art: they have to stay
 ## crisp at any viewport scale, they must not need a translation, and there is no
-## artist time to spend on five glyphs that are this simple.
+## artist time to spend on four glyphs that are this simple.
 ##
 ## brand/BRAND_SYSTEM.md §8.1 (safe area), §12 (accessibility).
 
-enum Icon { LEFT, RIGHT, JUMP, ZAP, PECK }
+enum Icon { LEFT, RIGHT, JUMP, ZAP }
 
 const CORNER := 22.0
 const RIM := 3.0
@@ -85,16 +88,3 @@ func _draw_icon(rect: Rect2, tint: Color, plate_fill: Color) -> void:
 				c + Vector2(r * 0.15, -r * 1.15), c + Vector2(-r * 0.75, r * 0.15),
 				c + Vector2(-r * 0.05, r * 0.15), c + Vector2(-r * 0.15, r * 1.15),
 				c + Vector2(r * 0.75, -r * 0.15), c + Vector2(r * 0.05, -r * 0.15)]), tint)
-		Icon.PECK:
-			# Hörmann's head, beak forward: the thing doing the pecking. Two
-			# earlier attempts failed here - an abstract wedge with impact ticks
-			# read as a media "play" button beside a list, and adding his crest
-			# put three 4px strokes on a 24px icon that read as scratches rather
-			# than feathers. At this size a clean silhouette beats character.
-			var head := c + Vector2(-r * 0.2, 0)
-			draw_circle(head, r * 0.7, tint)
-			draw_colored_polygon(PackedVector2Array([
-				head + Vector2(r * 0.4, -r * 0.34),
-				head + Vector2(r * 1.5, r * 0.04),
-				head + Vector2(r * 0.4, r * 0.42)]), tint)
-			draw_circle(head + Vector2(r * 0.2, -r * 0.18), r * 0.16, plate_fill)

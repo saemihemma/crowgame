@@ -306,6 +306,33 @@ The seed now moves `currentStep` only. A *calibration* move still raises
 the ladder's own stretch-lane fast path accepts. Pinned by
 `test_the_seed_does_not_hand_out_trophies`.
 
+## The one a screenshot found
+
+The HUD review (US-9) went looking for what was drawn wrong. It did not think to
+ask what was drawn *right* and meant nothing.
+
+The on-screen controls shipped five pads. The fifth was `interact`, drawn as
+Hörmann with his beak forward — a good icon, carefully made, with two rejected
+earlier attempts documented above it in the source. Nothing in the game has ever
+read that action. Owl encounters fire on proximity: `Npc._on_body_entered` calls
+`interact()` when the player walks into the zone, and `_process` re-offers on a
+cooldown while they stand there. So a child had a 92px target in the thumb
+corner, wearing the game's own mascot, that lit up under a finger and led
+nowhere. On a phone it sat directly on top of the owl they were walking toward.
+
+Two tests kept it alive. `test_touch_controls` and `test_project_config` both
+loop over the action names and assert each one exists in the InputMap — the
+wiring is present, and neither ever asked whether anything was on the other end.
+An action with no reader is invisible to that shape of test by construction.
+
+Deleted whole: the pad, the `Icon.PECK` geometry, the InputMap entry, both test
+expectations, and the `peckBtnSprite` token in all ten theme files, which pointed
+at `ui_<theme>_peck` art that was never drawn. Four controls now.
+
+If interaction ever wants a button, the proximity trigger has to come out in the
+same change. A control that duplicates what the game already does for you is
+this bug again with a working handler.
+
 ## What did not ship, and why
 
 **The lesson-copy rewrite (US-4.2).** 47 lessons × 4 bodies × 2 locales. The
