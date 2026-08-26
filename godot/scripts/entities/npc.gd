@@ -89,9 +89,23 @@ func _update_idle_bob(delta: float) -> void:
 		var rise := (1.0 - cos(_bob_time * TAU * 0.5)) * 0.5
 		_sprite.position.y = _sprite_base_y - rise * _bob_amp
 
+## The name that floats above an owl as a child walks up to it.
+##
+## It carries the QUESTION COUNT for a chain owl, and that is the point. The
+## chain links on the perch already encode it -- one link per question, broken as
+## each is answered -- but they encode it by inference: a one-question owl draws
+## no chain at all (MIN_VISIBLE_CHAIN_LINKS), so the language a child has to
+## work out is "nothing means one, two links mean two". A playtester met the
+## first twin owl in level 3 and read the second question as a malfunction:
+## "why is there an owl now in one level with 2 math?"
+##
+## So the count is also said in words, once, before the child commits. Only for
+## chain owls: appending "1 question" to every single-question owl in the game
+## would be noise on the overwhelmingly common case, and would make the number
+## stop being a warning.
 func _build_prompt() -> void:
 	_prompt = Label.new()
-	_prompt.text = display_name
+	_prompt.text = _prompt_text()
 	_prompt.add_theme_font_size_override("font_size", 16)
 	_prompt.add_theme_color_override("font_color", Color.WHITE)
 	_prompt.add_theme_color_override("font_shadow_color", Color.BLACK)
@@ -102,6 +116,22 @@ func _build_prompt() -> void:
 	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_prompt.visible = false
 	add_child(_prompt)
+
+func _prompt_text() -> String:
+	var questions := _question_count()
+	if questions < 2:
+		return display_name
+	return TextManager.t("npc.owl_questions", [display_name, str(questions)])
+
+## How many problems this owl will ask, read from its own math component rather
+## than from behaviorConfig.chainLinks -- the chain is the DECORATION of the
+## count and the component is the count itself, and a mismatch between them
+## should show up as a wrong chain rather than as a wrong number.
+func _question_count() -> int:
+	for c in definition.get("components", []):
+		if c is Dictionary and String((c as Dictionary).get("type", "")) == "math_challenge":
+			return int((c as Dictionary).get("problemCount", 1))
+	return 1
 
 func _update_prompt_visibility() -> void:
 	if _prompt == null:

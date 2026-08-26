@@ -6,7 +6,7 @@
       "mapFile": "data/levels/compiled/level_99.json",
       "music": "level_01_music",
       "unlockRequirement": null,
-      "order": 1,
+      "order": 99,
       "mathGating": {
         "skills": [
           "addition",

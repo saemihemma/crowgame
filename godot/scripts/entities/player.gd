@@ -102,6 +102,10 @@ func _physics_process(delta: float) -> void:
 		"right": Input.is_action_pressed("move_right"),
 		"jump_just_pressed": Input.is_action_just_pressed("jump"),
 		"jump_held": Input.is_action_pressed("jump"),
+		# Space, which used to be a third jump key. Behind
+		# input/space_is_sprint so the old binding can be restored whole -- see
+		# feature_flags.json for why that flag also gates keyboard answering.
+		"sprint": Config.flag("input/space_is_sprint", true) and Input.is_action_pressed("sprint"),
 	}
 	var was_on_floor := is_on_floor()
 	PlayerMotion.compute_velocity(_state, input, was_on_floor, _tuning, delta)

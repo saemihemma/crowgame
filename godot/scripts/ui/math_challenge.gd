@@ -151,10 +151,45 @@ func _finish(correct: bool, first_attempt: bool) -> void:
 	EventBus.math_challenge_complete.emit(_result(correct, first_attempt))
 	_close()
 
+## ANSWERING FROM THE KEYBOARD, by position: 1 is the leftmost option.
+##
+## The options deliberately take no focus (see AnswerButton), and that is not
+## being undone here. Focus was the mechanism that broke: ui_left/ui_right are
+## the arrow keys, so a child trying to walk moved the focus ring, and ui_accept
+## is Space and Enter -- Space also being jump -- so the two keys the game had
+## just taught them committed whichever option the ring had landed on.
+##
+## Digits have no movement meaning, so no reflex can reach them. A child pressing
+## "2" can only have meant the second answer.
+##
+## Deliberately NOT the Ctrl key a playtester suggested. Ctrl alone cannot say
+## WHICH of four answers, so it would need a highlight to commit -- and that is
+## the focus ring again, with a two-step select-then-confirm on the one screen
+## where a five-year-old is already holding a question in their head.
+##
+## Position, not value index: the options are shuffled per render, and "the
+## second thing I can see" is the only thing a digit can honestly mean.
+## `_display_order[i]` is the translation the mouse path already goes through.
+func _unhandled_input(event: InputEvent) -> void:
+	if _done or not Config.flag("input/space_is_sprint", true):
+		return
+	for i in mini(_display_order.size(), 4):
+		if not event.is_action_pressed("answer_%d" % (i + 1)):
+			continue
+		# The retry lockout disables the buttons; the keyboard has to honour it or
+		# it becomes a way to answer during the wrong-answer beat, which is the
+		# lockout's whole reason for existing.
+		if i < _buttons.size() and _buttons[i].disabled:
+			get_viewport().set_input_as_handled()
+			return
+		submit_answer(_display_order[i])
+		get_viewport().set_input_as_handled()
+		return
+
 ## Hand the board back for the second try. The wrong option stays marked: it is
 ## a fact about what has already been tried, and clearing it would invite the
-## same tap again. Nothing is focused - see AnswerButton on why these options do
-## not take keyboard focus at all.
+## same tap again. Nothing is focused - the options take no keyboard focus at
+## all (see AnswerButton); _unhandled_input above is the keyboard path.
 func _reenable_for_retry() -> void:
 	if _done:
 		return
@@ -322,7 +357,9 @@ func _build_ui(opts: Dictionary) -> void:
 		var centred := CenterContainer.new()
 		centred.add_child(count_row)
 		vbox.add_child(centred)
-		count_row.setup(tokens)
+		# The prompt's own symbol picks the token shape, so two counting problems
+		# in a row do not look like the same question asked twice.
+		count_row.setup(tokens, CountRow.marker_in(prompt_text))
 
 	# Hint / explanation line: hidden until a miss needs it.
 	_hint_label = Label.new()

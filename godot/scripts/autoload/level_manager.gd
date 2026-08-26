@@ -70,7 +70,7 @@ func _count_owls(key: String) -> int:
 	var entry: Variant = get_level(key)
 	if entry == null:
 		return 0
-	var path := "res://%s" % String(entry.get("mapFile", ""))
+	var path := "res://%s" % map_file(key)
 	if not FileAccess.file_exists(path):
 		return 0
 	var f := FileAccess.open(path, FileAccess.READ)
@@ -129,3 +129,28 @@ static func required_for_door(entry: Dictionary, total: int) -> int:
 
 func has_level(key: String) -> bool:
 	return get_level(key) != null
+
+## Which compiled map file a level actually loads.
+##
+## `levels.wide_gap_pass` off swaps in `<name>.classic.json` -- a frozen snapshot
+## of the geometry as it shipped before the gap-vocabulary pass. So the two
+## layouts can be compared by toggling in the grown-up panel and re-entering the
+## level, rather than by reading a diff or reverting a commit, which is the only
+## way a question like "is this too hard for a five-year-old" gets answered.
+##
+## The snapshots have no spec and are never recompiled, which is the point: a
+## baseline that moves is not a baseline. tools/validate-content.ts walks specs
+## rather than compiled files, so they sit alongside without being checked
+## against anything.
+##
+## Falls through to the authored path when a snapshot is missing, so deleting the
+## snapshots degrades to "the new geometry, always" instead of to a blank level.
+func map_file(key: String) -> String:
+	var entry: Variant = get_level(key)
+	if entry == null:
+		return ""
+	var authored := String((entry as Dictionary).get("mapFile", ""))
+	if bool(Config.flag("levels/wide_gap_pass", true)):
+		return authored
+	var classic := authored.replace(".json", ".classic.json")
+	return classic if FileAccess.file_exists("res://%s" % classic) else authored

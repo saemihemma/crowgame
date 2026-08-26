@@ -100,11 +100,15 @@ mutate "a documented route the server does not register" "does not register" \
 mutate "a registered route with no row" "has no row for it" \
 	ARCHITECTURE.md '\#| `DELETE` | `/api/v1/family`#d'
 
+# Matched by SHAPE, not by today's figure. Both of these used to name the number
+# literally, so every time the export grew the sed matched nothing, the
+# "mutated" doc was byte-identical to the real one, and the case passed while
+# testing nothing -- which is the exact failure mode these cases exist to catch.
 echo "=== the derived payload figures track the artifact ==="
 mutate "drifted raw payload total" "payload totals" \
-	deploy/RAILWAY.md 's/\*\*51.1 MB\*\*/**40.0 MB**/'
+	deploy/RAILWAY.md 's/| \*\*whole payload\*\* | \*\*[0-9.]* MB\*\*/| **whole payload** | **40.0 MB**/'
 mutate "drifted first-launch transfer figure" "first-launch transfer figure" \
-	deploy/RAILWAY.md 's/transfers about \*\*17.5 MB\*\*/transfers about **12.0 MB**/'
+	deploy/RAILWAY.md 's/transfers about \*\*[0-9.]* MB\*\*/transfers about **12.0 MB**/'
 
 echo "=== references must not dangle ==="
 mutate "a doc pointing at the retired Phaser tree" "retired Phaser tree" \

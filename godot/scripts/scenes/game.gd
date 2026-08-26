@@ -106,7 +106,8 @@ func _load_level(key: String) -> void:
 	if entry == null:
 		push_error("[Game] unknown level: %s" % key)
 		return
-	var map_path := "res://%s" % String(entry.get("mapFile", ""))
+	# Via LevelManager, so the wide_gap_pass A/B applies here too.
+	var map_path := "res://%s" % LevelManager.map_file(key)
 	if not FileAccess.file_exists(map_path):
 		push_error("[Game] missing map file: %s" % map_path)
 		return
@@ -558,7 +559,28 @@ func hurt_player() -> void:
 	if lives <= 0:
 		player_die()
 	else:
-		respawn_player()
+		_stumble()
+
+## The stumble: a life lost with lives still in hand.
+##
+## THIS is the path a child actually hits, and it used to have nothing -- the
+## crow was teleported back to the spawn point mid-stride, no beat, no
+## acknowledgement, which is what a playtester reported as "not instant respawn".
+## Only running out of lives got a beat, which is the rarer event.
+##
+## Physics off for the duration so the crow does not keep falling behind the
+## overlay, and the respawn happens when the beat ENDS rather than immediately,
+## so the child sees where they were before they are moved.
+func _stumble() -> void:
+	respawning = true
+	if _player:
+		_player.set_physics_process(false)
+	var beat := DeathBeat.make(DeathBeat.Kind.STUMBLE)
+	beat.finished.connect(func() -> void:
+		if _player:
+			_player.set_physics_process(true)
+		respawn_player())
+	add_child(beat)
 
 func player_die() -> void:
 	respawning = true
@@ -570,33 +592,13 @@ func player_die() -> void:
 	EventBus.coins_changed.emit(coin_count)
 	if _player:
 		_player.set_physics_process(false)
-	_show_death_text()
 	# Full level reload, mirroring Phaser's scene.restart(): coins and enemies
-	# respawn, lives refill (handled by _load_level).
-	get_tree().create_timer(Config.fx("death_beat", 0.8)).timeout.connect(
-		_swap_level.bind(LevelManager.get_current_level_key()), CONNECT_ONE_SHOT)
-
-func _show_death_text() -> void:
-	# "Oops!" float-up (MathChallengeScene-era death text from GameScene.ts).
-	var layer := get_node_or_null("FX")
-	if layer == null:
-		return
-	var l := Label.new()
-	l.text = TextManager.t("game.oops")
-	l.add_theme_font_size_override("font_size", 48)
-	l.add_theme_color_override("font_color", ThemeManager.get_color_value("death_text"))
-	l.add_theme_color_override("font_shadow_color", Color.BLACK)
-	l.add_theme_constant_override("shadow_offset_x", 3)
-	l.add_theme_constant_override("shadow_offset_y", 3)
-	l.anchor_right = 1.0
-	l.anchor_bottom = 1.0
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	layer.add_child(l)
-	var tw := l.create_tween().set_parallel(true)
-	tw.tween_property(l, "position:y", -40.0, 0.6).set_trans(Tween.TRANS_QUAD)
-	tw.tween_property(l, "modulate:a", 0.0, 0.8)
-	tw.chain().tween_callback(l.queue_free)
+	# respawn, lives refill (handled by _load_level). Driven off the beat
+	# finishing rather than a parallel timer, so the two can never disagree about
+	# how long a death lasts.
+	var beat := DeathBeat.make(DeathBeat.Kind.LAST_LIFE)
+	beat.finished.connect(_swap_level.bind(LevelManager.get_current_level_key()))
+	add_child(beat)
 
 func respawn_player() -> void:
 	respawning = true
