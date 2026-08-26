@@ -22,6 +22,12 @@
       "y": 16
     },
     {
+      "type": "platform",
+      "x": 11,
+      "width": 2,
+      "y": 17
+    },
+    {
       "type": "ground",
       "x": 15,
       "width": 10,

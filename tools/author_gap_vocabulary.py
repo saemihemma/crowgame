@@ -86,10 +86,29 @@ EDITS = {
         # skill is met before level 6 demands it.
         "add": [{"type": "platform", "x": 74, "width": 1, "y": 12}],
     },
-    # ── The sprint band. One wide gap each, in the open, with nothing bridging
-    # it: the first thing in the game that cannot be walked across.
+    # ── The sprint band. One wide gap each, in the open, and each with ONE
+    # foothold in it.
+    #
+    # The footholds are a correction, and the measurement that forced them is
+    # worth keeping. Sprint is a default capability that is never taught, by
+    # decision -- so the guard was re-run with the sprint envelope removed
+    # entirely, asking what a child who never presses Space can do. Level 6
+    # stopped that child at column 17 and level 8 at column 15, both a few tiles
+    # from the spawn, with the door and 37 and 44 coins on the far side. Not hard:
+    # unfinishable, by a key nothing mentions.
+    #
+    # A foothold ONE ROW BELOW THE GROUND LINE fixes it without softening the
+    # gap. Platforms in this game are solid from every side, so anything placed
+    # above the ground line would stand in the way of the running leap itself;
+    # a step down is out of the arc entirely. The walk route becomes down one,
+    # across, up one -- slow, and available. The sprint route is unchanged: one
+    # clean line over the whole six tiles, and now a missed sprint lands on a
+    # ledge instead of the spikes at row 19, which for a five-year-old is the
+    # right way for a first attempt at a new skill to fail.
     "level_06_emberwood_deep": {
         "gap": [(0, 6)],
+        # Gap is columns 11-16; ground surface is row 16 and the spikes are at 19.
+        "add": [{"type": "platform", "x": 13, "width": 2, "y": 17}],
     },
     # Level 7 deliberately gets NOTHING.
     #
@@ -105,6 +124,9 @@ EDITS = {
     "level_07_crystal_depths": {},
     "level_08_meadow_heights": {
         "gap": [(0, 6), (3, 7)],
+        # Gap is columns 9-14. The 7 after run 3 is already bridged, so it needs
+        # nothing: it is crossed over the bridge, not across the hole.
+        "add": [{"type": "platform", "x": 11, "width": 2, "y": 17}],
     },
 }
 
@@ -228,6 +250,14 @@ def rewrite(stem, edits):
         if err:
             problems.append(f"{stem}: {err}")
     for extra in edits.get("add", []):
+        # Idempotent, because this tool is run again every time the vocabulary
+        # changes and a bare append is not. Running it twice duplicated level 4's
+        # 2-wide ledge and level 5's 1-wide pad -- two platforms occupying exactly
+        # the same tiles, invisible in the game and invisible in the compiled map,
+        # and a landmine for anyone later reading the spec as the authored truth.
+        key = (extra["type"], extra["x"], extra["width"], extra["y"])
+        if any((q["type"], q["x"], q["width"], q["y"]) == key for q in platforms):
+            continue
         platforms.append(dict(extra))
 
     platforms.sort(key=lambda p: (p["x"], p["y"]))

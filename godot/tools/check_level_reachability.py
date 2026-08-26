@@ -29,6 +29,10 @@ FLAGS = json.loads((ROOT / "data" / "tuning" / "feature_flags.json").read_text()
 # finishable at a walk -- see feature_flags.json levels.sprint_gaps_from.
 SPRINT_FROM = int(FLAGS.get("levels", {}).get("sprint_gaps_from", 99))
 
+# Set for the second pass in main(), which asks a different question: what can a
+# child who never presses Space do? See main().
+WALK_ONLY = False
+
 
 def envelope(tile, speed):
     """How far the crow can move in one jump at `speed`, in tiles."""
@@ -57,7 +61,7 @@ def speed_for(name):
     """
     digits = "".join(ch for ch in name.split("_")[1] if ch.isdigit())
     number = int(digits) if digits else 0
-    if number >= SPRINT_FROM and number != 99:
+    if not WALK_ONLY and number >= SPRINT_FROM and number != 99:
         return float(TUNING.get("sprintMaxSpeed", TUNING["maxSpeed"])), "sprint"
     return float(TUNING["maxSpeed"]), "walk"
 
@@ -115,7 +119,7 @@ def object_cell(level, kind, tile):
     return None
 
 
-def check(path):
+def check(path, quiet=False):
     level = json.loads(path.read_text())
     tile = level["tilewidth"]
     w, h = level["width"], level["height"]
@@ -173,8 +177,9 @@ def check(path):
         gap = min((abs(c - finish[0]) for c, r in seen), default=-1)
         return [f"{path.name}: the door at column {finish[0]} is unreachable "
                 f"(closest the crow gets is {gap} columns away)"]
-    print(f"  {path.name:26} [{band:6}] spawn {start} -> door {finish}  "
-          f"({len(seen)}/{len(cells)} standable cells reachable)")
+    if not quiet:
+        print(f"  {path.name:26} [{band:6}] spawn {start} -> door {finish}  "
+              f"({len(seen)}/{len(cells)} standable cells reachable)")
     return []
 
 
@@ -187,12 +192,39 @@ def main():
     problems = []
     for name in keys:
         problems += check(LEVELS / name)
+
+    # SECOND PASS: every level, at a walk, with the sprint budget taken away.
+    #
+    # The pass above allows levels from sprint_gaps_from up to need the run key.
+    # This one asks the question that decision does not answer: sprint is a
+    # default capability and nothing in the game teaches it, so what happens to a
+    # child who never presses Space? When it was first run, level 6 stopped that
+    # child at column 17 and level 8 at column 15 -- both a few tiles past the
+    # spawn, with the door and dozens of coins on the far side. The first pass was
+    # clean throughout, because it was measuring a crow that sprints.
+    #
+    # So a sprint gap is allowed to be the FAST way across and never the only way.
+    # Both passes gate. If sprint is ever taught, this pass is the thing to relax,
+    # deliberately, in one place.
+    global WALK_ONLY
+    WALK_ONLY = True
+    walk_problems = []
+    for name in keys:
+        walk_problems += check(LEVELS / name, quiet=True)
+    WALK_ONLY = False
+
     if problems:
         print("UNFINISHABLE:")
         for p in problems:
             print("  " + p)
+    if walk_problems:
+        print("UNFINISHABLE AT A WALK (sprint is never taught, so this is a wall):")
+        for p in walk_problems:
+            print("  " + p)
+    if problems or walk_problems:
         sys.exit(1)
-    print("level reachability: clean")
+    print(f"level reachability: clean, and clean again at a walk with no sprint "
+          f"({len(keys)} levels)")
 
 
 if __name__ == "__main__":
