@@ -24,10 +24,15 @@ TUNING = json.loads((ROOT / "data" / "tuning" / "player_base.json").read_text())
 GRAVITY = 800.0
 
 
-def envelope(tile):
-    """How far the crow can move in one jump, in tiles."""
+FLAGS = json.loads((ROOT / "data" / "tuning" / "feature_flags.json").read_text())
+# The first level allowed to need a wound-up run. Everything below it must be
+# finishable at a walk -- see feature_flags.json levels.sprint_gaps_from.
+SPRINT_FROM = int(FLAGS.get("levels", {}).get("sprint_gaps_from", 99))
+
+
+def envelope(tile, speed):
+    """How far the crow can move in one jump at `speed`, in tiles."""
     v = float(TUNING["jumpVelocity"])
-    speed = float(TUNING["maxSpeed"])
     rise_px = v * v / (2 * GRAVITY)
     airtime = 2 * v / GRAVITY
     # One tile of margin in each direction: a child does not jump frame-perfect,
@@ -35,6 +40,26 @@ def envelope(tile):
     up = int(rise_px // tile) - 1
     across = int((speed * airtime) // tile) - 1
     return up, across
+
+
+def speed_for(name):
+    """Which speed a level is allowed to be solved at.
+
+    TWO BUDGETS, not one. Levels below sprint_gaps_from must be finishable at a
+    WALK: requiring a held run key to survive is too much for a child still
+    learning to jump, and a guard that measured everything at sprint speed would
+    let an unwalkable early level through silently. From sprint_gaps_from up, a
+    gap may want the run -- and a guard still measuring at walking speed would
+    report that deliberate design as unfinishable.
+
+    The practice arena has no number and no platforming; it takes the walk
+    budget, which it trivially satisfies.
+    """
+    digits = "".join(ch for ch in name.split("_")[1] if ch.isdigit())
+    number = int(digits) if digits else 0
+    if number >= SPRINT_FROM and number != 99:
+        return float(TUNING.get("sprintMaxSpeed", TUNING["maxSpeed"])), "sprint"
+    return float(TUNING["maxSpeed"]), "walk"
 
 
 def solid_grid(level):
@@ -94,7 +119,8 @@ def check(path):
     level = json.loads(path.read_text())
     tile = level["tilewidth"]
     w, h = level["width"], level["height"]
-    up, across = envelope(tile)
+    speed, band = speed_for(path.stem)
+    up, across = envelope(tile, speed)
     grid = solid_grid(level)
     cells = standable(grid, w, h)
 
@@ -147,15 +173,17 @@ def check(path):
         gap = min((abs(c - finish[0]) for c, r in seen), default=-1)
         return [f"{path.name}: the door at column {finish[0]} is unreachable "
                 f"(closest the crow gets is {gap} columns away)"]
-    print(f"  {path.name:26} spawn {start} -> door {finish}  "
+    print(f"  {path.name:26} [{band:6}] spawn {start} -> door {finish}  "
           f"({len(seen)}/{len(cells)} standable cells reachable)")
     return []
 
 
 def main():
     keys = [l["mapFile"].split("/")[-1] for l in json.loads(REGISTRY.read_text())["levels"]]
-    up, across = envelope(32)
-    print(f"level reachability (jump envelope: {across} tiles across, {up} up)")
+    wu, wa = envelope(32, float(TUNING["maxSpeed"]))
+    su, sa = envelope(32, float(TUNING.get("sprintMaxSpeed", TUNING["maxSpeed"])))
+    print(f"level reachability (walk {wa} across / {wu} up; "
+          f"sprint {sa} across / {su} up from level {SPRINT_FROM})")
     problems = []
     for name in keys:
         problems += check(LEVELS / name)

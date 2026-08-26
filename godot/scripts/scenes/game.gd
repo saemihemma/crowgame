@@ -97,7 +97,8 @@ func _load_level(key: String) -> void:
 	if entry == null:
 		push_error("[Game] unknown level: %s" % key)
 		return
-	var map_path := "res://%s" % String(entry.get("mapFile", ""))
+	# Via LevelManager, so the wide_gap_pass A/B applies here too.
+	var map_path := "res://%s" % LevelManager.map_file(key)
 	if not FileAccess.file_exists(map_path):
 		push_error("[Game] missing map file: %s" % map_path)
 		return

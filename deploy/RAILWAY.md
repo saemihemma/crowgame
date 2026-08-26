@@ -63,7 +63,7 @@ made a decision from it. The decision — is a first launch acceptable on home w
 
 | | Raw | gzip |
 | --- | --- | --- |
-| **whole payload** | **49.7 MB** | **~16.1 MB** |
+| **whole payload** | **50.5 MB** | **~16.1 MB** |
 
 Gzip is node's zlib at level 9; a server's own encoder will differ by a few
 tenths. Per-file sizes are `ls -la output/web` when you need them.
