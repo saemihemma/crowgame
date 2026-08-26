@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "NPCRegistry",
-    "description": "Registry of all NPC definitions",
+    "description": "Registry of all NPC definitions Sprite path and frame geometry live in sprite_registry.json, not here.",
     "type": "object",
     "required": [
         "npcs"
@@ -15,9 +15,6 @@
                     "id",
                     "name",
                     "spriteKey",
-                    "spritesheet",
-                    "frameWidth",
-                    "frameHeight",
                     "behavior",
                     "components",
                     "behaviorConfig"
@@ -32,18 +29,9 @@
                         "minLength": 1
                     },
                     "spriteKey": {
-                        "type": "string"
-                    },
-                    "spritesheet": {
-                        "type": "string"
-                    },
-                    "frameWidth": {
-                        "type": "integer",
-                        "minimum": 1
-                    },
-                    "frameHeight": {
-                        "type": "integer",
-                        "minimum": 1
+                        "type": "string",
+                        "minLength": 1,
+                        "description": "Key into data/registries/sprite_registry.json, which owns the path and frame grid (ARCHITECTURE rule 7)."
                     },
                     "behavior": {
                         "type": "string",

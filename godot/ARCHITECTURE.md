@@ -28,6 +28,19 @@ not by editing code. A CI guard (`tools/check_hardcoding.py`) enforces the rules
 6. **No `play_sfx("key")` scattered in gameplay.** Fire semantic events:
    `AudioManager.play_event("coin")` (`data/audio/sound_events.json`).
 
+7. **No sprite paths, frame geometry or anchors in `.gd` or `.tscn`.** What each
+   *kind* of sprite must be lives in `data/registries/sprite_spec.json` (the pixel
+   law from `brand/ASSET_MANIFEST.md`, as data); what each *asset* is lives in
+   `data/registries/sprite_registry.json`. Entities name a key —
+   `SpriteSheet.texture("owl")` — and derive placement with
+   `SpriteSheet.anchor_offset()`. Change a class and every sprite of that kind
+   moves together; deviate for one asset with a required `why`.
+   `tools/check_assets.py` fails the build on a missing or orphaned file, an
+   unknown class, a sheet that is not a whole number of its class's cells, an
+   unjustified override, a `res://assets/**.png` literal in `.gd`, or an `offset`
+   or `scale` on a sprite node in a `.tscn`. `--spec` prints the delivery brief.
+   Full rationale: `../docs/SPRITE_CONTRACT.md`.
+
 Escape hatch for genuine exceptions (brand text, diagnostics): append `# hardcode-ok` to the line.
 
 ## The one boundary: Tier-1 parity constants stay in code
@@ -39,6 +52,11 @@ JSON — moving them risks silent fidelity drift. Change them only with the TS s
 golden fixtures (`npm run godot:gen-math-fixtures` / `gen-motion-fixtures`).
 
 ## How to add X (data-first recipes)
+- **A sprite:** run `python3 tools/check_assets.py --spec` — it prints the size,
+  anchor and art notes required for each class. Generate to that, drop the PNG under
+  `assets/sprites/<role>/`, add an entry to `data/registries/sprite_registry.json`
+  naming its `class` (never its size — that comes from the class), then
+  `godot --headless --path godot --import`.
 - **A sound:** add a WAV via `tools/gen_sfx.py` (or drop a file), add it to
   `data/audio/audio_manifest.json`, map an event in `data/audio/sound_events.json`, then
   `AudioManager.play_event("your_event")`.

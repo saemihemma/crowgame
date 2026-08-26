@@ -2,7 +2,7 @@
 
 Status: Current
 Authority: Runtime code and data, especially `data_manager.gd`, `math_problem_manager.gd`, `elo_manager.gd`, `elo_aware_strategy.gd`, `learner_state_manager.gd`, `elo_update_manager.gd` and `save_manager.gd`. The executable specification for these numbers is `math-kernel/**`, locked by `godot/tests/fixtures/**`.
-Last verified against code: 2026-03-31
+Last verified against code: 2026-08-25
 
 ## Purpose
 
@@ -20,6 +20,8 @@ What this is not:
 For identity, persistence, and hosted sync details, also read [docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md](./docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md).
 
 For offline math authoring, batch materialization, and review outputs, read [docs/MATH_AUTHORING_PIPELINE.md](./docs/MATH_AUTHORING_PIPELINE.md).
+
+For what a curriculum step MEANS, and the lesson each meaning opens with, read [docs/MATH_CONCEPT_LADDER.md](./docs/MATH_CONCEPT_LADDER.md).
 
 ## Runtime Map
 
@@ -132,13 +134,17 @@ Per-level math identity:
 
 The teaching window:
 - when a level's gating includes a domain the child has never attempted
-  (`totalAttempts` of 0 in `curriculumProgress`), the owl opens with a
+  (`totalAttempts` of 0 in `curriculumProgress`), the owl opens with a lesson
+  before it opens with a question
+- where the concept ladder has a lesson for the rung that child starts on, that
+  four-card lesson is what plays (see **Concept ladder and lessons** below)
+- the fallback, for a rung with no lesson authored, is the original
   worked-example demo: the problem appears, the localised hint plays as
   "thinking aloud", then the answer lights up with its explanation — no input
   accepted, no learner-model events emitted
-- the demo hands over to a freebie problem in the same domain: a win records
-  normally, a miss records nothing at all, so first contact with new math can
-  never hurt
+- either way the teaching hands over to a freebie problem in the same domain: a
+  win records normally, a miss records nothing at all, so first contact with new
+  math can never hurt
 
 The comeback arc:
 - a correct answer on a review item whose last outcome was wrong fires
@@ -325,6 +331,49 @@ Local kid-safe filter:
 - `runtime-browser-smoke.json` is the current browser-backed proof artifact for the real owl interaction, wrong-answer retry, and the single-problem completion-and-close path.
 - `runtime-browser-smoke.json` is still not telemetry-backed pedagogy proof and does not independently validate that the frozen ELO bands are perfect for every child.
 
+## Concept Ladder And Lessons
+
+The learner model measures how HARD a problem is. It did not know what that
+number meant, so it could not notice the moment a genuinely new idea arrived.
+
+`godot/data/curriculum/concept_ladder.json` is the grouping layer: every domain's
+steps in contiguous ranges, one teachable idea each — 30 concepts over the 8
+domains, covering all 3150 authored problems with none left outside.
+`godot/scripts/math/concept_ladder.gd` is the lookup, and it is pure: seen-state
+lives in the `TutorialManager` autoload and persists per profile through
+`SaveManager` (`tutorialsSeen`), deliberately NOT in the parity-locked
+`learner_state_manager.gd`.
+
+Each concept opens with a four-card lesson from
+`godot/data/curriculum/tutorials.json`, rendered by
+`godot/scripts/ui/math_tutorial.gd`:
+
+1. `see` — the idea as objects
+2. `model` — the same idea in a ten-frame, number line, base-ten rods or equal groups
+3. `worked` — the equation, already solved, with the reasoning stated
+4. `try` — one guided question, picture still on screen
+
+`math_challenge_component.gd` asks for a lesson twice: on first contact with a
+whole domain (replacing the silent demo), and when a selected problem's own
+`curriculumStep` lands on a concept the child has not met. Keyed off the
+PROBLEM's step, not the learner's — the comfort and stretch lanes hand out a
+problem a rung either side of the ladder's position, so a lesson keyed off the
+learner would teach the wrong idea. The selected problem is held across the
+lesson and asked afterwards.
+
+Invariants, each with a test:
+
+- a lesson emits none of `MATH_PROBLEM_PRESENTED`, `MATH_ANSWER_SUBMITTED` or
+  `MATH_CHALLENGE_COMPLETE`, and never touches ELO or a curriculum step
+- Skip is present from the first card, and skipping records as seen
+- a lesson is offered once per child, ever
+
+Layout, pacing and colour roles are entirely in
+`godot/data/tuning/tutorial_tuning.json`; wording is entirely in the i18n
+bundles under `tutorial.*`. `tools/validate_math_concepts.mjs` recomputes every
+number all 120 cards assert from the picture it is drawn on, and fails the build
+on an undeclared empty or thin rung — see **Current Limitations**.
+
 ### Golden problems
 
 Roughly 1 in 8 real owl problems arrives golden: a pulsing gold frame, a
@@ -426,6 +475,7 @@ The in-engine parent report ([godot/scripts/ui/parent_report.gd](./godot/scripts
 - Level registry still carries `minStars`, but the live learner model is separate from that legacy progression field.
 - Problem pool ELO ratings are still initialized from legacy static difficulty; local selection now obeys curriculum steps instead, but the telemetry-facing ELO layer is still coarse.
 - Two-digit addition and subtraction remain intentionally out of the owl's local path until a denser later ladder exists.
+- The concept ladder has 15 rungs with no problems authored on them and 12 more with fewer than six. All are declared in `concept_ladder.json` and enforced against reality by `tools/validate_math_concepts.mjs`; the two inside the owl-safe band are `addition` step 20 and `subtraction` steps 17-20. `reports/math-concepts/coverage.json` is the generated inventory.
 - Subtraction step `5` is structurally sparse under the current curriculum-step derivation, so it exists only as a tiny bridge instead of a six-prompt band.
 - The opening owl steps still contain a limited number of unique arithmetic facts even though they now avoid recent same-fact repeats more aggressively.
 - Review queue scheduling happens on failed challenges, not on first wrong attempts that are later corrected within the same challenge.

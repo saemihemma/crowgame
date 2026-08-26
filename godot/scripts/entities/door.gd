@@ -4,7 +4,7 @@ extends Area2D
 ## 56x80 trigger zone. Opens its animation when the player is near (~100px) and
 ## triggers the level transition on contact.
 
-const DOOR_TEXTURE := "res://assets/sprites/objects/door/door-36-runtime-88x96.png"
+const SPRITE_KEY := "door"
 @onready var PROXIMITY: float = Config.ui("door/proximity", 100.0)
 
 var target_level := ""
@@ -18,17 +18,20 @@ func setup_from_spawn(s: Dictionary) -> void:
 	target_level = String(s.get("props", {}).get("target_level", ""))
 
 func _ready() -> void:
-	if ResourceLoader.exists(DOOR_TEXTURE):
-		var tex: Texture2D = load(DOOR_TEXTURE)
-		var frames := SpriteSheet.build_frames(tex, 88, 96, 36, 24.0, "open", false)
+	var tex := SpriteSheet.texture(SPRITE_KEY)
+	if tex != null:
+		var e := SpriteSheet.entry(SPRITE_KEY)
+		var frames := SpriteSheet.frames(SPRITE_KEY)
 		frames.add_animation("idle")
 		frames.set_animation_loop("idle", false)
 		# Reuse the first frame for idle.
 		var at := AtlasTexture.new()
 		at.atlas = tex
-		at.region = Rect2(0, 0, 88, 96)
+		at.region = Rect2(0, 0, int(e.get("frameWidth", 88)), int(e.get("frameHeight", 96)))
 		frames.add_frame("idle", at)
 		_anim.sprite_frames = frames
+		# A door is mounted on the ground, not standing on it: no grounding sink.
+		_anim.offset = SpriteSheet.anchor_offset(SPRITE_KEY)
 		_anim.play("idle")
 	# Pulsing glow (Tier-2 feel via Godot tween).
 	var tw := create_tween().set_loops()

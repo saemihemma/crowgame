@@ -11,6 +11,7 @@ const DOOR_SCENE := preload("res://scenes/Door.tscn")
 const NPC_SCENE := preload("res://scenes/Npc.tscn")
 const ENEMY_SCENE := preload("res://scenes/Enemy.tscn")
 const MATH_CHALLENGE_SCENE := preload("res://scenes/MathChallenge.tscn")
+const MATH_TUTORIAL_SCENE := preload("res://scenes/MathTutorial.tscn")
 const HUD_SCENE := preload("res://scenes/Hud.tscn")
 const TOUCH_SCENE := preload("res://scenes/TouchControls.tscn")
 const PAUSE_SCENE := preload("res://scenes/Pause.tscn")
@@ -666,12 +667,12 @@ func _owl_icon() -> Texture2D:
 	return OwlRing.new()._load_icon()
 
 func _coin_icon() -> Texture2D:
-	var path := "res://assets/sprites/ui/coin/coinsprite-runtime-32.png"
-	if not ResourceLoader.exists(path):
+	var coin_texture := SpriteSheet.texture("coin")
+	if coin_texture == null:
 		return null
 	# Frame 0 of the 3x3 spin sheet; the whole sheet in one box is gold noise.
 	var frame := AtlasTexture.new()
-	frame.atlas = load(path)
+	frame.atlas = coin_texture
 	frame.region = Rect2(0, 0, 32, 32)
 	return frame
 
@@ -749,6 +750,42 @@ func launch_math_challenge(problem: Dictionary, opts: Dictionary) -> void:
 	if _player:
 		_player.set_physics_process(false)  # pause gameplay during the challenge
 	_math_challenge.present(problem, opts)
+
+## The lesson that precedes a challenge, hosted the same way and on the same
+## terms: gameplay paused, camera lifted, touch controls away. `on_closed` gets
+## {"tutorialId", "skipped"} and is where the caller launches the question the
+## lesson was for.
+##
+## Guarded on the challenge slot rather than a slot of its own: a tutorial and a
+## question are the same interruption as far as the level is concerned, and
+## letting both open at once would put two boards on one screen.
+var _math_tutorial: CanvasLayer
+
+func is_math_tutorial_active() -> bool:
+	return is_instance_valid(_math_tutorial)
+
+func get_math_tutorial() -> CanvasLayer:
+	return _math_tutorial
+
+func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable) -> void:
+	if is_math_challenge_active() or is_math_tutorial_active():
+		return
+	_math_tutorial = MATH_TUTORIAL_SCENE.instantiate()
+	add_child(_math_tutorial)
+	_math_tutorial.closed.connect(func(payload: Dictionary):
+		_math_tutorial = null
+		_set_touch_visible(true)
+		_lift_camera_for_challenge(false)
+		if _player:
+			_player.set_physics_process(true)
+		if on_closed.is_valid():
+			on_closed.call(payload)
+	)
+	_set_touch_visible(false)
+	_lift_camera_for_challenge(true)
+	if _player:
+		_player.set_physics_process(false)
+	_math_tutorial.present(tutorial)
 
 func _on_challenge_closed() -> void:
 	_math_challenge = null

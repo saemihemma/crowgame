@@ -1,0 +1,471 @@
+#!/usr/bin/env python3
+"""Asset guard — keeps assets/, the sprite registry, and the import settings from
+drifting apart, so dead art can't quietly ride along in the shipped .pck and a
+new sprite can't ship with blurry import settings.
+
+This is the static half of ARCHITECTURE.md rule 7 (the runtime half is
+tests/test_sprite_registry.gd, which boots Godot and actually loads the textures).
+
+Rules:
+  0. Every sprite names a `class` from data/registries/sprite_spec.json, and the PNG
+     on disk is the size that class requires. sprite_spec.json is the game's opinion
+     about what each KIND of art must be; conforming to it is how new art drops in
+     and just works. An asset may override its class only with a `why` recorded
+     beside it, so a deviation is a decision on the record, not a drift.
+  1. Every sprite/tileset in data/registries/sprite_registry.json exists on disk.
+  2. Every PNG under assets/ is claimed by the registry — no orphans. The export
+     preset is `all_resources`, so an unreferenced file is dead weight a child
+     downloads over mobile data.
+  3. The declared frame grid divides the sheet exactly and holds the declared
+     frame count.
+  4. Every PNG has a .import sibling carrying the pixel-art preset
+     (project.godot [importer_defaults]); every .import has its PNG.
+  5. No sprite path literals left in .gd — entities name registry keys.
+  5b. No hardcoded sprite anchor in a .tscn. `offset = Vector2(0, -28)` on a
+     Sprite2D silently encodes half the CURRENT frame height plus any sink, so it
+     quietly means something else the moment the art changes size. Anchors are
+     derived from the registry at runtime (SpriteSheet.anchor_offset).
+  6. Every audio file under assets/audio/ is named by data/audio/audio_manifest.json.
+  7. No declared frame is fully transparent, and no two declared frames are byte
+     identical — both mean the sheet or the frame count is wrong, and both read as
+     a stutter or a gap in play rather than as an error.
+
+Escape hatch: add a path to ALLOW_UNREFERENCED below with a comment saying why.
+Run: python3 godot/tools/check_assets.py [--selftest] [--spec]
+  --spec prints the delivery brief: what the game requires, per kind of art.
+"""
+import json
+import os
+import re
+import struct
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.normpath(os.path.join(HERE, ".."))
+ASSETS = os.path.join(ROOT, "assets")
+SCRIPTS = os.path.join(ROOT, "scripts")
+REGISTRY = os.path.join(ROOT, "data", "registries", "sprite_registry.json")
+SPEC = os.path.join(ROOT, "data", "registries", "sprite_spec.json")
+TILESET_MANIFEST = os.path.join(ROOT, "data", "tilesets", "tileset_manifest.json")
+AUDIO_MANIFEST = os.path.join(ROOT, "data", "audio", "audio_manifest.json")
+
+# Files intentionally kept without a registry entry. Keep this list empty if you
+# can — each entry is weight in every build.
+ALLOW_UNREFERENCED = {
+    # The 784px source the shipped 64px owl was exported from. Nothing loads it,
+    # but data/ASSET_CREDITS.json records its licence against this filename, so
+    # deleting it would orphan the attribution.
+    "assets/sprites/characters/npcs/owl.png": "attribution source in ASSET_CREDITS.json",
+}
+
+# The pixel-art contract from project.godot [importer_defaults]. Nearest-neighbour
+# upscaling at integer scale is the whole look; these four settings protect it.
+REQUIRED_IMPORT = {
+    "compress/mode": "0",            # lossless — block compression smears pixel art
+    "mipmaps/generate": "false",     # never rendered below 1:1
+    "process/fix_alpha_border": "false",  # a bilinear fix; pointless under Nearest
+    "detect_3d/compress_to": "0",    # never silently switch to VRAM compression
+}
+
+SPRITE_PATH_RE = re.compile(r'"res://assets/[^"]*\.(?:png|jpg|jpeg|webp)"')
+ALLOW_LINE = "# asset-ok"
+SCENES = os.path.join(ROOT, "scenes")
+SPRITE_NODE_RE = re.compile(r'^\[node .*type="(?:Animated)?Sprite2D"')
+
+
+def rel(path):
+    return os.path.relpath(path, ROOT).replace(os.sep, "/")
+
+
+def png_size(path):
+    """(width, height) from the IHDR chunk — no Pillow dependency in CI."""
+    with open(path, "rb") as f:
+        head = f.read(24)
+    if head[:8] != b"\x89PNG\r\n\x1a\n":
+        return None
+    return struct.unpack(">II", head[16:24])
+
+
+def load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def walk(root, exts):
+    out = []
+    for dirpath, _, files in os.walk(root):
+        for fn in files:
+            if os.path.splitext(fn)[1].lower() in exts:
+                out.append(os.path.join(dirpath, fn))
+    return sorted(out)
+
+
+def parse_import(path):
+    """Flat key=value pairs from a .import file (section headers ignored)."""
+    params = {}
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith(("[", ";")) or "=" not in line:
+                continue
+            k, v = line.split("=", 1)
+            params[k.strip()] = v.strip()
+    return params
+
+
+OVERRIDABLE = ("frameWidth", "frameHeight", "anchor")
+
+
+def resolve(raw, spec):
+    """Sprite fields laid over its class defaults, plus the list of overridden keys."""
+    cls = raw.get("class", "")
+    defaults = spec.get("classes", {}).get(cls, {})
+    merged = {k: defaults[k] for k in OVERRIDABLE if k in defaults}
+    overridden = [k for k in OVERRIDABLE if k in raw and raw[k] != merged.get(k)]
+    merged.update(raw)
+    return merged, overridden
+
+
+def read_frames(path, fw, fh, count):
+    """Grid-slice a PNG into `count` RGBA frame buffers. Reuses the audit tool's
+    dependency-free decoder so CI needs no Pillow."""
+    sys.path.insert(0, HERE)
+    from audit_pixel_art import read_png_rgba
+    w, _h, rgba = read_png_rgba(path)
+    cols = max(1, w // fw)
+    out = []
+    for i in range(count):
+        fx, fy = (i % cols) * fw, (i // cols) * fh
+        buf = bytearray()
+        for y in range(fh):
+            start = ((fy + y) * w + fx) * 4
+            buf += rgba[start:start + fw * 4]
+        out.append(buf)
+    return out
+
+
+def check():
+    errors = []
+    warnings = []
+
+    if not os.path.exists(REGISTRY):
+        return ["missing %s" % rel(REGISTRY)], []
+    if not os.path.exists(SPEC):
+        return ["missing %s — the game has no declared asset spec" % rel(SPEC)], []
+
+    reg = load_json(REGISTRY)
+    spec = load_json(SPEC)
+    sprites = reg.get("sprites", {})
+    known_classes = set(spec.get("classes", {}))
+    # Tilesets are deliberately absent: data/tilesets/tileset_manifest.json already
+    # owns their contract (grid, per-tile roles, provenance). Everything it names is
+    # claimed here so those PNGs do not read as orphans.
+    tileset_claimed = set()
+    if os.path.exists(TILESET_MANIFEST):
+        for t in load_json(TILESET_MANIFEST).get("tilesets", []):
+            tileset_claimed.add(t.get("image", ""))
+
+    claimed = set()
+
+    # --- 1 + 3: registry entries point at real files with a valid grid --------
+    for key, raw in sprites.items():
+        # Claim the path first: a sprite with a bad class is still a registered file,
+        # and reporting it as an orphan too would just be noise on top of the real error.
+        claimed.add(raw.get("path", ""))
+        cls = raw.get("class", "")
+        if cls not in known_classes:
+            errors.append(
+                "sprite '%s' has class %r — must be one of %s (see %s). The class is what "
+                "gives it a frame size and anchor."
+                % (key, cls, ", ".join(sorted(known_classes)) or "(none defined)", rel(SPEC))
+            )
+            continue
+        e, overridden = resolve(raw, spec)
+        if overridden and not str(raw.get("why", "")).strip():
+            errors.append(
+                "sprite '%s' overrides %s from class '%s' with no `why`. An asset may differ "
+                "from the spec, but the reason has to be on the record."
+                % (key, "/".join(overridden), cls)
+            )
+        if overridden:
+            warnings.append(
+                "sprite '%s' is off-spec for class '%s' (%s) — %s"
+                % (key, cls, "/".join(overridden), str(raw.get("why", "")).strip())
+            )
+        relpath = e.get("path", "")
+        abspath = os.path.join(ROOT, relpath)
+        claimed.add(relpath)
+        if not os.path.exists(abspath):
+            # A slot flagged `optional` is art brand/ASSET_MANIFEST.md has commissioned
+            # but nobody has drawn yet. The registry names it so the day the file lands
+            # it is picked up with no code change; until then the caller falls back.
+            if bool(raw.get("optional", False)):
+                fb = str(raw.get("fallback", "")).strip()
+                warnings.append(
+                    "slot '%s' is still empty (%s)%s"
+                    % (key, relpath, " — falling back to '%s'" % fb if fb else ""))
+            else:
+                errors.append("sprite '%s' -> missing file %s" % (key, relpath))
+            continue
+        size = png_size(abspath)
+        if size is None:
+            errors.append("sprite '%s' -> %s is not a PNG" % (key, relpath))
+            continue
+        w, h = size
+        fw, fh = int(e.get("frameWidth", 0)), int(e.get("frameHeight", 0))
+        if fw <= 0 or fh <= 0:
+            errors.append("sprite '%s' has no frame size" % key)
+            continue
+        if w % fw or h % fh:
+            errors.append(
+                "sprite '%s' is class '%s', which requires %dx%d cells — the delivered PNG "
+                "is %dx%d, which is not a whole number of them. Re-export at a multiple of "
+                "%dx%d (see `check_assets.py --spec`), or override frameWidth/frameHeight "
+                "on this sprite with a `why`."
+                % (key, cls, fw, fh, w, h, fw, fh)
+            )
+            continue
+        # The sheet must be a whole number of the class's cells in both axes.
+        # This is where off-spec art is caught before anyone wonders why it looks wrong.
+        cw, ch = int(e.get("frameWidth", 0)), int(e.get("frameHeight", 0))
+        if not overridden and (w % cw or h % ch):
+            errors.append(
+                "sprite '%s' (class '%s', %dx%d cells) has a %dx%d sheet, which is not a "
+                "whole number of cells. Re-export to a multiple of %dx%d, or override "
+                "frameWidth/frameHeight on this sprite with a `why`."
+                % (key, cls, cw, ch, w, h, cw, ch)
+            )
+        capacity = (w // fw) * (h // fh)
+        declared = int(e.get("frames", 1))
+        if declared > capacity:
+            errors.append(
+                "sprite '%s' declares %d frames, sheet %dx%d holds %d"
+                % (key, declared, w, h, capacity)
+            )
+        elif declared < capacity:
+            warnings.append(
+                "sprite '%s' uses %d of %d cells — %d unused cell(s) shipping"
+                % (key, declared, capacity, capacity - declared)
+            )
+        if declared > 1 and float(e.get("fps", 0)) <= 0:
+            errors.append("sprite '%s' animates %d frames at fps %s" % (key, declared, e.get("fps")))
+        fb = str(raw.get("fallback", "")).strip()
+        if fb and fb not in sprites:
+            errors.append("sprite '%s' falls back to '%s', which is not a registered sprite" % (key, fb))
+        anchor = e.get("anchor")
+        if anchor not in ("feet", "center"):
+            errors.append(
+                "sprite '%s' resolves to anchor %r via class '%s' — must be \"feet\" (frame "
+                "bottom on the origin) or \"center\". Without it the entity cannot derive "
+                "its offset and something will hardcode one." % (key, anchor, cls)
+            )
+
+
+    # --- 2: no orphaned images ------------------------------------------------
+    for abspath in walk(ASSETS, {".png", ".jpg", ".jpeg", ".webp"}):
+        r = rel(abspath)
+        if r in claimed or r in tileset_claimed or r in ALLOW_UNREFERENCED:
+            continue
+        errors.append(
+            "%s is not in sprite_registry.json — register it or delete it "
+            "(export_filter is all_resources, so it ships either way)" % r
+        )
+
+    # --- 4: import sidecars + pixel-art preset --------------------------------
+    for abspath in walk(ASSETS, {".png", ".jpg", ".jpeg", ".webp"}):
+        imp = abspath + ".import"
+        if not os.path.exists(imp):
+            errors.append("%s has no .import sidecar (run: godot --headless --import)" % rel(abspath))
+            continue
+        params = parse_import(imp)
+        for k, want in REQUIRED_IMPORT.items():
+            got = params.get(k)
+            if got is None:
+                errors.append("%s: .import is missing %s" % (rel(abspath), k))
+            elif got != want:
+                errors.append(
+                    "%s: .import %s=%s, pixel-art preset requires %s "
+                    "(delete the .import and re-run godot --headless --import)"
+                    % (rel(abspath), k, got, want)
+                )
+
+    for imp in walk(ASSETS, {".import"}):
+        source = imp[: -len(".import")]
+        if not os.path.exists(source):
+            errors.append("%s is orphaned — its source file is gone" % rel(imp))
+
+    # --- 5: no sprite paths hardcoded in .gd ----------------------------------
+    for dirpath, _, files in os.walk(SCRIPTS):
+        for fn in files:
+            if not fn.endswith(".gd"):
+                continue
+            p = os.path.join(dirpath, fn)
+            with open(p, encoding="utf-8") as f:
+                for i, line in enumerate(f, 1):
+                    if ALLOW_LINE in line or line.strip().startswith("#"):
+                        continue
+                    m = SPRITE_PATH_RE.search(line)
+                    if m:
+                        errors.append(
+                            "%s:%d hardcodes %s — use a sprite_registry.json key "
+                            "via SpriteSheet (rule 7)" % (rel(p), i, m.group(0))
+                        )
+
+    # --- 5b: no hardcoded sprite anchors in scenes ----------------------------
+    if os.path.isdir(SCENES):
+        for path in walk(SCENES, {".tscn"}):
+            in_sprite = False
+            with open(path, encoding="utf-8") as f:
+                for i, line in enumerate(f, 1):
+                    if line.startswith("[node "):
+                        in_sprite = bool(SPRITE_NODE_RE.match(line))
+                    elif in_sprite and line.startswith(("offset = ", "scale = ")):
+                        errors.append(
+                            "%s:%d hardcodes %s on a sprite node — anchors and scale come "
+                            "from sprite_registry.json via SpriteSheet.anchor_offset, so "
+                            "swapping art with a different frame size cannot silently "
+                            "change what the number means"
+                            % (rel(path), i, line.strip().split("=")[0].strip())
+                        )
+
+    # --- 7: frame integrity ---------------------------------------------------
+    for key, raw in sprites.items():
+        cls = raw.get("class", "")
+        if cls not in known_classes:
+            continue
+        e, _ = resolve(raw, spec)
+        abspath = os.path.join(ROOT, e.get("path", ""))
+        n = int(e.get("frames", 1))
+        fw, fh = int(e.get("frameWidth", 0)), int(e.get("frameHeight", 0))
+        if n < 2 or fw <= 0 or fh <= 0 or not os.path.exists(abspath):
+            continue
+        try:
+            frames = read_frames(abspath, fw, fh, n)
+        except Exception as exc:                       # report, never crash the guard
+            errors.append("sprite '%s': could not decode frames (%s)" % (key, exc))
+            continue
+        empty = [i for i, f in enumerate(frames) if not any(f[3::4])]
+        if empty:
+            errors.append(
+                "sprite '%s' declares %d frames but frame(s) %s are fully transparent — "
+                "the sheet holds fewer real frames than the registry claims, which plays "
+                "as a gap in the animation." % (key, n, empty))
+        seen, dupes = {}, []
+        for i, f in enumerate(frames):
+            h = bytes(f)
+            if h in seen:
+                dupes.append((seen[h], i))
+            else:
+                seen[h] = i
+        if dupes:
+            warnings.append(
+                "sprite '%s' has identical frames %s — either the export duplicated them "
+                "or the frame count is too high" % (key, dupes))
+
+    # --- 6: audio is manifest-claimed ----------------------------------------
+    if os.path.exists(AUDIO_MANIFEST):
+        manifest_text = json.dumps(load_json(AUDIO_MANIFEST))
+        for abspath in walk(os.path.join(ASSETS, "audio"), {".mp3", ".wav", ".ogg"}):
+            if os.path.basename(abspath) not in manifest_text:
+                warnings.append("%s is not named by audio_manifest.json" % rel(abspath))
+
+    return errors, warnings
+
+
+def selftest():
+    """Prove the grid maths rejects what it should, without touching the repo."""
+    cases = [
+        # (sheet_w, sheet_h, frame_w, frame_h, frames, should_pass)
+        (96, 96, 32, 32, 9, True),
+        (192, 192, 64, 64, 9, True),
+        (528, 576, 88, 96, 36, True),
+        (100, 96, 32, 32, 9, False),   # width not divisible
+        (96, 96, 32, 32, 10, False),   # more frames than cells
+    ]
+    bad = 0
+    for w, h, fw, fh, n, ok in cases:
+        divides = (w % fw == 0) and (h % fh == 0)
+        fits = divides and n <= (w // fw) * (h // fh)
+        if fits != ok:
+            print("  selftest FAIL: %dx%d @ %dx%d x%d -> %s, expected %s" % (w, h, fw, fh, n, fits, ok))
+            bad += 1
+    if bad:
+        return 1
+    print("check_assets selftest: %d/%d grid cases OK" % (len(cases), len(cases)))
+    return 0
+
+
+def print_spec():
+    """The delivery brief: what the game requires, per kind of art."""
+    spec = load_json(SPEC)
+    reg = load_json(REGISTRY) if os.path.exists(REGISTRY) else {"sprites": {}}
+    sprites = reg.get("sprites", {})
+
+    grid = spec.get("grid", {})
+    print("CROW — ASSET SPECIFICATION")
+    print("=" * 74)
+    print("World grid: %dpx tile. %s" % (grid.get("tile", 0), grid.get("note", "")))
+    print()
+
+    for cls, c in spec.get("classes", {}).items():
+        members = sorted(k for k, v in sprites.items() if v.get("class") == cls)
+        print("%s  —  %dx%d px, anchor: %s" % (
+            cls.upper(), c.get("frameWidth", 0), c.get("frameHeight", 0), c.get("anchor", "?")))
+        print("  %s" % c.get("description", ""))
+        for n in c.get("art_notes", []):
+            print("    - %s" % n)
+        if members:
+            print("  current assets:")
+            for k in members:
+                raw = sprites[k]
+                over = [o for o in OVERRIDABLE if o in raw]
+                fw = raw.get("frameWidth", c.get("frameWidth", 0))
+                fh = raw.get("frameHeight", c.get("frameHeight", 0))
+                n = int(raw.get("frames", 1))
+                shape = "%dx%d" % (fw, fh)
+                if n > 1:
+                    shape += " x%d frames @ %sfps" % (n, raw.get("fps", 0))
+                flag = "   OFF-SPEC: %s" % str(raw.get("why", "")).strip() if over else ""
+                print("    %-12s %s%s" % (k, shape, flag))
+        else:
+            print("  current assets: (none yet)")
+        print()
+
+    ts = spec.get("tilesets", {})
+    print("TILESET  —  %dx%d px tiles" % (ts.get("tileWidth", 0), ts.get("tileHeight", 0)))
+    print("  %s" % ts.get("description", ""))
+    for n in ts.get("art_notes", []):
+        print("    - %s" % n)
+    print()
+    print("-" * 74)
+    print("Anchor: \"feet\" = the BOTTOM edge of the frame is the ground contact line.")
+    print("        \"center\" = the frame is centred on the object's position.")
+    print()
+    print("Rendering: 960x540 canvas, Nearest filtering, whole-number scaling only.")
+    print("           Art is drawn at exactly the size you export it. Nothing is resized.")
+    print()
+    print("To change a standard for every asset of a kind, edit %s." % rel(SPEC))
+    print("To deviate for one asset, put frameWidth/frameHeight/anchor on it in")
+    print("%s with a `why`." % rel(REGISTRY))
+    return 0
+
+
+def main():
+    if "--selftest" in sys.argv:
+        return selftest()
+    if "--spec" in sys.argv:
+        return print_spec()
+    errors, warnings = check()
+    for w in warnings:
+        print("  warn: %s" % w)
+    if errors:
+        print("\nAsset guard failed (%d):" % len(errors))
+        for e in errors:
+            print("  - %s" % e)
+        return 1
+    print("check_assets: OK (%d warning(s))" % len(warnings))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

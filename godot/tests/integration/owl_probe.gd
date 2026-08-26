@@ -9,10 +9,18 @@ extends Node
 ## while counting nothing, so when the roster moved to a one-answer default the
 ## message quietly became a lie and no test disagreed.
 ##
+## A fresh learner meets the concept lesson first, so the probe clicks through
+## that too -- and asserts it happened. This is the only place the whole chain
+## (owl -> lesson -> guided answer -> freebie question -> learner update) is
+## exercised against the real scene tree rather than against data.
+##
 ## Run: godot --headless --path godot res://tests/integration/OwlProbe.tscn
 
 const GAME_SCENE := preload("res://scenes/Game.tscn")
-const MAX_FRAMES := 900  # a fresh learner meets the teaching demo (~5.2s) before the freebie problem
+const MAX_FRAMES := 900  # a fresh learner clicks through the concept lesson before the freebie problem
+## The lesson a fresh learner's first owl must open with: level_01 gates counting
+## first, and a fresh profile starts at counting step 2.
+const EXPECTED_LESSON := "counting.to_ten"
 
 var _game: Node2D
 var _frames := 0
@@ -23,6 +31,8 @@ var _completes := 0
 var _elo_before := 0.0
 var _answered_overlay_id := 0
 var _expected_problems := 0
+var _lesson_id := ""
+var _lesson_cards_seen := 0
 
 func _ready() -> void:
 	# Fresh learner so domains/steps are deterministic.
@@ -51,6 +61,21 @@ func _physics_process(_delta: float) -> void:
 		_owl.interact()
 		return
 
+	# The lesson comes first. Click through it exactly as a child would: Next to
+	# the last card, then answer the guided question.
+	if _game.is_math_tutorial_active():
+		var lesson = _game.get_math_tutorial()
+		if lesson.is_active():
+			_lesson_id = lesson.tutorial_id()
+			_lesson_cards_seen = maxi(_lesson_cards_seen, lesson.current_index() + 1)
+			if lesson.current_index() < lesson.card_count() - 1:
+				lesson.advance()
+			else:
+				var guided := _guided_index(lesson.current_card())
+				if guided >= 0:
+					lesson.choose(guided)
+		return
+
 	# Answer each presented problem correctly (once per overlay instance).
 	if _game.is_math_challenge_active():
 		var overlay = _game.get_math_challenge()
@@ -71,12 +96,21 @@ func _finish(ok: bool, msg: String) -> void:
 	if ok and elo_after <= _elo_before:
 		ok = false
 		msg = "ELO did not increase (%.2f -> %.2f)" % [_elo_before, elo_after]
+	if ok and _lesson_id == "":
+		ok = false
+		msg = "a fresh learner's first owl showed no concept lesson at all"
+	if ok and _lesson_id != EXPECTED_LESSON:
+		ok = false
+		msg = "opened with lesson %s, expected %s" % [_lesson_id, EXPECTED_LESSON]
+	if ok and _lesson_cards_seen < 4:
+		ok = false
+		msg = "the lesson only reached card %d of 4" % _lesson_cards_seen
 	if ok and _completes != _expected_problems:
 		ok = false
 		msg = "solved %d problem(s), registry says the chain is %d link(s)" % [_completes, _expected_problems]
 	if ok:
-		print("[pass] owl_probe: %d/%d chain link(s) solved, owl_saved, owl flew away, ELO %.2f -> %.2f" % [
-			_completes, _expected_problems, _elo_before, elo_after])
+		print("[pass] owl_probe: lesson %s (%d cards) then %d/%d chain link(s) solved, owl_saved, owl flew away, ELO %.2f -> %.2f" % [
+			_lesson_id, _lesson_cards_seen, _completes, _expected_problems, _elo_before, elo_after])
 	else:
 		print("[FAIL] owl_probe: %s" % msg)
 	get_tree().quit(0 if ok else 1)
@@ -94,6 +128,15 @@ func _find_owl() -> Node2D:
 		if c.scene_file_path.get_file() == "Npc.tscn":
 			return c
 	return null
+
+## The right answer to a lesson's guided question, read from the card.
+func _guided_index(card: Dictionary) -> int:
+	var choice: Dictionary = card.get("choice", {})
+	var options: Array = choice.get("options", [])
+	for i in options.size():
+		if str(options[i]) == str(choice.get("correct", null)):
+			return i
+	return -1
 
 func _correct_index(problem: Dictionary) -> int:
 	var answer: Dictionary = problem.get("answer", {})

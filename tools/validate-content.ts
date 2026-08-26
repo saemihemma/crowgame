@@ -11,7 +11,7 @@ import {
     reviewMaterializedMathBatches,
     type MaterializationResult,
 } from './math_authoring';
-import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt } from './math_verifier';
+import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt, isUnrecognisedEquation } from './math_verifier';
 import type { MathProblem } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
@@ -128,7 +128,7 @@ function validateCrossReferences(): void {
     if (existsSync(mathDir)) {
         const problemIds = new Set<string>();
         const promptKeys = new Map<string, string>();
-        for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+        for (const file of readdirSync(mathDir).filter(f => f.startsWith('problems_') && f.endsWith('.json'))) {
             const pool = loadJson(join(mathDir, file)) as {
                 problems: Array<{
                     id: string;
@@ -191,6 +191,20 @@ function validateMathAuthoringFiles(): void {
 }
 
 function validateProblemMetadata(problem: MathProblem, file: string): void {
+    // An equation whose shape nothing recognises must never reach the checks
+    // below, because both of them SKIP when the parse comes back empty -- so an
+    // unrecognised shape would ship with neither its answer nor its operands
+    // ever independently re-derived. Refuse it instead.
+    if (isUnrecognisedEquation(problem.prompt.text)) {
+        console.error(
+            `  FAIL: Problem ${problem.id} in ${file} is an equation whose unknown is not alone `
+            + `at the end ("${problem.prompt.text}"). Nothing can verify it. Teach `
+            + `parseRelationalPrompt in tools/math_verifier.ts its shape first.`,
+        );
+        errors++;
+        return;
+    }
+
     const evaluatedAnswer = evaluateArithmeticPrompt(problem.prompt.text);
     if (evaluatedAnswer !== null && problem.answer.correct !== evaluatedAnswer) {
         console.error(
@@ -554,7 +568,7 @@ if (existsSync(npcRegPath)) {
 console.log('\nMath problems:');
 const mathDir = join(DATA_DIR, 'math');
 if (existsSync(mathDir)) {
-    for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+    for (const file of readdirSync(mathDir).filter(f => f.startsWith('problems_') && f.endsWith('.json'))) {
         validateFile(join(mathDir, file), join(SCHEMA_DIR, 'math-problem.schema.json'), file);
     }
 }
@@ -573,7 +587,6 @@ validateMathAuthoringFiles();
 // chain as a whole must cover every skill the owl can serve. These guards
 // keep the design from rotting as specs, registries, or pools change.
 function validateLevelMathGating(): void {
-    const LIVE_DOMAINS = ['addition', 'subtraction', 'counting', 'comparison', 'pattern_matching', 'number_sequence'];
     const MIN_PROBLEMS_IN_BAND = 30;
 
     const specsDir = join(DATA_DIR, 'levels', 'specs');
@@ -620,7 +633,7 @@ function validateLevelMathGating(): void {
         npcRegistry.npcs.flatMap(npc => npc.components).find(c => c.type === 'math_challenge')?.problemTypes ?? [],
     );
     const byDomain = new Map<string, MathProblem[]>();
-    for (const file of readdirSync(join(DATA_DIR, 'math')).filter(f => f.endsWith('.json'))) {
+    for (const file of readdirSync(join(DATA_DIR, 'math')).filter(f => f.startsWith('problems_') && f.endsWith('.json'))) {
         const pool = JSON.parse(readFileSync(join(DATA_DIR, 'math', file), 'utf-8')) as { problems?: MathProblem[] };
         for (const problem of pool.problems ?? []) {
             const list = byDomain.get(problem.domain) ?? [];
@@ -646,15 +659,197 @@ function validateLevelMathGating(): void {
             }
         }
     }
-    const missing = LIVE_DOMAINS.filter(domain => !covered.has(domain));
+    // Every domain the owl can serve must have a level that teaches it. The
+    // list comes from the NPC config itself, so enabling a new domain for the
+    // owl immediately demands a home in the chain — no list to remember.
+    const missing = [...owlDomains].filter(domain => !covered.has(domain));
     if (missing.length > 0) {
-        console.error(`  FAIL: no level in the chain teaches: ${missing.join(', ')} — every servable domain needs a home.`);
+        console.error(`  FAIL: no level in the chain teaches: ${missing.join(', ')} — every owl-servable domain needs a home.`);
         errors++;
     } else {
         validated++;
     }
 }
 validateLevelMathGating();
+
+// The analytics problem catalog (server/src/generated/problemCatalog.ts) maps
+// problem_id -> domain + kind for the parent report. It is generated from the
+// pools; a stale copy silently mislabels a child's accuracy matrix, so drift
+// fails validation instead.
+function validateProblemCatalogFreshness(): void {
+    const catalogPath = join(ROOT, 'server', 'src', 'generated', 'problemCatalog.ts');
+    if (!existsSync(catalogPath)) {
+        console.error('  FAIL: server/src/generated/problemCatalog.ts is missing. Run: npx tsx tools/gen_problem_catalog.ts');
+        errors++;
+        return;
+    }
+    const source = readFileSync(catalogPath, 'utf-8');
+    const match = source.match(/POOLS_HASH = "([0-9a-f]{64})"/);
+    if (!match) {
+        console.error('  FAIL: problemCatalog.ts carries no POOLS_HASH; regenerate it.');
+        errors++;
+        return;
+    }
+    const { createHash } = require('node:crypto') as typeof import('node:crypto');
+    const hash = createHash('sha256');
+    const mathDataDir = join(DATA_DIR, 'math');
+    for (const file of readdirSync(mathDataDir).filter((f: string) => f.endsWith('.json')).sort()) {
+        hash.update(file).update('\0').update(readFileSync(join(mathDataDir, file), 'utf-8'));
+    }
+    if (hash.digest('hex') !== match[1]) {
+        console.error('  FAIL: the analytics problem catalog is stale against godot/data/math. Run: npx tsx tools/gen_problem_catalog.ts');
+        errors++;
+    } else {
+        validated++;
+    }
+}
+validateProblemCatalogFreshness();
+/**
+ * The lane weights the API recommends against must be the ones the game plays
+ * with. The API image contains no godot/data (deploy/api/Dockerfile copies only
+ * `server/`), so they are generated in -- and a generated copy that nothing
+ * checks is a copy that drifts. See tools/gen_ladder_weights.ts.
+ */
+function validateLadderWeightsFreshness(): void {
+    console.log('\nLadder weights freshness:');
+    const generated = join(ROOT, 'server', 'src', 'generated', 'ladderWeights.ts');
+    if (!existsSync(generated)) {
+        console.error('  FAIL: server/src/generated/ladderWeights.ts is missing. Run: npx tsx tools/gen_ladder_weights.ts');
+        errors++;
+        return;
+    }
+    const source = readFileSync(generated, 'utf-8');
+    const match = source.match(/TUNING_HASH = "([0-9a-f]{64})"/);
+    if (!match) {
+        console.error('  FAIL: ladderWeights.ts carries no TUNING_HASH; regenerate it.');
+        errors++;
+        return;
+    }
+    const { createHash } = require('node:crypto') as typeof import('node:crypto');
+    const tuningPath = join(DATA_DIR, 'tuning', 'math_tuning.json');
+    const actual = createHash('sha256').update(readFileSync(tuningPath, 'utf-8')).digest('hex');
+    if (actual !== match[1]) {
+        console.error('  FAIL: the API\'s lane weights are stale against godot/data/tuning/math_tuning.json. '
+            + 'Run: npx tsx tools/gen_ladder_weights.ts');
+        errors++;
+    } else {
+        console.log('  OK: the API recommends against the weights the game plays with');
+        validated++;
+    }
+}
+validateLadderWeightsFreshness();
+
+// The parent report renders TextManager.t("kind_" + kind) and ("domain_" + d).
+// Those prefixes are exempt from the dead-key scanner because they are built at
+// runtime — which means a NEW kind or newly served domain without a translation
+// would silently show a raw key to a parent. Close the loop from this side:
+// every kind the catalog can emit and every owl-servable domain must have its
+// string in BOTH bundles.
+function validateAnalyticsI18nCoverage(): void {
+    const catalogPath = join(ROOT, 'server', 'src', 'generated', 'problemCatalog.ts');
+    if (!existsSync(catalogPath)) return; // freshness check above already failed
+    const source = readFileSync(catalogPath, 'utf-8');
+    const kinds = new Set<string>();
+    for (const match of source.matchAll(/"k":"(\w+)"/g)) kinds.add(match[1]!);
+
+    const npcRegistry = JSON.parse(readFileSync(join(DATA_DIR, 'npcs', 'npc_registry.json'), 'utf-8')) as {
+        npcs: Array<{ components: Array<{ type: string; problemTypes?: string[] }> }>;
+    };
+    const domains = new Set(
+        npcRegistry.npcs.flatMap(npc => npc.components)
+            .filter(c => c.type === 'math_challenge')
+            .flatMap(c => c.problemTypes ?? []),
+    );
+
+    for (const locale of ['en', 'is']) {
+        const bundle = JSON.parse(readFileSync(join(DATA_DIR, 'i18n', `strings_${locale}.json`), 'utf-8')) as Record<string, string>;
+        for (const kind of kinds) {
+            if (!(`kind_${kind}` in bundle)) {
+                console.error(`  FAIL: strings_${locale}.json is missing "kind_${kind}" — the parent report would show a raw key.`);
+                errors++;
+            }
+        }
+        for (const domain of domains) {
+            if (!(`domain_${domain}` in bundle)) {
+                console.error(`  FAIL: strings_${locale}.json is missing "domain_${domain}" — the parent report would show a raw key.`);
+                errors++;
+            }
+        }
+    }
+    validated++;
+}
+validateAnalyticsI18nCoverage();
+
+// The Icelandic grade-expectation mapping (godot/data/curriculum/
+// grade_expectations.json -> server/src/generated/gradeExpectations.ts) is what
+// lets the parent report say "ahead / on track / practice" against a school
+// grade. Three ways it can rot, all closed here: the generated copy drifts from
+// the source; a newly served domain has no milestones (a new math domain would
+// silently get no grade verdict); or a milestone points at a ladder step the
+// curriculum pools do not actually author (a verdict no child could ever earn).
+function validateGradeExpectations(): void {
+    const srcPath = join(DATA_DIR, 'curriculum', 'grade_expectations.json');
+    const genPath = join(ROOT, 'server', 'src', 'generated', 'gradeExpectations.ts');
+    if (!existsSync(srcPath) || !existsSync(genPath)) {
+        console.error('  FAIL: grade expectations missing. Source: godot/data/curriculum/grade_expectations.json; run: npx tsx tools/gen_grade_expectations.ts');
+        errors++;
+        return;
+    }
+    const raw = readFileSync(srcPath, 'utf-8');
+    const { createHash } = require('node:crypto') as typeof import('node:crypto');
+    const expected = createHash('sha256').update(raw).digest('hex');
+    const generated = readFileSync(genPath, 'utf-8');
+    const match = generated.match(/GRADE_EXPECTATIONS_HASH = "([0-9a-f]{64})"/);
+    if (!match || match[1] !== expected) {
+        console.error('  FAIL: gradeExpectations.ts is stale against godot/data/curriculum/grade_expectations.json. Run: npx tsx tools/gen_grade_expectations.ts');
+        errors++;
+        return;
+    }
+
+    const source = JSON.parse(raw) as {
+        meta: { sources: Array<{ id: string }> };
+        domains: Record<string, Array<{ endOfGrade: number; step: number; covers?: string; basis?: string; source?: string }>>;
+    };
+    const sourceIds = new Set(source.meta.sources.map(s => s.id));
+
+    const npcRegistry = JSON.parse(readFileSync(join(DATA_DIR, 'npcs', 'npc_registry.json'), 'utf-8')) as {
+        npcs: Array<{ components: Array<{ type: string; problemTypes?: string[] }> }>;
+    };
+    const servedDomains = new Set(
+        npcRegistry.npcs.flatMap(npc => npc.components)
+            .filter(c => c.type === 'math_challenge')
+            .flatMap(c => c.problemTypes ?? []),
+    );
+
+    const curriculumPool = JSON.parse(readFileSync(join(DATA_DIR, 'math', 'problems_curriculum.json'), 'utf-8')) as {
+        problems: Array<{ domain: string; curriculumStep: number }>;
+    };
+    const maxStep = new Map<string, number>();
+    for (const p of curriculumPool.problems) {
+        maxStep.set(p.domain, Math.max(maxStep.get(p.domain) ?? 0, p.curriculumStep));
+    }
+
+    for (const domain of servedDomains) {
+        if (!source.domains[domain] || source.domains[domain].length === 0) {
+            console.error(`  FAIL: grade_expectations.json has no milestones for served domain "${domain}" — decide which Icelandic grade its material belongs to (docs/GRADE_EXPECTATIONS.md) or the parent report cannot place it.`);
+            errors++;
+        }
+    }
+    for (const [domain, milestones] of Object.entries(source.domains)) {
+        for (const m of milestones) {
+            if (m.step > (maxStep.get(domain) ?? 0)) {
+                console.error(`  FAIL: grade_expectations.json ${domain} end-of-grade-${m.endOfGrade} milestone is step ${m.step}, but the curriculum pool only authors up to step ${maxStep.get(domain) ?? 0} — no child could ever reach the verdict.`);
+                errors++;
+            }
+            if (!m.covers || !m.basis || !m.source || !sourceIds.has(m.source)) {
+                console.error(`  FAIL: grade_expectations.json ${domain} grade-${m.endOfGrade} milestone must carry covers/basis and a source id listed in meta.sources — every claim needs provenance.`);
+                errors++;
+            }
+        }
+    }
+    validated++;
+}
+validateGradeExpectations();
 
 // Cross-reference validation
 validateCrossReferences();

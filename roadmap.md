@@ -2,7 +2,7 @@
 
 Status: Current
 Authority: The list of open work. Not a record of finished work. Runtime truth lives in the code.
-Last verified against code: 2026-08-23
+Last verified against code: 2026-08-25
 
 ## READ THIS FIRST — THIS FILE HAS ONE JOB
 
@@ -43,13 +43,63 @@ there.
 ## P1 — Correctness and reachability
 
 ### Tune the ladder against real play, not intuition
-The admin session report tags accuracy against the 70-85% sweet spot. After a
-week of family play: above 85% raise the at-level/stretch share, below 70%
-raise comfort, low comeback rate shorten the review gap. One knob at a time,
-one week per change.
+The loop is now built and only the play is missing. `/api/v1/admin/ladder-tuning`
+reads the last seven days and answers with one knob to move -- which file, from
+what to what, and the measurement behind it -- or with a refusal naming exactly
+what the sample is short of. The decision is a pure function in
+`server/src/lib/ladderTuning.ts`, pinned by nine tests, and the admin page
+renders it under the charts.
+
+It refuses today, and will keep refusing until roughly 200 answers spread over
+four separate days exist, because a rate over one enthusiastic afternoon is noise
+and a knob moved from noise leaves a system nobody can reason about. Nothing here
+is waiting on code.
+
+What remains is the tuning itself, which takes calendar time: play a week, apply
+the one change it names, play another, repeat. Note that if it recommends the
+review gap, that is `IMMEDIATE_REVIEW_MIN_GAP`/`MAX_GAP` in
+`learner_state_manager.gd` -- a Tier-1 constant, so changing it means
+regenerating the golden parity fixtures, and the recommendation says so.
 
 *Done when:* two consecutive weekly reports sit inside the sweet spot with at
 least one step-up per early session and frustration flags under 10%.
+
+### Sessions are derived from math attempts, so math-free play is invisible
+The admin overview splits attempt timestamps on a 30-minute gap to get session
+counts and lengths. A child who runs and jumps without meeting an owl leaves no
+trace in it. A lightweight client heartbeat (session start + a ping every few
+minutes, batched into the existing API) would make session length honest for
+all play, not just math play.
+
+*Done when:* the overview's session numbers come from heartbeats, and the
+`derivedFromAttempts` label is gone from `/api/v1/admin/overview`.
+
+### Four grade milestones are approximate alignments, not sourced scope
+The Icelandic grade mapping (docs/GRADE_EXPECTATIONS.md) anchors addition,
+subtraction, counting, multiplication and division milestones to official
+sources (aðalnámskrá end-of-grade-4 criteria, MMS Sproti per-grade scope). The
+comparison, number_sequence and pattern_matching milestones are marked
+`"basis": "approx"` in `godot/data/curriculum/grade_expectations.json` because
+no official number-range anchor exists for them — they were placed by
+judgement against the Sproti topic lists. Contingency: a practising
+grunnskólakennari reviewing that one JSON file (eight domains, sixteen rows)
+would either confirm or correct them in minutes. The grade-2 content ceiling
+is closed: the ladders now run to grade-4 material (3- and 4-digit
+add/subtract by regrouping load, the full table-order multiplication ladder,
+fact-family division, ordering and skip counting into the thousands — see
+docs/MATH_AUTHORING_STANDARDS.md). The `approx` rows now also include the
+number_sequence grade-3/4 milestones.
+
+*Done when:* every milestone's `basis` is `law`/`curriculum`/`material`, or an
+educator has signed off the `approx` rows in the JSON's provenance notes.
+
+### Division with remainders needs a new answer mode
+The MCQ answer format is a single number, so "deiling með afgangi" (Sproti 4)
+cannot be asked honestly — division content stops at exact division. A
+quotient+remainder answer widget (or a two-part question) unlocks it.
+
+*Done when:* a remainder answer mode exists and a `division` band authored
+with remainders passes the materialize review gate.
 
 ## P2 — Experience decisions that need making
 
@@ -186,6 +236,14 @@ and the fixtures are regenerated — or the idea is dropped on purpose.
 
 ## P3 — Content and localisation
 
+### Lessons for the concepts, and only some of the practice
+`docs/MATH_CONCEPT_LADDER.md` ships 38 lessons over 40 concepts, but a lesson is
+authored copy and the pools are generated. When a concept is re-cut, split or
+its step range moved, the lesson's numbers stop matching the rung it teaches.
+`tools/validate_math_concepts.mjs` checks each card's arithmetic against its own
+picture; nothing yet checks that a lesson's numbers sit inside its concept's
+band. Worth adding when the ladder next moves.
+
 ### Visual and richer worded prompts
 Addition and subtraction now carry two word-problem shapes each (berries,
 birds), gated to steps 3+. Still open: more story families and objects so the
@@ -241,10 +299,14 @@ multi-problem UI (progress header, alternate-domain follow-ups) stays dormant
 at the baseline but keeps working for any NPC that raises the count.
 
 ### Multiplication and division need a fate decision
-650 authored problems sit in domains the owl never serves — not in its
-`problemTypes`, and with almost no content below step 3 (division's lowest
-band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
-the rotation for older kids, or park them explicitly in Settled.
+~1150 authored problems sit in domains the owl never serves — not in its
+`problemTypes`. The on-ramp objection is now answered: both ladders were
+re-cut into six teaching stages each, in measured table order (×1, ×2, ×10, ×5,
+×3, ×4, zero and squares, then the 6-8 cluster, then two-digit), every stage has
+its own lesson, and the lowest stages hold 121 and 64 problems respectively. So
+the remaining decision is purely whether to serve these domains at all — add
+them to the rotation for older kids, or park them explicitly in Settled. There
+is no longer any content work standing in the way of either answer.
 
 ### The trophy shelf has no heading
 `trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with

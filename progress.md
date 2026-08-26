@@ -1,6 +1,6 @@
 Status: Supportive
 Authority: Working log for this asset-baseline pass, not a source-of-truth architecture doc.
-Last verified against code: 2026-03-24
+Last verified against code: 2026-08-25
 
 Original prompt: Export tighter runtime assets and wire the game to them so gameplay stops relying on magnification/resizing.
 
@@ -181,3 +181,369 @@ Original prompt: Export tighter runtime assets and wire the game to them so game
 - 2026-08-25: Post-restructure audit of main after the multi-agent merge wave (Phaser tree removed, math truth moved to math-kernel, board/HUD/menus rebuilt, owl roster + streak added). Verdict on the math-experience systems built here: everything survived with behavioural parity, verified by running, not by reading - 120 unit tests green including the golden-roll/ladder/ELO parity fixtures, the owl probe drives demo -> answer -> owl_saved with the identical ELO delta (150 -> 155.60), and the rebuilt board still carries the tuning-paced teaching beats, progress pips, golden frame and golden coin multipliers; the menus still carry the recap and trophy shelf; gating still keeps the level's headline order.
 - 2026-08-25: Fixed what the audit found red or noisy on trunk. The two mechanical validate reds: compiled-level drift for levels 05/99 (recompiled) and the stale committed export (rebuilt; the new freshness guard and the boot smoke both pass). Two boot-time script errors: String(null) crash loading the mute preference (str() now), and complete_level crashing on saves that predate completedLevels (backfilled). Post-rebuild debris: 21 dead i18n keys deleted from both bundles (including hud.level/hud.level_up/login.delete/login.delete_confirm, which closes the old four-dead-keys roadmap item), 4 stale fit-budget rows removed, ONBOARDING count snapshots synced (6 NPCs, 287 keys), required doc headers added to the two new asset-slot READMEs, and validate_assets now understands declared drop-in art slots (board-9slice, count-token-32, owl-icon-32) whose absence is the designed state.
 - 2026-08-25: Known non-blockers left on purpose: tools/godot_play_smoke.mjs predates the menu rebuild and the cloud-save POSTs and is no longer the CI gate (web_boot_smoke.mjs is, and passes); the owl-ring streak flame is celebration-only but sits in mild tension with the documented "nothing to protect" kid-safe rule - flagged for the design owner, not reverted.
+- 2026-08-25: Analytics, phase one of three audiences. Owner: a token-gated admin surface (`CROW_ADMIN_TOKEN`, off-means-404, header-only) serving `/admin` - a self-contained dashboard with KPI tiles (active kids, sessions with median length from 30-minute gap-splitting over attempts, D1/D7 retention shown as n-of-cohort, lifetime answers, first-try accuracy, open error groups) and four 28-day single-series charts, all inline SVG with hover tooltips, light/dark. Errors: the existing fingerprint-deduplicated error_groups finally have a read side - list by status, triage transitions (acknowledge/resolve/ignore) from the dashboard, so bugs are debuggable without player feedback and without spam.
+- 2026-08-25: Parent report. New device-authed, RLS-scoped `GET /api/v1/family/children/{id}/report`: every attempt the family has ever synced, rolled up per domain (with current/highest step and effective skill score from the save blob) and per problem kind - equation / word problem / visual counting - classified by a generated problem catalog (tools/gen_problem_catalog.ts) that uses math-kernel's own parseWordedArithmetic, emitted as a TS module so the API Docker build ships it untouched, with a pools-hash freshness gate in npm run validate. The in-game ParentReport scene now renders the cloud matrix colour-coded (green >=85%, amber 70-85%, red below - thresholds and hexes in ui_tuning, not code) with counts per kind, and falls back to the local recent window with an explicit "this device only" label when not enrolled. Server tests cover admin auth off/wrong/right, error triage round-trip, the rollup shape, retired-problem fallback, and family isolation (a stranger family gets 404).
+
+- 2026-08-25: Icelandic grade mapping shipped end to end. Researched primary
+  sources (lög um grunnskóla 91/2008 15. gr. school-start rule; aðalnámskrá
+  25. kafli — criteria only at grades 4/7/10; MMS Sproti 1a–4a per-grade scope)
+  into docs/GRADE_EXPECTATIONS.md and the canonical
+  godot/data/curriculum/grade_expectations.json (provenance per milestone,
+  generated into server/src/generated/gradeExpectations.ts with a freshness
+  hash). children.birth_year (YEAR only, migration 005) collected optionally at
+  profile creation and backfillable from the parent report; report endpoint now
+  derives the grade and a per-domain band verdict (ahead / on track / practice
+  together / not expected yet — leikskóli has no floor by design) from
+  highestStep, rendered color-coded in parent_report.gd. New guards: generated
+  copy freshness, every owl-served domain must have milestones, milestones must
+  point at authored ladder steps, provenance required. 42 server + 154 Godot
+  tests green, export rebuilt.
+
+- 2026-08-25: Grade 3-4 math coverage shipped through the authoring pipeline.
+  Research-based step redesign documented in docs/MATH_AUTHORING_STANDARDS.md
+  (fluency phases, one-difficulty-factor-per-step, regrouping-load ordering,
+  measured times-table order, CGI word-problem taxonomy). Ladders extended:
+  addition/subtraction steps 41-46 (3- and 4-digit by carry/borrow count,
+  frozen tiers untouched), multiplication rebuilt on the table-order ladder
+  0-14 (legal: never served), division as fact families (mult step + 1),
+  comparison to step 9 (ordering past 1000), sequence to step 9 (skip counting
+  by 10/25/50/100). ~700 new problems via 9 new batches + 10 new bands; two
+  new word-problem shapes (equal-groups nests x, sharing berries division)
+  wired through the kernel parser, phrasing catalog and both locales, with a
+  new strictVariants template flag so story-only templates stay stories.
+  Multiplication/division now servable: added to all owl problemTypes
+  (unlock-gated by addition mastery) and to level_05 + level_99 gating
+  (difficultyBand to [1,5]). grade_expectations.json now anchors grades 3-4
+  in every extended domain. 43 server + 154 Godot tests green, full validate
+  clean, export rebuilt. Deferred with roadmap entries: remainders (needs a
+  new answer mode), fractions/negatives (new domains).
+
+## 2026-08-25 — Concept ladder and click-through lessons
+
+Original prompt: teach a step-by-step, skippable, click-through tutorial for every level of maths problem, in both languages, easy to restyle for a UI/UX pass; group the problems architecturally; identify what is missing.
+
+- The gap this closes: the learner model knew how HARD a problem was
+  (`curriculumStep`, 0-36 per domain) and nothing else. Step 6, step 9 and step
+  30 were all "addition", so the moment a genuinely new idea arrived — carrying,
+  bridging past ten, place value — was invisible and nothing could trigger on
+  it. The one teaching moment that existed fired once per domain, ever.
+- Added the grouping layer as data: `godot/data/curriculum/concept_ladder.json`,
+  30 concepts over the 8 domains, contiguous step ranges covering all 3150
+  authored problems with none left outside. `concept_ladder.gd` is the lookup
+  and is pure; seen-state is a new `TutorialManager` autoload persisting through
+  `SaveManager` (`tutorialsSeen`, profile-scoped).
+- Deliberately NOT in `learner_state_manager.gd`. That file is parity-locked
+  against the kernel's golden fixtures; teaching is a product decision that will
+  change often, and putting it there would make every lesson tweak Tier-1.
+- 30 lessons, 120 cards, in `godot/data/curriculum/tutorials.json`. Four beats
+  each, in the order the evidence supports for a novice: concrete, pictorial,
+  worked example, guided try. Sources are cited in
+  `docs/MATH_CONCEPT_LADDER.md` rather than asserted.
+- Ten representations drawn in code (`tutorial_visual.gd`): ten-frame, number
+  line with hops and a landmark, base-ten rods, equal groups, unifix towers,
+  pattern strip, take-away with crosses, count-all, sequence, equation. Adding an
+  eleventh is one `RENDERERS` entry plus one `_draw_` function.
+- Every pixel, delay and colour role is in `godot/data/tuning/tutorial_tuning.json`,
+  including a `roles` map from each drawn part to a palette role. Nothing a
+  designer needs to move lives in a `.gd`.
+- 155 new string keys, English and Icelandic, key-for-key. Bundle is now 449.
+- Where it fires: `math_challenge_component.gd` asks twice — on first contact
+  with a domain (replacing the silent demo), and when a selected problem's own
+  `curriculumStep` lands on an unmet concept. Keyed off the PROBLEM's step, not
+  the learner's: the comfort and stretch lanes routinely hand out a problem a
+  rung either side of the ladder's position. The problem is held across the
+  lesson so the child is asked what they were just taught.
+- `tools/validate_math_concepts.mjs` (wired into `npm run validate`) recomputes
+  every number all 120 cards assert from the picture it is drawn on. It caught a
+  real teaching bug on first run: `division.sharing`'s guided question sat on an
+  equal-groups picture, which asserts the TOTAL, while the question asked how
+  many were in each box — the card would have marked 4 correct against a picture
+  of 8. It also caught three Icelandic lines over their fit budget.
+- The same guard turns "what is missing" into a build gate. Fifteen rungs have
+  no problems on them and twelve more have fewer than six; all are declared in
+  `concept_ladder.json` with a reason, and an undeclared gap — or a declared one
+  that has since been filled — fails the build. `reports/math-concepts/coverage.json`
+  is the generated inventory. The two that matter for a child playing today are
+  `subtraction` steps 17-20 and `addition` step 20; both are now in `roadmap.md`.
+- `bash godot/tools/capture_tutorials.sh` renders every card to PNG, in either
+  language and any theme. It found two real bugs immediately: the board
+  overflowed a 960x540 screen with the Next button off the bottom edge, and
+  `token_c` mapped to `coin`, which is the same hex as `accent` in emberwood, so
+  the second and third slot of every pattern lesson were identical there.
+  `test_theme_roles.gd` now fails the build on the latter.
+- `owl_probe.gd` drives the whole chain against the real scene tree and asserts
+  the lesson happened: owl -> lesson -> four cards -> guided answer -> freebie
+  question -> learner update. It was the failure that proved the wiring was live.
+- Verification: `bash godot/tools/run_tests.sh` green (174 unit tests across 33
+  suites, 6 probes, hardcode/asset/reachability guards), `npm run validate`
+  green, `npm run typecheck` clean, `bash godot/tools/build_web.sh` +
+  `node godot/tools/web_boot_smoke.mjs` green with 0 console errors.
+- Not verified: `tools/godot_play_smoke.mjs` fails at profile creation in this
+  environment, identically on the pre-change export — a harness/environment
+  issue, not a regression. It is not part of `run_tests.sh` or `npm run validate`.
+- Also not verified: whether these lessons actually teach a real five-year-old
+  anything. No artifact in this repo claims that, and this one does not either.
+  The evidence cited is for the instructional pattern, not for this
+  implementation of it.
+
+## 2026-08-25 - Relational equals and missing addend
+
+Original prompt: implement the highest-value absence the hardening review found - "=" is never a relation, and every addition problem is result-unknown.
+
+- Routed through LP, which collapsed three stated decisions into one and forced a
+  fourth candidate into the comparison. The winner was none of the three
+  originally proposed.
+- What made it cheap: only `problems_curriculum.json` is generator-owned
+  (`math_authoring.ts:1936`). `easy`, `gaps` and `dataset` are hand-authored, so
+  new problem content needs no generator work and no 3035-problem regeneration.
+  That single fact removed most of the projected blast radius.
+- What made it possible at all: `deriveCurriculumStep` already dispatches on
+  domain for non-arithmetic prompts, and `answer.correct` is schema-typed as
+  anything. The seams existed.
+- THE DESIGN: overlays. A concept may declare `"requires": {"skill": "..."}` and
+  is then matched by what a problem IS rather than by how hard it is.
+  `ConceptLadder.overlay_for_problem` is tried before the step ranges.
+  "5 + ? = 8" derives onto the same rung as "5 + 3 = 8" - correctly, it is the
+  same bond - so on step alone the child would have been handed the make-ten
+  lesson, which teaches nothing about where an unknown may sit.
+- Overlays never claim a step, so the ladder's "contiguous from 0" guarantee is
+  untouched. Rejected alternatives: a 9th domain (touches MathDomains, the
+  golden fixtures, the unlock graph, all six owls' problemTypes, a
+  parent-report row and a level's mathGating), and re-keying the ladder on shape
+  (destroys the partition invariant). A cross-cutting concern must not become a
+  sibling of the things it cuts across.
+- The same mechanism is what carrying will use: `requiresCarry` is on 995
+  problems, spread 40-50% across every two-digit step, and has never been
+  expressible as a step range.
+- VERIFIER INTEGRITY was the real work. `parseArithmeticPromptIndependent` is a
+  first-match scan, and on "4 + 3 = ? + 5" it returns {4,+,3} and reports 7 when
+  the answer is 2. Meanwhile `validate-content` skips both its answer check and
+  its trait check when the parse comes back null - so "5 + ? = 8" would have
+  shipped with neither its answer nor its operands ever independently
+  re-derived. Fixed three ways: `parseRelationalPrompt` with ANCHORED patterns
+  (nothing can be half-recognised); the generic parser now refuses relational
+  text outright; and `isUnrecognisedEquation` names the shapes nothing
+  understands so `validate-content` refuses them instead of verifying them
+  wrongly. Verified against all 3150 pre-existing problems: zero false positives.
+- Content: 20 problems hand-authored into `problems_gaps.json`, all totals ten
+  or under, steps 2-7, every one servable under the operand cap. Twelve
+  missing-addend ("a + ? = c", "? + b = c"), eight relational ("c = a + ?").
+  Step and traits stamped by the repo's own `math:sync-metadata`, so both are
+  DERIVED and verified rather than authored. Distractors are the actual errors:
+  the total (operator-as-command) and an off-by-one on the part.
+- Two lessons, 8 cards, EN + IS. Two new renderer pieces, each the standard
+  representation for its concept: `part_whole` (the bar model - "5 + ? = 8" is
+  eight things of which five are visible, not five things and a mystery), and
+  `equation` learning `form: "total_first"` plus an interior unknown, so
+  "9 = 4 + ?" can be drawn at all.
+- My own new guard caught my own bug: it flagged the balance try card as
+  asserting 9 when the truth was 5. It was right that something was wrong and
+  wrong about what - on the interior-unknown form `result` is the WHOLE, not the
+  answer. The check now only treats `result` as an answer-assertion when the sum
+  is complete.
+- Guard also gained: overlay minimum-content and declared-span checks, a
+  no-two-overlays-claim-one-skill check, and report attribution that mirrors the
+  runtime's overlay-then-step rule. That last one mattered - counting by raw step
+  range reported 17 phantom skill drifts the moment the first overlay landed.
+- Negative-tested: authored "4 + 3 = ? + 5" into the pool and confirmed
+  validate-content refuses it by name. That test's `git checkout` restore then
+  wiped the 20 uncommitted problems, and the two reachability tests failed
+  within seconds - which is the tests doing exactly their job.
+- Pipeline note for next time: `npm run math:materialize` is two steps.
+  `materialize_math_batches.ts` STRIPS `phrasing` from every problem and
+  `npm run math:phrasing` re-derives it. Running only the first leaves the pool
+  looking catastrophically changed (all 3035 problems "different"). After both,
+  `problems_curriculum.json` is byte-identical.
+- Verified: 180 tests across 33 suites, 6 probes, all guards, npm run validate,
+  typecheck, export rebuilt and boot-smoked with zero console errors. i18n guard
+  round-trips 8723 phrasings, up from 8683 - the 40 new ones are semantically
+  verified, not merely present.
+- NOT done, and now the whole of the roadmap entry rather than its preamble:
+  two-sided equations ("4 + 5 = ? + 6", the form Falkner et al. actually tested)
+  are refused by name until the verifier learns them; no relational problem
+  exceeds a total of ten; and subtraction has no relational or missing-part
+  shape at all.
+
+## 2026-08-25 - Merging the concept ladder with the grade 3-4 work
+
+- Two sessions landed on the same files in parallel: the grade 3-4 ladder
+  (~700 problems, mult/div live, three-digit and four-digit arithmetic) and the
+  concept ladder with its lessons. Merged deliberately rather than by picking a
+  side, and nothing was dropped from either.
+- The i18n bundles were a clean union: 169 keys only in mine, 33 only in main's,
+  294 identical, ZERO where both sides changed the same key, and nothing deleted
+  by either. Checked with a real three-way diff before merging rather than
+  trusting the conflict markers. Result 506 keys per locale.
+- `problems_gaps.json` auto-merged and kept both: main's 60 plus the 20
+  relational problems. `progress.md` kept both logs. `roadmap.md` kept all 25 of
+  main's entries plus 8 new. Generated files (`output/web/**`,
+  `reports/math-batches/**`) were regenerated rather than resolved by hand.
+- THE LADDER NEEDED REAL EXTENSION, and the guard is what said so precisely:
+  addition and subtraction now reach step 46 (four-digit), comparison and
+  number_sequence reach 9 (three-digit). Four new rungs authored to cover them.
+  `multiplication.tables_large` and `division.larger` were SHRUNK to 13-14 and
+  15-15, because main's content stops before my declared ranges did and a rung
+  with nothing on it is a rung nothing can teach.
+- The gap declarations were rewritten from measurement, not edited. Main's work
+  CLOSED multiplication steps 0-5 and division 1, 2, 4, 5 - the guard listed
+  every one of them as "declared but no longer is", which is exactly the
+  discipline it was built for. New holes at addition/subtraction 37-40,
+  multiplication 11, division 7 and 12.
+- Two of the four new rungs got lessons (`comparison.compare_larger`,
+  `number_sequence.big_skips`). The multi-digit pair carries `tutorial: null`
+  ON PURPOSE: every problem in them has an operand between 121 and 4788 and the
+  owl caps at 20, so a lesson there would be the same waste the hardening review
+  found four of.
+- FINDING WORTH ACTING ON: division went live but the cap blocks 72% of it.
+  Multiplication is fine (531/588 servable, because its maxOperand is
+  `max(left, right)`), but division's is `max(dividend, divisor, quotient)`, so
+  `24 / 3` reports 24 and is dropped - while the multiplication fact `3 x 8`
+  that answers it is served. `division.tables` and `division.larger` are
+  entirely unreachable. Declared, documented, and in `roadmap.md` as a decision
+  about which number represents division's difficulty. Not silently changed:
+  re-deriving traits for 383 problems is main's territory.
+- The answer-position guard caught me a second time: all three two-option
+  guided tries had the correct answer in the same slot. Fixed.
+- The doc's gap and unreachable sections are now GENERATED from the
+  declarations in `concept_ladder.json`, quoting each reason verbatim, because
+  hand-paraphrasing them is how the doc and the data drift apart - and the guard
+  was already failing on exactly that.
+- Verified on the merged tree: 180 Godot tests, 6 probes, all guards,
+  npm run validate, typecheck, export rebuilt and boot-smoked with zero console
+  errors, main's analytics catalog regenerated with its own tool, and main's
+  server suite still green (18 pass, 0 fail; the Postgres-backed cases need a
+  DATABASE_URL this environment does not have).
+
+## 2026-08-25 - Division reachability, and five rungs that were never fillable
+
+Original prompt: fix the division cap, the four-rung subtraction hole and addition step 20.
+
+- DIVISION WAS A BUG, not a decision, and the codebase already said so.
+  `deriveCurriculumStep` calls `deriveDivisionStep(divisor, quotient)` and has
+  never looked at the dividend, while `deriveDifficultyTraits` reported
+  `maxOperand` as `max(dividend, divisor, quotient)`. So `24 / 3` read as a
+  twenty-four and the owl's cap of 20 dropped it, while the multiplication fact
+  `3 x 8` that answers it sailed through at eight. Same fact, two verdicts.
+  Fixed to `max(divisor, quotient)` in both derivations. Division servability
+  went 108 -> 336 of 383 problems, and `division.tables` and `division.larger`
+  came off `knownUnreachable` - the guard demanded it, which is the discipline
+  working in the closing direction for once.
+- Checked first that this was not Tier-1: the golden fixtures contain no
+  `difficultyTraits` and no `maxOperand` at all, so the change is offline tooling
+  plus a re-derive, and `validate-content` re-checks every stamped trait.
+- THE OTHER TWO ITEMS TURNED OUT TO BE IMPOSSIBLE, and I nearly authored 24
+  problems before finding out. My first enumeration reimplemented the step
+  formula from memory and reported 20-21 available facts per rung. Calling the
+  REAL `deriveCurriculumStep` instead reported zero. Main had rewritten those
+  ladders; my copy of the formula was stale.
+- The truth: no fact whose operands and result stay inside twenty derives onto
+  `subtraction` steps 17-20 or `addition` step 20. Addition step 20 needs
+  maxOperand 20 WITH a carry, and 20's ones digit is zero, so nothing can carry
+  into it. Subtraction 17-20 need operands above twenty, which the cap drops
+  anyway. `subtraction` step 15 has exactly three possible facts, so three is its
+  ceiling rather than a shortfall.
+- So the fix was not authoring. It was: correct three declarations that recorded
+  authoring debt where there is none, and turn "harmless" from an assertion into
+  a test.
+  `test_promotion_can_step_over_every_impossible_rung` asserts that the rung
+  before each hole finds content within `promotionStepScanLimit` and that the
+  landing step clears the hole entirely - so subtraction goes 16 -> 21 and
+  addition 19 -> 21, and no child stalls.
+  `test_the_impossible_rungs_are_still_empty` fails if the derivation ever
+  changes underneath the declaration.
+- roadmap.md: the division entry is deleted because it is done. The two
+  "fill this hole" entries are replaced by the question they actually turned out
+  to be - whether a magnitude-derived ladder with permanent holes is the right
+  shape, or whether the derivation should produce a dense sequence. Dense
+  numbering would make "step 12 of 20" mean something in a parent report and
+  remove five permanent exceptions, at the cost of renumbering every problem.
+  Not small, not urgent, and now written down instead of assumed.
+- The ladder doc now marks which gaps are UNAUTHORED and which are
+  STRUCTURALLY IMPOSSIBLE, because the two need completely different fixes and
+  the previous list read as though every one of them was waiting for someone to
+  write problems.
+- Verified: 182 Godot tests, 6 probes, all guards, npm run validate, typecheck,
+  live build rebuilt and boot-smoked with zero console errors, analytics catalog
+  regenerated, server suite green (18 pass / 0 fail; Postgres-backed cases need a
+  DATABASE_URL this environment lacks).
+
+## 2026-08-25 - Relational maths across both operations, and the form the research tested
+
+- One parser pass covered all three roadmap items, which is why they were
+  sequenced that way: `parseRelationalPrompt` went from three addition-only
+  patterns to four shapes across two operators, and each pattern now carries its
+  own reader. "5 - ? = 2" and "? - 3 = 5" are not the same question and must not
+  be verified as though they were.
+- Added `fact: [left, right]` to the parse result - the plain arithmetic
+  underneath, in an order that matters. "? - 3 = 5" is the fact `8 - 3`, and the
+  minuend has to come first for both the borrow rule and the step derivation.
+  `deriveCurriculumStep` now routes by operator, so a relational subtraction gets
+  the rung its plain fact would earn.
+- TWO BUGS IN MY OWN WORK, caught by probing rather than by assuming.
+  `8 + 7 = ? + 6` reported maxOperand 9 when the child has to work inside
+  FIFTEEN - the total nobody writes down was missing from the operand list, and
+  the cap would have admitted a problem it should refuse. And its carry flag was
+  computed from the wrong pair: the carry lives in the 8 + 7, not in the known
+  and unknown.
+- 46 new problems, all inside the operand cap: relational addition widened to
+  totals of twenty, subtraction Change Unknown and Start Unknown, and twelve
+  two-sided equations. 66 relational problems in total across six overlays.
+- Four new lessons, EN + IS. Reviewing the cards before trusting the guard found
+  two teaching errors it could not have caught, because both were internally
+  consistent: the start-unknown try card asked for the part that WENT when the
+  lesson is about the start, and the subtraction balance card had the same
+  mismatch. `part_whole` can only ever assert the missing part, so both became
+  equations with the unknown in the slot the lesson is about.
+- That needed a renderer gap closed: the unknown can now lead
+  ("? - 4 = 9"), which is the only way to draw start-unknown at all.
+- MY GUARD CHANGE BROKE FIVE EXISTING CARDS and said so immediately: collapsing
+  the equation truth into +/- turned `5 x 7` into `5 - 7` and reported -2.
+  Restructured to keep the operator switch for a complete sum and add the
+  missing-slot cases beside it.
+- The equality card was colouring one side green. `addition.both_sides` opens on
+  two towers of seven, and highlighting one of them says the opposite of what the
+  card is for. A previous pass had already restructured that code around `ask`,
+  so the first fix landed in the wrong branch and the capture is what caught it.
+  Captures are worth taking even when the guard is clean.
+- Also restored a documentation section I had destroyed earlier: "What is not on
+  the ladder at all" was consumed by one of my own generated-section rewrites,
+  taking the subitizing, commutativity and CGI-compare analysis with it.
+  Recovered from git and updated rather than left lost.
+- Verified: 184 Godot tests, 6 probes, all guards, npm run validate, typecheck,
+  live build rebuilt and boot-smoked clean, analytics catalog regenerated, server
+  suite green.
+- Left undone on purpose: nothing relational exceeds a total of twenty, and
+  multiplication and division have no relational form. Both in roadmap.md; the
+  first is blocked on the operand-cap decision rather than on the parser.
+
+## 2026-08-25 - Making the lessons legible in all seven worlds
+
+- I had only ever looked at these cards in emberwood. Auditing all seven palettes
+  by contrast ratio rather than by eye found two real defects, and one of them was
+  a test of mine that was passing while the thing it guarded was broken.
+- `token_c` was below 3:1 against the board in SIX of seven themes - 1.16:1 in
+  prism_hollow, which is invisible. My own earlier "fix" caused it: swapping the
+  third pattern slot from `coin` to `primary` stopped it matching `accent` and
+  made it unreadable instead. The test I wrote at the time asserted the three
+  colours were DIFFERENT HEX VALUES. They were. Testing identity where the
+  requirement is perceptibility is exactly how that got through.
+- Searched every role in every palette for a third colour that is legible on the
+  board AND distinct from the other two, in all seven themes. Two qualify:
+  `hurt` and `spike`, the damage colours. So this is not a palette-picking
+  problem - colour cannot carry a three-way distinction here at all.
+- The repeat is carried by SHAPE now: circle, square, diamond, with colour
+  reinforcing. Works in every theme by construction, and it is what a child who
+  cannot separate the colours needed anyway. `token_c` is deleted from the tuning
+  file with the reason recorded beside the roles that remain, and the lesson copy
+  says "the shapes show you where" in both languages because the copy has to
+  follow the carrier.
+- Replaced the bad test with one that measures WCAG 1.4.11 contrast for every
+  drawn part against the board, in every theme, and negative-tested it by
+  pointing `token_b` back at the invisible colour: it fails per theme with the
+  measured ratio.
+- Text contrast was already fine everywhere (5.5:1 to 16:1), so the audit's one
+  genuine finding was in the drawn parts - which is where I had never looked.
+- Careless moment worth recording: `git checkout` on the tuning file to undo the
+  negative test silently reverted the uncommitted token_c removal, the same trap
+  that wiped twenty problems earlier in this session. Checked, reapplied, and
+  staged first this time.

@@ -264,11 +264,17 @@ for (const dir of otherDirs) {
 const DYNAMIC_PREFIXES = [
     { prefix: 'domain.', built: 'HUDScene.ts / hud.gd, from a problem domain' },
     { prefix: 'domain_', built: 'parent_report.gd, from a domain in the learner summary' },
+    { prefix: 'kind_', built: 'parent_report.gd, from a problem kind in the analytics report' },
     { prefix: 'level.', built: 'LevelSelectScene.ts / level_select.gd, from a level key' },
     { prefix: 'theme.', built: 'pause.gd, from the active theme id' },
     { prefix: 'math.prompt.', built: "each problem's phrasing reference" },
     { prefix: 'math.hint.', built: "each problem's phrasing reference" },
     { prefix: 'math.expl.', built: "each problem's phrasing reference" },
+    // math_tutorial.gd builds `tutorial.<tutorial id>.<card body>` from
+    // data/curriculum/tutorials.json, so 150 of the 155 tutorial keys are
+    // never literals. validate_math_concepts.mjs is what actually holds them to
+    // account: it fails if a card has no string, or a string has no card.
+    { prefix: 'tutorial.', built: 'math_tutorial.gd, from a tutorial id and a card body' },
 ];
 
 {

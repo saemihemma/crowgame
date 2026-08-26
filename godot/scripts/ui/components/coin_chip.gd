@@ -21,7 +21,7 @@ const PAD_LEFT := 10.0
 const PAD_RIGHT := 14.0
 const ICON := 22.0
 const ICON_GAP := 8.0
-const COIN_FRAME := 32
+
 
 var _coins := 0
 var _label: Label
@@ -32,7 +32,7 @@ func _ready() -> void:
 	custom_minimum_size = Vector2(96, HEIGHT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	var coin_texture := load("res://assets/sprites/ui/coin/coinsprite-runtime-32.png")
+	var coin_texture := SpriteSheet.texture("coin")
 	if coin_texture != null:
 		# The sheet is a 3x3 spin cycle. Handing the whole sheet to a TextureRect
 		# renders all nine frames shrunk into one 22px box, which is what the
@@ -40,7 +40,9 @@ func _ready() -> void:
 		# atlas region picks the single rest frame.
 		var frame := AtlasTexture.new()
 		frame.atlas = coin_texture
-		frame.region = Rect2(0, 0, COIN_FRAME, COIN_FRAME)
+		# Cell size from the registry, never a literal: a 32 written here would keep
+		# cutting 32x32 after the pickup class was retargeted, cropping the new coin.
+		frame.region = Rect2(Vector2.ZERO, SpriteSheet.frame_size("coin"))
 		_icon = TextureRect.new()
 		_icon.texture = frame
 		_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE

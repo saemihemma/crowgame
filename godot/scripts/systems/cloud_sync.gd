@@ -123,10 +123,16 @@ func bind_active_profile() -> void:
 	if cached != "":
 		_remote_child_id = cached
 	else:
-		var res := await _request(HTTPClient.METHOD_POST, "/family/children", {
+		var body := {
 			"displayName": String(profile.get("username", "")),
 			"legacyChildId": String(profile.get("childId", "")),
-		})
+		}
+		# The server fills a missing birth year but never erases one, so sending
+		# it on every first bind from any device is safe.
+		var birth_year := int(profile.get("birthYear", 0))
+		if birth_year > 0:
+			body["birthYear"] = birth_year
+		var res := await _request(HTTPClient.METHOD_POST, "/family/children", body)
 		if not (res["ok"] and res["json"] is Dictionary):
 			return
 		_remote_child_id = String(res["json"].get("remoteChildId", ""))
@@ -136,6 +142,36 @@ func bind_active_profile() -> void:
 
 	if _remote_child_id != "":
 		await pull_save()
+
+## The parent report: the server's lifetime, cross-device rollup for one child
+## (per domain and per problem kind). Empty when this device is not enrolled or
+## the profile was never bound to a server child — the ParentReport scene then
+## falls back to what this device has seen locally.
+func fetch_child_report(profile: Dictionary) -> Dictionary:
+	if not _enrolled:
+		return {}
+	var remote := String(profile.get(REMOTE_CHILD_KEY, ""))
+	if remote == "":
+		return {}
+	var res := await _request(HTTPClient.METHOD_GET, "/family/children/%s/report" % remote, {})
+	if res["ok"] and res["json"] is Dictionary:
+		return res["json"]
+	return {}
+
+## Backfill a birth year onto an already-bound server child (the parent report
+## offers this for children created before the field existed). Also stores it
+## on the local profile so the next bind from this device agrees.
+func push_birth_year(profile: Dictionary, birth_year: int) -> bool:
+	ProfileManager.set_profile_field(
+		String(profile.get("username", "")), "birthYear", birth_year)
+	if not _enrolled:
+		return false
+	var remote := String(profile.get(REMOTE_CHILD_KEY, ""))
+	if remote == "":
+		return false
+	var res := await _request(HTTPClient.METHOD_PUT,
+		"/family/children/%s/birth-year" % remote, { "birthYear": birth_year })
+	return bool(res["ok"])
 
 ## Fetch the authoritative save and adopt it when the server is ahead.
 func pull_save() -> void:

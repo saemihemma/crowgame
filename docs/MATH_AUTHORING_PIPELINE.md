@@ -2,7 +2,7 @@
 
 Status: Current
 Authority: Current workflow guide for offline math authoring, materialization, and review. Runtime truth still lives in `godot/data/math/**` plus the live selection code in `godot/scripts/math/**` and `godot/scripts/systems/**`. The offline pipeline itself runs on `math-kernel/**`, which never ships.
-Last verified against code: 2026-03-31
+Last verified against code: 2026-08-25
 
 ## Purpose
 
@@ -75,6 +75,25 @@ npm run math:review
 node godot/tools/web_boot_smoke.mjs
 npm run validate
 ```
+
+`math:materialize` is TWO STEPS, and running only the first looks like a
+catastrophe:
+
+```
+npm run math:materialize
+  = tsx tools/materialize_math_batches.ts   <- strips `phrasing` from every problem
+ && npm run math:phrasing                   <- re-derives it
+```
+
+`materialize_math_batches.ts` writes the pool WITHOUT the `phrasing` block, and
+`math:phrasing` (`fix_math_plural_grammar` -> `derive_math_phrasing --write` ->
+`sync_math_phrasing_bundles`) puts it back. Run the first alone and all 3035
+curriculum problems compare as changed, every one of them missing its
+localisation — which reads exactly like the generator having gone wrong. Run
+both and `problems_curriculum.json` comes back byte-identical.
+
+If you find yourself diffing a suspiciously total-looking churn, check whether
+`phrasing` is the only key missing before investigating anything else.
 
 `math:materialize`:
 - loads the seed curriculum plus the offline batch specs
@@ -201,6 +220,18 @@ What this does not prove:
 - Do not hand-grow `gaps` or `dataset` pools as the long-term path.
 - Do not directly merge LLM-authored concrete problems into runtime pools.
 - Do not edit the materialized curriculum without rerunning `math:materialize`.
+- `problems_curriculum.json` is the ONLY generator-owned pool. `problems_easy.json`,
+  `problems_gaps.json` and `problems_dataset.json` are hand-authored and survive
+  a materialization untouched, which is where content that needs a shape the
+  batch templates cannot express belongs — the relational addition problems live
+  in `problems_gaps.json` for exactly that reason. `npm run math:sync-metadata`
+  stamps `curriculumStep` and `difficultyTraits` onto them so both stay DERIVED
+  rather than authored, and `npm run validate` then re-derives and compares.
+- A prompt shape no verifier understands must be refused, not accepted.
+  `validate-content` skips its answer check and its trait check when the parse
+  comes back null, so an unrecognised shape would ship with neither ever
+  independently re-derived. `isUnrecognisedEquation` in `tools/math_verifier.ts`
+  names those shapes and fails the build instead.
 - If a batch fails review, fix that batch and rerun the review loop before authoring more.
 - Treat `review-summary.json` as a deterministic repository-side scorecard, not an independent reviewer verdict.
 - Treat `owl-surface-summary.json` as the owl-safe inventory plus fresh-profile subset report: it is the right place to see what the shipped owl path can expose overall and what a fresh child actually reaches today.

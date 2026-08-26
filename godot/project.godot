@@ -32,6 +32,7 @@ MathProblemManager="*res://scripts/math/math_problem_manager.gd"
 LearnerSyncService="*res://scripts/systems/learner_sync_service.gd"
 ELOUpdateManager="*res://scripts/systems/elo_update_manager.gd"
 SessionStats="*res://scripts/autoload/session_stats.gd"
+TutorialManager="*res://scripts/systems/tutorial_manager.gd"
 CloudSync="*res://scripts/systems/cloud_sync.gd"
 
 [display]
@@ -48,6 +49,25 @@ textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.529412, 0.807843, 0.921569, 1)
+
+[importer_defaults]
+
+; Pixel-art import preset. brand/ASSET_MANIFEST.md states the law for the source
+; files ("no anti-aliasing", "author at 1x"); this is the engine half — every PNG
+; dropped into assets/ inherits it, so a new sprite is crisp by default instead of
+; relying on someone remembering the per-file toggles in the editor.
+;   compress/mode=0        lossless — block compression smears pixel art
+;   mipmaps/generate=false never rendered below 1:1
+;   fix_alpha_border=false an alpha bleed is a bilinear fix; under Nearest it only
+;                          rewrites RGB beneath transparent pixels for nothing
+;   detect_3d/compress_to=0 never silently switch a 2D sprite to VRAM compression
+; Enforced by godot/tools/check_assets.py.
+texture={
+"compress/mode": 0,
+"mipmaps/generate": false,
+"process/fix_alpha_border": false,
+"detect_3d/compress_to": 0
+}
 
 [physics]
 

@@ -15,6 +15,8 @@ const PATHS := {
 	"MATH_DATASET": "math/problems_dataset.json",
 	"MATH_GAPS": "math/problems_gaps.json",
 	"MATH_CURRICULUM": "math/problems_curriculum.json",
+	"CONCEPT_LADDER": "curriculum/concept_ladder.json",
+	"MATH_TUTORIALS": "curriculum/tutorials.json",
 	"PLAYER_TUNING": "tuning/player_base.json",
 	"ABILITIES": "tuning/abilities.json",
 	"LEVELING": "tuning/leveling.json",
@@ -25,6 +27,7 @@ const PATHS := {
 	"UI_TUNING": "tuning/ui_tuning.json",
 	"FX_TUNING": "tuning/fx_tuning.json",
 	"MATH_TUNING": "tuning/math_tuning.json",
+	"TUTORIAL_TUNING": "tuning/tutorial_tuning.json",
 	"THEME_FOREST": "themes/theme_forest.json",
 	"THEME_SCIFI": "themes/theme_scifi.json",
 	"THEME_EMBERWOOD": "themes/theme_emberwood.json",
@@ -38,6 +41,8 @@ const PATHS := {
 	"STRINGS_IS": "i18n/strings_is.json",
 	"SCENES": "registries/scenes.json",
 	"SPAWN_REGISTRY": "registries/spawn_registry.json",
+	"SPRITE_SPEC": "registries/sprite_spec.json",
+	"SPRITE_REGISTRY": "registries/sprite_registry.json",
 	"SOUND_EVENTS": "audio/sound_events.json",
 }
 
