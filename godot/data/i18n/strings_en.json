@@ -32,6 +32,7 @@
   "npc.professor_hoot": "Professor Hoot",
   "npc.owl_questions": "{0} - {1} questions",
   "game.oops": "Oops!",
+  "game.out_of_lives": "Out of hearts!",
   "login.hi": "Hi, {0}!",
   "login.pick_pin": "Pick a 4-digit PIN",
   "login.play": "Let's go",

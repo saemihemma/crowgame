@@ -8,6 +8,7 @@
     "danger": "#FF4D4D",
     "textColor": "#FFF8E7",
     "textShadow": "#1F1A16",
+        "overlay_shade": "#1F1A16",
     "boardBg": "#5C3A1E",
     "boardBorder": "#3D2510",
     "buttonBg": "#6B4E1B",

@@ -3,6 +3,7 @@
   "game.congratulations_title": "Til hamingju!",
   "game.play_again": "Spila aftur",
   "game.oops": "Úps!",
+  "game.out_of_lives": "Hjörtun búin!",
   "hud.coins": "x{0}",
   "hud.coins_milestone": "{n} myntir!",
   "hud.coins_milestone.one": "{n} mynt!",
