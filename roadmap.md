@@ -438,6 +438,13 @@ of completed tasks.** Do not add finished work here.
   `answer.correct`, plus the measured operand-order invariant for the 62
   templates where `{a}`/`{b}` are the prompt's operands. See
   `tools/math_phrasing_catalog.mjs`.
+- **The child says "level", the parent report says "step" -- in both locales.**
+  One number, the derived curriculum step, and two registers on purpose.
+  `math.step_up` celebrates with "Level up!" / "Næsta stig!" because that is what
+  lands with a seven-year-old, while the parent report and the recap say "step" /
+  "þrep" because that is the ladder a grown-up is reading. `tools/validate_i18n.mjs`
+  cannot tell a register split from an inconsistency, so it is recorded here
+  instead: do not unify them.
 - **Icelandic explanations say "gerir", not "er"/"eru".** Icelandic verb
   agreement follows the numeral -- "2 plús 3 eru 5" but "4 mínus 3 er 1" -- and
   the result is a parameter, so any agreeing verb is wrong for some values.

@@ -644,6 +644,54 @@ for (const pool of MATH_POOLS) {
     }
 }
 
+// ── Icelandic: no agreeing verb on a result the runtime supplies ───────────
+//
+// Icelandic verb agreement follows the numeral -- "2 plús 3 eru 5" but
+// "4 mínus 3 er 1" -- and in a phrasing the result is a PARAMETER, so an
+// agreeing verb is wrong for some values of it. roadmap.md carries this as a
+// settled decision: use the invariant "gerir", or drop the verb.
+//
+// It was settled and then broken in seven phrasings, which is why it is a check
+// now and not a note. Six of them shipped: two problems rendered "2 plús 0 er 2"
+// where Icelandic needs "eru", and three more the same way.
+//
+// The narrow, certain case only: the verb DIRECTLY governs a numeric parameter
+// AND the subject in front of it is itself parameterised. "Svarið er {total}"
+// has a noun subject and is correct at any value, so it is not flagged. A
+// phrasing with a plural sibling (`<key>.one`) is not flagged either -- that is
+// the render-time plural rule doing its job, which is the other legal answer.
+//
+// Grammar this regex cannot read gets an explicit exemption with its reason,
+// the same shape as `hardcode-ok` elsewhere in this repo.
+const AGREEMENT_EXEMPT = {
+    'math.expl.add_double': 'subject is "Tvöfalt {a}", neuter singular, so "er" agrees with it and not with {sum}',
+    'math.expl.sub_half': 'subject is "helmingurinn", masculine singular, not the numeral',
+    'math.hint.rel.other_part': 'names {total} as the whole; a native reading is needed to say whether the copula should agree',
+    'math.expl.choice': 'subject is "rétta svarið"; a native reading is needed on which side the copula agrees with',
+};
+const NUMERIC_PARAM = /\{(?:sum|n|diff|prod|quot|total|answer|result|run)\}/;
+{
+    const is = bundles[primaryDir].is ?? {};
+    for (const [key, value] of Object.entries(is)) {
+        if (!/^math\.(expl|hint)\./.test(key)) continue;
+        if (key.endsWith('.one')) continue;                 // the singular variant
+        if (Object.hasOwn(is, `${key}.one`)) continue;       // has a plural pair
+        if (Object.hasOwn(AGREEMENT_EXEMPT, key)) continue;
+        const text = String(value);
+        const m = /\b(er|eru)\s+(?:bara\s+|enn\s+|allir\s+)?(\{[a-z_]+\})/.exec(text);
+        if (!m || !NUMERIC_PARAM.test(m[2])) continue;
+        // Is the subject itself a parameter? If nothing before the verb is, the
+        // subject is a noun and the verb is not agreeing with the result.
+        if (!/\{[a-z_]+\}/.test(text.slice(0, m.index))) continue;
+        fail(
+            `[${key}] Icelandic "${m[1]} ${m[2]}" makes the verb agree with a result the runtime `
+            + `supplies, so it is wrong for some values. Use the invariant "gerir", drop the verb, `
+            + `or add a "${key}.one" singular variant. If the grammar is actually right, add `
+            + `AGREEMENT_EXEMPT['${key}'] with the reason.`,
+        );
+    }
+}
+
 // ── report ─────────────────────────────────────────────────────────────────
 if (failures.length === 0) {
     const keyCount = Object.keys(reference).length;
