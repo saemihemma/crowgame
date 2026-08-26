@@ -86,6 +86,7 @@ const FLAG_ROWS: Array = [
 	"math/group_tokens_in_fives",
 	"math/tutorial_below_level",
 	"input/space_is_sprint",
+	"input/sprint_pad_latches",
 	"levels/wide_gap_pass",
 	"levels/practice_arena_in_grid",
 	"death/hold_ms",
