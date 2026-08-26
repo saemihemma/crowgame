@@ -77,6 +77,11 @@ def seq(*parts):
     return out
 
 
+def shift(samples, seconds):
+    """Delay a sound by `seconds`, so two copies read as one two-part gesture."""
+    return [0.0] * int(seconds * SR) + list(samples)
+
+
 def mix(a, b):
     n = max(len(a), len(b))
     return [(a[i] if i < len(a) else 0) + (b[i] if i < len(b) else 0) for i in range(n)]
@@ -138,6 +143,11 @@ SOUNDS = {
     # click, because it fires on every arrow press and a sound at click volume
     # would turn holding Down into a machine gun.
     "button_focus": tone(1320, 0.035, 0.22, "sine", decay=18.0),
+    # The door will not open yet. A soft double knock, deliberately NOT the hurt
+    # sound and nothing like a buzzer: the child has done nothing wrong, they
+    # have somewhere left to go. Same pedagogy rail as the wrong-answer cue.
+    "door_locked": mix(tone(196, 0.10, 0.35, "sine", decay=9.0),
+                       shift(tone(196, 0.10, 0.30, "sine", decay=9.0), 0.14)),
 }
 
 if __name__ == "__main__":

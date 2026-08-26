@@ -25,8 +25,13 @@ func _run() -> void:
 
 	for path in suites:
 		var script: GDScript = load(path)
-		if script == null:
-			printerr("  ! could not load %s" % path)
+		# can_instantiate(), not just null. A test file with a PARSE ERROR loads to
+		# a non-null GDScript that cannot be instantiated, so `script.new()` threw
+		# "Nonexistent function 'new'" -- and the runner then hung instead of
+		# exiting, which in CI is a ten-minute timeout with no failing test named.
+		# One typo in one test file could stall the whole suite.
+		if script == null or not script.can_instantiate():
+			printerr("  ! could not load %s (parse error?)" % path)
 			total_fail += 1
 			continue
 		var instance: Object = script.new()

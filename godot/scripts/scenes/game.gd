@@ -42,6 +42,15 @@ var lives := MAX_LIVES
 var transitioning := false
 var respawning := false
 var spawn_point := Vector2.ZERO
+## The door's gate. Freeing the basic owls is what clears a level, so the magic
+## door stays shut until enough of them are out of their chains - see
+## LevelManager.owls_required_for_door for why "enough" is per level rather than
+## "all of them".
+##
+## Counted here rather than read off the owl ring: the ring is a drawing of this
+## number and a HUD component must not be the thing a door asks permission from.
+var _owls_freed := 0
+var _owls_required := 0
 
 # Tier-2 FX state
 var _shake_time := 0.0
@@ -119,6 +128,11 @@ func _load_level(key: String) -> void:
 	EventBus.streak_changed.emit(streak, streak_paused)
 	transitioning = false
 	respawning = false
+	# Resolved BEFORE anything spawns: the door asks this every frame, and a door
+	# that spawned into a not-yet-known requirement would count as unlocked for
+	# the frame it took to find out.
+	_owls_freed = 0
+	_owls_required = LevelManager.owls_required_for_door(key)
 	# Persist where the player is (GameScene.ts does this on create) so the
 	# main menu's Continue resumes the right level.
 	SaveManager.set_current_level(key)
@@ -493,6 +507,7 @@ func _streak_toast() -> void:
 	AudioManager.play_event("milestone")
 
 func _on_owl_saved() -> void:
+	_owls_freed += 1
 	AudioManager.play_event("owl_saved")
 	var layer := get_node_or_null("FX")
 	if layer == null:
@@ -619,6 +634,32 @@ func _check_pit_death() -> void:
 		hurt_player()
 
 # ─── Doors / transitions ──────────────────────────────────
+# --- The door's gate ---------------------------------------------
+# The door owns proximity and contact; this owns whether it may open at all.
+
+## How many owls the door is still waiting on. 0 means it will open.
+func owls_still_needed() -> int:
+	return maxi(0, _owls_required - _owls_freed)
+
+func door_is_locked() -> bool:
+	return owls_still_needed() > 0
+
+## The player walked into a shut door.
+##
+## Two things happen together and neither works alone: a card appears saying how
+## many owls are left, and the HUD's owl ring pulses. The card is the answer to
+## "what now"; the ring pulse is the answer to "where do I watch this", which is
+## what stops the card from being the only place a child can find the number.
+##
+## `door_locked` is a soft double knock, not the hurt sound - brand/SOUND_DESIGN.md
+## is explicit that arriving early is not damage.
+func refuse_door() -> void:
+	if transitioning:
+		return
+	AudioManager.play_event("door_locked")
+	EventBus.door_refused.emit(owls_still_needed())
+	LockedDoorCard.present(get_node_or_null("FX") as CanvasLayer, _owls_freed, _owls_required)
+
 func transition_to_level(target_level: String) -> void:
 	if transitioning:
 		return

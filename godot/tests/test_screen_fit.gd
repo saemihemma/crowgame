@@ -120,6 +120,27 @@ func test_the_pause_card_fits_the_tightest_viewport() -> void:
 	pause.queue_free()
 
 
+## The locked-door card is the one overlay a child will meet by accident, over
+## and over, and it is the tallest thing the FX layer ever mounts: a 112px owl, a
+## pip row, an 80px numeral and a line of text. It also renders in no test that
+## looks at a screen, which is exactly the shape of the boot.gd bug - a Control
+## nobody had ever instantiated, broken in a browser and green here.
+func test_the_locked_door_card_fits_the_tightest_viewport() -> void:
+	var layer := CanvasLayer.new()
+	Engine.get_main_loop().root.add_child(layer)
+	# Eight owls, none freed: the widest pip row the card will draw.
+	LockedDoorCard.present(layer, 0, LockedDoorCard.PIPS_MAX)
+	var fitters: Array = _fitters(layer, [])
+	assert_true(fitters.size() == 1,
+		"the card mounts through exactly one FitBox (got %d)" % fitters.size())
+	for viewport in VIEWPORTS:
+		var result := _worst_overflow(layer, viewport["size"])
+		assert_true(float(result["overflow"]) == 0.0,
+			"[locked door @ %s] the card overflows by %.0fpx (%s)"
+				% [str(viewport["size"]), float(result["overflow"]), result["where"]])
+	layer.queue_free()
+
+
 ## And prove the arithmetic itself, at sizes the project does not ship - the same
 ## reason SpriteSheet.compute_anchor_offset is tested apart from the registry. A
 ## fitter that returned 1.0 for everything would pass every assertion above on a

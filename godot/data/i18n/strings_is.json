@@ -38,6 +38,8 @@
   "boot.loading_hint": "Undirbý heiminn...",
   "boot.press_start": "Ýttu á Enter til að spila",
   "boot.tap_start": "Ýttu til að spila",
+  "door.locked": "Bjargaðu {n} uglum í viðbót!",
+  "door.locked.one": "Bjargaðu {n} uglu í viðbót!",
   "game.owl_saved": "Uglu bjargað!",
   "cloud_title": "Vistun í netinu",
   "cloud_off": "Framvinda er aðeins vistuð á þessu tæki",

@@ -118,3 +118,41 @@ func test_unlock_reads_the_prerequisites_own_history() -> void:
 		})
 	assert_true(LearnerStateManager.is_domain_unlocked("pattern_matching"),
 		"twenty clean counting answers unlock pattern_matching however they were interleaved")
+
+## Where the owl aims inside a lane.
+##
+## THIS METHOD DID NOT EXIST. elo_aware_strategy.gd called it on every ELO-aware
+## selection, so every pick printed "Nonexistent function
+## 'get_effective_selection_elo'" and handed the softmax a null target -- 46 of
+## those in one pass of this suite, all green, because a SCRIPT ERROR is not a
+## test failure. math_tuning.json's withinLaneEloSpread comment describes aiming
+## that was not happening.
+##
+## The two terms are the point: mastery moves over a child's whole history, the
+## confidence offset moves within a session, and it is the second one that gets a
+## child who has just missed three an easier question off the same rung.
+func test_the_selection_target_is_mastery_plus_this_session() -> void:
+	_fresh()
+	var domain := "addition"
+	var mastery: float = ELOManager.get_effective_elo(domain)
+	var offset: float = LearnerStateManager.get_confidence_offset(domain)
+	assert_almost_eq(LearnerStateManager.get_effective_selection_elo(domain), mastery + offset, 0.001,
+		"the aim is lifetime mastery plus how the child is doing right now")
+	# And it moves with the session, or the second term is decoration.
+	LearnerStateManager.record_attempt({
+		"attemptId": "aim-1",
+		"problemId": "p-addition-1",
+		"domain": domain,
+		"correct": false,
+		"firstAttempt": false,
+		"hintsUsed": 0,
+		"responseMs": 1200,
+		"problemELO": 150,
+		"curriculumStep": LearnerStateManager.get_current_step(domain),
+		"selectionLane": "at_level",
+		"skills": [domain],
+		"answeredAt": Time.get_unix_time_from_system() * 1000.0,
+	})
+	var after: float = LearnerStateManager.get_effective_selection_elo(domain)
+	assert_true(after != mastery + offset,
+		"a wrong answer moves where the next question is aimed (still %.1f)" % after)

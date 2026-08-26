@@ -76,6 +76,7 @@ The **Fires** column is the code that plays it; that is the authority on *when*.
 | Owl freed | `owl_saved` | `scenes/game.gd` | A four-note rise. The chain is off and the owl is going home. |
 | Golden problem appears | `golden` | `ui/math_challenge.gd` | A fast high shimmer. This announces the problem; it is not the reward. |
 | Near the door | `door` | `entities/door.gd` | A low wooden open. An invitation — the door has noticed you. |
+| Door still locked | `door_locked` | `entities/door.gd` | A soft double knock on wood. Deliberately not a buzzer and not the hurt sound: arriving before the owls are free is not a mistake, it is arriving early, and the card that appears with it says so too. |
 | Through the door | `level_enter` | `scenes/game.gd` | A short rise. A departure, and deliberately not the same sound as being near the door. |
 | Run complete | `level_complete` | `scenes/game.gd` | The five-note fanfare. Once per run; it can afford to be the longest thing here. |
 | Ability unlocked | `ability` | `ui/hud.gd` | A rising sweep. Something you can do now that you could not before. |

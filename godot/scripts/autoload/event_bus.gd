@@ -29,6 +29,12 @@ signal owl_saved()
 ## How many owls this level holds, emitted on load so the HUD can segment the
 ## owl ring before the first rescue.
 signal level_owls(count: int)
+## The player reached the door with owls still in chains. Carries how many are
+## still needed so the HUD's owl ring can draw attention to itself: the card the
+## door puts up says WHAT to do, and the ring is WHERE the count lives, so the
+## two have to move together or the child learns neither.
+signal door_refused(still_needed: int)
+
 ## Consecutive correct answers within the current level.
 ## `paused` carries the wrong-answer state: brand/BRAND_SYSTEM.md §10.2 says a
 ## wrong answer dims the flame rather than resetting the count, so the two facts

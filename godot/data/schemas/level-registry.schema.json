@@ -1,77 +1,82 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "LevelRegistry",
-    "description": "Registry of all game levels",
-    "type": "object",
-    "required": [
-        "levels"
-    ],
-    "properties": {
-        "levels": {
-            "type": "array",
-            "items": {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LevelRegistry",
+  "description": "Registry of all game levels",
+  "type": "object",
+  "required": [
+    "levels"
+  ],
+  "properties": {
+    "levels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "key",
+          "name",
+          "mapFile",
+          "order"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^level_\\d+"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "mapFile": {
+            "type": "string"
+          },
+          "theme": {
+            "description": "ThemeManager id this level is dressed in. Distinct from LevelSpec.theme, which selects a tileset filename.",
+            "type": "string",
+            "enum": [
+              "emberwood",
+              "prism_hollow",
+              "sugarstorm",
+              "geyserworks",
+              "aurora_spire"
+            ]
+          },
+          "music": {
+            "type": "string"
+          },
+          "unlockRequirement": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
                 "type": "object",
                 "required": [
-                    "key",
-                    "name",
-                    "mapFile",
-                    "order"
+                  "level",
+                  "minStars"
                 ],
                 "properties": {
-                    "key": {
-                        "type": "string",
-                        "pattern": "^level_\\d+"
-                    },
-                    "name": {
-                        "type": "string",
-                        "minLength": 1
-                    },
-                    "mapFile": {
-                        "type": "string"
-                    },
-                    "theme": {
-                        "description": "ThemeManager id this level is dressed in. Distinct from LevelSpec.theme, which selects a tileset filename.",
-                        "type": "string",
-                        "enum": [
-                            "emberwood",
-                            "prism_hollow",
-                            "sugarstorm",
-                            "geyserworks",
-                            "aurora_spire"
-                        ]
-                    },
-                    "music": {
-                        "type": "string"
-                    },
-                    "unlockRequirement": {
-                        "oneOf": [
-                            {
-                                "type": "null"
-                            },
-                            {
-                                "type": "object",
-                                "required": [
-                                    "level",
-                                    "minStars"
-                                ],
-                                "properties": {
-                                    "level": {
-                                        "type": "string"
-                                    },
-                                    "minStars": {
-                                        "type": "integer",
-                                        "minimum": 0
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    "order": {
-                        "type": "integer",
-                        "minimum": 1
-                    }
+                  "level": {
+                    "type": "string"
+                  },
+                  "minStars": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
                 }
-            }
+              }
+            ]
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "owlsRequiredForDoor": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "How many owls must be freed before the door opens. Omit for 'all the owls in this level', which is the default and what a story level wants. 0 means no gate — the practice arena uses that, because leaving it is not an achievement."
+          }
         }
+      }
     }
+  }
 }

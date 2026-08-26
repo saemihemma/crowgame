@@ -89,6 +89,12 @@ func _ready() -> void:
 	var owl_args := OS.get_cmdline_user_args()
 	if owl_args.size() > 3 and owl_args[3] != "":
 		_owl_index = int(owl_args[3])
+	# Which language to photograph in. Icelandic is the language this game is
+	# FOR, and until this existed every shot in output/godot-shots was English -
+	# so the locale whose words are longer, and whose grammar changes with the
+	# number in the sentence, was the one nobody ever looked at.
+	if owl_args.size() > 4 and owl_args[4] != "":
+		TextManager.set_locale(owl_args[4])
 	# The pause overlay pauses the whole tree, which would stop this node's own
 	# frame loop and hang the harness. Capture keeps stepping regardless of the
 	# game's pause state - it is a camera, not a participant.
@@ -241,6 +247,21 @@ func _stage(variant: String) -> bool:
 	# level with no NPC still has a pause menu and can still be completed.
 	if variant == "pause" or variant == "complete":
 		return _stage_overlay(variant)
+	# The locked door, staged through Game's own entry point - the same call the
+	# door makes when the player walks into it with owls still in chains. No owl
+	# is needed: a fresh level has freed none, so the card is already truthful.
+	if variant.begins_with("door-locked"):
+		if not _game.has_method("refuse_door"):
+			printerr("[capture] Game has no refuse_door()")
+			return false
+		# door-locked-part frees one owl first, through the same signal a real
+		# rescue fires. Zero-freed and part-freed are the two shots worth having:
+		# the first shows the row of empty sockets, the second is the only one
+		# that proves gold-versus-empty reads as progress rather than as decoration.
+		if variant == "door-locked-part":
+			EventBus.owl_saved.emit()
+		_game.call("refuse_door")
+		return true
 	if variant.begins_with("hud-"):
 		return _stage_hud(variant)
 	var owl := _find_owl()

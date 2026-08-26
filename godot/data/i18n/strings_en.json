@@ -38,6 +38,8 @@
   "boot.loading_hint": "Getting the world ready...",
   "boot.press_start": "Press Enter to play",
   "boot.tap_start": "Tap to play",
+  "door.locked": "Save {n} more owls!",
+  "door.locked.one": "Save {n} more owl!",
   "game.owl_saved": "Owl saved!",
   "cloud_title": "Cloud save",
   "cloud_off": "Progress is saved on this device only",

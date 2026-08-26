@@ -99,5 +99,33 @@ func _count_owls(key: String) -> int:
 				count += 1
 	return count
 
+## How many owls the magic door asks for before it opens.
+##
+## Freeing the basic owls is what CLEARS a level - the door is the reward for
+## doing the work, not a shortcut past it. But "all of them" is not always the
+## right bar: a level can hold a hard-to-reach owl meant to be revisited later
+## with a better crow, and that owl must not lock the level behind it. So the
+## registry may name a smaller number, and omitting the field means "all the
+## owls in this level", which is what a story level wants.
+##
+## Clamped to the level's actual owl count: a registry asking for six owls in a
+## three-owl level would otherwise make the door permanently unopenable, and
+## that failure mode is silent - the player just walks into a door forever.
+func owls_required_for_door(key: String) -> int:
+	var entry: Variant = get_level(key)
+	if entry == null:
+		return 0
+	return required_for_door(entry as Dictionary, owl_count(key))
+
+
+## The decision, with the registry lookup taken out of it, so the cases that
+## matter can be fed directly - including the two the shipped registry does not
+## contain (a requirement above the owl count, and a level with no owls at all).
+static func required_for_door(entry: Dictionary, total: int) -> int:
+	if not entry.has("owlsRequiredForDoor"):
+		return total
+	return clampi(int(entry.get("owlsRequiredForDoor", total)), 0, total)
+
+
 func has_level(key: String) -> bool:
 	return get_level(key) != null

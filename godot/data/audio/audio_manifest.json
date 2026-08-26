@@ -85,6 +85,10 @@
       "file": "assets/audio/sfx/button_focus.wav",
       "volume": 0.3,
       "pool": 3
+    },
+    "door_locked": {
+      "file": "assets/audio/sfx/door_locked.wav",
+      "volume": 0.4
     }
   },
   "music": {

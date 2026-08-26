@@ -5,10 +5,12 @@
 #   bash godot/tools/capture.sh                        # every level, playing
 #   bash godot/tools/capture.sh level_01               # just one
 #   bash godot/tools/capture.sh level_01 play,math     # and its maths board
-#   bash godot/tools/capture.sh level_01 play "" 1194x834   # at iPad size
+#   bash godot/tools/capture.sh level_01 play 1194x834      # at iPad size
+#   bash godot/tools/capture.sh level_01 play "" "" is       # in Icelandic
 #
 # Variants: play | math | math-wrong | math-count | pause | complete |
-#           hud-hurt | hud-streak | hud-ability (see tools/capture/capture.gd).
+#           door-locked | door-locked-part | hud-hurt | hud-streak | hud-ability
+#           (see tools/capture/capture.gd).
 # Writes output/godot-shots/<level>-<variant>.png.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -20,6 +22,8 @@ VARIANTS="${2:-play}"
 SIZE="${3:-}"
 # Which owl to walk to for the maths variants (0 = the first in the level).
 OWL="${4:-}"
+# Which language to photograph in: en | is. Empty keeps whatever was saved.
+LOCALE="${5:-}"
 
 # --resolution, not DisplayServer.window_set_size: the window has to exist at
 # the right size before the first frame, or the stretch system resolves the
@@ -31,5 +35,5 @@ if [ -n "$SIZE" ]; then
 fi
 
 xvfb-run -a --server-args="-screen 0 ${SCREEN}x24" \
-  "$GODOT" --path "$HERE" "${RES_ARG[@]}" res://tools/capture/Capture.tscn -- "$LEVELS" "$VARIANTS" "$SIZE" "$OWL" 2>&1 \
+  "$GODOT" --path "$HERE" "${RES_ARG[@]}" res://tools/capture/Capture.tscn -- "$LEVELS" "$VARIANTS" "$SIZE" "$OWL" "$LOCALE" 2>&1 \
   | grep -E "^\[capture\]" || true

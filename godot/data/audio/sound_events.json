@@ -19,5 +19,6 @@
   "player_die": "player_die",
   "level_enter": "level_enter",
   "chain_break": "chain_break",
-  "button_focus": "button_focus"
+  "button_focus": "button_focus",
+  "door_locked": "door_locked"
 }

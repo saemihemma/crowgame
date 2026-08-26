@@ -66,8 +66,24 @@ reach_status=$?
 
 "$GODOT" --headless --path "$HERE" --import >/dev/null 2>&1 || true
 reset_store
-"$GODOT" --headless --path "$HERE" res://tests/TestRunner.tscn
-unit_status=$?
+# Teed, not just streamed: a GDScript runtime error is printed by the ENGINE and
+# is not a test failure, so the suite reported 245 passed / 0 failed while
+# "Nonexistent function 'get_effective_selection_elo'" fired 46 times and every
+# problem selection was aiming at null. The assertions could not see it; the log
+# could. So the log is now part of the result.
+unit_log="$(mktemp)"
+"$GODOT" --headless --path "$HERE" res://tests/TestRunner.tscn 2>&1 | tee "$unit_log"
+unit_status=${PIPESTATUS[0]}
+if grep -q "SCRIPT ERROR" "$unit_log"; then
+	echo "=== runtime errors during the unit suite ==="
+	echo "The suite printed a GDScript runtime error. That is a live code path"
+	echo "failing silently -- a call into nothing returns null and the caller"
+	echo "carries on. Fix it, or if a test provokes it deliberately, make the test"
+	echo "assert the outcome instead of letting the engine print it."
+	grep -n "SCRIPT ERROR" -A1 "$unit_log" | sort -u | head -40
+	unit_status=1
+fi
+rm -f "$unit_log"
 
 # Headless physics integration probes (separate scenes; advance real frames).
 echo "=== integration probes ==="

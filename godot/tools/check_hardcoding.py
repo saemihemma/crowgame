@@ -155,6 +155,54 @@ def audio_problems(registered: set, called: dict) -> list:
 	return problems
 
 
+SOUND_DOC = os.path.join(os.path.dirname(__file__), "..", "..", "brand", "SOUND_DESIGN.md")
+DOC_EVENT_RE = re.compile(r'^\|[^|]*\|\s*`([a-z_]+)`\s*\|')
+
+
+def check_sound_doc() -> list:
+	"""Every sound event has a row in brand/SOUND_DESIGN.md, and vice versa.
+
+	The doc exists because the owner is going to replace every one of these files
+	and needs to know, per moment, what the file is FOR -- "how it should sound" is
+	the only column in it that a generator cannot produce. A row missing for a new
+	event is therefore not a documentation nit: it is a file somebody has to guess
+	at. And a row for a deleted event sends them to swap an asset nothing plays.
+
+	Both directions, for the reason audio_problems gives: the tool cannot know
+	which side is wrong, so it says which and fails.
+	"""
+	with open(AUDIO_EVENTS, encoding="utf-8") as f:
+		registered = {k for k in json.load(f) if not k.startswith("_")}
+	documented = set()
+	with open(SOUND_DOC, encoding="utf-8") as f:
+		for line in f:
+			m = DOC_EVENT_RE.match(line)
+			if m:
+				documented.add(m.group(1))
+	return doc_problems(registered, documented)
+
+
+def doc_problems(registered: set, documented: set) -> list:
+	# Split from the file reading so --selftest can feed it, same as
+	# audio_problems -- an ungated decision is the thing this repo keeps finding.
+	problems = []
+	if not documented:
+		problems.append(
+			"brand/SOUND_DESIGN.md has no event rows; this check enforced nothing "
+			"(the table format changed, or the file moved)")
+		return problems
+	for key in sorted(registered - documented):
+		problems.append(
+			"brand/SOUND_DESIGN.md has no row for event \"%s\" -- whoever replaces "
+			"that file has nothing telling them what it is for" % key)
+	for key in sorted(documented - registered):
+		problems.append(
+			"brand/SOUND_DESIGN.md documents event \"%s\", which is not in "
+			"data/audio/sound_events.json -- it sends someone to swap an asset "
+			"nothing plays" % key)
+	return problems
+
+
 def selftest() -> int:
 	samples = [
 		('x.text = "Hello there"', True),
@@ -209,7 +257,27 @@ def selftest() -> int:
 			      % (desc, expected, got))
 			ok = False
 
+	doc_cases = [
+		("clean: every event has a row and every row an event",
+		 {"coin", "jump"}, {"coin", "jump"}, 0),
+		("a new event with no row leaves its file undocumented",
+		 {"coin", "door_locked"}, {"coin"}, 1),
+		("a row for a deleted event sends someone to swap nothing",
+		 {"coin"}, {"coin", "gone"}, 1),
+		("a table that stopped parsing must fail rather than pass vacuously",
+		 {"coin"}, set(), 1),
+	]
+	for desc, registered, documented, expected in doc_cases:
+		got = len(doc_problems(registered, documented))
+		if got != expected:
+			print("SELFTEST FAIL: sound doc %r expected %d problem(s), got %d"
+			      % (desc, expected, got))
+			ok = False
+
 	# And the live tree, so --selftest cannot pass while the repo itself is broken.
+	if check_sound_doc():
+		print("SELFTEST FAIL: brand/SOUND_DESIGN.md and sound_events.json disagree")
+		ok = False
 	if check_audio_events():
 		print("SELFTEST FAIL: the live audio registry does not resolve both ways")
 		ok = False
@@ -221,7 +289,7 @@ def main() -> int:
 	if "--selftest" in sys.argv:
 		return selftest()
 	hits = scan()
-	audio = check_audio_events()
+	audio = check_audio_events() + check_sound_doc()
 	if not hits and not audio:
 		print("hardcode guard: clean")
 		return 0

@@ -149,6 +149,23 @@ func get_confidence_offset(domain: String) -> float:
 	return float(get_snapshot()["confidenceOffsets"][domain])
 
 
+## Where to aim inside a lane: mastery plus how the child is doing right now.
+##
+## Port of LearnerStateManager.getEffectiveSelectionELO. It was MISSING, and
+## elo_aware_strategy.gd called it anyway - so every ELO-aware selection printed
+## "Nonexistent function 'get_effective_selection_elo'" and handed the softmax a
+## null target. 46 of those errors fired in one pass of the test suite, and the
+## suite was green: nothing asserted that the aiming aims, so the lane picked the
+## rung and then the question effectively came out of a hat, which is exactly the
+## behaviour math_tuning.json's withinLaneEloSpread comment says was fixed.
+##
+## The two terms are deliberate. ELO is lifetime mastery and moves slowly;
+## the confidence offset is this session, and is what makes a child who has just
+## missed three get an easier question from the same rung.
+func get_effective_selection_elo(domain: String) -> float:
+	return _elo().get_effective_elo(domain) + get_confidence_offset(domain)
+
+
 func get_current_step(domain: String) -> int:
 	return int(get_snapshot()["curriculumProgress"][domain]["currentStep"])
 
