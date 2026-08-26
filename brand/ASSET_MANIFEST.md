@@ -185,30 +185,45 @@ not have to do is guess at the contract, the seams, or the palette.
 
 ## Priority 1 - parallax
 
-The sky is now a two-stop gradient from the theme, which is why the worlds
-already read as different places. The far and mid layers are what give them
-depth and scale. Scroll factors are fixed by BRAND_SYSTEM §5.4 and already
-recorded in each token file under `world.parallax`.
+**Shipped, as placeholders.** `tools/gen_parallax.mjs` generates three mountain
+ranges per world into `godot/assets/parallax/<world>_{far,mid,near}.png`, and
+`_paint_parallax()` in `godot/scripts/scenes/game.gd` hangs them on a
+`ParallaxBackground`. Before this the sky was two gradient stops and nothing
+else, so every level was a coloured void with platforms floating in it.
 
-| Layer | Size | Scroll | Saturation | Notes |
-| --- | --- | --- | --- | --- |
-| `far` | `960x180`, tileable on x | 0.25 | 40% | horizon silhouette strip, single flat colour, no outline |
-| `mid` | `960x260`, tileable on x | 0.55 | 70% | structures and big flora, 2-3 tone, no outline |
-| `near` | `960x120`, tileable on x | 1.35 | 60% | foreground framing, max 15% screen coverage |
+| Layer | Size | Scroll | Notes |
+| --- | --- | --- | --- |
+| `far` | `960x560`, tileable on x | 0.10 | highest ridge, most hazed toward the sky |
+| `mid` | `960x560`, tileable on x | 0.25 | |
+| `near` | `960x560`, tileable on x | 0.45 | lowest and heaviest, closest to the level |
 
-- **Emberwood:** `godot/assets/parallax/emberwood_far.png`, `emberwood_mid.png`, `emberwood_near.png` - far `#6E9E8A`, mid `#2E6B47`, near `#194031`
-- **Prism Hollow:** `godot/assets/parallax/prism_hollow_far.png`, `prism_hollow_mid.png`, `prism_hollow_near.png` - far `#241D52`, mid `#37306E`, near `#0E0B26`
-- **Sugarstorm:** `godot/assets/parallax/sugarstorm_far.png`, `sugarstorm_mid.png`, `sugarstorm_near.png` - far `#6B2A8A`, mid `#A83CA0`, near `#1B0F3B`
-- **Geyserworks:** `godot/assets/parallax/geyserworks_far.png`, `geyserworks_mid.png`, `geyserworks_near.png` - far `#3A3B44`, mid `#5A4238`, near `#20161A`
-- **Aurora Spire:** `godot/assets/parallax/aurora_spire_far.png`, `aurora_spire_mid.png`, `aurora_spire_near.png` - far `#1E2A55`, mid `#2F4E7A`, near `#0B1030`
+All three share one horizon at 86% down the screen and hang upward from it; the
+ridge height lives inside each texture rather than in the placement, so the art
+does the layering.
 
-**Wire in:** a new `_paint_parallax()` in `godot/scripts/scenes/game.gd`, beside
-the existing `_paint_sky()`, on `ParallaxBackground` layers under the sky's
-`CanvasLayer`. The `far`, `mid` and `deep` palette roles already exist in every
-theme file and nothing reads them yet - the sky gradient uses only `sky_top` and
-`sky_bottom`.
+Three things the generator gets right that are easy to get wrong by hand, and
+worth keeping in a replacement:
 
----
+- **One hue, ramped.** All three bands derive from the world's `mid` palette
+  role and separate by a forced lightness ramp. Picking three palette roles was
+  the first attempt and it fails: the roles are named for the tileset's depth,
+  not for brightness, so Sugarstorm's `mid` is a hot magenta and its `far` is a
+  darker purple - the middle range came out the loudest thing on screen and read
+  as being *in front of* the level.
+- **Aerial perspective.** Each band is washed toward `sky_bottom` by distance
+  (66% / 44% / 22%) and pulled toward black by nearness. That wash is what makes
+  three ranges read as depth rather than as one mass.
+- **Low amplitude toward the viewer.** A spiky near range punches up past the
+  platforms and becomes foreground clutter competing with the crow.
+
+Authored at quarter scale and upscaled nearest-neighbour, so every edge lands on
+a 4px block and matches the 32px world tiles. Tileable by construction: the
+ridge uses whole numbers of cycles across the strip, so `motion_mirroring`
+repeats it seamlessly. Seeded deterministically - a regenerated range is
+byte-identical, so re-running the tool never shows up as a meaningless diff.
+
+Replacing a world's range is dropping three PNGs at the same paths. A world with
+no strips keeps the plain gradient, so nothing breaks if a set is deleted.
 
 ## Priority 2 - the four new enemies
 
