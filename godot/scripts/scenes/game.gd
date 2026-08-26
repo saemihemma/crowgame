@@ -283,23 +283,28 @@ func _unhandled_input(event: InputEvent) -> void:
 
 var _pause_overlay: CanvasLayer
 
-## Pan the view so the crow sits below the maths board, and put it back after.
+## Stop the world moving the instant a maths board opens.
 ##
-## The board is centred and roughly 380 tall; the crow was directly underneath
-## it, so for the whole of every encounter a child could not see who they were.
-## brand/BRAND_SYSTEM.md §8.3 asks for exactly this: move the camera before
-## pausing, restore on close.
+## An overlay used to be a camera move: a 150px lift tweened over 0.28s, on top
+## of a camera that was still settling. The two together are what a player
+## reported as "it goes to the left then centers again" -- and the sideways half
+## was never the lift at all. The camera runs with position smoothing at
+## followLerp*50 (camera_tuning.json: 5.0, so ~0.4s of travel) and horizontal
+## drag margins, so at the moment the challenge freezes the crow the camera is
+## mid-drag and keeps gliding to its target with nothing on screen moving to
+## explain why. A board that arrives on top of a drifting world reads as a scene
+## transition, and a maths question is not a place you go.
 ##
-## A negative offset lifts the camera, which pushes the player down the screen -
-## the camera keeps following him, so this survives the crow being anywhere in
-## the level rather than assuming he is where a screenshot found him.
-func _lift_camera_for_challenge(lifted: bool) -> void:
+## reset_smoothing() lands the camera on its own target in one frame, under the
+## overlay's scrim, and then it is still. No lift: the board no longer needs the
+## crow pushed out from under it now that it centres on the whole viewport
+## (math_challenge/board_screen_share), and a pan the child did not ask for was
+## paying for a glimpse of a sprite they cannot control while the board is up.
+func _settle_camera_for_overlay() -> void:
 	if not is_instance_valid(_camera):
 		return
-	var to := -float(Config.ui("math_challenge/camera_lift", 150)) if lifted else 0.0
-	var seconds := float(Config.ui("math_challenge/camera_lift_seconds", 0.28))
-	_camera.create_tween().tween_property(_camera, "offset:y", to, seconds) \
-		.set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	_camera.offset = Vector2.ZERO
+	_camera.reset_smoothing()
 
 ## Hide the on-screen controls while an overlay owns the screen. Visibility is
 ## the whole fix: a hidden TouchScreenButton does not take input.
@@ -671,13 +676,13 @@ func launch_math_challenge(problem: Dictionary, opts: Dictionary) -> void:
 	add_child(_math_challenge)
 	_math_challenge.closed.connect(_on_challenge_closed)
 	_set_touch_visible(false)
-	_lift_camera_for_challenge(true)
+	_settle_camera_for_overlay()
 	if _player:
 		_player.set_physics_process(false)  # pause gameplay during the challenge
 	_math_challenge.present(problem, opts)
 
 ## The lesson that precedes a challenge, hosted the same way and on the same
-## terms: gameplay paused, camera lifted, touch controls away. `on_closed` gets
+## terms: gameplay paused, camera settled, touch controls away. `on_closed` gets
 ## {"tutorialId", "skipped"} and is where the caller launches the question the
 ## lesson was for.
 ##
@@ -692,7 +697,7 @@ func is_math_tutorial_active() -> bool:
 func get_math_tutorial() -> CanvasLayer:
 	return _math_tutorial
 
-func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable) -> void:
+func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable, depth: String = TutorialManager.DEPTH_FULL) -> void:
 	if is_math_challenge_active() or is_math_tutorial_active():
 		return
 	_math_tutorial = MATH_TUTORIAL_SCENE.instantiate()
@@ -700,21 +705,19 @@ func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable) -> void:
 	_math_tutorial.closed.connect(func(payload: Dictionary):
 		_math_tutorial = null
 		_set_touch_visible(true)
-		_lift_camera_for_challenge(false)
 		if _player:
 			_player.set_physics_process(true)
 		if on_closed.is_valid():
 			on_closed.call(payload)
 	)
 	_set_touch_visible(false)
-	_lift_camera_for_challenge(true)
+	_settle_camera_for_overlay()
 	if _player:
 		_player.set_physics_process(false)
-	_math_tutorial.present(tutorial)
+	_math_tutorial.present(tutorial, depth)
 
 func _on_challenge_closed() -> void:
 	_math_challenge = null
 	_set_touch_visible(true)
-	_lift_camera_for_challenge(false)
 	if _player:
 		_player.set_physics_process(true)

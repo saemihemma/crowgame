@@ -239,9 +239,11 @@ func _build_ui(opts: Dictionary) -> void:
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(dim)
 
-	# Centred in the upper part of the screen, not the whole of it. The camera
-	# lifts the crow into the strip this leaves free (game.gd), so the two moves
-	# together are what let a child see themselves while they think.
+	# Centred on the whole viewport. This used to sit in the upper 78% so that a
+	# camera lift could park the crow in the strip left free underneath -- a pan
+	# the child did not ask for, buying a glimpse of a sprite they cannot move
+	# while the board is up. The lift is gone (game.gd), and with it the reason
+	# for an off-centre board.
 	var center := CenterContainer.new()
 	center.anchor_right = 1.0
 	center.anchor_bottom = float(Config.ui("math_challenge/board_screen_share", 0.78))
@@ -307,11 +309,6 @@ func _build_ui(opts: Dictionary) -> void:
 			head.add_child(icon)
 		head.add_child(header)
 		vbox.add_child(head)
-
-	# Progress pips: wins already banked toward the next level-up in this
-	# problem's domain. The third pip is the step-up moment itself.
-	if not _is_demo:
-		vbox.add_child(_build_pips())
 
 	_question_label = Label.new()
 	_question_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -441,29 +438,19 @@ func _pop_in(node: Control) -> void:
 	if is_instance_valid(node):
 		UiFx.elastic_entrance(node)
 
-## Small circles drawn in code (no glyphs — UI primitives are drawn, per the
-## i18n house rules): filled = wins banked, outlined = wins still to earn.
-func _build_pips() -> Control:
-	var row := HBoxContainer.new()
-	row.alignment = BoxContainer.ALIGNMENT_CENTER
-	row.add_theme_constant_override("separation", 10)
-	var target: int = LearnerStateManager.get_promotion_win_target()
-	var wins: int = mini(target, LearnerStateManager.get_wins_at_current_step(String(current_problem.get("domain", ""))))
-	var accent := ThemeManager.get_color_value("accent")
-	for i in target:
-		var pip := Panel.new()
-		pip.custom_minimum_size = Vector2(14, 14)
-		var style := StyleBoxFlat.new()
-		style.set_corner_radius_all(7)
-		if i < wins:
-			style.bg_color = accent
-		else:
-			style.bg_color = Color(0, 0, 0, 0)  # hardcode-ok: fully transparent, not a themed colour
-			style.set_border_width_all(2)
-			style.border_color = accent
-		pip.add_theme_stylebox_override("panel", style)
-		row.add_child(pip)
-	return row
+## Deliberately no progress pips on the board.
+##
+## Three small circles used to sit under the owl's greeting: wins banked toward
+## the next curriculum step, filled or outlined. Nothing on screen said so. A
+## row of dots with no label, on the one surface where a five-year-old is
+## already holding a question in their head, is a second thing to decode before
+## the first one -- and a child who does decode it learns that two of three
+## answers "do not count", which is the opposite of what the ladder means.
+##
+## The step-up is still celebrated, where a celebration belongs and where it
+## reads without a legend: hud.gd's banner on EventBus.curriculum_step_up. Wins
+## banked toward the next step belong to the grown-up surface, and
+## ui/parent_report.gd is where a parent already goes for them.
 
 ## Disabled options have to LOOK disabled.
 ##

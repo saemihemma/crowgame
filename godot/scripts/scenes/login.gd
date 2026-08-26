@@ -290,6 +290,12 @@ func _finish_login() -> void:
 	var save := SaveManager.get_data()
 	ELOManager.initialize(save.get("eloStats", null))
 	LearnerStateManager.initialize(ProfileManager.get_active_profile(), save.get("learnerState", null), ELOManager.get_stats())
+	# Where this child STARTS, from the birth year already on the profile. Before
+	# LearnerSyncService.init so the snapshot it caches is the seeded one, and
+	# after initialize so there is a snapshot to seed. A no-op for a returning
+	# child, for a leikskóli child and for a profile with no birth year on file
+	# (MathPlacement.apply_seed).
+	MathPlacement.apply_seed(ProfileManager.get_active_profile())
 	LearnerSyncService.init(LearnerStateManager.get_snapshot())
 	MathProblemManager.hydrate_recent_problems(save.get("telemetry", {}).get("answeredProblemIds", []))
 	SceneRouter.goto("main_menu")

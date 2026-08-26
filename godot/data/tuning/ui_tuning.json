@@ -22,9 +22,7 @@
         "question_wrap_width": 520,
         "hint_font_size": 20,
         "board_min_w": 560,
-        "camera_lift": 150,
-        "camera_lift_seconds": 0.28,
-        "board_screen_share": 0.78
+        "board_screen_share": 1.0
     },
     "player": {
         "walk_speed_threshold": 10.0

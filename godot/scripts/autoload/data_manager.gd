@@ -16,6 +16,7 @@ const PATHS := {
 	"MATH_GAPS": "math/problems_gaps.json",
 	"MATH_CURRICULUM": "math/problems_curriculum.json",
 	"CONCEPT_LADDER": "curriculum/concept_ladder.json",
+	"GRADE_EXPECTATIONS": "curriculum/grade_expectations.json",
 	"MATH_TUTORIALS": "curriculum/tutorials.json",
 	"PLAYER_TUNING": "tuning/player_base.json",
 	"ABILITIES": "tuning/abilities.json",

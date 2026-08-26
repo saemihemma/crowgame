@@ -547,3 +547,67 @@ Original prompt: fix the division cap, the four-rung subtraction hole and additi
   negative test silently reverted the uncommitted token_c removal, the same trap
   that wiped twenty problems earlier in this session. Checked, reapplied, and
   staged first this time.
+
+## 2026-08-26 — The maths experience, user-storied and systemized
+
+Original prompt: the in-game maths experience is a mess; user-story it via game
+design and education, review it properly, and make real improvements. Eleven
+specific complaints, four screenshots. Routed through Lead Producer to
+`role-game-designer`, `role-ui-ux-designer` and `role-godot-engineer`.
+
+The design output is `docs/MATH_EXPERIENCE_REVIEW.md` (nine user stories, a
+severity table, and what deliberately did not ship). What changed in the code:
+
+- **The owl that never answers.** `npc.gd::interact()` committed the encounter —
+  flag, greeting, hidden prompt — before asking whether any component would
+  actually open anything, and `math_challenge_component::_launch()` returned
+  bare when another overlay was alive. The owl stayed flagged mid-encounter for
+  the rest of the level and went permanently silent. `on_interact()` now returns
+  whether it took the encounter, and nothing is announced until something says
+  yes. The obvious smaller fix (call `end_interaction()` on the bail) was tried
+  and rejected: it arms the ordinary 2s cooldown, so a neighbouring owl would
+  re-offer and hoot every two seconds behind somebody else's lesson.
+- **Teaching depth.** A new *domain* still earns the full four-card lesson; a
+  new rung inside a domain already met earns the two cards named by
+  `brief_cards` in `tutorial_tuning.json`, with no guided question. At most one
+  lesson per owl, and never for a concept the ladder has not reached — which is
+  what the stretch lane deals.
+- **Placement.** `math_placement.gd`: birth year → bekkur → a starting rung two
+  steps below what the grade tables expect that child to have finished, then a
+  three-answer calibration window that moves in whole concept rungs. No test
+  screen; the first three owls are the placement.
+- **Lesson pictures escaping the card.** `_draw_part_whole` handed `_fit()` the
+  bar alone while drawing numerals above and below it, and `_fit` scales up to
+  1.6x. Measured and positioned from one expression now. Audited the other ten
+  renderers: this was the only one of its kind.
+- Removed the unlabelled promotion pips from the question board; hid the lesson
+  dots on a single-card lesson; stopped drawing a one-link chain (most owls ask
+  one question, and a set of one counts nothing — that was the "random ring").
+- Camera no longer moves into a maths board at all: `reset_smoothing()` under
+  the scrim, and the board centres on the whole viewport.
+- Feedback pacing: correct 1500 → 700ms, reveal 3000 → 2400ms, retry lockout
+  900 → 800ms (its floor, pinned by `test_answer_feedback.gd`).
+- Two latent bugs found on the way: `_demo_shown_for` was keyed by domain alone,
+  so the second child on a shared tablet inherited the first child's "already
+  demonstrated"; and `ConceptLadder.tutorial_id` called `String(null)` on the
+  two concepts whose `tutorial` field is null, printing an engine error on every
+  pass over the ladder.
+
+Devil's Advocate caught the one that would have shipped: the age seed originally
+raised `highestStep` too, and `main_menu.gd` awards the trophy shelf off
+`highestStep` gated only on having answered *something*. A 2. bekkur child would
+have collected the top trophy in every domain for their first correct answer.
+The seed now moves `currentStep` only; a calibration move still raises
+`highestStep`, because that one is paid for with an answer.
+
+Deliberately not done, with reasoning in the review doc: the lane weights (Tier-1,
+and `roadmap.md` already has the instrument that should decide them), the lesson
+copy register pass, and removing the now near-unreachable silent demo path.
+
+Verification: 208 GDScript tests pass (up from 194 — two new suites and an added
+assertion in `owl_probe`), `npm run typecheck` and `npm run validate` clean, web
+export rebuilt. One caution worth recording: `perf_probe` failed once at 29.6
+ms/frame against a 12 ms budget while a second Godot process was running in the
+same container; two clean runs afterwards measured 3.4 and 3.6 ms. Sandbox
+contention, not a regression — but a probe that measures wall-clock in a shared
+container will say that again.

@@ -14,6 +14,13 @@ extends CanvasLayer
 ##                       faded guidance, and the first thing the child does
 ##                       rather than watches
 ##
+## That is a FULL lesson, and a child gets one the first time they meet a whole
+## domain. Every rung after it inside that domain gets a BRIEF one instead --
+## the cards named by tutorial_tuning.json's `brief_cards`, which is the model
+## and the worked example, no guided try. Four cards plus a guided question in
+## front of every new rung is how forty-seven lessons turn into a child tapping
+## Next without reading. See TutorialManager.depth_for().
+##
 ## Then the owl asks the real question. That question is the first thing that
 ## touches the learner model: NOTHING in here records an attempt, moves a
 ## curriculum step, or feeds ELO. A child cannot be marked down for a lesson.
@@ -30,6 +37,12 @@ extends CanvasLayer
 signal closed(payload: Dictionary)
 
 var _tutorial: Dictionary = {}
+## The cards this showing will actually play. A full lesson is every authored
+## card; a brief one is the subset named by tutorial_tuning.json. Held as its own
+## array rather than filtered on every read so `current_index()` and
+## `card_count()` mean the same thing to the flow, the dots and the probe.
+var _cards: Array = []
+var _depth := TutorialManager.DEPTH_FULL
 var _index := 0
 var _skipped := false
 var _done := false
@@ -52,19 +65,50 @@ func _ready() -> void:
 	TextManager.locale_changed.connect(func(_code): _refresh_text())
 
 ## Start the lesson. `tutorial` is one entry from data/curriculum/tutorials.json.
-func present(tutorial: Dictionary) -> void:
+##
+## `depth` is TutorialManager.DEPTH_FULL or DEPTH_BRIEF. Full plays all four
+## cards; brief plays only the ones named in tutorial_tuning.json's `briefCards`
+## -- the model picture and the worked example -- because the child has met this
+## domain before and needs reminding how the new rung goes, not teaching from
+## objects upward.
+func present(tutorial: Dictionary, depth: String = TutorialManager.DEPTH_FULL) -> void:
 	_tutorial = tutorial
+	_depth = depth
+	_cards = _cards_for_depth(tutorial, depth)
 	_index = 0
 	_skipped = false
 	_done = false
 	_build()
 	_render()
 
+## Which authored cards this depth plays, in the authored order.
+##
+## Falls back to the whole lesson whenever the brief set would come out empty --
+## a mistyped card name in the tuning file should cost a child extra reading,
+## never a lesson that opens on nothing and cannot be advanced.
+static func _cards_for_depth(tutorial: Dictionary, depth: String) -> Array:
+	var cards: Array = tutorial.get("cards", [])
+	if depth != TutorialManager.DEPTH_BRIEF:
+		return cards
+	var wanted: Variant = Config.tutorial("brief_cards", ["model", "worked"])
+	if not (wanted is Array) or (wanted as Array).is_empty():
+		return cards
+	var out: Array = []
+	for card in cards:
+		if (wanted as Array).has(String((card as Dictionary).get("body", ""))):
+			out.append(card)
+	return out if not out.is_empty() else cards
+
+## FULL or BRIEF. Public so a probe can assert the rule fired, rather than
+## inferring depth from a card count that two different lessons could share.
+func depth() -> String:
+	return _depth
+
 func tutorial_id() -> String:
 	return String(_tutorial.get("id", ""))
 
 func card_count() -> int:
-	return (_tutorial.get("cards", []) as Array).size()
+	return _cards.size()
 
 ## Which card is showing. Public because the flow is the thing worth testing:
 ## a lesson that silently stops advancing is invisible from the outside.
@@ -141,8 +185,7 @@ func _finish(skipped: bool) -> void:
 ## maths board: a headless probe drives the real flow, and it needs the guided
 ## question in order to answer it.
 func current_card() -> Dictionary:
-	var cards: Array = _tutorial.get("cards", [])
-	return cards[_index] if _index >= 0 and _index < cards.size() else {}
+	return _cards[_index] if _index >= 0 and _index < _cards.size() else {}
 
 func _ms(key: String, fallback: float) -> float:
 	return float(Config.tutorial("pacing/%s" % key, fallback)) / 1000.0
@@ -237,9 +280,15 @@ func _render() -> void:
 	_render_controls(card)
 	_refresh_text()
 
+## One dot per card left to tap. A single-card lesson has none: a lone dot is
+## an unexplained mark on a board a child is already reading a question off, and
+## it says nothing a Next button has not already said.
 func _render_dots() -> void:
 	for child in _dots.get_children():
 		child.queue_free()
+	_dots.visible = card_count() > 1
+	if not _dots.visible:
+		return
 	var accent := ThemeManager.get_color_value(String(Config.tutorial("roles/title", "accent")))
 	var diameter := float(_layout("dot_size", 12))
 	for i in card_count():

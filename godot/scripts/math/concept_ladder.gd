@@ -78,6 +78,55 @@ static func concepts_in(domain: String) -> Array:
 			out.append(entry)
 	return out
 
+## The first step of the concept AFTER the one `step` falls in, for placement.
+##
+## Concept boundaries are the unit the calibration window moves in
+## (MathPlacement): inside a window three answers long, +1 step tells you almost
+## nothing, while "did they clear this whole idea" is the question being asked.
+## Off the end of the ladder returns the last rung, so a child who is genuinely
+## past everything the game holds stops at the top rather than walking into empty
+## content.
+static func next_concept_step(domain: String, step: int) -> int:
+	var ordered := _ordered_steps(domain)
+	for start in ordered:
+		if start > step:
+			return start
+	return ordered[ordered.size() - 1] if not ordered.is_empty() else step
+
+
+## The first step of the concept BEFORE the one `step` falls in. Floors at 0.
+static func previous_concept_step(domain: String, step: int) -> int:
+	var ordered := _ordered_steps(domain)
+	var best := 0
+	for start in ordered:
+		if start < _concept_start(domain, step):
+			best = maxi(best, start)
+	return best
+
+
+## The first step of the concept `step` falls in, or `step` itself when it falls
+## in none -- an authoring hole should not silently move a child.
+static func _concept_start(domain: String, step: int) -> int:
+	var concept := concept_for(domain, step)
+	if concept.is_empty():
+		return step
+	var steps: Array = concept.get("steps", [])
+	return int(steps[0]) if steps.size() == 2 else step
+
+
+## Every base concept's first step in one domain, ascending. Sorted rather than
+## trusted from file order: the ladder is hand-authored JSON and nothing enforces
+## that a new entry is inserted in the right place.
+static func _ordered_steps(domain: String) -> Array:
+	var out: Array = []
+	for entry in concepts_in(domain):
+		var steps: Array = entry.get("steps", [])
+		if steps.size() == 2:
+			out.append(int(steps[0]))
+	out.sort()
+	return out
+
+
 ## Where this concept sits in its domain's ladder, or -1 if it is not on one.
 static func index_of(concept_id: String) -> int:
 	var entry := by_id(concept_id)
@@ -94,8 +143,15 @@ static func by_id(concept_id: String) -> Dictionary:
 ## The tutorial a concept opens with, or "" when it has none authored yet. A
 ## concept without a tutorial is legal: the ladder can name an idea before
 ## anyone has written the lesson for it.
+##
+## `null` is how the ladder file spells "no lesson" for the two multi-digit
+## concepts, and String(null) is not a conversion in GDScript -- it raises
+## "Nonexistent 'String' constructor" and returns nothing. The error was
+## non-fatal, so this read as working while printing two engine errors on every
+## pass over the ladder.
 static func tutorial_id(concept: Dictionary) -> String:
-	return String(concept.get("tutorial", ""))
+	var named: Variant = concept.get("tutorial", "")
+	return String(named) if named is String else ""
 
 static func all() -> Array:
 	return _concepts()

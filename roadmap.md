@@ -244,6 +244,30 @@ its step range moved, the lesson's numbers stop matching the rung it teaches.
 picture; nothing yet checks that a lesson's numbers sit inside its concept's
 band. Worth adding when the ladder next moves.
 
+### Lesson copy is written at an adult reading level
+The lessons are correct Icelandic and correct maths, and too long for the child
+in front of them. `tutorial.addition.missing_part.see` is 24 words with a
+colon-clause, next to a picture that already says it. There is no measurement
+behind "excellent Icelandic" today: `tools/validate_i18n.mjs` checks that a key
+exists in both locales and fits its box, not that a six-year-old can read it.
+
+*Done when:* a sentence-length and word-count budget for `tutorial.*` exists in
+`validate_i18n.mjs`, and the 47 lessons x 4 bodies x 2 locales that fail it have
+been rewritten under it. The validator alone just turns the build red; the
+rewrite alone drifts back. Render with `bash godot/tools/capture_tutorials.sh`
+and read the cards, which is how the last three copy problems were found.
+
+### The silent demo path is near-unreachable and still standing
+`math_challenge_component.gd` demonstrates a worked example on first contact
+with a domain, but only as the fallback for a rung with no authored lesson —
+and 47 lessons now cover every domain's opening rung, so it is close to dead.
+It is the last thing making one owl more than `[one lesson] -> one question`.
+
+*Done when:* the demo branch, `EventBus.math_demo_complete`, the `demo` option
+in `math_challenge.gd`, its branch in `godot/tools/capture/capture.gd` and the
+`math.demo_watch` string are removed together, or the path is given a reason to
+exist. Removing it is a behaviour change with an i18n tail, not cleanup.
+
 ### Visual and richer worded prompts
 Addition and subtraction now carry two word-problem shapes each (berries,
 birds), gated to steps 3+. Still open: more story families and objects so the

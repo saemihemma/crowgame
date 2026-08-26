@@ -59,16 +59,45 @@ func test_every_concept_names_a_real_tutorial() -> void:
 
 func test_a_lesson_is_offered_once_and_then_never_again() -> void:
 	_fresh_save()
+	# The learner has to be STANDING on the rung, not merely dealt a problem from
+	# it. A lesson is only offered once the ladder has reached the concept's first
+	# step (TutorialManager._learner_has_reached), because the stretch lane deals a
+	# rung the child has not earned and teaching it there would open a lesson for
+	# an idea they have not reached, mid-run, on a question meant to be a reach.
+	# Before that rule this test paired a learner on step 2 with a step-7 problem,
+	# which the selection lanes cannot actually produce -- stretch reaches exactly
+	# one step.
 	var problem := {"domain": "addition", "curriculumStep": 7}
+	_stand_on("addition", 7)
 	var first := TutorialManager.tutorial_for_problem(problem)
 	assert_eq(String(first.get("id", "")), "addition.make_ten", "first contact offers the lesson")
 
 	TutorialManager.mark_seen("addition.make_ten", false)
 	assert_true(TutorialManager.tutorial_for_problem(problem).is_empty(), "not offered a second time")
 	# A neighbouring rung is a different idea and still gets taught.
+	_stand_on("addition", 12)
 	assert_eq(String(TutorialManager.tutorial_for_problem({"domain": "addition", "curriculumStep": 12}).get("id", "")),
 		"addition.teen_numbers", "the next concept is still unseen")
 	_fresh_save()
+
+## A concept above the ladder is not taught at all, however new it is. This is
+## the stretch lane: a reach is a reach, and the lesson arrives when the ladder
+## does.
+func test_a_concept_the_learner_has_not_reached_is_not_taught() -> void:
+	_fresh_save()
+	_stand_on("addition", 0)
+	assert_true(TutorialManager.tutorial_for_problem({"domain": "addition", "curriculumStep": 12}).is_empty(),
+		"a child on step 0 is not taught teen numbers")
+	_stand_on("addition", 12)
+	assert_true(not TutorialManager.tutorial_for_problem({"domain": "addition", "curriculumStep": 12}).is_empty(),
+		"and is, once the ladder gets them there")
+	_fresh_save()
+
+## Put the learner on a rung, so a test can pair a problem with a plausible
+## reader of it.
+func _stand_on(domain: String, step: int) -> void:
+	LearnerStateManager.replace_snapshot(
+		MathPlacement.place_snapshot(LearnerStateManager.get_snapshot(), domain, step))
 
 func test_skipping_still_counts_as_seen() -> void:
 	# A Skip button that re-offers the lesson tomorrow is a Skip button that

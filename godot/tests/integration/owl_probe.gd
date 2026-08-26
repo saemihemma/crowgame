@@ -58,6 +58,14 @@ func _physics_process(_delta: float) -> void:
 		if _expected_problems <= 0:
 			_finish(false, "owl has no math_challenge component")
 			return
+		# A chain is a COUNT, and a set of one counts nothing. This owl asks a
+		# single question, so it wears no chain -- a lone 22px ring hovering at its
+		# feet with nothing to be one OF is the thing a player asked about. The owl
+		# sprite is already drawn in chains holding a padlock, so nothing is lost.
+		var drawn := _drawn_chain_links(_owl)
+		if _expected_problems < Npc.MIN_VISIBLE_CHAIN_LINKS and drawn > 0:
+			_finish(false, "a %d-question owl drew %d chain link(s)" % [_expected_problems, drawn])
+			return
 		_owl.interact()
 		return
 
@@ -122,6 +130,16 @@ func _chain_length_of(owl: Node2D) -> int:
 		if String(c.get("type", "")) == "math_challenge":
 			return int(c.get("problemCount", 1))
 	return -1
+
+## How many chain-link sprites this owl actually built. Reads the node rather
+## than the registry: the registry is what the owl WANTS, and this is what a
+## child SEES.
+func _drawn_chain_links(owl: Node2D) -> int:
+	var count := 0
+	for c in owl.get_children():
+		if c is Sprite2D and c.name != "Sprite":
+			count += 1
+	return count
 
 func _find_owl() -> Node2D:
 	for c in _game.get_node("World").get_children():

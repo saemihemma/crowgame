@@ -30,6 +30,22 @@ const RENDERERS := {
 	"equation": "_draw_equation",
 }
 
+## How far the part-whole card's ink reaches past its bar, in numerals. Above:
+## the bracket line at 0.7 plus the whole's numeral centred another 0.55 up, plus
+## half a glyph. Below: the part labels centred 0.7 down, plus half a glyph.
+## Written as constants because _draw_part_whole has to agree with itself in
+## three places -- what it measures, where it puts the bar, and where it puts the
+## numerals -- and the first version of this fix only changed one of them.
+const ABOVE_BAR := 1.75
+const BELOW_BAR := 1.2
+
+## Everything the part-whole card draws, bar and numerals together. Static and
+## arithmetic-only so a test can hold the renderer to it without a board, and so
+## the renderer measures and positions from ONE expression rather than two that
+## can drift apart.
+static func part_whole_natural_size(bar: Vector2, numeral_size: float) -> Vector2:
+	return Vector2(bar.x, numeral_size * ABOVE_BAR + bar.y + numeral_size * BELOW_BAR)
+
 ## The ten-frame is five and five, which is the whole reason it works: eight
 ## reads as "a full row and three", not as eight things to count one at a time.
 const FRAME_COLUMNS := 5
@@ -515,10 +531,27 @@ func _draw_part_whole() -> void:
 	var cell: float = minf(_tune("token_size", 26.0) * 1.4, (span - gap * (total - 1)) / float(total))
 	var width := total * cell + gap * maxf(0.0, total - 1)
 	var height := cell * 1.5
-	_fit(width, height)
-	var origin := Vector2(size.x * 0.5 - width * 0.5, size.y * 0.5 - height * 0.5)
-	var outline := _role("outline", "ink")
 	var numeral_size := _tune("numeral_font_size", 26.0)
+
+	# MEASURE THE WHOLE PICTURE, NOT JUST THE BAR.
+	#
+	# This card draws three things the bar's own rect does not contain: the whole
+	# above it, the bracket line it hangs from, and the two part labels below. It
+	# used to hand _fit() the bar alone -- so on any card where the bar was small
+	# for its band, _fit scaled UP (to fit_max_scale, 1.6x) around the centre and
+	# threw everything outside the bar clean out of the visual's 122px strip. On
+	# addition.missing_part that put the "8" on top of the progress dots and the
+	# "5" and the "?" through the body text underneath, which is what a screenshot
+	# caught. Whatever _fit is given IS the picture as far as it is concerned.
+	var natural := part_whole_natural_size(Vector2(width, height), numeral_size)
+	var above := numeral_size * ABOVE_BAR
+	_fit(natural.x, natural.y)
+
+	# The ink is taller above the bar than below it, so centring the BAR would
+	# leave the picture sitting low in its own band. Centre the whole extent and
+	# put the bar where that leaves it.
+	var origin := Vector2(size.x * 0.5 - width * 0.5, size.y * 0.5 - natural.y * 0.5 + above)
+	var outline := _role("outline", "ink")
 
 	for i in total:
 		var at := Rect2(Vector2(origin.x + i * (cell + gap), origin.y), Vector2(cell, height))

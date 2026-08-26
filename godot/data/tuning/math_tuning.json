@@ -40,8 +40,9 @@
     ]
   },
   "feedback": {
-    "retryLockoutMs": 900,
-    "correctCloseMs": 1500,
-    "revealCloseMs": 3000
+    "_comment": "How long a child waits to find out what happened. correctCloseMs is the one felt on every single right answer and it was 1.5s -- a second of nothing after the button had already gone green, which reads as the game thinking rather than as celebrating. 700ms holds the green long enough to be seen and lands the next thing before attention leaves. revealCloseMs is longer on purpose: after the second miss the board is TEACHING, showing the right answer with its explanation, and a young reader needs the sentence. retryLockoutMs stays at its floor rather than below it -- godot/tests/test_answer_feedback.gd pins it at >= 800ms because it has to outlast the wrong-answer tint, the shake and the hint fading in, and a retry that re-enables underneath its own animation is the bug that put the lockout there.",
+    "retryLockoutMs": 800,
+    "correctCloseMs": 700,
+    "revealCloseMs": 2400
   }
 }

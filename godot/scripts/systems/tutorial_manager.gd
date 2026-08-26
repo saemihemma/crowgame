@@ -22,6 +22,21 @@ extends Node
 ## not a failure -- SessionStats and the HUD deliberately do not celebrate it.
 signal tutorial_finished(payload: Dictionary)
 
+## Teaching depth. FULL is the four-card lesson -- objects, model, worked
+## example, guided try. BRIEF is the reminder: the cards named in
+## tutorial_tuning.json ("briefCards"), which is the model picture and the
+## worked example, no guided question.
+##
+## The rule is the child's own words for it: a new CATEGORY earns the lesson, a
+## new rung inside a category they already know earns a reminder. Forty-seven
+## concepts across eight domains meant a child who had done four hundred
+## additions still got the full four-card treatment for meeting a ten -- the
+## same shape, the same number of taps, the same guided try, for an idea one
+## rung from where they already were. Taught every single time is how a lesson
+## stops being read.
+const DEPTH_FULL := "full"
+const DEPTH_BRIEF := "brief"
+
 ## The tutorial to play before this problem, or an empty dictionary if the child
 ## has already met the idea -- which is the overwhelmingly common case, so this
 ## is the cheap path.
@@ -29,6 +44,13 @@ signal tutorial_finished(payload: Dictionary)
 ## Takes the problem rather than the learner's current step: the child is about
 ## to be shown THIS problem, and the selection lanes routinely hand out one a
 ## rung below or above where the ladder says they are.
+##
+## But NOT above. The stretch lane deals a problem one step past the ladder at a
+## tuned rate, and teaching its concept would open a lesson for an idea the
+## child has not earned, in the middle of a run, on a question that exists to be
+## a reach rather than a lesson. A concept is teachable once its own first rung
+## is at or below where the learner stands; the stretch problem is then answered
+## on its merits, and the lesson arrives when the ladder does.
 func tutorial_for_problem(problem: Dictionary) -> Dictionary:
 	var concept := ConceptLadder.concept_for_problem(problem)
 	if concept.is_empty():
@@ -36,7 +58,38 @@ func tutorial_for_problem(problem: Dictionary) -> Dictionary:
 	var tutorial_id := ConceptLadder.tutorial_id(concept)
 	if tutorial_id == "" or has_seen(tutorial_id):
 		return {}
+	if not _learner_has_reached(concept):
+		return {}
 	return get_tutorial(tutorial_id)
+
+## Has the learner's ladder actually arrived at this concept's first rung?
+##
+## A concept with no readable step range is treated as reached: an authoring gap
+## should cost a child a lesson they did not need, never silence a lesson they
+## did.
+func _learner_has_reached(concept: Dictionary) -> bool:
+	var domain := String(concept.get("domain", ""))
+	var steps: Variant = concept.get("steps", null)
+	if domain == "" or not (steps is Array) or (steps as Array).is_empty():
+		return true
+	return LearnerStateManager.get_current_step(domain) >= int((steps as Array)[0])
+
+## FULL for the first lesson a child ever gets in a domain, BRIEF after that.
+##
+## Derived rather than authored: a `teachDepth` field on all forty-seven concept
+## entries would be forty-seven chances to disagree with the one rule that
+## actually matters, and the rule is about the CHILD's history, not the
+## concept's -- the same rung is a first meeting for one child and a fifth for
+## another.
+func depth_for(tutorial_id: String) -> String:
+	var dot := tutorial_id.find(".")
+	if dot <= 0:
+		return DEPTH_FULL
+	var prefix := tutorial_id.substr(0, dot + 1)
+	for seen_id in SaveManager.get_tutorials_seen():
+		if String(seen_id).begins_with(prefix):
+			return DEPTH_BRIEF
+	return DEPTH_FULL
 
 func has_seen(tutorial_id: String) -> bool:
 	return SaveManager.has_seen_tutorial(tutorial_id)

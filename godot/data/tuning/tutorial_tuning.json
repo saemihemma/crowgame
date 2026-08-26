@@ -29,6 +29,8 @@
     "option_gap": 20,
     "_comment": "Retuned after reading all 164 rendered cards, not from the numbers: Skip outweighed the title, every picture floated in a band it never filled, and two-line bodies sat hard against the nav row. Budgeted against the 960x540 design viewport in project.godot: 40 padding + 88 header + 12 dots + 140 visual + 52 body + 88 nav + 4 separations leaves the board inside the screen with the Gate B3 tap-target floor intact on both button rows. Grow visual_height or body_min_h and the nav row walks off the bottom."
   },
+  "brief_cards": ["model", "worked"],
+  "_brief_cards_comment": "Which authored cards a BRIEF lesson plays. A brief lesson is what a child gets for a new rung inside a domain they have already been taught -- see role of TutorialManager.depth_for(). Names match the `body` field of a card in data/curriculum/tutorials.json; every lesson is authored as see/model/worked/try. The pair here is the picture that carries the strategy and the equation with the reasoning said out loud, which is the shortest thing that still answers 'how do I do this one'. Dropping `try` is deliberate: a guided question in front of the owl's real question is two questions to answer one owl. Naming a card that does not exist falls the lesson back to all four rather than opening on nothing.",
   "pacing": {
     "_comment": "Nothing auto-advances. A child sets the pace; the only timers are the ones that hold a moment long enough to be read.",
     "card_in_ms": 260,
