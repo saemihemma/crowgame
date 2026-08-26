@@ -270,6 +270,10 @@ const DYNAMIC_PREFIXES = [
     { prefix: 'math.prompt.', built: "each problem's phrasing reference" },
     { prefix: 'math.hint.', built: "each problem's phrasing reference" },
     { prefix: 'math.expl.', built: "each problem's phrasing reference" },
+    // math_misconception.gd builds `math.miss.<tag>` from the misconception tag
+    // a wrong answer identifies. test_math_misconception.gd is what holds these
+    // to account: it fails if a tag the rule can name has no string.
+    { prefix: 'math.miss.', built: 'math_misconception.gd, from an identified misconception tag' },
     // math_tutorial.gd builds `tutorial.<tutorial id>.<card body>` from
     // data/curriculum/tutorials.json, so 150 of the 155 tutorial keys are
     // never literals. validate_math_concepts.mjs is what actually holds them to
@@ -370,6 +374,72 @@ for (const [key, box] of Object.entries(BOXES)) {
                 `[${key}] ${locale.toUpperCase()} overflows its box by ${Math.ceil(width - box.max)}px ` +
                 `(${Math.round(width)}px into ${box.max}px at ${box.size}px -- ${box.where}): ` +
                 JSON.stringify(value),
+            );
+        }
+    }
+}
+
+// ── 4b. reading load on a lesson card ──────────────────────────────────────
+//
+// The lessons are correct Icelandic and correct maths and were written at an
+// adult reading level. The card a player complained about read "Átta alls. Þú
+// sérð fimm. Spurningarmerkið er restin: þau eru til, þú þarft bara að finna
+// hvað þau eru mörg." -- a fifteen-word clause behind a colon, on a card for a
+// six-year-old, beside a picture that already says it.
+//
+// The fit budget above measures whether a string PHYSICALLY fits. Nothing
+// measured whether the child it is for can read it, so nothing stopped the
+// next one being written the same way.
+//
+// The unit that matters is the CLAUSE, not the sentence and not the card. A
+// colon or a semicolon opens something a child has to hold in mind while
+// reading on, so both count as boundaries here; two short sentences are easier
+// than one of the same total length. Primary-reading guidance puts a first- and
+// second-year sentence at roughly five to ten words, so ten is the ceiling and
+// the corpus median already sits at eight.
+//
+// Applies to lesson bodies only. A prompt is a question with numbers in it and
+// has its own pixel budget; menu copy is read by a grown-up.
+const LESSON_READING_BUDGET = {
+    maxWordsPerClause: 10,
+    maxClauses: 3,
+    maxWordsPerCard: 18,
+};
+const LESSON_BODY_KEY = /^tutorial\.[a-z_]+\.[a-z_]+\.(see|model|worked|try)$/;
+
+const clausesOf = (text) => String(text)
+    .split(/(?<=[.!?:;])\s*/)
+    .map(part => part.trim())
+    .filter(Boolean);
+const wordsIn = (text) => String(text).trim().split(/\s+/).filter(Boolean).length;
+
+let lessonBodies = 0;
+let widestClause = 0;
+for (const locale of LOCALES) {
+    for (const [key, value] of Object.entries(bundles[primaryDir][locale])) {
+        if (!LESSON_BODY_KEY.test(key)) continue;
+        lessonBodies++;
+        const clauses = clausesOf(value);
+        const longest = clauses.reduce((a, c) => Math.max(a, wordsIn(c)), 0);
+        widestClause = Math.max(widestClause, longest);
+        const total = wordsIn(value);
+        if (longest > LESSON_READING_BUDGET.maxWordsPerClause) {
+            fail(
+                `[${key}] ${locale.toUpperCase()} has a ${longest}-word clause, over the `
+                + `${LESSON_READING_BUDGET.maxWordsPerClause}-word lesson budget. Split it, or cut it: `
+                + JSON.stringify(value),
+            );
+        }
+        if (clauses.length > LESSON_READING_BUDGET.maxClauses) {
+            fail(
+                `[${key}] ${locale.toUpperCase()} is ${clauses.length} clauses, over the `
+                + `${LESSON_READING_BUDGET.maxClauses}-clause lesson budget: ${JSON.stringify(value)}`,
+            );
+        }
+        if (total > LESSON_READING_BUDGET.maxWordsPerCard) {
+            fail(
+                `[${key}] ${locale.toUpperCase()} is ${total} words, over the `
+                + `${LESSON_READING_BUDGET.maxWordsPerCard}-word lesson budget: ${JSON.stringify(value)}`,
             );
         }
     }
@@ -579,7 +649,9 @@ if (failures.length === 0) {
     const keyCount = Object.keys(reference).length;
     console.log(
         `i18n guard: clean (${keyCount} keys x ${LOCALES.length} locales x ${BUNDLE_DIRS.length} targets, ` +
-        `${measured} fit checks, ${phrasingChecked} math phrasings round-tripped and verified)`,
+        `${measured} fit checks, ${lessonBodies} lesson bodies inside the reading budget `
+        + `(widest clause ${widestClause}/${LESSON_READING_BUDGET.maxWordsPerClause} words), `
+        + `${phrasingChecked} math phrasings round-tripped and verified)`,
     );
     for (const [what, w] of Object.entries(worstFit)) {
         console.log(`  tightest ${what.padEnd(16)} ${String(Math.ceil(w.height)).padStart(3)}px  ${w.problem}`);

@@ -29,6 +29,17 @@ extends Node
 ##               objects rather than a row of asterisks
 ##   pause       the pause overlay over a live level
 ##   complete    the run-complete celebration
+##   hud-hurt    the HUD with a heart spent
+##   hud-streak  the HUD with the streak flame lit
+##   hud-ability the HUD with an ability chip in its slot
+##
+## The three hud-* variants exist because those states were DESIGNED and never
+## photographed. A lost heart needs damage, the flame needs consecutive correct
+## answers, and the slots need a grant -- none of which happens while a harness
+## walks a crow across a field, so all three shipped on the strength of the code
+## reading plausibly. They are driven through the same public entry points the
+## game uses, not by writing to the HUD, so a shot is evidence about the real
+## state and not about the harness.
 
 const GAME_SCENE := preload("res://scenes/Game.tscn")
 
@@ -230,6 +241,8 @@ func _stage(variant: String) -> bool:
 	# level with no NPC still has a pause menu and can still be completed.
 	if variant == "pause" or variant == "complete":
 		return _stage_overlay(variant)
+	if variant.begins_with("hud-"):
+		return _stage_hud(variant)
 	var owl := _find_owl()
 	if owl == null:
 		return false
@@ -242,11 +255,6 @@ func _stage(variant: String) -> bool:
 		# domain is the only way to photograph that layout reliably.
 		return _represent_from_domain(owl, "counting")
 	if variant == "math-wrong":
-		# A teaching demo cannot be answered at all, so swap it for a live
-		# problem before pressing anything.
-		if _game.is_math_challenge_active() and _game.get_math_challenge().is_demo():
-			if not _represent_from_domain(owl, "addition"):
-				return false
 		# The board is built during interact(), so the wrong answer can be
 		# submitted straight away; the hold above is what shows its aftermath.
 		if not _game.is_math_challenge_active():
@@ -287,6 +295,49 @@ func _represent_from_domain(owl: Node2D, domain: String) -> bool:
 		"npcGreeting": "How many?",
 	})
 	return true
+
+## Drive the HUD into a state that needs something to have HAPPENED.
+##
+## Each goes through the game's own entry point rather than the HUD's, so the
+## shot is evidence about the state the game can actually reach:
+##
+##   hud-hurt    Game.hurt_player(), the same call a hazard makes
+##   hud-streak  EventBus.math_answer_submitted, which is what Game listens to
+##               in order to count a streak. Fired past the flame threshold,
+##               read from fx_tuning rather than assumed to be three.
+##   hud-ability EventBus.ability_granted, which is what the HUD listens to.
+##               There is no manager to ask: gameplay/ability_manager.gd is not
+##               wired to anything, and the signal is the whole contract.
+func _stage_hud(variant: String) -> bool:
+	if variant == "hud-hurt":
+		if not _game.has_method("hurt_player"):
+			printerr("[capture] Game has no hurt_player()")
+			return false
+		_game.call("hurt_player")
+		return true
+
+	if variant == "hud-streak":
+		# One past the threshold, so the shot shows a lit flame rather than the
+		# frame it lights on.
+		var flame_at := int(Config.fx("streak/flame", 3))
+		for _i in flame_at + 1:
+			EventBus.math_answer_submitted.emit({"problemId": "capture", "isCorrect": true})
+		return true
+
+	if variant == "hud-ability":
+		var declared: Array = DataManager.get_dict("ABILITIES").get("abilities", [])
+		var id := ""
+		for entry in declared:
+			if entry is Dictionary and String((entry as Dictionary).get("id", "")) != "":
+				id = String((entry as Dictionary)["id"])
+				break
+		if id == "":
+			printerr("[capture] abilities.json declares nothing to grant")
+			return false
+		EventBus.ability_granted.emit({"abilityId": id})
+		return true
+
+	return false
 
 func _stage_overlay(variant: String) -> bool:
 	var method := "_toggle_pause" if variant == "pause" else "_show_completion_screen"

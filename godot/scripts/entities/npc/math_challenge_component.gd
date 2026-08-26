@@ -12,18 +12,10 @@ var problem_count := 1
 
 var _problems_completed := 0
 var _last_domain: Variant = null
-# Teaching window: which domain the current interact's freebie belongs to,
-# and which domains already got their demo this session.
+# Teaching window: which domain the current interact's freebie belongs to. The
+# question after a lesson is a freebie -- a miss on the very first try at a
+# brand-new idea records nothing at all.
 var _pending_freebie_domain: Variant = null
-## Keyed "<childId>|<domain>", not by domain alone. Static state survives a level
-## reload -- which is the point, one demo per domain per session -- but it also
-## survived switching profile, so the second child on a shared tablet silently
-## inherited the first child's "already demonstrated" and met a whole domain with
-## no worked example at all.
-static var _demo_shown_for: Dictionary = {}
-
-static func _demo_key(domain: String) -> String:
-	return "%s|%s" % [String(LearnerStateManager.get_snapshot().get("childId", "local-child")), domain]
 ## At most one lesson per owl. Teaching is per-concept and selection is per
 ## problem, so an owl that asked two questions could open two lessons back to
 ## back -- and even a one-question owl re-enters _launch() after a lesson, which
@@ -44,7 +36,6 @@ func _init(config: Dictionary = {}) -> void:
 func init_component(owner_npc: Node) -> void:
 	npc = owner_npc
 	EventBus.math_challenge_complete.connect(_on_math_complete)
-	EventBus.math_demo_complete.connect(_on_demo_complete)
 
 func on_interact() -> bool:
 	_problems_completed = 0
@@ -57,8 +48,6 @@ func on_interact() -> bool:
 func destroy() -> void:
 	if EventBus.math_challenge_complete.is_connected(_on_math_complete):
 		EventBus.math_challenge_complete.disconnect(_on_math_complete)
-	if EventBus.math_demo_complete.is_connected(_on_demo_complete):
-		EventBus.math_demo_complete.disconnect(_on_demo_complete)
 
 ## Open the next thing this encounter owes the child -- a lesson, or a question.
 ## Returns whether anything opened, which is what npc.gd needs in order to decide
@@ -75,43 +64,32 @@ func _launch() -> bool:
 		return false
 	var config := _selection_config()
 
-	# Teaching window: if this level's gating includes a domain the child has
-	# never attempted, the owl demonstrates one worked example first, then
-	# hands over a freebie try in the same domain.
-	if _pending_freebie_domain == null and _problems_completed == 0:
+	# FIRST CONTACT WITH A DOMAIN. The child has never attempted this subject, so
+	# the opening rung's lesson runs before the first question and that question
+	# is a freebie.
+	#
+	# There used to be a second, wordless mechanism here: the owl presented a
+	# problem it answered itself while the child watched, on a fixed four-beat
+	# timer, and only fell back to it when the rung had no authored lesson. Forty
+	# seven lessons now cover every domain's opening rung, so the fallback was
+	# unreachable in every journey the simulator produces -- and it was the last
+	# thing that could make one owl more than [one lesson] -> one question. The
+	# lesson is the better worked example anyway: it shows the idea with objects
+	# and a model before the symbols, and it lets the child try it.
+	if _pending_freebie_domain == null and _problems_completed == 0 and not _taught_this_encounter:
 		for domain in config["domains"]:
-			var demo_key := _demo_key(String(domain))
-			if LearnerStateManager.get_total_attempts(String(domain)) == 0 and not _demo_shown_for.has(demo_key):
-				_demo_shown_for[demo_key] = true
-				# First contact with a whole domain. If the ladder has a lesson
-				# for the rung this child starts on, that lesson IS the worked
-				# example, and a better one -- it shows the idea with objects and
-				# a model before the symbols, and it lets the child try it. The
-				# silent demo below stays as the fallback for a rung nobody has
-				# written a lesson for yet.
-				var opening := ConceptLadder.concept_for(
-					String(domain), LearnerStateManager.get_current_step(String(domain)))
-				var opening_lesson := TutorialManager.get_tutorial(ConceptLadder.tutorial_id(opening))
-				if not opening_lesson.is_empty() and not TutorialManager.has_seen(String(opening_lesson["id"])):
-					_pending_freebie_domain = domain
-					_taught_this_encounter = true
-					game.launch_math_tutorial(opening_lesson, _on_tutorial_closed,
-						TutorialManager.depth_for(String(opening_lesson["id"])))
-					return true
-				var demo_config := config.duplicate(true)
-				demo_config["domains"] = [domain]
-				demo_config["primaryDomain"] = domain
-				var demo_problem = OwlSelection.select_owl_problem(MathProblemManager, demo_config, null)
-				if demo_problem != null:
-					MathProblemManager.consume_selection_meta(String(demo_problem.get("id", "")))
-					_pending_freebie_domain = domain
-					game.launch_math_challenge(demo_problem, {
-						"demo": true,
-						"npcName": TextManager.t("npc.professor_hoot"),
-						"npcGreeting": TextManager.t("math.demo_watch"),
-					})
-					return true
-				break
+			if LearnerStateManager.get_total_attempts(String(domain)) > 0:
+				continue
+			var opening := ConceptLadder.concept_for(
+				String(domain), LearnerStateManager.get_current_step(String(domain)))
+			var opening_lesson := TutorialManager.get_tutorial(ConceptLadder.tutorial_id(opening))
+			if opening_lesson.is_empty() or TutorialManager.has_seen(String(opening_lesson["id"])):
+				continue
+			_pending_freebie_domain = domain
+			_taught_this_encounter = true
+			game.launch_math_tutorial(opening_lesson, _on_tutorial_closed,
+				TutorialManager.depth_for(String(opening_lesson["id"])))
+			return true
 
 	var freebie_domain = _pending_freebie_domain
 	_pending_freebie_domain = null
@@ -132,7 +110,7 @@ func _launch() -> bool:
 		return false
 	_last_domain = problem["domain"]
 
-	# A new rung inside a domain the child already knows. The demo above only
+	# A new rung inside a domain the child already knows. First contact above only
 	# ever fires once per domain, so without this the first two-digit sum, the
 	# first bridge past ten and the first borrow all arrive with no warning at
 	# all -- they are just "addition" and "subtraction" to the runtime.
@@ -185,15 +163,10 @@ func _on_tutorial_closed(payload: Dictionary) -> void:
 		# The encounter ended under the lesson (the level reloaded, the player
 		# died). The held problem is never going to be asked, so hand its
 		# selection metadata back rather than leaving an orphan in the pool
-		# manager's map -- the demo path does the same for the same reason.
+		# manager's map.
 		if _pending_problem != null:
 			MathProblemManager.consume_selection_meta(String((_pending_problem as Dictionary).get("id", "")))
 			_pending_problem = null
-		return
-	npc.get_tree().create_timer(0.22).timeout.connect(_launch_next, CONNECT_ONE_SHOT)
-
-func _on_demo_complete(_data: Dictionary) -> void:
-	if npc == null or not npc.is_interacting() or _pending_freebie_domain == null:
 		return
 	npc.get_tree().create_timer(0.22).timeout.connect(_launch_next, CONNECT_ONE_SHOT)
 

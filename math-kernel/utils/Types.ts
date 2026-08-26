@@ -6,7 +6,6 @@ export interface LevelRegistryEntry {
     key: string;
     name: string;
     mapFile: string;
-    tilesetImages: Record<string, string>;
     /**
      * ThemeManager id this level is dressed in. Distinct from `LevelSpec.theme`,
      * which the level compiler uses to pick a tileset filename and which cannot

@@ -81,7 +81,7 @@ Game:
 - **70** `.gd` scripts under `godot/scripts/`, **25** `.tscn` scenes under `godot/scenes/`
 - `godot/data/registries/spawn_registry.json`: **5** spawnable object types
 - `godot/data/audio/sound_events.json`: **16** semantic sound events
-- `godot/data/i18n/strings_en.json`: **582** keys, matched key-for-key by
+- `godot/data/i18n/strings_en.json`: **588** keys, matched key-for-key by
   `strings_is.json`
 - **20** autoloads, listed in `godot/project.godot` (order matters: `CloudSync` is last)
 

@@ -467,16 +467,8 @@ async function build() {
         theme: 'forest',
         image: 'assets/tilesets/forest_tiles.png',
         source: 'authored',
-        note: 'Legacy skin. Kept because the Godot suite asserts on the forest theme id.',
+        note: 'Base ground skin. Every level .tscn instances it through resources/tilesets/forest_tiles.tres; the per-world sheets dress over it.',
         tiles: GRID_ROLES,
-    });
-    manifest.tilesets.push({
-        key: 'level1_tiles',
-        theme: null,
-        image: 'assets/tilesets/level1_tiles.png',
-        source: 'authored',
-        note: '32x64, two tiles. Loaded but never selected - compiled maps name their own tileset. Retirement tracked in roadmap.md.',
-        tiles: [],
     });
     manifest.tilesets.push({
         key: 'spike_hazards',

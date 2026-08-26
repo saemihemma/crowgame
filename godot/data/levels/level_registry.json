@@ -4,9 +4,6 @@
       "key": "level_99",
       "name": "Math Practice Arena",
       "mapFile": "data/levels/compiled/level_99.json",
-      "tilesetImages": {
-        "level1_tiles": "assets/tilesets/level1_tiles.png"
-      },
       "music": "level_01_music",
       "unlockRequirement": null,
       "order": 1,
@@ -33,9 +30,6 @@
       "key": "level_01",
       "name": "Forest Clearing",
       "mapFile": "data/levels/compiled/level_01_forest.json",
-      "tilesetImages": {
-        "level1_tiles": "assets/tilesets/level1_tiles.png"
-      },
       "music": "level_01_music",
       "unlockRequirement": null,
       "order": 2,
@@ -56,9 +50,6 @@
       "key": "level_02",
       "name": "Crystal Cave",
       "mapFile": "data/levels/compiled/level_02_cave.json",
-      "tilesetImages": {
-        "level1_tiles": "assets/tilesets/level1_tiles.png"
-      },
       "music": "level_02_music",
       "unlockRequirement": {
         "level": "level_01",
@@ -82,9 +73,6 @@
       "key": "level_03",
       "name": "Sunny Meadow",
       "mapFile": "data/levels/compiled/level_03_meadow.json",
-      "tilesetImages": {
-        "level1_tiles": "assets/tilesets/level1_tiles.png"
-      },
       "music": "level_03_music",
       "unlockRequirement": {
         "level": "level_02",
@@ -109,9 +97,6 @@
       "key": "level_04",
       "name": "Mossy Bridge",
       "mapFile": "data/levels/compiled/level_04_bridge.json",
-      "tilesetImages": {
-        "level1_tiles": "assets/tilesets/level1_tiles.png"
-      },
       "music": "level_04_music",
       "unlockRequirement": {
         "level": "level_03",
@@ -136,9 +121,6 @@
       "key": "level_05",
       "name": "Treetop Trail",
       "mapFile": "data/levels/compiled/level_05_treetop.json",
-      "tilesetImages": {
-        "level1_tiles": "assets/tilesets/level1_tiles.png"
-      },
       "music": "level_05_music",
       "unlockRequirement": {
         "level": "level_04",

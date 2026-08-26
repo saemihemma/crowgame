@@ -1,6 +1,12 @@
 extends TestCase
-## Phase 0.5: every palette role referenced by code exists in BOTH skins, so a
-## theme swap can never leave a styling color undefined (would fall back to white).
+## Every palette role referenced by code exists in EVERY world, so a theme swap
+## can never leave a styling colour undefined (it would fall back to white).
+##
+## This used to assert on two skins by path -- `theme_forest` and `theme_scifi`,
+## a pair that predated the worlds and that these two tests were the only reason
+## to keep. The five worlds are the themes now, and asserting on all of them
+## instead of on two placeholders is both the honest check and one fewer thing
+## whose deletion breaks a test.
 
 const REQUIRED_ROLES := [
 	"primary", "secondary", "accent", "danger", "textColor",
@@ -19,15 +25,26 @@ func _palette(path: String) -> Dictionary:
 	f.close()
 	return t.get("palette", {})
 
-func test_forest_has_all_roles() -> void:
-	var pal := _palette("res://data/themes/theme_forest.json")
-	for role in REQUIRED_ROLES:
-		assert_true(pal.has(role), "forest palette has role '%s'" % role)
+## Every world listed in the level registry, rather than a hardcoded list: a
+## sixth world added without a palette role should fail here, not on a player's
+## screen.
+func test_every_world_palette_has_all_roles() -> void:
+	var worlds := _world_theme_ids()
+	assert_true(worlds.size() >= 5, "the registry names the worlds to check (found %d)" % worlds.size())
+	for id in worlds:
+		var path := "res://data/themes/theme_%s.json" % id
+		assert_true(FileAccess.file_exists(path), "%s has a palette file" % id)
+		var pal := _palette(path)
+		for role in REQUIRED_ROLES:
+			assert_true(pal.has(role), "%s palette has role '%s'" % [id, role])
 
-func test_scifi_has_all_roles() -> void:
-	var pal := _palette("res://data/themes/theme_scifi.json")
-	for role in REQUIRED_ROLES:
-		assert_true(pal.has(role), "scifi palette has role '%s'" % role)
+func _world_theme_ids() -> Array:
+	var ids: Array = []
+	for level in DataManager.get_dict("LEVEL_REGISTRY").get("levels", []):
+		var id := String((level as Dictionary).get("theme", ""))
+		if id != "" and not ids.has(id):
+			ids.append(id)
+	return ids
 
 ## Every drawn part of a lesson has to be VISIBLE, in every world.
 ##

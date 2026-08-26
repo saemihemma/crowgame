@@ -7,7 +7,8 @@
 #   bash godot/tools/capture.sh level_01 play,math     # and its maths board
 #   bash godot/tools/capture.sh level_01 play "" 1194x834   # at iPad size
 #
-# Variants: play | math | math-wrong (see tools/capture/capture.gd).
+# Variants: play | math | math-wrong | math-count | pause | complete |
+#           hud-hurt | hud-streak | hud-ability (see tools/capture/capture.gd).
 # Writes output/godot-shots/<level>-<variant>.png.
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

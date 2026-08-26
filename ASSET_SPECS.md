@@ -20,7 +20,6 @@ Sprites and images:
 - `assets/sprites/ui/coin/coinsprite.png`
 - `assets/sprites/objects/door/door-36.png`
 - `assets/tilesets/forest_tiles.png`
-- `assets/tilesets/level1_tiles.png`
 - `assets/tilesets/spike_hazards.png`
 
 Audio manifest:

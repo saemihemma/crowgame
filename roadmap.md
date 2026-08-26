@@ -156,71 +156,59 @@ wallpaper — which means distinctive marks have nowhere to live.
 *Done when:* the compiler selects left/middle/right caps for platform runs, and
 scatters decoration tiles into the layer it already emits.
 
-### `level1_tiles.png` is loaded but never selected
-It is in the tileset manifest and BootScene loads it, but no compiled map names
-it: `GameScene.loadTiledLevel()` resolves a tileset by the name the map carries,
-and every map now names its world tileset. It is 32x64, two tiles, and predates
-the current compiler. `LevelRegistryEntry.tilesetImages` is the same story — the
-field is declared in `src/utils/Types.ts` and read by nothing.
+### The feel pass is the last thing the Phaser prototype proved and Godot lacks
+The rest of that list has landed. Five world themes with per-level selection, the
+themed two-stop sky (`game.gd::_paint_sky`), the five per-world tilesets named by
+every compiled map, the wrong-answer choreography, the board that measures its
+own question and grows, the three-pod HUD with the owl ring, the streak flame,
+and the one-answer owl roster -- `owl_probe` solves exactly the one problem the
+registry says the owl asks.
 
-*Done when:* both are removed, or something actually uses them.
+What is left is the feel pass itself: `brand/BRAND_SYSTEM.md` §2.4 asks for coyote
+time, jump buffering and the apex hold, and the port has constant gravity and no
+input grace. The apex hold has its own entry below because the motion parity
+contract blocks it specifically; coyote time and jump buffering do not touch the
+gravity model and are the cheaper half.
 
-### `theme_forest` and `theme_scifi` are kept alive only by the Godot tests
-`godot/tests/test_theme_roles.gd` and `test_theme_swap.gd` assert on the
-`forest` and `scifi` ids by path. Once the five world themes land in Godot those
-two skins have no other reason to exist.
+*Done when:* `player_motion.gd` carries coyote time and a jump buffer from
+`data/tuning/player_base.json`, and `test_motion_parity.gd` still passes -- both
+are input-timing windows, not gravity, so the golden fixtures should not move. If
+they do, the fixtures are asserting more than the motion model.
 
-*Done when:* the tests assert on two world ids instead, and the legacy skins are
-deleted.
+### Five board materials are wired and undrawn
+`math_challenge.gd::_board_face()` now reads the active world's
+`mathBoard.frameSprite` before the shared `board_panel` slot, and falls back to
+the drawn `StyleBoxFlat` when neither has art -- so dropping a PNG into the
+registry under the name a theme already declares changes that world's board and
+nothing else. It is a nine-slice (`StyleBoxTexture` with texture margins), which
+is what the growing board needs: it measures its question and can reach ~380
+tall, and a fixed-size PNG would smear its corners.
 
-### The Godot build is missing everything the Phaser prototype proved
-Godot is the only runtime now, so this is not a parity gap — it is the actual
-backlog. A capture of `level_01` shows a flat `#87CEEB` sky, the forest tileset,
-and a HUD reading `Lives: *** / Coins 15 / Owls 3` in plain yellow text.
+`brand/BRAND_SYSTEM.md` §8.3 owns the intent -- bark, crystal, candy, iron,
+sky-stone, with the geometry, button grid and timings identical in all five.
+`brand/ASSET_MANIFEST.md` P4 lists the five files. This is now purely an art
+dependency; there is no code left to write.
 
-Missing: the five world themes and per-level selection, the themed sky, the five
-tilesets (the PNGs are there; nothing loads them), the feel pass, the
-wrong-answer choreography, the dynamic maths-board layout, the three-pod HUD and
-owl ring, the streak, and the one-answer owl roster — `owl_probe` still solves
-two problems.
+*Done when:* the five frames exist and each world's board is visibly made of that
+world's material.
 
-`brand/PRODUCTION_PLAN.md` §2a has the table and the order. Themes go first.
+### The HUD's uncovered states are covered, and found two bugs
+`godot/tools/capture.sh` now has `hud-hurt`, `hud-streak` and `hud-ability`
+variants, driven through the game's own entry points (`Game.hurt_player`,
+`EventBus.math_answer_submitted`, `EventBus.ability_granted`) rather than by
+writing to the HUD, so a shot is evidence about a state the game can reach.
 
-*Done when:* captures show five visibly different worlds and `run_tests.sh`
-still passes.
+The first run of them showed a lit streak with no flame on the ring at all, and
+"Double Jump" printed across the jump button. Both are fixed and both are now
+arithmetic assertions in `godot/tests/test_hud_pods.gd`, which is the kind of
+check that would have caught them without a renderer.
 
-### The maths board is themed by colour only, not by material
-Every theme file already declares `mathBoard.frameSprite`, `mathBoard.bgSprite`
-and `mathBoard.optionSprite`, and none of them has ever had a texture behind it.
-`MathBoard` draws the panel and the option buttons with `Graphics` from the
-palette, so a world changes the board's *colour* and nothing else. Emberwood and
-Geyserworks should not be the same rounded rectangle in different browns.
+What is still uncovered is the DEATH and respawn sequence, and the completion
+screen with a full owl ring rather than an empty one -- `complete` stages the
+overlay but not the state behind it.
 
-`brand/BRAND_SYSTEM.md` §8.3 owns the intent: the board is made of the world's
-material — bark, crystal, candy, iron, sky-stone — while its geometry, button
-grid and timings stay identical in all five. Skin changes, layout never does.
-`brand/ASSET_MANIFEST.md` P4 lists the files.
-
-*Watch out:* the board is no longer a fixed `520x280`. It measures its question,
-options and hint and grows to fit, so on a two-line prompt it is close to 380
-tall. **The frame has to be a true nine-slice** — a fixed-size PNG will stretch
-and smear its corners. That means the asset is a nine-slice source plus the
-border insets, and `MathBoard.drawBoardBackground()` needs to draw a
-`NineSlice` game object when a texture exists and keep the `Graphics` path as
-the fallback, the same way `HealthBar` already falls back for its icons.
-
-*Done when:* each world's board is visibly made of that world's material, the
-frame survives a two-line prompt without distortion, and replacing one is a PNG
-swap plus insets in the theme file.
-
-### The HUD has states no screenshot has ever seen
-`tools/theme_screenshots.mjs` now rescues an owl, so the filled ring is covered.
-Still uncovered: a lost heart (needs damage), the streak flame at 3+ (needs two
-owls answered perfectly in sequence), and the ability slots (needs an ability
-granted). Those are three designed states with no visual evidence behind them.
-
-*Done when:* the harness can drive damage and a multi-owl streak, or those states
-are checked some other way and the check is written down.
+*Done when:* those two are variants too, or are checked some other way and the
+check is written down.
 
 ### Apex hang is blocked by the motion parity contract
 The jump would feel more generous with reduced gravity near the top of the arc,
@@ -235,38 +223,6 @@ exercised from the container this was written in.
 and the fixtures are regenerated — or the idea is dropped on purpose.
 
 ## P3 — Content and localisation
-
-### Lessons for the concepts, and only some of the practice
-`docs/MATH_CONCEPT_LADDER.md` ships 38 lessons over 40 concepts, but a lesson is
-authored copy and the pools are generated. When a concept is re-cut, split or
-its step range moved, the lesson's numbers stop matching the rung it teaches.
-`tools/validate_math_concepts.mjs` checks each card's arithmetic against its own
-picture; nothing yet checks that a lesson's numbers sit inside its concept's
-band. Worth adding when the ladder next moves.
-
-### Lesson copy is written at an adult reading level
-The lessons are correct Icelandic and correct maths, and too long for the child
-in front of them. `tutorial.addition.missing_part.see` is 24 words with a
-colon-clause, next to a picture that already says it. There is no measurement
-behind "excellent Icelandic" today: `tools/validate_i18n.mjs` checks that a key
-exists in both locales and fits its box, not that a six-year-old can read it.
-
-*Done when:* a sentence-length and word-count budget for `tutorial.*` exists in
-`validate_i18n.mjs`, and the 47 lessons x 4 bodies x 2 locales that fail it have
-been rewritten under it. The validator alone just turns the build red; the
-rewrite alone drifts back. Render with `bash godot/tools/capture_tutorials.sh`
-and read the cards, which is how the last three copy problems were found.
-
-### The silent demo path is near-unreachable and still standing
-`math_challenge_component.gd` demonstrates a worked example on first contact
-with a domain, but only as the fallback for a rung with no authored lesson —
-and 47 lessons now cover every domain's opening rung, so it is close to dead.
-It is the last thing making one owl more than `[one lesson] -> one question`.
-
-*Done when:* the demo branch, `EventBus.math_demo_complete`, the `demo` option
-in `math_challenge.gd`, its branch in `godot/tools/capture/capture.gd` and the
-`math.demo_watch` string are removed together, or the path is given a reason to
-exist. Removing it is a behaviour change with an i18n tail, not cleanup.
 
 ### Visual and richer worded prompts
 Addition and subtraction now carry two word-problem shapes each (berries,
@@ -339,17 +295,6 @@ stipulated.
 *Done when:* a real week of play says the pace is right, or says which way to
 move the weights.
 
-### The trophy shelf has no heading
-`trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with
-the shelf but nothing ever drew it — the new dead-key guard caught it on its
-first merge. The key is deleted rather than wired up, because adding a heading
-changes the main menu's layout and that belongs to whoever designed the shelf.
-
-*Done when:* either a heading is drawn above the badge row and the key comes
-back with it, or the shelf is deliberately headingless and this entry goes.
-Note the main menu is already tight: the language selector's width is measured
-against the title ending at x 636.
-
 ### Only six levels exist
 `level_99` (practice) plus five real ones. More content is the main lever on how
 long a child stays with the game.
@@ -395,6 +340,12 @@ of completed tasks.** Do not add finished work here.
 - **Answer-feedback pacing lives in `data/tuning/math_tuning.json`.** It was
   hardcoded in one port and in `ui_tuning.json` in the other, so the two
   disagreed about how long a child waits after a miss.
+- **The trophy shelf is deliberately headingless.** Every badge already carries
+  its own domain label underneath it, so a heading would be the one item on that
+  row that names nothing -- and the row is anchored to the bottom strip under the
+  buttons, where it reads as a status shelf rather than a titled section. The
+  `trophy.title` key stays deleted. The band is 84px and a badge plus its label
+  already fills it, so adding one would also have to move the menu.
 - **A held control must look held.** The options dim to 0.45 while input is
   locked out. Use `self_modulate`, not `modulate` -- the focus highlight owns
   `modulate` and will otherwise leave the focused option lit.

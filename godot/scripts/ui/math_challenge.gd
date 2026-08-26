@@ -37,8 +37,6 @@ var _wrong_attempts := 0
 var _presented_at := 0
 var _first_response_ms := 0
 var _done := false
-# Worked-example mode: the owl demonstrates, the child only watches.
-var _is_demo := false
 # Freebie: first-ever try at a newly taught skill. A win counts normally;
 # a miss is never recorded against the learner.
 var _is_freebie := false
@@ -75,9 +73,8 @@ func present(problem: Dictionary, opts: Dictionary = {}) -> void:
 	_done = false
 	_presented_at = Time.get_ticks_msec()
 	_first_response_ms = 0
-	_is_demo = bool(opts.get("demo", false))
 	_is_freebie = bool(opts.get("freebie", false))
-	_is_golden = bool(opts.get("golden", false)) and not _is_demo
+	_is_golden = bool(opts.get("golden", false))
 	# Clear any previous board. present() is public and re-presenting on the same
 	# overlay would otherwise stack a second scrim and board over the first.
 	for child in get_children():
@@ -86,41 +83,15 @@ func present(problem: Dictionary, opts: Dictionary = {}) -> void:
 	if _is_golden:
 		AudioManager.play_event("golden")
 
-	if _is_demo:
-		# Worked example: no input, no learner-model events. Two beats — think
-		# aloud (hint), then the answer with its explanation — then hand over.
-		# Pacing comes from the shared math_tuning.json (ms, hence / 1000.0).
-		var teaching: Dictionary = DataManager.get_dict("MATH_TUNING").get("teaching", {})
-		_set_buttons_enabled(false)
-		get_tree().create_timer(float(teaching["hintMs"]) / 1000.0).timeout.connect(
-			func(): _show_hint(_localised("hint")), CONNECT_ONE_SHOT)
-		get_tree().create_timer(float(teaching["revealMs"]) / 1000.0).timeout.connect(_reveal_answer, CONNECT_ONE_SHOT)
-		get_tree().create_timer(float(teaching["handoverMs"]) / 1000.0).timeout.connect(func():
-			var viewport_size := get_viewport().get_visible_rect().size
-			DopamineFX.number_fly_up(self, viewport_size / 2.0 - Vector2(0, 120), TextManager.t("math.demo_your_turn"), ThemeManager.get_color_value("accent"))
-		, CONNECT_ONE_SHOT)
-		get_tree().create_timer(float(teaching["closeMs"]) / 1000.0).timeout.connect(func():
-			_done = true
-			EventBus.math_demo_complete.emit({"problemId": current_problem.get("id", ""), "domain": current_problem.get("domain", "")})
-			_close()
-		, CONNECT_ONE_SHOT)
-		return
-
 	EventBus.math_challenge_start.emit({"problemId": String(problem.get("id", ""))})
 	EventBus.math_problem_presented.emit(problem)
-
-## A demo problem is shown, not answered - the owl is teaching. Public so the
-## capture harness can tell the two apart: it kept photographing a disabled board
-## and reporting it as the wrong-answer state.
-func is_demo() -> bool:
-	return _is_demo
 
 func is_active() -> bool:
 	return not _done
 
 ## Submit an answer by option index (called by buttons and by tests).
 func submit_answer(index: int) -> void:
-	if _done or _is_demo:
+	if _done:
 		return
 	var answer: Dictionary = current_problem.get("answer", {})
 	var options: Array = answer.get("options", [])
@@ -159,12 +130,19 @@ func submit_answer(index: int) -> void:
 			get_tree().create_timer(TEACH_DELAY).timeout.connect(
 				_finish.bind(false, false), CONNECT_ONE_SHOT)
 		else:
-			# First wrong: show the authored hint and pause briefly before the
-			# retry (MathBoard re-enables after 600ms — anti-spam pacing).
+			# First wrong: show a hint and pause briefly before the retry
+			# (anti-spam pacing).
+			#
+			# The hint speaks to THIS miss when the miss is recognisable -- out by
+			# one, out by ten, a factor of ten, digits the wrong way round -- and to
+			# the problem otherwise. Every problem has carried `misconceptionTags`
+			# since it was authored and nothing had ever read them, so a child who
+			# was one away and a child who guessed got the same sentence.
+			#
 			# Through _localised(), not the raw field: an Icelandic player was
 			# getting the English hint at exactly the moment they needed help
 			# most. The reveal path below had been localised; this one was missed.
-			_show_hint(_localised("hint"))
+			_show_hint(_miss_hint(options[index]))
 			_set_buttons_enabled(false)
 			get_tree().create_timer(RETRY_LOCKOUT).timeout.connect(
 				_reenable_for_retry, CONNECT_ONE_SHOT)
@@ -224,6 +202,19 @@ func _reveal_answer() -> void:
 	if explanation == "":
 		explanation = _localised("hint")
 	_show_hint(explanation)
+
+## What to say about a wrong answer.
+##
+## The misconception-specific line when the miss identifies one, the problem's
+## authored hint otherwise. Never both: two sentences at the moment a child has
+## just got something wrong is the point at which they stop reading.
+func _miss_hint(tapped: Variant) -> String:
+	var key := MathMisconception.hint_key(current_problem, tapped)
+	if key != "":
+		var targeted := TextManager.t(key)
+		if targeted != "" and targeted != key:
+			return targeted
+	return _localised("hint")
 
 func _show_hint(text: String) -> void:
 	if _hint_label == null or text == "":
@@ -378,13 +369,28 @@ func _build_ui(opts: Dictionary) -> void:
 ## The board's surface. Themed roles rather than fixed colours, so each world
 ## brings its own slate - and swappable for a nine-slice texture the day one is
 ## drawn, without touching this file (brand/ASSET_MANIFEST.md P1).
+##
+## Three sources, most specific first:
+##
+##   1. the active world's own `mathBoard.frameSprite` (theme_*.json)
+##   2. the registry's shared `board_panel` slot
+##   3. the drawn StyleBoxFlat below
+##
+## The theme slot is first because it is the only one that can make Emberwood
+## and Geyserworks different MATERIALS rather than the same rounded rectangle in
+## two browns, which is what brand/BRAND_SYSTEM.md §8.3 asks for. Every theme
+## file has declared `mathBoard.frameSprite` since the palettes were written and
+## nothing read it: this used to check one global key, so the day the five PNGs
+## landed all five worlds would still have shared one board and the slots would
+## have looked wired while doing nothing.
 func _board_face() -> StyleBox:
-	# A theme may point at its own panel; otherwise the registry's board slot,
-	# which is empty until the nine-slice in ASSET_MANIFEST P4 is drawn.
 	var texture_path := String(Config.ui("math_challenge/board_texture", ""))
 	var panel: Texture2D = null
+	var themed := String((ThemeManager.get_theme().get("mathBoard", {}) as Dictionary).get("frameSprite", ""))
 	if texture_path != "" and ResourceLoader.exists(texture_path):
 		panel = load(texture_path)
+	elif themed != "" and SpriteSheet.has_art(themed):
+		panel = SpriteSheet.texture(themed)
 	elif SpriteSheet.has_art("board_panel"):
 		panel = SpriteSheet.texture("board_panel")
 	if panel != null:

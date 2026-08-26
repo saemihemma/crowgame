@@ -611,3 +611,86 @@ ms/frame against a 12 ms budget while a second Godot process was running in the
 same container; two clean runs afterwards measured 3.4 and 3.6 ms. Sandbox
 contention, not a regression — but a probe that measures wall-clock in a shared
 container will say that again.
+
+## 2026-08-26 (later) — Remainders cleared, and the roadmap worked down
+
+Original prompt: push to main; tackle the remainders; tackle all roadmap, through
+Lead Producer.
+
+**Scope ruling first, because "all" was not honestly available.** Seven roadmap
+entries have done-when conditions that name an artist, a practising
+grunnskólakennari, a week of real play, or a decision that is the owner's to
+make: ladder tuning from play, the `approx` grade milestones, the tileset art
+pass, the code-drawn UI art pass, the SFX decision, mult/div pace, and the mouse
+half of the touch-control question. Those were left alone rather than claimed.
+
+Pushed to main after merging it in. Both sides had touched `math_tuning.json` and
+both edits were wanted -- main's `domainWeights`, this branch's retuned
+`feedback` -- so both were kept and `ladderWeights.ts` regenerated. The export
+conflict (three content-addressed builds claiming four filenames) is not
+hand-resolvable, so the blobs were dropped and `output/web` rebuilt.
+
+**The two remainders.**
+- The silent demo path is gone: the trigger, `EventBus.math_demo_complete`, the
+  `demo` option on the board, the capture-harness branch, the `math.demo_watch`
+  string, and the `teaching` block in `math_tuning.json` that only it read. An owl
+  is now at most `[one lesson] -> one question` on every path.
+- Lesson copy is at a child's reading level, and measurably so.
+  `tools/validate_i18n.mjs` gained a reading budget for `tutorial.*` bodies --
+  max 10 words per clause, 3 clauses, 18 words per card, with a colon or
+  semicolon counting as a clause boundary because it opens something a child has
+  to hold. 84 of the 188 card bodies failed it; all 84 were rewritten in both
+  locales. The corpus now sits at a widest clause of exactly 10.
+
+**Roadmap.** Five entries deleted as done, two rewritten because they described
+a state that is no longer true (the Phaser-parity entry claimed a plain-text HUD
+and a two-problem owl; the board-material entry described Phaser's `Graphics`
+path), one closed by decision into Settled (the trophy shelf is deliberately
+headingless -- every badge already labels itself and the 84px band is full).
+
+Work done off it:
+- The five board materials are now actually wired. `_board_face()` read one
+  global `board_panel` key while every theme file has declared
+  `mathBoard.frameSprite` since the palettes were written, so the day the art
+  landed all five worlds would still have shared one board. Theme slot first,
+  global second, drawn fallback third.
+- `theme_forest` / `theme_scifi` deleted, and the two tests that were their only
+  reason to exist now assert on the five worlds from the level registry -- so a
+  sixth world without a palette role fails there instead of on a screen.
+- `level1_tiles.png` retired with `tilesetImages`, its schema requirement, its
+  manifest entry and its `Types.ts` field. Note the near-miss: `forest_tiles.png`
+  was deleted with it and had to be restored -- it is alive through
+  `resources/tilesets/forest_tiles.tres` and every level `.tscn`, which the
+  roadmap entry did not mention and `validate_assets` caught immediately.
+- Misconception tags are consumed, in the half that reaches the child. Every
+  problem has carried `misconceptionTags` since it was authored and nothing read
+  them, so a child who was one away and a child who guessed got the same hint.
+  `math_misconception.gd` names a miss only when the arithmetic identifies it
+  (out by one, out by ten, a factor of ten, digits reversed) AND the author
+  declared that tag on that problem; anything else falls back to the authored
+  hint. Being narrow is the point: "so close, count once more" said to a child
+  who was out by seven is worse than the generic line. The review queue still
+  targets the skill -- that half lives in the parity-locked learner model and
+  stays on the roadmap.
+- The HUD's three unphotographed states are photographed, and the first run found
+  two bugs. The streak flame was drawn at radius 38, inside an 11px bezel with
+  the paper rim on top, at 45% alpha and 1.5px -- a lit streak rendered no flame
+  at all. And the ability row anchored bottom-right, printing "Double Jump"
+  across the jump button, because "the top right belongs to the owl ring" never
+  asked what was in the bottom right. Flame moved outside the rim and weighted;
+  chips moved into the left pod under the coin chip, where hearts, coins and
+  abilities read as one column of "what do I have". Both proven by re-capture and
+  pinned by `test_hud_pods.gd` as arithmetic on constants.
+
+Two process notes worth keeping. `ConceptLadder.tutorial_id` was calling
+`String(null)` on the two concepts whose `tutorial` field is null -- non-fatal,
+so it printed two engine errors on every pass over the ladder and read as
+working. And `test_hud_pods.gd` first loaded `HUD.tscn` instead of `Hud.tscn`: the
+script error aborted the function before any assertion ran, and the runner
+reported it as PASSING. A vacuous test looks identical to a green one, which is
+why the scene load is now asserted before it is used.
+
+Verification: 227 GDScript tests pass, typecheck and validate clean, export
+rebuilt. `perf_probe` failed twice under container contention (29.6ms, 15.9ms
+against a 12ms budget) and measured 3.2/3.4/3.6/4.1ms on four isolated runs --
+environmental, but a wall-clock probe in a shared container will say that again.

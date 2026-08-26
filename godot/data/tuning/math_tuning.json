@@ -20,12 +20,6 @@
     "at_level": 0.3,
     "stretch": 0.1
   },
-  "teaching": {
-    "hintMs": 900,
-    "revealMs": 2400,
-    "handoverMs": 4200,
-    "closeMs": 5200
-  },
   "golden": {
     "rate": 0.125,
     "firstTryCoinMultiplier": 2,
