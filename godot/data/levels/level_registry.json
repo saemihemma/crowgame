@@ -25,7 +25,8 @@
         "teachingIntent": "Open practice: every unlocked skill, at the ladder's own pace, all the way to grade-4 material."
       },
       "theme": "emberwood",
-      "owlsRequiredForDoor": 0
+      "owlsRequiredForDoor": 0,
+      "countsTowardCompletion": false
     },
     {
       "key": "level_01",

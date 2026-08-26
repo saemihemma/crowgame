@@ -42,6 +42,12 @@ func _ready() -> void:
 	var first := _add(col, TextManager.t("menu.play"), BrandButton.Role.PRIMARY, _on_play)
 	if SaveManager.has_save():
 		_add(col, _continue_label(), BrandButton.Role.SECONDARY, _on_continue)
+	# How much of the game is finished, and which bit is missing. Below Continue
+	# because it is a place to LOOK rather than a place to play, and only once
+	# there is a save -- an empty progress screen reading 0% is a worse first
+	# impression than no row at all.
+	if SaveManager.has_save():
+		_add(col, TextManager.t("menu.progress"), BrandButton.Role.SECONDARY, _on_progress)
 	if ProfileManager.get_active_user() != null:
 		_add(col, TextManager.t("menu.switch_user"), BrandButton.Role.GHOST, _on_switch_user)
 	# Cloud save is a grown-up's setting, so it lives behind its own panel rather
@@ -315,6 +321,10 @@ func resolve_continue_key(save: Dictionary) -> String:
 func _on_continue() -> void:
 	LevelManager.set_current_level(resolve_continue_key(SaveManager.get_data()))
 	SceneRouter.goto("game")
+
+
+func _on_progress() -> void:
+	SceneRouter.goto("progress")
 
 func _on_switch_user() -> void:
 	ProfileManager.logout()

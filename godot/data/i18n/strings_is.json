@@ -598,5 +598,8 @@
   "tutorial.division.zero_and_squares.see": "Fjórir kassar með engu í. Ekkert deilt út er samt ekkert í hverjum.",
   "tutorial.division.zero_and_squares.model": "Tuttugu og fimm í fimm kössum. Fimm í hverjum. Hluturinn og kassarnir eru eins.",
   "tutorial.division.zero_and_squares.worked": "Ekkert deilt með fjórum er ekkert. Það er ekkert ber til að gefa neinum.",
-  "tutorial.division.zero_and_squares.try": "Tuttugu og fimm deilt með fimm. Hvað þarf margar fimmur til að fá tuttugu og fimm?"
+  "tutorial.division.zero_and_squares.try": "Tuttugu og fimm deilt með fimm. Hvað þarf margar fimmur til að fá tuttugu og fimm?",
+  "menu.progress": "MITT FERÐALAG",
+  "progress.title": "Ferðalagið þitt",
+  "progress.back": "Til baka"
 }

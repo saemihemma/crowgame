@@ -598,5 +598,8 @@
   "tutorial.division.zero_and_squares.see": "Four boxes with nothing in them. Nothing shared out is still nothing in each.",
   "tutorial.division.zero_and_squares.model": "Twenty-five in five boxes. Five in each. The share and the boxes match.",
   "tutorial.division.zero_and_squares.worked": "Nothing shared by four is nothing. There is no berry to give anybody.",
-  "tutorial.division.zero_and_squares.try": "Twenty-five shared by five. How many fives make twenty-five?"
+  "tutorial.division.zero_and_squares.try": "Twenty-five shared by five. How many fives make twenty-five?",
+  "menu.progress": "MY PROGRESS",
+  "progress.title": "How far you have come",
+  "progress.back": "Back"
 }
