@@ -53,6 +53,14 @@
             "loop": true,
             "anim": "spin"
         },
+    "big_coin": {
+        "class": "bonus_pickup",
+        "path": "assets/sprites/objects/bigcoin/bigcoin-9-runtime-64.png",
+        "frames": 9,
+        "fps": 12,
+        "loop": true,
+        "anim": "spin"
+    },
         "door": {
             "class": "door",
             "path": "assets/sprites/objects/door/door-36-runtime-88x96.png",

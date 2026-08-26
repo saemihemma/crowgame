@@ -51,6 +51,22 @@ var spawn_point := Vector2.ZERO
 ## number and a HUD component must not be the thing a door asks permission from.
 var _owls_freed := 0
 var _owls_required := 0
+## Every big coin this child now HAS in this level: the ones already banked, plus
+## the ones found in this run. Not the run alone.
+##
+## The distinction cost a screenshot to notice. Seeded empty, a returning child
+## with one already banked saw an empty row of three -- while the banked one had
+## come back as a ghost they cannot collect, so 3/3 was unreachable and the HUD
+## was promising something the level could not give. The question a child is
+## actually asking is "how close am I to finishing this level", and that includes
+## what they already own.
+##
+## It is still not written to the save as coins are picked up: banking happens at
+## the door, and dying reloads the level and throws the run's additions away along
+## with the coins themselves. Seeding also makes banking a union, which is the
+## same thing as taking the best of the two.
+var _big_coins_found: Array[String] = []
+var _big_coins_in_level := 0
 
 # Tier-2 FX state
 var _shake_time := 0.0
@@ -134,6 +150,11 @@ func _load_level(key: String) -> void:
 	# the frame it took to find out.
 	_owls_freed = 0
 	_owls_required = LevelManager.owls_required_for_door(key)
+	_big_coins_found.clear()
+	for banked in SaveManager.get_level_record(key).get("bigCoins", []):
+		_big_coins_found.append(String(banked))
+	_big_coins_in_level = _count_big_coins()
+	EventBus.big_coins_changed.emit(_big_coins_found.size(), _big_coins_in_level)
 	# Persist where the player is (GameScene.ts does this on create) so the
 	# main menu's Continue resumes the right level.
 	SaveManager.set_current_level(key)
@@ -543,6 +564,43 @@ func collect_coin(coin: Node) -> void:
 	coin_count += 1
 	AudioManager.play_event("coin")
 	EventBus.coins_changed.emit(coin_count)
+
+## One of the level's big coins. The moment, not the arithmetic.
+##
+## The third one gets a bigger sound than the first two, because 3/3 in a level is
+## the achievement and the first two are progress toward it. Nothing is written to
+## the save here -- see transition_to_level, which is where a run becomes a record.
+func collect_big_coin(coin: Node) -> void:
+	if transitioning:
+		return
+	var id := String(coin.get("coin_id"))
+	if id == "" or _big_coins_found.has(id):
+		return
+	_big_coins_found.append(id)
+	if _world and coin is Node2D:
+		DopamineFX.burst(_world, (coin as Node2D).position,
+			ThemeManager.get_color_value("coin"), int(Config.fx("burst/big_coin", 46)))
+	coin.queue_free()
+	# Two statements, not a ternary. Partly because check_hardcoding.py reads
+	# play_event call sites to prove every registered event has a caller and a
+	# key hidden inside an expression is invisible to it -- and partly because
+	# these are two different announcements, and one line made them look like one
+	# sound with a parameter.
+	if _big_coins_found.size() >= _big_coins_in_level and _big_coins_in_level > 0:
+		AudioManager.play_event("big_coin_all")
+	else:
+		AudioManager.play_event("big_coin")
+	EventBus.big_coins_changed.emit(_big_coins_found.size(), _big_coins_in_level)
+
+## How many big coins this level holds. The denominator for its share of the
+## completion percentage, and for the HUD row -- read off the level rather than
+## assumed to be three, because a level that holds two must not display "2/3".
+func _count_big_coins() -> int:
+	var n := 0
+	for spawn in _parsed.get("spawns", []):
+		if String(spawn.get("type", "")) == "big_coin":
+			n += 1
+	return n
 
 # ─── Damage / death / respawn ─────────────────────────────
 func hurt_player() -> void:

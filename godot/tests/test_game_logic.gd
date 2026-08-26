@@ -19,13 +19,43 @@ func _count_instances(parent: Node, scene_file: String) -> int:
 			n += 1
 	return n
 
-func test_spawns_from_level() -> void:
+## Every spawn the level declares becomes a node, by type.
+##
+## This used to name three magic numbers (20 coins, 6 hazards, 1 door) and it
+## broke the moment three of level_01's coins became big coins -- which is the
+## right failure for the wrong reason: the test was pinned to today's level
+## content rather than to the pipeline. Derived from the level now, which is
+## strictly stronger. A spawn silently dropped is what this is for, and a magic
+## number could not tell that from an edit to the map.
+##
+## Not vacuous: the expected counts come from the parsed level and the actual ones
+## from the scene tree, so a spawn type with no registry entry (the failure mode
+## when a new type is added) reports as a missing node rather than agreeing with
+## itself. The registry is walked so the check covers types this test has never
+## heard of.
+func test_every_declared_spawn_becomes_a_node() -> void:
 	var g := _make_game()
 	var world: Node = g.get_node("World")
 	assert_true(g.get_player() != null, "player spawned")
-	assert_eq(_count_instances(world, "Coin.tscn"), 20, "20 coins spawned")
-	assert_eq(_count_instances(world, "Hazard.tscn"), 6, "6 hazards spawned")
-	assert_eq(_count_instances(world, "Door.tscn"), 1, "1 door spawned")
+
+	var registry: Dictionary = DataManager.get_dict("SPAWN_REGISTRY")
+	var expected := {}
+	for spawn in g._parsed.get("spawns", []):
+		var type := String(spawn.get("type", ""))
+		if not registry.has(type):
+			continue
+		expected[type] = int(expected.get(type, 0)) + 1
+
+	assert_true(expected.size() >= 3,
+		"level_01 declares several kinds of spawn (got %s)" % str(expected))
+	for type: String in expected:
+		var scene_file := String((registry[type] as Dictionary).get("scene", "")).get_file()
+		assert_eq(_count_instances(world, scene_file), int(expected[type]),
+			"every '%s' in the level is in the world" % type)
+
+	# And the one number worth naming, because it is a design rule rather than a
+	# fact about this map: a level has exactly one way out.
+	assert_eq(_count_instances(world, "Door.tscn"), 1, "one door")
 	g.free()
 
 func test_collect_coin_increments_and_emits() -> void:

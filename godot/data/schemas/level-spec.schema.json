@@ -160,6 +160,10 @@
                             },
                             "y": {
                                 "type": "number"
+                            },
+                            "id": {
+                                "type": "string",
+                                "description": "Required for type big_coin, ignored otherwise. This is what the save records, so a coin can be moved or the spawns reordered without wiping a child's record the way a positional index would. Must be unique within the level."
                             }
                         }
                     }

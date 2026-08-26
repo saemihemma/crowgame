@@ -182,9 +182,10 @@
         "y": 8
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 19,
-        "y": 14
+        "y": 14,
+        "id": "c1"
       },
       {
         "type": "coin",
@@ -192,9 +193,10 @@
         "y": 14
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 23,
-        "y": 12
+        "y": 12,
+        "id": "c2"
       },
       {
         "type": "coin",
@@ -222,9 +224,10 @@
         "y": 6
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 58,
-        "y": 6
+        "y": 6,
+        "id": "c3"
       },
       {
         "type": "coin",

@@ -196,6 +196,13 @@ func _load_next() -> void:
 			_load_next()
 			return
 	else:
+		# Before instantiate, deliberately. A banked big coin decides it is a
+		# ghost in its own _ready(), so a record written at staging time -- which
+		# runs after the level has spawned -- would photograph a live coin and
+		# claim it was the returning-player state.
+		if String(_jobs[_index]["variant"]) == "bigcoins-ghost":
+			var data: Dictionary = SaveManager.get_data()
+			data["levelRecords"] = {key: {"bigCoins": ["c1"]}}
 		_game = GAME_SCENE.instantiate()
 		_game.level_key = key
 	add_child(_game)
@@ -266,6 +273,17 @@ func _stage(variant: String) -> bool:
 	# The locked door, staged through Game's own entry point - the same call the
 	# door makes when the player walks into it with owls still in chains. No owl
 	# is needed: a fresh level has freed none, so the card is already truthful.
+	# The big coins. `bigcoins` is one waiting to be found; `bigcoins-ghost` is
+	# the same coin already banked, which is what a child sees on their second
+	# visit -- and the whole reason to come back, so it is worth a shot of its own.
+	# The record for the ghost is written in _load_next, before the level spawns.
+	if variant.begins_with("bigcoins"):
+		var coin := _find_big_coin()
+		if coin == null:
+			printerr("[capture] %s holds no big coins" % LevelManager.get_current_level_key())
+			return false
+		_stand_at(coin)
+		return true
 	if variant.begins_with("door-locked"):
 		if not _game.has_method("refuse_door"):
 			printerr("[capture] Game has no refuse_door()")
@@ -438,6 +456,17 @@ func _find_owl() -> Node2D:
 	if owls.is_empty():
 		return null
 	return owls[clampi(_owl_index, 0, owls.size() - 1)] as Node2D
+
+## The first big coin in the level, so the shot is of a real spawned one rather
+## than of a node the harness built for the photograph.
+func _find_big_coin() -> Node2D:
+	var world := _game.get_node_or_null("World")
+	if world == null:
+		return null
+	for c in world.get_children():
+		if c.scene_file_path.get_file() == "BigCoin.tscn":
+			return c as Node2D
+	return null
 
 func _capture_and_advance() -> void:
 	var job := _jobs[_index]

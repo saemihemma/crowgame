@@ -143,6 +143,16 @@ SOUNDS = {
     # click, because it fires on every arrow press and a sound at click volume
     # would turn holding Down into a machine gun.
     "button_focus": tone(1320, 0.035, 0.22, "sine", decay=18.0),
+    # One of the three big coins. The coin sound's bigger cousin: same family,
+    # unmistakably rarer. It has to be recognisably NOT the ordinary coin, because
+    # the two mean different things -- one goes into a purse, this is a third of a
+    # level.
+    "big_coin": seq(tone(784, 0.08, 0.5), tone(1047, 0.09, 0.55), tone(1319, 0.16, 0.6)),
+    # All three in one level. The only sound in the game that is allowed to be a
+    # small fanfare outside the completion screen, because 3/3 is the achievement
+    # the other two were progress toward. Shorter than `level_complete`, which
+    # still has to be the biggest thing a run ends on.
+    "big_coin_all": arp([784, 1047, 1319, 1568, 2093], 0.09, 0.6),
     # The door will not open yet. A soft double knock, deliberately NOT the hurt
     # sound and nothing like a buzzer: the child has done nothing wrong, they
     # have somewhere left to go. Same pedagogy rail as the wrong-answer cue.

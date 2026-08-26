@@ -91,6 +91,18 @@
                 "Coins keep the shipped silhouette and the gold ink in every world."
             ]
         },
+        "bonus_pickup": {
+            "frameWidth": 64,
+            "frameHeight": 64,
+            "anchor": "center",
+            "description": "The three big coins hidden in every level. Two tiles across, centred on its spawn point, and deliberately NOT the size of a coin: a child has to tell one from an ordinary coin across a screen, because a coin goes into a lifetime purse and this is a third of a level's progress.",
+            "art_notes": [
+                "Centred, not bottom-aligned — these float, like a coin.",
+                "It must read as a BIGGER, RARER coin rather than a different object. The reward it stands for is the currency the child already understands.",
+                "Nine frames on a 3x3 grid, the same layout as the coin sheet, so replacing it is a file copy with no registry change.",
+                "There is no second asset for the collected state. big_coin.gd builds that from this same art - darkened to a tint of itself and ringed in gold - so a replacement gets its ghost for free."
+            ]
+        },
         "ui": {
             "frameWidth": 32,
             "frameHeight": 32,

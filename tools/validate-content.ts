@@ -103,7 +103,10 @@ function validateCrossReferences(): void {
         for (const file of readdirSync(specsDir).filter(f => f.endsWith('.json'))) {
             const spec = loadJson(join(specsDir, file)) as {
                 id: string;
-                spawns: { npcs?: Array<{ npc_id: string }> };
+                spawns: {
+                    npcs?: Array<{ npc_id: string }>;
+                    collectibles?: Array<{ type: string; id?: string }>;
+                };
                 exits: Array<{ target_level: string }>;
             };
 
@@ -119,6 +122,26 @@ function validateCrossReferences(): void {
             if (!spec.spawns || !('player' in spec.spawns)) {
                 console.error(`  FAIL: ${file} missing player spawn point`);
                 errors++;
+            }
+
+            // Big coins are identified by an explicit id, and the save records
+            // that id. A missing one means the coin can never be banked; a
+            // duplicated one means two coins share a record, so collecting
+            // either marks both -- and both failures are silent at runtime,
+            // which is why they are caught here instead.
+            const coinIds = new Set<string>();
+            for (const col of spec.spawns.collectibles || []) {
+                if (col.type !== 'big_coin') continue;
+                if (!col.id) {
+                    console.error(`  FAIL: ${file} has a big_coin with no id; it could never be banked`);
+                    errors++;
+                    continue;
+                }
+                if (coinIds.has(col.id)) {
+                    console.error(`  FAIL: ${file} reuses big_coin id "${col.id}"; two coins would share one record`);
+                    errors++;
+                }
+                coinIds.add(col.id);
             }
         }
     }

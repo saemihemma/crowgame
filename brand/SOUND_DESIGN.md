@@ -67,6 +67,8 @@ The **Fires** column is the code that plays it; that is the authority on *when*.
 | Crow fires | `shoot` | `entities/player.gd` | A thin downward zap. Toy-like, not a weapon. |
 | Coin picked up | `coin` | `scenes/game.gd` | The brightest two notes in the game, rising. This is the one everybody remembers. |
 | Cockroach killed | `enemy_defeat` | `entities/enemy.gd` | A short dry crunch-pop. Satisfying, never gory — the enemy bursts into sparks, not blood. |
+| Big coin found | `big_coin` | `scenes/game.gd` | The coin sound's bigger cousin - same family, unmistakably rarer. It must not be mistakable for an ordinary coin: one goes into a lifetime purse, this is a third of a level. |
+| All three big coins | `big_coin_all` | `scenes/game.gd` | A small fanfare, and the only one allowed outside the completion screen - 3/3 in a level is the achievement the other two were progress toward. Still shorter than `level_complete`, which has to stay the biggest thing a run ends on. |
 | Crow hurt | `hurt` | `scenes/game.gd` | A falling note. Alarming enough to notice, gentle enough not to frighten. |
 | Crow dies | `player_die` | `scenes/game.gd` | A short fall that ends softly. This says *again*, not *you failed*: the only cost is the coins from this level. |
 | Owl noticed | `owl_greet` | `entities/npc.gd` | Two low hoots. Friendly and unhurried — this is who you meet before doing maths. |

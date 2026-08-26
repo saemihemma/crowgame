@@ -180,11 +180,11 @@ func test_the_card_says_it_without_words_too() -> void:
 	var layer := _present_card(1, 3)
 	var nodes: Array = _descendants(layer, [])
 	var has_owl := false
-	var pips: LockedDoorCard.PipRow = null
+	var pips: PipRow = null
 	for node in nodes:
 		if node is TextureRect and (node as TextureRect).texture != null:
 			has_owl = true
-		if node is LockedDoorCard.PipRow:
+		if node is PipRow:
 			pips = node
 	assert_true(has_owl, "the chained owl is on the card; it is the fastest thing on it to read")
 	assert_true(pips != null, "the pip row is there")
@@ -219,7 +219,7 @@ func test_a_level_above_the_pip_cap_still_says_the_number() -> void:
 	var many: int = LockedDoorCard.PIPS_MAX + 4
 	var layer := _present_card(0, many)
 	for node in _descendants(layer, []):
-		assert_true(not (node is LockedDoorCard.PipRow),
+		assert_true(not (node is PipRow),
 			"above %d owls the pip row is dropped; it stops being countable" % LockedDoorCard.PIPS_MAX)
 	var texts := []
 	for label: Label in _labels(layer):

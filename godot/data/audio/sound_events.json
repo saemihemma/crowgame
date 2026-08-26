@@ -20,5 +20,7 @@
   "level_enter": "level_enter",
   "chain_break": "chain_break",
   "button_focus": "button_focus",
-  "door_locked": "door_locked"
+  "door_locked": "door_locked",
+  "big_coin": "big_coin",
+  "big_coin_all": "big_coin_all"
 }

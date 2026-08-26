@@ -86,6 +86,14 @@
       "volume": 0.3,
       "pool": 3
     },
+    "big_coin": {
+        "file": "assets/audio/sfx/big_coin.wav",
+        "volume": 0.65
+    },
+    "big_coin_all": {
+        "file": "assets/audio/sfx/big_coin_all.wav",
+        "volume": 0.7
+    },
     "door_locked": {
       "file": "assets/audio/sfx/door_locked.wav",
       "volume": 0.4

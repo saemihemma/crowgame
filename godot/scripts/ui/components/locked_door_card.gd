@@ -88,9 +88,10 @@ func _ready() -> void:
 	if owl != null:
 		col.add_child(owl)
 	if _required <= PIPS_MAX:
-		var pips := PipRow.new()
-		pips.total = _required
-		pips.filled = _freed
+		# The shared row (ui/components/pip_row.gd), not a private drawing: the
+		# HUD shows this exact shape for big coins and the completion screen shows
+		# it for both, and a child should have to learn it once.
+		var pips := PipRow.make(_required, _freed)
 		pips.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		col.add_child(pips)
 
@@ -154,47 +155,3 @@ func _owl() -> TextureRect:
 	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return rect
 
-
-## One dot per owl the door asks for: gold for freed, an empty socket for waiting.
-##
-## RINGS, not two shades of dot. The first build drew the waiting ones as a blend
-## of owl toward ink, which is what the HUD ring does for its unlit track - but
-## the ring's track sits on an ink disc over a BRIGHT WORLD, and here the same mix
-## sits on the ink card itself. The first capture of this card
-## (output/godot-shots/level_01-door-locked.png) shows two dots at rgb(95,84,73):
-## mud, distinct from the card but reading as dead stones rather than as owls
-## still waiting. An empty socket has to look empty and still look like a place an
-## owl goes, so the outline is the constant and the fill is what changes.
-class PipRow extends Control:
-	const DOT := 16.0
-	const GAP := 12.0
-	const RING := 3.0
-	## The socket floor: dark, but lifted off the card so a hollow pip is a hole
-	## in something rather than a hole in nothing.
-	const SOCKET_MIX := 0.86
-
-	var total := 3
-	var filled := 0
-
-	func _ready() -> void:
-		var count: int = maxi(1, total)
-		custom_minimum_size = Vector2(
-			count * DOT * 2.0 + (count - 1) * GAP + RING * 2.0,
-			DOT * 2.0 + RING * 2.0)
-		mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	func _draw() -> void:
-		var owl := ThemeManager.get_color_value("owl")
-		var ink := ThemeManager.get_color_value("ink")
-		var gold := ThemeManager.get_color_value("coin")
-		var socket := owl.lerp(ink, SOCKET_MIX)
-		var y := size.y * 0.5
-		for i in maxi(1, total):
-			var x := DOT + RING + i * (DOT * 2.0 + GAP)
-			var lit := i < filled
-			draw_circle(Vector2(x, y), DOT, gold if lit else socket)
-			# The outline is owl-gold on every pip, lit or not: it is what says
-			# "an owl belongs here", and it is the only thing a child has to
-			# count. A freed one is that same circle filled in.
-			draw_arc(Vector2(x, y), DOT - RING * 0.5, 0, TAU, 28,
-				gold if lit else Color(owl, 0.8), RING)
