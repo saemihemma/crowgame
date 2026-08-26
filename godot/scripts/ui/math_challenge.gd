@@ -322,7 +322,9 @@ func _build_ui(opts: Dictionary) -> void:
 		var centred := CenterContainer.new()
 		centred.add_child(count_row)
 		vbox.add_child(centred)
-		count_row.setup(tokens)
+		# The prompt's own symbol picks the token shape, so two counting problems
+		# in a row do not look like the same question asked twice.
+		count_row.setup(tokens, CountRow.marker_in(prompt_text))
 
 	# Hint / explanation line: hidden until a miss needs it.
 	_hint_label = Label.new()

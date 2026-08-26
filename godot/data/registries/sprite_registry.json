@@ -89,15 +89,6 @@
             "optional": true,
             "fallback": "owl"
         },
-        "board_count_token": {
-            "class": "ui",
-            "path": "assets/sprites/ui/board/count-token-32.png",
-            "frames": 1,
-            "fps": 0,
-            "loop": false,
-            "anim": "idle",
-            "optional": true
-        },
         "board_panel": {
             "class": "ui",
             "path": "assets/sprites/ui/board/board-9slice.png",

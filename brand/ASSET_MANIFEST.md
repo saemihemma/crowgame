@@ -304,7 +304,7 @@ lands, and every one of them is a placeholder with a file path waiting for it.
 | File | Size | Now holds | Drawn by |
 | --- | --- | --- | --- |
 | `godot/assets/sprites/ui/hud/owl-icon-32.png` | `32x32` | **placeholder** - flat owl head, Fixed Nine | `scripts/ui/components/owl_ring.gd` |
-| `godot/assets/sprites/ui/board/count-token-32.png` | `32x32` | **placeholder** - notched disc, deliberately not a coin | `scripts/ui/components/count_row.gd` |
+| `godot/assets/sprites/ui/board/count-token-{disc,ring,square,diamond,leaf,flower}-32.png` | `32x32` each | optional per-shape art; all six are drawn primitives until a file arrives. Never a coin | `scripts/ui/components/count_row.gd` |
 | `godot/assets/sprites/ui/board/board-9slice.png` | nine-slice, `96x96` source | **placeholder** - framed panel with corner studs | `scripts/ui/math_challenge.gd` |
 | `godot/assets/sprites/objects/chain/chain-link-32.png` | `32x32` | **placeholder** - open steel oval | `scripts/entities/npc.gd` |
 | `godot/assets/sprites/objects/chain/chain-link-burst-32.png` | `32x32` | **placeholder** - the same link, in pieces | `scripts/entities/npc.gd` |
