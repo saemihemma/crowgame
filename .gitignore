@@ -65,3 +65,7 @@ output/level-shots/
 # output/playwright/: a harness writes them on demand to show its own work, and
 # nothing reads them back.
 output/focus-repro/
+
+# Frames from pin_entry_probe.mjs and touch_target_probe.mjs, same category.
+output/pin-probe/
+output/touch-probe/

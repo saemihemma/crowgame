@@ -21,7 +21,16 @@ const MIN_HEIGHT := 88.0
 const PULSE_SECONDS := 1.6
 const PULSE_SCALE := 0.022
 
-var role: int = Role.SECONDARY
+## Settable after the button is built: the main menu's cloud row does not know
+## whether it is an offer or a footnote until the session request comes back, and
+## a role assigned then has to repaint. _restyle is only safe once _ready has run,
+## so the setter checks.
+var role: int = Role.SECONDARY:
+	set(value):
+		role = value
+		if is_inside_tree():
+			add_theme_font_size_override("font_size", 30 if role == Role.PRIMARY else 26)
+			_restyle()
 ## A primary action breathes so the eye lands on it without needing an arrow or
 ## a "click here". Off for the others: three pulsing buttons is a fairground.
 var pulse := false
