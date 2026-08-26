@@ -23,6 +23,12 @@ For offline math authoring, batch materialization, and review outputs, read [doc
 
 For what a curriculum step MEANS, and the lesson each meaning opens with, read [docs/MATH_CONCEPT_LADDER.md](./docs/MATH_CONCEPT_LADDER.md).
 
+For what a child actually EXPERIENCES across a whole journey -- which subjects
+open when, how soon each is served after it is earned, and how much of the
+shipped content one learner ever meets -- read
+[docs/LEARNER_JOURNEY.md](./docs/LEARNER_JOURNEY.md). It is measured by
+`tools/sim_learner_journey.ts`, which runs in `npm run validate`.
+
 ## Runtime Map
 
 ```mermaid

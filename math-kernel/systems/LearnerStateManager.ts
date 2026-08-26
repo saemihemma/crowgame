@@ -26,6 +26,13 @@ const ALL_MATH_DOMAINS: MathDomain[] = [
 ];
 
 const MAX_RECENT_ATTEMPTS = 40;
+/**
+ * How many of a domain's own attempts are kept for the unlock decision.
+ *
+ * Twenty, because the unlock rule asks for twenty. Held per domain so the answer
+ * does not depend on how often the selector happened to choose it.
+ */
+const MAX_DOMAIN_ATTEMPT_HISTORY = 20;
 const MAX_RECENT_PROBLEMS = 12;
 const MAX_BACKLOG_HISTORY = 8;
 const MAX_STEP_RESULTS = 10;
@@ -66,14 +73,14 @@ function createDomainNumberMap(initialValue = 0): DomainNumberMap {
 
 function createDomainHistoryMap(): LearnerDomainHistoryMap {
     return {
-        addition: { backlogHistory: [] },
-        subtraction: { backlogHistory: [] },
-        multiplication: { backlogHistory: [] },
-        division: { backlogHistory: [] },
-        counting: { backlogHistory: [] },
-        comparison: { backlogHistory: [] },
-        pattern_matching: { backlogHistory: [] },
-        number_sequence: { backlogHistory: [] },
+        addition: { backlogHistory: [], attemptHistory: [] },
+        subtraction: { backlogHistory: [], attemptHistory: [] },
+        multiplication: { backlogHistory: [], attemptHistory: [] },
+        division: { backlogHistory: [], attemptHistory: [] },
+        counting: { backlogHistory: [], attemptHistory: [] },
+        comparison: { backlogHistory: [], attemptHistory: [] },
+        pattern_matching: { backlogHistory: [], attemptHistory: [] },
+        number_sequence: { backlogHistory: [], attemptHistory: [] },
     };
 }
 
@@ -298,6 +305,7 @@ export class LearnerStateManager {
         this.snapshot.recentProblemIds.push(attempt.problemId);
         this.snapshot.recentProblemIds = this.snapshot.recentProblemIds.slice(-MAX_RECENT_PROBLEMS);
 
+        this.pushDomainAttempt(attempt.domain, attempt.correct, attempt.firstAttempt);
         this.pushBacklogHistory(attempt.domain);
         this.refreshDerivedState();
         return this.getSnapshot();
@@ -353,6 +361,12 @@ export class LearnerStateManager {
 
         for (const domain of ALL_MATH_DOMAINS) {
             merged[domain].backlogHistory = [...(history[domain]?.backlogHistory ?? [])].slice(-MAX_BACKLOG_HISTORY);
+            // A save written before per-domain history existed simply has none.
+            // It rebuilds from the next twenty attempts in that domain, which is
+            // the same thing a fresh child does -- no migration, no lost unlock
+            // that was not already earned under the old rule.
+            merged[domain].attemptHistory = [...(history[domain]?.attemptHistory ?? [])]
+                .slice(-MAX_DOMAIN_ATTEMPT_HISTORY);
         }
         return merged;
     }
@@ -575,6 +589,13 @@ export class LearnerStateManager {
         this.snapshot.reviewItems = this.snapshot.reviewItems.filter(item => item.stage !== 'graduated');
     }
 
+    /** A domain's own attempt log, appended on every attempt in that domain. */
+    private pushDomainAttempt(domain: MathDomain, correct: boolean, firstAttempt: boolean): void {
+        const history = this.snapshot.domainHistory[domain];
+        history.attemptHistory = [...(history.attemptHistory ?? []), { correct, firstAttempt }]
+            .slice(-MAX_DOMAIN_ATTEMPT_HISTORY);
+    }
+
     private pushBacklogHistory(domain: MathDomain): void {
         const history = this.snapshot.domainHistory[domain];
         const activeBacklog = this.snapshot.reviewItems.filter(item =>
@@ -602,7 +623,9 @@ export class LearnerStateManager {
             }
 
             nextState[domain] = prerequisites.every(prereq => {
-                const recent = this.getRecentAttempts(prereq, 20);
+                // The prerequisite's OWN history, not its slice of the shared
+                // window -- see LearnerDomainHistory.attemptHistory.
+                const recent = this.snapshot.domainHistory[prereq]?.attemptHistory ?? [];
                 if (recent.length < 20) return false;
 
                 const firstAttemptAccuracy = this.computeFirstAttemptAccuracy(recent);
@@ -711,7 +734,9 @@ export class LearnerStateManager {
         ].slice(-count);
     }
 
-    private computeFirstAttemptAccuracy(attempts: LearnerSnapshot['recentAttempts']): number {
+    // Structural on purpose: this reads two booleans, so it serves both the full
+    // attempt records in the shared window and the compact per-domain history.
+    private computeFirstAttemptAccuracy(attempts: ReadonlyArray<{ correct: boolean; firstAttempt: boolean }>): number {
         if (attempts.length === 0) return 0;
         const firstAttemptWins = attempts.filter(attempt => attempt.correct && attempt.firstAttempt).length;
         return firstAttemptWins / attempts.length;

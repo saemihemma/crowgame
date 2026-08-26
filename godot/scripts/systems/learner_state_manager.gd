@@ -9,6 +9,15 @@ extends Node
 const ALL_MATH_DOMAINS := MathDomains.ALL
 
 const MAX_RECENT_ATTEMPTS := 40
+## How many of a domain's OWN attempts are kept for the unlock decision.
+##
+## Twenty, because the unlock rule asks for twenty. Held per domain so the answer
+## does not depend on how often the selector happened to choose that domain.
+## Reading it out of the shared 40-deep window meant a domain had to own HALF of
+## all recent play before anything downstream could unlock, which nothing but the
+## dominant domain ever does: pattern_matching and division were unreachable for
+## that reason alone, in every simulated journey, at every accuracy.
+const MAX_DOMAIN_ATTEMPT_HISTORY := 20
 const MAX_RECENT_PROBLEMS := 12
 const MAX_BACKLOG_HISTORY := 8
 const MAX_STEP_RESULTS := 10
@@ -225,6 +234,7 @@ func record_attempt(attempt: Dictionary) -> Dictionary:
 	(_snapshot["recentProblemIds"] as Array).append(attempt["problemId"])
 	_snapshot["recentProblemIds"] = _slice_tail(_snapshot["recentProblemIds"], MAX_RECENT_PROBLEMS)
 
+	_push_domain_attempt(String(attempt["domain"]), bool(attempt["correct"]), bool(attempt["firstAttempt"]))
 	_push_backlog_history(String(attempt["domain"]))
 	_refresh_derived_state()
 	return get_snapshot()
@@ -383,6 +393,13 @@ func _apply_review_update(attempt: Dictionary) -> void:
 			kept.append(item)
 	_snapshot["reviewItems"] = kept
 
+## A domain's own attempt log, appended on every attempt in that domain.
+func _push_domain_attempt(domain: String, correct: bool, first_attempt: bool) -> void:
+	var history: Dictionary = _snapshot["domainHistory"][domain]
+	var log: Array = history.get("attemptHistory", [])
+	log.append({"correct": correct, "firstAttempt": first_attempt})
+	history["attemptHistory"] = _slice_tail(log, MAX_DOMAIN_ATTEMPT_HISTORY)
+
 func _push_backlog_history(domain: String) -> void:
 	var history: Dictionary = _snapshot["domainHistory"][domain]
 	var active := 0
@@ -406,7 +423,8 @@ func _compute_unlock_state() -> Dictionary:
 			continue
 		var all_ok := true
 		for prereq in prereqs:
-			var recent := _get_recent_attempts(prereq, 20)
+			# The prerequisite's OWN history, not its slice of the shared window.
+			var recent: Array = _snapshot["domainHistory"][prereq].get("attemptHistory", [])
 			if recent.size() < 20:
 				all_ok = false
 				break
@@ -576,7 +594,7 @@ func _create_number_map(v: float) -> Dictionary:
 func _create_domain_history_map() -> Dictionary:
 	var m := {}
 	for d in ALL_MATH_DOMAINS:
-		m[d] = {"backlogHistory": []}
+		m[d] = {"backlogHistory": [], "attemptHistory": []}
 	return m
 
 func _create_curriculum_progress_map() -> Dictionary:
@@ -605,8 +623,13 @@ func _merge_domain_history(history: Variant) -> Dictionary:
 	if not (history is Dictionary):
 		return merged
 	for domain in ALL_MATH_DOMAINS:
-		var src: Array = history.get(domain, {}).get("backlogHistory", []) if history.get(domain, null) is Dictionary else []
-		merged[domain]["backlogHistory"] = _slice_tail(src, MAX_BACKLOG_HISTORY)
+		var entry: Dictionary = history.get(domain, {}) if history.get(domain, null) is Dictionary else {}
+		merged[domain]["backlogHistory"] = _slice_tail(entry.get("backlogHistory", []), MAX_BACKLOG_HISTORY)
+		# A save written before per-domain history existed simply has none. It
+		# rebuilds from the next twenty attempts in that domain, which is what a
+		# fresh child does -- no migration, and no unlock lost that was not
+		# already earned under the old rule.
+		merged[domain]["attemptHistory"] = _slice_tail(entry.get("attemptHistory", []), MAX_DOMAIN_ATTEMPT_HISTORY)
 	return merged
 
 func _merge_curriculum_progress(progress: Variant) -> Dictionary:

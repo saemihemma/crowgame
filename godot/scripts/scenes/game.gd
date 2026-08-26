@@ -197,6 +197,118 @@ func _paint_sky() -> void:
 	layer.layer = -100
 	layer.add_child(_sky)
 	add_child(layer)
+	_paint_parallax()
+
+
+## Three mountain ranges behind the world, in this world's own palette.
+##
+## The sky was a two-stop gradient and nothing else, so every level was a
+## coloured void with platforms floating in it. The `far`, `mid` and `deep`
+## palette roles have existed since the themes were written and nothing had ever
+## read them (brand/ASSET_MANIFEST.md Priority 1).
+##
+## The three scroll at different rates, which is the whole trick: the far range
+## barely moves, the near one nearly keeps up with the world, and the difference
+## between them is what the eye reads as depth. They sit on the sky's own
+## CanvasLayer so they stay behind everything without any other node having to
+## declare a z_index.
+##
+## Missing art is not an error: a world with no strips simply keeps the gradient
+## it had before, which is what every world looked like until now.
+## Only the scroll rate differs here. Each strip already carries its own ridge
+## height inside the texture - far is drawn high in the image, near is drawn low
+## - so all three share one horizon and the art does the layering.
+const PARALLAX_BANDS := [
+	{"file": "far", "scroll": 0.10},
+	{"file": "mid", "scroll": 0.25},
+	{"file": "near", "scroll": 0.45},
+]
+const PARALLAX_HEIGHT := 576.0
+## Between the sky (-100) and the world (0).
+const PARALLAX_LAYER := -90
+
+func _paint_parallax() -> void:
+	var world := ThemeManager.get_theme_id()
+	# A sibling of the sky, not a child of it: ParallaxBackground *is* a
+	# CanvasLayer, and Godot does not allow one nested inside another - the whole
+	# node simply never drew.
+	var parallax := ParallaxBackground.new()
+	parallax.name = "Parallax"
+	parallax.layer = PARALLAX_LAYER
+	var any := false
+
+	for band in PARALLAX_BANDS:
+		# By key, never by path: tools/gen_parallax.mjs registers every strip it
+		# writes, so a world's ranges exist for the same reason any other sprite
+		# does (ARCHITECTURE.md rule 7).
+		var texture := SpriteSheet.texture("parallax_%s_%s" % [world, band["file"]])
+		if texture == null:
+			continue
+		var strip := ParallaxLayer.new()
+		strip.motion_scale = Vector2(float(band["scroll"]), 0.0)
+		strip.motion_mirroring = Vector2(texture.get_width(), 0.0)
+
+		var art := Sprite2D.new()
+		art.texture = texture
+		art.centered = false
+		# The strip hangs *upward* from the horizon: position is its top-left, so
+		# subtracting its full height puts its base on the horizon line. Placing
+		# the top there instead dropped the whole range below the screen, leaving
+		# one peak visible through a pit.
+		art.position = Vector2(0, _horizon_y() - PARALLAX_HEIGHT)
+		strip.add_child(art)
+		parallax.add_child(strip)
+		any = true
+
+	if not any:
+		parallax.queue_free()
+		return
+	add_child(parallax)
+	_paint_valley(world)
+
+## What a pit opens onto.
+##
+## The ranges hang *above* the horizon, so anywhere the level floor has a gap
+## the sky gradient showed straight through it - a bright blue hole punched in
+## the bottom of a mountain range, which read as a rendering bug rather than as
+## a drop. This fills everything below the horizon with the near range's own
+## base tone, so a pit reads as the valley floor continuing away from the
+## camera.
+##
+## The colour is sampled from the bottom row of the near strip rather than
+## recomputed here: that pixel already went through the generator's haze and
+## lightness ramp, and deriving it twice is how the two drift apart.
+func _paint_valley(world: String) -> void:
+	var near := SpriteSheet.texture("parallax_%s_near" % world)
+	if near == null:
+		return
+	var image: Image = near.get_image()
+	if image == null:
+		return
+	var layer := CanvasLayer.new()
+	layer.name = "Valley"
+	# Behind the ranges, in front of the sky. They do not overlap - the ranges
+	# stop at the horizon and this starts there - but the order has to be
+	# defined or a rounding difference shows a one-pixel seam of sky.
+	layer.layer = PARALLAX_LAYER - 1
+	var fill := ColorRect.new()
+	fill.color = image.get_pixel(0, image.get_height() - 1)
+	fill.anchor_right = 1.0
+	fill.anchor_bottom = 1.0
+	fill.offset_top = _horizon_y()
+	fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(fill)
+	add_child(layer)
+
+## Where the ranges' base sits, down the screen.
+##
+## Screen space, not world space: the layers do not scroll vertically, so the
+## horizon stays put while the crow jumps. Just below the platform line, so the
+## mountains read as behind the level rather than standing in it.
+const PARALLAX_HORIZON := 0.86
+
+func _horizon_y() -> float:
+	return float(get_viewport().get_visible_rect().size.y) * PARALLAX_HORIZON
 
 
 ## Soil below the level, so a viewport taller than the level shows ground rather

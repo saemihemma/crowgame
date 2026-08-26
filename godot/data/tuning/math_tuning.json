@@ -44,5 +44,16 @@
     "retryLockoutMs": 800,
     "correctCloseMs": 700,
     "revealCloseMs": 2400
+  },
+  "domainWeights": {
+    "_comment": "How often each subject comes due when the owl picks what to ask next. Weight 3 is due three times as often as weight 1. The core two carry the most weight because they are the year's actual curriculum; the rest are there so a child meets them at all. This is the dial for 'how much addition' -- before it existed the answer was 70%, by accident of list order.",
+    "addition": 3,
+    "subtraction": 3,
+    "counting": 2,
+    "number_sequence": 1,
+    "comparison": 1,
+    "pattern_matching": 1,
+    "multiplication": 2,
+    "division": 2
   }
 }

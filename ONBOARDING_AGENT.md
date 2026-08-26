@@ -154,6 +154,7 @@ Tests, all in:
 | Which scenes exist, and how are they reached? | `godot/data/registries/scenes.json` |
 | How does difficulty adapt? | `godot/scripts/systems/learner_state_manager.gd` + `godot/scripts/math/**` |
 | What does a step MEAN, and what teaches it? | `godot/data/curriculum/**` + `docs/MATH_CONCEPT_LADDER.md` |
+| What does a child actually experience over months? | `docs/LEARNER_JOURNEY.md` + `npm run math:journey` |
 | Is that logic still correct? | `godot/tests/fixtures/**` vs `math-kernel/**` |
 | What is stored, where, under which key? | `docs/LEARNER_STATE_AND_SYNC_ARCHITECTURE.md` |
 | What crosses the network? | `docs/API_CONTRACT.md` |
