@@ -148,6 +148,24 @@ func update_sync_metadata(status: String, latest_cursor: Variant, last_synced_at
 func get_confidence_offset(domain: String) -> float:
 	return float(get_snapshot()["confidenceOffsets"][domain])
 
+## Where the selector aims: mastery ELO shifted by how the child has been doing
+## lately. Port of LearnerStateManager.getEffectiveSelectionELO.
+##
+## RESTORED. A code-reduction pass (dc0492f) deleted this as dead, and it had
+## exactly one caller: elo_aware_strategy.gd line 55. Missing it meant every
+## ELOAwareStrategy.select() aborted mid-function on "Invalid call. Nonexistent
+## function", so the whole lane system -- comfort, review, at_level, stretch --
+## returned null and the owl fell through to the random step-capped fallback for
+## every single problem a child was ever served. The review/SRS lane never ran at
+## all.
+##
+## Nothing went red. The probe that exercises the owl still passed, because the
+## fallback path serves a problem and the probe asserts that a problem arrives.
+## The engine printed SCRIPT ERROR into the probe's own output and the suite
+## reported 236 passed, 0 failed. That is why test_elo_lanes.gd now exists.
+func get_effective_selection_elo(domain: String) -> float:
+	return _elo().get_effective_elo(domain) + get_confidence_offset(domain)
+
 
 func get_current_step(domain: String) -> int:
 	return int(get_snapshot()["curriculumProgress"][domain]["currentStep"])
