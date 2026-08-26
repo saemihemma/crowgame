@@ -17,7 +17,7 @@ class_name TouchPad
 ##
 ## brand/BRAND_SYSTEM.md §8.1 (safe area), §12 (accessibility).
 
-enum Icon { LEFT, RIGHT, JUMP, ZAP }
+enum Icon { LEFT, RIGHT, JUMP, ZAP, SPRINT }
 
 const CORNER := 22.0
 const RIM := 3.0
@@ -29,9 +29,36 @@ const PRESS_GROW := 3.0
 var icon: int = Icon.LEFT
 var box := 88.0
 
+## The action a LATCHING pad drives, held in a field of our own because
+## TouchScreenButton.action is momentary by construction: the engine presses it on
+## touch-down and releases it on touch-up, which is the behaviour a latch exists
+## to replace. Empty on a momentary pad.
+var _latch_action := ""
+var _latched := false
+
 static func make(action: String, which: int, at: Vector2, size: float) -> TouchPad:
-	var pad := TouchPad.new()
+	var pad := _bare(which, at, size)
 	pad.action = action
+	return pad
+
+## A pad that stays down until it is tapped again.
+##
+## WHY SPRINT NEEDS THIS. A running jump is direction + sprint + jump, held
+## together. On the keyboard that is three fingers and nothing to think about. On
+## this layout it is two thumbs: the left holds a direction, the right reaches
+## jump. A momentary sprint pad would need a third, so a child could sprint or
+## jump but never both -- and every gap worth sprinting at needs both. Latched,
+## the left thumb taps sprint once and goes back to holding the direction.
+##
+## The lit plate is the state readout: a latched pad draws exactly as a held one
+## does, because it IS held.
+static func make_latching(action: String, which: int, at: Vector2, size: float) -> TouchPad:
+	var pad := _bare(which, at, size)
+	pad._latch_action = action
+	return pad
+
+static func _bare(which: int, at: Vector2, size: float) -> TouchPad:
+	var pad := TouchPad.new()
 	pad.icon = which
 	pad.box = size
 	pad.position = at
@@ -41,13 +68,50 @@ static func make(action: String, which: int, at: Vector2, size: float) -> TouchP
 	pad.shape_centered = false
 	return pad
 
+## The action this pad drives, whichever way it drives it. Callers and the gate
+## tests read the binding through this rather than off `action`, which is empty on
+## a latching pad.
+func pad_action() -> String:
+	return action if action != "" else _latch_action
+
+func is_latching() -> bool:
+	return _latch_action != ""
+
+func is_latched() -> bool:
+	return _latched
+
+## Flip the latch. Public because the press path cannot be exercised headlessly --
+## TouchScreenButton does its own screen-to-canvas hit testing, which a headless
+## tree has no canvas for (see test_touch_controls.gd) -- so the behaviour is
+## tested by calling this, and the wiring below is what a finger reaches.
+func toggle_latch() -> void:
+	if not is_latching():
+		return
+	_latched = not _latched
+	if _latched:
+		Input.action_press(_latch_action)
+	else:
+		Input.action_release(_latch_action)
+	queue_redraw()
+
 func _ready() -> void:
 	pressed.connect(queue_redraw)
 	released.connect(queue_redraw)
+	if is_latching():
+		pressed.connect(toggle_latch)
 	ThemeManager.theme_changed.connect(func(_id): queue_redraw())
 
+## A latched action is pressed in the global Input state, not in this node, so a
+## pad that goes away while latched leaves the crow sprinting forever -- through
+## the next level, and the one after that. Freed on a level change like everything
+## else in the scene, so this is not hypothetical.
+func _exit_tree() -> void:
+	if _latched:
+		Input.action_release(_latch_action)
+		_latched = false
+
 func _draw() -> void:
-	var down := is_pressed()
+	var down := is_pressed() or _latched
 	var ink := ThemeManager.get_color_value("ink")
 	var paper := ThemeManager.get_color_value("paper")
 	var coin := ThemeManager.get_color_value("coin")
@@ -83,6 +147,21 @@ func _draw_icon(rect: Rect2, tint: Color, plate_fill: Color) -> void:
 			draw_colored_polygon(PackedVector2Array([
 				c + Vector2(0, -r * 1.15), c + Vector2(-r, r * 0.15), c + Vector2(r, r * 0.15)]), tint)
 			draw_line(c + Vector2(-r * 0.9, r * 0.85), c + Vector2(r * 0.9, r * 0.85), tint, 5.0)
+		Icon.SPRINT:
+			# Two open chevrons and three speed lines behind them. It has to read
+			# as "faster" to a child who cannot read, and it has to not read as
+			# RIGHT -- which is why the chevrons are STROKED and RIGHT's arrow is
+			# a solid triangle: one filled shape versus a group of thin ones is a
+			# difference visible at a glance and under a thumb.
+			var w := maxf(4.0, r * 0.22)
+			for i in 2:
+				var nose := c + Vector2(r * (0.15 + 0.55 * float(i)), 0)
+				draw_line(nose + Vector2(-r * 0.5, -r * 0.62), nose, tint, w)
+				draw_line(nose, nose + Vector2(-r * 0.5, r * 0.62), tint, w)
+			for i in 3:
+				var y := c.y + r * (float(i) - 1.0) * 0.62
+				var len_x := r * (0.62 if i == 1 else 0.40)
+				draw_line(Vector2(c.x - r * 1.05, y), Vector2(c.x - r * 1.05 + len_x, y), tint, w * 0.8)
 		Icon.ZAP:
 			draw_colored_polygon(PackedVector2Array([
 				c + Vector2(r * 0.15, -r * 1.15), c + Vector2(-r * 0.75, r * 0.15),

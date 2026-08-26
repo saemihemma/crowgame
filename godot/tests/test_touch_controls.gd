@@ -36,7 +36,7 @@ func _teardown(node: Node) -> void:
 ## rather than recomputed from the layout constants.
 func _button_centre(root: Node, action: String) -> Vector2:
 	for child in root.get_children():
-		if child is TouchScreenButton and child.action == action:
+		if child is TouchPad and (child as TouchPad).pad_action() == action:
 			var btn := child as TouchScreenButton
 			var size := Vector2.ZERO
 			if btn.shape is RectangleShape2D:
@@ -49,9 +49,13 @@ func test_touch_controls_expose_the_expected_actions() -> void:
 	var root := _mount()
 	var found: Array[String] = []
 	for child in root.get_children():
-		if child is TouchScreenButton:
-			found.append((child as TouchScreenButton).action)
-	for action in ["move_left", "move_right", "jump", "shoot"]:
+		if child is TouchPad:
+			found.append((child as TouchPad).pad_action())
+	# Sprint is in this list because a touch device has no Space key, so without
+	# the pad the run is unreachable rather than merely untaught -- and it is read
+	# through pad_action() because the sprint pad latches, which means its binding
+	# is not on TouchScreenButton.action at all.
+	for action in ["move_left", "move_right", "jump", "shoot", "sprint"]:
 		assert_true(found.has(action), "on-screen control exists for '%s'" % action)
 	_teardown(root)
 
@@ -59,14 +63,14 @@ func test_touch_controls_expose_the_expected_actions() -> void:
 func test_every_touch_button_has_a_hit_shape_covering_its_panel() -> void:
 	var root := _mount()
 	for child in root.get_children():
-		if not (child is TouchScreenButton):
+		if not (child is TouchPad):
 			continue
-		var btn := child as TouchScreenButton
-		assert_true(btn.shape != null, "'%s' has a press shape" % btn.action)
+		var btn := child as TouchPad
+		assert_true(btn.shape != null, "'%s' has a press shape" % btn.pad_action())
 		if btn.shape is RectangleShape2D:
 			var size: Vector2 = (btn.shape as RectangleShape2D).size
 			assert_true(size.x > 40.0 and size.y > 40.0,
-				"'%s' press shape is a usable size (got %s)" % [btn.action, size])
+				"'%s' press shape is a usable size (got %s)" % [btn.pad_action(), size])
 	_teardown(root)
 
 
@@ -94,3 +98,46 @@ func test_every_touch_button_has_a_hit_shape_covering_its_panel() -> void:
 ## What stays here is what a headless tree can actually answer: the controls
 ## exist, they are bound to the right actions, and their hit shapes are big
 ## enough for a child's finger.
+
+
+## The latch, tested where it can be: TouchScreenButton does its own
+## screen-to-canvas hit testing and a headless tree has no canvas for it, which is
+## why the press test above is gone. The latch is not that -- it is a state
+## machine, and this drives it.
+func test_the_sprint_pad_holds_the_action_until_it_is_tapped_again() -> void:
+	var root := _mount()
+	var pad: TouchPad = root.pad_for("sprint")
+	assert_true(pad != null, "a sprint pad was built")
+	assert_true(pad.is_latching(), "the sprint pad latches by default")
+	assert_true(not Input.is_action_pressed("sprint"), "sprint starts up")
+
+	pad.toggle_latch()
+	assert_true(Input.is_action_pressed("sprint"), "one tap holds sprint down")
+	assert_true(pad.is_latched(), "and the pad knows it is latched, so it draws lit")
+
+	pad.toggle_latch()
+	assert_true(not Input.is_action_pressed("sprint"), "a second tap lets it go")
+	_teardown(root)
+
+## A latched action lives in the global Input state, not in the node, so a pad
+## freed while latched would leave the crow sprinting through every level after
+## this one. The pads are freed on every level change.
+func test_a_latched_pad_releases_the_action_when_it_leaves_the_tree() -> void:
+	var root := _mount()
+	var pad: TouchPad = root.pad_for("sprint")
+	pad.toggle_latch()
+	assert_true(Input.is_action_pressed("sprint"), "latched before teardown")
+	root.get_parent().remove_child(root)
+	root.free()
+	assert_true(not Input.is_action_pressed("sprint"),
+		"freeing the controls released the latched action")
+
+## The other half of input/sprint_pad_latches, built directly rather than through
+## a flag override: no test in this suite writes an override, and one that did
+## would leave it in the real save for every test after it.
+func test_a_momentary_sprint_pad_binds_the_action_the_engine_way() -> void:
+	var pad := TouchPad.make("sprint", TouchPad.Icon.SPRINT, Vector2.ZERO, 92.0)
+	assert_true(not pad.is_latching(), "momentary, so no latch")
+	assert_eq(pad.action, "sprint", "the engine drives the action off TouchScreenButton.action")
+	assert_eq(pad.pad_action(), "sprint", "and pad_action agrees, whichever way it is bound")
+	pad.free()

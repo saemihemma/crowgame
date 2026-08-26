@@ -13,7 +13,9 @@
   },
   "input": {
     "space_is_sprint": true,
-    "_space_is_sprint": "Space stops being a jump key and becomes hold-to-accelerate; W and Up keep jumping. This also gates keyboard answering, because the two cannot be separated: ui/components/answer_button.gd sets FOCUS_NONE precisely BECAUSE space is jump -- arrow keys walked the focus ring across the four options and ui_accept (space and enter) committed whichever one it landed on, so the game answered its own first question. Take space off jump and the keyboard path is safe again. OFF restores both old behaviours together, never one without the other."
+    "_space_is_sprint": "Space stops being a jump key and becomes hold-to-accelerate; W and Up keep jumping. This also gates keyboard answering, because the two cannot be separated: ui/components/answer_button.gd sets FOCUS_NONE precisely BECAUSE space is jump -- arrow keys walked the focus ring across the four options and ui_accept (space and enter) committed whichever one it landed on, so the game answered its own first question. Take space off jump and the keyboard path is safe again. OFF restores both old behaviours together, never one without the other.",
+    "sprint_pad_latches": true,
+    "_sprint_pad_latches": "Whether the on-screen sprint pad STAYS DOWN until it is tapped again. ON because of the hands, not the taste: a running jump is direction + sprint + jump held together, which is three fingers, and this layout has two thumbs -- the left holding a direction, the right reaching jump. Momentary, a child could sprint or jump but never both, and every gap worth sprinting at needs both. Latched, the left thumb taps sprint once and returns to the direction, and the lit plate is the state readout. The cost is real: a child who latches it and forgets is running through level 7, whose one-tile stones want walking, so they have to notice the lit pad and tap it off. OFF makes the pad behave exactly like the Space key, which is more honest and, on a touch device, close to unusable -- worth trying on a device before believing either of us. Keyboard sprint is unaffected either way."
   },
   "levels": {
     "wide_gap_pass": true,
