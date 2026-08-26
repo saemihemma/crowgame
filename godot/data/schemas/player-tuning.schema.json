@@ -34,10 +34,25 @@
       "minimum": 0,
       "description": "Maximum horizontal speed while the sprint key is held (pixels/sec). A gap-width dial: jump reach is airtime x speed, and airtime is fixed by jumpVelocity and gravity, so this is the only number that changes how wide a gap can be crossed. At 160 a jump reaches 5.9 tiles; at 265 it reaches 9.8."
     },
-    "sprintDecayPerSec": {
+    "sprintAccel": {
       "type": "number",
       "minimum": 0,
-      "description": "How much of the sprint ceiling is given back per second after the key is released, while airborne (pixels/sec per sec). Zero snaps straight back to maxSpeed, which reads as hitting a wall mid-jump."
+      "description": "Horizontal acceleration ABOVE the walking cap while sprint is held (pixels/sec\u00b2). Deliberately much lower than `accel`: it is what makes the top end something a committed hold builds toward (~0.75s) rather than something a tap grants. Below the walking cap `accel` still applies, so ordinary walking stays as responsive as ever."
+    },
+    "sprintBlendPx": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Width in pixels/sec of the band just above maxSpeed over which acceleration ramps from `accel` down to `sprintAccel`. Narrow on purpose: a ramp spread across the whole 160-265 range left acceleration near `accel` for the first stretch above the walking cap, which is most of what made a three-frame tap of the sprint key worth almost a full run. It also has to be a ramp rather than a step -- walking acceleration lands EXACTLY on maxSpeed, so a step there is decided by the last bit of a float and the two ports disagree."
+    },
+    "sprintDecelPerSec": {
+      "type": "number",
+      "minimum": 0,
+      "description": "How fast the speed CAP falls back toward maxSpeed once sprint is released (pixels/sec per sec). The clamp follows the cap down, so speed bleeds off and the crow coasts. Zero snaps the cap instead, which reads as flying into a wall the instant a thumb lifts."
+    },
+    "skidDecel": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Deceleration applied when the movement input opposes current motion (pixels/sec\u00b2). Far harsher than `accel`, so turning around at speed costs a moment and reads as a skid -- which is what makes momentum feel like weight rather than like lag."
     },
     "jumpVelocity": {
       "type": "number",
