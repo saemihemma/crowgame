@@ -3,7 +3,6 @@
 Status: Current
 Authority: Canonical deployment runbook. The live truth is the Railway dashboard
 plus `deploy/web/Dockerfile` and `deploy/web/Caddyfile`.
-Last verified against code: 2026-08-23
 
 ## What this is
 
@@ -12,9 +11,9 @@ one repo, a promotion path between them, and a rollback that does not require a
 rebuild.
 
 What this is not:
-- not a description of the game (see `godot/README.md`)
+- not a description of the game (see `ONBOARDING.md`)
 - not a CI reference (see `.github/workflows/`)
-- not the client/server contract (see `docs/API_CONTRACT.md`)
+- not the client/server contract (see `ARCHITECTURE.md` (the wire contract))
 
 ## Topology
 
@@ -57,24 +56,30 @@ That makes the cache policy simple and, more importantly, correct:
 | `index.html` | `no-store` | ~5 KB, and the only file that knows which payload belongs to this build |
 | `index.<id>.*` | `public, max-age=31536000, immutable` | the name is the content, so it can never be stale |
 
-Measured payload:
+Measured payload, **derived from `output/web` by `npm run validate:docs`** so it
+cannot drift from the artifact. The per-file breakdown used to be here; nobody
+made a decision from it. The decision — is a first launch acceptable on home wifi
+— comes from the total.
 
-| File | Raw | gzip |
+| | Raw | gzip |
 | --- | --- | --- |
-| `index.<id>.wasm` | 33.7 MB | 7.6 MB |
-| `index.<id>.pck` | 11.7 MB | 8.0 MB |
-| `index.<id>.js` + worklet | 0.3 MB | 0.1 MB |
-| **total** | **45.8 MB** | **~15.7 MB** |
+| **whole payload** | **51.1 MB** | **~17.5 MB** |
 
-So a first launch transfers about **15.7 MB**, and a returning player transfers
+Gzip is node's zlib at level 9; a server's own encoder will differ by a few
+tenths. Per-file sizes are `ls -la output/web` when you need them.
+
+**One field is deliberately outside the fingerprint:** `build_info.json` carries
+a timestamp and the commit the build was made from, and it is excluded so a
+rebuild does not stale the export for a reason that is not a source change. The
+consequence is that its `commit` can name an earlier commit than the one whose
+tree the bytes were built from, which matters because production error triage
+keys on that field. Read it as "built from this source", not "shipped in this
+commit".
+
+So a first launch transfers about **17.5 MB**, and a returning player transfers
 **nothing at all** for the payload — no bytes, no conditional request, no `304`.
 Only the 5 KB shell is re-fetched.
 
-For context on how that was reached: the payload was ~25.8 MB gzipped before two
-changes. Excluding unreferenced source art from the export took the pck from
-22.1 MB to 18.7 MB raw, and re-encoding the five music tracks from 193 kbps to
-96 kbps took another 7.1 MB out of it. Neither is visible or audible on a tablet
-speaker; both are reversible from git history.
 
 `CROW_ASSET_CACHE` still exists for the handful of files that are *not*
 content-addressed (icons), and so staging can force `no-store` while iterating.
@@ -135,9 +140,30 @@ For each environment (`staging`, then `prod`):
 5. **Settings → Networking:** do **not** generate a public domain. Private only.
 6. **Variables:**
    ```
-   DATABASE_URL = ${{ Postgres.DATABASE_URL }}
-   CROW_ENV     = staging | production
+   DATABASE_URL          = ${{ Postgres.DATABASE_URL }}
+   CROW_ENV              = staging | production
+   CROW_PUBLIC_BASE_URL  = https://<the web service's public domain>
+   CROW_MAIL_DRIVER      = http
+   CROW_MAIL_ENDPOINT    = <the mail processor's send URL>
+   CROW_MAIL_API_KEY     = <its key>
+   CROW_MAIL_FROM        = Hörmann <no-reply@your-domain>
    ```
+   **The last five are not optional, and following this step without them ships a
+   production where cloud save can never be turned on.** `CROW_MAIL_DRIVER`
+   defaults to `log`, so `createMailer` returns a `LogMailer` with
+   `delivers = false`; every enrollment then answers `sent: false,
+   delivery: 'unavailable'` and writes the sign-in link to the server log instead
+   of the parent's inbox. The code degrades honestly and says so in the response —
+   this list was the gap, and it listed only the first two for as long as the
+   runbook has existed.
+
+   `CROW_PUBLIC_BASE_URL` is what the emailed link points at. Unset, the link is
+   relative and unusable from an inbox.
+
+   Note for PRIVACY.md: turning the mail driver on introduces the first third
+   party that sees a parent's email address. That page says which one; keep the
+   two in step when the processor changes.
+
    The service binds `::` by default. Do not override `HOST` to `0.0.0.0` —
    Railway's private network is IPv6, and that single change is the classic way
    to end up with a service that looks healthy and is unreachable.
@@ -268,8 +294,10 @@ curl -s https://<domain>/build_info.json    # commit + build time
 ## Cost notes
 
 Railway bills egress. With a content-addressed payload served `immutable`, a
-returning player transfers ~5 KB per launch instead of ~15.7 MB. A player
-launching twice a day for a month is the difference between roughly 950 MB and
+returning player transfers ~5 KB per launch instead of ~15.8 MB. A player
+launching twice a day for a month is the difference between roughly 950 MB
+(60 launches at the derived ~17.5 MB, done by hand — this figure is NOT gated,
+unlike the table above) and
 300 KB. Across a class or a family group that is the difference between egress
 being a line item and being invisible.
 

@@ -75,19 +75,23 @@ texture={
 
 [input_devices]
 
-; The on-screen TouchScreenButtons are always shown in a web export
-; (OS.has_feature("web")), including on desktop, where the player has a mouse
-; and Godot does not route mouse input to a TouchScreenButton by default. This
-; setting is the documented way to make those visible controls usable there.
+; OFF, and the on-screen pads are hidden wherever it would have mattered.
 ;
-; Honest caveat: the desktop-mouse path is NOT verified. Synthetic pointer input
-; does not reach Godot's TouchScreenButtons in headless Chromium (neither
-; Playwright mouse nor CDP touch events), so a browser test cannot confirm it
-; either way. What is verified, in tests/test_touch_controls.gd, is that a real
-; InputEventScreenTouch presses the bound action -- so the touch path a phone
-; uses is sound. Controls elsewhere keep working with this on: the language
-; pills respond to mouse clicks in the exported build.
-pointing/emulate_touch_from_mouse=true
+; This was on because the pads were shown in every web export, desktop included,
+; and Godot does not route mouse input to a TouchScreenButton by default. But
+; showing a five-button d-pad to someone holding a keyboard was the bug, not the
+; unreachable buttons: the owner played on a PC and got a thumb gamepad over the
+; level. TouchControls now asks DisplayServer.is_touchscreen_available(), which
+; on the web reports what the browser reports, so the pads appear on a tablet
+; and never on a desktop.
+;
+; Those two changes have to land together. This setting is an input of
+; is_touchscreen_available() -- with it on, the engine says "yes, touch" on every
+; machine, and the honest check would answer the same wrong thing it used to.
+; Real touch input is native and needs no emulation, so turning it off costs a
+; touch device nothing. Verified in tests/test_touch_controls.gd, which drives a
+; real InputEventScreenTouch through to the bound action.
+pointing/emulate_touch_from_mouse=false
 
 [input]
 

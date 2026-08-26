@@ -15,9 +15,6 @@ extends TestCase
 ## Placement of the entity itself — nothing standing inside the ground — is
 ## test_entity_placement.gd. This is only about where the frame sits on the node.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _sink() -> float:
 	return SpriteSheet.grounding_sink()
@@ -95,17 +92,33 @@ func test_live_entities_render_where_they_always_did() -> void:
 				"%s still renders at the value the .tscn used to hardcode" % path.get_file())
 		inst.free()
 
+## A test that only speaks up when it finds a violation is indistinguishable from
+## one whose loop has silently stopped looking. This one used to `continue` past an
+## unreadable path and assert nothing at all on a clean tree — so renaming these
+## five scenes would have disabled it without turning anything red. The runner
+## reports a test that asserts nothing, which is how that was noticed.
+##
+## So it now proves it did the work: every scene opened, and a sprite node was
+## actually examined in each.
 func test_scenes_carry_no_hardcoded_sprite_offset() -> void:
-	for path in ["res://scenes/Player.tscn", "res://scenes/Enemy.tscn",
-			"res://scenes/Npc.tscn", "res://scenes/Coin.tscn", "res://scenes/Door.tscn"]:
+	const SCENES := ["res://scenes/Player.tscn", "res://scenes/Enemy.tscn",
+			"res://scenes/Npc.tscn", "res://scenes/Coin.tscn", "res://scenes/Door.tscn"]
+	for path in SCENES:
 		var f := FileAccess.open(path, FileAccess.READ)
+		assert_true(f != null, "%s is readable" % path.get_file())
 		if f == null:
 			continue
 		var text := f.get_as_text()
 		f.close()
 		var in_sprite := false
+		var sprites_seen := 0
 		for line in text.split("\n"):
 			if line.begins_with("[node "):
 				in_sprite = line.contains("Sprite2D") or line.contains("AnimatedSprite2D")
+				if in_sprite:
+					sprites_seen += 1
 			elif in_sprite and line.begins_with("offset = "):
 				assert_true(false, "%s hardcodes a sprite offset: %s" % [path.get_file(), line])
+		assert_true(sprites_seen > 0,
+			"%s has a sprite node to check; if it does not, this scene no longer belongs in the list"
+				% path.get_file())

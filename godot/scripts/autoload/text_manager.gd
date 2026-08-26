@@ -125,34 +125,23 @@ func available_locales() -> Array:
 func endonym(code: String) -> String:
 	return String(LOCALE_ENDONYMS.get(code, code))
 
-func get_all_keys() -> Array:
-	return _defaults.keys()
-
-func get_default(key: String) -> String:
-	return String(_defaults.get(key, ""))
-
-func get_override(key: String) -> String:
-	return String(_overrides.get(key, ""))
-
-func set_translation(key: String, value: String) -> void:
-	if value != "":
-		_overrides[key] = value
-	else:
-		_overrides.erase(key)
-	_save_overrides()
-
-func export_translations() -> Dictionary:
-	return _overrides.duplicate(true)
-
-func import_translations(data: Dictionary) -> void:
-	_overrides = data.duplicate(true)
-	_save_overrides()
-
+## The write half of this used to be the admin.html translation editor's API:
+## get_all_keys, get_default, get_override, set_translation, export_translations
+## and import_translations. That editor was deliberately never ported -- a live
+## string editor lets anyone on a shared family device rewrite what a child reads
+## -- so the six functions had no caller in GDScript, in any .tscn, or through
+## any of the tree's string dispatches. Deleted.
+##
+## The READ path below stays, and is deliberate: t() still consults _overrides
+## ahead of the locale bundle, so a crow_translations value in the store still
+## outranks every shipped string. Removing that is a behaviour change for anyone
+## who has one, so it is a decision rather than a cleanup -- see roadmap.md.
+##
+## _save_overrides() went with the six: it was their only caller, so deleting them
+## orphaned it directly beneath a comment asserting nothing can write one.
 func _load_overrides() -> void:
 	var raw: Variant = Persistence.get_item(STORAGE_KEY)
 	if raw != null:
 		var parsed: Variant = JSON.parse_string(String(raw))
 		_overrides = parsed if parsed is Dictionary else {}
 
-func _save_overrides() -> void:
-	Persistence.set_item(STORAGE_KEY, JSON.stringify(_overrides))

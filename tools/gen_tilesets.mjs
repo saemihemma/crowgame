@@ -527,7 +527,7 @@ async function build() {
             + '3-6 are the left/right end caps of a ground or platform run; 7-9 are '
             + 'transparent scatter marks for the decoration layer. '
             + 'Replace a PNG in place to reskin a world; add an entry here plus a PNG to add one. '
-            + 'BootScene loads every entry, so neither needs a code change. Generated entries come '
+            + 'The loader reads every entry, so neither needs a code change. Generated entries come '
             + 'from tools/gen_tilesets.mjs - edit that, not this file. See brand/ASSET_MANIFEST.md.',
         tileWidth: TILE,
         tileHeight: TILE,
@@ -571,7 +571,7 @@ async function build() {
     }
 
     // Authored tilesets the generator does not produce. They belong in the
-    // manifest anyway, or BootScene ends up with two ways to load a tileset.
+    // manifest anyway, or the loader ends up with two ways to load a tileset.
     const GRID_ROLES = ROLES.map(({ index, role, collides }) => ({ index, role, collides }));
 
     manifest.tilesets.push({
@@ -579,7 +579,7 @@ async function build() {
         theme: 'forest',
         image: 'assets/tilesets/forest_tiles.png',
         source: 'authored',
-        note: 'Base ground skin. Every level .tscn instances it through resources/tilesets/forest_tiles.tres; the per-world sheets dress over it.',
+        note: 'Base ground skin. level_loader.gd bakes a TileSet from whichever sheet a compiled level names; the per-world sheets dress over this one.',
         tiles: GRID_ROLES,
     });
     manifest.tilesets.push({
@@ -587,7 +587,7 @@ async function build() {
         theme: null,
         image: 'assets/tilesets/spike_hazards.png',
         source: 'authored',
-        note: 'Variable-width hazard frames, sliced in BootScene. Not a 32px grid.',
+        note: 'Variable-width hazard frames, sliced at load time. Not a 32px grid.',
         tiles: [],
     });
 

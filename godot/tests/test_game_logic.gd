@@ -5,9 +5,6 @@ extends TestCase
 
 const GAME_SCENE := preload("res://scenes/Game.tscn")
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _make_game() -> Node2D:
 	var g: Node2D = GAME_SCENE.instantiate()

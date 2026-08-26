@@ -248,8 +248,7 @@ func _selection_config() -> Dictionary:
 		# handed a six-year-old.
 		#
 		# Raising it is a product decision about who the game is for, not a
-		# content unlock. MATH_SYSTEM_ARCHITECTURE.md and
-		# docs/MATH_CONCEPT_LADDER.md both carry the reasoning.
+		# content unlock. docs/MATH_CONCEPT_LADDER.md carries the reasoning.
 		"maxOperand": 20,
 		"primaryDomain": allowed[0],
 		# How often each subject comes due. Data, so "how much addition does a

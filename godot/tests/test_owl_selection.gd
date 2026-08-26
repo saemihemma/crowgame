@@ -4,6 +4,9 @@ extends TestCase
 
 const OWL_DOMAINS := ["addition", "counting", "pattern_matching", "subtraction", "comparison", "number_sequence"]
 
+## Clear the case's own tally so a long test that loops can assert per iteration
+## without every iteration counting again. Deleted once as uncalled, and four
+## tests were written against it on another branch in the meantime.
 func _reset() -> void:
 	_failures.clear()
 	_assertions = 0

@@ -2,9 +2,6 @@ extends TestCase
 ## Slice 2 smoke test: every JSON loads, the math pools total what we expect,
 ## and the core autoloads behave (save round-trip, profile PIN, i18n, levels).
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _root() -> Node:
 	return Engine.get_main_loop().root
@@ -18,11 +15,29 @@ func test_all_data_files_loaded() -> void:
 	for key in dm.PATHS.keys():
 		assert_true(dm.get_data(key) != null, "data loaded: %s" % key)
 
-func test_math_pool_count() -> void:
+## DataManager must expose every problem the four pools hold.
+##
+## This asserted `n >= 2900` against a comment claiming a 3000 total. The real
+## total is larger, so the floor had drifted roughly 250 problems clear of the
+## data and would still have passed with an entire pool missing. The exact counts
+## are already gated by `npm run validate:docs`, which derives them from the same
+## JSON — so what is worth asserting HERE, and only here, is the runtime wiring:
+## that loading through the autoload loses nothing. Summing the files makes that
+## self-updating.
+func test_math_pool_count_matches_the_pools_on_disk() -> void:
 	var dm: Node = _root().get_node("DataManager")
-	var n: int = dm.get_total_problem_count()
-	# Inventory expectation: easy 15 + dataset 40 + gaps 60 + curriculum 2885 = 3000.
-	assert_true(n >= 2900, "math problem count plausible (got %d, expect ~3000)" % n)
+	var expected := 0
+	for pool in ["problems_easy", "problems_dataset", "problems_gaps", "problems_curriculum"]:
+		var f := FileAccess.open("res://data/math/%s.json" % pool, FileAccess.READ)
+		assert_true(f != null, "%s.json is readable" % pool)
+		if f == null:
+			continue
+		var parsed: Variant = JSON.parse_string(f.get_as_text())
+		f.close()
+		expected += (parsed.get("problems", []) as Array).size()
+	assert_true(expected > 0, "the pools on disk are not empty")
+	assert_eq(dm.get_total_problem_count(), expected,
+		"DataManager serves every problem the four pools hold")
 
 func test_level_registry_sorted() -> void:
 	var lm: Node = _root().get_node("LevelManager")

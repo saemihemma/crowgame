@@ -17,11 +17,6 @@ func init(config: Dictionary) -> void:
 	_player_level = int(save.get("playerLevel", 1))
 	EventBus.math_challenge_complete.connect(_on_math_complete)
 
-func get_xp() -> int:
-	return _xp
-
-func get_player_level() -> int:
-	return _player_level
 
 func get_xp_for_current_level() -> int:
 	var per: Array = _config.get("xpPerLevel", [])
@@ -30,8 +25,6 @@ func get_xp_for_current_level() -> int:
 	var idx: int = clampi((_player_level if _player_level > 0 else 1) - 1, 0, per.size() - 1)
 	return int(per[idx])
 
-func get_xp_progress() -> int:
-	return _xp
 
 func add_xp(amount: int) -> void:
 	_xp += amount

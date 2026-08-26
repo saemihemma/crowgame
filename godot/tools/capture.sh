@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Capture every level from the Godot build. The visual half of the
-# concept-then-measure loop in brand/PRODUCTION_PLAN.md.
+# concept-then-measure loop in brand/README.md.
 #
 #   bash godot/tools/capture.sh                        # every level, playing
 #   bash godot/tools/capture.sh level_01               # just one

@@ -71,7 +71,6 @@ describe('cloud save', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => 
     }
 
     before(async () => {
-        ({ buildApp } = await import('../src/app.ts'));
         const appModule = await import('../src/app.ts');
         const dbModule = await import('../src/db.ts');
         const { migrate } = await import('../src/migrate.ts');
@@ -331,14 +330,70 @@ describe('cloud save', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => 
 
     it('exports and hard-deletes a family', async () => {
         const cookie = await enrollFamily('erasure@example.com');
-        const childId = await createChild(cookie, 'Emma');
+        // A family with a row in every table the export promises, so the
+        // assertions below are about the endpoint rather than about the fixture:
+        // two children (one enrolled with a device-local id, which is what
+        // populates child_aliases), two save versions per child so save history is
+        // non-empty, and a losing write to produce a sync-conflict row.
+        const childId = await createChild(cookie, 'Emma', 'local-child-erasure');
+        const secondChildId = await createChild(cookie, 'Ari');
         await putSave(cookie, childId, saveBlob(9, 9), [{ attemptId: 'attempt-exp-1', correct: true }]);
+        await putSave(cookie, childId, saveBlob(12, 12), [{ attemptId: 'attempt-exp-2', correct: true }]);
+        // Fewer problems attempted than the stored save, so arbitration rejects it
+        // and logs the conflict. The attempts still land — that is the documented
+        // behaviour and the reason sync_conflicts exists.
+        await putSave(cookie, childId, saveBlob(3, 3), []);
+        await putSave(cookie, secondChildId, saveBlob(4, 4), []);
 
         const exported = await app.inject({
             method: 'GET', url: '/api/v1/family/export', headers: { cookie } });
         assert.equal(exported.statusCode, 200);
-        assert.equal(exported.json().children.length, 1);
-        assert.equal(exported.json().attempts.length, 1);
+        const body = exported.json();
+
+        // The RESPONSE, not the handler's source text.
+        //
+        // role-isolation.test.ts derives the family-scoped tables and checks the
+        // handler selects from each — which is a static read, and it passed two
+        // mutations that ship the broken promise: deleting `parents: parents.rows`
+        // from the response object, and returning `parents: []`. Both leave the
+        // query in place, so the source-text gate sees `from parents` and goes
+        // green while the file a parent downloads is missing the only row a
+        // subject-access request is actually about.
+        //
+        // PRIVACY.md now tells parents this is checkable. That sentence is only
+        // true because of the assertions below.
+        // CONTENT for every promised key, not `Array.isArray`.
+        //
+        // The first version of this asserted shape for all eight and content for
+        // four, so `saves: []`, `saveHistory: []`, `syncConflicts: []` and
+        // `childAliases: []` each shipped the broken promise past it — and `saves`
+        // is the child's actual progress, the single biggest reason after the
+        // email that the export exists. PRIVACY.md names all seven of these things
+        // one by one and then says "everything" is checkable; that sentence is
+        // only as true as the weakest assertion here.
+        const promised: Array<[string, number, string]> = [
+            ['parents', 1, 'the grown-up email is the only PII in the system'],
+            ['children', 2, 'the aliased child and the plain one'],
+            ['childAliases', 1, 'a second device enrolling maps its local child id here'],
+            ['devices', 1, 'the enrolling device'],
+            ['saves', 2, "the child's actual progress"],
+            ['attempts', 2, 'the record of what was answered'],
+            ['saveHistory', 1, 'the recoverable earlier versions'],
+            ['syncConflicts', 1, 'the arbitration log a losing device produced'],
+        ];
+        for (const [key, atLeast, why] of promised) {
+            assert.ok(Array.isArray(body[key]),
+                `the export must carry a "${key}" array — PRIVACY.md promises ` +
+                'everything held about the family, and names its exclusions separately');
+            assert.ok(body[key].length >= atLeast,
+                `the export's "${key}" is ${body[key].length} rows, expected at least ` +
+                `${atLeast} (${why}). An empty array satisfies a shape check and still ` +
+                'breaks the promise made in PRIVACY.md.');
+        }
+        assert.equal(body.parents[0].email, 'erasure@example.com',
+            'the export must carry the real address, not an empty or placeholder row');
+        assert.deepEqual(Object.keys(body.notIncluded).sort(), ['device_tokens', 'login_codes'],
+            'the exclusions are part of the promise; changing them changes what the doc must say');
 
         const deleted = await app.inject({
             method: 'DELETE', url: '/api/v1/family', headers: { cookie } });
@@ -356,4 +411,3 @@ describe('cloud save', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => 
 
 // Declared here so `before` can assign it without TypeScript complaining about
 // use-before-assignment on a module-scoped binding.
-let buildApp: typeof import('../src/app.ts').buildApp;

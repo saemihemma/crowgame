@@ -38,6 +38,7 @@ import json
 import os
 import re
 import struct
+import zlib
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -126,11 +127,99 @@ def resolve(raw, spec):
     return merged, overridden
 
 
+# Inlined from the deleted godot/tools/audit_pixel_art.py, which was 357 lines of
+# unwired reporting wrapped around this one live function. Deleting that module
+# broke CI, because the reference sweep grepped for the FILENAME and a Python
+# `import audit_pixel_art` carries no .py. One consumer, so it lives here.
+def read_png_rgba(path):
+    """Decode an 8-bit PNG to (width, height, bytearray RGBA). Handles colour
+    types 0/2/3/4/6 and the five standard filters — enough for game sprites."""
+    with open(path, "rb") as f:
+        data = f.read()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise ValueError("not a PNG: %s" % path)
+    pos, idat, palette, trns = 8, bytearray(), None, None
+    width = height = depth = ctype = None
+    while pos < len(data):
+        (length,) = struct.unpack(">I", data[pos:pos + 4])
+        ctag = data[pos + 4:pos + 8]
+        body = data[pos + 8:pos + 8 + length]
+        pos += 12 + length
+        if ctag == b"IHDR":
+            width, height, depth, ctype, _, _, interlace = struct.unpack(">IIBBBBB", body)
+            if depth != 8 or interlace != 0:
+                raise ValueError("unsupported PNG (depth=%d interlace=%d): %s" % (depth, interlace, path))
+        elif ctag == b"PLTE":
+            palette = body
+        elif ctag == b"tRNS":
+            trns = body
+        elif ctag == b"IDAT":
+            idat += body
+        elif ctag == b"IEND":
+            break
+
+    raw = zlib.decompress(bytes(idat))
+    channels = {0: 1, 2: 3, 3: 1, 4: 2, 6: 4}[ctype]
+    stride = width * channels
+    out = bytearray(stride * height)
+    prev = bytearray(stride)
+    p = 0
+    for y in range(height):
+        ftype = raw[p]
+        p += 1
+        line = bytearray(raw[p:p + stride])
+        p += stride
+        if ftype == 1:
+            for i in range(channels, stride):
+                line[i] = (line[i] + line[i - channels]) & 0xFF
+        elif ftype == 2:
+            for i in range(stride):
+                line[i] = (line[i] + prev[i]) & 0xFF
+        elif ftype == 3:
+            for i in range(stride):
+                left = line[i - channels] if i >= channels else 0
+                line[i] = (line[i] + ((left + prev[i]) >> 1)) & 0xFF
+        elif ftype == 4:
+            for i in range(stride):
+                a = line[i - channels] if i >= channels else 0
+                b = prev[i]
+                c = prev[i - channels] if i >= channels else 0
+                pa, pb, pc = abs(b - c), abs(a - c), abs(a + b - 2 * c)
+                pred = a if (pa <= pb and pa <= pc) else (b if pb <= pc else c)
+                line[i] = (line[i] + pred) & 0xFF
+        elif ftype != 0:
+            raise ValueError("bad PNG filter %d" % ftype)
+        out[y * stride:(y + 1) * stride] = line
+        prev = line
+
+    rgba = bytearray(width * height * 4)
+    for i in range(width * height):
+        s, d = i * channels, i * 4
+        if ctype == 6:
+            rgba[d:d + 4] = out[s:s + 4]
+        elif ctype == 2:
+            rgba[d:d + 3] = out[s:s + 3]
+            rgba[d + 3] = 255
+        elif ctype == 0:
+            g = out[s]
+            rgba[d:d + 4] = bytes((g, g, g, 255))
+        elif ctype == 4:
+            g = out[s]
+            rgba[d:d + 4] = bytes((g, g, g, out[s + 1]))
+        elif ctype == 3:
+            idx = out[s]
+            rgba[d:d + 3] = palette[idx * 3:idx * 3 + 3]
+            rgba[d + 3] = trns[idx] if trns and idx < len(trns) else 255
+    return width, height, rgba
+
+
+# --- metrics ----------------------------------------------------------------
+
+
 def read_frames(path, fw, fh, count):
     """Grid-slice a PNG into `count` RGBA frame buffers. Reuses the audit tool's
     dependency-free decoder so CI needs no Pillow."""
     sys.path.insert(0, HERE)
-    from audit_pixel_art import read_png_rgba
     w, _h, rgba = read_png_rgba(path)
     cols = max(1, w // fw)
     out = []
@@ -142,6 +231,30 @@ def read_frames(path, fw, fh, count):
             buf += rgba[start:start + fw * 4]
         out.append(buf)
     return out
+
+
+def opaque_extent(frame, fw, fh):
+    """(height, width) of the drawn pixels in one RGBA frame buffer.
+
+    Height is measured from the frame's BOTTOM edge up to the topmost drawn row,
+    not as the bounding box: `anchor: feet` puts the bottom edge on the ground
+    contact line, so that is where a collider grows from. Alpha > 8 counts as
+    drawn — a stray 1/255 pixel from a lossy round-trip is not a silhouette.
+    """
+    top, left, right = None, fw, -1
+    for y in range(fh):
+        row = frame[y * fw * 4:(y + 1) * fw * 4]
+        for x in range(fw):
+            if row[x * 4 + 3] > 8:
+                if top is None:
+                    top = y
+                if x < left:
+                    left = x
+                if x > right:
+                    right = x
+    if top is None:
+        return 0, 0
+    return fh - top, right - left + 1
 
 
 def check():
@@ -362,6 +475,47 @@ def check():
                 "sprite '%s' has identical frames %s — either the export duplicated them "
                 "or the frame count is too high" % (key, dupes))
 
+    # --- 5b: a declared collider fits inside the drawing ---------------------
+    #
+    # A class may declare `body`: the collision box, in frame pixels, grown up
+    # from the frame's bottom edge. It is the collider the game builds at
+    # runtime (SpriteSheet.body_box), and it has to be INSIDE the silhouette in
+    # every frame — a box taller than the art is a character that collides with
+    # a ceiling it has visibly not touched, which is exactly what shipped: 56px
+    # of collider on a crow drawn 47.
+    for key, raw in sorted(sprites.items()):
+        cls = spec.get("classes", {}).get(raw.get("class", ""), {})
+        body = cls.get("body")
+        if not isinstance(body, dict):
+            continue
+        abspath = os.path.join(ROOT, raw.get("path", ""))
+        if not raw.get("path") or not os.path.exists(abspath):
+            continue
+        fw = int(raw.get("frameWidth", cls.get("frameWidth", 0)))
+        fh = int(raw.get("frameHeight", cls.get("frameHeight", 0)))
+        if fw <= 0 or fh <= 0:
+            continue
+        try:
+            frames = read_frames(abspath, fw, fh, int(raw.get("frames", 1)))
+        except Exception as exc:                       # pragma: no cover
+            errors.append("sprite '%s': could not measure for its body box (%s)" % (key, exc))
+            continue
+        for i, frame in enumerate(frames):
+            drawn_h, drawn_w = opaque_extent(frame, fw, fh)
+            if drawn_h == 0:
+                continue
+            if int(body.get("height", 0)) > drawn_h:
+                errors.append(
+                    "sprite '%s' frame %d is drawn %dpx tall, but its class declares a "
+                    "%dpx body box — the collider sticks out of the top of the art, so the "
+                    "character stops short of every ceiling it jumps at."
+                    % (key, i, drawn_h, int(body["height"])))
+            if int(body.get("width", 0)) > drawn_w:
+                errors.append(
+                    "sprite '%s' frame %d is drawn %dpx wide, but its class declares a "
+                    "%dpx body box — the collider is wider than the character."
+                    % (key, i, drawn_w, int(body["width"])))
+
     # --- 6: audio is manifest-claimed ----------------------------------------
     if os.path.exists(AUDIO_MANIFEST):
         manifest_text = json.dumps(load_json(AUDIO_MANIFEST))
@@ -392,6 +546,32 @@ def selftest():
     if bad:
         return 1
     print("check_assets selftest: %d/%d grid cases OK" % (len(cases), len(cases)))
+
+    # And prove the body-box measurement measures what it claims. The whole
+    # point of it is that a 64px frame is not a 64px character: build a frame
+    # with a known amount of clear margin above the head and check the number
+    # that comes back is the drawing, not the frame.
+    fw = fh = 8
+    body_cases = [
+        # (top_pad, left_pad, right_pad, expected_h, expected_w)
+        (0, 0, 0, 8, 8),      # fills the frame
+        (3, 0, 0, 5, 8),      # 3px of sky above the head — the shipped case
+        (8, 0, 0, 0, 0),      # nothing drawn at all
+        (2, 2, 1, 6, 5),      # inset on three sides
+    ]
+    for top, left, right, want_h, want_w in body_cases:
+        frame = bytearray(fw * fh * 4)
+        for y in range(top, fh):
+            for x in range(left, fw - right):
+                frame[(y * fw + x) * 4 + 3] = 255
+        got_h, got_w = opaque_extent(frame, fw, fh)
+        if (got_h, got_w) != (want_h, want_w):
+            print("  selftest FAIL: pad(t%d l%d r%d) -> %dx%d, expected %dx%d"
+                  % (top, left, right, got_w, got_h, want_w, want_h))
+            bad += 1
+    if bad:
+        return 1
+    print("check_assets selftest: %d/%d body-box cases OK" % (len(body_cases), len(body_cases)))
     return 0
 
 

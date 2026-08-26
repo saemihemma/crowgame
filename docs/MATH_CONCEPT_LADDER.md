@@ -2,7 +2,6 @@
 
 Status: Current
 Authority: Runtime code and data, specifically `godot/data/curriculum/concept_ladder.json`, `godot/data/curriculum/tutorials.json`, `godot/scripts/math/concept_ladder.gd`, `godot/scripts/systems/tutorial_manager.gd` and `godot/scripts/ui/math_tutorial.gd`. `tools/validate_math_concepts.mjs` is the enforcing authority, and it checks this document too.
-Last verified against code: 2026-08-25
 
 ## Purpose
 
@@ -17,9 +16,31 @@ What this is:
 
 What this is not:
 - not the adaptive difficulty model (that is
-  [MATH_SYSTEM_ARCHITECTURE.md](../MATH_SYSTEM_ARCHITECTURE.md))
+  [ARCHITECTURE.md](../ARCHITECTURE.md))
 - not the authoring pipeline for problems themselves (that is
-  [MATH_AUTHORING_PIPELINE.md](./MATH_AUTHORING_PIPELINE.md))
+  [ARCHITECTURE.md](../ARCHITECTURE.md#the-math-authoring-pipeline))
+
+## The ladder, in numbers
+
+This is the only numeric snapshot left in the doc set, and it survives for one
+reason: `tools/validate_math_concepts.mjs` matches every figure below against the
+data and fails the build when one drifts. A count nobody checks is a claim that
+rots in silence — this one cannot.
+
+`DataManager` loads 4 maths pools totalling 4039 problems (`curriculum` 3736,
+`gaps` 248, `dataset` 40, `easy` 15). Those are grouped into **49** concepts by
+`godot/data/curriculum/concept_ladder.json` — **40** rungs keyed on step range
+plus **9** overlays keyed on problem shape — of which **47** open with a
+**4**-card lesson from `godot/data/curriculum/tutorials.json`: **47** lessons,
+**188** cards. The two without one are `addition.multi_digit` and
+`subtraction.multi_digit`, deliberately, because the owl's operand cap of 20
+means no child can reach them.
+
+`reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,
+including the **0** empty and **3** thin rungs, and the **6** concepts the cap
+puts out of reach — all declared. Separately, **8** rungs are dead zones the step
+derivation cannot emit at all: not authoring debt, and measured rather than
+asserted by `npm run math:step-domains`.
 
 ## The problem this solves
 
@@ -392,7 +413,7 @@ This sits on top of what the game already does for motivation, and does not
 duplicate it: the golden-problem roll is seeded rather than random-on-demand,
 the comeback beat celebrates a corrected miss harder than an ordinary win, and
 the session recap ends on the best moment. Those are in
-[MATH_SYSTEM_ARCHITECTURE.md](../MATH_SYSTEM_ARCHITECTURE.md).
+[ARCHITECTURE.md](../ARCHITECTURE.md).
 
 The Icelandic curriculum for this age band is the practical scope check:
 first-year pupils work on number sense, writing the numerals 0-20, and meeting

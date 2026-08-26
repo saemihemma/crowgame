@@ -2,7 +2,6 @@
 
 Status: Current
 Authority: The list of open work. Not a record of finished work. Runtime truth lives in the code.
-Last verified against code: 2026-08-25
 
 ## READ THIS FIRST — THIS FILE HAS ONE JOB
 
@@ -15,19 +14,19 @@ or need to do. Nothing else belongs here.
    through. Do not move it to a "completed" section. Do not write "(done)" after
    it. Delete the lines. An item that is finished has no business in a list of
    open work, and a roadmap that accumulates finished items stops being read.
-2. **Never add an entry describing something you just did.** That is what
-   `progress.md` is for. If you finished it, it goes in `progress.md` and it
-   comes *out* of here.
+2. **Never add an entry describing something you just did.** That is what the
+   commit message is for. If you finished it, it comes *out* of here and the
+   record of it is in git history.
 3. **If you finish part of an item, rewrite the item to describe only what is
    left.** Do not annotate it with what you did.
 4. **This file is not a changelog, a status report, a diary, or a design
    document.** No dates on entries. No author names. No "as of" notes. No
-   history. If you want to explain a decision, put it in `progress.md` or an
-   architecture doc and link to it.
+   history. If you want to explain a decision, put it in the commit message or
+   an architecture doc and link to it.
 5. **Every entry must be actionable and specific enough to start on.** Name the
    file, the behaviour, or the question to answer. "Improve UX" is not an entry.
-6. **Deleting an item you did not finish requires a reason** written into
-   `progress.md`. Silent removal of open work is worse than leaving it.
+6. **Deleting an item you did not finish requires a reason** written into the
+   commit that removes it. Silent removal of open work is worse than leaving it.
 
 If you are an agent working in this repository: you are expected to leave this
 file *shorter* than you found it whenever you complete something. Adding to it
@@ -130,16 +129,16 @@ because once the crow reaches the owl the encounter overlay opens and captures
 input, after which every later probe reads as dead including a keyboard control.
 A gate needs a fresh level per probe, or a level with no owl near the spawn.
 
-*Mouse:* untested. `godot/scripts/ui/touch_controls.gd` shows the d-pad whenever
-`OS.has_feature("web")` is true, which includes desktop browsers where the player
-has a mouse, and `pointing/emulate_touch_from_mouse` is enabled as the documented
-fix but has never been confirmed — Playwright's synthetic mouse does not reach a
-TouchScreenButton, which is a harness limitation and not evidence either way.
+*Mouse:* no longer a question, because the pads are no longer there. Owner
+playtest: a desktop PC got the five-button thumb gamepad laid over the level.
+`TouchControls.supported()` now asks `DisplayServer.is_touchscreen_available()`
+alone, and `pointing/emulate_touch_from_mouse` is off — it had to be, because it
+is an input of that same call and made the engine answer "yes, touch" on any
+machine with a mouse. Confirmed in a browser both ways: pads present under touch
+emulation, absent without.
 
-*Done when:* someone clicks a pad with a real mouse in a desktop browser and says
-whether the crow moves. If it does not, the fallback is to hide the controls
-unless `DisplayServer.is_touchscreen_available()`, so desktop players are not
-shown dead buttons.
+*Done when:* the touch half above has a repeatable assertion. The mouse half is
+closed.
 
 ### The five tilesets are generated placeholders
 Each world has its own tileset and no two levels share a ground, but the five
@@ -149,7 +148,7 @@ what is wrong with each, the geometry contract and the replacement steps.
 
 Redrawing them by hand is the highest-value art work available.
 
-*Done when:* every entry in `public/data/tilesets/tileset_manifest.json` reads
+*Done when:* every entry in `godot/data/tilesets/tileset_manifest.json` reads
 `"source": "authored"`, and `tools/gen_tilesets.mjs` can be deleted.
 
 ### Reduced gravity at the apex is an unmade design decision, not a blocked one
@@ -220,7 +219,7 @@ birds), gated to steps 3+. Still open: more story families and objects so the
 wording doesn't wear out, worded shapes for comparison and sequences, and
 visual prompts via the unused `prompt.assets` field (picture-group addition in
 the spirit of counting's dot strings). Every new worded shape needs a matching
-pattern in `src/math/wordedArithmetic.ts` — that table is what keeps steps,
+pattern in `math-kernel/math/wordedArithmetic.ts` — that table is what keeps steps,
 traits, and replay keys honest.
 
 ### Review items target the skill, not the confusion
@@ -297,13 +296,14 @@ are regenerated -- problem ELO is assigned from `difficulty`, so this moves
 Tier-1 numbers and cannot be done piecemeal.
 
 ### A gated "padlock owl" variant that asks for more than one answer
-The baseline owl asks exactly one problem. `problemCount` is already per-NPC
-config in `npc_registry.json` and both ports' components loop until it is met,
-so the remaining work is content and design, not plumbing: a visually distinct
-NPC variant, a registry entry with `problemCount` 2-3 and a bigger reward, and
-a decision about where it appears (level gates? bonus areas?). The
-multi-problem UI (progress header, alternate-domain follow-ups) stays dormant
-at the baseline but keeps working for any NPC that raises the count.
+The baseline owl asks exactly one problem, and every dial that makes one owl
+different from another is on the owl: `problemCount`, `difficultyRange` and
+`problemTypes`, documented in `npc_registry.json`'s own `fields` block. So a new
+variant is a registry entry plus the `npc_id` a level spawns — no code change.
+What is left is content and design: a visually distinct sprite, a bigger reward,
+and a decision about where it appears (level gates? bonus areas?). The
+multi-problem UI (progress header, alternate-domain follow-ups) stays dormant at
+the baseline but keeps working for any NPC that raises the count.
 
 ### Multiplication and division reach a child late
 Both are served now: they are in every owl's `problemTypes`, they unlock off the
@@ -353,12 +353,17 @@ tuning-driven logic that decides when they appear (`math_tuning.json`
 the drawn primitives as the shipped look — for badges, pips, the golden
 frame, and the recap panel, wired in both `src/` and `godot/`.
 
-### Web SFX are generated, not authored
-`tools/gen_sfx.py` synthesizes all 16 effects procedurally and writes them to
-both runtimes. They are committed and they work, but they are placeholders in
-tone.
+### The SFX are generated, not authored
+`tools/gen_sfx.py` synthesizes every effect procedurally. They are committed and
+they work, but they are placeholders in tone.
 
-*Done when:* someone decides whether these are the shipping sounds.
+The brief now exists: `brand/SOUND_DESIGN.md` lists every moment in the game,
+which file fires it, and how it should sound, and the swap procedure is copying
+a file over the old one — no code, manifest or registry change. So this is a
+commission, not an engineering task.
+
+*Done when:* someone decides whether these are the shipping sounds, and if not,
+whose they are.
 
 ---
 
@@ -404,8 +409,8 @@ of completed tasks.** Do not add finished work here.
   an extra affordance for a child who cannot read yet, never the identifier. The
   word stays, and stays untranslated. 🇺🇸 was chosen for English over 🇬🇧 as the
   owner's call.
-  They are vector geometry (`src/ui/components/FlagIcon.ts`,
-  `godot/scripts/ui/flag_icon.gd`), not emoji, for the same reason the PIN dots
+  They are vector geometry (`godot/scripts/ui/flag_icon.gd`), not emoji, for
+  the same reason the PIN dots
   and the tick are: a flag emoji is a regional-indicator pair far outside
   Latin-1, Windows ships no flag glyphs so Chrome there renders it as the
   letters "US"/"IS", and the Godot export's bundled font has no emoji at all --
@@ -416,7 +421,7 @@ of completed tasks.** Do not add finished work here.
   things read them and would break if they became Icelandic:
   `tools/math_verifier.ts` recomputes every answer by parsing operands out of
   `prompt.text` and is the only independent arithmetic check;
-  `src/math/problemReplayKey.ts` builds the anti-repeat key from it with literal
+  `math-kernel/math/problemReplayKey.ts` builds the anti-repeat key from it with literal
   tests like `startsWith('count these:')`; `buildPromptUniquenessKey` dedupes the
   pools on it; and the golden fixtures shared with the Godot parity tests compare
   it byte for byte. Localisation is a render-time overlay through the optional
@@ -433,6 +438,13 @@ of completed tasks.** Do not add finished work here.
   `answer.correct`, plus the measured operand-order invariant for the 62
   templates where `{a}`/`{b}` are the prompt's operands. See
   `tools/math_phrasing_catalog.mjs`.
+- **The child says "level", the parent report says "step" -- in both locales.**
+  One number, the derived curriculum step, and two registers on purpose.
+  `math.step_up` celebrates with "Level up!" / "Næsta stig!" because that is what
+  lands with a seven-year-old, while the parent report and the recap say "step" /
+  "þrep" because that is the ladder a grown-up is reading. `tools/validate_i18n.mjs`
+  cannot tell a register split from an inconsistency, so it is recorded here
+  instead: do not unify them.
 - **Icelandic explanations say "gerir", not "er"/"eru".** Icelandic verb
   agreement follows the numeral -- "2 plús 3 eru 5" but "4 mínus 3 er 1" -- and
   the result is a parameter, so any agreeing verb is wrong for some values.

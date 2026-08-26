@@ -16,26 +16,55 @@ name: CI
 # skipped run that should have failed costs far more than a redundant one.
 
 on:
+  # NO paths filter, deliberately, and that now includes output/web.
+  #
+  # Markdown is not ignored: doc validation is the check most likely to be needed
+  # by a docs-only change, and ignoring .md turned it off for exactly that case.
+  #
+  # output/web is no longer ignored either, and that was a real hole. It is the
+  # deployed artifact, and `npm run validate` carries the export-freshness gate
+  # that exists to prove it matches godot/**. Ignoring the path meant a commit
+  # touching ONLY output/web — a hand-edit, a partial copy, a re-export from the
+  # wrong tree — skipped the one check written to catch it, and left a red trunk
+  # green after a fix-by-re-export. The gate has to run on the file it guards.
   push:
-    branches: [main, release]
-    # Markdown is NOT ignored: doc validation is the check most likely to be
-    # needed by a docs-only change, and ignoring .md turned it off for exactly
-    # that case. Only the committed build artifact is ignored.
-    paths-ignore: ['output/web/**']
+    # Agent branches are included so their greenness is a fact rather than a
+    # manual dispatch. This whole hardening pass began with nine commits pushed
+    # and called green while CI had never seen the branch at all.
+    branches: [main, release, 'claude/**']
   pull_request:
     branches: [main, release]
-    # Markdown is NOT ignored: doc validation is the check most likely to be
-    # needed by a docs-only change, and ignoring .md turned it off for exactly
-    # that case. Only the committed build artifact is ignored.
-    paths-ignore: ['output/web/**']
   workflow_dispatch:
+
+# One run per ref. Pushing three commits in a row used to start three full runs
+# and let all three finish; only the last one's result means anything. main and
+# release are exempt: on a protected branch the run IS the record of that commit,
+# and cancelling it loses the answer to "was this commit green".
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/release' }}
 
 jobs:
   godot-tests:
     name: Godot suite (unit + physics probes)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This job never opens output/web, so it does not need to fetch it.
+          # Measured: 68 MB of working tree becomes 20 MB. Verified locally that
+          # the pattern excludes ONLY output/web and leaves godot/, math-kernel/,
+          # server/ and tools/ intact -- non-cone mode, because cone mode cannot
+          # express an exclusion.
+          #
+          # content-validate and error-pipeline-e2e deliberately do NOT do this:
+          # one derives the payload table and the export fingerprint FROM those
+          # bytes, the other serves them to a browser.
+          sparse-checkout: |
+            /*
+            !/output/web/
+          sparse-checkout-cone-mode: false
 
       - name: Cache Godot binary
         id: godot-cache
@@ -62,8 +91,23 @@ jobs:
   parity-gate:
     name: Parity oracle (kernel -> fixtures -> Godot)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This job never opens output/web, so it does not need to fetch it.
+          # Measured: 68 MB of working tree becomes 20 MB. Verified locally that
+          # the pattern excludes ONLY output/web and leaves godot/, math-kernel/,
+          # server/ and tools/ intact -- non-cone mode, because cone mode cannot
+          # express an exclusion.
+          #
+          # content-validate and error-pipeline-e2e deliberately do NOT do this:
+          # one derives the payload table and the export fingerprint FROM those
+          # bytes, the other serves them to a browser.
+          sparse-checkout: |
+            /*
+            !/output/web/
+          sparse-checkout-cone-mode: false
 
       - uses: actions/setup-node@v4
         with:
@@ -113,7 +157,17 @@ jobs:
   content-validate:
     name: Content and docs validation
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
+      # A shallow checkout is fine here now. This was `fetch-depth: 0` because the
+      # validator dated a `Last verified against code:` stamp on every doc against
+      # git history, so it needed the history. That gate is gone — it asserted a
+      # doc had been edited recently, which git answers better, and bumping the
+      # stamp in the same commit always satisfied it. Nothing left in
+      # `npm run validate` reads git.
+      #
+      # This job DOES need the committed export, so no sparse-checkout exclusion:
+      # it derives the payload figures and the export fingerprint from those bytes.
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
@@ -122,19 +176,27 @@ jobs:
       - run: npm ci
       - name: Typecheck the reference kernel and the toolchain
         run: npm run typecheck
-      - name: Validate content, docs and assets
+      # Includes the colour law: 66 checks that the world palettes obey
+      # BRAND_SYSTEM §6, run against godot/data/themes because that is what the
+      # game loads. It was a separate step against a duplicate copy in
+      # brand/tokens/, which meant it could pass while the shipped palettes drifted.
+      - name: Validate content, docs, assets and palettes
         run: npm run validate
-      # Rescued from web-ci.yml. That workflow gated the retired Phaser build and
-      # could never pass, but this step was real and passing: 65 checks that the
-      # brand palettes obey their own colour laws. Deleting the workflow dropped
-      # it, so it lives here now, where the rest of the gates actually run.
-      - name: Colour law
-        working-directory: brand/tokens
-        run: python3 verify_palettes.py
+
+      # The gate above is only as good as this job's checkout depth, and the
+      # depth is defended by nothing except the literal 0 above — which is the
+      # honour system that let the same gate ship broken three times. This proves
+      # the deployed configuration: it builds full-depth, depth-2 and depth-1
+      # clones, asserts a depth regression FAILS rather than quietly narrowing,
+      # and asserts each failure's reason so a validator too broken to parse
+      # cannot read as a caught defect.
+      - name: The doc gate must actually gate
+        run: npm run validate:docs-test
 
   api:
     name: API (server tests against Postgres)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       postgres:
         image: postgres:16-alpine
@@ -149,6 +211,20 @@ jobs:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/crow_test?sslmode=disable
     steps:
       - uses: actions/checkout@v4
+        with:
+          # This job never opens output/web, so it does not need to fetch it.
+          # Measured: 68 MB of working tree becomes 20 MB. Verified locally that
+          # the pattern excludes ONLY output/web and leaves godot/, math-kernel/,
+          # server/ and tools/ intact -- non-cone mode, because cone mode cannot
+          # express an exclusion.
+          #
+          # content-validate and error-pipeline-e2e deliberately do NOT do this:
+          # one derives the payload table and the export fingerprint FROM those
+          # bytes, the other serves them to a browser.
+          sparse-checkout: |
+            /*
+            !/output/web/
+          sparse-checkout-cone-mode: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -166,6 +242,7 @@ jobs:
   error-pipeline-e2e:
     name: Error pipeline end-to-end (browser -> API -> Postgres)
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       postgres:
         image: postgres:16-alpine
@@ -188,7 +265,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm --prefix server ci
-      # No Godot needed: output/web is committed, so this exercises the exact
-      # bytes that get deployed.
+      # No Godot needed for either step: output/web is committed, so both
+      # exercise the exact bytes that get deployed.
       - name: Run the pipeline end to end
         run: npm run e2e:errors
+
+      # ONBOARDING.md calls this "not optional for a shipping change" and names
+      # "trusting the source suite about the export" as a known failure mode of
+      # this project — and it was on the honour system, referenced nowhere in CI.
+      # It needs only the committed export and a browser, both of which this job
+      # already has, so it costs one step. It gates the render (>=256 distinct
+      # canvas colours; a working build measures ~2700) and the geometry (0px of
+      # letterbox, which stretch/aspect=expand guarantees), so a blank frame or a
+      # return of the 19.1% letterbox fails here rather than printing a number
+      # nobody reads.
+      - name: The exported build must boot and render
+        run: npm run web:boot-smoke

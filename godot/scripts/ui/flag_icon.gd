@@ -1,7 +1,8 @@
 extends Control
 class_name FlagIcon
 ## Flag icons for the language selector, drawn as vector geometry.
-## Godot port of src/ui/components/FlagIcon.ts -- keep the two in step.
+## Vector flag geometry, not emoji: Windows ships no flag glyphs and the
+## export font carries none, so a regional-indicator pair renders as tofu.
 ##
 ## WHY NOT EMOJI
 ## -------------

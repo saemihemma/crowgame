@@ -12,7 +12,15 @@
  * behaviour (audio-context unlock rules, memory ceilings, Safari's WASM
  * compilation limits) still needs a device check.
  *
- * Usage: node godot/tools/web_boot_smoke.mjs [--port 8061]
+ * Usage: node godot/tools/web_boot_smoke.mjs [--port 8061] [--shots <dir>]
+ *
+ * `--shots <dir>` also writes a PNG of every step of the walk. That is not part
+ * of the gate — a screenshot cannot fail a build — but "what does each screen
+ * actually look like right now, at a size nobody plays on" is the question that
+ * found the UI being cut off on every 16:9 display, and it is worth being one
+ * flag away rather than a script somebody writes again each time. The gate for
+ * that defect is godot/tests/test_screen_fit.gd, which is deterministic and
+ * headless; this is the human's version of it.
  */
 import { existsSync, readdirSync } from 'fs';
 import { spawn } from 'child_process';
@@ -24,6 +32,7 @@ import { chromium } from 'playwright-core';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const WEB_DIR = resolve(ROOT, 'output/web');
 const PORT = Number(process.argv.includes('--port') ? process.argv[process.argv.indexOf('--port') + 1] : 8061);
+const SHOT_DIR = process.argv.includes('--shots') ? process.argv[process.argv.indexOf('--shots') + 1] : null;
 
 const EXECUTABLE_CANDIDATES = [
     process.env.CHROMIUM_PATH,
@@ -40,6 +49,15 @@ function resolveChromium() {
 
 // iPad (10th gen) CSS viewport in landscape — the owner's primary device class.
 const IPAD = { width: 1180, height: 820 };
+
+/** A blank or near-blank frame is not a render. A working build measures ~2714. */
+const MIN_DISTINCT_COLORS = 256;
+/** `stretch/aspect=expand` makes the viewport the window, so bars are zero. */
+const MAX_LETTERBOX_PX = 0;
+// Cropping is the same defect as letterboxing with the sign flipped, and under
+// `stretch/aspect=expand` both are zero by construction, so the floor is the
+// same number.
+const MAX_OFFSCREEN_PX = 0;
 
 async function main() {
     // The payload is content-addressed (index.<id>.wasm), so this looks for the
@@ -100,6 +118,56 @@ async function main() {
         // Let the boot scene settle and the first real scene come up.
         await page.waitForTimeout(9000);
 
+        // WALK THE FLOW, and gate on engine errors while doing it.
+        //
+        // Booting is not playing. This harness used to stop at the first frame,
+        // which is why it never saw `login.gd` calling `_col.add_child(_pin_edit)`
+        // on a node `_make_pin_edit()` had already parented — Godot refuses that
+        // with "already has a parent" on every visit to the PIN and new-player
+        // screens, and the rejected add left the field looking correct, so nothing
+        // anywhere noticed.
+        //
+        // There WAS a second harness for this (tools/godot_play_smoke.mjs). It
+        // asserted the screen CHANGED between steps, using hand-tuned pixel-noise
+        // floors — "noise floor 0.0066, walk change 0.0055, needs > 0.0265" — and
+        // that is why it rotted unrun: flaky by construction, and nobody wanted to
+        // own the thresholds. It is deleted. What actually found the bug was not a
+        // pixel diff; it was the console. So this asserts only that clicking and
+        // typing through the real screens produces NO engine error, which is
+        // deterministic, needs no threshold, and would have failed on that bug.
+        //
+        // Deliberately blind clicks at the canvas centre. Coordinate-precise
+        // clicking is what makes browser tests break on every layout change; the
+        // point here is to exercise the screens, not to assert a layout.
+        const flow = [
+            ['open a screen',      async () => page.mouse.click(590, 430)],
+            ['type a name',        async () => page.keyboard.type('Smoke')],
+            ['type a PIN',         async () => page.keyboard.type('1234')],
+            ['commit',             async () => page.keyboard.press('Enter')],
+            ['advance',            async () => page.mouse.click(590, 430)],
+            ['advance again',      async () => page.mouse.click(590, 430)],
+            ['hold right',         async () => {
+                await page.keyboard.down('ArrowRight');
+                await page.waitForTimeout(1200);
+                await page.keyboard.up('ArrowRight');
+            }],
+        ];
+        if (SHOT_DIR) await mkdir(SHOT_DIR, { recursive: true });
+        let step = 0;
+        for (const [label, act] of flow) {
+            const before = consoleErrors.length;
+            await act();
+            await page.waitForTimeout(1200);
+            if (consoleErrors.length > before) {
+                consoleErrors.push(`(the ${consoleErrors.length - before} error(s) above appeared while: ${label})`);
+            }
+            if (SHOT_DIR) {
+                step += 1;
+                const name = `${String(step).padStart(2, '0')}-${label.replace(/\W+/g, '-')}.png`;
+                await page.screenshot({ path: resolve(SHOT_DIR, name) });
+            }
+        }
+
         const canvas = await page.evaluate(() => {
             const c = document.querySelector('canvas');
             return { width: c.width, height: c.height, clientWidth: c.clientWidth, clientHeight: c.clientHeight };
@@ -133,22 +201,67 @@ async function main() {
         });
         const distinctColors = render.distinctColors;
 
-        // How much of an iPad screen the 16:9 game actually uses. Recorded so a
-        // change to the stretch/aspect policy shows up as a number, not a vibe.
+        // How much of an iPad screen the game actually uses — gate B1.
+        //
+        // This used to compute the bars from a HARDCODED 16:9, which made it a
+        // false negative the moment the stretch policy changed. Under
+        // `stretch/aspect=expand` the viewport IS the window, so the canvas
+        // fills it and there are no bars — but the old maths reported a phantom
+        // 156px / 19.1% anyway, which is the exact figure the switch to `expand`
+        // was made to eliminate. Its own comment claimed a policy change would
+        // "show up as a number"; hardcoding the aspect is what stopped that
+        // being true.
+        //
+        // So measure what is actually on screen: the canvas box against the
+        // viewport, in both axes and in BOTH DIRECTIONS.
+        //
+        // Bars alone are half the failure. `Math.max(0, vw - width)` is
+        // structurally blind to a canvas LARGER than the viewport: injecting
+        // 1450x1000 into the exported build reported "0px bars, canvas covers
+        // 149.9%" and passed, when a third of the frame — including whichever
+        // edge the HUD lives on — was cropped off the owner's primary device.
+        // Same class of defect as the hardcoded 16:9 above: a metric that can
+        // only move in the direction someone thought to look.
+        //
+        // Offscreen is measured from the canvas's POSITION, not just its size,
+        // so a correctly-sized canvas shifted out from under the viewport counts
+        // too.
         const letterbox = await page.evaluate(() => {
             const c = document.querySelector('canvas');
             const r = c.getBoundingClientRect();
-            const usedH = (r.width * 9) / 16;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const barsH = Math.max(0, Math.round(vh - r.height));
+            const barsW = Math.max(0, Math.round(vw - r.width));
+            const offV = Math.max(0, Math.round(-r.top)) + Math.max(0, Math.round(r.bottom - vh));
+            const offH = Math.max(0, Math.round(-r.left)) + Math.max(0, Math.round(r.right - vw));
+            const usedPct = Math.round(((r.width * r.height) / (vw * vh)) * 1000) / 10;
             return {
-                cssViewport: `${Math.round(r.width)}x${Math.round(r.height)}`,
-                gameAspect: '16:9',
-                barsTotalPx: Math.max(0, Math.round(r.height - usedH)),
-                screenUsedPct: Math.round((usedH / r.height) * 1000) / 10,
+                cssViewport: `${Math.round(vw)}x${Math.round(vh)}`,
+                canvasBox: `${Math.round(r.width)}x${Math.round(r.height)}`,
+                barsTotalPx: barsH + barsW,
+                verticalBarsPx: barsH,
+                horizontalBarsPx: barsW,
+                offscreenTotalPx: offV + offH,
+                verticalOffscreenPx: offV,
+                horizontalOffscreenPx: offH,
+                screenUsedPct: usedPct,
             };
         });
 
         const result = {
-            accepted: consoleErrors.length === 0 && failedRequests.length === 0 && canvas.width > 0 && distinctColors > 1,
+            // GATED, not merely recorded. `distinctColors > 1` accepted a
+            // two-colour frame as a render, and nothing checked the geometry at
+            // all — so a regression to the 19.1% letterbox this project fixed
+            // would have printed its number and still passed. Floors are set
+            // well under what a working build measures (2714 colours, 0 bars) so
+            // they fail on a real regression, not on noise.
+            accepted: consoleErrors.length === 0
+                && failedRequests.length === 0
+                && canvas.width > 0
+                && distinctColors >= MIN_DISTINCT_COLORS
+                && letterbox.barsTotalPx <= MAX_LETTERBOX_PX
+                && letterbox.offscreenTotalPx <= MAX_OFFSCREEN_PX,
             kind: 'web_export_boot_smoke',
             whatThisIs: 'Exported output/web build booted in Chromium at an iPad landscape viewport with touch enabled.',
             whatThisIsNot: 'Not real iPad Safari verification. WebKit audio unlock, memory ceilings and WASM limits are unproven here.',
@@ -166,8 +279,18 @@ async function main() {
 
         console.log(`canvas          : ${canvas.width}x${canvas.height} (css ${canvas.clientWidth}x${canvas.clientHeight})`);
         console.log(`distinct colors : ${distinctColors} (full canvas)`);
-        console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars, game uses ${letterbox.screenUsedPct}% of screen height`);
+        console.log(`ipad letterbox  : ${letterbox.barsTotalPx}px bars (${letterbox.verticalBarsPx}v/${letterbox.horizontalBarsPx}h), ${letterbox.offscreenTotalPx}px offscreen (${letterbox.verticalOffscreenPx}v/${letterbox.horizontalOffscreenPx}h), canvas covers ${letterbox.screenUsedPct}% of the viewport`);
+        console.log(`flow steps      : ${flow.length} (clicks and keys after boot)`);
         console.log(`console errors  : ${consoleErrors.length}`);
+        if (distinctColors < MIN_DISTINCT_COLORS) {
+            console.error(`FAIL: only ${distinctColors} distinct colours (floor ${MIN_DISTINCT_COLORS}) — the build booted but did not render`);
+        }
+        if (letterbox.barsTotalPx > MAX_LETTERBOX_PX) {
+            console.error(`FAIL: ${letterbox.barsTotalPx}px of bars (floor ${MAX_LETTERBOX_PX}) — gate B1 has regressed`);
+        }
+        if (letterbox.offscreenTotalPx > MAX_OFFSCREEN_PX) {
+            console.error(`FAIL: ${letterbox.offscreenTotalPx}px of canvas is off screen (floor ${MAX_OFFSCREEN_PX}) at ${letterbox.screenUsedPct}% coverage — the frame is being cropped, not letterboxed`);
+        }
         console.log(`failed requests : ${failedRequests.length}`);
         for (const e of consoleErrors.slice(0, 5)) console.log(`  ERR ${e}`);
         for (const f of failedRequests.slice(0, 5)) console.log(`  REQ ${f}`);

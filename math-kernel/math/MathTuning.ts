@@ -10,7 +10,7 @@
  * a number is a one-line JSON edit that both ports pick up together.
  *
  * There are deliberately no compiled-in defaults: every entry point must load
- * the JSON (BootScene in the browser, an explicit file read in Node tools).
+ * the JSON: an explicit file read in the Node tools that consume this kernel.
  * A missing initialize is a loud crash, never a silent drift back to stale
  * numbers.
  */
@@ -72,7 +72,7 @@ export function mathTuning(): MathTuningData {
     if (!activeTuning) {
         throw new Error(
             '[MathTuning] not initialized - load data/tuning/math_tuning.json first ' +
-            '(BootScene does this in the browser; Node tools must read the file themselves)',
+            '(Node tools must read the tuning file themselves before use)',
         );
     }
     return activeTuning;

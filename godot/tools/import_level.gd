@@ -6,6 +6,13 @@ extends SceneTree
 ## can be authored natively. The runtime LevelLoader stays as the parity path.
 ##
 ## Run: godot --headless --path godot --script res://tools/import_level.gd
+##
+## ITS OUTPUT IS NOT COMMITTED. A previous run's six level scenes and one TileSet
+## were, and they went stale: nothing at runtime read them, they still referenced
+## the retired `forest` theme, and because `godot/scenes/**` is exported they were
+## shipping in the pck. Regenerate when you want to author in the editor; commit a
+## scene only once it is the authored source for a level rather than a copy of the
+## compiled JSON.
 
 const COMPILED_DIR := "res://data/levels/compiled"
 const TILESET_OUT := "res://resources/tilesets"

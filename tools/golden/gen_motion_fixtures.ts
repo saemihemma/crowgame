@@ -1,7 +1,7 @@
 /**
  * Golden-value generator for player movement-feel parity.
  *
- * Implements the Phaser-Arcade integration model used by src/entities/Player.ts
+ * Implements the Arcade-style integration model mirrored by player_motion.gd
  * (gravity -> accel/drag -> maxSpeed clamp -> jump override -> variable-jump cut
  * -> terminal clamp) as a standalone reference, runs scripted input sequences,
  * and emits godot/tests/fixtures/motion_fixtures.json. player_motion.gd must

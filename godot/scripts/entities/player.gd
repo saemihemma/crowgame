@@ -45,9 +45,11 @@ var _land_tween: Tween = null
 var _was_on_floor := true
 
 @onready var _sprite: AnimatedSprite2D = $Sprite
+@onready var _body: CollisionShape2D = $CollisionShape2D
 
 func _ready() -> void:
 	add_to_group("player")
+	_size_body()
 	_tuning = DataManager.get_dict("PLAYER_TUNING")
 	if _tuning.is_empty():
 		_tuning = {"accel": 600, "drag": 800, "maxSpeed": 160, "jumpVelocity": 475,
@@ -57,6 +59,28 @@ func _ready() -> void:
 	var combat := DataManager.get_dict("COMBAT_TUNING")
 	_laser_speed = float(combat.get("laser_speed", 400))
 	_laser_cooldown = float(combat.get("laser_cooldown_ms", 1000)) / 1000.0
+
+## Fit the collider to the drawing, from sprite_spec.json.
+##
+## The scene used to state it: a 40x56 box at y = -28. The crow is drawn 47-51px
+## tall in a 64px frame, so up to 9 of those 56 pixels were above its head —
+## which is why a jump stopped a visible gap short of every platform's underside.
+## The number was never measured; it was half the frame height, the same literal
+## SpriteSheet already exists to keep out of scene files.
+##
+## A fresh shape rather than resizing the scene's: sub-resources are shared
+## between instances of a PackedScene, and this is the kind of edit that quietly
+## reaches through one.
+func _size_body() -> void:
+	var box := SpriteSheet.body_box(WALK_SPRITE_KEY)
+	if _body == null or box == Vector2.ZERO:
+		return
+	var shape := RectangleShape2D.new()
+	shape.size = box
+	_body.shape = shape
+	# Grown upward from the feet, which sit on the node origin.
+	_body.position = Vector2(0.0, -box.y * 0.5)
+
 
 func _build_animations() -> void:
 	if _sprite == null:
@@ -79,12 +103,23 @@ func _physics_process(delta: float) -> void:
 		"jump_just_pressed": Input.is_action_just_pressed("jump"),
 		"jump_held": Input.is_action_pressed("jump"),
 	}
-	PlayerMotion.compute_velocity(_state, input, is_on_floor(), _tuning, delta)
+	var was_on_floor := is_on_floor()
+	PlayerMotion.compute_velocity(_state, input, was_on_floor, _tuning, delta)
 	velocity = Vector2(float(_state["vx"]), float(_state["vy"]))
+	# Captured before move_and_slide resolves the collision, which zeroes vy on a
+	# landing -- so this is the speed the crow actually hit the ground at.
+	var fall_speed := velocity.y
 	move_and_slide()
 	# Write resolved velocity back so collisions (landing/ceiling) reset feel state.
 	_state["vx"] = velocity.x
 	_state["vy"] = velocity.y
+
+	# The threshold lives in data/tuning/fx_tuning.json, like every other motion
+	# and FX figure -- it shipped as a bare const for one commit, in the file whose
+	# own README rule is that magic numbers do not live in .gd.
+	if not was_on_floor and is_on_floor() \
+			and fall_speed >= float(Config.fx("land_min_fall_speed", 220.0)):
+		AudioManager.play_event("land")
 
 	if input["left"]:
 		_facing = -1
@@ -202,5 +237,3 @@ func _find_game() -> Node:
 func get_motion_state() -> Dictionary:
 	return _state
 
-func set_tuning(t: Dictionary) -> void:
-	_tuning = t

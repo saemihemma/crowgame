@@ -2,7 +2,6 @@
 
 Status: Supportive
 Authority: The list of art assets still to generate, with their sizes and destinations. Runtime truth is the Godot project under `godot/` - its registries, theme files and tuning JSON.
-Last verified against code: 2026-08-24
 
 Every art asset the five worlds need, in the order worth making them, with the
 exact pixel dimensions and the exact path each file goes to. Design intent lives
@@ -19,7 +18,6 @@ This table is now also machine-readable, as
 `godot/data/registries/sprite_spec.json`, and the build checks the shipped art
 against it (`godot/tools/check_assets.py`). The sizes there are transcribed from
 here — if the two ever disagree, this file wins and the JSON is the bug. See
-`docs/SPRITE_CONTRACT.md`. `godot/tools/audit_pixel_art.py` measures the two rules
 below that can be measured — "no anti-aliasing" and "author at 1x" — and currently
 reports four of the six shipped sprites failing the first.
 
@@ -48,19 +46,21 @@ Rules that apply to every file in this document:
   columns from the sheet width, so both layouts read correctly; a strip remains
   the preferred layout for new art.)
 - **Author at 1x.** Never generate at 4x and downscale; it produces the muddy
-  edges `PROJECT.md` explicitly warns against.
+  edges `PRODUCT.md` explicitly warns against.
 
 ---
 
 ## How to generate and place an asset
 
-The repo has no automated art pipeline and `ai_generation_guide.md` is explicit
+The repo has no automated art pipeline and `brand/ASSET_MANIFEST.md` is explicit
 that the helper scripts are manual conveniences, not a production path. The loop
 that actually works:
 
 1. **Generate externally**, at the exact dimensions in the tables below, using
    the world's palette hexes in the prompt (they are listed per world).
-2. **Stage it** in `ai_assets/` if you want to iterate. Nothing there is live.
+2. **Stage it outside the repo** while you iterate — a scratch directory of your
+   own. There is deliberately no staging tree in git, and nothing outside the
+   `Destination` paths below is ever live.
 3. **Check it against the pixel law** above. Reject soft edges now, not later.
 4. **Place the approved file** at the exact `Destination` path in the table.
 5. **Wire it** - the `Wire in` column names the file to edit. An asset that
@@ -81,16 +81,10 @@ npx tsc --noEmit
 > ```
 > bash godot/tools/build_web.sh
 > (cd output/web && python3 -m http.server 8060)
-> node tools/godot_play_smoke.mjs      # walks login -> menu -> level -> owl
 > node godot/tools/web_boot_smoke.mjs  # iPad viewport, boots and renders
 > ```
 
-The screenshot walker used to be the gate that mattered for art: it walked all
-six levels, captured gameplay and the maths board in each, and checked the
-rendered pixels against that world's token file. It drove the Phaser build and
-went with it.
-
-Its job is now done by `godot/tests/test_world_palettes.gd`, one layer down: it
+The art gate is `godot/tests/test_world_palettes.gd`, one layer down: it
 scores each world's tileset directly against that world's theme tokens, so it
 needs no browser, no served build and no walk through the UI, and it runs in the
 headless suite on every push. A pixel counts as on-palette within an RGB
@@ -98,9 +92,8 @@ distance of 32; at least 75% of opaque, non-neutral pixels must clear that.
 
 Two things it deliberately does not claim:
 
-- **It does not check rendered frames.** A layout bug that draws the right
-  colours in the wrong place will pass. `node tools/godot_play_smoke.mjs` and a
-  human eye still cover that.
+- **It does not check rendered frames.** Art drawn in the right palette but
+  placed wrong still passes; only playing it catches that.
 - **It cannot tell worlds apart.** The palettes overlap by design — shared
   danger red, accents, text — so `geyserworks` art scores 1.000 against
   `emberwood`'s palette. The matrix is in the test's header. What it does prove
@@ -111,7 +104,7 @@ Two things it deliberately does not claim:
 plum family (`#613049`, 1640 px, 45.6 away) that `theme_sugarstorm.json` does
 not declare. Either the art or the token file is wrong; that is an art call.
 
-`brand/tokens/verify_palettes.py` remains complementary: it proves the token
+`tools/verify_palettes.py` remains complementary: it proves the token
 files are internally lawful, this proves the pixels match them.
 
 ---
@@ -126,7 +119,7 @@ bottom of this section. Replacing them is the highest-value art work available.
 ### The real geometry contract
 
 An earlier version of this document specified a `320x320` sheet with a 9-tile
-order. **That was wrong.** The truth, read out of the compiled level JSON and `scripts/levels/level_loader.gd`:
+order. **That was wrong.** The truth, read out of the compiled level JSON and `godot/scripts/systems/level_loader.gd`:
 
 | | |
 | --- | --- |
@@ -166,7 +159,6 @@ The PNG is the asset. Nothing about a tileset lives in code.
    `godot/data/tilesets/tileset_manifest.json`, so the generator stops being
    treated as its origin.
 4. `npm run validate`, then look at the build: `bash godot/tools/build_web.sh`
-   and `node tools/godot_play_smoke.mjs`.
 
 To **add** a world: drop a PNG in, add a manifest entry, add a theme token file,
 give a level spec that `theme`. The tileset manifest is loaded by `DataManager`, so there
@@ -441,5 +433,4 @@ Worth stating, so nobody generates something that is already handled:
 **91 files, of which 5 are placed and 86 remain.** Nothing in P1-P5 blocks
 anything else, so they can land in any order, one file per pull request.
 `godot/tests/test_world_palettes.gd` polices the palette of each world's tileset
-on every push; `node tools/godot_play_smoke.mjs` and a human eye cover placement
 and composition, which no pixel check can judge.

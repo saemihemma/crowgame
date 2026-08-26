@@ -114,7 +114,7 @@ const BOXES = {
     // 36px -- so "Næsta stig! Samanburður" is the string that has to fit, and the
     // '88' stand-in said nothing useful about it.
     'math.step_up': {
-        size: 36, max: 900, where: 'HUDScene celebration banner, centred on a 960 canvas',
+        size: 36, max: 900, where: 'HUD celebration banner, centred on a 960 canvas',
         fill: [
             'domain.addition', 'domain.subtraction', 'domain.multiplication',
             'domain.division', 'domain.counting', 'domain.comparison',
@@ -247,7 +247,7 @@ for (const dir of otherDirs) {
  * A naive "does the source mention this string" sweep DELETES LIVE STRINGS. Four
  * families of key are assembled at runtime and never appear as literals:
  *
- *   domain.*        HUDScene.ts:81   t(`domain.${data.domain}`)
+ *   domain.*        hud.gd           t(`domain.${data.domain}`)
  *                   hud.gd:80        TextManager.t("domain." + domain)
  *   level.*         LevelSelectScene.ts:226  `level.${level.key}.name`
  *                   level_select.gd:74       "level.%s.name" % key
@@ -262,7 +262,7 @@ for (const dir of otherDirs) {
  * strings the game is using.
  */
 const DYNAMIC_PREFIXES = [
-    { prefix: 'domain.', built: 'HUDScene.ts / hud.gd, from a problem domain' },
+    { prefix: 'domain.', built: 'hud.gd, from a problem domain' },
     { prefix: 'domain_', built: 'parent_report.gd, from a domain in the learner summary' },
     { prefix: 'kind_', built: 'parent_report.gd, from a problem kind in the analytics report' },
     { prefix: 'level.', built: 'LevelSelectScene.ts / level_select.gd, from a level key' },
@@ -569,16 +569,16 @@ for (const pool of MATH_POOLS) {
  * {seq}" is short until {seq} is "22, 16, 19, 15, 22, 16, 19, ?". So this walks
  * the actual pools, renders each problem's prompt and hint in both locales, and
  * requires the wrapped block to fit at the FLOOR size the renderer will shrink
- * to. Passing here is what makes MathBoard's floor unreachable in practice.
+ * to. Passing here is what makes the board's font floor unreachable in practice.
  *
- * Numbers from src/ui/components/MathBoard.ts.
+ * Numbers from godot/scripts/ui/math_challenge.gd.
  */
 const PHRASING_BOXES = {
-    prompt: { wrap: 460, floor: 20, maxH: 96, where: 'MathBoard question band' },
-    hint: { wrap: 460, floor: 16, maxH: 72, where: 'MathBoard hint band below the board' },
+    prompt: { wrap: 460, floor: 20, maxH: 96, where: 'maths board question band' },
+    hint: { wrap: 460, floor: 16, maxH: 72, where: 'hint band below the maths board' },
 };
 
-/** Greedy word wrap, matching what Phaser does at a monospace advance. */
+/** Greedy word wrap at a monospace advance, matching the board's renderer. */
 function wrappedLines(text, size, wrapWidth) {
     const perLine = Math.max(1, Math.floor(wrapWidth / (size * ADVANCE_RATIO)));
     let lines = 1;
@@ -641,6 +641,54 @@ for (const pool of MATH_POOLS) {
                 }
             }
         }
+    }
+}
+
+// ── Icelandic: no agreeing verb on a result the runtime supplies ───────────
+//
+// Icelandic verb agreement follows the numeral -- "2 plús 3 eru 5" but
+// "4 mínus 3 er 1" -- and in a phrasing the result is a PARAMETER, so an
+// agreeing verb is wrong for some values of it. roadmap.md carries this as a
+// settled decision: use the invariant "gerir", or drop the verb.
+//
+// It was settled and then broken in seven phrasings, which is why it is a check
+// now and not a note. Six of them shipped: two problems rendered "2 plús 0 er 2"
+// where Icelandic needs "eru", and three more the same way.
+//
+// The narrow, certain case only: the verb DIRECTLY governs a numeric parameter
+// AND the subject in front of it is itself parameterised. "Svarið er {total}"
+// has a noun subject and is correct at any value, so it is not flagged. A
+// phrasing with a plural sibling (`<key>.one`) is not flagged either -- that is
+// the render-time plural rule doing its job, which is the other legal answer.
+//
+// Grammar this regex cannot read gets an explicit exemption with its reason,
+// the same shape as `hardcode-ok` elsewhere in this repo.
+const AGREEMENT_EXEMPT = {
+    'math.expl.add_double': 'subject is "Tvöfalt {a}", neuter singular, so "er" agrees with it and not with {sum}',
+    'math.expl.sub_half': 'subject is "helmingurinn", masculine singular, not the numeral',
+    'math.hint.rel.other_part': 'names {total} as the whole; a native reading is needed to say whether the copula should agree',
+    'math.expl.choice': 'subject is "rétta svarið"; a native reading is needed on which side the copula agrees with',
+};
+const NUMERIC_PARAM = /\{(?:sum|n|diff|prod|quot|total|answer|result|run)\}/;
+{
+    const is = bundles[primaryDir].is ?? {};
+    for (const [key, value] of Object.entries(is)) {
+        if (!/^math\.(expl|hint)\./.test(key)) continue;
+        if (key.endsWith('.one')) continue;                 // the singular variant
+        if (Object.hasOwn(is, `${key}.one`)) continue;       // has a plural pair
+        if (Object.hasOwn(AGREEMENT_EXEMPT, key)) continue;
+        const text = String(value);
+        const m = /\b(er|eru)\s+(?:bara\s+|enn\s+|allir\s+)?(\{[a-z_]+\})/.exec(text);
+        if (!m || !NUMERIC_PARAM.test(m[2])) continue;
+        // Is the subject itself a parameter? If nothing before the verb is, the
+        // subject is a noun and the verb is not agreeing with the result.
+        if (!/\{[a-z_]+\}/.test(text.slice(0, m.index))) continue;
+        fail(
+            `[${key}] Icelandic "${m[1]} ${m[2]}" makes the verb agree with a result the runtime `
+            + `supplies, so it is wrong for some values. Use the invariant "gerir", drop the verb, `
+            + `or add a "${key}.one" singular variant. If the grammar is actually right, add `
+            + `AGREEMENT_EXEMPT['${key}'] with the reason.`,
+        );
     }
 }
 

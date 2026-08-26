@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## ParentReport — what a parent can see about their child's learning.
 ##
-## PROJECT.md says parent visibility matters, and after the Godot port there was
+## PRODUCT.md says parent visibility matters, and after the Godot port there was
 ## no way to get it: admin.html reads browser localStorage, while the game stores
 ## everything in user://crow_localstorage.json (IndexedDB on the web). Same key
 ## names, different storage engine — so the old page could not see this game's

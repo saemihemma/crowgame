@@ -115,8 +115,11 @@ func _show_pin_entry(username: String) -> void:
 	_clear()
 	_title(TextManager.t("login.hi", [username]), 32)
 	_title(TextManager.t("login.enter_pin"), 22)
+	# _make_pin_edit() has already parented this inside its own frame and added
+	# that frame to _col. Adding it to _col again is what Godot refused with
+	# "already has a parent" on every visit to this screen — invisible, because
+	# the rejected add left the field exactly where it belonged.
 	_pin_edit = _make_pin_edit()
-	_col.add_child(_pin_edit)
 	_status = _make_status()
 	_col.add_child(_status)
 	_action_button(TextManager.t("login.play"), func(): _try_login(username, _pin_edit.text), BrandButton.Role.PRIMARY)
@@ -133,8 +136,8 @@ func _show_new_player() -> void:
 	_name_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_col.add_child(_name_edit)
 	_title(TextManager.t("login.pick_pin"), 22)
+	# Already parented by _make_pin_edit() — see the PIN screen above.
 	_pin_edit = _make_pin_edit()
-	_col.add_child(_pin_edit)
 	# Birth YEAR, optional, for the parent report's grade comparison. A year and
 	# not a date on purpose: Icelandic school grade depends only on the calendar
 	# year of birth (docs/GRADE_EXPECTATIONS.md), so a date would be data about a

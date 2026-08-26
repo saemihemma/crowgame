@@ -129,7 +129,7 @@ export function runJourney(profile: string, successRate: number, attempts: numbe
 
 function runJourneyInner(profile: string, successRate: number, attempts: number): JourneyResult {
     // The kernel reads its ladder and lane knobs from the shipped tuning file.
-    // BootScene does this in the browser; a Node tool has to do it itself.
+    // The Godot boot path does this at runtime; a Node tool has to do it itself.
     MathTuning.initialize(read(join(ROOT, 'godot', 'data', 'tuning', 'math_tuning.json')));
     const problems = loadPools();
     const owl = loadOwl();

@@ -47,10 +47,6 @@ func get_problems_in_range(domain: String, min_elo: float, max_elo: float, exclu
 			out.append(problem)
 	return out
 
-func get_problems_by_skills_in_range(domain: String, skills: Array, min_elo: float, max_elo: float, exclude_ids: Array, constraints: Dictionary = {}) -> Array:
-	if skills.is_empty():
-		return get_problems_in_range(domain, min_elo, max_elo, exclude_ids, constraints)
-	return _filter_by_skills(get_problems_in_range(domain, min_elo, max_elo, exclude_ids, constraints), skills)
 
 func get_problems_in_curriculum_step_range(domain: String, min_step: int, max_step: int, exclude_ids: Array, constraints: Dictionary = {}) -> Array:
 	var out: Array = []
@@ -104,11 +100,6 @@ func record_problem_outcome(problem_id: String, success: bool) -> void:
 func get_all_problems_for_domain(domain: String) -> Array:
 	return _problems_by_domain.get(domain, [])
 
-func get_total_problems() -> int:
-	var total := 0
-	for problems in _problems_by_domain.values():
-		total += problems.size()
-	return total
 
 func _filter_by_skills(problems: Array, skills: Array) -> Array:
 	var wanted := {}

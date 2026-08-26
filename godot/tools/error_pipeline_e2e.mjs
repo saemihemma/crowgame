@@ -250,7 +250,10 @@ async function main() {
 
         // The context must be coarse device facts only — never anything about a child.
         const contextKeys = Object.keys(row.context ?? {});
-        const forbidden = contextKeys.filter(k => /child|pin|name|user|save/i.test(k));
+        // `email` and `label` are here because PRIVACY.md's claim is about anything
+        // ANYONE typed into the game, not only a child: the cloud panel takes a
+        // grown-up's address and a pairing code, and a device carries a label.
+        const forbidden = contextKeys.filter(k => /child|pin|name|user|save|email|label|code/i.test(k));
         if (forbidden.length > 0) fail(`context carried player-identifying keys: ${forbidden.join(', ')}`);
         if (!contextKeys.includes('viewportW')) fail('context lost the coarse device facts');
 

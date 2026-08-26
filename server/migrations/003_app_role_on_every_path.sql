@@ -1,0 +1,12 @@
+-- Make "every request path runs as crow_app" an invariant rather than a habit.
+--
+-- Two of the four database entry points did not drop the superuser role: the
+-- DELETE /api/v1/family cascade, and the anonymous POST /api/v1/errors ingest.
+-- Both now go through withFamily/withAppRole. GET /api/v1/health was the third,
+-- and it could not have: crow_app held no privilege on schema_migrations, so
+-- routing it through the app role would have turned a liveness probe into a 503.
+--
+-- An invariant with an exception list rots at the exception. One SELECT grant
+-- removes the exception, and test/role-isolation.test.ts asserts the invariant
+-- holds for all four rather than for a list of three.
+grant select on schema_migrations to crow_app;

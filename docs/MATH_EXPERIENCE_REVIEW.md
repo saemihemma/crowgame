@@ -17,7 +17,7 @@ This document is that missing layer. Part 1 is the user stories the experience
 is now built to. Part 2 is the review that produced them, issue by issue, with
 what shipped and what deliberately did not.
 
-Read `MATH_SYSTEM_ARCHITECTURE.md` for how the maths works, and
+Read `ARCHITECTURE.md` for how the maths works, and
 `docs/MATH_CONCEPT_LADDER.md` for what it teaches. This is why it feels the way
 it does.
 
@@ -65,7 +65,7 @@ Acceptance criteria:
 
 Pinned by `godot/tests/test_math_placement.gd`.
 
-**Explicitly rejected: a separate placement quiz screen.** `PROJECT.md` asks for
+**Explicitly rejected: a separate placement quiz screen.** `PRODUCT.md` asks for
 "playful rather than school-like", and three questions on a screen with no crow,
 no owl and no coins is the most school-like thing the game could open with. The
 first three owls *are* the placement; they just count for more than the fourth
@@ -195,7 +195,7 @@ calibration window moves in concept-sized jumps for the first three answers.
 
 **Deliberately not changed: the lane weights** (40% comfort / 20% review / 30%
 at-level / 10% stretch, so 60% of questions sit at or below the current rung).
-Two reasons. First, that ratio is the design — `PROJECT.md`: "success should be
+Two reasons. First, that ratio is the design — `PRODUCT.md`: "success should be
 common enough to feel motivating". Second, `laneWeights` is Tier-1: golden
 fixtures are generated from it and `tools/validate-content.ts` hashes the file
 into the server's `ladderWeights.ts`. Moving it on intuition is exactly what

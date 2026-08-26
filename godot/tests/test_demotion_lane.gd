@@ -26,7 +26,9 @@ extends TestCase
 ##
 ## The same constants are asserted against the reference kernel by
 ## tools/validate_docs.js, so the two implementations cannot drift apart quietly.
-## See docs/PREMORTEM_PUBLIC_LAUNCH.md, Story 3.
+## This was a pre-launch finding: the ladder could conclude a child was bad at
+## maths and never let them back up. Fixed before release; these assertions are
+## what keep it fixed.
 
 func _fresh_learner(child_id: String) -> void:
 	Persistence.remove_item("crow_learner_snapshot_%s" % child_id)

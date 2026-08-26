@@ -427,7 +427,7 @@ func _set_touch_visible(shown: bool) -> void:
 ## The same condition TouchControls uses to decide whether it belongs on this
 ## device at all - so showing it back does not summon a d-pad onto a desktop.
 func _touch_supported() -> bool:
-	return DisplayServer.is_touchscreen_available() or OS.has_feature("web") or OS.has_feature("mobile")
+	return TouchControls.supported()
 
 func _toggle_pause() -> void:
 	if is_instance_valid(_pause_overlay):
@@ -474,13 +474,21 @@ func _on_answer_submitted(payload: Dictionary) -> void:
 
 ## The top centre of the HUD is kept empty precisely so this reads as an event
 ## rather than as another readout. It appears, it says one thing, it leaves.
+##
+## It says the COUNT, not a multiplier. The string was "x{0} COINS!" ("x{0}
+## MYNTIR!" in Icelandic) and nothing in the game multiplies coins: an owl coin is
+## `coin_count += 1` and an enemy drop is `+= amount`, neither of which reads
+## `streak`. A six-year-old was being shown "x3 COINS!" and handed one coin, in a
+## product whose whole thesis is that the reward has to be real. Renamed from
+## fx.streak_multiplier so the key cannot re-acquire the claim by accident, and
+## test_i18n.gd asserts neither locale's toast names the currency.
 func _streak_toast() -> void:
 	var layer := get_node_or_null("FX")
 	if layer == null:
 		return
 	var hot := streak >= int(Config.fx("streak/hot", 5))
 	var vw := float(ProjectSettings.get_setting("display/window/size/viewport_width"))
-	var key := "fx.streak_on_fire" if hot else "fx.streak_multiplier"
+	var key := "fx.streak_on_fire" if hot else "fx.streak_count"
 	DopamineFX.number_fly_up(layer, Vector2(vw * 0.5, 96.0), TextManager.t(key, [streak]))
 	AudioManager.play_event("milestone")
 
@@ -540,6 +548,7 @@ func hurt_player() -> void:
 func player_die() -> void:
 	respawning = true
 	transitioning = true
+	AudioManager.play_event("player_die")
 	EventBus.player_died.emit()
 	# Coins collected this level are lost (back to level-start count).
 	coin_count = coins_at_level_start
@@ -622,6 +631,10 @@ func transition_to_level(target_level: String) -> void:
 		AudioManager.stop_music()
 		call_deferred("_show_completion_screen")
 		return
+	# Arriving somewhere new is its own moment. `door` marks getting CLOSE to the
+	# door and opens it; this is the step through, and the two are deliberately
+	# different sounds - the first is an invitation, the second is a departure.
+	AudioManager.play_event("level_enter")
 	# Swap to the next level (deferred so we're outside the Area2D callback).
 	call_deferred("_swap_level", target_level)
 
@@ -655,13 +668,13 @@ func _show_completion_screen() -> void:
 	scrim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	root.add_child(scrim)
 
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	root.add_child(center)
+	# Fitted, not centred — a 62px title, two counted-up medals and two Gate-B3
+	# buttons is close enough to the 540 a 16:9 display leaves that one more
+	# medal would push the second button off the biggest moment in the game.
 	var col := VBoxContainer.new()
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
 	col.add_theme_constant_override("separation", 18)
-	center.add_child(col)
+	root.add_child(FitBox.around(col))
 
 	var title := Label.new()
 	title.text = TextManager.t("game.congratulations_title")

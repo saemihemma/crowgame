@@ -1,6 +1,6 @@
 extends TestCase
 ## The on-screen controls, checked against the gates in
-## brand/PRODUCTION_PLAN.md at every aspect this game supports.
+## brand/BRAND_SYSTEM.md §14 at every aspect this game supports.
 ##
 ## These exist because the controls were laid out from ProjectSettings' fixed
 ## 960x540 while the viewport is `expand` and is 1171x540 on a phone and 960x720
@@ -27,9 +27,6 @@ const SAFE_MARGIN := 32.0
 ## device, which means the bottom corners - not the middle of the screen.
 const THUMB_BAND := 0.45
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _mounted() -> CanvasLayer:
 	var controls: CanvasLayer = TOUCH_SCENE.instantiate()

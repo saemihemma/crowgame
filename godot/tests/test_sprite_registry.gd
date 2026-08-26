@@ -12,9 +12,6 @@ extends TestCase
 ## The static half — orphaned files, import settings, off-spec sheet dimensions —
 ## is tools/check_assets.py, which runs without booting Godot.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _registry() -> Dictionary:
 	return DataManager.get_dict("SPRITE_REGISTRY").get("sprites", {})

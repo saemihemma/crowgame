@@ -1,6 +1,8 @@
 {
   "_comment": "Juice/FX tuning — shake, flash, particles, timings. JSON-first; colors come from the active theme palette (ThemeManager), amounts/durations from here. grounding_sink_px is the one entry here that is not juice: it is how many pixels a world actor's sprite is drawn below its collider so it reads as planted on the grass lip rather than balanced on the collision plane. It compensates the TILESET's art language, not any one character's art — do not re-tune it because a single sprite looks off, fix that sprite. Applied via SpriteSheet.anchor_offset() by player, enemy and NPC; the door and pickups take no sink.",
   "grounding_sink_px": 4,
+  "land_min_fall_speed": 220.0,
+  "_land_min_fall_speed_comment": "Downward speed (px/s) below which touching the ground is a step off a kerb rather than a landing, so the thud does not play. Roughly half the speed a full-height jump lands at, and well clear of the few px/s move_and_slide produces on a slope.",
   "shake": {
     "duration": 0.15,
     "strength": 6.0

@@ -2,9 +2,6 @@ extends TestCase
 ## Phase 0.5: data-driven registries resolve correctly — scene routing, spawn
 ## types, and sound events all point at things that actually exist.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _root() -> Node:
 	return Engine.get_main_loop().root
@@ -32,7 +29,7 @@ func test_sound_events_map_to_manifest() -> void:
 			continue
 		assert_true(sfx.has(String(events[ev])), "event '%s' -> sfx key '%s' exists" % [ev, events[ev]])
 
-## The progression PROJECT.md commits to: worlds unlock strictly one at a time,
+## The progression PRODUCT.md commits to: worlds unlock strictly one at a time,
 ## in registry order, with the practice arena outside the chain.
 ##
 ## Pinned because the reason is the maths rather than the platforming - each

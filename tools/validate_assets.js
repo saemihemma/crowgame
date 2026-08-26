@@ -147,9 +147,9 @@ function printGroup(title, entries, missing) {
 /**
  * Every visual asset the game actually references.
  *
- * The Phaser original declared these in one place (a BootScene full of
- * `this.load.image(...)` calls), so this used to be a single-file scrape. Godot
- * has no such chokepoint: a texture is referenced from a `.gd` constant, a
+ * The Phaser original declared these in one place — a BootScene    [retired-ref-ok]
+ * full of `this.load.image(...)` calls — so this used to be a single-file scrape.
+ * Godot has no such chokepoint: a texture is referenced from a `.gd` constant, a
  * `.tscn` ext_resource, a `.tres`, or a data registry. So scan all four for
  * `res://assets/...` and bare `assets/...` paths.
  *
@@ -292,7 +292,7 @@ function main() {
 
     printGroup('Sound Effects', audioAssets.sfx, missingAssets);
     printGroup('Music Tracks', audioAssets.music, missingAssets);
-    printGroup('BootScene Visual Assets', bootVisuals, missingAssets);
+    printGroup('Boot-Loaded Visual Assets', bootVisuals, missingAssets);
     printGroup('Compiled Level Tileset Assets', compiledLevelAssets, missingAssets);
 
     const suspiciousAssets = findSuspiciousUnreferencedAssets(uniqueReferencedAssets);

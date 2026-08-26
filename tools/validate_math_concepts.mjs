@@ -737,12 +737,18 @@ writeFileSync(join(REPORT_DIR, 'coverage.json'), JSON.stringify({
 // which concepts exist and which steps each one owns -- is a design decision,
 // and it belongs in prose a human wrote. This check is what stops that prose
 // from quietly becoming fiction.
-const ONBOARDING_DOC = 'ONBOARDING_AGENT.md';
+const ONBOARDING_DOC = 'docs/MATH_CONCEPT_LADDER.md';
 
-// The onboarding snapshot states the ladder's shape as bare numbers, and bare
-// numbers rot in silence: it claimed 40 concepts, 6 overlays, 18 empty rungs and
-// 5 thin ones long after every one of those had changed. A new reader takes
-// those on trust, so they are checked like any other assertion.
+// The ladder doc states its shape as bare numbers, and bare numbers rot in
+// silence: they claimed 40 concepts, 6 overlays, 18 empty rungs and 5 thin ones
+// long after every one of those had changed. A new reader takes those on trust,
+// so they are checked like any other assertion.
+//
+// This block used to read ONBOARDING_AGENT.md, which no longer exists — the doc
+// set was consolidated, and the snapshot moved into the doc that describes the
+// thing it counts. That is also the only reason the numbers survived the
+// consolidation at all: every other count in prose was deleted, because nothing
+// stopped it going stale. This one has this check.
 {
     const onboarding = readFileSync(join(ROOT, ONBOARDING_DOC), 'utf8');
     const overlays = ladder.concepts.filter(c => c.requires);

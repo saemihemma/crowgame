@@ -2,7 +2,7 @@ extends Node
 ## Screenshot harness for the Godot build — the replacement for the Playwright
 ## loop that drove the retired web port.
 ##
-## The concept-then-measure process in brand/PRODUCTION_PLAN.md depends on being
+## The concept-then-measure process in brand/README.md depends on being
 ## able to look at the real game, not at source. Godot renders under a virtual
 ## display with the gl_compatibility driver, so this runs in CI and in a
 ## container:

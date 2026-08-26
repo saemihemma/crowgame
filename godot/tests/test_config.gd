@@ -3,9 +3,6 @@ extends TestCase
 ## graceful fallback for missing keys. Asserts against the JSON directly so
 ## routine tuning changes never break the test (we test wiring, not values).
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _cfg() -> Node:
 	return Engine.get_main_loop().root.get_node("Config")

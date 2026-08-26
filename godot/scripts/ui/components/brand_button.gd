@@ -25,6 +25,14 @@ var role: int = Role.SECONDARY
 ## A primary action breathes so the eye lands on it without needing an arrow or
 ## a "click here". Off for the others: three pulsing buttons is a fairground.
 var pulse := false
+## Every button acknowledges the press. Set false only where the row's own
+## callback plays something better placed than the click would be.
+##
+## This lives here because "a button was pressed" is one moment, not thirty. The
+## click used to be fired by hand at three call sites, so PLAY, every world card,
+## every login row and both grown-up panels were silent, and nobody had a list of
+## which ones were missing it.
+var clicks := true
 
 static func make(text: String, button_role: int, on_press: Callable) -> BrandButton:
 	var b := BrandButton.new()
@@ -35,12 +43,28 @@ static func make(text: String, button_role: int, on_press: Callable) -> BrandBut
 		b.pressed.connect(on_press)
 	return b
 
+
+func _pressed() -> void:
+	if clicks:
+		AudioManager.play_event("button")
+
+
+## The focus ring arriving is its own moment, quieter than the press.
+##
+## Menus were navigable by keyboard and silent while you navigated: a child
+## holding Down heard nothing until they committed. Connected in _ready rather
+## than overridden, because Control has no _focus_entered to override.
+func _on_focus() -> void:
+	if clicks:
+		AudioManager.play_event("button_focus")
+
 func _ready() -> void:
 	custom_minimum_size.y = maxf(custom_minimum_size.y, MIN_HEIGHT)
 	focus_mode = Control.FOCUS_ALL
 	add_theme_font_size_override("font_size", 30 if role == Role.PRIMARY else 26)
 	_restyle()
 	ThemeManager.theme_changed.connect(func(_id): _restyle())
+	focus_entered.connect(_on_focus)
 	if pulse:
 		_start_pulse.call_deferred()
 
@@ -54,9 +78,6 @@ func _start_pulse() -> void:
 	tw.tween_property(self, "scale", Vector2.ONE, PULSE_SECONDS * 0.5) \
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
-func set_role(new_role: int) -> void:
-	role = new_role
-	_restyle()
 
 func _fill() -> Color:
 	match role:

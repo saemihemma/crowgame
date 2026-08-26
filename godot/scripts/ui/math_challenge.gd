@@ -153,15 +153,12 @@ func _finish(correct: bool, first_attempt: bool) -> void:
 
 ## Hand the board back for the second try. The wrong option stays marked: it is
 ## a fact about what has already been tried, and clearing it would invite the
-## same tap again.
+## same tap again. Nothing is focused - see AnswerButton on why these options do
+## not take keyboard focus at all.
 func _reenable_for_retry() -> void:
 	if _done:
 		return
 	_set_buttons_enabled(true)
-	for b in _buttons:
-		if b.get_state() == AnswerButton.State.IDLE:
-			b.grab_focus()
-			break
 
 func _result(correct: bool, first_attempt: bool) -> Dictionary:
 	var has_hint: bool = String(current_problem.get("hint", "")) != "" and _wrong_attempts > 0
@@ -195,7 +192,6 @@ func _reveal_answer() -> void:
 		if is_correct_button:
 			_buttons[i].disabled = false
 			_buttons[i].add_theme_color_override("font_color", ThemeManager.get_color_value("accent"))
-			_buttons[i].grab_focus()
 		else:
 			_buttons[i].modulate.a = 0.35
 	var explanation := _localised("explanation")
@@ -230,16 +226,6 @@ func _build_ui(opts: Dictionary) -> void:
 	dim.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(dim)
 
-	# Centred on the whole viewport. This used to sit in the upper 78% so that a
-	# camera lift could park the crow in the strip left free underneath -- a pan
-	# the child did not ask for, buying a glimpse of a sprite they cannot move
-	# while the board is up. The lift is gone (game.gd), and with it the reason
-	# for an off-centre board.
-	var center := CenterContainer.new()
-	center.anchor_right = 1.0
-	center.anchor_bottom = float(Config.ui("math_challenge/board_screen_share", 0.78))
-	dim.add_child(center)
-
 	# THE BOARD. There wasn't one: the question and the options were loose labels
 	# floating on a dimmed level, with grass tiles visible through the answer
 	# buttons. A surface is what separates "the game, paused" from "the thing you
@@ -251,6 +237,17 @@ func _build_ui(opts: Dictionary) -> void:
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_theme_constant_override("separation", 16)
 	_board.add_child(vbox)
+	# The card the fitter owns: the gold frame when there is one, the board
+	# otherwise.
+	#
+	# Fitted rather than centred. `stretch/aspect=expand` never makes the viewport
+	# smaller than 960x540, but on any display at 16:9 or wider it is EXACTLY 540
+	# tall, and a long word problem with a hint under it is taller than that --
+	# the answer row is the part that falls off. FitBox shrinks the card only when
+	# it has to. (This used to sit in the upper 78% so a camera lift could park
+	# the crow in the strip below; the lift is gone, and with it the reason for an
+	# off-centre board.)
+	var card: Control = _board
 	if _is_golden:
 		# Golden arrival: a pulsing gold frame around the board (mirrors
 		# MathChallengeScene.decorateGolden). Announcement, not reward — the
@@ -263,13 +260,12 @@ func _build_ui(opts: Dictionary) -> void:
 		frame_style.set_corner_radius_all(20)
 		frame_style.set_content_margin_all(24)
 		frame.add_theme_stylebox_override("panel", frame_style)
-		center.add_child(frame)
 		frame.add_child(_board)
+		card = frame
 		var tw := frame.create_tween().set_loops()
 		tw.tween_property(frame, "self_modulate:a", 0.45, 0.65).set_trans(Tween.TRANS_SINE)
 		tw.tween_property(frame, "self_modulate:a", 1.0, 0.65).set_trans(Tween.TRANS_SINE)
-	else:
-		center.add_child(_board)
+	dim.add_child(FitBox.around(card))
 
 	var name_str := String(opts.get("npcName", ""))
 	var greet := String(opts.get("npcGreeting", ""))
@@ -361,8 +357,6 @@ func _build_ui(opts: Dictionary) -> void:
 		b.pressed.connect(func(): submit_answer(idx))
 		row.add_child(b)
 		_buttons.append(b)
-	if _buttons.size() > 0:
-		_buttons[0].grab_focus()
 	# Elastic pop-in once the layout has computed sizes.
 	_pop_in.call_deferred(vbox)
 
@@ -511,7 +505,7 @@ func _on_locale_changed() -> void:
 ## that drives plural agreement. Anything unresolvable falls back to the English,
 ## so a child sees their own language or they see English, never a raw key.
 ##
-## Was mirrored by src/math/problemPhrasing.ts in the retired web build; this is
+## Was mirrored by the retired web build's phrasing module; this is
 ## now the only implementation.
 func _localised(field: String) -> String:
 	var english := ""

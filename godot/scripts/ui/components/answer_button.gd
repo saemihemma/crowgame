@@ -20,8 +20,23 @@ const SHAKE_SECONDS := 0.34
 
 var _state: int = State.IDLE
 
+## An option is chosen by pointing at it. Nothing else.
+##
+## These used to take keyboard focus, and that is how the game answered its own
+## first question. Godot's built-in `ui_left`/`ui_right` are bound to the arrow
+## keys, so walking the crow left and right walked the focus ring across the four
+## options instead; `ui_accept` is bound to Space and Enter, and Space is also
+## `jump` - so a child pressing the two keys the game had just taught them
+## committed whichever option the ring had landed on. The overlay disables the
+## player's physics while it is up, which is exactly why nobody noticed the two
+## inputs were still live: the crow stood still while its keys drove the board.
+##
+## FOCUS_NONE is the whole fix. There is no keyboard path to an answer now, on
+## purpose - this is a touch-first game with a mouse fallback, and a second input
+## route to the one irreversible action on the screen is not worth the class of
+## bug it just caused.
 func _ready() -> void:
-	focus_mode = Control.FOCUS_ALL
+	focus_mode = Control.FOCUS_NONE
 	# The face is paper: an option is a card you pick up, and dark-on-light is
 	# the easier direction to read a numeral in at speed.
 	_restyle()
@@ -46,17 +61,15 @@ func _restyle() -> void:
 	add_theme_stylebox_override("normal", _face(fill, ink, 3))
 	add_theme_stylebox_override("hover", _face(fill.lightened(0.12), ink, 3))
 	add_theme_stylebox_override("pressed", _face(fill.darkened(0.12), ink, 3))
-	# Focus is a thicker ink border, not a scale-up. The row lays these out side
-	# by side, so a focused button that grew made its neighbours shuffle and the
-	# four options stopped looking like a set.
-	add_theme_stylebox_override("focus", _face(fill, ThemeManager.get_color_value("focus"), 5))
+	# No `focus` stylebox: with FOCUS_NONE it can never be drawn, and leaving one
+	# behind would suggest a focus state that no longer exists.
 	# A disabled option during the wrong-answer beat should read as "wait", not
 	# as "broken": it keeps its colour and loses only some of its light.
 	add_theme_stylebox_override("disabled", _face(fill.darkened(0.18), ink, 3))
 
 	# Ink on every state: paper, green and orange are all light enough to carry
 	# dark text, which keeps the numeral legible through a colour change.
-	for role in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color", "font_disabled_color"]:
+	for role in ["font_color", "font_hover_color", "font_pressed_color", "font_disabled_color"]:
 		add_theme_color_override(role, ink)
 
 func _face(fill: Color, border: Color, width: int) -> StyleBoxFlat:

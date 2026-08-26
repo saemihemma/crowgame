@@ -15,9 +15,6 @@ extends TestCase
 
 const GAME_SCENE := preload("res://scenes/Game.tscn")
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _level_keys() -> Array:
 	var out: Array = []
