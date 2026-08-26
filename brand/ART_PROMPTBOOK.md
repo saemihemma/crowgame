@@ -132,27 +132,26 @@ roach     #6B3F16 rust-brown carapace, #8A7A2E grimy plating
 
 ---
 
-## 5. Tier 0 — the style anchor
+## 5. Tier 0 — the anchor
 
-Generate this first. Everything else references it, so a bad anchor poisons the
-film and a good one carries it.
+**Generate this one first.** It is the establishing shot of the film *and* the
+style reference every later call passes up, so a bad anchor poisons everything
+and a good one carries it. Look hard at it before going further.
 
 ```art
-id: style.anchor
-kind: style
+id: bg.tally
+kind: plate
 size: 1536x1024
-quality: high
+refs: []
 ---
-A single wide establishing illustration that defines the visual language of a
-children's game: a tall wooden tower of counted things standing on a cold
-mountaintop at night, under an aurora. The tower is built of wooden frames,
-wires and beads, like a hundred abacuses stacked into a spire. Small warm points
-of light glow inside it where things are counted correctly.
-Palette: night sky #1B223E, mountain #3A6EA8, aurora ribbons #A97BFF and
-#7CF5C4, warm interior glow #FFC93C and #FFE9A8, outlines and shadow #1A1420.
-Flat painted shapes, hard edges, no gradients. Three clear depth planes: cold
-sky, the tower, a dark foreground ridge. Cold outside, warm inside — that
-contrast is the point of the whole picture.
+Wide night shot of a tall wooden tower of counted things — stacked abacus
+frames, wires and beads — standing on a cold mountaintop, seen from slightly
+above and far away, small in a huge sky. Aurora ribbons #A97BFF and #7CF5C4
+across a #1B223E night sky. Mountains #3A6EA8 below. Warm #FFC93C and #FFE9A8
+points of light all through the tower's frame.
+A dark foreground ridge with a low wooden rail across the bottom quarter of the
+frame. Empty: no people, no birds, no creatures anywhere.
+Three clean depth planes. Cold outside, warm inside.
 ```
 
 ---
@@ -170,7 +169,7 @@ id: char.hormann.base
 kind: character
 size: 1024x1024
 background: transparent
-refs: [style.anchor, ref:godot/assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png]
+refs: [bg.tally, ref:godot/assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png]
 ---
 Full-body character design of a small scrappy crow, facing three-quarters to the
 left, standing, wings folded, alert and curious. Painted enlargement of the
@@ -200,19 +199,6 @@ The outstretched wing is the clearest shape in the image and reads as a
 gesture, not as flight. Transparent background, no shadow, no scenery.
 ```
 
-```art
-id: char.hormann.perch
-kind: character
-size: 1024x1024
-background: transparent
-refs: [char.hormann.base]
----
-The same crow in profile facing right, perched low and leaning forward, looking
-upward at something above and beyond the frame. Weight on the front foot, head
-forward of the feet. The scarlet scarf streams back on a light breeze.
-Identical bird to the reference in every detail. Transparent background, no
-perch, no branch, no shadow, no scenery.
-```
 
 ```art
 id: char.hormann.railing
@@ -234,7 +220,7 @@ id: char.vala.base
 kind: character
 size: 1024x1024
 background: transparent
-refs: [style.anchor]
+refs: [bg.tally]
 ---
 Full-body character design of a very small owl, facing three-quarters right,
 standing. Deliberately the opposite of a crow: round, soft-edged, symmetrical,
@@ -298,7 +284,7 @@ id: char.grubb.back
 kind: character
 size: 1536x1024
 background: transparent
-refs: [style.anchor]
+refs: [bg.tally]
 ---
 An enormous cockroach seen from behind and to one side, so close and so large
 that the body runs off both the left and the right edge of the frame and is
@@ -334,21 +320,6 @@ they are not allowed to touch. Nothing else of the creature is visible.
 Transparent background, no scenery, no shadow.
 ```
 
-```art
-id: char.grubbin
-kind: character
-size: 1024x1024
-background: transparent
-refs: [char.grubb.back]
----
-A small ugly cockroach foot-soldier, side view, walking left to right. Low and
-wide, five visible legs, olive-brown #6B3F16 carapace, lumpy asymmetric
-silhouette with nothing mirrored: one eye bigger than the other, both yellow
-#FFC93C and far too big for the head, one antenna bent, one wing case torn.
-Bits of stolen gear taped on crookedly.
-Ugly and grubby and a bit pathetic, absolutely not frightening. Grumbling, not
-roaring. Transparent background, no shadow, no scenery.
-```
 
 ```art
 id: prop.barge
@@ -374,7 +345,7 @@ id: prop.bead
 kind: character
 size: 1536x1024
 background: transparent
-refs: [style.anchor]
+refs: [bg.tally]
 ---
 Extreme close-up of a single round wooden bead on a taut horizontal wire, in
 profile, filling about a third of the frame. The bead is polished warm wood and
@@ -389,7 +360,7 @@ id: prop.ring
 kind: character
 size: 1024x1024
 background: transparent
-refs: [style.anchor]
+refs: [bg.tally]
 ---
 A circular portal hanging in the air, edge-on to slightly three-quarter, about
 two-thirds the height of the frame. The rim is a ring of warm #FFC93C light,
@@ -406,27 +377,12 @@ Transparent background, nothing else in the frame.
 
 No characters, no props. Those get composited in. Each plate is the *place*.
 
-```art
-id: bg.tally
-kind: plate
-size: 1536x1024
-refs: [style.anchor]
----
-Wide night shot of a tall wooden tower of counted things — stacked abacus
-frames, wires and beads — standing on a cold mountaintop, seen from slightly
-above and far away, small in a huge sky. Aurora ribbons #A97BFF and #7CF5C4
-across a #1B223E night sky. Mountains #3A6EA8 below. Warm #FFC93C and #FFE9A8
-points of light all through the tower's frame.
-A dark foreground ridge with a low wooden rail across the bottom quarter of the
-frame. Empty: no people, no birds, no creatures anywhere.
-Three clean depth planes. Cold outside, warm inside.
-```
 
 ```art
 id: bg.bead
 kind: plate
 size: 1536x1024
-refs: [style.anchor, bg.tally]
+refs: [bg.tally]
 ---
 Extreme close-up interior of the wooden counting tower at night, shallow and
 almost abstract: a wall of vertical wires and wooden frames receding into warm
@@ -455,7 +411,7 @@ No creatures, no birds, no beads.
 id: bg.miscount
 kind: plate
 size: 1536x1024
-refs: [style.anchor, bg.tally]
+refs: [bg.tally]
 ---
 The wooden counting tower from the reference, now collapsing — not exploding. A
 tall stack coming apart the way a pile of counted things goes when the bottom
@@ -471,7 +427,7 @@ debris cloud. No creatures, no birds.
 id: bg.shed
 kind: plate
 size: 1536x1024
-refs: [style.anchor]
+refs: [bg.tally]
 ---
 Wide interior of a vast dim underground shed or larder, receding to the right.
 Violet-dark #16142E gloom, walls of dull #2B2A5E crystal with cold #4DE3FF
@@ -488,7 +444,7 @@ the frame is open floor and clear, unobstructed space.
 id: bg.ledge
 kind: plate
 size: 1536x1024
-refs: [style.anchor, bg.miscount]
+refs: [bg.tally, bg.miscount]
 ---
 Wide shot of a broken stone ledge high on a cold mountainside at dawn, the
 wreckage of the wooden counting tower behind and below it — snapped frames and
@@ -520,7 +476,7 @@ lettering anywhere.
 id: bg.emberwood
 kind: plate
 size: 1536x1024
-refs: [style.anchor, ref:design-concept/plate-emberwood.png]
+refs: [bg.tally, ref:design-concept/plate-emberwood.png]
 ---
 Wide shot of a warm forest clearing at dawn, in the palette of the supplied
 game screenshot — match its colours closely: peach #F6C092 dawn sky, green
@@ -544,7 +500,7 @@ id: fx.aurora
 kind: character
 size: 1536x1024
 background: transparent
-refs: [style.anchor]
+refs: [bg.tally]
 ---
 Thin sparse ribbons of aurora light, #A97BFF and #7CF5C4, sweeping diagonally
 across an otherwise completely empty transparent frame. Soft flat translucent
@@ -571,7 +527,7 @@ id: fx.leaves
 kind: character
 size: 1536x1024
 background: transparent
-refs: [style.anchor]
+refs: [bg.tally]
 ---
 A sparse scatter of individual forest leaves, deep green #2C6B42 and warm
 #3F8F5B, of varied size and angle, across an otherwise completely empty
@@ -647,7 +603,8 @@ layers:
   - out: 06_stuck_owl.png     from: char.vala.ring  w: 0.10  x: 0.18  y: 0.66  anchor: bottom
     with:
       - from: prop.ring   w: 0.30  x: 0.58  y: 0.52  anchor: center
-      - from: bg.street   w: 0.26  x: 0.58  y: 0.52  anchor: center  mask: circle  behind: true
+      - from: bg.street            w: 0.26  x: 0.58  y: 0.52  anchor: center  mask: circle  behind: true
+      - from: char.hormann.railing  w: 0.09  x: 0.58  y: 0.57  anchor: bottom
   - out: 06_stuck_leaves.png  from: fx.dust  fit: cover
 ```
 
