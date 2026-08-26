@@ -223,7 +223,7 @@ const PARALLAX_BANDS := [
 	{"file": "mid", "scroll": 0.25},
 	{"file": "near", "scroll": 0.45},
 ]
-const PARALLAX_HEIGHT := 560.0
+const PARALLAX_HEIGHT := 576.0
 ## Between the sky (-100) and the world (0).
 const PARALLAX_LAYER := -90
 
@@ -238,10 +238,12 @@ func _paint_parallax() -> void:
 	var any := false
 
 	for band in PARALLAX_BANDS:
-		var path := "res://assets/parallax/%s_%s.png" % [world, band["file"]]
-		if not ResourceLoader.exists(path):
+		# By key, never by path: tools/gen_parallax.mjs registers every strip it
+		# writes, so a world's ranges exist for the same reason any other sprite
+		# does (ARCHITECTURE.md rule 7).
+		var texture := SpriteSheet.texture("parallax_%s_%s" % [world, band["file"]])
+		if texture == null:
 			continue
-		var texture: Texture2D = load(path)
 		var strip := ParallaxLayer.new()
 		strip.motion_scale = Vector2(float(band["scroll"]), 0.0)
 		strip.motion_mirroring = Vector2(texture.get_width(), 0.0)
@@ -277,10 +279,10 @@ func _paint_parallax() -> void:
 ## recomputed here: that pixel already went through the generator's haze and
 ## lightness ramp, and deriving it twice is how the two drift apart.
 func _paint_valley(world: String) -> void:
-	var path := "res://assets/parallax/%s_near.png" % world
-	if not ResourceLoader.exists(path):
+	var near := SpriteSheet.texture("parallax_%s_near" % world)
+	if near == null:
 		return
-	var image: Image = (load(path) as Texture2D).get_image()
+	var image: Image = near.get_image()
 	if image == null:
 		return
 	var layer := CanvasLayer.new()

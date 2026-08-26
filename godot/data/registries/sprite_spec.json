@@ -94,6 +94,18 @@
                 "Must stay legible at 1x on a phone; no detail finer than 2px.",
                 "A head crop, not a shrunk full body, when derived from a world sprite."
             ]
+        },
+        "parallax": {
+            "frameWidth": 960,
+            "frameHeight": 576,
+            "anchor": "feet",
+            "description": "Background mountain ranges, three per world. One screen wide and 18 tiles tall, tiled horizontally by a ParallaxLayer.",
+            "art_notes": [
+                "Transparent above the ridge line. The sky gradient shows through it, so a baked background colour would cover the sky the strip is supposed to sit in.",
+                "Bottom edge is the horizon - `feet`, like anything else that stands on a line.",
+                "Tileable on x: the ridge height at column 0 must equal the height one past the right edge, or the seam walks across the screen every time the strip repeats.",
+                "No outline. sprite_spec's outline rule already exempts sky/far/mid, and an ink line here would pull the range forward into the play layer."
+            ]
         }
     }
 }

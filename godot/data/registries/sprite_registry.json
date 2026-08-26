@@ -17,7 +17,7 @@
             "class": "character",
             "path": "assets/sprites/characters/crow2/crow3/crow1-64px-fixed.png",
             "frames": 1,
-            "fps": 0.0,
+            "fps": 0,
             "loop": false,
             "anim": "idle"
         },
@@ -25,7 +25,7 @@
             "class": "character",
             "path": "assets/sprites/characters/crow2/crow3/crow-walk-64px-fixed.png",
             "frames": 9,
-            "fps": 10.0,
+            "fps": 10,
             "loop": true,
             "anim": "walk"
         },
@@ -33,7 +33,7 @@
             "class": "enemy",
             "path": "assets/sprites/characters/npcs/cockroach.png",
             "frames": 1,
-            "fps": 0.0,
+            "fps": 0,
             "loop": false,
             "anim": "idle"
         },
@@ -41,7 +41,7 @@
             "class": "npc",
             "path": "assets/sprites/characters/npcs/owl-runtime-64.png",
             "frames": 1,
-            "fps": 0.0,
+            "fps": 0,
             "loop": false,
             "anim": "idle"
         },
@@ -49,7 +49,7 @@
             "class": "pickup",
             "path": "assets/sprites/ui/coin/coinsprite-runtime-32.png",
             "frames": 9,
-            "fps": 12.0,
+            "fps": 12,
             "loop": true,
             "anim": "spin"
         },
@@ -57,7 +57,7 @@
             "class": "door",
             "path": "assets/sprites/objects/door/door-36-runtime-88x96.png",
             "frames": 36,
-            "fps": 24.0,
+            "fps": 24,
             "loop": false,
             "anim": "open"
         },
@@ -65,7 +65,7 @@
             "class": "attachment",
             "path": "assets/sprites/objects/chain/chain-link-32.png",
             "frames": 1,
-            "fps": 0.0,
+            "fps": 0,
             "loop": false,
             "anim": "idle"
         },
@@ -73,7 +73,7 @@
             "class": "attachment",
             "path": "assets/sprites/objects/chain/chain-link-burst-32.png",
             "frames": 1,
-            "fps": 0.0,
+            "fps": 0,
             "loop": false,
             "anim": "idle",
             "optional": true,
@@ -83,7 +83,7 @@
             "class": "ui",
             "path": "assets/sprites/ui/hud/owl-icon-32.png",
             "frames": 1,
-            "fps": 0.0,
+            "fps": 0,
             "loop": false,
             "anim": "idle",
             "optional": true,
@@ -93,7 +93,7 @@
             "class": "ui",
             "path": "assets/sprites/ui/board/count-token-32.png",
             "frames": 1,
-            "fps": 0.0,
+            "fps": 0,
             "loop": false,
             "anim": "idle",
             "optional": true
@@ -102,13 +102,181 @@
             "class": "ui",
             "path": "assets/sprites/ui/board/board-9slice.png",
             "frames": 1,
-            "fps": 0.0,
+            "fps": 0,
             "loop": false,
             "anim": "idle",
             "optional": true,
             "frameWidth": 96,
             "frameHeight": 96,
             "why": "Nine-slice source panel, not a 32px HUD icon. brand/ASSET_MANIFEST.md Priority 4 specifies a 96x96 source for it."
+        },
+        "parallax_aurora_spire_far": {
+            "class": "parallax",
+            "path": "assets/parallax/aurora_spire_far.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_aurora_spire_mid": {
+            "class": "parallax",
+            "path": "assets/parallax/aurora_spire_mid.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_aurora_spire_near": {
+            "class": "parallax",
+            "path": "assets/parallax/aurora_spire_near.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_emberwood_far": {
+            "class": "parallax",
+            "path": "assets/parallax/emberwood_far.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_emberwood_mid": {
+            "class": "parallax",
+            "path": "assets/parallax/emberwood_mid.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_emberwood_near": {
+            "class": "parallax",
+            "path": "assets/parallax/emberwood_near.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_forest_far": {
+            "class": "parallax",
+            "path": "assets/parallax/forest_far.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_forest_mid": {
+            "class": "parallax",
+            "path": "assets/parallax/forest_mid.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_forest_near": {
+            "class": "parallax",
+            "path": "assets/parallax/forest_near.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_geyserworks_far": {
+            "class": "parallax",
+            "path": "assets/parallax/geyserworks_far.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_geyserworks_mid": {
+            "class": "parallax",
+            "path": "assets/parallax/geyserworks_mid.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_geyserworks_near": {
+            "class": "parallax",
+            "path": "assets/parallax/geyserworks_near.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_prism_hollow_far": {
+            "class": "parallax",
+            "path": "assets/parallax/prism_hollow_far.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_prism_hollow_mid": {
+            "class": "parallax",
+            "path": "assets/parallax/prism_hollow_mid.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_prism_hollow_near": {
+            "class": "parallax",
+            "path": "assets/parallax/prism_hollow_near.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_scifi_far": {
+            "class": "parallax",
+            "path": "assets/parallax/scifi_far.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_scifi_mid": {
+            "class": "parallax",
+            "path": "assets/parallax/scifi_mid.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_scifi_near": {
+            "class": "parallax",
+            "path": "assets/parallax/scifi_near.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_sugarstorm_far": {
+            "class": "parallax",
+            "path": "assets/parallax/sugarstorm_far.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_sugarstorm_mid": {
+            "class": "parallax",
+            "path": "assets/parallax/sugarstorm_mid.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "parallax_sugarstorm_near": {
+            "class": "parallax",
+            "path": "assets/parallax/sugarstorm_near.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
         }
     }
 }
