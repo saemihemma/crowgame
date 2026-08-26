@@ -2,6 +2,8 @@
     "accel": 600,
     "drag": 800,
     "maxSpeed": 160,
+    "sprintMaxSpeed": 265,
+    "sprintDecayPerSec": 420,
     "jumpVelocity": 475,
     "coyoteMs": 80,
     "jumpBufferMs": 100,

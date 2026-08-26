@@ -16,7 +16,7 @@ class_name PlayerMotion
 const WORLD_GRAVITY := 800.0
 
 ## state: { vx, vy, coyote_ms, jump_buffer_ms, is_jumping }  (mutated in place)
-## input: { left, right, jump_just_pressed, jump_held }
+## input: { left, right, jump_just_pressed, jump_held, sprint }
 ## tuning: player_base.json dict (accel, drag, maxSpeed, jumpVelocity, coyoteMs,
 ##         jumpBufferMs, gravityScale, terminalVelocity)
 static func compute_velocity(state: Dictionary, input: Dictionary, on_floor: bool, tuning: Dictionary, dt: float) -> void:
@@ -54,9 +54,38 @@ static func compute_velocity(state: Dictionary, input: Dictionary, on_floor: boo
 			vx += d
 		else:
 			vx = 0.0
+	# SPRINT: hold to raise the ceiling, not the acceleration.
+	#
+	# A gap-width dial rather than a speed toy, and that is the whole reason it
+	# exists. Jump reach is airtime x horizontal speed, and airtime is fixed by
+	# jumpVelocity and gravity -- so at 160px/s a jump crosses 5.9 tiles and every
+	# jumpable gap in the shipped game is three. Raising the ceiling is the only
+	# lever that makes a genuinely wide gap crossable, which is what a playtester
+	# asked for: "hold down a button ... that is making me accelerate".
+	#
+	# The CEILING, not `accel`: raising acceleration would make the crow twitchier
+	# to place on a one-tile pad, which is the other half of the platforming this
+	# is meant to serve. Reaching the higher ceiling still takes the same 600/s^2,
+	# so a tap does nothing and a hold pays off -- the feel is "winding up".
+	#
+	# Absent `sprint` means no sprint, which keeps this invisible to the golden
+	# motion fixtures: they pass an input dict without the key, take this branch's
+	# false path, and compute exactly what they computed before.
+	var ceiling := max_speed
+	if input.get("sprint", false):
+		ceiling = float(tuning.get("sprintMaxSpeed", max_speed))
+
 	# Manual maxSpeed clamp (Player.ts clamps |vx| > maxSpeed).
-	if absf(vx) > max_speed:
-		vx = signf(vx) * max_speed
+	#
+	# Clamping DOWN toward the walking ceiling when sprint is released, rather
+	# than snapping, is what stops a released sprint reading as hitting a wall in
+	# mid-air. sprintDecayPerSec is px/s of ceiling given back per second.
+	if absf(vx) > ceiling:
+		var decay := float(tuning.get("sprintDecayPerSec", 0.0)) * dt
+		if decay > 0.0 and not on_floor:
+			vx = signf(vx) * maxf(ceiling, absf(vx) - decay)
+		else:
+			vx = signf(vx) * ceiling
 	state["vx"] = vx
 
 	# --- Gravity (applied before the jump override, matching Phaser order) ---

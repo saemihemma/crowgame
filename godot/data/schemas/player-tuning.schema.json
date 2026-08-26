@@ -27,7 +27,17 @@
     "maxSpeed": {
       "type": "number",
       "minimum": 0,
-      "description": "Maximum horizontal speed (pixels/sec)"
+      "description": "Maximum horizontal speed while walking (pixels/sec)"
+    },
+    "sprintMaxSpeed": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Maximum horizontal speed while the sprint key is held (pixels/sec). A gap-width dial: jump reach is airtime x speed, and airtime is fixed by jumpVelocity and gravity, so this is the only number that changes how wide a gap can be crossed. At 160 a jump reaches 5.9 tiles; at 265 it reaches 9.8."
+    },
+    "sprintDecayPerSec": {
+      "type": "number",
+      "minimum": 0,
+      "description": "How much of the sprint ceiling is given back per second after the key is released, while airborne (pixels/sec per sec). Zero snaps straight back to maxSpeed, which reads as hitting a wall mid-jump."
     },
     "jumpVelocity": {
       "type": "number",
