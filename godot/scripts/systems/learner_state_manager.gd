@@ -368,6 +368,56 @@ func _find_next_step_with_content(domain: String, current_step: int) -> int:
 			return step
 	return current_step
 
+## Has this child finished everything this domain can teach them?
+##
+## Port of LearnerStateManager.isDomainExhausted. True when they have earned
+## promotion off the top rung and there is nothing above it -- exactly the case
+## _find_next_step_with_content above detects and then silently swallows.
+##
+## Deliberately NOT `current_step >= some_ceiling`: current_step is CAPPED at the
+## ceiling by that same function, so a step comparison can never fire. That is
+## the trap this exists to avoid, and the reason counting sat at step 6 while
+## being served 530 times in 1200 attempts to a struggling child.
+##
+## And not the bare "nothing above me" either: a child who has just arrived at
+## the top rung still has that rung's problems to practise. Arriving AND
+## mastering is what finished means, so this reuses promotionWinTarget rather
+## than inventing a second threshold.
+func is_domain_exhausted(domain: String) -> bool:
+	var progress: Variant = _snapshot.get("curriculumProgress", {}).get(domain, null)
+	if not (progress is Dictionary):
+		return false
+	if int((progress as Dictionary).get("winsAtCurrentStep", 0)) < _ladder_int("promotionWinTarget"):
+		return false
+	var step := int((progress as Dictionary).get("currentStep", 0))
+	return _find_next_step_with_content(domain, step) == step
+
+## Exhausted AND safe to stop serving. This, not is_domain_exhausted, is what the
+## selector asks.
+##
+## Port of LearnerStateManager.isDomainRetirable. The distinction is neither
+## academic nor obvious and it cost a real regression to find: _compute_unlock_state
+## gates a domain on its PREREQUISITE having twenty attempts at ninety percent
+## first-try accuracy, and pattern_matching's prerequisite is counting, whose
+## whole ladder is seven rungs deep. Retiring counting the moment it is mastered
+## starves that gate -- measured on tools/sim_learner_journey.ts, counting fell to
+## fifteen lifetime attempts and pattern_matching NEVER unlocked, taking 125
+## problems and four concepts out of the game permanently.
+##
+## So a finished domain keeps its turn while it is load-bearing for something
+## still locked. Read from DOMAIN_PREREQUISITES rather than special-casing
+## counting, so a new prerequisite edge cannot quietly reintroduce the deadlock.
+func is_domain_retirable(domain: String) -> bool:
+	if not is_domain_exhausted(domain):
+		return false
+	for dependent in ALL_MATH_DOMAINS:
+		var prereqs: Array = DOMAIN_PREREQUISITES.get(dependent, [])
+		if not prereqs.has(domain):
+			continue
+		if not is_domain_unlocked(String(dependent)):
+			return false
+	return true
+
 func _apply_review_update(attempt: Dictionary) -> void:
 	var domain := String(attempt["domain"])
 	var seen := {}

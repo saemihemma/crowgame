@@ -46,6 +46,29 @@ static func get_allowed_owl_domains(config: Dictionary) -> Array:
 			allowed.append(d)
 	if allowed.is_empty():
 		allowed = ["addition"] if domains.has("addition") else [domains[0]]
+
+	# Drop the subjects the child has finished.
+	#
+	# pick_primary_domain chooses by staleness, which has no notion of mastery --
+	# so a domain sitting at its ceiling is not merely still eligible, it becomes
+	# MORE due the longer it goes unserved. Counting is the case that exposed it:
+	# its ladder stops at step 6, and a child who topped it out was then handed
+	# rows of marks to count for 24% (steady) to 44% (struggling) of every
+	# question they answered, out of a pool of 125, while their addition was up at
+	# step 19.
+	#
+	# The `not is_empty()` guard is the whole safety of this. A child who has
+	# exhausted EVERYTHING must still be served something -- same reasoning as the
+	# addition fallback above -- so a filter that would empty the set is discarded
+	# instead. It also means the core subjects cannot vanish while any subject
+	# remains unfinished.
+	if bool(config.get("retireExhaustedDomains", false)):
+		var unfinished: Array = []
+		for d in allowed:
+			if not LearnerStateManager.is_domain_retirable(String(d)):
+				unfinished.append(d)
+		if not unfinished.is_empty():
+			allowed = unfinished
 	return allowed
 
 static func build_owl_domain_plans(allowed_domains: Array, previous_domain: Variant, primary_domain: Variant) -> Array:

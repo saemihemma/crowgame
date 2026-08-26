@@ -10,6 +10,8 @@ export interface OwlSelectionConfig extends Omit<ELOSelectionOptions, 'excludedR
     primaryDomain: MathDomain;
     /** How often each subject comes due, from math_tuning.json. */
     domainWeights?: Partial<Record<MathDomain, number>>;
+    /** feature_flags.json `math/retire_exhausted_domains`. */
+    retireExhaustedDomains?: boolean;
 }
 
 type OwlDomainPlan = {
@@ -60,14 +62,35 @@ export function pickPrimaryDomain(
 }
 
 export function getAllowedOwlDomains(config: OwlSelectionConfig): MathDomain[] {
-    let allowedDomains = config.domains.filter(domain =>
-        LearnerStateManager.getInstance().isDomainUnlocked(domain),
-    );
+    const learner = LearnerStateManager.getInstance();
+    let allowedDomains = config.domains.filter(domain => learner.isDomainUnlocked(domain));
 
     if (allowedDomains.length === 0) {
         allowedDomains = config.domains.includes('addition')
             ? ['addition']
             : [config.domains[0]];
+    }
+
+    // Drop the subjects the child has finished.
+    //
+    // pickPrimaryDomain below chooses by staleness, which has no notion of
+    // mastery -- so a domain sitting at its ceiling is not merely still eligible,
+    // it becomes MORE due the longer it goes unserved. Counting is the case that
+    // exposed it: its ladder stops at step 6, and a child who topped it out was
+    // then handed rows of marks to count for 24% (steady) to 44% (struggling) of
+    // every question they answered, from a pool of 125 problems, while their
+    // addition was up at step 19.
+    //
+    // The `length > 0` guard is the whole safety of this. A child who has
+    // exhausted EVERYTHING must still be served something -- the same reasoning
+    // as the addition fallback above -- so when the filter would empty the set it
+    // is discarded instead. That also means the core subjects cannot vanish while
+    // any subject remains unfinished.
+    if (config.retireExhaustedDomains) {
+        const unfinished = allowedDomains.filter(domain => !learner.isDomainRetirable(domain));
+        if (unfinished.length > 0) {
+            allowedDomains = unfinished;
+        }
     }
 
     return allowedDomains;

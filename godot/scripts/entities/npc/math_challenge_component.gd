@@ -255,4 +255,8 @@ func _selection_config() -> Dictionary:
 		# child meet" is a designer's dial rather than an accident of the order
 		# problemTypes happens to list.
 		"domainWeights": DataManager.get_dict("MATH_TUNING").get("domainWeights", {}),
+		# Whether a subject the child has finished stops coming round. See
+		# feature_flags.json, and OwlSelection.get_allowed_owl_domains for what it
+		# actually does.
+		"retireExhaustedDomains": bool(Config.flag("math/retire_exhausted_domains", true)),
 	}

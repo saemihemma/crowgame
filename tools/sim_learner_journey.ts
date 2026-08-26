@@ -174,6 +174,14 @@ function runJourneyInner(profile: string, successRate: number, attempts: number)
         maxOperand: MAX_OPERAND,
         primaryDomain: owl.domains[0],
         domainWeights: read(join(ROOT, 'godot', 'data', 'tuning', 'math_tuning.json')).domainWeights ?? {},
+        // Read from the shipped flag file rather than hardcoded true, for the
+        // same reason MathTuning.initialize reads math_tuning.json above: this
+        // harness is only useful while it is faithful to what the game does, and
+        // a flag flipped in the JSON has to move these numbers or the numbers
+        // are not measuring the game.
+        retireExhaustedDomains: read(
+            join(ROOT, 'godot', 'data', 'tuning', 'feature_flags.json'),
+        ).math?.retire_exhausted_domains ?? false,
     };
 
     for (let attempt = 1; attempt <= attempts; attempt++) {
