@@ -1,4 +1,5 @@
 extends Control
+class_name LevelSelect
 ## LevelSelect — choosing where to go next.
 ##
 ## What this replaced: a vertical stack of six identical grey slabs, three of
@@ -12,6 +13,9 @@ extends Control
 ##
 ## A level is unlocked when it has no unlockRequirement or its required level is
 ## completed. Selecting one sets the current level and starts the game.
+
+## The Math Practice Arena, which is not a world.
+const PRACTICE_ARENA_KEY := "level_99"
 
 const TITLE_TOP := 18.0
 const TITLE_H := 58.0
@@ -62,11 +66,25 @@ func _ready() -> void:
 	# against the screen edge when the row is scrolled to a stop.
 	row.add_child(_spacer())
 
+	## The Math Practice Arena: a flat 200-tile run of nineteen owls and no
+	## platforming. It held `order: 1`, which put it in the FIRST card slot and
+	## left every other card sitting one position ahead of its own level number --
+	## the fourth card was level three, which is what a playtester reported as "i
+	## can play like level 4 now but not 3". The order is fixed in the registry;
+	## this is the separate question of whether it belongs in a child's grid at
+	## all, and by default it does not.
+	##
+	## It is still reachable: nothing here deletes it, and the flag is in the
+	## grown-up panel. If it stays hidden, free practice wants an entry point a
+	## parent can find -- that decision is open.
 	var completed: Array = SaveManager.get_data().get("completedLevels", [])
+	var unlocked_by_key := unlock_map(LevelManager.get_levels(), completed)
 	var first: WorldCard = null
 	for level in LevelManager.get_levels():
 		var key := String(level.get("key", ""))
-		var unlocked := _is_unlocked(level, completed)
+		if key == PRACTICE_ARENA_KEY and not bool(Config.flag("levels/practice_arena_in_grid", false)):
+			continue
+		var unlocked := bool(unlocked_by_key.get(key, false))
 		var card := WorldCard.make(key, level, unlocked, completed.has(key), _play.bind(key))
 		row.add_child(card)
 		if unlocked and first == null:
@@ -130,11 +148,57 @@ func _spacer() -> Control:
 	pad.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	return pad
 
-func _is_unlocked(level: Dictionary, completed: Array) -> bool:
-	var req = level.get("unlockRequirement", null)
-	if req == null:
-		return true
-	return completed.has(String(req.get("level", "")))
+## Which levels a child may open, as {key: bool}.
+##
+## MONOTONE, and that is the whole fix. This used to ask each level on its own
+## whether the one level it names as its requirement is in completedLevels. That
+## is a chain, and a chain breaks in the middle: a save holding level_01 and
+## level_03 but not level_02 rendered card three as LOCKED -- because its
+## requirement, level_02, was missing -- while card four rendered READY, because
+## ITS requirement, level_03, was there. A locked world sitting between two open
+## ones, which is what a playtester photographed and, in their words, "makes no
+## sense".
+##
+## Worse than the hole: card three was a level the child had FINISHED. WorldCard
+## checks `not unlocked` before it checks `completed`, so the card said "Læst" on
+## a world they had already cleared.
+##
+## Gaps like that are not exotic. This save has one because of the ordering bug
+## already fixed on this branch -- the practice arena held order 1, so every card
+## opened the level BEFORE the one it showed, and a child pressing card four
+## played level three without ever playing level two. A cloud save merged across
+## two devices, or a registry that ever gains or loses a level, would do the same
+## thing.
+##
+## So progress is read as a HIGH-WATER MARK rather than a chain: everything up to
+## and including one past the furthest level ever finished is open. A completed
+## level is always open too, whatever else is true -- a card must never call a
+## world locked when the child has already beaten it. Self-healing, so the save
+## in the screenshot fixes itself on the next launch and card two becomes
+## playable instead of card three becoming a lie.
+##
+## The practice arena is deliberately outside the water mark: it has no
+## requirement so it is always open, and drilling sums in a flat room must not
+## unlock the last platforming level.
+static func unlock_map(levels: Array, completed: Array) -> Dictionary:
+	var graded: Array = []
+	for level in levels:
+		if String((level as Dictionary).get("key", "")) != PRACTICE_ARENA_KEY:
+			graded.append(level)
+
+	var furthest := -1
+	for i in graded.size():
+		if completed.has(String((graded[i] as Dictionary).get("key", ""))):
+			furthest = i
+
+	var out := {}
+	for level in levels:
+		out[String((level as Dictionary).get("key", ""))] = true
+	for i in graded.size():
+		var key := String((graded[i] as Dictionary).get("key", ""))
+		var required = (graded[i] as Dictionary).get("unlockRequirement", null)
+		out[key] = required == null or completed.has(key) or i <= furthest + 1
+	return out
 
 func _play(key: String) -> void:
 	LevelManager.set_current_level(key)

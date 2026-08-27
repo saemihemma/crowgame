@@ -57,6 +57,7 @@ func _ready() -> void:
 		_sprite.texture = tex
 	_sprite.offset = SpriteSheet.anchor_offset(sprite_key, SpriteSheet.grounding_sink())
 	_sprite_base_y = _sprite.position.y
+	_size_zone(sprite_key)
 	var npc_tuning := DataManager.get_dict("NPC_TUNING")
 	_bob_amp = float(npc_tuning.get("float_bob_amplitude", 8))
 	_bob_speed = float(npc_tuning.get("float_bob_speed", 1.5))
@@ -89,9 +90,50 @@ func _update_idle_bob(delta: float) -> void:
 		var rise := (1.0 - cos(_bob_time * TAU * 0.5)) * 0.5
 		_sprite.position.y = _sprite_base_y - rise * _bob_amp
 
+## The name that floats above an owl as a child walks up to it.
+##
+## It carries the QUESTION COUNT for a chain owl, and that is the point. The
+## chain links on the perch already encode it -- one link per question, broken as
+## each is answered -- but they encode it by inference: a one-question owl draws
+## no chain at all (MIN_VISIBLE_CHAIN_LINKS), so the language a child has to
+## work out is "nothing means one, two links mean two". A playtester met the
+## first twin owl in level 3 and read the second question as a malfunction:
+## "why is there an owl now in one level with 2 math?"
+##
+## So the count is also said in words, once, before the child commits. Only for
+## chain owls: appending "1 question" to every single-question owl in the game
+## would be noise on the overwhelmingly common case, and would make the number
+## stop being a warning.
+## Fit the interact zone to the owl, from sprite_spec.json.
+##
+## The scene stated it: a 96x96 box at y = -32, three tiles by three. Encounters
+## fire on proximity - Npc._on_body_entered starts one the moment the player
+## enters this shape - so that number decided how far away an owl could reach out
+## and stop a child who was only running past. It reached about two tiles, and
+## nothing said it should.
+##
+## The owl is drawn 44x53 inside its 64px frame, so the zone is the bird. A child
+## has to walk up to an owl to meet it, which is the thing the encounter is
+## supposed to mean.
+##
+## A fresh shape rather than resizing the scene's: sub-resources are shared
+## between instances of a PackedScene, and every owl in a level is one of those.
+func _size_zone(sprite_key: String) -> void:
+	var box := SpriteSheet.body_box(sprite_key)
+	if _zone == null or box == Vector2.ZERO:
+		return
+	var collider := _zone.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if collider == null:
+		return
+	var shape := RectangleShape2D.new()
+	shape.size = box
+	collider.shape = shape
+	# Grown upward from the feet, which sit on the node origin.
+	collider.position = Vector2(0.0, -box.y * 0.5)
+
 func _build_prompt() -> void:
 	_prompt = Label.new()
-	_prompt.text = display_name
+	_prompt.text = _prompt_text()
 	_prompt.add_theme_font_size_override("font_size", 16)
 	_prompt.add_theme_color_override("font_color", Color.WHITE)
 	_prompt.add_theme_color_override("font_shadow_color", Color.BLACK)
@@ -102,6 +144,22 @@ func _build_prompt() -> void:
 	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_prompt.visible = false
 	add_child(_prompt)
+
+func _prompt_text() -> String:
+	var questions := _question_count()
+	if questions < 2:
+		return display_name
+	return TextManager.t("npc.owl_questions", [display_name, str(questions)])
+
+## How many problems this owl will ask, read from its own math component rather
+## than from behaviorConfig.chainLinks -- the chain is the DECORATION of the
+## count and the component is the count itself, and a mismatch between them
+## should show up as a wrong chain rather than as a wrong number.
+func _question_count() -> int:
+	for c in definition.get("components", []):
+		if c is Dictionary and String((c as Dictionary).get("type", "")) == "math_challenge":
+			return int((c as Dictionary).get("problemCount", 1))
+	return 1
 
 func _update_prompt_visibility() -> void:
 	if _prompt == null:
@@ -117,19 +175,47 @@ func _on_body_exited(body: Node) -> void:
 	if body.is_in_group("player"):
 		_player_in_range = false
 
+## How long an NPC waits before offering again after a normal encounter ends,
+## and after one that never started. The second is shorter because nothing
+## happened: a maths board belonging to a NEARBY owl is the usual reason, the
+## player cannot walk away while it is up, and the owl they are standing on
+## should be ready the moment it closes.
+const COOLDOWN_MS := 2000
+const DECLINED_BACKOFF_MS := 750
+
+## Start an encounter, IF a component will actually take it.
+##
+## The flag, the greeting and the hidden prompt used to be set before any
+## component was asked. A component that could not open anything -- because
+## another owl's board was still on screen, or the level was mid-reload -- then
+## left this NPC flagged mid-encounter with nothing to end it: the prompt stays
+## hidden, the re-trigger loop in _process skips it, completion events are
+## ignored, and standing on the owl does nothing for the rest of the level. That
+## is the "the maths problem does not open" report.
+##
+## So the commit is now conditional. Nothing is announced until something has
+## said yes, and a declined offer rolls all the way back and simply tries again
+## shortly -- silently, because an owl greeting every couple of seconds behind
+## somebody else's lesson is its own bug.
 func interact() -> void:
 	if _interacting or _flown:
 		return
 	if Time.get_ticks_msec() < _cooldown_until:
 		return
 	_interacting = true
-	AudioManager.play_event("owl_greet")
+	var accepted := false
 	for c in _components:
-		c.on_interact()
+		if c.on_interact():
+			accepted = true
+	if not accepted:
+		_interacting = false
+		_cooldown_until = Time.get_ticks_msec() + DECLINED_BACKOFF_MS
+		return
+	AudioManager.play_event("owl_greet")
 
 func end_interaction() -> void:
 	_interacting = false
-	_cooldown_until = Time.get_ticks_msec() + 2000
+	_cooldown_until = Time.get_ticks_msec() + COOLDOWN_MS
 
 # ─── Chains (brand/BRAND_SYSTEM.md §3.4a) ──────────────────
 ## One link per answer this owl still wants. Drawn across the perch rather than
@@ -153,10 +239,23 @@ const CHAIN_PERCH_Y := -5.0
 
 var _chain_links: Array[Sprite2D] = []
 
+## A chain is a COUNT, and one link counts nothing.
+##
+## chainLinks mirrors problemCount (tools/validate-content.ts enforces it), and
+## most owls ask exactly one question -- so most owls were wearing a single 22px
+## ring hovering at their feet with nothing beside it to be one *of*. A player
+## asked what it was, which is the whole answer: a set of one communicates no
+## size, so it reads as debris rather than as "this owl wants one answer".
+##
+## Two or more still earns the row, and still breaks link by link. The owl
+## sprite is already drawn in chains holding a padlock, so "locked" was never
+## resting on this either way.
+const MIN_VISIBLE_CHAIN_LINKS := 2
+
 func _build_chains() -> void:
 	var count := int(definition.get("behaviorConfig", {}).get("chainLinks", 0))
 	var texture := SpriteSheet.texture(CHAIN_SPRITE)
-	if count <= 0 or texture == null:
+	if count < MIN_VISIBLE_CHAIN_LINKS or texture == null:
 		return
 	var span := float(count - 1) * CHAIN_SPACING
 	for i in count:
@@ -187,6 +286,7 @@ func _break_link() -> void:
 	var burst := SpriteSheet.texture(CHAIN_BURST_SPRITE)
 	if burst != null:
 		link.texture = burst
+	AudioManager.play_event("chain_break")
 	DopamineFX.burst(get_parent(), link.global_position,
 		ThemeManager.get_color_value("enemy_pop"), int(Config.fx("burst/chain_link", 12)))
 	var tw := link.create_tween().set_parallel(true)

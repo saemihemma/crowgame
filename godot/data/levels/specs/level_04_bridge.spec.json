@@ -18,7 +18,7 @@
     {
       "type": "ground",
       "x": 0,
-      "width": 14,
+      "width": 15,
       "y": 16
     },
     {
@@ -30,7 +30,7 @@
     {
       "type": "ground",
       "x": 17,
-      "width": 12,
+      "width": 3,
       "y": 16,
       "gap_before": 3
     },
@@ -41,6 +41,12 @@
       "y": 13
     },
     {
+      "type": "ground",
+      "x": 23,
+      "width": 6,
+      "y": 16
+    },
+    {
       "type": "platform",
       "x": 24,
       "width": 3,
@@ -49,7 +55,7 @@
     {
       "type": "ground",
       "x": 32,
-      "width": 13,
+      "width": 4,
       "y": 16,
       "gap_before": 3
     },
@@ -61,8 +67,14 @@
     },
     {
       "type": "ground",
+      "x": 39,
+      "width": 7,
+      "y": 16
+    },
+    {
+      "type": "ground",
       "x": 48,
-      "width": 13,
+      "width": 2,
       "y": 16,
       "gap_before": 3
     },
@@ -71,6 +83,12 @@
       "x": 50,
       "width": 3,
       "y": 13
+    },
+    {
+      "type": "ground",
+      "x": 53,
+      "width": 8,
+      "y": 16
     },
     {
       "type": "platform",
@@ -83,6 +101,12 @@
       "x": 58,
       "width": 3,
       "y": 7
+    },
+    {
+      "type": "platform",
+      "x": 62,
+      "width": 2,
+      "y": 12
     },
     {
       "type": "ground",
@@ -122,6 +146,24 @@
       "width": 15,
       "y": 16,
       "gap_before": 3
+    },
+    {
+      "type": "platform",
+      "x": 98,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 102,
+      "width": 3,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 107,
+      "width": 5,
+      "y": 4
     }
   ],
   "spawns": {
@@ -132,25 +174,33 @@
     "npcs": [
       {
         "npc_id": "owl_teacher_01",
-        "x": 22,
+        "x": 25,
         "y": 16
       },
       {
         "npc_id": "owl_tough_01",
-        "x": 58,
+        "x": 57,
         "y": 16
       },
       {
         "npc_id": "owl_twin_chain",
         "x": 90,
         "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 108,
+        "y": 4,
+        "bonus": true,
+        "requiresAbility": "double_jump"
       }
     ],
     "collectibles": [
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 8,
-        "y": 12
+        "y": 12,
+        "id": "c1"
       },
       {
         "type": "coin",
@@ -218,9 +268,10 @@
         "y": 10
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 54,
-        "y": 12
+        "y": 12,
+        "id": "c2"
       },
       {
         "type": "coin",
@@ -253,9 +304,10 @@
         "y": 10
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 86,
-        "y": 10
+        "y": 10,
+        "id": "c3"
       },
       {
         "type": "coin",
@@ -287,7 +339,14 @@
   "hazards": [
     {
       "type": "spikes",
-      "x": 14,
+      "x": 15,
+      "y": 19,
+      "width": 2,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 20,
       "y": 19,
       "width": 3,
       "height": 1
@@ -301,28 +360,21 @@
     },
     {
       "type": "spikes",
-      "x": 45,
+      "x": 36,
       "y": 19,
       "width": 3,
       "height": 1
     },
     {
       "type": "spikes",
-      "x": 61,
+      "x": 46,
       "y": 19,
-      "width": 3,
+      "width": 2,
       "height": 1
     },
     {
       "type": "spikes",
-      "x": 77,
-      "y": 19,
-      "width": 3,
-      "height": 1
-    },
-    {
-      "type": "spikes",
-      "x": 94,
+      "x": 50,
       "y": 19,
       "width": 3,
       "height": 1
@@ -338,6 +390,16 @@
       "enemy_id": "cockroach_basic",
       "x": 72,
       "y": 15
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 99,
+      "y": 12
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 103,
+      "y": 9
     }
   ],
   "exits": [

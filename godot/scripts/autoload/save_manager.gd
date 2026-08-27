@@ -47,6 +47,7 @@ func load_save() -> void:
 			_data["mathStats"] = _merge(defaults["mathStats"], parsed.get("mathStats", {}))
 			_data["telemetry"] = _merge(defaults["telemetry"], parsed.get("telemetry", {}))
 			_data["settings"] = _merge(defaults["settings"], parsed.get("settings", {}))
+			_data["tutorialsSeen"] = _merge(defaults["tutorialsSeen"], parsed.get("tutorialsSeen", {}))
 			if parsed.has("learnerState"):
 				_data["learnerState"] = parsed["learnerState"]
 			return
@@ -99,7 +100,17 @@ func get_save_version() -> int:
 func adopt_remote_save(remote: Variant) -> void:
 	if not (remote is Dictionary) or (remote as Dictionary).is_empty():
 		return
-	_data = migrate_save(remote as Dictionary)
+	var adopted := migrate_save(remote as Dictionary)
+	# Records MERGE rather than being replaced, unlike everything else here.
+	#
+	# The sync arbitrates whole saves by problems_attempted, so the blob with more
+	# maths wins outright -- and a best run is the one thing in the save that is
+	# monotone and mergeable. Without this, a hard coin found on the iPad is
+	# thrown away by a phone that happens to have answered more questions, and the
+	# child is simply told they never found it.
+	adopted["levelRecords"] = _merge_level_records(
+		_data.get("levelRecords", {}), adopted.get("levelRecords", {}))
+	_data = adopted
 	Persistence.set_item(_get_save_key(), JSON.stringify(_data))
 	# initialize() is the real rehydrate entry point — the same one ELOManager
 	# uses at boot when it reads save.eloStats. There is no load_stats().
@@ -108,6 +119,32 @@ func adopt_remote_save(remote: Variant) -> void:
 	if _data.has("learnerState"):
 		LearnerStateManager.replace_snapshot(_data["learnerState"])
 	EventBus.save_adopted.emit()
+
+## Best-of, level by level: the union of the big coins and the higher owl count.
+## Order does not matter, which is what makes it safe to run on a sync.
+func _merge_level_records(mine: Variant, theirs: Variant) -> Dictionary:
+	var out: Dictionary = {}
+	for source in [mine, theirs]:
+		if not (source is Dictionary):
+			continue
+		for key: String in (source as Dictionary):
+			var record: Variant = (source as Dictionary)[key]
+			if not (record is Dictionary):
+				continue
+			var merged: Dictionary = out.get(key, {"bigCoins": [], "owls": 0})
+			var found: Array = merged["bigCoins"]
+			var incoming: Variant = (record as Dictionary).get("bigCoins", [])
+			if incoming is Array:
+				for id in incoming:
+					var text := String(id)
+					if text != "" and not found.has(text):
+						found.append(text)
+			found.sort()
+			merged["bigCoins"] = found
+			merged["owls"] = maxi(int(merged["owls"]), int((record as Dictionary).get("owls", 0)))
+			out[key] = merged
+	return out
+
 
 func has_save() -> bool:
 	return Persistence.has_item(_get_save_key())
@@ -118,9 +155,6 @@ func add_coins(amount: int) -> void:
 	_data["coins"] = int(_data["coins"]) + amount
 	if _auto_save_enabled: save()
 
-func add_stars(amount: int) -> void:
-	_data["stars"] = int(_data["stars"]) + amount
-	if _auto_save_enabled: save()
 
 func increment_owls_saved() -> void:
 	_data["owlsSaved"] = int(_data["owlsSaved"]) + 1
@@ -166,11 +200,83 @@ func record_math_attempt(attempt: Dictionary) -> void:
 		tel["answeredProblemIds"] = answered.slice(answered.size() - 100)
 	if _auto_save_enabled: save()
 
-func set_learner_state() -> void:
-	var learner := get_node_or_null("/root/LearnerStateManager")
-	if learner == null or not (learner.has_method("is_initialized") and learner.is_initialized()):
+
+## What a level's best run left behind: which big coins were banked, and the most
+## owls ever freed there.
+##
+## Keyed by level, and NOT part of `coins`. An ordinary coin goes into a lifetime
+## purse that only rises; these are a third of a level's progress each, and they
+## are the thing the completion percentage is built out of.
+##
+## A missing level reads as an empty record rather than an error, so a save
+## written before this existed needs no migration - the shallow merge in
+## load_save() supplies the empty dictionary.
+func get_level_record(level_key: String) -> Dictionary:
+	var records: Variant = _data.get("levelRecords", {})
+	if not (records is Dictionary):
+		return {}
+	var one: Variant = (records as Dictionary).get(level_key, {})
+	return one if one is Dictionary else {}
+
+## Has this child already banked this particular big coin in this level?
+##
+## By id, never by index: the id comes from the level spec, so moving a coin or
+## reordering the spawns cannot silently wipe a record.
+func has_big_coin(level_key: String, coin_id: String) -> bool:
+	if coin_id == "":
+		return false
+	var found: Variant = get_level_record(level_key).get("bigCoins", [])
+	return found is Array and (found as Array).has(coin_id)
+
+
+## Write a finished run into the level's record, keeping the best of the two.
+##
+## Called at the DOOR and nowhere else. A big coin picked up on a run that ends in
+## death does not count, because death reloads the level and the coin comes back
+## -- that is the whole shape of a run, and it is why this is not written at
+## pickup time.
+##
+## Element-wise best, never replace: the big coins are unioned and the owl count
+## takes the higher. A child who clears a level a second time having found less
+## must not lose what they already had.
+func bank_run(level_key: String, big_coins: Array, owls_freed: int) -> void:
+	if level_key == "":
 		return
-	_data["learnerState"] = learner.get_snapshot()
+	if not (_data.get("levelRecords", null) is Dictionary):
+		_data["levelRecords"] = {}
+	var records: Dictionary = _data["levelRecords"]
+	var record: Dictionary = records.get(level_key, {}) if records.get(level_key, {}) is Dictionary else {}
+	var found: Array = record.get("bigCoins", []) if record.get("bigCoins", []) is Array else []
+	for id in big_coins:
+		var text := String(id)
+		if text != "" and not found.has(text):
+			found.append(text)
+	found.sort()
+	record["bigCoins"] = found
+	record["owls"] = maxi(int(record.get("owls", 0)), owls_freed)
+	records[level_key] = record
+	if _auto_save_enabled: save()
+
+
+## Which tutorials this child has seen: id -> {"skipped": bool, "at": ms}.
+##
+## A skipped tutorial still counts as seen -- a child who taps Skip has told us
+## they do not want it, and re-showing it would make the button a lie. The flag
+## is kept rather than discarded so a grown-up surface can tell "was taught" from
+## "chose to skip", which are very different facts about a struggling child.
+func get_tutorials_seen() -> Dictionary:
+	var seen: Variant = _data.get("tutorialsSeen", {})
+	return seen if seen is Dictionary else {}
+
+func has_seen_tutorial(tutorial_id: String) -> bool:
+	return get_tutorials_seen().has(tutorial_id)
+
+func mark_tutorial_seen(tutorial_id: String, skipped: bool) -> void:
+	if tutorial_id == "":
+		return
+	if not (_data.get("tutorialsSeen", null) is Dictionary):
+		_data["tutorialsSeen"] = {}
+	(_data["tutorialsSeen"] as Dictionary)[tutorial_id] = {"skipped": skipped, "at": _now_ms()}
 	if _auto_save_enabled: save()
 
 func grant_ability(ability_id: String) -> void:
@@ -205,8 +311,15 @@ func _create_default_save() -> Dictionary:
 		"playerLevel": 1,
 		"inventory": [],
 		"activeAbilities": [],
+		# level key -> { bigCoins: [id, ...], owls: int }. Best run only, and only
+		# written when a level is FINISHED - see Game.transition_to_level.
+		"levelRecords": {},
 		"mathStats": {"totalCorrect": 0, "totalWrong": 0, "bySkill": {}},
 		"telemetry": {"hintUsage": 0, "problemsAttempted": 0, "answeredProblemIds": []},
+		# Which concept tutorials this child has already been shown, and whether
+		# they sat through it or skipped it. Profile-scoped like everything else
+		# here: two children on one device get taught independently.
+		"tutorialsSeen": {},
 		"settings": {"musicVolume": 0.7, "sfxVolume": 1.0},
 		"timestamp": _now_ms(),
 	}

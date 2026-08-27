@@ -6,9 +6,6 @@ extends TestCase
 
 const CURRICULUM := "res://data/math/problems_curriculum.json"
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func test_reads_every_marker_the_curriculum_uses() -> void:
 	# All twelve, since the authors cycled through them rather than settling.

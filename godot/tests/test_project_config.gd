@@ -3,9 +3,6 @@ extends TestCase
 ## render settings the game requires. These were originally mirrored from the
 ## Phaser config; they are now the source of truth in their own right.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func test_viewport_is_960x540() -> void:
 	assert_eq(int(ProjectSettings.get_setting("display/window/size/viewport_width")), 960, "viewport width")
@@ -52,5 +49,5 @@ func test_gravity_is_800() -> void:
 	assert_almost_eq(float(ProjectSettings.get_setting("physics/2d/default_gravity")), 800.0, 0.001, "gravity")
 
 func test_input_actions_exist() -> void:
-	for action in ["move_left", "move_right", "jump", "interact", "shoot", "pause"]:
+	for action in ["move_left", "move_right", "jump", "shoot", "pause"]:
 		assert_true(InputMap.has_action(action), "input action %s" % action)

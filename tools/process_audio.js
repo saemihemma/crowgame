@@ -145,7 +145,7 @@ function main() {
     console.log('\nPlease download and extract asset packs to:');
     console.log(`  - ${SOURCE_SFX_DIR}`);
     console.log(`  - ${SOURCE_MUSIC_DIR}`);
-    console.log('\nSee ASSET_SPECS.md for download instructions.\n');
+    console.log('\nSee brand/ASSET_MANIFEST.md for download instructions.\n');
     process.exit(1);
   }
 

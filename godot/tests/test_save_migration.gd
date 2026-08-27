@@ -3,9 +3,6 @@ extends TestCase
 ## changes — the migrate_save() seam is exercised here so future version bumps
 ## can't silently wipe a save.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _sm() -> Node:
 	return Engine.get_main_loop().root.get_node("SaveManager")

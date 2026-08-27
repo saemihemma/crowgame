@@ -2,7 +2,7 @@ extends Node
 ## MathProblemManager — Godot port of math-kernel/math/MathProblemManager.ts. Autoload.
 ## Owns the merged problem list, recent-id/replay-key anti-repeat windows, the
 ## ProblemPoolManager + ELOAwareStrategy, and selection metadata. Initialized
-## from DataManager's four pools (mirrors BootScene addPool calls).
+## from DataManager's four pools.
 
 const MAX_RECENT_PROBLEM_IDS := 12
 const MAX_RECENT_REPLAY_KEYS := 18
@@ -67,6 +67,14 @@ func get_next_problem(filter: Dictionary = {}) -> Variant:
 			var traits: Dictionary = p.get("difficultyTraits", {})
 			if traits.has("maxOperand") and int(traits["maxOperand"]) > int(filter["maxOperand"]):
 				continue
+		# The representation floor, on the RANDOM path. The owl only gets here when
+		# the ELO-aware lanes came up empty -- but "the lanes found nothing" is no
+		# reason to hand a child a row of nineteen marks to count, so the cap has to
+		# hold on both paths or the fallback quietly undoes it.
+		if filter.has("maxUngroupedCount") and ProblemPoolManager.is_ungrouped_count_row(p):
+			var correct: Variant = p.get("answer", {}).get("correct", null)
+			if (correct is float or correct is int) and int(correct) > int(filter["maxUngroupedCount"]):
+				continue
 		candidates.append(p)
 
 	if candidates.is_empty():
@@ -121,11 +129,6 @@ func consume_selection_meta(problem_id: String) -> Variant:
 	_selection_meta.erase(problem_id)
 	return meta
 
-func get_total_count() -> int:
-	return _all_problems.size()
-
-func get_answered_count() -> int:
-	return _recent_problem_ids.size()
 
 # ─── internals ────────────────────────────────────────────
 func _filter_unlocked(domains: Array) -> Array:
@@ -165,6 +168,8 @@ func _build_domain_filter(domain: String, options: Dictionary) -> Dictionary:
 		filter["difficultyRange"] = options["difficultyRange"]
 	if options.has("maxOperand"):
 		filter["maxOperand"] = options["maxOperand"]
+	if options.has("maxUngroupedCount"):
+		filter["maxUngroupedCount"] = options["maxUngroupedCount"]
 	return filter
 
 func _has_any_skill(problem: Dictionary, skills: Array) -> bool:

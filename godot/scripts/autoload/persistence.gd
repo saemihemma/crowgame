@@ -34,9 +34,6 @@ func remove_item(key: String) -> void:
 func has_item(key: String) -> bool:
 	return _store.has(key)
 
-func clear_all() -> void:
-	_store.clear()
-	_mark_dirty()
 
 ## Debounced disk writes: reads always hit the in-memory store, so persistence
 ## semantics are unchanged, but rapid auto-saves (every coin pickup) coalesce

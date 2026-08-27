@@ -16,6 +16,19 @@
 import { AdaptiveProblemSelectionOptions, MathProblem, MathDomain, ProblemELORating } from '../utils/Types';
 import { buildProblemReplayKey } from './problemReplayKey';
 
+/**
+ * Does this problem ask the child to count things one at a time?
+ *
+ * Identified by the glyph row its prompt interpolates -- `phrasing.prompt.params.glyphs`
+ * -- and deliberately not by its domain. The REPRESENTATION is what
+ * maxUngroupedCount is about: all 123 of these happen to sit in `counting`
+ * today, but a worded problem that drew a row of berries would be the same ask
+ * and has to be caught by the same rule.
+ */
+function isUngroupedCountRow(problem: MathProblem): boolean {
+    return problem.phrasing?.prompt?.params?.glyphs !== undefined;
+}
+
 export class ProblemPoolManager {
     private problemsByDomain: Map<MathDomain, MathProblem[]>;
     private problemELORatings: Map<string, ProblemELORating>;
@@ -153,7 +166,22 @@ export class ProblemPoolManager {
         return rating ? rating.eloRating : 150;
     }
 
-    public updateProblemRating(problemId: string, success: boolean): void {
+    /**
+     * Record what happened on a problem. Attempts and success rate only.
+     *
+     * NOT a difficulty update, which is what this was called
+     * (`updateProblemRating`) for as long as it has existed while never touching
+     * `eloRating`. Renamed rather than made true, because making it true here is
+     * the wrong place: the ratings map is rebuilt by initialize() on every boot
+     * and never saved, and a child answers perhaps fifty problems out of 3,736 in
+     * a session -- so nearly every entry would calibrate from zero or one
+     * observation, which is not calibration.
+     *
+     * Item difficulty has to be calibrated across children, and the attempts
+     * already go somewhere that can: every one is submitted to the API with its
+     * problem id and outcome.
+     */
+    public recordProblemOutcome(problemId: string, success: boolean): void {
         const rating = this.problemELORatings.get(problemId);
         if (!rating) return;
 
@@ -219,6 +247,13 @@ export class ProblemPoolManager {
             problem.difficultyTraits.maxOperand > constraints.maxOperand
         ) {
             return false;
+        }
+
+        if (constraints?.maxUngroupedCount !== undefined && isUngroupedCountRow(problem)) {
+            const answer = Number(problem.answer?.correct);
+            if (Number.isFinite(answer) && answer > constraints.maxUngroupedCount) {
+                return false;
+            }
         }
 
         if (constraints?.excludedReplayKeys?.includes(buildProblemReplayKey(problem))) {

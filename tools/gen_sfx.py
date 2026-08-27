@@ -7,9 +7,14 @@ friendly; the "wrong" cue is gentle and low (never a harsh buzzer — pedagogy
 rail: mistakes are not punished).
 
 Run: python3 tools/gen_sfx.py
-Writes the 15 WAVs to godot/assets/audio/sfx/. They are committed, because
-godot/data/audio/audio_manifest.json declares them as required assets and
-tools/validate_assets.js fails without them.
+Writes one WAV per entry in SOUNDS to godot/assets/audio/sfx/. They are
+committed, because godot/data/audio/audio_manifest.json declares them as
+required assets and tools/validate_assets.js fails without them.
+
+These are PLACEHOLDERS with the right shape, not final sound design. Every one
+of them is meant to be replaced by dropping a real file over it — same name,
+same folder — with no code, manifest or registry change. brand/SOUND_DESIGN.md
+is the brief: what each moment is, when it fires, and how it should sound.
 """
 import math, os, struct, wave
 
@@ -72,6 +77,11 @@ def seq(*parts):
     return out
 
 
+def shift(samples, seconds):
+    """Delay a sound by `seconds`, so two copies read as one two-part gesture."""
+    return [0.0] * int(seconds * SR) + list(samples)
+
+
 def mix(a, b):
     n = max(len(a), len(b))
     return [(a[i] if i < len(a) else 0) + (b[i] if i < len(b) else 0) for i in range(n)]
@@ -119,6 +129,35 @@ SOUNDS = {
     # Golden problem arrival: a fast, high shimmer distinct from the win
     # sounds — it announces the problem, it is not the reward itself.
     "golden": arp([1319, 1568, 1976, 2637], 0.06, 0.5),
+    # The crow goes down: a short fall, not a game-over sting. Losing a life
+    # costs the coins from this level and nothing else, and the sound should
+    # say "again" rather than "you failed".
+    "player_die": chirp(560, 180, 0.30, 0.45, "sine"),
+    # Stepping through the door into the next level. Rising, and distinct from
+    # `door` (getting close), which is the low wooden open.
+    "level_enter": arp([392, 523, 659], 0.10, 0.5),
+    # One link off an owl's chain. Short and metallic; it fires up to three
+    # times in a row on a gauntlet owl, so it must not outstay its beat.
+    "chain_break": mix(tone(1180, 0.09, 0.35, "square", decay=12.0), noise(0.05, 0.20, decay=14.0)),
+    # The focus ring moving between menu buttons. Quieter and higher than the
+    # click, because it fires on every arrow press and a sound at click volume
+    # would turn holding Down into a machine gun.
+    "button_focus": tone(1320, 0.035, 0.22, "sine", decay=18.0),
+    # One of the three big coins. The coin sound's bigger cousin: same family,
+    # unmistakably rarer. It has to be recognisably NOT the ordinary coin, because
+    # the two mean different things -- one goes into a purse, this is a third of a
+    # level.
+    "big_coin": seq(tone(784, 0.08, 0.5), tone(1047, 0.09, 0.55), tone(1319, 0.16, 0.6)),
+    # All three in one level. The only sound in the game that is allowed to be a
+    # small fanfare outside the completion screen, because 3/3 is the achievement
+    # the other two were progress toward. Shorter than `level_complete`, which
+    # still has to be the biggest thing a run ends on.
+    "big_coin_all": arp([784, 1047, 1319, 1568, 2093], 0.09, 0.6),
+    # The door will not open yet. A soft double knock, deliberately NOT the hurt
+    # sound and nothing like a buzzer: the child has done nothing wrong, they
+    # have somewhere left to go. Same pedagogy rail as the wrong-answer cue.
+    "door_locked": mix(tone(196, 0.10, 0.35, "sine", decay=9.0),
+                       shift(tone(196, 0.10, 0.30, "sine", decay=9.0), 0.14)),
 }
 
 if __name__ == "__main__":

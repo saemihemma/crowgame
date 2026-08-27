@@ -2,7 +2,6 @@
 
 Status: Current
 Authority: The list of open work. Not a record of finished work. Runtime truth lives in the code.
-Last verified against code: 2026-08-23
 
 ## READ THIS FIRST — THIS FILE HAS ONE JOB
 
@@ -15,19 +14,19 @@ or need to do. Nothing else belongs here.
    through. Do not move it to a "completed" section. Do not write "(done)" after
    it. Delete the lines. An item that is finished has no business in a list of
    open work, and a roadmap that accumulates finished items stops being read.
-2. **Never add an entry describing something you just did.** That is what
-   `progress.md` is for. If you finished it, it goes in `progress.md` and it
-   comes *out* of here.
+2. **Never add an entry describing something you just did.** That is what the
+   commit message is for. If you finished it, it comes *out* of here and the
+   record of it is in git history.
 3. **If you finish part of an item, rewrite the item to describe only what is
    left.** Do not annotate it with what you did.
 4. **This file is not a changelog, a status report, a diary, or a design
    document.** No dates on entries. No author names. No "as of" notes. No
-   history. If you want to explain a decision, put it in `progress.md` or an
-   architecture doc and link to it.
+   history. If you want to explain a decision, put it in the commit message or
+   an architecture doc and link to it.
 5. **Every entry must be actionable and specific enough to start on.** Name the
    file, the behaviour, or the question to answer. "Improve UX" is not an entry.
-6. **Deleting an item you did not finish requires a reason** written into
-   `progress.md`. Silent removal of open work is worse than leaving it.
+6. **Deleting an item you did not finish requires a reason** written into the
+   commit that removes it. Silent removal of open work is worse than leaving it.
 
 If you are an agent working in this repository: you are expected to leave this
 file *shorter* than you found it whenever you complete something. Adding to it
@@ -43,23 +42,26 @@ there.
 ## P1 — Correctness and reachability
 
 ### Tune the ladder against real play, not intuition
-The admin session report tags accuracy against the 70-85% sweet spot. After a
-week of family play: above 85% raise the at-level/stretch share, below 70%
-raise comfort, low comeback rate shorten the review gap. One knob at a time,
-one week per change.
+The loop is now built and only the play is missing. `/api/v1/admin/ladder-tuning`
+reads the last seven days and answers with one knob to move -- which file, from
+what to what, and the measurement behind it -- or with a refusal naming exactly
+what the sample is short of. The decision is a pure function in
+`server/src/lib/ladderTuning.ts`, pinned by nine tests, and the admin page
+renders it under the charts.
+
+It refuses today, and will keep refusing until roughly 200 answers spread over
+four separate days exist, because a rate over one enthusiastic afternoon is noise
+and a knob moved from noise leaves a system nobody can reason about. Nothing here
+is waiting on code.
+
+What remains is the tuning itself, which takes calendar time: play a week, apply
+the one change it names, play another, repeat. Note that if it recommends the
+review gap, that is `IMMEDIATE_REVIEW_MIN_GAP`/`MAX_GAP` in
+`learner_state_manager.gd` -- a Tier-1 constant, so changing it means
+regenerating the golden parity fixtures, and the recommendation says so.
 
 *Done when:* two consecutive weekly reports sit inside the sweet spot with at
 least one step-up per early session and frustration flags under 10%.
-
-### Sessions are derived from math attempts, so math-free play is invisible
-The admin overview splits attempt timestamps on a 30-minute gap to get session
-counts and lengths. A child who runs and jumps without meeting an owl leaves no
-trace in it. A lightweight client heartbeat (session start + a ping every few
-minutes, batched into the existing API) would make session length honest for
-all play, not just math play.
-
-*Done when:* the overview's session numbers come from heartbeats, and the
-`derivedFromAttempts` label is gone from `/api/v1/admin/overview`.
 
 ### Four grade milestones are approximate alignments, not sourced scope
 The Icelandic grade mapping (docs/GRADE_EXPECTATIONS.md) anchors addition,
@@ -80,13 +82,44 @@ number_sequence grade-3/4 milestones.
 *Done when:* every milestone's `basis` is `law`/`curriculum`/`material`, or an
 educator has signed off the `approx` rows in the JSON's provenance notes.
 
-### Division with remainders needs a new answer mode
-The MCQ answer format is a single number, so "deiling með afgangi" (Sproti 4)
-cannot be asked honestly — division content stops at exact division. A
-quotient+remainder answer widget (or a two-part question) unlocks it.
+### Division with remainders: two blockers, and neither is the UI
+"Deiling með afgangi" is Sproti 4 material and division content stops at exact
+division. Scoped properly, because a first look assumed the hard part was a
+two-part answer widget and it is not:
 
-*Done when:* a remainder answer mode exists and a `division` band authored
-with remainders passes the materialize review gate.
+**Already there.** `forceDivisible: false` is a template flag the generator
+honours (`math_authoring.ts`), so producing non-divisible pairs needs no
+generator work. And the maths board already stringifies every option
+(`b.text = str(options[value_index])`, and grading compares strings), so an
+option of `"3 og 2 í afgang"` renders and grades today with no UI change at all.
+
+**The two real blockers.**
+
+1. `tools/math_verifier.ts` assumes exact division everywhere it evaluates a
+   prompt -- `c / a`, `c / b` -- so a remainder prompt derives a non-integer and
+   its traits come out wrong. That file is what the golden fixtures compare byte
+   for byte, so this is a Tier-1 change: the verifier, the fixtures, and a
+   re-materialize of all 4,039 problems.
+2. `reviewMaterializedMathBatches` gates on
+   `answer.mode !== 'mcq' || !options.includes(correct as number)`, so any new
+   mode fails the review gate as an option error until the gate knows the shape.
+   `math-problem.schema.json`'s mode enum needs the new value too.
+
+*Done when:* the verifier evaluates `a ÷ b` with a remainder, the review gate
+accepts the new mode, a `division` band authored with `forceDivisible: false`
+passes materialize, and the golden math fixtures are regenerated.
+
+
+### Multi-digit concepts need their lessons
+`addition.multi_digit` and `subtraction.multi_digit` (steps 37-46) became
+reachable when the blanket operand rail was removed, but both still have
+`tutorial: null` — a child's first three-digit sum arrives without the worked
+example every other concept gets. Author the two 4-card lessons in
+`godot/data/curriculum/tutorials.json` (en+is, existing visual renderers,
+place-value strategy per docs/MATH_AUTHORING_STANDARDS.md).
+
+*Done when:* both concepts name a tutorial and `npm run validate` passes with
+the lesson-quality gates.
 
 ## P2 — Experience decisions that need making
 
@@ -108,16 +141,16 @@ because once the crow reaches the owl the encounter overlay opens and captures
 input, after which every later probe reads as dead including a keyboard control.
 A gate needs a fresh level per probe, or a level with no owl near the spawn.
 
-*Mouse:* untested. `godot/scripts/ui/touch_controls.gd` shows the d-pad whenever
-`OS.has_feature("web")` is true, which includes desktop browsers where the player
-has a mouse, and `pointing/emulate_touch_from_mouse` is enabled as the documented
-fix but has never been confirmed — Playwright's synthetic mouse does not reach a
-TouchScreenButton, which is a harness limitation and not evidence either way.
+*Mouse:* no longer a question, because the pads are no longer there. Owner
+playtest: a desktop PC got the five-button thumb gamepad laid over the level.
+`TouchControls.supported()` now asks `DisplayServer.is_touchscreen_available()`
+alone, and `pointing/emulate_touch_from_mouse` is off — it had to be, because it
+is an input of that same call and made the engine answer "yes, touch" on any
+machine with a mouse. Confirmed in a browser both ways: pads present under touch
+emulation, absent without.
 
-*Done when:* someone clicks a pad with a real mouse in a desktop browser and says
-whether the crow moves. If it does not, the fallback is to hide the controls
-unless `DisplayServer.is_touchscreen_available()`, so desktop players are not
-shown dead buttons.
+*Done when:* the touch half above has a repeatable assertion. The mouse half is
+closed.
 
 ### The five tilesets are generated placeholders
 Each world has its own tileset and no two levels share a ground, but the five
@@ -127,99 +160,143 @@ what is wrong with each, the geometry contract and the replacement steps.
 
 Redrawing them by hand is the highest-value art work available.
 
-*Done when:* every entry in `public/data/tilesets/tileset_manifest.json` reads
+*Done when:* every entry in `godot/data/tilesets/tileset_manifest.json` reads
 `"source": "authored"`, and `tools/gen_tilesets.mjs` can be deleted.
 
-### The compiler places three tiles and emits an empty decoration layer
-`tools/level_compiler.ts` only ever writes GIDs 1, 2 and 3 — ground surface,
-ground fill, platform — into the ground layer. Indices 3-15 of every tileset are
-unused, and the `decoration` layer is created full of zeros and never populated.
+### The crow has no air poses, and no longer needs an apex-gravity decision
+An earlier version of this entry said the port had "constant gravity and no input
+grace". Half of that was wrong: coyote time and the jump buffer have always been
+in `player_motion.gd`, read from `player_base.json`, and pinned by
+`test_motion_parity.gd`.
 
-Two consequences worth fixing together. A platform run is the same tile repeated,
-so a 3-wide ledge has no left or right cap and reads as a slab. And because there
-is one tile per role, tile texture has to stay non-figurative or it tiles into
-wallpaper — which means distinctive marks have nowhere to live.
+The squash and stretch §2.4 asks for is now in too, as scale on the pose the game
+already has -- rise, apex, fall and the three-beat landing (squash, overshoot,
+settle), all tuned from `player_base.json`'s `feel` block. That is the whole of
+what §2.4 specifies as code. `jump_rise`, `apex` and `fall` are listed there as
+sprite states as well, and there is no crow art for any of them: the only frames
+that exist are a one-frame idle and a nine-frame walk. Those belong to the art
+pass, not here.
 
-*Done when:* the compiler selects left/middle/right caps for platform runs, and
-scatters decoration tiles into the layer it already emits.
+Reduced gravity near the apex is no longer an open question on its own: the
+answer is that the crow should not float by default, and anything that changes
+how it moves through the air arrives as an ABILITY the child earns. See "Crow
+abilities" below. What is left here is only the art -- §2.4 lists `jump_rise`,
+`apex` and `fall` as sprite states and there is no crow art for any of them, only
+a one-frame idle and a nine-frame walk. That belongs to the art pass.
 
-### `level1_tiles.png` is loaded but never selected
-It is in the tileset manifest and BootScene loads it, but no compiled map names
-it: `GameScene.loadTiledLevel()` resolves a tileset by the name the map carries,
-and every map now names its world tileset. It is 32x64, two tiles, and predates
-the current compiler. `LevelRegistryEntry.tilesetImages` is the same story — the
-field is declared in `src/utils/Types.ts` and read by nothing.
+*Done when:* the three air poses exist as art, or the art pass declares the pose
+scaling sufficient without them.
 
-*Done when:* both are removed, or something actually uses them.
+### Crow abilities: the framework exists and nothing is wired to it
+`godot/data/tuning/abilities.json` declares three abilities (`double_jump`,
+`wall_slide`, `dash`), all `persistent: false`, all `grantedBy` pickups that do
+not exist. `godot/scripts/gameplay/ability_manager.gd` is a `RefCounted` class
+that nothing instantiates -- it is not an autoload and has no call site anywhere
+in `godot/scripts`. `EventBus.ability_granted`/`ability_revoked` exist, the HUD
+reacts to them, and `SaveManager.grant_ability` persists an id into
+`activeAbilities`. So the plumbing is real and the pipe is not connected at
+either end: nothing grants, and `player_motion.gd` never asks `has_ability`.
 
-### `theme_forest` and `theme_scifi` are kept alive only by the Godot tests
-`godot/tests/test_theme_roles.gd` and `test_theme_swap.gd` assert on the
-`forest` and `scifi` ids by path. Once the five world themes land in Godot those
-two skins have no other reason to exist.
+Settled by the owner: abilities are a MIX of permanent unlocks and timed
+pickups (a Mario star), and they are earned by CLEARING MAPS. Double jump and
+gliding are the two named. Anything that changes how the crow moves through the
+air lands here rather than in the base jump.
 
-*Done when:* the tests assert on two world ids instead, and the legacy skins are
-deleted.
+Four things this needs that the scaffold does not have:
+- An owner. `AbilityManager` has to become an autoload or belong to `Game`, and
+  something has to grant on `EventBus.level_complete`.
+- A read. `player_motion.gd` is parity-locked against
+  `tools/golden/gen_motion_fixtures.ts`, so an ability that changes motion means
+  the same change in the TS kernel and regenerated fixtures in the same commit.
+- A duration for the timed kind, plus a HUD countdown -- and care that a timed
+  ability does NOT go through `SaveManager.grant_ability`, which appends to
+  `activeAbilities` and would silently make it permanent across a reload.
+- Real ids for `requiresAbility` to point at, which is how the bonus owl at the
+  end of a map declares that it is deliberately out of reach for now.
 
-### The Godot build is missing everything the Phaser prototype proved
-Godot is the only runtime now, so this is not a parity gap — it is the actual
-backlog. A capture of `level_01` shows a flat `#87CEEB` sky, the forest tileset,
-and a HUD reading `Lives: *** / Coins 15 / Owls 3` in plain yellow text.
+*Done when:* clearing a level grants an ability the crow can still use in the
+next level, a timed one visibly expires, and a bonus owl declared
+`requiresAbility: double_jump` becomes reachable once the child has it.
 
-Missing: the five world themes and per-level selection, the themed sky, the five
-tilesets (the PNGs are there; nothing loads them), the feel pass, the
-wrong-answer choreography, the dynamic maths-board layout, the three-pod HUD and
-owl ring, the streak, and the one-answer owl roster — `owl_probe` still solves
-two problems.
+### Email: provider, welcome mail, and the CLM journey
+Nothing in this repository depends on this, and no code is blocked by it: it is
+account setup plus DNS plus copy. It is here because it is the last thing
+standing between a family signing up and hearing anything back.
 
-`brand/PRODUCTION_PLAN.md` §2a has the table and the order. Themes go first.
+Blocked on two answers from the owner, and neither can be guessed:
+1. **The sending domain.** Which domain the mail goes out from, because SPF,
+   DKIM and DMARC records have to be added to whatever DNS hosts it, and picking
+   the wrong one means re-doing the whole chain.
+2. **Transactional only, or transactional plus an opt-in weekly digest.** Only
+   the second one needs code -- a scheduled job reading
+   `/api/v1/admin`-shaped aggregates per family and an unsubscribe route -- and
+   it also changes what has to be said in `PRIVACY.md`, which is gated.
 
-*Done when:* captures show five visibly different worlds and `run_tests.sh`
-still passes.
+*Done when:* a real signup receives a welcome mail from a domain that passes
+DMARC, and the answer to (2) is either "no digest" or a shipped digest.
 
-### The maths board is themed by colour only, not by material
-Every theme file already declares `mathBoard.frameSprite`, `mathBoard.bgSprite`
-and `mathBoard.optionSprite`, and none of them has ever had a texture behind it.
-`MathBoard` draws the panel and the option buttons with `Graphics` from the
-palette, so a world changes the board's *colour* and nothing else. Emberwood and
-Geyserworks should not be the same rounded rectangle in different browns.
+### Five board materials are wired and undrawn
+`math_challenge.gd::_board_face()` now reads the active world's
+`mathBoard.frameSprite` before the shared `board_panel` slot, and falls back to
+the drawn `StyleBoxFlat` when neither has art -- so dropping a PNG into the
+registry under the name a theme already declares changes that world's board and
+nothing else. It is a nine-slice (`StyleBoxTexture` with texture margins), which
+is what the growing board needs: it measures its question and can reach ~380
+tall, and a fixed-size PNG would smear its corners.
 
-`brand/BRAND_SYSTEM.md` §8.3 owns the intent: the board is made of the world's
-material — bark, crystal, candy, iron, sky-stone — while its geometry, button
-grid and timings stay identical in all five. Skin changes, layout never does.
-`brand/ASSET_MANIFEST.md` P4 lists the files.
+`brand/BRAND_SYSTEM.md` §8.3 owns the intent -- bark, crystal, candy, iron,
+sky-stone, with the geometry, button grid and timings identical in all five.
+`brand/ASSET_MANIFEST.md` P4 lists the five files. This is now purely an art
+dependency; there is no code left to write.
 
-*Watch out:* the board is no longer a fixed `520x280`. It measures its question,
-options and hint and grows to fit, so on a two-line prompt it is close to 380
-tall. **The frame has to be a true nine-slice** — a fixed-size PNG will stretch
-and smear its corners. That means the asset is a nine-slice source plus the
-border insets, and `MathBoard.drawBoardBackground()` needs to draw a
-`NineSlice` game object when a texture exists and keep the `Graphics` path as
-the fallback, the same way `HealthBar` already falls back for its icons.
+*Done when:* the five frames exist and each world's board is visibly made of that
+world's material.
 
-*Done when:* each world's board is visibly made of that world's material, the
-frame survives a two-line prompt without distortion, and replacing one is a PNG
-swap plus insets in the theme file.
+### The HUD's uncovered states are covered, and found two bugs
+`godot/tools/capture.sh` now has `hud-hurt`, `hud-streak` and `hud-ability`
+variants, driven through the game's own entry points (`Game.hurt_player`,
+`EventBus.math_answer_submitted`, `EventBus.ability_granted`) rather than by
+writing to the HUD, so a shot is evidence about a state the game can reach.
 
-### The HUD has states no screenshot has ever seen
-`tools/theme_screenshots.mjs` now rescues an owl, so the filled ring is covered.
-Still uncovered: a lost heart (needs damage), the streak flame at 3+ (needs two
-owls answered perfectly in sequence), and the ability slots (needs an ability
-granted). Those are three designed states with no visual evidence behind them.
+The first run of them showed a lit streak with no flame on the ring at all, and
+"Double Jump" printed across the jump button. Both are fixed and both are now
+arithmetic assertions in `godot/tests/test_hud_pods.gd`, which is the kind of
+check that would have caught them without a renderer.
 
-*Done when:* the harness can drive damage and a multi-owl streak, or those states
-are checked some other way and the check is written down.
+What is still uncovered is the DEATH and respawn sequence, and the completion
+screen with a full owl ring rather than an empty one -- `complete` stages the
+overlay but not the state behind it.
 
-### Apex hang is blocked by the motion parity contract
-The jump would feel more generous with reduced gravity near the top of the arc,
-which `brand/BRAND_SYSTEM.md` §2.4 calls for as the `apex` hold. It was left out
-of the feel pass deliberately: `godot/tests/test_motion_parity.gd` asserts the
-Godot port matches golden fixtures generated from the web motion model
-(`tools/golden/gen_motion_fixtures.ts`), and that model has one constant gravity.
-Changing it on the web side alone silently breaks parity, and Godot cannot be
-exercised from the container this was written in.
+*Done when:* those two are variants too, or are checked some other way and the
+check is written down.
 
-*Done when:* apex damping exists in the shared model, both runtimes implement it
-and the fixtures are regenerated — or the idea is dropped on purpose.
+### The crow's collider is centred on its frame, but the crow is not
+
+Measured, not suspected: `test_collision_fidelity` proves the box never reaches
+outside the drawing, and the tile squares are the tile art to within a pixel. The
+remaining mismatch is that the crow is drawn *off-centre* in its 64px frame -
+tail to the left, head and beak to the right - while `sprite_spec.json` gives it
+a 40px box centred on the frame. At its widest the art spans the full 64, so
+roughly 12px of bird hangs outside the collider on each side.
+
+What that costs: walking into a wall, the beak enters it about a third of a tile
+before the crow stops, and the same on the left with the tail. It is not a bug -
+a box around a tail and a beak would stop the crow a third of a tile short of
+every wall, which is worse - and it is not what makes collision *feel* wide
+either. It is simply the last place where the collider and the drawing disagree,
+and the disagreement is asymmetric, which is the part that would bother someone
+watching closely.
+
+Three ways to go, in increasing cost: leave it (the current answer, and a
+defensible one); give `body` an x-offset so the box sits on the bird's mass
+rather than the frame's middle; or re-register the walk sheet so the crow is
+drawn centred and the box needs no offset. The third is the real fix and needs
+an artist, because every frame of the cycle has to move together or the crow
+swims.
+
+*Done when:* someone plays with walls and ledges and says whether the beak
+overlapping a wall is visible enough to spend art time on — and then either the
+box moves or this entry is deleted.
 
 ## P3 — Content and localisation
 
@@ -229,15 +306,26 @@ birds), gated to steps 3+. Still open: more story families and objects so the
 wording doesn't wear out, worded shapes for comparison and sequences, and
 visual prompts via the unused `prompt.assets` field (picture-group addition in
 the spirit of counting's dot strings). Every new worded shape needs a matching
-pattern in `src/math/wordedArithmetic.ts` — that table is what keeps steps,
+pattern in `math-kernel/math/wordedArithmetic.ts` — that table is what keeps steps,
 traits, and replay keys honest.
 
-### Misconception tags are authored but nothing consumes them
-Every problem carries `misconceptionTags` (off-by-one, counting-back errors,
-…) and MCQ distractors are constructed, yet the runtime never looks at *which*
-wrong option a child picked. Mapping distractor → misconception in
-`ELOUpdateManager` would let review items target the actual confusion instead
-of just the skill, and let hints speak to the specific error.
+### Review items target the skill, not the confusion
+The hint half is done: `math_misconception.gd` reads a problem's
+`misconceptionTags` and names a miss when the arithmetic identifies it, so a
+child who was one away hears about being one away. `math_challenge.gd` shows that
+instead of the generic authored hint.
+
+What is still open is the queue. `_apply_review_update` schedules a review item
+per (domain, skill), so two children who miss the same problem for opposite
+reasons -- one counting back wrong, one slipping a place value -- get the same
+review. Carrying the identified misconception onto the review item would let the
+scheduled return target the confusion.
+
+*Done when:* a review item carries the misconception it was born from, in both
+ports, and the selector prefers a problem that can reproduce it. Note this one is
+a snapshot shape change in `learner_state_manager.gd`, which is parity-locked, so
+it needs the same field in `math-kernel/systems/LearnerStateManager.ts` and
+regenerated golden fixtures -- which is why the hint half went first.
 
 ### Response time is recorded but unused as a learning signal
 `responseMs` is now honest time-to-first-answer, but nothing distinguishes
@@ -246,57 +334,94 @@ right) is the real mastery bar — consider a soft fluency component in the
 promotion gate, and retune the frustration `responseTimeSpike` threshold in
 `LearnerStateManager.buildSummary` against real session data.
 
-### Within-lane selection is uniform random and problem ELO never learns
-`ELOAwareStrategy` picks uniformly inside the chosen lane; the effective
-selection ELO it computes is unused. Weighting lane candidates toward the
-learner's edge would sharpen targeting inside a step. Relatedly,
-`ProblemPoolManager.updateProblemRating` records per-problem success rates but
-never adjusts `eloRating` — either calibrate item difficulty from that
-telemetry or rename the method to what it does.
+### Item difficulty is not calibrated, and cannot be calibrated on the client
+Within-lane selection is no longer uniform: `ELOAwareStrategy` now leans toward
+the candidate nearest the learner's edge with a wide softmax
+(`selection.withinLaneEloSpread`), so the effective selection ELO it computes is
+finally used for something. Deliberately wide -- `tools/sim_learner_journey.ts`
+measures a thriving child at 517 distinct problems against a floor of 450, and a
+greedier temperature spends that margin.
 
-### Review backlog has no decay or cap policy
-`day_1`/`day_3`/`day_7` review items assume steady play. A child who skips a
-week comes back to a stacked, all-due backlog that crowds the 20-25% review
-lane for a long stretch. Decide a cap per domain and a staleness policy in
-`LearnerStateManager.applyReviewUpdate` / `getDueReviewItems`.
+`updateProblemRating` is renamed `recordProblemOutcome`, because that is what it
+did: it counted attempts and a success rate and never touched `eloRating`. It was
+not made true, because the client is the wrong place for it -- the ratings map is
+rebuilt on every boot and never saved, and a child answers perhaps fifty problems
+out of 3,736 in a session, so nearly every entry would calibrate from zero or one
+observation.
 
-### Difficulty scalar and curriculum step are two separate scales
-`difficulty` comes from authoring band ELO targets, `curriculumStep` from the
-structural derivation in `tools/math_curriculum.ts`; the owl's difficulty band
+What is open is the real version. Every attempt already reaches the API with its
+problem id and outcome, so the observations exist across children; nothing reads
+them back as difficulty.
+
+*Done when:* an admin surface beside `/api/v1/admin/ladder-tuning` reports which
+authored problems are measurably harder or easier than their band claims, with
+enough observations behind each to be worth acting on.
+
+### Difficulty and curriculum step are two scales, and one of them is a rail
+`difficulty` comes from an authoring band's ELO target; `curriculumStep` comes
+from the structural derivation in `tools/math_curriculum.ts`. The owl's band
 filter sits on the first while the ladder climbs the second, which is how
-comparison got stalled before the band was widened. Unify: derive `difficulty`
-from the derived step (one source of truth), or drop the difficulty filter
-from the adaptive path once step data is fully trusted.
+comparison stalled before its band was widened.
+
+**Dropping the band filter from the adaptive path is NOT available**, which cost
+an attempt to find out. It measurably helps -- `tools/sim_learner_journey.ts` put
+a thriving child at 579 distinct problems instead of 517 -- and then
+`reviewMaterializedMathBatches` fails it: the selector smoke counts a problem
+outside the owl's `difficultyRange` as a `selectorCapBreach` (7 of them), and its
+`recentWindowFallbackPreserved` probe is built on `impossibleOptions` that are
+only impossible *because* the band filter exists. That gate is a deliberate
+statement that the band is a safety rail on the adaptive path, not decoration,
+and 62 more distinct problems is not worth removing a rail.
+
+So the remaining option is the other one: derive `difficulty` FROM the derived
+step, so the two scales cannot disagree in the first place and the rail and the
+ladder become the same rail.
+
+*Done when:* `difficulty` is a function of `curriculumStep` in the authoring
+pipeline, every pool is re-materialized through it, and the golden math fixtures
+are regenerated -- problem ELO is assigned from `difficulty`, so this moves
+Tier-1 numbers and cannot be done piecemeal.
 
 ### A gated "padlock owl" variant that asks for more than one answer
-The baseline owl asks exactly one problem. `problemCount` is already per-NPC
-config in `npc_registry.json` and both ports' components loop until it is met,
-so the remaining work is content and design, not plumbing: a visually distinct
-NPC variant, a registry entry with `problemCount` 2-3 and a bigger reward, and
-a decision about where it appears (level gates? bonus areas?). The
-multi-problem UI (progress header, alternate-domain follow-ups) stays dormant
-at the baseline but keeps working for any NPC that raises the count.
+The baseline owl asks exactly one problem, and every dial that makes one owl
+different from another is on the owl: `problemCount`, `difficultyRange` and
+`problemTypes`, documented in `npc_registry.json`'s own `fields` block. So a new
+variant is a registry entry plus the `npc_id` a level spawns — no code change.
+Where it appears is settled: one hard-to-reach bonus owl at the end of each map,
+outside the door's requirement so it can never lock a level. What is left is
+content -- a visually distinct sprite and a reward worth the climb. The
+multi-problem UI (progress header, alternate-domain follow-ups) stays dormant at
+the baseline but keeps working for any NPC that raises the count.
 
-### Multiplication and division need a fate decision
-650 authored problems sit in domains the owl never serves — not in its
-`problemTypes`, and with almost no content below step 3 (division's lowest
-band starts at difficulty ~2). Either author step 0-2 on-ramps and add them to
-the rotation for older kids, or park them explicitly in Settled.
+### Multiplication and division reach a child late
+Both are served now: they are in every owl's `problemTypes`, they unlock off the
+accuracy gate, and `tools/sim_learner_journey.ts` measures a thriving child
+unlocking multiplication at attempt 44 and division at 179, with both offered on
+the next question after unlocking. (An earlier version of this entry claimed they
+were "not in problemTypes". That was never true.)
 
-### The trophy shelf has no heading
-`trophy.title` ("My badges" / "Merkin mín") was added to all four bundles with
-the shelf but nothing ever drew it — the new dead-key guard caught it on its
-first merge. The key is deleted rather than wired up, because adding a heading
-changes the main menu's layout and that belongs to whoever designed the shelf.
+What remains is pace. Both plateau around step 8 of 14 and 9 of 15 even after
+4000 problems, because their ELO grows only from their own attempts and they open
+late in a journey. `domainWeights` in `math_tuning.json` is the dial, and
+`/api/v1/admin/ladder-tuning` is the instrument that should decide where to set
+it -- from real play rather than from a simulation whose success rates are
+stipulated.
 
-*Done when:* either a heading is drawn above the badge row and the key comes
-back with it, or the shelf is deliberately headingless and this entry goes.
-Note the main menu is already tight: the language selector's width is measured
-against the title ending at x 636.
+*Done when:* a real week of play says the pace is right, or says which way to
+move the weights.
 
-### Only six levels exist
-`level_99` (practice) plus five real ones. More content is the main lever on how
-long a child stays with the game.
+### The second lap has never been played by a person
+`level_06`--`level_08` were authored by walking a motif sequence rather than by
+typing coordinates, so their geometry follows from the crow's measured jump
+envelope and both guards pass: every standable cell is reachable and nothing
+spawns inside a tile. What no guard can tell us is whether the three of them are
+any *fun* -- whether the chasm stepping-stones read as a decision, whether the
+single-tile hops are too tight for a six-year-old, whether a summit is worth
+climbing. Nine levels is also not a finish line; content stays the main lever on
+how long a child keeps playing.
+
+*Done when:* a child has played 06 through 08 and someone has watched, and
+either the motifs are kept or the walker's constants change.
 
 ## P4 — Build and tooling
 
@@ -316,12 +441,17 @@ tuning-driven logic that decides when they appear (`math_tuning.json`
 the drawn primitives as the shipped look — for badges, pips, the golden
 frame, and the recap panel, wired in both `src/` and `godot/`.
 
-### Web SFX are generated, not authored
-`tools/gen_sfx.py` synthesizes all 16 effects procedurally and writes them to
-both runtimes. They are committed and they work, but they are placeholders in
-tone.
+### The SFX are generated, not authored
+`tools/gen_sfx.py` synthesizes every effect procedurally. They are committed and
+they work, but they are placeholders in tone.
 
-*Done when:* someone decides whether these are the shipping sounds.
+The brief now exists: `brand/SOUND_DESIGN.md` lists every moment in the game,
+which file fires it, and how it should sound, and the swap procedure is copying
+a file over the old one — no code, manifest or registry change. So this is a
+commission, not an engineering task.
+
+*Done when:* someone decides whether these are the shipping sounds, and if not,
+whose they are.
 
 ---
 
@@ -339,6 +469,12 @@ of completed tasks.** Do not add finished work here.
 - **Answer-feedback pacing lives in `data/tuning/math_tuning.json`.** It was
   hardcoded in one port and in `ui_tuning.json` in the other, so the two
   disagreed about how long a child waits after a miss.
+- **The trophy shelf is deliberately headingless.** Every badge already carries
+  its own domain label underneath it, so a heading would be the one item on that
+  row that names nothing -- and the row is anchored to the bottom strip under the
+  buttons, where it reads as a status shelf rather than a titled section. The
+  `trophy.title` key stays deleted. The band is 84px and a badge plus its label
+  already fills it, so adding one would also have to move the menu.
 - **A held control must look held.** The options dim to 0.45 while input is
   locked out. Use `self_modulate`, not `modulate` -- the focus highlight owns
   `modulate` and will otherwise leave the focused option lit.
@@ -361,8 +497,8 @@ of completed tasks.** Do not add finished work here.
   an extra affordance for a child who cannot read yet, never the identifier. The
   word stays, and stays untranslated. 🇺🇸 was chosen for English over 🇬🇧 as the
   owner's call.
-  They are vector geometry (`src/ui/components/FlagIcon.ts`,
-  `godot/scripts/ui/flag_icon.gd`), not emoji, for the same reason the PIN dots
+  They are vector geometry (`godot/scripts/ui/flag_icon.gd`), not emoji, for
+  the same reason the PIN dots
   and the tick are: a flag emoji is a regional-indicator pair far outside
   Latin-1, Windows ships no flag glyphs so Chrome there renders it as the
   letters "US"/"IS", and the Godot export's bundled font has no emoji at all --
@@ -373,7 +509,7 @@ of completed tasks.** Do not add finished work here.
   things read them and would break if they became Icelandic:
   `tools/math_verifier.ts` recomputes every answer by parsing operands out of
   `prompt.text` and is the only independent arithmetic check;
-  `src/math/problemReplayKey.ts` builds the anti-repeat key from it with literal
+  `math-kernel/math/problemReplayKey.ts` builds the anti-repeat key from it with literal
   tests like `startsWith('count these:')`; `buildPromptUniquenessKey` dedupes the
   pools on it; and the golden fixtures shared with the Godot parity tests compare
   it byte for byte. Localisation is a render-time overlay through the optional
@@ -390,6 +526,13 @@ of completed tasks.** Do not add finished work here.
   `answer.correct`, plus the measured operand-order invariant for the 62
   templates where `{a}`/`{b}` are the prompt's operands. See
   `tools/math_phrasing_catalog.mjs`.
+- **The child says "level", the parent report says "step" -- in both locales.**
+  One number, the derived curriculum step, and two registers on purpose.
+  `math.step_up` celebrates with "Level up!" / "Næsta stig!" because that is what
+  lands with a seven-year-old, while the parent report and the recap say "step" /
+  "þrep" because that is the ladder a grown-up is reading. `tools/validate_i18n.mjs`
+  cannot tell a register split from an inconsistency, so it is recorded here
+  instead: do not unify them.
 - **Icelandic explanations say "gerir", not "er"/"eru".** Icelandic verb
   agreement follows the numeral -- "2 plús 3 eru 5" but "4 mínus 3 er 1" -- and
   the result is a parameter, so any agreeing verb is wrong for some values.

@@ -66,28 +66,61 @@ reach_status=$?
 
 "$GODOT" --headless --path "$HERE" --import >/dev/null 2>&1 || true
 reset_store
-"$GODOT" --headless --path "$HERE" res://tests/TestRunner.tscn
+# Teed, not just streamed: a GDScript runtime error is printed by the ENGINE and
+# is not a test failure, so the suite reported 245 passed / 0 failed while
+# "Nonexistent function 'get_effective_selection_elo'" fired 46 times and every
+# problem selection was aiming at null. The assertions could not see it; the log
+# could. So the log is now part of the result.
+# Run one Godot scene and return non-zero if it FAILED OR printed a runtime error.
+#
+# The second half is the point. A GDScript runtime error is printed by the ENGINE
+# and is not a test failure, and that is exactly how the lane system stayed dead
+# for four commits: "Nonexistent function 'get_effective_selection_elo'" printed
+# inside the owl probe's own stdout, three lines above its [pass] line, while the
+# suite reported 236 passed / 0 failed. Every problem a child was served came out
+# of the random fallback. An assertion about the outcome cannot tell a selector
+# from its corpse -- but the log could, so the log is now part of the result.
+run_scene() {
+	local scene="$1"
+	local log
+	log="$(mktemp)"
+	"$GODOT" --headless --path "$HERE" "$scene" 2>&1 | tee "$log"
+	local status=${PIPESTATUS[0]}
+	if grep -q "SCRIPT ERROR" "$log"; then
+		echo "=== runtime error in $scene ==="
+		echo "A live code path failed silently: a call into nothing returns null"
+		echo "and the caller carries on. Fix it, or if a test provokes it on"
+		echo "purpose, make the test assert the outcome instead of letting the"
+		echo "engine print it."
+		grep -n "SCRIPT ERROR" -A1 "$log" | sort -u | head -40
+		status=1
+	fi
+	rm -f "$log"
+	return $status
+}
+
+run_scene res://tests/TestRunner.tscn
 unit_status=$?
 
 # Headless physics integration probes (separate scenes; advance real frames).
 echo "=== integration probes ==="
 reset_store
-"$GODOT" --headless --path "$HERE" res://tests/integration/LandProbe.tscn
+run_scene res://tests/integration/LandProbe.tscn
 land_status=$?
 reset_store
-"$GODOT" --headless --path "$HERE" res://tests/integration/CoinProbe.tscn
+run_scene res://tests/integration/CoinProbe.tscn
 coin_status=$?
 reset_store
-"$GODOT" --headless --path "$HERE" res://tests/integration/OwlProbe.tscn
+run_scene res://tests/integration/OwlProbe.tscn
 owl_status=$?
 reset_store
-"$GODOT" --headless --path "$HERE" res://tests/integration/ShootProbe.tscn
+run_scene res://tests/integration/ShootProbe.tscn
 shoot_status=$?
 reset_store
-"$GODOT" --headless --path "$HERE" res://tests/integration/DeathProbe.tscn
+run_scene res://tests/integration/DeathProbe.tscn
 death_status=$?
 reset_store
-"$GODOT" --headless --path "$HERE" res://tests/integration/PerfProbe.tscn
+run_scene res://tests/integration/PerfProbe.tscn
 perf_status=$?
 
 exit $(( guard_status != 0 || asset_status != 0 || reach_status != 0 || unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 || shoot_status != 0 || death_status != 0 || perf_status != 0 ))

@@ -1,6 +1,6 @@
 extends RefCounted
 class_name GoldenRoll
-## Godot port of src/math/goldenRoll.ts. Decides whether an owl problem
+## Godot port of math-kernel/math/goldenRoll.ts. Decides whether an owl problem
 ## arrives golden — deterministic given (childId, lifetime attempt index),
 ## so both ports roll identically from the same save state (covered by the
 ## golden_roll fixtures in test_math_parity.gd). Never tied to time or

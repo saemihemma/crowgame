@@ -38,15 +38,34 @@ output/web/*.br
 # Boot-smoke report is a CI check result, not a gated artifact.
 reports/web/
 
-# Playwright run artifacts. The smoke harnesses WRITE these as diagnostics and
-# nothing reads them back — godot_play_smoke.mjs calls itself "a liveness gate
-# rather than a content check", so they are not baselines. Tracking them meant
-# every local smoke run dirtied the working tree, and 28 of them were outputs of
-# tools that no longer exist. CI uploads what it needs as job artifacts.
+# Playwright run artifacts. web_boot_smoke.mjs writes these as diagnostics —
+# its boot frame always, and every screen of the walk under --shots — and nothing
+# reads them back, so they are not baselines. Tracking them meant every local
+# smoke run dirtied the working tree. CI uploads what it needs as job artifacts.
 output/playwright/
+
+# Lesson contact sheets from godot/tools/capture_tutorials.sh -- a review aid,
+# regenerated on demand, 120 PNGs per locale.
+output/tutorial-captures/
 
 # Python bytecode. The asset guard imports audit_pixel_art as a module, so every
 # run of tools/check_assets.py writes a __pycache__ next to the tools and dirties
 # the working tree. Nothing reads it back.
 __pycache__/
 *.pyc
+
+# Level contact sheets from godot/tools/level_walkthrough.mjs -- one PNG per
+# screen-width of every level, ~190 images and 13MB per run. Same reasoning as
+# output/playwright/ above: a review aid regenerated on demand, nothing reads it
+# back, and the script overwrites the same filenames, so tracking it would put
+# 13MB of binary churn in every commit that followed a capture run.
+output/level-shots/
+
+# Frames from godot/tools/focus_loss_repro.mjs. Same category as
+# output/playwright/: a harness writes them on demand to show its own work, and
+# nothing reads them back.
+output/focus-repro/
+
+# Frames from pin_entry_probe.mjs and touch_target_probe.mjs, same category.
+output/pin-probe/
+output/touch-probe/

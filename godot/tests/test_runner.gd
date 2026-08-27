@@ -25,8 +25,13 @@ func _run() -> void:
 
 	for path in suites:
 		var script: GDScript = load(path)
-		if script == null:
-			printerr("  ! could not load %s" % path)
+		# can_instantiate(), not just null. A test file with a PARSE ERROR loads to
+		# a non-null GDScript that cannot be instantiated, so `script.new()` threw
+		# "Nonexistent function 'new'" -- and the runner then hung instead of
+		# exiting, which in CI is a ten-minute timeout with no failing test named.
+		# One typo in one test file could stall the whole suite.
+		if script == null or not script.can_instantiate():
+			printerr("  ! could not load %s (parse error?)" % path)
 			total_fail += 1
 			continue
 		var instance: Object = script.new()
@@ -35,9 +40,14 @@ func _run() -> void:
 			var mname: String = method.name
 			if not mname.begins_with("test_"):
 				continue
+			# Optional per-test setup. Four suites use it for real work — lazily
+			# parsing a fixture or a compiled level, and clearing the learner
+			# store between tests — so this is what keeps those independent of
+			# each other. It runs BEFORE the deltas below are read.
 			if instance.has_method("_reset"):
 				instance.call("_reset")
 			var before: int = instance.failures().size()
+			var asserts_before: int = instance.assertion_count()
 			# AWAITED, deliberately. `instance.call(mname)` alone returns at the
 			# test's first `await`, so the failure count below was read before the
 			# rest of the test had run -- every assertion after a frame boundary
@@ -50,6 +60,17 @@ func _run() -> void:
 			@warning_ignore("redundant_await")
 			await instance.call(mname)
 			var after: int = instance.failures().size()
+
+			# A test that asserts NOTHING passes, and looks identical to one that
+			# works. This repo has already been bitten by exactly that: the
+			# `await` note above describes five tests across three suites that
+			# ran their assertions after a frame boundary and were counted as
+			# passing while proving nothing. Reported, not failed, so a suite
+			# that is legitimately structural stays green while the vacuum is
+			# still visible in the log.
+			if instance.assertion_count() == asserts_before:
+				print("  [vacuous] %s::%s asserted nothing" % [suite_name, mname])
+
 			if after > before:
 				total_fail += 1
 				print("  [FAIL] %s::%s" % [suite_name, mname])

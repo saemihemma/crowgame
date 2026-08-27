@@ -1,18 +1,168 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "PlayerTuning",
-    "description": "Data-driven physics parameters for the player character",
-    "type": "object",
-    "required": ["accel", "drag", "maxSpeed", "jumpVelocity", "coyoteMs", "jumpBufferMs", "gravityScale", "terminalVelocity"],
-    "properties": {
-        "accel": { "type": "number", "minimum": 0, "description": "Horizontal acceleration (pixels/sec²)" },
-        "drag": { "type": "number", "minimum": 0, "description": "Horizontal drag when no input (pixels/sec²)" },
-        "maxSpeed": { "type": "number", "minimum": 0, "description": "Maximum horizontal speed (pixels/sec)" },
-        "jumpVelocity": { "type": "number", "minimum": 0, "description": "Initial upward velocity on jump (pixels/sec)" },
-        "coyoteMs": { "type": "number", "minimum": 0, "description": "Grace period after leaving edge (ms)" },
-        "jumpBufferMs": { "type": "number", "minimum": 0, "description": "Jump input buffer window (ms)" },
-        "gravityScale": { "type": "number", "minimum": 0, "description": "Gravity multiplier (1.0 = normal)" },
-        "terminalVelocity": { "type": "number", "minimum": 0, "description": "Maximum fall speed (pixels/sec)" }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PlayerTuning",
+  "description": "Data-driven physics parameters for the player character",
+  "type": "object",
+  "required": [
+    "accel",
+    "drag",
+    "maxSpeed",
+    "jumpVelocity",
+    "coyoteMs",
+    "jumpBufferMs",
+    "gravityScale",
+    "terminalVelocity"
+  ],
+  "properties": {
+    "accel": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Horizontal acceleration (pixels/sec²)"
     },
-    "additionalProperties": false
+    "drag": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Horizontal drag when no input (pixels/sec²)"
+    },
+    "maxSpeed": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Maximum horizontal speed while walking (pixels/sec)"
+    },
+    "sprintMaxSpeed": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Maximum horizontal speed while the sprint key is held (pixels/sec). A gap-width dial: jump reach is airtime x speed, and airtime is fixed by jumpVelocity and gravity, so this is the only number that changes how wide a gap can be crossed. At 160 a jump reaches 5.9 tiles; at 265 it reaches 9.8."
+    },
+    "sprintAccel": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Horizontal acceleration ABOVE the walking cap while sprint is held (pixels/sec\u00b2). Deliberately much lower than `accel`: it is what makes the top end something a committed hold builds toward (~0.75s) rather than something a tap grants. Below the walking cap `accel` still applies, so ordinary walking stays as responsive as ever."
+    },
+    "sprintBlendPx": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Width in pixels/sec of the band just above maxSpeed over which acceleration ramps from `accel` down to `sprintAccel`. Narrow on purpose: a ramp spread across the whole 160-265 range left acceleration near `accel` for the first stretch above the walking cap, which is most of what made a three-frame tap of the sprint key worth almost a full run. It also has to be a ramp rather than a step -- walking acceleration lands EXACTLY on maxSpeed, so a step there is decided by the last bit of a float and the two ports disagree."
+    },
+    "sprintDecelPerSec": {
+      "type": "number",
+      "minimum": 0,
+      "description": "How fast the speed CAP falls back toward maxSpeed once sprint is released (pixels/sec per sec). The clamp follows the cap down, so speed bleeds off and the crow coasts. Zero snaps the cap instead, which reads as flying into a wall the instant a thumb lifts."
+    },
+    "skidDecel": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Deceleration applied when the movement input opposes current motion (pixels/sec\u00b2). Far harsher than `accel`, so turning around at speed costs a moment and reads as a skid -- which is what makes momentum feel like weight rather than like lag."
+    },
+    "jumpVelocity": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Initial upward velocity on jump (pixels/sec)"
+    },
+    "coyoteMs": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Grace period after leaving edge (ms)"
+    },
+    "jumpBufferMs": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Jump input buffer window (ms)"
+    },
+    "gravityScale": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Gravity multiplier (1.0 = normal)"
+    },
+    "terminalVelocity": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Maximum fall speed (pixels/sec)"
+    },
+    "_feelComment": {
+      "type": "string"
+    },
+    "feel": {
+      "type": "object",
+      "description": "Squash and stretch (brand/BRAND_SYSTEM.md §2.4). Read by player.gd only; PlayerMotion never sees it, so none of this can move the golden motion fixtures.",
+      "required": [
+        "apexVy",
+        "riseScaleY",
+        "riseScaleX",
+        "fallScaleY",
+        "fallScaleX",
+        "landSquashY",
+        "landSquashX",
+        "landSquashMs",
+        "landOvershootY",
+        "landOvershootX",
+        "landSettleMs",
+        "shapeLerp"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "apexVy": {
+          "type": "number",
+          "minimum": 0,
+          "description": "|vy| below which the crow is at its apex and stops stretching (px/sec)"
+        },
+        "riseScaleY": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Vertical stretch while ascending"
+        },
+        "riseScaleX": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Horizontal squeeze while ascending"
+        },
+        "fallScaleY": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Vertical stretch while descending"
+        },
+        "fallScaleX": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Horizontal squeeze while descending"
+        },
+        "landSquashY": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Vertical squash on the landing frame"
+        },
+        "landSquashX": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Horizontal spread on the landing frame"
+        },
+        "landSquashMs": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Squash-to-overshoot duration (ms)"
+        },
+        "landOvershootY": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Vertical overshoot past neutral"
+        },
+        "landOvershootX": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Horizontal overshoot past neutral"
+        },
+        "landSettleMs": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Overshoot-to-neutral duration (ms)"
+        },
+        "shapeLerp": {
+          "type": "number",
+          "minimum": 0,
+          "description": "How fast the airborne shape eases toward its target (per second)"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
 }

@@ -4,9 +4,9 @@ extends TestCase
 
 const CHILD := "test-child-sync"
 
+## Per-test setup. The runner calls this before each test_ method, which is what
+## makes these tests independent of each other's queue and cache state.
 func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 	Persistence.remove_item("crow_learner_api_base")
 	Persistence.remove_item("crow_learner_snapshot_%s" % CHILD)
 	Persistence.remove_item("crow_learner_pending_attempts_%s" % CHILD)

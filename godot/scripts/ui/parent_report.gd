@@ -1,7 +1,7 @@
 extends CanvasLayer
 ## ParentReport — what a parent can see about their child's learning.
 ##
-## PROJECT.md says parent visibility matters, and after the Godot port there was
+## PRODUCT.md says parent visibility matters, and after the Godot port there was
 ## no way to get it: admin.html reads browser localStorage, while the game stores
 ## everything in user://crow_localstorage.json (IndexedDB on the web). Same key
 ## names, different storage engine — so the old page could not see this game's
@@ -27,14 +27,38 @@ func _ready() -> void:
 	shade.anchor_bottom = 1.0
 	add_child(shade)
 
+	var margin: float = Config.ui("parent_report/margin", 48)
+	var bar_h: float = Config.ui("parent_report/button_height", 64)
+
 	var scroll := ScrollContainer.new()
 	scroll.anchor_right = 1.0
 	scroll.anchor_bottom = 1.0
-	scroll.offset_left = Config.ui("parent_report/margin", 48)
-	scroll.offset_top = Config.ui("parent_report/margin", 48)
-	scroll.offset_right = -Config.ui("parent_report/margin", 48)
-	scroll.offset_bottom = -Config.ui("parent_report/margin", 48)
+	scroll.offset_left = margin
+	# Below the pinned bar, so the report scrolls under a way out that stays put.
+	scroll.offset_top = margin + bar_h + Config.ui("parent_report/separation", 12)
+	scroll.offset_right = -margin
+	scroll.offset_bottom = -margin
 	add_child(scroll)
+
+	# THE WAY OUT, PINNED.
+	#
+	# There was one back button and it was the last child of the scrolling
+	# column, under every child's report and the whole flag panel. So on any real
+	# family the only way to leave this screen was to scroll past everything to
+	# find it, and a parent who opened the report saw no exit at all. It was also
+	# a bare Button.new() -- Godot's default flat grey, in a game where every
+	# other button is a BrandButton -- so even once found it did not read as a
+	# button. "Extremely unclear" was the report, and both halves of that are
+	# fixed here: it is a BrandButton, and it is nailed to the top-left corner
+	# where it cannot scroll away.
+	var pinned := BrandButton.make(TextManager.t("menu.back"), BrandButton.Role.SECONDARY,
+		func() -> void:
+			closed.emit()
+			queue_free())
+	pinned.custom_minimum_size = Vector2(Config.ui("parent_report/button_width", 320), bar_h)
+	pinned.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	pinned.position = Vector2(margin, margin)
+	add_child(pinned)
 
 	_column = VBoxContainer.new()
 	_column.custom_minimum_size = Vector2(Config.ui("parent_report/width", 860), 0)
@@ -53,15 +77,125 @@ func _ready() -> void:
 			# in the column even when a cloud fetch is in flight.
 			await _render_child(profile)
 
-	var back := Button.new()
-	back.text = TextManager.t("menu.back")
+	_render_flag_panel()
+
+	# Kept as well as the pinned one: a parent who has read to the bottom should
+	# not have to travel back up to leave. Same role and same size as the pinned
+	# one, so the two read as the same control rather than two different offers.
+	var back := BrandButton.make(TextManager.t("menu.back"), BrandButton.Role.SECONDARY,
+		func() -> void:
+			closed.emit()
+			queue_free())
 	back.custom_minimum_size = Vector2(
 		Config.ui("parent_report/button_width", 320), Config.ui("parent_report/button_height", 64))
-	back.pressed.connect(func() -> void:
-		closed.emit()
-		queue_free())
-	UiFx.attach_focus_highlight(back)
+	back.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_column.add_child(back)
+
+# ─── The grown-up's toggles ───────────────────────────────
+##
+## Every open product decision in data/tuning/feature_flags.json, as something a
+## grown-up can change and then feel.
+##
+## HERE and not in the pause menu, which is the other screen with settings on it:
+## the pause menu is child-facing, and a five-year-old must not be able to switch
+## the maths off. This screen is already the grown-up surface -- it is where the
+## learning report lives and where the birth-year backfill is asked for -- so it
+## is where a decision about a child belongs.
+##
+## Deliberately plain. These are questions being asked of a parent, not settings
+## being offered to a player: each row is the flag's own name, a toggle, and the
+## sentence from the JSON explaining what it changes. No icons, no grouping into
+## tabs, nothing that suggests a child should come here and browse.
+const FLAG_ROWS: Array = [
+	"math/retire_exhausted_domains",
+	"math/representation_floor",
+	"math/group_tokens_in_fives",
+	"math/tutorial_below_level",
+	"input/space_is_sprint",
+	"input/sprint_pad_latches",
+	"levels/wide_gap_pass",
+	"levels/practice_arena_in_grid",
+	"death/hold_ms",
+]
+
+## The values a non-boolean flag cycles through, in order. A flag absent from
+## here is a boolean and cycles true/false.
+##
+## Data rather than a parse of the current value: `tutorial_below_level` has
+## three named modes and `hold_ms` is a duration, and inferring "what could this
+## become next" from "what is it now" would mean a typo in the JSON silently
+## reduces a three-way to a two-way.
+const FLAG_CHOICES: Dictionary = {
+	"math/tutorial_below_level": ["full", "brief", "off"],
+	"death/hold_ms": [0, 800, 1200, 1800, 2500],
+}
+
+func _render_flag_panel() -> void:
+	_heading(TextManager.t("report_flags_title"), int(Config.ui("parent_report/child_font_size", 30)))
+	_body(TextManager.t("report_flags_intro"))
+	for path in FLAG_ROWS:
+		_render_flag_row(String(path))
+
+func _render_flag_row(path: String) -> void:
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", int(Config.ui("parent_report/separation", 12)))
+
+	var toggle := Button.new()
+	toggle.custom_minimum_size = Vector2(
+		Config.ui("parent_report/flag_button_width", 260),
+		Config.ui("parent_report/button_height", 64))
+	UiFx.attach_focus_highlight(toggle)
+	row.add_child(toggle)
+
+	var reset := Button.new()
+	reset.text = TextManager.t("report_flags_reset")
+	reset.custom_minimum_size = Vector2(
+		Config.ui("parent_report/flag_reset_width", 160),
+		Config.ui("parent_report/button_height", 64))
+	UiFx.attach_focus_highlight(reset)
+	row.add_child(reset)
+
+	_column.add_child(row)
+
+	# The explanation is the `_`-prefixed sibling in the JSON, so the sentence a
+	# parent reads and the sentence the next engineer reads are the same string.
+	# One place to keep true, and the JSON is where the reasoning already lives.
+	var parts := path.split("/")
+	var why := String(Config.flag_default("%s/_%s" % [parts[0], parts[1]], ""))
+	if why != "":
+		_body(why)
+
+	var refresh := func() -> void:
+		var value: Variant = Config.flag(path)
+		var marker := "*" if Config.has_flag_override(path) else ""
+		toggle.text = "%s: %s%s" % [parts[1], _flag_text(value), marker]
+		reset.disabled = not Config.has_flag_override(path)
+
+	toggle.pressed.connect(func() -> void:
+		Config.set_flag_override(path, _next_flag_value(path))
+		refresh.call())
+	reset.pressed.connect(func() -> void:
+		Config.clear_flag_override(path)
+		refresh.call())
+	refresh.call()
+
+## The next value in the cycle, starting from whatever is live now.
+##
+## Falls back to inverting a boolean, so a flag added to the JSON without a
+## FLAG_CHOICES entry is still togglable rather than inert.
+func _next_flag_value(path: String) -> Variant:
+	var current: Variant = Config.flag(path)
+	var choices: Variant = FLAG_CHOICES.get(path, null)
+	if choices is Array and not (choices as Array).is_empty():
+		var list: Array = choices
+		var at := list.find(current)
+		return list[(at + 1) % list.size()]
+	return not bool(current)
+
+func _flag_text(value: Variant) -> String:
+	if value is bool:
+		return TextManager.t("report_flags_on" if value else "report_flags_off")
+	return str(value)
 
 func _render_child(profile: Dictionary) -> void:
 	var username := String(profile.get("username", ""))

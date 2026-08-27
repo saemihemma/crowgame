@@ -352,7 +352,7 @@ export function computeInitialProblemELO(difficulty: number): number {
     return Math.round(minELO + clamp(normalized, 0, 1) * (maxELO - minELO));
 }
 
-export function difficultyFromTargetELO(targetELO: number): number {
+function difficultyFromTargetELO(targetELO: number): number {
     const minELO = 100;
     const maxELO = 1100;
     const normalized = clamp((targetELO - minELO) / (maxELO - minELO), 0, 1);
@@ -1023,11 +1023,11 @@ export function loadBandTable(): MathBandTable {
     return readJson<MathBandTable>(join(AUTHORING_DIR, 'band-table.json'));
 }
 
-export function loadBatchSpecs(): MathBatchCollection {
+function loadBatchSpecs(): MathBatchCollection {
     return readJson<MathBatchCollection>(join(AUTHORING_DIR, 'batches.json'));
 }
 
-export function loadCurriculumSeed(): { problems: MathProblem[] } {
+function loadCurriculumSeed(): { problems: MathProblem[] } {
     return readJson<{ problems: MathProblem[] }>(join(AUTHORING_DIR, 'seed', 'problems_curriculum_seed.json'));
 }
 

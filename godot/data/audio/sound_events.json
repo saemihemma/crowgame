@@ -1,5 +1,5 @@
 {
-  "_comment": "Gameplay event -> sfx key (in audio_manifest.json). Call AudioManager.play_event('coin'); re-map a sound by editing here, no code change.",
+  "_comment": "Gameplay event -> sfx key (in audio_manifest.json). Call AudioManager.play_event('coin'); re-map a sound by editing here, no code change. brand/SOUND_DESIGN.md says what each moment is and how it should sound. godot/tools/check_hardcoding.py checks BOTH directions: every event a script fires is registered here, and every event registered here has a caller.",
   "coin": "coin_collect",
   "jump": "player_jump",
   "land": "land",
@@ -15,5 +15,12 @@
   "level_complete": "level_complete",
   "ability": "ability",
   "milestone": "milestone",
-  "golden": "golden"
+  "golden": "golden",
+  "player_die": "player_die",
+  "level_enter": "level_enter",
+  "chain_break": "chain_break",
+  "button_focus": "button_focus",
+  "door_locked": "door_locked",
+  "big_coin": "big_coin",
+  "big_coin_all": "big_coin_all"
 }

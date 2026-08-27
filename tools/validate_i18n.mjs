@@ -114,7 +114,7 @@ const BOXES = {
     // 36px -- so "Næsta stig! Samanburður" is the string that has to fit, and the
     // '88' stand-in said nothing useful about it.
     'math.step_up': {
-        size: 36, max: 900, where: 'HUDScene celebration banner, centred on a 960 canvas',
+        size: 36, max: 900, where: 'HUD celebration banner, centred on a 960 canvas',
         fill: [
             'domain.addition', 'domain.subtraction', 'domain.multiplication',
             'domain.division', 'domain.counting', 'domain.comparison',
@@ -247,7 +247,7 @@ for (const dir of otherDirs) {
  * A naive "does the source mention this string" sweep DELETES LIVE STRINGS. Four
  * families of key are assembled at runtime and never appear as literals:
  *
- *   domain.*        HUDScene.ts:81   t(`domain.${data.domain}`)
+ *   domain.*        hud.gd           t(`domain.${data.domain}`)
  *                   hud.gd:80        TextManager.t("domain." + domain)
  *   level.*         LevelSelectScene.ts:226  `level.${level.key}.name`
  *                   level_select.gd:74       "level.%s.name" % key
@@ -262,7 +262,7 @@ for (const dir of otherDirs) {
  * strings the game is using.
  */
 const DYNAMIC_PREFIXES = [
-    { prefix: 'domain.', built: 'HUDScene.ts / hud.gd, from a problem domain' },
+    { prefix: 'domain.', built: 'hud.gd, from a problem domain' },
     { prefix: 'domain_', built: 'parent_report.gd, from a domain in the learner summary' },
     { prefix: 'kind_', built: 'parent_report.gd, from a problem kind in the analytics report' },
     { prefix: 'level.', built: 'LevelSelectScene.ts / level_select.gd, from a level key' },
@@ -270,6 +270,15 @@ const DYNAMIC_PREFIXES = [
     { prefix: 'math.prompt.', built: "each problem's phrasing reference" },
     { prefix: 'math.hint.', built: "each problem's phrasing reference" },
     { prefix: 'math.expl.', built: "each problem's phrasing reference" },
+    // math_misconception.gd builds `math.miss.<tag>` from the misconception tag
+    // a wrong answer identifies. test_math_misconception.gd is what holds these
+    // to account: it fails if a tag the rule can name has no string.
+    { prefix: 'math.miss.', built: 'math_misconception.gd, from an identified misconception tag' },
+    // math_tutorial.gd builds `tutorial.<tutorial id>.<card body>` from
+    // data/curriculum/tutorials.json, so 150 of the 155 tutorial keys are
+    // never literals. validate_math_concepts.mjs is what actually holds them to
+    // account: it fails if a card has no string, or a string has no card.
+    { prefix: 'tutorial.', built: 'math_tutorial.gd, from a tutorial id and a card body' },
 ];
 
 {
@@ -365,6 +374,72 @@ for (const [key, box] of Object.entries(BOXES)) {
                 `[${key}] ${locale.toUpperCase()} overflows its box by ${Math.ceil(width - box.max)}px ` +
                 `(${Math.round(width)}px into ${box.max}px at ${box.size}px -- ${box.where}): ` +
                 JSON.stringify(value),
+            );
+        }
+    }
+}
+
+// ── 4b. reading load on a lesson card ──────────────────────────────────────
+//
+// The lessons are correct Icelandic and correct maths and were written at an
+// adult reading level. The card a player complained about read "Átta alls. Þú
+// sérð fimm. Spurningarmerkið er restin: þau eru til, þú þarft bara að finna
+// hvað þau eru mörg." -- a fifteen-word clause behind a colon, on a card for a
+// six-year-old, beside a picture that already says it.
+//
+// The fit budget above measures whether a string PHYSICALLY fits. Nothing
+// measured whether the child it is for can read it, so nothing stopped the
+// next one being written the same way.
+//
+// The unit that matters is the CLAUSE, not the sentence and not the card. A
+// colon or a semicolon opens something a child has to hold in mind while
+// reading on, so both count as boundaries here; two short sentences are easier
+// than one of the same total length. Primary-reading guidance puts a first- and
+// second-year sentence at roughly five to ten words, so ten is the ceiling and
+// the corpus median already sits at eight.
+//
+// Applies to lesson bodies only. A prompt is a question with numbers in it and
+// has its own pixel budget; menu copy is read by a grown-up.
+const LESSON_READING_BUDGET = {
+    maxWordsPerClause: 10,
+    maxClauses: 3,
+    maxWordsPerCard: 18,
+};
+const LESSON_BODY_KEY = /^tutorial\.[a-z_]+\.[a-z_]+\.(see|model|worked|try)$/;
+
+const clausesOf = (text) => String(text)
+    .split(/(?<=[.!?:;])\s*/)
+    .map(part => part.trim())
+    .filter(Boolean);
+const wordsIn = (text) => String(text).trim().split(/\s+/).filter(Boolean).length;
+
+let lessonBodies = 0;
+let widestClause = 0;
+for (const locale of LOCALES) {
+    for (const [key, value] of Object.entries(bundles[primaryDir][locale])) {
+        if (!LESSON_BODY_KEY.test(key)) continue;
+        lessonBodies++;
+        const clauses = clausesOf(value);
+        const longest = clauses.reduce((a, c) => Math.max(a, wordsIn(c)), 0);
+        widestClause = Math.max(widestClause, longest);
+        const total = wordsIn(value);
+        if (longest > LESSON_READING_BUDGET.maxWordsPerClause) {
+            fail(
+                `[${key}] ${locale.toUpperCase()} has a ${longest}-word clause, over the `
+                + `${LESSON_READING_BUDGET.maxWordsPerClause}-word lesson budget. Split it, or cut it: `
+                + JSON.stringify(value),
+            );
+        }
+        if (clauses.length > LESSON_READING_BUDGET.maxClauses) {
+            fail(
+                `[${key}] ${locale.toUpperCase()} is ${clauses.length} clauses, over the `
+                + `${LESSON_READING_BUDGET.maxClauses}-clause lesson budget: ${JSON.stringify(value)}`,
+            );
+        }
+        if (total > LESSON_READING_BUDGET.maxWordsPerCard) {
+            fail(
+                `[${key}] ${locale.toUpperCase()} is ${total} words, over the `
+                + `${LESSON_READING_BUDGET.maxWordsPerCard}-word lesson budget: ${JSON.stringify(value)}`,
             );
         }
     }
@@ -494,16 +569,16 @@ for (const pool of MATH_POOLS) {
  * {seq}" is short until {seq} is "22, 16, 19, 15, 22, 16, 19, ?". So this walks
  * the actual pools, renders each problem's prompt and hint in both locales, and
  * requires the wrapped block to fit at the FLOOR size the renderer will shrink
- * to. Passing here is what makes MathBoard's floor unreachable in practice.
+ * to. Passing here is what makes the board's font floor unreachable in practice.
  *
- * Numbers from src/ui/components/MathBoard.ts.
+ * Numbers from godot/scripts/ui/math_challenge.gd.
  */
 const PHRASING_BOXES = {
-    prompt: { wrap: 460, floor: 20, maxH: 96, where: 'MathBoard question band' },
-    hint: { wrap: 460, floor: 16, maxH: 72, where: 'MathBoard hint band below the board' },
+    prompt: { wrap: 460, floor: 20, maxH: 96, where: 'maths board question band' },
+    hint: { wrap: 460, floor: 16, maxH: 72, where: 'hint band below the maths board' },
 };
 
-/** Greedy word wrap, matching what Phaser does at a monospace advance. */
+/** Greedy word wrap at a monospace advance, matching the board's renderer. */
 function wrappedLines(text, size, wrapWidth) {
     const perLine = Math.max(1, Math.floor(wrapWidth / (size * ADVANCE_RATIO)));
     let lines = 1;
@@ -569,12 +644,62 @@ for (const pool of MATH_POOLS) {
     }
 }
 
+// ── Icelandic: no agreeing verb on a result the runtime supplies ───────────
+//
+// Icelandic verb agreement follows the numeral -- "2 plús 3 eru 5" but
+// "4 mínus 3 er 1" -- and in a phrasing the result is a PARAMETER, so an
+// agreeing verb is wrong for some values of it. roadmap.md carries this as a
+// settled decision: use the invariant "gerir", or drop the verb.
+//
+// It was settled and then broken in seven phrasings, which is why it is a check
+// now and not a note. Six of them shipped: two problems rendered "2 plús 0 er 2"
+// where Icelandic needs "eru", and three more the same way.
+//
+// The narrow, certain case only: the verb DIRECTLY governs a numeric parameter
+// AND the subject in front of it is itself parameterised. "Svarið er {total}"
+// has a noun subject and is correct at any value, so it is not flagged. A
+// phrasing with a plural sibling (`<key>.one`) is not flagged either -- that is
+// the render-time plural rule doing its job, which is the other legal answer.
+//
+// Grammar this regex cannot read gets an explicit exemption with its reason,
+// the same shape as `hardcode-ok` elsewhere in this repo.
+const AGREEMENT_EXEMPT = {
+    'math.expl.add_double': 'subject is "Tvöfalt {a}", neuter singular, so "er" agrees with it and not with {sum}',
+    'math.expl.sub_half': 'subject is "helmingurinn", masculine singular, not the numeral',
+    'math.hint.rel.other_part': 'names {total} as the whole; a native reading is needed to say whether the copula should agree',
+    'math.expl.choice': 'subject is "rétta svarið"; a native reading is needed on which side the copula agrees with',
+};
+const NUMERIC_PARAM = /\{(?:sum|n|diff|prod|quot|total|answer|result|run)\}/;
+{
+    const is = bundles[primaryDir].is ?? {};
+    for (const [key, value] of Object.entries(is)) {
+        if (!/^math\.(expl|hint)\./.test(key)) continue;
+        if (key.endsWith('.one')) continue;                 // the singular variant
+        if (Object.hasOwn(is, `${key}.one`)) continue;       // has a plural pair
+        if (Object.hasOwn(AGREEMENT_EXEMPT, key)) continue;
+        const text = String(value);
+        const m = /\b(er|eru)\s+(?:bara\s+|enn\s+|allir\s+)?(\{[a-z_]+\})/.exec(text);
+        if (!m || !NUMERIC_PARAM.test(m[2])) continue;
+        // Is the subject itself a parameter? If nothing before the verb is, the
+        // subject is a noun and the verb is not agreeing with the result.
+        if (!/\{[a-z_]+\}/.test(text.slice(0, m.index))) continue;
+        fail(
+            `[${key}] Icelandic "${m[1]} ${m[2]}" makes the verb agree with a result the runtime `
+            + `supplies, so it is wrong for some values. Use the invariant "gerir", drop the verb, `
+            + `or add a "${key}.one" singular variant. If the grammar is actually right, add `
+            + `AGREEMENT_EXEMPT['${key}'] with the reason.`,
+        );
+    }
+}
+
 // ── report ─────────────────────────────────────────────────────────────────
 if (failures.length === 0) {
     const keyCount = Object.keys(reference).length;
     console.log(
         `i18n guard: clean (${keyCount} keys x ${LOCALES.length} locales x ${BUNDLE_DIRS.length} targets, ` +
-        `${measured} fit checks, ${phrasingChecked} math phrasings round-tripped and verified)`,
+        `${measured} fit checks, ${lessonBodies} lesson bodies inside the reading budget `
+        + `(widest clause ${widestClause}/${LESSON_READING_BUDGET.maxWordsPerClause} words), `
+        + `${phrasingChecked} math phrasings round-tripped and verified)`,
     );
     for (const [what, w] of Object.entries(worstFit)) {
         console.log(`  tightest ${what.padEnd(16)} ${String(Math.ceil(w.height)).padStart(3)}px  ${w.problem}`);

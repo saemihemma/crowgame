@@ -5,6 +5,20 @@ extends CharacterBody2D
 ## so a landing zeroes vy exactly like Phaser's blocked.down does.
 ## Animation mirrors Player.ts: walk while moving on ground, static pose
 ## otherwise (no jump anim in the source). Jump fires dust + SFX.
+##
+## SHAPE IS SEPARATE FROM ANIMATION, and is where the jump feel lives.
+## brand/BRAND_SYSTEM.md §2.4 asks for jump_rise, apex, fall and land as
+## distinct states; the only crow art that exists is a one-frame idle and a
+## nine-frame walk, so there are no sprites to hold. The doc already says `land`
+## is "code, not frames" -- squash, overshoot, settle -- and the same is true of
+## the other three here: they are scale on the pose the game already has, driven
+## by vertical velocity, with every number in player_base.json's `feel` block.
+##
+## Deliberately NOT a change to PlayerMotion. Reduced gravity at the apex would
+## be a physics change nobody has specified (the doc's `apex` is an animation
+## state at |vy| < 60, not a gravity scale), and PlayerMotion is parity-locked
+## against golden fixtures. Shape costs nothing and is most of what "the jump
+## feels good" actually means.
 
 const IDLE_SPRITE_KEY := "crow_idle"
 const WALK_SPRITE_KEY := "crow_walk"
@@ -20,18 +34,53 @@ var _shoot_cooldown := 0.0
 var _laser_speed := 400.0
 var _laser_cooldown := 1.0
 
+## Squash and stretch. `_shape` is where the sprite is now, `_shape_target` where
+## the current state wants it; _apply_shape eases one toward the other so a state
+## change reads as a move rather than a snap. A landing overrides both with a
+## tween, because a landing is an event and the rest are conditions.
+var _feel: Dictionary = {}
+var _shape := Vector2.ONE
+var _shape_target := Vector2.ONE
+var _land_tween: Tween = null
+var _was_on_floor := true
+
 @onready var _sprite: AnimatedSprite2D = $Sprite
+@onready var _body: CollisionShape2D = $CollisionShape2D
 
 func _ready() -> void:
 	add_to_group("player")
+	_size_body()
 	_tuning = DataManager.get_dict("PLAYER_TUNING")
 	if _tuning.is_empty():
 		_tuning = {"accel": 600, "drag": 800, "maxSpeed": 160, "jumpVelocity": 475,
 			"coyoteMs": 80, "jumpBufferMs": 100, "gravityScale": 1.0, "terminalVelocity": 500}
+	_feel = _tuning.get("feel", {}) if _tuning.get("feel", null) is Dictionary else {}
 	_build_animations()
 	var combat := DataManager.get_dict("COMBAT_TUNING")
 	_laser_speed = float(combat.get("laser_speed", 400))
 	_laser_cooldown = float(combat.get("laser_cooldown_ms", 1000)) / 1000.0
+
+## Fit the collider to the drawing, from sprite_spec.json.
+##
+## The scene used to state it: a 40x56 box at y = -28. The crow is drawn 47-51px
+## tall in a 64px frame, so up to 9 of those 56 pixels were above its head —
+## which is why a jump stopped a visible gap short of every platform's underside.
+## The number was never measured; it was half the frame height, the same literal
+## SpriteSheet already exists to keep out of scene files.
+##
+## A fresh shape rather than resizing the scene's: sub-resources are shared
+## between instances of a PackedScene, and this is the kind of edit that quietly
+## reaches through one.
+func _size_body() -> void:
+	var box := SpriteSheet.body_box(WALK_SPRITE_KEY)
+	if _body == null or box == Vector2.ZERO:
+		return
+	var shape := RectangleShape2D.new()
+	shape.size = box
+	_body.shape = shape
+	# Grown upward from the feet, which sit on the node origin.
+	_body.position = Vector2(0.0, -box.y * 0.5)
+
 
 func _build_animations() -> void:
 	if _sprite == null:
@@ -53,13 +102,28 @@ func _physics_process(delta: float) -> void:
 		"right": Input.is_action_pressed("move_right"),
 		"jump_just_pressed": Input.is_action_just_pressed("jump"),
 		"jump_held": Input.is_action_pressed("jump"),
+		# Space, which used to be a third jump key. Behind
+		# input/space_is_sprint so the old binding can be restored whole -- see
+		# feature_flags.json for why that flag also gates keyboard answering.
+		"sprint": Config.flag("input/space_is_sprint", true) and Input.is_action_pressed("sprint"),
 	}
-	PlayerMotion.compute_velocity(_state, input, is_on_floor(), _tuning, delta)
+	var was_on_floor := is_on_floor()
+	PlayerMotion.compute_velocity(_state, input, was_on_floor, _tuning, delta)
 	velocity = Vector2(float(_state["vx"]), float(_state["vy"]))
+	# Captured before move_and_slide resolves the collision, which zeroes vy on a
+	# landing -- so this is the speed the crow actually hit the ground at.
+	var fall_speed := velocity.y
 	move_and_slide()
 	# Write resolved velocity back so collisions (landing/ceiling) reset feel state.
 	_state["vx"] = velocity.x
 	_state["vy"] = velocity.y
+
+	# The threshold lives in data/tuning/fx_tuning.json, like every other motion
+	# and FX figure -- it shipped as a bare const for one commit, in the file whose
+	# own README rule is that magic numbers do not live in .gd.
+	if not was_on_floor and is_on_floor() \
+			and fall_speed >= float(Config.fx("land_min_fall_speed", 220.0)):
+		AudioManager.play_event("land")
 
 	if input["left"]:
 		_facing = -1
@@ -73,6 +137,15 @@ func _physics_process(delta: float) -> void:
 	_was_jumping = jumping_now
 
 	_update_animation()
+
+	# Landing is read from the floor transition rather than from vy: vy is already
+	# zeroed by move_and_slide() on the tick the crow touches down, so a
+	# velocity test would miss the exact frame the squash belongs on.
+	var on_floor := is_on_floor()
+	if on_floor and not _was_on_floor:
+		_land_squash()
+	_was_on_floor = on_floor
+	_update_shape(delta)
 
 	_shoot_cooldown = maxf(0.0, _shoot_cooldown - delta)
 	if Input.is_action_just_pressed("shoot") and _shoot_cooldown <= 0.0:
@@ -91,6 +164,50 @@ func _update_animation() -> void:
 			_sprite.play("walk")
 	elif _sprite.animation != "idle":
 		_sprite.play("idle")
+
+## The state's resting shape, from vertical velocity.
+##
+## Rise is tall and narrow, fall is the same idea softened, and apex is round --
+## which is the whole trick: the crow visibly stops stretching for a moment at
+## the top, and that moment is what reads as float. The threshold is the doc's
+## own |vy| < 60.
+func _update_shape(delta: float) -> void:
+	if _sprite == null or _feel.is_empty():
+		return
+	var apex_vy := float(_feel.get("apexVy", 60.0))
+	if is_on_floor():
+		_shape_target = Vector2.ONE
+	elif absf(velocity.y) < apex_vy:
+		_shape_target = Vector2.ONE
+	elif velocity.y < 0.0:
+		_shape_target = Vector2(float(_feel.get("riseScaleX", 0.92)), float(_feel.get("riseScaleY", 1.12)))
+	else:
+		_shape_target = Vector2(float(_feel.get("fallScaleX", 0.95)), float(_feel.get("fallScaleY", 1.08)))
+
+	# A landing tween owns the shape while it runs; easing underneath it would
+	# fight it and flatten the overshoot into nothing.
+	if _land_tween != null and _land_tween.is_running():
+		return
+	var rate: float = float(_feel.get("shapeLerp", 18.0)) * delta
+	_shape = _shape.lerp(_shape_target, clampf(rate, 0.0, 1.0))
+	_sprite.scale = _shape
+
+## Squash, overshoot, settle -- the three beats §2.4 names, in its own timings.
+func _land_squash() -> void:
+	if _sprite == null or _feel.is_empty():
+		return
+	if _land_tween != null and _land_tween.is_valid():
+		_land_tween.kill()
+	var squash := Vector2(float(_feel.get("landSquashX", 1.18)), float(_feel.get("landSquashY", 0.82)))
+	var overshoot := Vector2(float(_feel.get("landOvershootX", 0.96)), float(_feel.get("landOvershootY", 1.06)))
+	var squash_s := float(_feel.get("landSquashMs", 80)) / 1000.0
+	var settle_s := float(_feel.get("landSettleMs", 120)) / 1000.0
+	_sprite.scale = squash
+	_shape = squash
+	_land_tween = create_tween()
+	_land_tween.tween_property(_sprite, "scale", overshoot, squash_s).set_ease(Tween.EASE_OUT)
+	_land_tween.tween_property(_sprite, "scale", Vector2.ONE, settle_s).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	_land_tween.tween_callback(func(): _shape = Vector2.ONE)
 
 func _on_jumped() -> void:
 	AudioManager.play_event("jump")
@@ -124,5 +241,3 @@ func _find_game() -> Node:
 func get_motion_state() -> Dictionary:
 	return _state
 
-func set_tuning(t: Dictionary) -> void:
-	_tuning = t

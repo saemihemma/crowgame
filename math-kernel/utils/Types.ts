@@ -6,7 +6,6 @@ export interface LevelRegistryEntry {
     key: string;
     name: string;
     mapFile: string;
-    tilesetImages: Record<string, string>;
     /**
      * ThemeManager id this level is dressed in. Distinct from `LevelSpec.theme`,
      * which the level compiler uses to pick a tileset filename and which cannot
@@ -250,6 +249,20 @@ export interface AdaptiveProblemSelectionOptions {
     maxCurriculumStep?: number;
     maxOperand?: number;
     excludedReplayKeys?: string[];
+    /**
+     * The largest quantity a child may be asked to count one thing at a time.
+     *
+     * Not a difficulty cap -- a REPRESENTATION cap, and the difference is the
+     * whole point. `addition.teen_numbers` teaches that thirteen is one ten and
+     * three ones, using a ten-frame and then a bar and cubes; a child who has
+     * been taught that and is then shown thirteen identical ungrouped marks with
+     * the hint "count each dot carefully" is being asked to do, by ones, the
+     * exact thing the lesson just told them to stop doing.
+     *
+     * Undefined means no cap, which is right for a child who cannot yet compose
+     * a ten: counting fourteen marks is honest work for them.
+     */
+    maxUngroupedCount?: number;
 }
 
 export interface CurriculumStepResult {
@@ -306,6 +319,19 @@ export interface LearnerAttemptRecord {
 
 export interface LearnerDomainHistory {
     backlogHistory: number[];
+    /**
+     * This domain's OWN last attempts, independent of the global recent-attempt
+     * window.
+     *
+     * Unlocking a domain asks "did the child do well at its prerequisite?", and
+     * that has to be a fact about the prerequisite -- not about how large a share
+     * of recent play it happened to occupy. Reading it out of the shared 40-deep
+     * window meant a domain had to own HALF of all recent attempts before
+     * anything downstream of it could unlock, which no domain but the dominant
+     * one ever does. pattern_matching and division were unreachable for that
+     * reason alone, in every simulated journey, at every accuracy.
+     */
+    attemptHistory: Array<{ correct: boolean; firstAttempt: boolean }>;
 }
 
 export type LearnerDomainHistoryMap = Record<MathDomain, LearnerDomainHistory>;

@@ -78,11 +78,64 @@ describe('analytics', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => {
         const overview = right.json();
         assert.ok(overview.totals, 'overview carries totals');
         assert.ok(overview.retention.d1.cohort >= overview.retention.d1.returned, 'retention is n-of-cohort');
-        assert.equal(overview.sessions.derivedFromAttempts, true, 'session derivation is labeled');
+        assert.ok(
+            ['pings', 'attempts', 'pings+attempts'].includes(overview.sessions.source),
+            `session source names its streams (got ${overview.sessions.source})`,
+        );
 
         const page = await app.inject({ method: 'GET', url: '/admin' });
         assert.equal(page.statusCode, 200);
         assert.match(page.headers['content-type'] ?? '', /text\/html/);
+    });
+
+    it('play pings make a math-free session visible, and are family-scoped', async () => {
+        const cookie = await enrollFamily('analytics-pings@example.test');
+        const childId = await createChild(cookie, 'Bjartur');
+
+        // A child who ran and jumped and never opened a maths board. Before
+        // pings existed this session did not appear in the overview at all,
+        // because the only clock the overview had was the attempt stream.
+        const sent = await app.inject({
+            method: 'POST',
+            url: '/api/v1/play/pings',
+            headers: { cookie },
+            payload: { childId, count: 4 },
+        });
+        assert.equal(sent.statusCode, 200, sent.body);
+        assert.equal(sent.json().acceptedPings, 4);
+
+        const overview = await app.inject({
+            method: 'GET',
+            url: '/api/v1/admin/overview',
+            headers: { authorization: `Bearer ${ADMIN_TOKEN}` },
+        });
+        assert.equal(overview.statusCode, 200, overview.body);
+        const sessions = overview.json().sessions;
+        assert.ok(
+            sessions.source === 'pings' || sessions.source === 'pings+attempts',
+            `the overview now knows it has pings (got ${sessions.source})`,
+        );
+        const total = sessions.daily.reduce((n: number, d: { sessions: number }) => n + d.sessions, 0);
+        assert.ok(total >= 1, 'the math-free session is counted');
+
+        // Another family's child is not pingable, whatever id is presented.
+        const other = await enrollFamily('analytics-pings-other@example.test');
+        const stolen = await app.inject({
+            method: 'POST',
+            url: '/api/v1/play/pings',
+            headers: { cookie: other },
+            payload: { childId, count: 1 },
+        });
+        assert.equal(stolen.statusCode, 404, 'a ping cannot name a child in another family');
+
+        // The batch cap is a schema rule, not a suggestion.
+        const oversized = await app.inject({
+            method: 'POST',
+            url: '/api/v1/play/pings',
+            headers: { cookie },
+            payload: { childId, count: 100000 },
+        });
+        assert.equal(oversized.statusCode, 400, 'an unbounded batch is rejected');
     });
 
     it('error groups are listable and triageable', async () => {

@@ -29,10 +29,30 @@ static func class_defaults(class_name_: String) -> Dictionary:
 		push_warning("SpriteSheet: unknown sprite class '%s'" % class_name_)
 		return {}
 	var out := {}
-	for k in ["frameWidth", "frameHeight", "anchor"]:
+	for k in ["frameWidth", "frameHeight", "anchor", "body"]:
 		if (c as Dictionary).has(k):
 			out[k] = (c as Dictionary)[k]
 	return out
+
+
+## The collision box for `key`'s class, in frame pixels, or ZERO if its class
+## does not declare one.
+##
+## Player.tscn used to carry `size = Vector2(40, 56)` and `position = (0, -28)`,
+## and 56 is not a measurement of anything: the crow is drawn 48 tall in a 64px
+## frame, so the collider stuck 8-12px out of the top of the drawing and the crow
+## bounced off ceilings it had visibly not reached. Same failure as the literal
+## sprite offset this file already replaced - a number in a .tscn that silently
+## means "half the frame height of whatever art shipped that week".
+##
+## Anchored to the frame's BOTTOM edge, which `anchor: feet` puts on the ground
+## contact line, so the box grows upward from the feet exactly like the drawing.
+static func body_box(key: String) -> Vector2:
+	var e := entry(key)
+	var body: Variant = e.get("body", null)
+	if not (body is Dictionary):
+		return Vector2.ZERO
+	return Vector2(float((body as Dictionary).get("width", 0.0)), float((body as Dictionary).get("height", 0.0)))
 
 
 ## Fully resolved entry: the sprite's own fields laid over its class defaults.

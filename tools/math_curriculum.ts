@@ -1,4 +1,5 @@
 import type { MathProblem, ProblemDifficultyTraits } from '../math-kernel/utils/Types';
+import { parseRelationalPrompt, relationalTraits } from './math_verifier';
 import { evaluateArithmeticPrompt, parseArithmeticPromptIndependent } from './math_verifier';
 
 type ParsedArithmetic = {
@@ -11,12 +12,20 @@ function clamp(value: number, min: number, max: number): number {
     return Math.max(min, Math.min(max, value));
 }
 
-export function parseArithmeticPrompt(text: string): ParsedArithmetic | null {
+function parseArithmeticPrompt(text: string): ParsedArithmetic | null {
     const parsed = parseArithmeticPromptIndependent(text);
     return parsed ? { ...parsed } : null;
 }
 
 export function deriveDifficultyTraits(problem: MathProblem): ProblemDifficultyTraits | undefined {
+    // An equation with its unknown somewhere other than the right-hand side is
+    // still a fact with operands; it just is not the fact the generic scan would
+    // read out of it.
+    const relational = parseRelationalPrompt(problem.prompt.text);
+    if (relational) {
+        return relationalTraits(relational);
+    }
+
     const parsed = parseArithmeticPrompt(problem.prompt.text);
     if (!parsed) {
         return undefined;
@@ -37,8 +46,12 @@ export function deriveDifficultyTraits(problem: MathProblem): ProblemDifficultyT
     }
 
     if (parsed.operator === '\u00F7') {
+        // Divisor and quotient, not the dividend -- see the long note beside the
+        // same rule in tools/math_verifier.ts. These two must agree, because
+        // validate-content checks the authored traits against one and the
+        // materializer stamps them from the other.
         return {
-            maxOperand: Math.max(parsed.left, parsed.right, evaluateArithmeticPrompt(problem.prompt.text) ?? 0),
+            maxOperand: Math.max(parsed.right, evaluateArithmeticPrompt(problem.prompt.text) ?? 0),
         };
     }
 
@@ -46,6 +59,31 @@ export function deriveDifficultyTraits(problem: MathProblem): ProblemDifficultyT
 }
 
 export function deriveCurriculumStep(problem: MathProblem): number {
+    // "5 + ? = 8" is exactly as hard as "5 + 3 = 8" -- the same bond, asked from
+    // the other end -- so it earns the same rung. Deriving it from the fact
+    // rather than from the authored `difficulty` keeps the step VERIFIED: an
+    // author cannot place a relational problem wherever they like.
+    const relational = parseRelationalPrompt(problem.prompt.text);
+    if (relational) {
+        // The rung the plain fact would earn. "5 + ? = 8" is exactly as hard as
+        // "5 + 3 = 8" -- the same bond, asked from the other end -- and
+        // "? - 3 = 5" is the fact 8 - 3. Deriving from the fact rather than from
+        // the authored `difficulty` keeps the step VERIFIED: an author cannot
+        // place a relational problem wherever they like.
+        //
+        // For division the pair is (divisor, quotient), NOT the written
+        // operands -- see the `fact` doc in math_verifier.ts. That is what
+        // deriveDivisionStep expects, so "? / 4 = 3" earns the same rung as
+        // "12 / 4", which is the point.
+        const [left, right] = relational.fact;
+        switch (relational.operator) {
+            case '-': return deriveSubtractionStep(left, right);
+            case '\u00D7': return deriveMultiplicationStep(left, right);
+            case '\u00F7': return deriveDivisionStep(left, right);
+            default: return deriveAdditionStep(left, right);
+        }
+    }
+
     const parsed = parseArithmeticPrompt(problem.prompt.text);
     if (!parsed) {
         switch (problem.domain) {

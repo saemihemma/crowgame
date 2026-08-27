@@ -1,32 +1,14 @@
 # Hörmann — Brand & Art System
 
 Status: Supportive
-Authority: Canonical brand, art-direction and UI standard. Runtime truth still lives in `src/**`, `godot/data/**` and the manifests.
-Last verified against code: 2026-08-24
+Authority: Canonical brand, art-direction and UI standard. Runtime truth lives in `godot/scripts/**`, `godot/data/**` and the manifests.
 
 This is the one brand file. If another document disagrees with this one about
 colour, type, motion, tone or HUD layout, this one is right and the other one is
 stale. Per-world art detail lives in its companion, [LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md).
 
-Machine-readable palette tokens for every world live in [tokens/](./tokens/) in
+Machine-readable palette tokens for every world live in `godot/data/themes/` in
 the exact shape `ThemeDefinition` expects.
-
----
-
-## 0. The problem this document exists to solve
-
-Findings from the current build, 2026-08-24:
-
-| Symptom | Evidence | Consequence |
-| --- | --- | --- |
-| Every level looks the same | all six `*.spec.json` declare `"theme": "forest"`, and every entry in `level_registry.json` loads the same `level1_tiles.png` | there is no sense of travel; world 5 feels like world 1 |
-| The theme system is built but unused | `ThemeManager` supports swapping, only `forest` and `scifi` are registered, and `scifi` is never selected | the most valuable art lever in the codebase is idle |
-| One enemy exists | `enemy_registry.json` contains `cockroach_basic` and nothing else | no escalation, no world identity, no reason to look up |
-| The HUD is a left-edge text stack | `HUDScene` places health at `16,16`, coins at `16,56`, owls at `16,88` | the goal metric (owls saved) has the same visual weight as a debug readout |
-| Failure is painted red | `MathBoard.showWrongFeedback()` fills the chosen button with `danger` for 400ms and flies "Try again" up in a hardcoded `#ff6666` | the most confidence-sensitive moment in the game uses the colour of damage |
-| Colour has no law | palette keys are duplicated verbatim between `theme_forest.json` and `theme_scifi.json` | "themes" currently differ in four colours out of twenty-four |
-
-Everything below is written to close those six gaps.
 
 ---
 
@@ -382,21 +364,23 @@ Everything else is a world variable. Each world owns:
 
 ### 6.4 The five worlds at a glance
 
-| World | Hue story | `primary` | `accent` | `light` | Feels like |
-| --- | --- | --- | --- | --- | --- |
-| 1 · **Emberwood** | warm greens under a peach dawn | `#3F8F5B` | `#FFC93C` | `#FFD98A` | waking up |
-| 2 · **Prism Hollow** | violet dark, cyan and magenta emissive | `#2B2A5E` | `#4DE3FF` | `#FF5FD2` | holding your breath |
-| 3 · **Sugarstorm** | hot pink and teal on deep night | `#FF4FA3` | `#FFE14D` | `#2CE0C8` | showing off |
-| 4 · **Geyserworks** | rust and basalt, molten orange | `#C2582A` | `#FFA22B` | `#FF6B1A` | pushing through |
-| 5 · **Aurora Spire** | cold indigo, aurora green and violet | `#3A6EA8` | `#7CF5C4` | `#A97BFF` | arriving |
+The hue story and the intended feeling — the part that is a decision. The hexes
+are in `godot/data/themes/`, one copy, held to §6 by `tools/verify_palettes.py`.
 
-Full tables, tilesets, props and object lists are in
-[LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md). Copy-paste tokens are in
-[tokens/](./tokens/).
+| World | Hue story | Feels like |
+| --- | --- | --- |
+| 1 · **Emberwood** | warm greens under a peach dawn | waking up |
+| 2 · **Prism Hollow** | violet dark, cyan and magenta emissive | holding your breath |
+| 3 · **Sugarstorm** | hot pink and teal on deep night | showing off |
+| 4 · **Geyserworks** | rust and basalt, molten orange | pushing through |
+| 5 · **Aurora Spire** | cold indigo, aurora green and violet | arriving |
+
+Tilesets, props and object lists per world are in
+[LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md).
 
 ### 6.5 Contrast floor
 
-These are checked, not asserted. [tokens/verify_palettes.py](./tokens/verify_palettes.py)
+These are checked, not asserted. [tools/verify_palettes.py](../tools/verify_palettes.py)
 runs all of them across all five worlds and exits non-zero on a violation. Two
 of the rules below exist because the first draft of the tokens failed them.
 
@@ -922,72 +906,76 @@ like a worksheet.
 
 ---
 
-## 14. Handoff
+## 14. The bar, in numbers
 
-Ordered by value per hour of work. Items 1–5 are all small, and together they
-change how the game feels more than anything else on the list.
+"Award standard" is not a feeling. These are the gates, and they are measured on
+a device profile — not on a desktop browser.
 
-### Tier 1 — hours each, disproportionate effect
+| # | Gate | Measured how |
+| --- | --- | --- |
+| B1 | **No letterbox above 8%** on iPad and iPhone **in landscape** | canvas area ÷ viewport area, per device profile |
+| B2 | **Sustained 60fps** on a 4× CPU-throttled profile at 1024×768 | frame trace, p95 frame time ≤ 16.7ms |
+| B3 | **Every touch target ≥ 64px**, primary action ≥ 80px, ≥ 12px apart | measured from the live scene graph, not from source |
+| B4 | **Nothing interactive within 32px** of a safe-area edge | same |
+| B5 | **First input accepted < 3s** from cold load on a throttled profile | navigation timing to first enabled control |
+| B6 | **No essential meaning carried by text alone** in gameplay UI | audited per screen; icons must survive with strings blanked |
+| B7 | **No text below 24px** anywhere a child must read | scene-graph audit |
+| B8 | **Every screen ≥ 85% on-palette** in all five worlds | palette conformance, extended to every screen |
+| B9 | **Reduced motion honoured**; no flash > 0.4 alpha or > 3Hz | flagged run of the harness |
+| B10 | **One-thumb reachable**: every gameplay control inside a 620px arc from each bottom corner | scene-graph audit against a reach mask |
 
-**Landed.** Land squash, jump-launch anticipation and airborne stretch
-(`Player.ts`); hitstop on enemy defeat and player damage (`DopamineFX.hitstop`);
-camera look-ahead and the phase-offset collectible bob (`GameScene.ts`); the
-warm scrim and the 900ms wrong-answer choreography in amber
-(`MathChallengeScene.ts`, `MathBoard.ts`); and the full-screen red damage wash
-replaced with an edge pulse that leaves the centre clear.
+**B1 is met and asserted.** `godot/tests/test_project_config.gd` pins the
+`canvas_items` / `expand` pair and proves the consequence: under `expand` the
+viewport IS the window, so the letterbox is zero by construction. The same test
+checks that no supported device shows more world height than a level holds, which
+is the risk `expand` introduces in exchange.
 
-Two things from this tier were deliberately **not** done, and both are in
-`roadmap.md` with the reason:
+**B8 is partly automated.** `godot/tests/test_world_palettes.gd` measures whether
+each world's tileset art is drawn in that world's palette, with a negative
+control and a sample-size floor so the check cannot pass vacuously. Extending it
+from tilesets to every screen is open work.
 
-1. **Apex hang.** It changes gravity, and the vertical motion model is under a
-   golden-fixture parity contract with the Godot port. It has to land in both
-   runtimes at once.
-2. **The board still covers the player.** §8.3 wants the camera panned before
-   the scene pauses; header plus board plus a visible player does not fit in 540
-   by stacking alone.
+The rest are not yet measurable: nothing in the suite opens a device viewport.
+That gap, and the accessibility and frame-budget work behind B2 and B9, is
+tracked in `../roadmap.md`.
 
-### Tier 2 — the systems this document is really about
+## 15. The loop
 
-6. **Ship the five world themes.** Drop [tokens/](./tokens/) into
-   `godot/data/themes/`, extend `DataManager`'s paths and `ThemeManager.THEME_KEYS`,
-   and call `ThemeManager.setTheme(spec.theme)` on level load in `GameScene`.
-   `HealthBar` already falls back to generated placeholders when a themed sprite
-   key has no texture, so **this lands safely before any new art exists** — five
-   visually distinct worlds from JSON alone.
-7. **Unify the theme vocabulary.** `level-spec.schema.json` currently enums
-   `theme` to `["forest","cave","village","mountain","sky","underwater"]`, which
-   is a different vocabulary from `ThemeManager`'s ids. Replace it with the five
-   world ids so *level spec theme = theme id = token filename*, one word
-   throughout.
-8. **Rebuild `HUDScene` to the three-pod layout.** §8.2.
-9. **Implement the streak.** §10.2. Highest-value new mechanic in the document.
-10. **Add the four new Muddle species** to `enemy_registry.json`. §3.3.
+Every piece of brand work runs the same loop. It is deliberately uncomfortable:
+the concept is drawn to a standard the implementation is not expected to reach on
+the first try, and the gap is written down rather than designed away.
 
-### Tier 3 — art production
+1. **Concept.** Artboards at the real target resolution, in real tokens, over
+   real captures. Ambitious on purpose.
+2. **Accept the concept** as the target. Not as the plan — as the thing the
+   implementation will be judged against.
+3. **Implement.**
+4. **Capture.** Never judge from source:
 
-11. Hörmann's scarf and the full animation set. §2.3, §2.4.
-12. Five tilesets. Currently all six levels share `level1_tiles.png`.
-13. Four new enemy sheets, five owl-station props, five door variants.
-14. Five music arrangements of one motif; re-record the 15 SFX. §11.
+   ```bash
+   ```
 
-### Naming
+5. **Compare, brutally.** Name every gap. Fix what is a defect. For what is not
+   reachable, write it into `../roadmap.md` with the reason.
+6. **Re-capture.** Repeat 3–6 until the gates above pass.
 
-The five worlds are renames of shipped, translated level names. The strings,
-their four bundle locations, the 240px fit budget and the measured widths for
-both locales are in
-[LEVEL_ART_BIBLE.md](./LEVEL_ART_BIBLE.md#renaming-the-levels). All ten fit;
-the Icelandic names still want a native-speaker read.
+**What this loop has already caught**, which is why it stays: the owl ring was
+mocked over a screenshot and shipped as the *least* visible thing on the HUD;
+the harness had never actually clicked a wrong answer; a shifted heart outline
+left a notch on every heart; an ink pill that worked on Emberwood dissolved into
+Sugarstorm; `shade()` overflowed to negative RGB and wrapped to white; a
+`clump()` cell that did not divide 32 printed a fixed motif into every tile.
 
-### Open questions for the product owner
+**Rule: nothing is accepted on a desktop screenshot alone.** The primary device
+is a tablet.
 
-- **Level 3 and 4 are currently too small for their worlds.** `level_03` is 7
-  platforms with zero hazards and zero enemies; `level_04` is 11 platforms with
-  one of each. Sugarstorm and Geyserworks as specified need roughly 18–24
-  platforms each. Grow the specs, or reassign those worlds to bigger levels.
-- **`roadmap.md` asks whether unlocks should be strictly one-at-a-time.** The
-  world ladder in the art bible assumes yes — sequential reveal is what makes a
-  new world feel earned.
-- **`pause.theme` promises a theme switcher that does not exist.** With five
-  real themes it becomes worth building, but a child switching Aurora Spire's
-  palette onto Emberwood breaks world identity. Recommendation: delete the key
-  and let the level own its theme.
+## 16. Where the work is tracked
+
+This file is brand **law** and the **method** above. It is not a backlog.
+
+Open brand work — the art passes, the maths-board material, the HUD states with
+no visual evidence, accessibility and frame budget — lives in `../roadmap.md`,
+which is the single list of open work for the whole repo. The production list of
+individual art files, with sizes and destinations, is
+[ASSET_MANIFEST.md](./ASSET_MANIFEST.md).
+

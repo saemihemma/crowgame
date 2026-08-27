@@ -2,6 +2,8 @@ import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { config } from '../config.js';
 import { pool } from '../db.js';
 import { requireAdmin } from '../lib/adminAuth.js';
+import { recommendLadderChange, type LaneStats } from '../lib/ladderTuning.js';
+import { LANE_WEIGHTS } from '../generated/ladderWeights.js';
 
 /**
  * The owner's read surface: business KPIs and the deduplicated error feed.
@@ -14,9 +16,11 @@ import { requireAdmin } from '../lib/adminAuth.js';
  * Honesty rules baked into the shapes:
  *  - retention returns numerators AND denominators; with one family playing, a
  *    percentage without its cohort size is a lie.
- *  - sessions are derived from attempt timestamps split on a gap
- *    (config.admin.sessionGapMinutes), so play that never touched an owl is
- *    invisible. The field is named derivedFromAttempts to keep that visible.
+ *  - sessions are a gap-split (config.admin.sessionGapMinutes) over PLAY PINGS
+ *    unioned with attempts, so a child who ran and jumped and never opened a
+ *    maths board still counts. `sessions.source` says which streams a window
+ *    actually had, because a window with no pings in it is still attempts-only
+ *    and reading it as total play time would be the same lie by a new name.
  *  - all times use received_at (our clock), never the tablet's.
  */
 export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
@@ -77,29 +81,51 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
                                and a.received_at::date between firsts.d0 + 1 and firsts.d0 + 7))::text as d7_returned
                    from firsts`,
             ),
-            pool.query<{ day: string; sessions: string; median_minutes: string | null; avg_attempts: string | null }>(
-                `with ordered as (
-                     select child_id, received_at,
+            // Sessions over BOTH streams. A ping says "playing"; an attempt says
+            // "playing, and answering". Unioned before the gap split so a burst
+            // of platforming and a burst of maths inside the same sitting are one
+            // session rather than two -- which is what they were, and what the
+            // attempts-only version could not see.
+            //
+            // avg_attempts counts only the attempt rows, so it stays what it
+            // always was: questions per session, not pings per session.
+            pool.query<{
+                day: string; sessions: string; median_minutes: string | null;
+                avg_attempts: string | null; ping_marks: string; attempt_marks: string;
+            }>(
+                `with marks as (
+                     select child_id, received_at, 1 as is_attempt
+                       from attempts
+                      where received_at >= now() - make_interval(days => $1)
+                     union all
+                     select child_id, received_at, 0 as is_attempt
+                       from play_pings
+                      where received_at >= now() - make_interval(days => $1)
+                 ), ordered as (
+                     select child_id, received_at, is_attempt,
                             case when lag(received_at) over w is null
                                    or received_at - lag(received_at) over w > make_interval(mins => $2)
                                  then 1 else 0 end as is_start
-                       from attempts
-                      where received_at >= now() - make_interval(days => $1)
+                       from marks
                      window w as (partition by child_id order by received_at)
-                 ), marked as (
-                     select child_id, received_at,
+                 ), numbered as (
+                     select child_id, received_at, is_attempt,
                             sum(is_start) over (partition by child_id order by received_at) as session_no
                        from ordered
                  ), sessions as (
                      select child_id, session_no,
-                            min(received_at) as started_at, max(received_at) as ended_at, count(*) as attempts
-                       from marked group by child_id, session_no
+                            min(received_at) as started_at, max(received_at) as ended_at,
+                            sum(is_attempt) as attempts,
+                            count(*) - sum(is_attempt) as pings
+                       from numbered group by child_id, session_no
                  )
                  select to_char(started_at::date, 'YYYY-MM-DD') as day,
                         count(*)::text as sessions,
                         (percentile_cont(0.5) within group (
                             order by extract(epoch from ended_at - started_at) / 60.0))::text as median_minutes,
-                        avg(attempts)::text as avg_attempts
+                        avg(attempts)::text as avg_attempts,
+                        sum(pings)::text as ping_marks,
+                        sum(attempts)::text as attempt_marks
                    from sessions
                   group by started_at::date
                   order by started_at::date`,
@@ -135,7 +161,17 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
             newChildren: newChildren.rows.map(row => ({ day: row.day, count: Number(row.new_children) })),
             errorsDaily: errorsDaily.rows.map(row => ({ day: row.day, events: Number(row.events) })),
             sessions: {
-                derivedFromAttempts: true,
+                // What the window actually contained. 'pings+attempts' is the
+                // honest case; 'attempts' means no client in this window sent a
+                // ping, so session LENGTH is still maths time rather than play
+                // time and should be read that way.
+                source: (() => {
+                    const pings = sessions.rows.reduce((n, r) => n + Number(r.ping_marks ?? 0), 0);
+                    const attempts = sessions.rows.reduce((n, r) => n + Number(r.attempt_marks ?? 0), 0);
+                    if (pings > 0 && attempts > 0) return 'pings+attempts';
+                    if (pings > 0) return 'pings';
+                    return 'attempts';
+                })(),
                 gapMinutes: gap,
                 daily: sessions.rows.map(row => ({
                     day: row.day,
@@ -145,6 +181,92 @@ export async function registerAdminRoutes(app: FastifyInstance): Promise<void> {
                 })),
             },
         });
+    });
+
+    /**
+     * What the last week of play says to change, or why it says nothing yet.
+     *
+     * The overview tile already reports first-try accuracy against the 70-85%
+     * band. This is the next sentence: which single knob to move, in which file,
+     * from what to what, and on the strength of what measurement. The decision
+     * itself is a pure function in lib/ladderTuning.ts -- this route only
+     * gathers the numbers -- so the rule can be tested without a database and
+     * cannot quietly diverge from what the page shows.
+     *
+     * Lane weights come from a generated module rather than being restated here,
+     * because a recommendation whose "from" the game does not actually use is
+     * worse than no recommendation. They cannot be read from disk at runtime --
+     * deploy/api/Dockerfile copies only `server/`, so the tuning file is absent
+     * in the running image and this route would 500 in production while working
+     * on a developer's checkout. tools/gen_ladder_weights.ts copies them in and
+     * `npm run validate` fails if the copy drifts.
+     */
+    app.get('/api/v1/admin/ladder-tuning', auth, async (_request, reply) => {
+        const t = config.admin.ladder;
+        const days = t.windowDays;
+
+        const [overall, lanes, review] = await Promise.all([
+            pool.query<{ attempts: string; children: string; days: string; first_try: string | null }>(
+                `select count(*)::text as attempts,
+                        count(distinct child_id)::text as children,
+                        count(distinct received_at::date)::text as days,
+                        avg(case when first_attempt then (case when correct then 1.0 else 0.0 end) end)::text as first_try
+                   from attempts
+                  where received_at >= now() - make_interval(days => $1)`,
+                [days],
+            ),
+            pool.query<{ lane: string | null; attempts: string; first_try: string | null }>(
+                `select coalesce(selection_lane, 'unknown') as lane,
+                        count(*)::text as attempts,
+                        avg(case when first_attempt then (case when correct then 1.0 else 0.0 end) end)::text as first_try
+                   from attempts
+                  where received_at >= now() - make_interval(days => $1)
+                  group by coalesce(selection_lane, 'unknown')
+                  order by count(*) desc`,
+                [days],
+            ),
+            pool.query<{ attempts: string; first_try: string | null }>(
+                `select count(*)::text as attempts,
+                        avg(case when first_attempt then (case when correct then 1.0 else 0.0 end) end)::text as first_try
+                   from attempts
+                  where received_at >= now() - make_interval(days => $1)
+                    and review_item_id is not null`,
+                [days],
+            ),
+        ]);
+
+        const num = (v: string | null): number | null => (v === null ? null : Number(v));
+        const head = overall.rows[0];
+        const laneStats: LaneStats[] = lanes.rows.map(row => ({
+            lane: row.lane ?? 'unknown',
+            attempts: Number(row.attempts),
+            firstTryAccuracy: num(row.first_try),
+        }));
+
+        return reply.send(recommendLadderChange(
+            {
+                windowDays: days,
+                attempts: Number(head?.attempts ?? 0),
+                children: Number(head?.children ?? 0),
+                daysWithPlay: Number(head?.days ?? 0),
+                firstTryAccuracy: num(head?.first_try ?? null),
+                lanes: laneStats,
+                review: {
+                    attempts: Number(review.rows[0]?.attempts ?? 0),
+                    firstTryAccuracy: num(review.rows[0]?.first_try ?? null),
+                },
+            },
+            {
+                low: t.bandLow,
+                high: t.bandHigh,
+                minAttempts: t.minAttempts,
+                minChildren: t.minChildren,
+                minDaysWithPlay: t.minDaysWithPlay,
+                reviewFloor: t.reviewFloorPct,
+                step: t.step,
+            },
+            LANE_WEIGHTS,
+        ));
     });
 
     app.get(

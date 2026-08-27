@@ -2,14 +2,15 @@
  * MathTuning
  *
  * The one shared home for every tunable math-experience number: ladder
- * promotion/demotion, the stretch-lane gate, selection lane weights, the
- * teaching-window pacing, and the golden-problem economy. The values live in
+ * promotion/demotion, the stretch-lane gate, selection lane weights, answer
+ * feedback pacing, per-domain due weighting, and the golden-problem economy.
+ * The values live in
  * `data/tuning/math_tuning.json`, which is byte-identical between
  * `godot/data` (the only copy), so tuning
  * a number is a one-line JSON edit that both ports pick up together.
  *
  * There are deliberately no compiled-in defaults: every entry point must load
- * the JSON (BootScene in the browser, an explicit file read in Node tools).
+ * the JSON: an explicit file read in the Node tools that consume this kernel.
  * A missing initialize is a loud crash, never a silent drift back to stale
  * numbers.
  */
@@ -36,11 +37,12 @@ export interface MathTuningData {
         at_level: number;
         stretch: number;
     };
-    teaching: {
-        hintMs: number;
-        revealMs: number;
-        handoverMs: number;
-        closeMs: number;
+    selection: {
+        withinLaneEloSpread: number;
+    };
+    reviewBacklog: {
+        maxDuePerDomain: number;
+        staleAfterDays: number;
     };
     golden: {
         rate: number;
@@ -70,7 +72,7 @@ export function mathTuning(): MathTuningData {
     if (!activeTuning) {
         throw new Error(
             '[MathTuning] not initialized - load data/tuning/math_tuning.json first ' +
-            '(BootScene does this in the browser; Node tools must read the file themselves)',
+            '(Node tools must read the tuning file themselves before use)',
         );
     }
     return activeTuning;

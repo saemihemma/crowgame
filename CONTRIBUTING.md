@@ -2,15 +2,14 @@
 
 Status: Supportive
 Authority: Contribution process. The verification loop itself is
-[DEVELOPMENT_GUIDE.md](./DEVELOPMENT_GUIDE.md).
-Last verified against code: 2026-08-24
+[ONBOARDING.md](./ONBOARDING.md).
 
 Hörmann is a maths game played by young children, including the author's own. That
 shapes what a good contribution looks like more than anything else here.
 
 ## Before you write code: which tree?
 
-This repo contains four live trees and one dead one. Getting this wrong is the
+This repo contains four live trees. Getting this wrong is the
 most common way to waste an afternoon:
 
 - **`godot/**`** — the game. Godot 4.3 / GDScript. This is what players run.
@@ -19,36 +18,35 @@ most common way to waste an afternoon:
   maths. Never ships. It generates the golden fixtures the game is tested against.
 - **`tools/**`** — offline curriculum authoring and validation. Never ships.
 
-[ONBOARDING_AGENT.md](./ONBOARDING_AGENT.md) is the map, and the only place
+[ONBOARDING.md](./ONBOARDING.md) is the map, and the only place
 mutable counts live.
 
 ## The rules that are enforced
 
-`godot/tools/check_hardcoding.py` runs in CI and will reject:
+`godot/tools/check_hardcoding.py` runs in CI and will reject four things in `.gd`
+files: user-facing strings, inline colours, `change_scene_to_file` outside
+`scene_router.gd`, and `play_sfx` outside `audio_manager.gd`. Each has a
+data-driven home — see [ARCHITECTURE.md](./ARCHITECTURE.md). Genuine exceptions
+take `# hardcode-ok` on the line, and "genuine" means brand text or a diagnostic,
+not "I was in a hurry".
 
-magic numbers, user-facing strings, inline colours, hardcoded scene paths,
-type-to-behaviour switches for content, and scattered `play_sfx` calls in `.gd`
-files. Each has a data-driven home — see
-[godot/ARCHITECTURE.md](./godot/ARCHITECTURE.md). Genuine exceptions take
-`# hardcode-ok` on the line, and "genuine" means brand text or a diagnostic, not
-"I was in a hurry".
+Two of the six rules in README.md are **not** in that script and are checked by
+review instead: magic numbers, and type-to-behaviour switches for content.
 
 Strings go in **both** `strings_en.json` and `strings_is.json`. A test enforces
 key-for-key lockstep, and a missing key renders as the raw key to a child.
 
 ## Things to leave alone
 
-- **`learner_state_manager.gd`.** It is 562 lines and looks like it wants
+- **`learner_state_manager.gd`.** It is 657 lines and looks like it wants
   splitting. It is locked against golden fixtures because it decides how hard the
   game feels to a child; splitting it risks drift that no test would catch as a
   behaviour change.
 - **Tier-1 constants** (ELO, learner, movement). Changing one is legitimate, but
   it means editing `math-kernel/**`, regenerating the fixtures, and keeping Godot
   parity green — all in the same commit.
-- **The wire contract.** [docs/API_CONTRACT.md](./docs/API_CONTRACT.md) is frozen
+- **The wire contract.** [ARCHITECTURE.md](./ARCHITECTURE.md#the-wire-contract) is frozen
   deliberately; it is baked into every installed client.
-- **`docs/learner_backend_schema.sql`.** A superseded draft. Its banner lists
-  three things in it that must never be built.
 
 ## Things that will not be accepted
 
@@ -83,6 +81,27 @@ would have.
 
 Some things still need a human: movement feel, difficulty pacing, whether a moment
 lands for a child. Say in your PR what you played and what you saw.
+
+## The doc gate
+
+`npm run validate` checks the doc claims that are **contracts**: the endpoint
+table against the routes the server registers, the storage keys, the Tier-1
+constants, the retention figures against the defaults they promise, the deploy
+payload against the artifact, and that no doc points at a deleted tree.
+
+It deliberately does not check descriptions. There is no gate on how many levels
+or sounds exist, because the docs no longer state those — a count in prose goes
+stale silently, and the fix is to not write it down.
+
+If you touch `tools/validate_docs.js`, run:
+
+```bash
+npm run validate:docs-test     # mutates each claim and asserts the gate objects
+```
+
+Two of those checks once shipped enforcing nothing. Every one now has a case that
+proves it fails for the right reason, asserted on the message rather than the exit
+code — a validator too broken to parse also exits non-zero.
 
 ## Docs are part of the change
 

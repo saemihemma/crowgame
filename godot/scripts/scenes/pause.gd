@@ -19,16 +19,13 @@ func _ready() -> void:
 	dim.anchor_right = 1.0
 	dim.anchor_bottom = 1.0
 	add_child(dim)
-	var center := CenterContainer.new()
-	center.anchor_right = 1.0
-	center.anchor_bottom = 1.0
-	dim.add_child(center)
-
 	# A card, so the menu reads as something laid over the game rather than as
-	# buttons dropped into it.
+	# buttons dropped into it. Five Gate-B3 rows under a 44px title is 596 tall,
+	# and a 16:9 display gives the viewport exactly 540 - so the card is fitted
+	# rather than centred, or Quit falls off the bottom.
 	var card := PanelContainer.new()
 	card.add_theme_stylebox_override("panel", _card_face())
-	center.add_child(card)
+	dim.add_child(FitBox.around(card))
 
 	var col := VBoxContainer.new()
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -45,6 +42,7 @@ func _ready() -> void:
 	_resume_btn = _button(col, TextManager.t("pause.resume"), _resume, BrandButton.Role.PRIMARY)
 	_sound_btn = _button(col, _sound_label(), _toggle_sound)
 	_volume_btn = _button(col, _volume_label(), _cycle_volume)
+	_volume_btn.clicks = false
 	_language_btn = _button(col, TextManager.endonym(TextManager.get_locale()), _cycle_locale)
 	_add_flag(_language_btn)
 	_quit_btn = _button(col, TextManager.t("pause.quit"), _quit, BrandButton.Role.GHOST)
@@ -148,19 +146,21 @@ func _cycle_volume() -> void:
 		if absf(float(VOLUME_STEPS[i]) - now) < absf(float(VOLUME_STEPS[nearest]) - now):
 			nearest = i
 	AudioManager.set_master_volume(float(VOLUME_STEPS[(nearest + 1) % VOLUME_STEPS.size()]))
-	AudioManager.play_sfx("ui_click")
+	# After the change, not before: this row's click is the demonstration. It is
+	# also why the row opts out of BrandButton's own click - two in a row reads
+	# as a glitch rather than as "this is how loud that is now".
+	AudioManager.play_event("button")
 	if is_instance_valid(_volume_btn):
 		_volume_btn.text = _volume_label()
 
 func _toggle_sound() -> void:
 	var now_muted := not AudioManager.is_muted()
-	# Play the click BEFORE muting, so turning sound off still acknowledges the
-	# tap; turning it back on is acknowledged by the click after.
-	if now_muted:
-		AudioManager.play_sfx("ui_click")
+	# Turning sound OFF is acknowledged by BrandButton's own click, which has
+	# already played by the time this runs. Turning it back ON is not: that click
+	# was swallowed by the mute it is about to lift, so it is replayed here.
 	AudioManager.set_muted(now_muted)
 	if not now_muted:
-		AudioManager.play_sfx("ui_click")
+		AudioManager.play_event("button")
 	if is_instance_valid(_sound_btn):
 		_sound_btn.text = _sound_label()
 

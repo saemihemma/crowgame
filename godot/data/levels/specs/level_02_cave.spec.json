@@ -18,7 +18,7 @@
     {
       "type": "ground",
       "x": 0,
-      "width": 10,
+      "width": 12,
       "y": 16
     },
     {
@@ -55,7 +55,7 @@
     {
       "type": "ground",
       "x": 25,
-      "width": 10,
+      "width": 3,
       "y": 16,
       "gap_before": 2
     },
@@ -66,6 +66,12 @@
       "y": 13
     },
     {
+      "type": "ground",
+      "x": 31,
+      "width": 4,
+      "y": 16
+    },
+    {
       "type": "platform",
       "x": 32,
       "width": 3,
@@ -74,7 +80,7 @@
     {
       "type": "ground",
       "x": 38,
-      "width": 12,
+      "width": 13,
       "y": 16,
       "gap_before": 3
     },
@@ -171,6 +177,24 @@
       "width": 10,
       "y": 16,
       "gap_before": 3
+    },
+    {
+      "type": "platform",
+      "x": 99,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 103,
+      "width": 3,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 103,
+      "width": 5,
+      "y": 4
     }
   ],
   "spawns": {
@@ -188,6 +212,13 @@
         "npc_id": "owl_tough_01",
         "x": 70,
         "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 104,
+        "y": 4,
+        "bonus": true,
+        "requiresAbility": "double_jump"
       }
     ],
     "collectibles": [
@@ -217,9 +248,10 @@
         "y": 8
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 29,
-        "y": 12
+        "y": 12,
+        "id": "c1"
       },
       {
         "type": "coin",
@@ -242,9 +274,10 @@
         "y": 8
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 48,
-        "y": 6
+        "y": 6,
+        "id": "c2"
       },
       {
         "type": "coin",
@@ -272,9 +305,10 @@
         "y": 8
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 76,
-        "y": 5
+        "y": 5,
+        "id": "c3"
       },
       {
         "type": "coin",
@@ -290,23 +324,13 @@
         "type": "coin",
         "x": 90,
         "y": 12
-      },
-      {
-        "type": "coin",
-        "x": 100,
-        "y": 14
-      },
-      {
-        "type": "coin",
-        "x": 101,
-        "y": 14
       }
     ]
   },
   "hazards": [
     {
       "type": "spikes",
-      "x": 13,
+      "x": 12,
       "y": 19,
       "width": 2,
       "height": 1
@@ -320,6 +344,13 @@
     },
     {
       "type": "spikes",
+      "x": 28,
+      "y": 19,
+      "width": 3,
+      "height": 1
+    },
+    {
+      "type": "spikes",
       "x": 35,
       "y": 19,
       "width": 3,
@@ -327,9 +358,9 @@
     },
     {
       "type": "spikes",
-      "x": 50,
+      "x": 51,
       "y": 19,
-      "width": 3,
+      "width": 2,
       "height": 1
     },
     {
@@ -342,13 +373,6 @@
     {
       "type": "spikes",
       "x": 78,
-      "y": 19,
-      "width": 3,
-      "height": 1
-    },
-    {
-      "type": "spikes",
-      "x": 95,
       "y": 19,
       "width": 3,
       "height": 1
@@ -374,6 +398,16 @@
       "enemy_id": "cockroach_basic",
       "x": 56,
       "y": 15
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 100,
+      "y": 12
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 104,
+      "y": 9
     }
   ],
   "exits": [

@@ -4,7 +4,7 @@ extends Node
 ## IMPORTANT: its remote paths are NOT the live transport.
 ##
 ## The `{api_base}/learner/{childId}/...` requests below are the PRE-CONTRACT
-## shape. docs/API_CONTRACT.md declares that shape void — childId was never a
+## shape. ARCHITECTURE.md declares that shape void — childId was never a
 ## usable authorization subject — and no server route implements it. They are
 ## inert: get_api_base() returns null outside a debug build.
 ##
@@ -109,7 +109,7 @@ func _mark_pending(local_snapshot: Dictionary) -> Dictionary:
 ## client-writable storage (crow_learner_api_base), which meant any script on the
 ## origin could redirect a child's learning records to a server of its choosing.
 ## The real base is the relative path CloudSync uses ("/api/v1"), proxied
-## same-origin per environment — see docs/API_CONTRACT.md.
+## same-origin per environment — see ARCHITECTURE.md.
 ##
 ## The override survives only in debug builds, for pointing a local editor run at
 ## a local API.

@@ -5,9 +5,6 @@ extends TestCase
 ## printed "2 problems solved" from a hardcoded string while the registry said
 ## one, and nothing noticed.
 
-func _reset() -> void:
-	_failures.clear()
-	_assertions = 0
 
 func _root() -> Node:
 	return Engine.get_main_loop().root

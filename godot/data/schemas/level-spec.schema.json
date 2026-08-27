@@ -29,8 +29,7 @@
                 "prism_hollow",
                 "sugarstorm",
                 "geyserworks",
-                "aurora_spire",
-                "forest"
+                "aurora_spire"
             ]
         },
         "difficulty": {
@@ -139,6 +138,14 @@
                             },
                             "y": {
                                 "type": "number"
+                            },
+                            "bonus": {
+                                "type": "boolean",
+                                "description": "This owl is not part of what clears the level. The door's requirement derives as all the NON-bonus owls, so a hard-to-reach owl can never lock a level behind itself."
+                            },
+                            "requiresAbility": {
+                                "type": "string",
+                                "description": "An ability id from abilities.json. Declares that this owl is deliberately out of reach until the child earns it. check_level_reachability.py inverts its rule for a goal that declares this: being reachable is then the failure, because the climb would not be a climb."
                             }
                         }
                     }
@@ -161,6 +168,10 @@
                             },
                             "y": {
                                 "type": "number"
+                            },
+                            "id": {
+                                "type": "string",
+                                "description": "Required for type big_coin, ignored otherwise. This is what the save records, so a coin can be moved or the spawns reordered without wiping a child's record the way a positional index would. Must be unique within the level."
                             }
                         }
                     }

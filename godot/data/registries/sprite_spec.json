@@ -1,99 +1,134 @@
 {
-    "$comment": "The pixel law, as data. This is brand/ASSET_MANIFEST.md §'The pixel law, in one table' in a form the build can enforce — the sizes here are transcribed from that table, not invented, and BRAND_SYSTEM §5.1 remains the authority. If the two ever disagree, the manifest wins and this file is the bug. Tilesets are NOT here: data/registries/tileset_manifest.json already owns their contract.",
-    "authority": "brand/ASSET_MANIFEST.md",
-    "grid": {
-        "tile": 32,
-        "note": "TILE_SIZE. Every sprite size below is a whole multiple of it, except doors, which the manifest lists as a deliberate 88x96."
+  "$comment": "The pixel law, as data. This is brand/ASSET_MANIFEST.md §'The pixel law, in one table' in a form the build can enforce — the sizes here are transcribed from that table, not invented, and BRAND_SYSTEM §5.1 remains the authority. If the two ever disagree, the manifest wins and this file is the bug. Tilesets are NOT here: data/registries/tileset_manifest.json already owns their contract.",
+  "authority": "brand/ASSET_MANIFEST.md",
+  "grid": {
+    "tile": 32,
+    "note": "TILE_SIZE. Every sprite size below is a whole multiple of it, except doors, which the manifest lists as a deliberate 88x96."
+  },
+  "rules": {
+    "$comment": "The per-file rules from the same table. tools/check_assets.py measures what can be measured; the rest are review items.",
+    "format": "PNG, RGBA, transparent background. No baked background colour.",
+    "no_antialiasing": "Hard pixel edges only. If the generator softened the edges the asset is not usable — re-do it, do not sharpen it afterwards. Review item: no tool measures softness.",
+    "author_at_1x": "Never generate at 4x and downscale; it produces muddy edges. Review item: no tool measures this.",
+    "outline": "1px outline in the world's ink_world on anything in the play layer; none on sky/far/mid.",
+    "sheet_layout": "Frames read left-to-right, top-to-bottom, no padding and no margin. A single horizontal strip is the preferred layout for new art; SpriteSheet also reads the square grids the shipped crow/coin/door sheets use, deriving columns from the sheet width.",
+    "body_box": "A class's `body` is the collider, and it must fit INSIDE the drawn silhouette in every frame - never the frame size. Measured by tools/check_assets.py."
+  },
+  "classes": {
+    "character": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "anchor": "feet",
+      "body": {
+        "width": 40,
+        "height": 46,
+        "why": "The collider, in frame pixels, measured up from the frame's bottom edge - which `anchor: feet` puts on the ground contact line. It is NOT the frame: a 64px character frame carries clear margin above the head (this class asks for 2-3px and the shipped crow has 13-17), and a collider sized to the frame sticks out of the top of the drawing. That is what made ceilings feel wrong - the crow stopped a third of a tile below a platform it had visibly not touched. The shortest silhouette in the shipped walk cycle is 47px, so 46 sits inside the art in every frame; check_assets.py measures the art and fails if it ever isn't."
+      },
+      "description": "The player. SPRITE_SIZE, matching the shipped crow.",
+      "art_notes": [
+        "Leave 2-3px of clear margin inside the frame left, right and top so the silhouette is never clipped.",
+        "Feet touch the bottom edge of the frame — that edge IS the ground contact line.",
+        "Every frame of a cycle registered to the same origin, or the character swims."
+      ]
     },
-    "rules": {
-        "$comment": "The per-file rules from the same table. audit_pixel_art.py measures the two that can be measured; the rest are review items.",
-        "format": "PNG, RGBA, transparent background. No baked background colour.",
-        "no_antialiasing": "Hard pixel edges only. If the generator softened the edges the asset is not usable — re-do it, do not sharpen it afterwards. Measured as `soft%` by tools/audit_pixel_art.py.",
-        "author_at_1x": "Never generate at 4x and downscale; it produces the muddy edges PROJECT.md warns against. Measured as `native` by tools/audit_pixel_art.py.",
-        "outline": "1px outline in the world's ink_world on anything in the play layer; none on sky/far/mid.",
-        "sheet_layout": "Frames read left-to-right, top-to-bottom, no padding and no margin. A single horizontal strip is the preferred layout for new art; SpriteSheet also reads the square grids the shipped crow/coin/door sheets use, deriving columns from the sheet width."
+    "enemy": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "anchor": "feet",
+      "description": "Ground enemies. Same footprint as the player so threat reads at a glance.",
+      "art_notes": [
+        "Same margin and registration rules as `character`.",
+        "Readable silhouette at 1x — a child has to tell it apart from scenery instantly."
+      ]
     },
-    "classes": {
-        "character": {
-            "frameWidth": 64,
-            "frameHeight": 64,
-            "anchor": "feet",
-            "description": "The player. SPRITE_SIZE, matching the shipped crow.",
-            "art_notes": [
-                "Leave 2-3px of clear margin inside the frame left, right and top so the silhouette is never clipped.",
-                "Feet touch the bottom edge of the frame — that edge IS the ground contact line.",
-                "Every frame of a cycle registered to the same origin, or the character swims."
-            ]
-        },
-        "enemy": {
-            "frameWidth": 64,
-            "frameHeight": 64,
-            "anchor": "feet",
-            "description": "Ground enemies. Same footprint as the player so threat reads at a glance.",
-            "art_notes": [
-                "Same margin and registration rules as `character`.",
-                "Readable silhouette at 1x — a child has to tell it apart from scenery instantly."
-            ]
-        },
-        "npc": {
-            "frameWidth": 64,
-            "frameHeight": 64,
-            "anchor": "feet",
-            "description": "Friendly characters the player interacts with (the owls).",
-            "art_notes": [
-                "Friendly and unthreatening; this is who a 5-7 year old meets before doing maths.",
-                "Same margin and registration rules as `character`."
-            ]
-        },
-        "prop": {
-            "frameWidth": 64,
-            "frameHeight": 64,
-            "anchor": "feet",
-            "description": "World objects that stand on the ground (owl stations). Chain links are NOT props — see `attachment`.",
-            "art_notes": [
-                "Bottom edge of the frame is where it meets the floor."
-            ]
-        },
-        "attachment": {
-            "frameWidth": 32,
-            "frameHeight": 32,
-            "anchor": "center",
-            "description": "32x32 objects drawn attached to another entity rather than standing on the floor — the chain links across an owl's perch. ASSET_MANIFEST lists these at 32x32 alongside coins, not with the 64x64 owl station.",
-            "art_notes": [
-                "Centred on its attach point, not bottom-aligned.",
-                "ASSET_MANIFEST requires a link to stay countable at 22px in a row of three, which is the size npc.gd draws it at — so the silhouette has to survive being read small.",
-                "Authored at 32 and drawn at 22 is a 0.6875 downscale. The manifest asks for both; if the links ever look mushy, author at 22 rather than sharpening the 32."
-            ]
-        },
-        "door": {
-            "frameWidth": 88,
-            "frameHeight": 96,
-            "anchor": "feet",
-            "description": "Level exits. The manifest lists doors as their own size, not as props.",
-            "art_notes": [
-                "Bottom edge of the frame meets the floor.",
-                "Symmetric horizontally unless the door is deliberately handed."
-            ]
-        },
-        "pickup": {
-            "frameWidth": 32,
-            "frameHeight": 32,
-            "anchor": "center",
-            "description": "Coins and small collectibles. One tile, centred on its spawn point.",
-            "art_notes": [
-                "Centred, not bottom-aligned — these float.",
-                "Coins keep the shipped silhouette and the gold ink in every world."
-            ]
-        },
-        "ui": {
-            "frameWidth": 32,
-            "frameHeight": 32,
-            "anchor": "center",
-            "description": "HUD and maths-board icons. The manifest allows 32x32 or 16x16 and nothing between.",
-            "art_notes": [
-                "Must stay legible at 1x on a phone; no detail finer than 2px.",
-                "A head crop, not a shrunk full body, when derived from a world sprite."
-            ]
-        }
+    "npc": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "anchor": "feet",
+      "body": {
+        "width": 44,
+        "height": 52,
+        "why": "The INTERACT zone, in frame pixels, measured up from the frame's bottom edge - which `anchor: feet` puts on the ground contact line. An owl has no collider; the only shape it has is the one a child has to walk into, so this is it. It was a 96x96 box in Npc.tscn, three tiles by three, and encounters fire on proximity - so an owl reached out and started a maths problem from a tile and a half away, at a child who was running past. Sized to the owl instead: the art is drawn 44x53 inside its 64px frame, so this is the bird, and a child now has to walk up to it."
+      },
+      "description": "Friendly characters the player interacts with (the owls).",
+      "art_notes": [
+        "Friendly and unthreatening; this is who a 5-7 year old meets before doing maths.",
+        "Same margin and registration rules as `character`."
+      ]
+    },
+    "prop": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "anchor": "feet",
+      "description": "World objects that stand on the ground (owl stations). Chain links are NOT props — see `attachment`.",
+      "art_notes": [
+        "Bottom edge of the frame is where it meets the floor."
+      ]
+    },
+    "attachment": {
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "anchor": "center",
+      "description": "32x32 objects drawn attached to another entity rather than standing on the floor — the chain links across an owl's perch. ASSET_MANIFEST lists these at 32x32 alongside coins, not with the 64x64 owl station.",
+      "art_notes": [
+        "Centred on its attach point, not bottom-aligned.",
+        "ASSET_MANIFEST requires a link to stay countable at 22px in a row of three, which is the size npc.gd draws it at — so the silhouette has to survive being read small.",
+        "Authored at 32 and drawn at 22 is a 0.6875 downscale. The manifest asks for both; if the links ever look mushy, author at 22 rather than sharpening the 32."
+      ]
+    },
+    "door": {
+      "frameWidth": 88,
+      "frameHeight": 96,
+      "anchor": "feet",
+      "description": "Level exits. The manifest lists doors as their own size, not as props.",
+      "art_notes": [
+        "Bottom edge of the frame meets the floor.",
+        "Symmetric horizontally unless the door is deliberately handed."
+      ]
+    },
+    "pickup": {
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "anchor": "center",
+      "description": "Coins and small collectibles. One tile, centred on its spawn point.",
+      "art_notes": [
+        "Centred, not bottom-aligned — these float.",
+        "Coins keep the shipped silhouette and the gold ink in every world."
+      ]
+    },
+    "bonus_pickup": {
+      "frameWidth": 64,
+      "frameHeight": 64,
+      "anchor": "center",
+      "description": "The three big coins hidden in every level. Two tiles across, centred on its spawn point, and deliberately NOT the size of a coin: a child has to tell one from an ordinary coin across a screen, because a coin goes into a lifetime purse and this is a third of a level's progress.",
+      "art_notes": [
+        "Centred, not bottom-aligned — these float, like a coin.",
+        "It must read as a BIGGER, RARER coin rather than a different object. The reward it stands for is the currency the child already understands.",
+        "Nine frames on a 3x3 grid, the same layout as the coin sheet, so replacing it is a file copy with no registry change.",
+        "There is no second asset for the collected state. big_coin.gd builds that from this same art - darkened to a tint of itself and ringed in gold - so a replacement gets its ghost for free."
+      ]
+    },
+    "ui": {
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "anchor": "center",
+      "description": "HUD and maths-board icons. The manifest allows 32x32 or 16x16 and nothing between.",
+      "art_notes": [
+        "Must stay legible at 1x on a phone; no detail finer than 2px.",
+        "A head crop, not a shrunk full body, when derived from a world sprite."
+      ]
+    },
+    "parallax": {
+      "frameWidth": 960,
+      "frameHeight": 576,
+      "anchor": "feet",
+      "description": "Background mountain ranges, three per world. One screen wide and 18 tiles tall, tiled horizontally by a ParallaxLayer.",
+      "art_notes": [
+        "Transparent above the ridge line. The sky gradient shows through it, so a baked background colour would cover the sky the strip is supposed to sit in.",
+        "Bottom edge is the horizon - `feet`, like anything else that stands on a line.",
+        "Tileable on x: the ridge height at column 0 must equal the height one past the right edge, or the seam walks across the screen every time the strip repeats.",
+        "No outline. sprite_spec's outline rule already exempts sky/far/mid, and an ink line here would pull the range forward into the play layer."
+      ]
     }
+  }
 }

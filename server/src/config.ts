@@ -77,6 +77,15 @@ export const config = {
         writesPerMinutePerDevice: int('CROW_SAVE_WRITES_PER_MIN', 6),
     },
 
+    play: {
+        /**
+         * How many play pings one request may carry. A ping is a timestamp and
+         * nothing else, and the client only makes one every few minutes, so a
+         * batch this size covers a couple of hours of offline play.
+         */
+        maxPingsPerBatch: int('CROW_PLAY_MAX_PING_BATCH', 60),
+    },
+
     mail: {
         driver: str('CROW_MAIL_DRIVER', 'log'),
         endpoint: str('CROW_MAIL_ENDPOINT', ''),
@@ -98,6 +107,23 @@ export const config = {
         sessionGapMinutes: int('CROW_SESSION_GAP_MINUTES', 30),
         /** How many days of daily series the overview returns. */
         overviewDays: int('CROW_OVERVIEW_DAYS', 28),
+        /**
+         * The ladder tuning loop (see lib/ladderTuning.ts). The band is the
+         * documented 70-85% sweet spot; the sample gates are what stops a
+         * handful of answers from one child on one afternoon turning into a
+         * knob change nobody can reason about a week later.
+         */
+        ladder: {
+            windowDays: int('CROW_LADDER_WINDOW_DAYS', 7),
+            bandLow: int('CROW_LADDER_BAND_LOW_PCT', 70) / 100,
+            bandHigh: int('CROW_LADDER_BAND_HIGH_PCT', 85) / 100,
+            minAttempts: int('CROW_LADDER_MIN_ATTEMPTS', 200),
+            minChildren: int('CROW_LADDER_MIN_CHILDREN', 1),
+            minDaysWithPlay: int('CROW_LADDER_MIN_DAYS', 4),
+            reviewFloorPct: int('CROW_LADDER_REVIEW_FLOOR_PCT', 50) / 100,
+            /** One change moves a lane weight by this much. Never more. */
+            step: int('CROW_LADDER_STEP_PCT', 5) / 100,
+        },
     },
 } as const;
 

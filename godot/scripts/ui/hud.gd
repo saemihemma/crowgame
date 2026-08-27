@@ -20,13 +20,16 @@ var _coins := 0
 var _hearts: HeartRow
 var _coin_chip: CoinChip
 var _owl_ring: OwlRing
+var _big_coins: PipRow
 
 func _ready() -> void:
 	layer = 5
 	_build()
+	_build_big_coin_row()
 	_build_ability_row()
 	_coins = int(SaveManager.get_data().get("coins", 0))
 	EventBus.coins_changed.connect(_on_coins_changed)
+	EventBus.big_coins_changed.connect(_on_big_coins_changed)
 	EventBus.ability_granted.connect(_on_ability_granted)
 	EventBus.ability_revoked.connect(_on_ability_revoked)
 	EventBus.curriculum_step_up.connect(_on_curriculum_step_up)
@@ -68,21 +71,70 @@ func _build() -> void:
 	_owl_ring.offset_bottom = m + OwlRing.EXTENT * 2.0
 	add_child(_owl_ring)
 
-# ─── AbilitySlots (top-right, AbilitySlots.ts) ─────────────
+# ─── Ability slots ─────────────────────────────────────────
 var _ability_row: HBoxContainer
 var _ability_chips: Dictionary = {}  # abilityId -> Label
+
+## Under the coin chip, in the LEFT pod.
+##
+## It used to anchor to the bottom right, on the reasoning that the top right
+## belongs to the owl ring -- which is true, and skipped the question of what was
+## already in the bottom right. The jump and shoot buttons are, and the first
+## screenshot ever taken of a granted ability (godot/tools/capture.sh hud-ability)
+## shows "Double Jump" printed across the jump button. Nothing had ever drawn a
+## chip and a control at the same time.
+##
+## The left pod is where it belonged anyway: hearts, coins and abilities are all
+## answers to "what do I have", and §8.2 gives that column to exactly that. The
+## gap is derived from the two things above it rather than guessed, so resizing a
+## heart or the chip cannot leave the three crowding.
+## This run's big coins, directly under the owl ring.
+##
+## It belongs beside the ring rather than beside the coin chip, because it is the
+## same KIND of fact: how close am I to finishing this level. The coin chip is a
+## lifetime purse and only ever rises; these three reset with the run, and a child
+## who cannot see them has no way to know the level holds any.
+##
+## Hidden when the level holds none, so the practice arena does not carry an empty
+## promise.
+func _build_big_coin_row() -> void:
+	_big_coins = PipRow.make(3, 0, "coin", "coin", true)
+	_big_coins.anchor_left = 1.0
+	_big_coins.anchor_right = 1.0
+	_big_coins.visible = false
+	add_child(_big_coins)
+	_place_big_coin_row()
+
+## Right-anchored by offsets, like the ring above it, and positioned FROM the
+## ring rather than from a guessed number -- so changing OwlRing.EXTENT moves both
+## instead of leaving a gap that nobody notices until a screenshot.
+func _place_big_coin_row() -> void:
+	if _big_coins == null:
+		return
+	var m := _margin()
+	var w := _big_coins.custom_minimum_size.x
+	var h := _big_coins.custom_minimum_size.y
+	_big_coins.offset_left = -m - w
+	_big_coins.offset_right = -m
+	_big_coins.offset_top = m + OwlRing.EXTENT * 2.0 + POD_GAP
+	_big_coins.offset_bottom = _big_coins.offset_top + h
+
+func _on_big_coins_changed(found: int, total: int) -> void:
+	if _big_coins == null:
+		return
+	_big_coins.visible = total > 0
+	if total <= 0:
+		return
+	_big_coins.set_counts(total, found)
+	_place_big_coin_row()
+	if found > 0:
+		UiFx.icon_pop(_big_coins)
 
 func _build_ability_row() -> void:
 	_ability_row = HBoxContainer.new()
 	_ability_row.add_theme_constant_override("separation", 8)
-	# Bottom right: the top right belongs to the owl ring, and two chips there
-	# would compete with it.
-	_ability_row.anchor_left = 1.0
-	_ability_row.anchor_right = 1.0
-	_ability_row.anchor_top = 1.0
-	_ability_row.anchor_bottom = 1.0
-	_ability_row.offset_left = -176
-	_ability_row.offset_top = -96
+	_ability_row.position = Vector2(_margin(),
+		_margin() + HeartRow.HEART + POD_GAP + CoinChip.HEIGHT + POD_GAP)
 	_ability_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_ability_row)
 

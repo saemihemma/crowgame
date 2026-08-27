@@ -8,6 +8,7 @@
     "danger": "#FF4D4D",
     "textColor": "#FFF8E7",
     "textShadow": "#1A0E2E",
+        "overlay_shade": "#1A0E2E",
     "boardBg": "#4B1B6B",
     "boardBorder": "#FFE14D",
     "buttonBg": "#7B2FBF",
@@ -62,8 +63,7 @@
   },
   "controls": {
     "dpadSprite": "ui_sugarstorm_dpad",
-    "jumpBtnSprite": "ui_sugarstorm_jump",
-    "peckBtnSprite": "ui_sugarstorm_peck"
+    "jumpBtnSprite": "ui_sugarstorm_jump"
   },
   "door": {
     "sprite": "door_sugarstorm",

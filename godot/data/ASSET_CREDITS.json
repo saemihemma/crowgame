@@ -161,7 +161,7 @@
         "frame_count": 4,
         "processing": "Assembled 4 frames horizontally into spritesheet",
         "status": "optional",
-        "fallback": "Procedurally generated in BootScene.ts"
+        "fallback": "Procedurally generated at boot"
       }
     }
   },

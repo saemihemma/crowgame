@@ -8,6 +8,8 @@ var _current_level_key := ""
 
 ## Cached per level: level select asks for all six at once, every time it opens.
 var _owl_counts: Dictionary = {}
+var _big_coin_counts: Dictionary = {}
+var _clearing_owl_counts: Dictionary = {}
 
 func _ready() -> void:
 	init(DataManager.get_dict("LEVEL_REGISTRY"))
@@ -45,9 +47,6 @@ func get_next_level() -> Variant:
 		return null
 	return _registry[idx + 1]
 
-func get_next_level_key() -> String:
-	var nxt = get_next_level()
-	return String(nxt.get("key", "")) if nxt != null else ""
 
 func transition_to(target_level_key: String) -> String:
 	if _current_level_key != "":
@@ -69,17 +68,22 @@ func owl_count(key: String) -> int:
 	_owl_counts[key] = count
 	return count
 
-func _count_owls(key: String) -> int:
-	var entry: Variant = get_level(key)
-	if entry == null:
-		return 0
-	var path := "res://%s" % String(entry.get("mapFile", ""))
+## One reader for the compiled map. Two counters walk it now, and a second copy
+## of "open it, parse it, give up quietly" is exactly where the two would drift.
+func _load_map(key: String) -> Dictionary:
+	if get_level(key) == null:
+		return {}
+	var path := "res://%s" % map_file(key)
 	if not FileAccess.file_exists(path):
-		return 0
+		return {}
 	var f := FileAccess.open(path, FileAccess.READ)
 	var level: Variant = JSON.parse_string(f.get_as_text())
 	f.close()
-	if typeof(level) != TYPE_DICTIONARY:
+	return level if level is Dictionary else {}
+
+func _count_owls(key: String, exclude_bonus: bool = false) -> int:
+	var level := _load_map(key)
+	if level.is_empty():
 		return 0
 
 	var by_id := {}
@@ -98,9 +102,131 @@ func _count_owls(key: String) -> int:
 				if String(prop.get("name", "")) == "npc_id":
 					id = String(prop.get("value", ""))
 			# Only challengers count. A signpost NPC is not a goal.
-			if String(by_id.get(id, {}).get("behavior", "")) == "math_challenger":
+			if String(by_id.get(id, {}).get("behavior", "")) != "math_challenger":
+				continue
+			if exclude_bonus and _is_bonus(obj):
+				continue
+			count += 1
+	return count
+
+## How many owls the magic door asks for before it opens.
+##
+## Freeing the basic owls is what CLEARS a level - the door is the reward for
+## doing the work, not a shortcut past it. But "all of them" is not always the
+## right bar: a level can hold a hard-to-reach owl meant to be revisited later
+## with a better crow, and that owl must not lock the level behind it. So the
+## registry may name a smaller number, and omitting the field means "all the
+## owls in this level", which is what a story level wants.
+##
+## Clamped to the level's actual owl count: a registry asking for six owls in a
+## three-owl level would otherwise make the door permanently unopenable, and
+## that failure mode is silent - the player just walks into a door forever.
+func owls_required_for_door(key: String) -> int:
+	var entry: Variant = get_level(key)
+	if entry == null:
+		return 0
+	# The default is every NON-BONUS owl, derived from the level rather than
+	# written down. A hand-written "this level needs 2" beside a level that holds
+	# 3 is one typo away from a door that never opens, and the failure is silent:
+	# the child just walks into it forever.
+	return required_for_door(entry as Dictionary, owls_that_clear_the_level(key))
+
+
+## The owls whose freeing is what CLEARS a level -- everything the level holds
+## except the bonus one, which is meant to be revisited later with a better crow
+## and must never be able to lock the level behind itself.
+func owls_that_clear_the_level(key: String) -> int:
+	if _clearing_owl_counts.has(key):
+		return int(_clearing_owl_counts[key])
+	var count := _count_owls(key, true)
+	_clearing_owl_counts[key] = count
+	return count
+
+
+## The decision, with the registry lookup taken out of it, so the cases that
+## matter can be fed directly - including the two the shipped registry does not
+## contain (a requirement above the owl count, and a level with no owls at all).
+static func required_for_door(entry: Dictionary, total: int) -> int:
+	if not entry.has("owlsRequiredForDoor"):
+		return total
+	return clampi(int(entry.get("owlsRequiredForDoor", total)), 0, total)
+
+
+## How many big coins a level holds.
+##
+## The denominator for that level's share of the completion percentage, and for
+## the HUD row. Read off the level rather than assumed to be three: a level that
+## holds two must not draw three sockets and send a child looking for one that
+## does not exist.
+## Whether a spawned NPC is the level's bonus owl.
+##
+## A property on the SPAWN rather than on the roster entry, because the same owl
+## definition can be an ordinary owl in one level and the hard one in another --
+## what makes it a bonus is where it was put, not what it is.
+static func _is_bonus(obj: Dictionary) -> bool:
+	for prop in obj.get("properties", []):
+		if String(prop.get("name", "")) == "bonus":
+			return bool(prop.get("value", false))
+	return false
+
+
+func big_coin_count(key: String) -> int:
+	if _big_coin_counts.has(key):
+		return int(_big_coin_counts[key])
+	var count := _count_big_coins(key)
+	_big_coin_counts[key] = count
+	return count
+
+func _count_big_coins(key: String) -> int:
+	var count := 0
+	for layer in _load_map(key).get("layers", []):
+		if String(layer.get("type", "")) != "objectgroup":
+			continue
+		for obj in layer.get("objects", []):
+			if String(obj.get("type", "")) == "big_coin":
 				count += 1
 	return count
 
+## Whether a level is part of "how much of the game have I finished".
+##
+## The practice arena is not. It is a drill room holding twenty owls, and folding
+## it into the average would swamp the eight levels that are actually the game: a
+## child who never opens it would be permanently capped, and one who grinds it
+## would watch the number move for something that is not progress.
+##
+## Declared in the registry rather than tested against a hardcoded key, so a
+## second practice space is a data change.
+func counts_toward_completion(key: String) -> bool:
+	var entry: Variant = get_level(key)
+	if entry == null:
+		return false
+	return bool((entry as Dictionary).get("countsTowardCompletion", true))
+
+
 func has_level(key: String) -> bool:
 	return get_level(key) != null
+
+## Which compiled map file a level actually loads.
+##
+## `levels.wide_gap_pass` off swaps in `<name>.classic.json` -- a frozen snapshot
+## of the geometry as it shipped before the gap-vocabulary pass. So the two
+## layouts can be compared by toggling in the grown-up panel and re-entering the
+## level, rather than by reading a diff or reverting a commit, which is the only
+## way a question like "is this too hard for a five-year-old" gets answered.
+##
+## The snapshots have no spec and are never recompiled, which is the point: a
+## baseline that moves is not a baseline. tools/validate-content.ts walks specs
+## rather than compiled files, so they sit alongside without being checked
+## against anything.
+##
+## Falls through to the authored path when a snapshot is missing, so deleting the
+## snapshots degrades to "the new geometry, always" instead of to a blank level.
+func map_file(key: String) -> String:
+	var entry: Variant = get_level(key)
+	if entry == null:
+		return ""
+	var authored := String((entry as Dictionary).get("mapFile", ""))
+	if bool(Config.flag("levels/wide_gap_pass", true)):
+		return authored
+	var classic := authored.replace(".json", ".classic.json")
+	return classic if FileAccess.file_exists("res://%s" % classic) else authored

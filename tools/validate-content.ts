@@ -2,7 +2,7 @@ import Ajv2020 from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
 import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
-import { compileLevel, type LevelSpec } from './level_compiler';
+import { compileLevel, GID, COLLIDING_TILE_IDS, type LevelSpec } from './level_compiler';
 import { deriveCurriculumStep, deriveDifficultyTraits } from './math_curriculum';
 import {
     computeInitialProblemELO,
@@ -11,7 +11,7 @@ import {
     reviewMaterializedMathBatches,
     type MaterializationResult,
 } from './math_authoring';
-import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt } from './math_verifier';
+import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt, isUnrecognisedEquation } from './math_verifier';
 import type { MathProblem } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
@@ -103,7 +103,10 @@ function validateCrossReferences(): void {
         for (const file of readdirSync(specsDir).filter(f => f.endsWith('.json'))) {
             const spec = loadJson(join(specsDir, file)) as {
                 id: string;
-                spawns: { npcs?: Array<{ npc_id: string }> };
+                spawns: {
+                    npcs?: Array<{ npc_id: string }>;
+                    collectibles?: Array<{ type: string; id?: string }>;
+                };
                 exits: Array<{ target_level: string }>;
             };
 
@@ -120,6 +123,26 @@ function validateCrossReferences(): void {
                 console.error(`  FAIL: ${file} missing player spawn point`);
                 errors++;
             }
+
+            // Big coins are identified by an explicit id, and the save records
+            // that id. A missing one means the coin can never be banked; a
+            // duplicated one means two coins share a record, so collecting
+            // either marks both -- and both failures are silent at runtime,
+            // which is why they are caught here instead.
+            const coinIds = new Set<string>();
+            for (const col of spec.spawns.collectibles || []) {
+                if (col.type !== 'big_coin') continue;
+                if (!col.id) {
+                    console.error(`  FAIL: ${file} has a big_coin with no id; it could never be banked`);
+                    errors++;
+                    continue;
+                }
+                if (coinIds.has(col.id)) {
+                    console.error(`  FAIL: ${file} reuses big_coin id "${col.id}"; two coins would share one record`);
+                    errors++;
+                }
+                coinIds.add(col.id);
+            }
         }
     }
 
@@ -128,7 +151,7 @@ function validateCrossReferences(): void {
     if (existsSync(mathDir)) {
         const problemIds = new Set<string>();
         const promptKeys = new Map<string, string>();
-        for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+        for (const file of readdirSync(mathDir).filter(f => f.startsWith('problems_') && f.endsWith('.json'))) {
             const pool = loadJson(join(mathDir, file)) as {
                 problems: Array<{
                     id: string;
@@ -191,6 +214,20 @@ function validateMathAuthoringFiles(): void {
 }
 
 function validateProblemMetadata(problem: MathProblem, file: string): void {
+    // An equation whose shape nothing recognises must never reach the checks
+    // below, because both of them SKIP when the parse comes back empty -- so an
+    // unrecognised shape would ship with neither its answer nor its operands
+    // ever independently re-derived. Refuse it instead.
+    if (isUnrecognisedEquation(problem.prompt.text)) {
+        console.error(
+            `  FAIL: Problem ${problem.id} in ${file} is an equation whose unknown is not alone `
+            + `at the end ("${problem.prompt.text}"). Nothing can verify it. Teach `
+            + `parseRelationalPrompt in tools/math_verifier.ts its shape first.`,
+        );
+        errors++;
+        return;
+    }
+
     const evaluatedAnswer = evaluateArithmeticPrompt(problem.prompt.text);
     if (evaluatedAnswer !== null && problem.answer.correct !== evaluatedAnswer) {
         console.error(
@@ -554,7 +591,7 @@ if (existsSync(npcRegPath)) {
 console.log('\nMath problems:');
 const mathDir = join(DATA_DIR, 'math');
 if (existsSync(mathDir)) {
-    for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+    for (const file of readdirSync(mathDir).filter(f => f.startsWith('problems_') && f.endsWith('.json'))) {
         validateFile(join(mathDir, file), join(SCHEMA_DIR, 'math-problem.schema.json'), file);
     }
 }
@@ -619,7 +656,7 @@ function validateLevelMathGating(): void {
         npcRegistry.npcs.flatMap(npc => npc.components).find(c => c.type === 'math_challenge')?.problemTypes ?? [],
     );
     const byDomain = new Map<string, MathProblem[]>();
-    for (const file of readdirSync(join(DATA_DIR, 'math')).filter(f => f.endsWith('.json'))) {
+    for (const file of readdirSync(join(DATA_DIR, 'math')).filter(f => f.startsWith('problems_') && f.endsWith('.json'))) {
         const pool = JSON.parse(readFileSync(join(DATA_DIR, 'math', file), 'utf-8')) as { problems?: MathProblem[] };
         for (const problem of pool.problems ?? []) {
             const list = byDomain.get(problem.domain) ?? [];
@@ -690,6 +727,41 @@ function validateProblemCatalogFreshness(): void {
     }
 }
 validateProblemCatalogFreshness();
+/**
+ * The lane weights the API recommends against must be the ones the game plays
+ * with. The API image contains no godot/data (deploy/api/Dockerfile copies only
+ * `server/`), so they are generated in -- and a generated copy that nothing
+ * checks is a copy that drifts. See tools/gen_ladder_weights.ts.
+ */
+function validateLadderWeightsFreshness(): void {
+    console.log('\nLadder weights freshness:');
+    const generated = join(ROOT, 'server', 'src', 'generated', 'ladderWeights.ts');
+    if (!existsSync(generated)) {
+        console.error('  FAIL: server/src/generated/ladderWeights.ts is missing. Run: npx tsx tools/gen_ladder_weights.ts');
+        errors++;
+        return;
+    }
+    const source = readFileSync(generated, 'utf-8');
+    const match = source.match(/TUNING_HASH = "([0-9a-f]{64})"/);
+    if (!match) {
+        console.error('  FAIL: ladderWeights.ts carries no TUNING_HASH; regenerate it.');
+        errors++;
+        return;
+    }
+    const { createHash } = require('node:crypto') as typeof import('node:crypto');
+    const tuningPath = join(DATA_DIR, 'tuning', 'math_tuning.json');
+    const actual = createHash('sha256').update(readFileSync(tuningPath, 'utf-8')).digest('hex');
+    if (actual !== match[1]) {
+        console.error('  FAIL: the API\'s lane weights are stale against godot/data/tuning/math_tuning.json. '
+            + 'Run: npx tsx tools/gen_ladder_weights.ts');
+        errors++;
+    } else {
+        console.log('  OK: the API recommends against the weights the game plays with');
+        validated++;
+    }
+}
+validateLadderWeightsFreshness();
+
 // The parent report renders TextManager.t("kind_" + kind) and ("domain_" + d).
 // Those prefixes are exempt from the dead-key scanner because they are built at
 // runtime — which means a NEW kind or newly served domain without a translation
@@ -805,6 +877,179 @@ validateGradeExpectations();
 // Cross-reference validation
 validateCrossReferences();
 validateCompiledLevels();
+
+/**
+ * The tile contract, checked against the SPEC rather than against the compiler.
+ *
+ * Compiled-level freshness above re-runs the compiler and compares, so it agrees
+ * with whatever the compiler currently does -- including doing it wrong. This
+ * derives the runs from the spec independently and asserts the properties a
+ * player can see: a run of two or more begins and ends with a cap, decoration
+ * never carries collision, and nothing is placed outside the sheet.
+ *
+ * Worth a guard because the sheet and the compiler are two files that have to
+ * agree on the same sixteen numbers, and for a long time they agreed only on
+ * three of them.
+ */
+function validateLevelTileUse(): void {
+    console.log('\nLevel tile contract:');
+
+    const specsDir = join(DATA_DIR, 'levels', 'specs');
+    const compiledDir = join(DATA_DIR, 'levels', 'compiled');
+    if (!existsSync(specsDir) || !existsSync(compiledDir)) {
+        console.log('  SKIP: specs or compiled directory missing');
+        return;
+    }
+
+    const manifest = loadJson(join(DATA_DIR, 'tilesets', 'tileset_manifest.json')) as {
+        tilesets: Array<{ key: string; worldSkin?: boolean; tiles: Array<{ index: number; role: string; collides: boolean }> }>;
+    };
+    const scatterGids = new Set<number>(GID.scatter as unknown as number[]);
+    const collidingGids = new Set(COLLIDING_TILE_IDS.map(id => id + 1));
+
+    let checkedRuns = 0;
+    let checkedScatter = 0;
+    const usedByALevel = new Set<string>();
+
+    for (const file of readdirSync(specsDir).filter(f => f.endsWith('.json'))) {
+        const spec = loadJson(join(specsDir, file)) as LevelSpec;
+        const compiledPath = join(compiledDir, file.replace('.spec.json', '.json'));
+        if (!existsSync(compiledPath)) continue;
+        const compiled = loadJson(compiledPath) as {
+            width: number;
+            layers: Array<{ name: string; type: string; data?: number[] }>;
+            tilesets: Array<{ tilecount: number; name?: string }>;
+        };
+        for (const t of compiled.tilesets) if (t.name) usedByALevel.add(t.name);
+        const width = compiled.width;
+        const layer = (name: string) => compiled.layers.find(l => l.name === name && l.type === 'tilelayer');
+        const ground = layer('ground')?.data;
+        const decoration = layer('decoration')?.data;
+        if (!ground || !decoration) {
+            console.error(`  FAIL: ${file} has no ground or decoration tile layer`);
+            errors++;
+            continue;
+        }
+        const tilecount = compiled.tilesets[0]?.tilecount ?? 0;
+        const at = (data: number[], x: number, y: number) => data[y * width + x] ?? 0;
+
+        // Every gid placed has to exist in the sheet.
+        for (const [name, data] of [['ground', ground], ['decoration', decoration]] as const) {
+            for (const gid of data) {
+                if (gid !== 0 && (gid < 1 || gid > tilecount)) {
+                    console.error(`  FAIL: ${file} ${name} layer places gid ${gid}, outside 1..${tilecount}`);
+                    errors++;
+                    break;
+                }
+            }
+        }
+
+        // Decoration must never collide, and the ground must never be scatter.
+        for (const gid of decoration) {
+            if (gid !== 0 && collidingGids.has(gid)) {
+                console.error(`  FAIL: ${file} puts colliding gid ${gid} in the decoration layer`);
+                errors++;
+                break;
+            }
+        }
+        for (const gid of ground) {
+            if (scatterGids.has(gid)) {
+                console.error(`  FAIL: ${file} puts scatter gid ${gid} in the ground layer`);
+                errors++;
+                break;
+            }
+        }
+
+        for (const platform of spec.platforms) {
+            const isGround = platform.type === 'ground';
+            const last = platform.x + platform.width - 1;
+            if (platform.width < 2 || platform.x < 0 || last >= width) continue;
+            checkedRuns++;
+            const wantLeft = isGround ? GID.groundCapLeft : GID.platformCapLeft;
+            const wantRight = isGround ? GID.groundCapRight : GID.platformCapRight;
+            const gotLeft = at(ground, platform.x, platform.y);
+            const gotRight = at(ground, last, platform.y);
+            if (gotLeft !== wantLeft) {
+                console.error(`  FAIL: ${file} run at (${platform.x},${platform.y}) w${platform.width} `
+                    + `starts with gid ${gotLeft}, expected the left cap ${wantLeft}`);
+                errors++;
+            }
+            if (gotRight !== wantRight) {
+                console.error(`  FAIL: ${file} run at (${platform.x},${platform.y}) w${platform.width} `
+                    + `ends with gid ${gotRight}, expected the right cap ${wantRight}`);
+                errors++;
+            }
+            // A tuft hanging over the end of a ledge looks like it is falling off.
+            for (const x of [platform.x, last]) {
+                if (platform.y - 1 >= 0 && at(decoration, x, platform.y - 1) !== 0) {
+                    console.error(`  FAIL: ${file} scatters over the capped cell (${x},${platform.y - 1})`);
+                    errors++;
+                }
+            }
+        }
+
+        for (let i = 0; i < decoration.length; i++) {
+            if (decoration[i] === 0) continue;
+            checkedScatter++;
+            const x = i % width;
+            const y = Math.floor(i / width);
+            // Every mark has to be sitting on something.
+            if (!collidingGids.has(at(ground, x, y + 1))) {
+                console.error(`  FAIL: ${file} scatters at (${x},${y}) with no ground beneath it`);
+                errors++;
+            }
+        }
+    }
+
+    // The sheet has to declare everything the compiler places, with the same
+    // collision answer. Two files, sixteen numbers, one contract.
+    //
+    // The exemption is `worldSkin: false`, not a hard-coded key. It used to be
+    // `|| tileset.key === 'forest_tiles'`, which is how that sheet came to
+    // declare four empty cells as colliding without anything noticing: the
+    // manifest handed it the full generated role list, and the one check that
+    // would have caught the mismatch had its name written into a skip. A sheet
+    // is exempt only by declaring that it cannot dress a world -- and then it
+    // has to actually not dress one, which is the next loop.
+    for (const tileset of manifest.tilesets) {
+        if (tileset.worldSkin === false && usedByALevel.has(tileset.key)) {
+            console.error(`  FAIL: ${tileset.key} is declared worldSkin false but a compiled level names it`);
+            errors++;
+        }
+    }
+    for (const tileset of manifest.tilesets) {
+        if (!tileset.key.endsWith('_tiles') || tileset.worldSkin === false) continue;
+        const declared = new Map(tileset.tiles.map(t => [t.index, t]));
+        for (const id of COLLIDING_TILE_IDS) {
+            const entry = declared.get(id);
+            if (!entry) {
+                console.error(`  FAIL: ${tileset.key} does not declare tile ${id}, which the compiler places`);
+                errors++;
+            } else if (!entry.collides) {
+                console.error(`  FAIL: ${tileset.key} declares tile ${id} (${entry.role}) as non-colliding, `
+                    + 'but the compiler places it in the ground layer');
+                errors++;
+            }
+        }
+        for (const gid of GID.scatter as unknown as number[]) {
+            const entry = declared.get(gid - 1);
+            if (!entry) {
+                console.error(`  FAIL: ${tileset.key} does not declare scatter tile ${gid - 1}`);
+                errors++;
+            } else if (entry.collides) {
+                console.error(`  FAIL: ${tileset.key} declares scatter tile ${gid - 1} as colliding`);
+                errors++;
+            }
+        }
+    }
+
+    if (errors === 0) {
+        console.log(`  OK: ${checkedRuns} capped run(s) and ${checkedScatter} scatter mark(s) `
+            + 'match the sheet the generator wrote');
+        validated++;
+    }
+}
+validateLevelTileUse();
 const materialized = validateMaterializedCurriculum();
 validateMathReviewReports(materialized);
 

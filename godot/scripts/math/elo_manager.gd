@@ -14,7 +14,8 @@ const DOMAINS := MathDomains.ALL
 var _stats: Dictionary = {}
 
 func _ready() -> void:
-	# Initialize from save if present, else defaults (matches BootScene order).
+	# Initialize from save if present, else defaults. Order matters: mastery
+	# restores before LearnerStateManager reads it.
 	var save := get_node_or_null("/root/SaveManager")
 	var elo_stats: Variant = save.get_data().get("eloStats", null) if save != null else null
 	initialize(elo_stats)

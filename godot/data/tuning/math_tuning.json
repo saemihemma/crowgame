@@ -20,12 +20,6 @@
     "at_level": 0.3,
     "stretch": 0.1
   },
-  "teaching": {
-    "hintMs": 900,
-    "revealMs": 2400,
-    "handoverMs": 4200,
-    "closeMs": 5200
-  },
   "golden": {
     "rate": 0.125,
     "firstTryCoinMultiplier": 2,
@@ -39,9 +33,30 @@
       10
     ]
   },
+  "selection": {
+    "_comment": "How sharply the owl aims INSIDE a lane. The lane weights decide which rung a question comes from; this decides which of that rung's questions. It used to be uniform, so the effective selection ELO the strategy computes and logs was never used for anything. withinLaneEloSpread is the softmax temperature in ELO points: a candidate one spread away from the learner's edge is about e times less likely than one sitting on it. Deliberately WIDE. Sharpening this is in direct tension with coverage -- tools/sim_learner_journey.ts exists because a thriving child once saw 335 of 4039 problems, and its floor of 450 distinct is the thing that will notice if this number gets greedy. Set it to 0 for uniform.",
+    "withinLaneEloSpread": 220
+  },
+  "reviewBacklog": {
+    "_comment": "What happens to the review queue when a child stops playing for a while. The SRS schedules items at day_1/day_3/day_7, which assumes steady play; a child who skips a week comes back with every item due at once. maxDuePerDomain is how many of them the selector is ever shown -- the queue keeps all of them, but the review lane draws from the most urgent few, so the backlog is worked through in urgency order instead of sampled uniformly out of a pile. staleAfterDays is when a schedule has been broken badly enough to stop meaning anything: an item that was due for review nine days ago has not been practised in a fortnight, so it comes back at the FRONT rather than behind every fresher day_1. Both are read-time: nothing here edits a review item, which is why it does not move the golden parity fixtures.",
+    "maxDuePerDomain": 3,
+    "staleAfterDays": 9
+  },
   "feedback": {
-    "retryLockoutMs": 900,
-    "correctCloseMs": 1500,
-    "revealCloseMs": 3000
+    "_comment": "How long a child waits to find out what happened. correctCloseMs is the one felt on every single right answer and it was 1.5s -- a second of nothing after the button had already gone green, which reads as the game thinking rather than as celebrating. 700ms holds the green long enough to be seen and lands the next thing before attention leaves. revealCloseMs is longer on purpose: after the second miss the board is TEACHING, showing the right answer with its explanation, and a young reader needs the sentence. retryLockoutMs stays at its floor rather than below it -- godot/tests/test_answer_feedback.gd pins it at >= 800ms because it has to outlast the wrong-answer tint, the shake and the hint fading in, and a retry that re-enables underneath its own animation is the bug that put the lockout there.",
+    "retryLockoutMs": 800,
+    "correctCloseMs": 700,
+    "revealCloseMs": 2400
+  },
+  "domainWeights": {
+    "_comment": "How often each subject comes due when the owl picks what to ask next. Weight 3 is due three times as often as weight 1. The core two carry the most weight because they are the year's actual curriculum; the rest are there so a child meets them at all. This is the dial for 'how much addition' -- before it existed the answer was 70%, by accident of list order.",
+    "addition": 3,
+    "subtraction": 3,
+    "counting": 2,
+    "number_sequence": 1,
+    "comparison": 1,
+    "pattern_matching": 1,
+    "multiplication": 2,
+    "division": 2
   }
 }

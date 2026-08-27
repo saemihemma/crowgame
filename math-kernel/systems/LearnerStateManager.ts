@@ -26,6 +26,13 @@ const ALL_MATH_DOMAINS: MathDomain[] = [
 ];
 
 const MAX_RECENT_ATTEMPTS = 40;
+/**
+ * How many of a domain's own attempts are kept for the unlock decision.
+ *
+ * Twenty, because the unlock rule asks for twenty. Held per domain so the answer
+ * does not depend on how often the selector happened to choose it.
+ */
+const MAX_DOMAIN_ATTEMPT_HISTORY = 20;
 const MAX_RECENT_PROBLEMS = 12;
 const MAX_BACKLOG_HISTORY = 8;
 const MAX_STEP_RESULTS = 10;
@@ -35,6 +42,8 @@ const IMMEDIATE_REVIEW_MAX_GAP = 4;
 // (shared byte-identical with the Godot port); read them via ladder()/gate().
 const ladder = () => mathTuning().ladder;
 const stretchGate = () => mathTuning().stretchGate;
+const reviewBacklog = () => mathTuning().reviewBacklog;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 const DOMAIN_PREREQUISITES: Partial<Record<MathDomain, MathDomain[]>> = {
     addition: [],
@@ -66,14 +75,14 @@ function createDomainNumberMap(initialValue = 0): DomainNumberMap {
 
 function createDomainHistoryMap(): LearnerDomainHistoryMap {
     return {
-        addition: { backlogHistory: [] },
-        subtraction: { backlogHistory: [] },
-        multiplication: { backlogHistory: [] },
-        division: { backlogHistory: [] },
-        counting: { backlogHistory: [] },
-        comparison: { backlogHistory: [] },
-        pattern_matching: { backlogHistory: [] },
-        number_sequence: { backlogHistory: [] },
+        addition: { backlogHistory: [], attemptHistory: [] },
+        subtraction: { backlogHistory: [], attemptHistory: [] },
+        multiplication: { backlogHistory: [], attemptHistory: [] },
+        division: { backlogHistory: [], attemptHistory: [] },
+        counting: { backlogHistory: [], attemptHistory: [] },
+        comparison: { backlogHistory: [], attemptHistory: [] },
+        pattern_matching: { backlogHistory: [], attemptHistory: [] },
+        number_sequence: { backlogHistory: [], attemptHistory: [] },
     };
 }
 
@@ -242,12 +251,34 @@ export class LearnerStateManager {
         return correctRate >= gate.minAccuracy && this.getConfidenceOffset(domain) >= gate.minConfidence;
     }
 
+    /**
+     * The review items the selector may draw from, most urgent first.
+     *
+     * Capped, and stale-aware. The SRS schedules at day_1/day_3/day_7, which
+     * assumes a child who plays most days; one who skips a week returns with
+     * everything due at once, and an uncapped list means the review lane samples
+     * uniformly out of a pile -- so the item they missed first can sit unasked
+     * while fresher ones keep coming up. The cap makes the backlog a queue.
+     *
+     * Staleness is the other half. Sorting by stage first put a day_7 item nine
+     * days overdue behind every day_1 item, which is backwards: nine days past a
+     * seven-day review is a fortnight without practice and its spacing has
+     * stopped meaning anything. Those sort as if immediate.
+     *
+     * READ-TIME ONLY, in both ports. Nothing here edits a review item, so the
+     * snapshot the golden fixtures assert on is untouched.
+     */
     getDueReviewItems(domain?: MathDomain): ReviewItem[] {
         const snapshot = this.getSnapshot();
         const currentAttemptCount = snapshot.mastery.problemsAttempted;
         const now = Date.now();
+        const staleMs = reviewBacklog().staleAfterDays * DAY_MS;
+        const urgency = (item: ReviewItem): number =>
+            item.dueAt !== null && now - item.dueAt >= staleMs
+                ? this.getStageRank('immediate')
+                : this.getStageRank(item.stage);
 
-        return snapshot.reviewItems
+        const due = snapshot.reviewItems
             .filter(item => item.stage !== 'graduated')
             .filter(item => !domain || item.domain === domain)
             .filter(item => {
@@ -260,12 +291,24 @@ export class LearnerStateManager {
                 return false;
             })
             .sort((a, b) => {
-                const stageRank = this.getStageRank(a.stage) - this.getStageRank(b.stage);
+                const stageRank = urgency(a) - urgency(b);
                 if (stageRank !== 0) return stageRank;
                 const aDue = a.dueAt ?? a.dueAfterAttempt ?? 0;
                 const bDue = b.dueAt ?? b.dueAfterAttempt ?? 0;
                 return aDue - bDue;
             });
+
+        // Per domain, not overall: capping the whole list would let one loud
+        // domain starve every other domain's reviews.
+        const cap = reviewBacklog().maxDuePerDomain;
+        if (cap <= 0) return due;
+        const taken = new Map<MathDomain, number>();
+        return due.filter(item => {
+            const n = taken.get(item.domain) ?? 0;
+            if (n >= cap) return false;
+            taken.set(item.domain, n + 1);
+            return true;
+        });
     }
 
     recordAttempt(attempt: LearnerAttemptSubmission): LearnerSnapshot {
@@ -298,6 +341,7 @@ export class LearnerStateManager {
         this.snapshot.recentProblemIds.push(attempt.problemId);
         this.snapshot.recentProblemIds = this.snapshot.recentProblemIds.slice(-MAX_RECENT_PROBLEMS);
 
+        this.pushDomainAttempt(attempt.domain, attempt.correct, attempt.firstAttempt);
         this.pushBacklogHistory(attempt.domain);
         this.refreshDerivedState();
         return this.getSnapshot();
@@ -353,6 +397,12 @@ export class LearnerStateManager {
 
         for (const domain of ALL_MATH_DOMAINS) {
             merged[domain].backlogHistory = [...(history[domain]?.backlogHistory ?? [])].slice(-MAX_BACKLOG_HISTORY);
+            // A save written before per-domain history existed simply has none.
+            // It rebuilds from the next twenty attempts in that domain, which is
+            // the same thing a fresh child does -- no migration, no lost unlock
+            // that was not already earned under the old rule.
+            merged[domain].attemptHistory = [...(history[domain]?.attemptHistory ?? [])]
+                .slice(-MAX_DOMAIN_ATTEMPT_HISTORY);
         }
         return merged;
     }
@@ -468,6 +518,69 @@ export class LearnerStateManager {
     }
 
     /**
+     * Has this child finished everything this domain can teach them?
+     *
+     * True when they have earned promotion off the top rung and there is nothing
+     * above it -- exactly the condition findNextStepWithContent above already
+     * detects and then silently swallows. The ladder parks them there for good;
+     * owlSelection needs to know so it can stop dealing a subject that has run
+     * out of things to say.
+     *
+     * Deliberately NOT `currentStep >= someCeiling`. currentStep is CAPPED at the
+     * ceiling by that same function, so a step comparison can never fire -- which
+     * is the trap this method exists to avoid, and the reason counting sat at step
+     * 6 while being served 530 times in 1200 attempts to a struggling child.
+     *
+     * And deliberately not the bare "nothing above me" either: a child who has
+     * only just arrived at the top rung still has that rung's problems to
+     * practise, and cutting them off would be taking away content they have not
+     * done. It is arriving at the top AND mastering it that means finished, so
+     * this reuses promotionWinTarget rather than inventing a second threshold.
+     *
+     * Reads the same stepContentProvider the ladder uses, so a domain's ceiling
+     * is wherever the authored problems actually stop. Note the provider does not
+     * know about the owl's maxOperand cap, which makes this conservative in the
+     * safe direction: addition has authored problems up to step 46 and so never
+     * reads as exhausted, even though only the steps below 20 can be served.
+     */
+    isDomainExhausted(domain: MathDomain): boolean {
+        const progress = this.snapshot?.curriculumProgress?.[domain];
+        if (!progress) return false;
+        if (progress.winsAtCurrentStep < ladder().promotionWinTarget) return false;
+        return this.findNextStepWithContent(domain, progress.currentStep) === progress.currentStep;
+    }
+
+    /**
+     * Exhausted AND safe to stop serving. This, not isDomainExhausted, is what
+     * the selector should ask.
+     *
+     * The distinction is neither academic nor obvious, and it cost a real
+     * regression to find. computeUnlockState gates a domain on its PREREQUISITE
+     * having at least twenty attempts at ninety percent first-try accuracy --
+     * and pattern_matching's prerequisite is counting, whose entire ladder is
+     * seven rungs deep. Retiring counting the moment it is mastered starves that
+     * gate: measured on tools/sim_learner_journey.ts, counting fell to fifteen
+     * lifetime attempts and pattern_matching NEVER unlocked for either the
+     * thriving or the steady child, taking 125 problems and four concepts out of
+     * the game permanently.
+     *
+     * A finished domain therefore keeps its turn for as long as it is
+     * load-bearing for something still locked, and retires once that job is
+     * done. Read from DOMAIN_PREREQUISITES rather than a hand-listed exception
+     * for counting, so adding a prerequisite edge cannot quietly reintroduce the
+     * deadlock somewhere else.
+     */
+    isDomainRetirable(domain: MathDomain): boolean {
+        if (!this.isDomainExhausted(domain)) return false;
+        for (const dependent of ALL_MATH_DOMAINS) {
+            const prerequisites = DOMAIN_PREREQUISITES[dependent] ?? [];
+            if (!prerequisites.includes(domain)) continue;
+            if (!this.isDomainUnlocked(dependent)) return false;
+        }
+        return true;
+    }
+
+    /**
      * Wire in a pool-backed "does this step have problems" check.
      * Also reconciles domains whose starting step sits below the first
      * authored step (e.g. a domain whose content starts at step 1).
@@ -575,6 +688,13 @@ export class LearnerStateManager {
         this.snapshot.reviewItems = this.snapshot.reviewItems.filter(item => item.stage !== 'graduated');
     }
 
+    /** A domain's own attempt log, appended on every attempt in that domain. */
+    private pushDomainAttempt(domain: MathDomain, correct: boolean, firstAttempt: boolean): void {
+        const history = this.snapshot.domainHistory[domain];
+        history.attemptHistory = [...(history.attemptHistory ?? []), { correct, firstAttempt }]
+            .slice(-MAX_DOMAIN_ATTEMPT_HISTORY);
+    }
+
     private pushBacklogHistory(domain: MathDomain): void {
         const history = this.snapshot.domainHistory[domain];
         const activeBacklog = this.snapshot.reviewItems.filter(item =>
@@ -602,7 +722,9 @@ export class LearnerStateManager {
             }
 
             nextState[domain] = prerequisites.every(prereq => {
-                const recent = this.getRecentAttempts(prereq, 20);
+                // The prerequisite's OWN history, not its slice of the shared
+                // window -- see LearnerDomainHistory.attemptHistory.
+                const recent = this.snapshot.domainHistory[prereq]?.attemptHistory ?? [];
                 if (recent.length < 20) return false;
 
                 const firstAttemptAccuracy = this.computeFirstAttemptAccuracy(recent);
@@ -711,7 +833,9 @@ export class LearnerStateManager {
         ].slice(-count);
     }
 
-    private computeFirstAttemptAccuracy(attempts: LearnerSnapshot['recentAttempts']): number {
+    // Structural on purpose: this reads two booleans, so it serves both the full
+    // attempt records in the shared window and the compact per-domain history.
+    private computeFirstAttemptAccuracy(attempts: ReadonlyArray<{ correct: boolean; firstAttempt: boolean }>): number {
         if (attempts.length === 0) return 0;
         const firstAttemptWins = attempts.filter(attempt => attempt.correct && attempt.firstAttempt).length;
         return firstAttemptWins / attempts.length;

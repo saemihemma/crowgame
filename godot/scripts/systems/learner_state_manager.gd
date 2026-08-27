@@ -9,6 +9,15 @@ extends Node
 const ALL_MATH_DOMAINS := MathDomains.ALL
 
 const MAX_RECENT_ATTEMPTS := 40
+## How many of a domain's OWN attempts are kept for the unlock decision.
+##
+## Twenty, because the unlock rule asks for twenty. Held per domain so the answer
+## does not depend on how often the selector happened to choose that domain.
+## Reading it out of the shared 40-deep window meant a domain had to own HALF of
+## all recent play before anything downstream could unlock, which nothing but the
+## dominant domain ever does: pattern_matching and division were unreachable for
+## that reason alone, in every simulated journey, at every accuracy.
+const MAX_DOMAIN_ATTEMPT_HISTORY := 20
 const MAX_RECENT_PROBLEMS := 12
 const MAX_BACKLOG_HISTORY := 8
 const MAX_STEP_RESULTS := 10
@@ -139,8 +148,29 @@ func update_sync_metadata(status: String, latest_cursor: Variant, last_synced_at
 func get_confidence_offset(domain: String) -> float:
 	return float(get_snapshot()["confidenceOffsets"][domain])
 
+## Where the selector aims: mastery ELO shifted by how the child has been doing
+## lately. Port of LearnerStateManager.getEffectiveSelectionELO.
+##
+## RESTORED. A code-reduction pass (dc0492f) deleted this as dead, and it had
+## exactly one caller: elo_aware_strategy.gd line 55. Missing it meant every
+## ELOAwareStrategy.select() aborted mid-function on "Invalid call. Nonexistent
+## function", so the whole lane system -- comfort, review, at_level, stretch --
+## returned null and the owl fell through to the random step-capped fallback for
+## every single problem a child was ever served. The review/SRS lane never ran at
+## all.
+##
+## Nothing went red. The probe that exercises the owl still passed, because the
+## fallback path serves a problem and the probe asserts that a problem arrives.
+## The engine printed SCRIPT ERROR into the probe's own output and the suite
+## reported 236 passed, 0 failed. That is why test_elo_lanes.gd now exists, and
+## why godot/tools/run_tests.sh now fails the suite on a SCRIPT ERROR at all.
+##
+## The two terms are deliberate. ELO is lifetime mastery and moves slowly; the
+## confidence offset is this session, and it is what gets a child who has just
+## missed three an easier question off the same rung.
 func get_effective_selection_elo(domain: String) -> float:
 	return _elo().get_effective_elo(domain) + get_confidence_offset(domain)
+
 
 func get_current_step(domain: String) -> int:
 	return int(get_snapshot()["curriculumProgress"][domain]["currentStep"])
@@ -185,6 +215,23 @@ func can_use_stretch_lane(domain: String) -> bool:
 	var rate := float(correct) / recent.size()
 	return rate >= float(gate["minAccuracy"]) and get_confidence_offset(domain) >= float(gate["minConfidence"])
 
+## The review items the selector may draw from, most urgent first.
+##
+## Capped, and stale-aware. The SRS schedules at day_1/day_3/day_7, which assumes
+## a child who plays most days; one who skips a week returns with everything due
+## at once, and an uncapped list means the review lane samples uniformly out of a
+## pile -- so the item they missed first can sit unasked for a long stretch while
+## fresher ones come up. The cap makes the backlog a queue.
+##
+## Staleness is the other half. Sorting is by stage first, so a day_7 item nine
+## days overdue queued behind every day_1 item -- which is exactly backwards:
+## nine days past a seven-day review means a fortnight without practice, and its
+## spacing has stopped meaning anything. Those sort as if they were immediate.
+##
+## READ-TIME ONLY. Nothing here edits a review item, so the snapshot the golden
+## parity fixtures assert on is untouched. A version that demoted stale items
+## would be the same idea and a Tier-1 change, and would need a deterministic
+## clock in the fixture generator to be testable at all.
 func get_due_review_items(domain: String = "") -> Array:
 	var snapshot := get_snapshot()
 	var current_attempt_count := int(snapshot["mastery"]["problemsAttempted"])
@@ -202,14 +249,39 @@ func get_due_review_items(domain: String = "") -> Array:
 			due = now >= int(item["dueAt"])
 		if due:
 			items.append(item)
+	var stale_ms := _backlog_int("staleAfterDays", 9) * DAY_MS
+	var urgency := func(item: Dictionary) -> int:
+		# A schedule broken by this much is not a schedule. Front of the queue.
+		if item.get("dueAt", null) != null and now - int(item["dueAt"]) >= stale_ms:
+			return _get_stage_rank("immediate")
+		return _get_stage_rank(String(item["stage"]))
 	items.sort_custom(func(a, b):
-		var sr := _get_stage_rank(a["stage"]) - _get_stage_rank(b["stage"])
+		var sr: int = urgency.call(a) - urgency.call(b)
 		if sr != 0:
 			return sr < 0
 		var a_due = a.get("dueAt", null) if a.get("dueAt", null) != null else (a.get("dueAfterAttempt", 0) if a.get("dueAfterAttempt", null) != null else 0)
 		var b_due = b.get("dueAt", null) if b.get("dueAt", null) != null else (b.get("dueAfterAttempt", 0) if b.get("dueAfterAttempt", null) != null else 0)
 		return int(a_due) < int(b_due))
-	return items
+
+	# Per domain, not overall: capping the whole list would let one loud domain
+	# starve the others' reviews entirely.
+	var cap := _backlog_int("maxDuePerDomain", 3)
+	if cap <= 0:
+		return items
+	var taken := {}
+	var capped: Array = []
+	for item in items:
+		var d := String(item["domain"])
+		var n: int = int(taken.get(d, 0))
+		if n >= cap:
+			continue
+		taken[d] = n + 1
+		capped.append(item)
+	return capped
+
+func _backlog_int(key: String, fallback: int) -> int:
+	var section := _tuning_section("reviewBacklog")
+	return int(section.get(key, fallback))
 
 func record_attempt(attempt: Dictionary) -> Dictionary:
 	if not _initialized:
@@ -225,6 +297,7 @@ func record_attempt(attempt: Dictionary) -> Dictionary:
 	(_snapshot["recentProblemIds"] as Array).append(attempt["problemId"])
 	_snapshot["recentProblemIds"] = _slice_tail(_snapshot["recentProblemIds"], MAX_RECENT_PROBLEMS)
 
+	_push_domain_attempt(String(attempt["domain"]), bool(attempt["correct"]), bool(attempt["firstAttempt"]))
 	_push_backlog_history(String(attempt["domain"]))
 	_refresh_derived_state()
 	return get_snapshot()
@@ -318,6 +391,56 @@ func _find_next_step_with_content(domain: String, current_step: int) -> int:
 			return step
 	return current_step
 
+## Has this child finished everything this domain can teach them?
+##
+## Port of LearnerStateManager.isDomainExhausted. True when they have earned
+## promotion off the top rung and there is nothing above it -- exactly the case
+## _find_next_step_with_content above detects and then silently swallows.
+##
+## Deliberately NOT `current_step >= some_ceiling`: current_step is CAPPED at the
+## ceiling by that same function, so a step comparison can never fire. That is
+## the trap this exists to avoid, and the reason counting sat at step 6 while
+## being served 530 times in 1200 attempts to a struggling child.
+##
+## And not the bare "nothing above me" either: a child who has just arrived at
+## the top rung still has that rung's problems to practise. Arriving AND
+## mastering is what finished means, so this reuses promotionWinTarget rather
+## than inventing a second threshold.
+func is_domain_exhausted(domain: String) -> bool:
+	var progress: Variant = _snapshot.get("curriculumProgress", {}).get(domain, null)
+	if not (progress is Dictionary):
+		return false
+	if int((progress as Dictionary).get("winsAtCurrentStep", 0)) < _ladder_int("promotionWinTarget"):
+		return false
+	var step := int((progress as Dictionary).get("currentStep", 0))
+	return _find_next_step_with_content(domain, step) == step
+
+## Exhausted AND safe to stop serving. This, not is_domain_exhausted, is what the
+## selector asks.
+##
+## Port of LearnerStateManager.isDomainRetirable. The distinction is neither
+## academic nor obvious and it cost a real regression to find: _compute_unlock_state
+## gates a domain on its PREREQUISITE having twenty attempts at ninety percent
+## first-try accuracy, and pattern_matching's prerequisite is counting, whose
+## whole ladder is seven rungs deep. Retiring counting the moment it is mastered
+## starves that gate -- measured on tools/sim_learner_journey.ts, counting fell to
+## fifteen lifetime attempts and pattern_matching NEVER unlocked, taking 125
+## problems and four concepts out of the game permanently.
+##
+## So a finished domain keeps its turn while it is load-bearing for something
+## still locked. Read from DOMAIN_PREREQUISITES rather than special-casing
+## counting, so a new prerequisite edge cannot quietly reintroduce the deadlock.
+func is_domain_retirable(domain: String) -> bool:
+	if not is_domain_exhausted(domain):
+		return false
+	for dependent in ALL_MATH_DOMAINS:
+		var prereqs: Array = DOMAIN_PREREQUISITES.get(dependent, [])
+		if not prereqs.has(domain):
+			continue
+		if not is_domain_unlocked(String(dependent)):
+			return false
+	return true
+
 func _apply_review_update(attempt: Dictionary) -> void:
 	var domain := String(attempt["domain"])
 	var seen := {}
@@ -383,6 +506,13 @@ func _apply_review_update(attempt: Dictionary) -> void:
 			kept.append(item)
 	_snapshot["reviewItems"] = kept
 
+## A domain's own attempt log, appended on every attempt in that domain.
+func _push_domain_attempt(domain: String, correct: bool, first_attempt: bool) -> void:
+	var history: Dictionary = _snapshot["domainHistory"][domain]
+	var log: Array = history.get("attemptHistory", [])
+	log.append({"correct": correct, "firstAttempt": first_attempt})
+	history["attemptHistory"] = _slice_tail(log, MAX_DOMAIN_ATTEMPT_HISTORY)
+
 func _push_backlog_history(domain: String) -> void:
 	var history: Dictionary = _snapshot["domainHistory"][domain]
 	var active := 0
@@ -406,7 +536,8 @@ func _compute_unlock_state() -> Dictionary:
 			continue
 		var all_ok := true
 		for prereq in prereqs:
-			var recent := _get_recent_attempts(prereq, 20)
+			# The prerequisite's OWN history, not its slice of the shared window.
+			var recent: Array = _snapshot["domainHistory"][prereq].get("attemptHistory", [])
 			if recent.size() < 20:
 				all_ok = false
 				break
@@ -576,7 +707,7 @@ func _create_number_map(v: float) -> Dictionary:
 func _create_domain_history_map() -> Dictionary:
 	var m := {}
 	for d in ALL_MATH_DOMAINS:
-		m[d] = {"backlogHistory": []}
+		m[d] = {"backlogHistory": [], "attemptHistory": []}
 	return m
 
 func _create_curriculum_progress_map() -> Dictionary:
@@ -605,8 +736,13 @@ func _merge_domain_history(history: Variant) -> Dictionary:
 	if not (history is Dictionary):
 		return merged
 	for domain in ALL_MATH_DOMAINS:
-		var src: Array = history.get(domain, {}).get("backlogHistory", []) if history.get(domain, null) is Dictionary else []
-		merged[domain]["backlogHistory"] = _slice_tail(src, MAX_BACKLOG_HISTORY)
+		var entry: Dictionary = history.get(domain, {}) if history.get(domain, null) is Dictionary else {}
+		merged[domain]["backlogHistory"] = _slice_tail(entry.get("backlogHistory", []), MAX_BACKLOG_HISTORY)
+		# A save written before per-domain history existed simply has none. It
+		# rebuilds from the next twenty attempts in that domain, which is what a
+		# fresh child does -- no migration, and no unlock lost that was not
+		# already earned under the old rule.
+		merged[domain]["attemptHistory"] = _slice_tail(entry.get("attemptHistory", []), MAX_DOMAIN_ATTEMPT_HISTORY)
 	return merged
 
 func _merge_curriculum_progress(progress: Variant) -> Dictionary:

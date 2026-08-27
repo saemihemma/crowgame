@@ -29,26 +29,49 @@ func _ready() -> void:
 	add_child(ScreenBackdrop.new())
 	_add_hero()
 
-	var center := CenterContainer.new()
-	center.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(center)
+	# Fitted, not centred: the wordmark plus up to five Gate-B3 rows is taller
+	# than the 540 a 16:9 display leaves, and this column grows by a row when a
+	# save exists, when a profile exists and when the build is on the web.
 	var col := VBoxContainer.new()
 	col.alignment = BoxContainer.ALIGNMENT_CENTER
 	col.add_theme_constant_override("separation", COLUMN_SEPARATION)
-	center.add_child(col)
+	add_child(FitBox.around(col))
 
 	_build_wordmark(col)
 
 	var first := _add(col, TextManager.t("menu.play"), BrandButton.Role.PRIMARY, _on_play)
 	if SaveManager.has_save():
 		_add(col, _continue_label(), BrandButton.Role.SECONDARY, _on_continue)
+	# How much of the game is finished, and which bit is missing. Below Continue
+	# because it is a place to LOOK rather than a place to play, and only once
+	# there is a save -- an empty progress screen reading 0% is a worse first
+	# impression than no row at all.
+	if SaveManager.has_save():
+		_add(col, TextManager.t("menu.progress"), BrandButton.Role.SECONDARY, _on_progress)
 	if ProfileManager.get_active_user() != null:
 		_add(col, TextManager.t("menu.switch_user"), BrandButton.Role.GHOST, _on_switch_user)
-	# Cloud save is a grown-up's setting, so it lives behind its own panel rather
-	# than in the child's path through the menu. Web-only: there is no cookie jar
-	# or same-origin proxy on a desktop build.
+	# Cloud save, OFFERED rather than filed away.
+	#
+	# There is no cloud-save switch to default to on: once a device is enrolled,
+	# CloudSync syncs on its own -- every attempt, every save, no toggle anywhere.
+	# What the menu row actually opens is ENROLMENT, and that cannot be skipped
+	# from in here because it needs a grown-up's email address to know whose save
+	# this is.
+	#
+	# So what was wrong was not that it was optional, it was that it was quiet: a
+	# ghost row reading "Cloud save", indistinguishable from a settings entry, on
+	# a game whose progress lives in browser storage that Safari will evict. A
+	# parent had to already know what it was for to press it. It now says what it
+	# wants and looks like an offer until it is taken, and goes quiet once it is.
+	#
+	# Only when a server actually answered. An unenrolled device behind a working
+	# API should be asked; a build with no backend wired up should not offer a
+	# door that opens onto nothing.
 	if OS.has_feature("web"):
-		_add(col, TextManager.t("cloud_title"), BrandButton.Role.GHOST, _on_cloud)
+		_cloud_button = _add(col, _cloud_label(), _cloud_role(), _on_cloud)
+		_refresh_cloud_row()
+		if not CloudSync.state_changed.is_connected(_on_cloud_state_changed):
+			CloudSync.state_changed.connect(_on_cloud_state_changed)
 	if ProfileManager.has_profiles():
 		_add(col, TextManager.t("report_open"), BrandButton.Role.GHOST, _on_parent_report)
 	first.grab_focus.call_deferred()
@@ -173,6 +196,29 @@ func _show_recap(recap: Dictionary) -> void:
 
 	AudioManager.play_event("milestone")
 	UiFx.elastic_entrance.call_deferred(panel)
+
+var _cloud_button: BrandButton
+
+func _cloud_label() -> String:
+	if CloudSync.is_enrolled():
+		return TextManager.t("menu.cloud_is_on")
+	return TextManager.t("menu.cloud_turn_on") if CloudSync.has_server() else TextManager.t("cloud_title")
+
+## An offer while it is worth taking, a footnote once it is taken.
+func _cloud_role() -> int:
+	if CloudSync.has_server() and not CloudSync.is_enrolled():
+		return BrandButton.Role.SECONDARY
+	return BrandButton.Role.GHOST
+
+func _refresh_cloud_row() -> void:
+	if not is_instance_valid(_cloud_button):
+		return
+	_cloud_button.text = _cloud_label()
+	_cloud_button.role = _cloud_role()
+
+## The session check is a request, so it lands after this menu is already built.
+func _on_cloud_state_changed(_enrolled: bool) -> void:
+	_refresh_cloud_row()
 
 func _on_cloud() -> void:
 	add_child(CLOUD_PANEL.instantiate())
@@ -315,6 +361,10 @@ func resolve_continue_key(save: Dictionary) -> String:
 func _on_continue() -> void:
 	LevelManager.set_current_level(resolve_continue_key(SaveManager.get_data()))
 	SceneRouter.goto("game")
+
+
+func _on_progress() -> void:
+	SceneRouter.goto("progress")
 
 func _on_switch_user() -> void:
 	ProfileManager.logout()

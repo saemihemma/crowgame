@@ -47,10 +47,6 @@ func get_problems_in_range(domain: String, min_elo: float, max_elo: float, exclu
 			out.append(problem)
 	return out
 
-func get_problems_by_skills_in_range(domain: String, skills: Array, min_elo: float, max_elo: float, exclude_ids: Array, constraints: Dictionary = {}) -> Array:
-	if skills.is_empty():
-		return get_problems_in_range(domain, min_elo, max_elo, exclude_ids, constraints)
-	return _filter_by_skills(get_problems_in_range(domain, min_elo, max_elo, exclude_ids, constraints), skills)
 
 func get_problems_in_curriculum_step_range(domain: String, min_step: int, max_step: int, exclude_ids: Array, constraints: Dictionary = {}) -> Array:
 	var out: Array = []
@@ -78,7 +74,21 @@ func get_problem_elo(problem_id: String) -> int:
 	var rating: Dictionary = _ratings.get(problem_id, {})
 	return int(rating["eloRating"]) if not rating.is_empty() else 150
 
-func update_problem_rating(problem_id: String, success: bool) -> void:
+## Record what happened on a problem. Attempts and success rate only.
+##
+## NOT a difficulty update, which is what this was called (`update_problem_rating`)
+## for as long as it has existed while never touching `eloRating`. Renamed rather
+## than made true, because making it true here is the wrong place: `_ratings` is
+## built from scratch by initialize() on every boot and is never saved, and a
+## child answers perhaps fifty problems out of 3,736 in a session -- so nearly
+## every entry would calibrate from zero or one observation, which is not
+## calibration, it is noise with a confident name.
+##
+## Item difficulty has to be calibrated across children, and the attempts are
+## already going somewhere that can: every one is submitted to the API with its
+## problem id and outcome. That belongs in the admin analytics beside
+## /api/v1/admin/ladder-tuning, not in a per-session map.
+func record_problem_outcome(problem_id: String, success: bool) -> void:
 	var rating: Dictionary = _ratings.get(problem_id, {})
 	if rating.is_empty():
 		return
@@ -90,11 +100,6 @@ func update_problem_rating(problem_id: String, success: bool) -> void:
 func get_all_problems_for_domain(domain: String) -> Array:
 	return _problems_by_domain.get(domain, [])
 
-func get_total_problems() -> int:
-	var total := 0
-	for problems in _problems_by_domain.values():
-		total += problems.size()
-	return total
 
 func _filter_by_skills(problems: Array, skills: Array) -> Array:
 	var wanted := {}
@@ -125,4 +130,25 @@ func _passes_common_constraints(problem: Dictionary, exclude_ids: Array, constra
 	if constraints.has("excludedReplayKeys"):
 		if (constraints["excludedReplayKeys"] as Array).has(ProblemReplayKey.build(problem)):
 			return false
+	if constraints.has("maxUngroupedCount") and is_ungrouped_count_row(problem):
+		var answer: Variant = problem.get("answer", {}).get("correct", null)
+		if answer is float or answer is int:
+			if int(answer) > int(constraints["maxUngroupedCount"]):
+				return false
 	return true
+
+## Does this problem ask the child to count things one at a time?
+##
+## Identified by the glyph row its prompt interpolates -- phrasing.prompt.params.glyphs
+## -- and deliberately NOT by its domain. The representation is what the floor is
+## about: all 123 of these sit in `counting` today, but a worded problem that drew
+## a row of berries would be the same ask and has to be caught by the same rule.
+static func is_ungrouped_count_row(problem: Dictionary) -> bool:
+	var phrasing: Variant = problem.get("phrasing", null)
+	if not (phrasing is Dictionary):
+		return false
+	var prompt: Variant = (phrasing as Dictionary).get("prompt", null)
+	if not (prompt is Dictionary):
+		return false
+	var params: Variant = (prompt as Dictionary).get("params", null)
+	return params is Dictionary and (params as Dictionary).has("glyphs")

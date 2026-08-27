@@ -3,13 +3,28 @@ extends Area2D
 ## 36-frame door sprite (idle frame 0; open 0..35 @24fps), pulsing glow, a
 ## 56x80 trigger zone. Opens its animation when the player is near (~100px) and
 ## triggers the level transition on contact.
+##
+## Unless the owls are still in chains. The door does not decide that - Game owns
+## the count and answers door_is_locked() - but the door is where the player finds
+## out, so a locked one keeps its animation shut and calls Game.refuse_door()
+## instead of transitioning.
 
 const SPRITE_KEY := "door"
 @onready var PROXIMITY: float = Config.ui("door/proximity", 100.0)
 
+## How long before a shut door will say the same thing again. Long enough that
+## standing against it is not a stream of cards, short enough that a child who
+## wandered off and came back gets an answer rather than silence.
+const REFUSE_COOLDOWN := 2.0
+
 var target_level := ""
-var _in_proximity := false
 var _opened := false
+## Contact is polled rather than taken straight off body_entered, because
+## body_entered fires ONCE. A child who reaches a locked door, frees the last owl
+## from where they are standing and never steps out of the trigger would
+## otherwise be sealed in a doorway that had already opened.
+var _player_inside := false
+var _refuse_cooldown := 0.0
 
 @onready var _anim: AnimatedSprite2D = $Anim
 
@@ -38,30 +53,52 @@ func _ready() -> void:
 	tw.tween_property(_anim, "modulate:a", 1.0, 0.8).from(0.8).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(_anim, "modulate:a", 0.8, 0.8).set_trans(Tween.TRANS_SINE)
 	body_entered.connect(_on_body_entered)
+	body_exited.connect(_on_body_exited)
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_refuse_cooldown = maxf(0.0, _refuse_cooldown - delta)
 	var game := _game()
 	if game == null:
 		return
 	var player = game.get_player()
 	if player == null:
 		return
+	# No has_method guard: the only node that answers transition_to_level is
+	# Game, and a Game that lost this method should fail loudly rather than
+	# quietly hand back every locked door in the build.
+	var locked: bool = game.door_is_locked()
 	var near := global_position.distance_to(player.global_position) < PROXIMITY
-	if near and not _opened:
+	# A locked door does not open its animation either. The invitation and the
+	# permission are the same fact, and a door that swings wide and then refuses
+	# contact is a worse message than one that stays shut.
+	if near and not locked and not _opened:
 		_opened = true
 		AudioManager.play_event("door")
 		if _anim.sprite_frames and _anim.sprite_frames.has_animation("open"):
 			_anim.play("open")
-	elif not near and _opened:
+	elif (not near or locked) and _opened:
 		_opened = false
 		_anim.play("idle")
 
-func _on_body_entered(body: Node) -> void:
-	if not body.is_in_group("player"):
+	if not _player_inside:
 		return
-	var game := _game()
-	if game != null:
-		game.transition_to_level(target_level)
+	if locked:
+		if _refuse_cooldown <= 0.0:
+			_refuse_cooldown = REFUSE_COOLDOWN
+			game.refuse_door()
+		return
+	game.transition_to_level(target_level)
+
+func _on_body_entered(body: Node) -> void:
+	if body.is_in_group("player"):
+		_player_inside = true
+
+func _on_body_exited(body: Node) -> void:
+	if body.is_in_group("player"):
+		_player_inside = false
+		# Walking away and coming back is a fresh question, so it gets a fresh
+		# answer rather than the tail of the last cooldown.
+		_refuse_cooldown = 0.0
 
 var _game_cache: Node
 

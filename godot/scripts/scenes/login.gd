@@ -17,6 +17,9 @@ const PIN_FIELD_WIDTH := 240.0
 const PIN_FIELD_HEIGHT := 60.0
 
 var _selected_user := ""
+## Every PIN field on the current sub-state. The create screen has two.
+var _pin_fields: Array[LineEdit] = []
+var _pin_confirm_edit: LineEdit
 var _scroll: ScrollContainer
 var _col: VBoxContainer
 var _pin_edit: LineEdit
@@ -65,6 +68,11 @@ func _on_locale_changed() -> void:
 	SceneRouter.goto("login")
 
 func _clear() -> void:
+	# The PIN fields go with the sub-state they belonged to. queue_free() only
+	# schedules the node, so a stale entry stays valid for a frame or two and
+	# _process would keep driving dots that are on their way out.
+	_pin_fields.clear()
+	_pin_confirm_edit = null
 	for c in _col.get_children():
 		c.queue_free()
 
@@ -115,8 +123,11 @@ func _show_pin_entry(username: String) -> void:
 	_clear()
 	_title(TextManager.t("login.hi", [username]), 32)
 	_title(TextManager.t("login.enter_pin"), 22)
+	# _make_pin_edit() has already parented this inside its own frame and added
+	# that frame to _col. Adding it to _col again is what Godot refused with
+	# "already has a parent" on every visit to this screen — invisible, because
+	# the rejected add left the field exactly where it belonged.
 	_pin_edit = _make_pin_edit()
-	_col.add_child(_pin_edit)
 	_status = _make_status()
 	_col.add_child(_status)
 	_action_button(TextManager.t("login.play"), func(): _try_login(username, _pin_edit.text), BrandButton.Role.PRIMARY)
@@ -133,8 +144,14 @@ func _show_new_player() -> void:
 	_name_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_col.add_child(_name_edit)
 	_title(TextManager.t("login.pick_pin"), 22)
+	# Already parented by _make_pin_edit() — see the PIN screen above.
 	_pin_edit = _make_pin_edit()
-	_col.add_child(_pin_edit)
+	# Typed twice, because a PIN is the only thing standing between a child and
+	# their own save and there is no way to recover a mistyped one: the profile
+	# would be created around four digits nobody knows. The login screen asks
+	# once -- a wrong PIN there costs a retry, not a save.
+	_title(TextManager.t("login.pin_again"), 22)
+	_pin_confirm_edit = _make_pin_edit()
 	# Birth YEAR, optional, for the parent report's grade comparison. A year and
 	# not a date on purpose: Icelandic school grade depends only on the calendar
 	# year of birth (docs/GRADE_EXPECTATIONS.md), so a date would be data about a
@@ -153,8 +170,6 @@ func _show_new_player() -> void:
 	_action_button(TextManager.t("login.back"), _show_profile_list, BrandButton.Role.GHOST)
 	_name_edit.grab_focus()
 
-var _pin_dots: HBoxContainer
-
 ## The PIN field and its dots are one object.
 ##
 ## They used to be two stacked children: an empty paper box with nothing in it
@@ -165,7 +180,11 @@ var _pin_dots: HBoxContainer
 ## Now the input sits behind the dots at the same size and is invisible - its
 ## text, caret and background are all transparent - so the dots *are* the field.
 ## Tapping anywhere on it focuses the real LineEdit underneath.
-func _make_pin_edit() -> LineEdit:
+##
+## Each field owns its own dots, in metadata rather than in a field on this
+## scene, because the create screen has TWO PIN fields now and a single
+## `_pin_dots` variable meant the second one silently drove the first one's dots.
+func _make_pin_edit(numeric := true) -> LineEdit:
 	var frame := Control.new()
 	frame.custom_minimum_size = Vector2(PIN_FIELD_WIDTH, PIN_FIELD_HEIGHT)
 	frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -175,6 +194,10 @@ func _make_pin_edit() -> LineEdit:
 	e.max_length = PIN_DOT_COUNT
 	e.secret = true
 	e.alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if numeric:
+		# So a touch device offers a number pad rather than a full qwerty for
+		# four digits. Same reason the birth-year field does it.
+		e.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_NUMBER
 	e.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	# Invisible, not hidden: a hidden LineEdit cannot take focus or a tap.
 	# Color.TRANSPARENT rather than a literal: this is the absence of a colour,
@@ -184,22 +207,93 @@ func _make_pin_edit() -> LineEdit:
 	e.add_theme_color_override("caret_color", Color.TRANSPARENT)
 	frame.add_child(e)
 
-	_pin_dots = _make_pin_dots()
-	_pin_dots.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_pin_dots.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	frame.add_child(_pin_dots)
+	var dots := _make_pin_dots()
+	dots.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	dots.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	frame.add_child(dots)
+	e.set_meta("pin_dots", dots)
+	e.set_meta("pin_shown", -1)
+	e.set_meta("pin_reveal_index", -1)
+	e.set_meta("pin_reveal_until", 0)
 
-	e.text_changed.connect(_update_pin_dots)
-	_update_pin_dots("")
+	e.text_changed.connect(func(_t): _sync_pin_dots(e))
+	_pin_fields.append(e)
+	_sync_pin_dots(e)
 	return e
 
-func _update_pin_dots(text: String) -> void:
-	if _pin_dots == null:
+## Keep every PIN field's dots honest, every frame.
+##
+## WHY A POLL AND NOT JUST THE SIGNAL. `text_changed` is emitted when a key
+## reaches the LineEdit, which is what happens on a machine with a keyboard. It
+## is NOT what happens on the device this game is for. With
+## html/experimental_virtual_keyboard on -- and it has to be on, or an iPad
+## cannot type at all -- a focused LineEdit is served by a DOM <input> Godot
+## injects, and the text comes back through the engine's own virtual-keyboard
+## path without raising that signal. So the PIN went in, the profile was created
+## from it, and all four dots sat there empty the whole time: a child pressing
+## digits and being told nothing at all.
+##
+## Reproduced before it was fixed, in the exported build, by
+## godot/tools/pin_entry_probe.mjs -- which drives both paths and counts the
+## filled dots off the frame.
+##
+## Polling four panels per frame against an integer is not a cost worth
+## avoiding, and unlike the signal it cannot be bypassed by an input path nobody
+## thought of.
+func _process(_delta: float) -> void:
+	for e in _pin_fields:
+		if is_instance_valid(e):
+			_sync_pin_dots(e)
+
+func _sync_pin_dots(e: LineEdit) -> void:
+	if not is_instance_valid(e) or not e.has_meta("pin_dots"):
 		return
-	var filled := mini(text.length(), 4)
-	for i in _pin_dots.get_child_count():
-		var dot := _pin_dots.get_child(i) as Panel
+	var text := e.text
+	var length := text.length()
+	var shown := int(e.get_meta("pin_shown", -1))
+	var reveal_index := int(e.get_meta("pin_reveal_index", -1))
+	var reveal_until := int(e.get_meta("pin_reveal_until", 0))
+	var now := Time.get_ticks_msec()
+
+	# A digit that has just been typed shows itself for a moment before it
+	# becomes a dot. Four-digit PINs are typed by five-year-olds who are still
+	# learning which key is which, and a field that never shows a character gives
+	# them no way to tell a mis-hit from a hit -- while a PIN that stayed on
+	# screen would defeat the point of it on a shared iPad. So: the newest digit,
+	# briefly, and never more than one.
+	if length > shown and length > 0:
+		reveal_index = length - 1
+		reveal_until = now + int(Config.ui("login/pin_reveal_ms", 900))
+		e.set_meta("pin_reveal_index", reveal_index)
+		e.set_meta("pin_reveal_until", reveal_until)
+	var revealing := reveal_index >= 0 and now < reveal_until and reveal_index < length
+	if reveal_index >= 0 and not revealing:
+		e.set_meta("pin_reveal_index", -1)
+
+	# Redraw only when something a viewer could see has changed.
+	var state := "%d/%d" % [length, reveal_index if revealing else -1]
+	if e.get_meta("pin_state", "") == state:
+		return
+	e.set_meta("pin_state", state)
+	e.set_meta("pin_shown", length)
+	_render_pin_dots(e.get_meta("pin_dots") as HBoxContainer, text,
+		reveal_index if revealing else -1)
+
+func _render_pin_dots(dots: HBoxContainer, text: String, reveal_index: int) -> void:
+	if dots == null:
+		return
+	var filled := mini(text.length(), PIN_DOT_COUNT)
+	for i in dots.get_child_count():
+		var dot := dots.get_child(i) as Panel
+		var is_reveal := i == reveal_index
+		# A revealed digit sits ON a filled dot rather than inside an empty ring:
+		# the ring plus a numeral drew two shapes on top of each other at the same
+		# size and the digit came out cramped against the border. Filled, the row
+		# also keeps saying the same thing about progress whether or not the
+		# newest digit is still showing.
 		dot.add_theme_stylebox_override("panel", _pin_dot_style(i < filled))
+		var label := dot.get_child(0) as Label
+		label.text = text.substr(i, 1) if is_reveal else ""
 
 
 ## PIN placeholders drawn as circles instead of text glyphs.
@@ -220,6 +314,18 @@ func _make_pin_dots() -> HBoxContainer:
 		# field it now sits inside and the circles render as tall ovals.
 		dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		dot.add_theme_stylebox_override("panel", _pin_dot_style(false))
+		# The numeral for the brief reveal. Always present and usually empty, so
+		# a reveal is a text change rather than a node being built mid-typing.
+		var label := Label.new()
+		label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		# Smaller than the dot, so the numeral sits inside the circle instead of
+		# against its edge, and in paper because it is drawn on filled ink.
+		label.add_theme_font_size_override("font_size", int(PIN_DOT_SIZE * 0.8))
+		label.add_theme_color_override("font_color", ThemeManager.get_color_value("paper"))
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		dot.add_child(label)
 		row.add_child(dot)
 	return row
 
@@ -272,6 +378,12 @@ func _try_create() -> void:
 		if birth_year < this_year - 17 or birth_year > this_year:
 			_status.text = TextManager.t("login.birth_year_invalid")
 			return
+	# Before create_profile, so a mismatch costs a retype rather than a profile.
+	if _pin_confirm_edit != null and _pin_edit.text != _pin_confirm_edit.text:
+		_status.text = TextManager.t("login.pin_mismatch")
+		_pin_confirm_edit.text = ""
+		_pin_confirm_edit.grab_focus()
+		return
 	var res = ProfileManager.create_profile(_name_edit.text, _pin_edit.text, birth_year)
 	if res == true:
 		ProfileManager.login(_name_edit.text, _pin_edit.text)
@@ -290,6 +402,12 @@ func _finish_login() -> void:
 	var save := SaveManager.get_data()
 	ELOManager.initialize(save.get("eloStats", null))
 	LearnerStateManager.initialize(ProfileManager.get_active_profile(), save.get("learnerState", null), ELOManager.get_stats())
+	# Where this child STARTS, from the birth year already on the profile. Before
+	# LearnerSyncService.init so the snapshot it caches is the seeded one, and
+	# after initialize so there is a snapshot to seed. A no-op for a returning
+	# child, for a leikskóli child and for a profile with no birth year on file
+	# (MathPlacement.apply_seed).
+	MathPlacement.apply_seed(ProfileManager.get_active_profile())
 	LearnerSyncService.init(LearnerStateManager.get_snapshot())
 	MathProblemManager.hydrate_recent_problems(save.get("telemetry", {}).get("answeredProblemIds", []))
 	SceneRouter.goto("main_menu")

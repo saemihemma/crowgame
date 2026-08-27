@@ -5,5 +5,6 @@ class_name InteractableComponent
 func _init() -> void:
 	type = "interactable"
 
-func on_interact() -> void:
+func on_interact() -> bool:
 	EventBus.npc_interact.emit({"npcId": npc.npc_id, "name": npc.display_name})
+	return true
