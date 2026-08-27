@@ -727,6 +727,11 @@ func transition_to_level(target_level: String) -> void:
 	if _player:
 		_player.velocity = Vector2.ZERO
 		_player.set_physics_process(false)
+	# The run becomes a record HERE, at the door, and nowhere else. A big coin
+	# found on a run that ended in death does not count: death reloads the level
+	# and the coin comes back, which is what makes a run a run. Banking is
+	# best-of, so a worse second visit takes nothing away.
+	SaveManager.bank_run(LevelManager.get_current_level_key(), _big_coins_found, _owls_freed)
 	LevelManager.transition_to(target_level)
 	if target_level == "__complete__":
 		AudioManager.stop_music()

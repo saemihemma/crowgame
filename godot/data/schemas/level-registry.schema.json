@@ -70,6 +70,10 @@
             "type": "integer",
             "minimum": 1
           },
+          "countsTowardCompletion": {
+              "type": "boolean",
+              "description": "Whether this level is part of the completion percentage. Omit for true, which is what a story level wants. The practice arena sets false: it is a drill room, and averaging it in would swamp the levels that are actually the game."
+          },
           "owlsRequiredForDoor": {
             "type": "integer",
             "minimum": 0,

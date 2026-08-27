@@ -49,7 +49,7 @@ const GAME_SCENE := preload("res://scenes/Game.tscn")
 ## review loop as the game. They were not, which is how the first screen anyone
 ## sees stayed a flat blue page with a grey slab on it while the in-game HUD got
 ## three rebuilds.
-const SCREENS := ["login", "main_menu", "level_select"]
+const SCREENS := ["login", "main_menu", "level_select", "progress"]
 ## Which owl in the level to walk to, when a variant needs a particular one.
 ## Set with a fourth CLI argument; defaults to the first.
 var _owl_index := 0
@@ -138,6 +138,14 @@ func _resolve_levels() -> PackedStringArray:
 	var known := PackedStringArray()
 	for entry in LevelManager.get_levels():
 		known.append(entry.get("key", ""))
+	# The screens are addressed the same way a level is, so they belong in the
+	# same list of what can be asked for. Without this, adding a screen to SCREENS
+	# left it rejected as "no such level" by the argument check two functions
+	# earlier -- which is the same class of bug the check exists to prevent.
+	for screen in SCREENS:
+		known.append(screen)
+	for substate in SCREEN_SUBSTATES:
+		known.append(String(substate))
 
 	var args := OS.get_cmdline_user_args()
 	if args.size() == 0 or args[0] == "":
@@ -183,6 +191,12 @@ func _load_next() -> void:
 		_staged = false
 		return
 	if SCREENS.has(key):
+		# The completion screen reads the save in its own _ready, and a shot of an
+		# empty one at 0% shows the layout without showing what the screen is FOR.
+		# Seeded with a plausible middle of the game: some cleared, some coins
+		# still missing, which is the state a child spends almost all their time in.
+		if key == "progress":
+			_seed_progress()
 		var path := SceneRouter.path_of(key)
 		if path == "" or not ResourceLoader.exists(path):
 			printerr("[capture] unknown screen '%s'" % key)
@@ -456,6 +470,17 @@ func _find_owl() -> Node2D:
 	if owls.is_empty():
 		return null
 	return owls[clampi(_owl_index, 0, owls.size() - 1)] as Node2D
+
+## A half-played save, so the completion screen has something to say.
+func _seed_progress() -> void:
+	var data: Dictionary = SaveManager.get_data()
+	data["completedLevels"] = ["level_01", "level_02", "level_03"]
+	data["levelRecords"] = {
+		"level_01": {"bigCoins": ["c1", "c2", "c3"], "owls": 2},
+		"level_02": {"bigCoins": ["c1"], "owls": 2},
+		"level_03": {"bigCoins": [], "owls": 1},
+	}
+
 
 ## The first big coin in the level, so the shot is of a real spawned one rather
 ## than of a node the harness built for the photograph.

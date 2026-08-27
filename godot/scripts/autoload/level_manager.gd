@@ -8,6 +8,7 @@ var _current_level_key := ""
 
 ## Cached per level: level select asks for all six at once, every time it opens.
 var _owl_counts: Dictionary = {}
+var _big_coin_counts: Dictionary = {}
 
 func _ready() -> void:
 	init(DataManager.get_dict("LEVEL_REGISTRY"))
@@ -66,17 +67,22 @@ func owl_count(key: String) -> int:
 	_owl_counts[key] = count
 	return count
 
-func _count_owls(key: String) -> int:
-	var entry: Variant = get_level(key)
-	if entry == null:
-		return 0
+## One reader for the compiled map. Two counters walk it now, and a second copy
+## of "open it, parse it, give up quietly" is exactly where the two would drift.
+func _load_map(key: String) -> Dictionary:
+	if get_level(key) == null:
+		return {}
 	var path := "res://%s" % map_file(key)
 	if not FileAccess.file_exists(path):
-		return 0
+		return {}
 	var f := FileAccess.open(path, FileAccess.READ)
 	var level: Variant = JSON.parse_string(f.get_as_text())
 	f.close()
-	if typeof(level) != TYPE_DICTIONARY:
+	return level if level is Dictionary else {}
+
+func _count_owls(key: String) -> int:
+	var level := _load_map(key)
+	if level.is_empty():
 		return 0
 
 	var by_id := {}
@@ -125,6 +131,45 @@ static func required_for_door(entry: Dictionary, total: int) -> int:
 	if not entry.has("owlsRequiredForDoor"):
 		return total
 	return clampi(int(entry.get("owlsRequiredForDoor", total)), 0, total)
+
+
+## How many big coins a level holds.
+##
+## The denominator for that level's share of the completion percentage, and for
+## the HUD row. Read off the level rather than assumed to be three: a level that
+## holds two must not draw three sockets and send a child looking for one that
+## does not exist.
+func big_coin_count(key: String) -> int:
+	if _big_coin_counts.has(key):
+		return int(_big_coin_counts[key])
+	var count := _count_big_coins(key)
+	_big_coin_counts[key] = count
+	return count
+
+func _count_big_coins(key: String) -> int:
+	var count := 0
+	for layer in _load_map(key).get("layers", []):
+		if String(layer.get("type", "")) != "objectgroup":
+			continue
+		for obj in layer.get("objects", []):
+			if String(obj.get("type", "")) == "big_coin":
+				count += 1
+	return count
+
+## Whether a level is part of "how much of the game have I finished".
+##
+## The practice arena is not. It is a drill room holding twenty owls, and folding
+## it into the average would swamp the eight levels that are actually the game: a
+## child who never opens it would be permanently capped, and one who grinds it
+## would watch the number move for something that is not progress.
+##
+## Declared in the registry rather than tested against a hardcoded key, so a
+## second practice space is a data change.
+func counts_toward_completion(key: String) -> bool:
+	var entry: Variant = get_level(key)
+	if entry == null:
+		return false
+	return bool((entry as Dictionary).get("countsTowardCompletion", true))
 
 
 func has_level(key: String) -> bool:

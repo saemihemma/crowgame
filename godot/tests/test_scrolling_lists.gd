@@ -98,6 +98,13 @@ func test_level_select_list_scrolls() -> void:
 	_assert_scrollable("level_select", HORIZONTAL)
 
 
+## The completion screen: one row per level, so it grows with the registry the
+## same way level select does. A fitted card would shrink the rows toward
+## illegibility as levels are added, which is the failure this rule exists for.
+func test_progress_list_scrolls() -> void:
+	_assert_scrollable("progress")
+
+
 func test_login_profile_list_scrolls() -> void:
 	_assert_scrollable("login")
 

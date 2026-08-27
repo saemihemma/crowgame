@@ -23,6 +23,21 @@ REGISTRY = ROOT / "data" / "levels" / "level_registry.json"
 TUNING = json.loads((ROOT / "data" / "tuning" / "player_base.json").read_text())
 GRAVITY = 800.0
 
+# Every ability a level is allowed to declare a goal behind. An unknown name is
+# an error rather than an exemption: "requires double_jmup" would otherwise read
+# as a deliberately-gated goal and hide an accidentally stranded one forever.
+ABILITIES = {
+    str(a.get("id", ""))
+    for a in json.loads((ROOT / "data" / "tuning" / "abilities.json").read_text()).get("abilities", [])
+}
+# Which NPC ids are goals. A signpost is not something a child has to reach; an
+# owl in chains is the entire point of the level.
+CHALLENGERS = {
+    str(n.get("id", ""))
+    for n in json.loads((ROOT / "data" / "npcs" / "npc_registry.json").read_text()).get("npcs", [])
+    if str(n.get("behavior", "")) == "math_challenger"
+}
+
 
 FLAGS = json.loads((ROOT / "data" / "tuning" / "feature_flags.json").read_text())
 # The first level allowed to need a wound-up run. Everything below it must be
@@ -119,6 +134,48 @@ def object_cell(level, kind, tile):
     return None
 
 
+def prop(obj, name):
+    for p in obj.get("properties", []) or []:
+        if p.get("name") == name:
+            return str(p.get("value") or "")
+    return ""
+
+
+def goals_in(level, tile):
+    """Everything a child is meant to be able to get to, as (kind, col, row, requires).
+
+    A signpost NPC is not a goal and an ordinary coin cannot be ability-gated, so
+    the three kinds are not interchangeable and each says which it is in the
+    failure message -- "3 coins out of reach" and "an owl out of reach" want very
+    different reactions from whoever reads it.
+    """
+    out = []
+    for layer in level["layers"]:
+        if layer.get("type") != "objectgroup":
+            continue
+        for obj in layer["objects"]:
+            kind = obj.get("type")
+            cx = int((obj["x"] + obj.get("width", tile) / 2) // tile)
+            if kind in ("collectible", "big_coin"):
+                # A pickup is CENTRED on its point and floats, so its own cell is
+                # the one to reach.
+                cy = int((obj["y"] + obj.get("height", tile) / 2) // tile)
+                if kind == "collectible":
+                    out.append(("coin", cx, cy, ""))
+                else:
+                    out.append(("big coin", cx, cy, prop(obj, "requires_ability")))
+            elif kind == "npc" and prop(obj, "npc_id") in CHALLENGERS:
+                # An owl is FEET-ANCHORED: the compiled y is where its feet land,
+                # which is the surface it stands on -- so the cell that matters is
+                # the one above, where the crow stands beside it. Reading it as a
+                # centre put every owl in the game two rows inside the floor and
+                # reported all nineteen as unreachable, which is how this comment
+                # came to exist.
+                out.append(("owl", cx, int(obj["y"] // tile) - 1,
+                            prop(obj, "requires_ability")))
+    return out
+
+
 def check(path, quiet=False):
     level = json.loads(path.read_text())
     tile = level["tilewidth"]
@@ -154,24 +211,43 @@ def check(path, quiet=False):
 
     seen = reachable_from(start, cells, up, across, h)
 
-    # A coin the crow can never reach is a coin that makes a child feel they
-    # missed something. Coins float above a surface, so a coin counts as
-    # reachable if any reachable standable cell sits within a jump of it.
+    # THREE KINDS OF GOAL, not one.
+    #
+    # Coins were the only thing checked here, which left the two that matter more
+    # unguarded: an owl is the point of a level, and a big coin is a third of its
+    # completion. Either one stranded by an edit was silent -- a child simply
+    # never found it and had no way to know it existed.
+    #
+    # They float above a surface, so a goal counts as reachable when any reachable
+    # standable cell sits within one jump of it.
+    #
+    # A goal may declare `requires_ability`, which INVERTS the rule for it: the
+    # bonus owl at the end of a map is meant to be out of reach until the child
+    # earns a better crow, so being reachable makes the declaration a lie and the
+    # climb not a climb. That case fails too.
     stranded = []
-    for layer in level["layers"]:
-        if layer.get("type") != "objectgroup":
+    for kind, cx, cy, requires in goals_in(level, tile):
+        can_reach = any(abs(sc - cx) <= across and 0 <= sr - cy <= up + 1
+                        for sc, sr in seen)
+        if requires:
+            if requires not in ABILITIES:
+                return [f"{path.name}: a {kind} at column {cx} row {cy} requires "
+                        f"'{requires}', which is not in abilities.json -- a typo here "
+                        f"reads as a deliberate gate and hides a stranded goal"]
+            # Only judged on the generous pass. The walk-only pass exists to ask
+            # what a child who never sprints can do, and everything is harder
+            # there, so "still out of reach" carries no information.
+            if can_reach and not WALK_ONLY:
+                return [f"{path.name}: the {kind} at column {cx} row {cy} says it needs "
+                        f"'{requires}', but the crow can already reach it -- either the "
+                        f"climb is not a climb, or the declaration should go"]
             continue
-        for obj in layer["objects"]:
-            if obj.get("type") != "collectible":
-                continue
-            cx = int((obj["x"] + obj.get("width", tile) / 2) // tile)
-            cy = int((obj["y"] + obj.get("height", tile) / 2) // tile)
-            if not any(abs(sc - cx) <= across and 0 <= sr - cy <= up + 1
-                       for sc, sr in seen):
-                stranded.append((cx, cy))
+        if not can_reach:
+            stranded.append((kind, cx, cy))
     if stranded:
-        return [f"{path.name}: {len(stranded)} coin(s) out of reach, first at "
-                f"column {stranded[0][0]} row {stranded[0][1]}"]
+        kinds = ", ".join(sorted({k for k, _, _ in stranded}))
+        return [f"{path.name}: {len(stranded)} goal(s) out of reach ({kinds}), first "
+                f"at column {stranded[0][1]} row {stranded[0][2]}"]
 
     if finish not in seen:
         gap = min((abs(c - finish[0]) for c, r in seen), default=-1)
