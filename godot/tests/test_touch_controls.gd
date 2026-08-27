@@ -22,8 +22,14 @@ func _mount() -> Node:
 	# TouchScreenButton does not accept input, so without this the press test
 	# asserts against a control the engine has switched off. It only looked like
 	# it passed because the runner was not awaiting coroutine tests.
-	if node is CanvasItem:
-		(node as CanvasItem).visible = true
+	#
+	# CanvasLayer, not CanvasItem. This used to test `node is CanvasItem`, which a
+	# CanvasLayer is not -- it extends Node -- so the branch never ran once and
+	# every test here has been mounting a hidden control. Harmless for the
+	# structural assertions, and not harmless at all for the release-on-hide test
+	# below, which needs the layer to be visible before it can be hidden.
+	if node is CanvasLayer:
+		(node as CanvasLayer).visible = true
 	return node
 
 
@@ -115,8 +121,8 @@ func test_sprint_sits_within_a_thumb_of_jump() -> void:
 		var sprint: TouchPad = root.pad_for("sprint")
 		var jump: TouchPad = root.pad_for("jump")
 		assert_true(sprint != null and jump != null, "both pads exist")
-		var s_rect := Rect2(sprint.position, (sprint.shape as RectangleShape2D).size)
-		var j_rect := Rect2(jump.position, (jump.shape as RectangleShape2D).size)
+		var s_rect := sprint.drawn_rect()
+		var j_rect := jump.drawn_rect()
 		# Edge to edge, not centre to centre: the thumb rolls across the gap.
 		var edge_gap: float = j_rect.position.x - s_rect.end.x
 		assert_true(edge_gap >= 0.0 and edge_gap <= 24.0,
@@ -176,3 +182,53 @@ func test_a_momentary_sprint_pad_binds_the_action_the_engine_way() -> void:
 	assert_eq(pad.action, "sprint", "the engine drives the action off TouchScreenButton.action")
 	assert_eq(pad.pad_action(), "sprint", "and pad_action agrees, whichever way it is bound")
 	pad.free()
+
+
+## A thumb is not a mouse pointer. It lands as a broad, wobbling patch, and a
+## child aiming one at a rounded plate misses the edge constantly -- reported as
+## "where i pressed it didnt seem to register, sometimes it did sporadically".
+## So the pressable square is larger than the plate, on every side.
+func test_every_pad_answers_outside_the_plate_it_draws() -> void:
+	var root := _mount()
+	root.layout_for(Vector2(960, 540))
+	for child in root.get_children():
+		if not (child is TouchPad):
+			continue
+		var pad := child as TouchPad
+		var drawn := pad.drawn_rect()
+		var hit := pad.hit_rect()
+		assert_true(hit.encloses(drawn),
+			"'%s' hit area does not contain its own plate" % pad.pad_action())
+		assert_true(hit.position.x < drawn.position.x and hit.position.y < drawn.position.y
+				and hit.end.x > drawn.end.x and hit.end.y > drawn.end.y,
+			"'%s' has no press margin: hit %s vs drawn %s"
+				% [pad.pad_action(), str(hit), str(drawn)])
+	_teardown(root)
+
+## The margin must not make two pads ambiguous. A press that could belong to
+## either of two controls is a worse bug than the one the margin fixes.
+func test_press_margins_do_not_touch_each_other() -> void:
+	var root := _mount()
+	for view: Vector2 in [Vector2(960, 540), Vector2(960, 671), Vector2(960, 720), Vector2(1171, 540)]:
+		root.layout_for(view)
+		var rects: Array = root.hit_rects()
+		for i in rects.size():
+			for j in range(i + 1, rects.size()):
+				assert_true(not (rects[i] as Rect2).intersects(rects[j] as Rect2),
+					"[%.0fx%.0f] pressable areas %d and %d overlap (%s vs %s)"
+						% [view.x, view.y, i, j, str(rects[i]), str(rects[j])])
+	_teardown(root)
+
+## A maths board opens on PROXIMITY -- no button, no warning -- and hides the
+## controls. If that happens with a thumb down, the pad never sees it lift and
+## the action stays pressed: the child answers, the board closes, and the crow is
+## already walking. Into the next owl, or off the next edge.
+func test_hiding_the_controls_lets_go_of_a_held_pad() -> void:
+	var root := _mount()
+	Input.action_press("move_right")
+	assert_true(Input.is_action_pressed("move_right"), "held before the board opened")
+	root.visible = false
+	assert_true(not Input.is_action_pressed("move_right"),
+		"hiding the controls released the held direction")
+	root.visible = true
+	_teardown(root)

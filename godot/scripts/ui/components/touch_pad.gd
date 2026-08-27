@@ -21,6 +21,18 @@ enum Icon { LEFT, RIGHT, JUMP, ZAP, SPRINT }
 
 const CORNER := 22.0
 const RIM := 3.0
+## How far outside the drawn plate a finger still counts.
+##
+## A thumb is not a mouse pointer: it lands as a broad, wobbling patch whose
+## reported point drifts, and a child aiming one at a rounded plate misses the
+## edge constantly. Every mobile toolkit that works has some version of this. The
+## plate is drawn inset by exactly this much inside the pressable square, so the
+## button looks the size it always did and forgives a near miss.
+##
+## 6, not more: the gap between two pads is 14, so their hit areas stop 2 apart
+## and no press is ever ambiguous between neighbours -- which would be a worse
+## bug than the one this fixes.
+const HIT_MARGIN := 6.0
 ## How much the plate grows under a thumb. The press has to be visible around a
 ## finger that is covering most of the button, so the change is on the rim and
 ## the fill, not only inside.
@@ -63,10 +75,50 @@ static func _bare(which: int, at: Vector2, size: float) -> TouchPad:
 	pad.box = size
 	pad.position = at
 	var shape := RectangleShape2D.new()
-	shape.size = Vector2(size, size)
+	# The pressable square is the plate plus a margin on every side. The node's
+	# position is the HIT origin; the plate is drawn inset by HIT_MARGIN, so
+	# drawn_rect() is what the child sees and this is what answers a thumb.
+	shape.size = Vector2(size + HIT_MARGIN * 2.0, size + HIT_MARGIN * 2.0)
 	pad.shape = shape
 	pad.shape_centered = false
+	# A thumb that slides onto a pad presses it.
+	#
+	# Off by default, which means a finger already down when it arrives over a
+	# button is ignored until it lifts and lands again. On a d-pad that is the
+	# difference between steering and stabbing: a child rolling their thumb from
+	# left to right gets nothing at all until they lift off, and a thumb that
+	# drifts a few pixels off the plate and back has to be re-pressed. From the
+	# sofa that is "sometimes it registers".
+	pad.passby_press = true
 	return pad
+
+## Where the plate is DRAWN, which is smaller than what it answers to.
+##
+## The gates measure this and not the hit area: gate B3 is about whether a child
+## can see and aim at a target, and a generous invisible margin must not be
+## allowed to paper over a plate that is too small to find.
+func drawn_rect() -> Rect2:
+	return Rect2(position + Vector2(HIT_MARGIN, HIT_MARGIN), Vector2(box, box))
+
+func hit_rect() -> Rect2:
+	var size := (shape as RectangleShape2D).size if shape is RectangleShape2D else Vector2.ZERO
+	return Rect2(position, size)
+
+## Let go of whatever this pad is holding.
+##
+## Called when the controls are hidden, which happens the moment an owl opens a
+## maths board -- and a board can open while a thumb is mid-press, because it
+## opens on proximity rather than on a button. A TouchScreenButton that is hidden
+## under a finger never sees the finger lift, so its action stays down: the child
+## answers the question, the board closes, and the crow walks off on its own into
+## the next owl or the next pit.
+func release() -> void:
+	if _latched:
+		_latched = false
+	var held := pad_action()
+	if held != "" and Input.is_action_pressed(held):
+		Input.action_release(held)
+	queue_redraw()
 
 ## The action this pad drives, whichever way it drives it. Callers and the gate
 ## tests read the binding through this rather than off `action`, which is empty on
@@ -117,7 +169,10 @@ func _draw() -> void:
 	var coin := ThemeManager.get_color_value("coin")
 
 	var grow := PRESS_GROW if down else 0.0
-	var rect := Rect2(Vector2(-grow, -grow), Vector2(box + grow * 2.0, box + grow * 2.0))
+	# Inset by HIT_MARGIN: the node's origin is the hit area's corner, and the
+	# plate is drawn inside it.
+	var rect := Rect2(Vector2(HIT_MARGIN - grow, HIT_MARGIN - grow),
+		Vector2(box + grow * 2.0, box + grow * 2.0))
 
 	var plate := StyleBoxFlat.new()
 	plate.bg_color = Color(coin, 0.92) if down else Color(ink, 0.42)

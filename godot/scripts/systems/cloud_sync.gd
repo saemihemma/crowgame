@@ -51,6 +51,11 @@ const REMOTE_CHILD_KEY := "remoteChildId"
 @onready var MAX_PING_BATCH: int = int(Config.ui("cloud/max_pings_per_batch", 60))
 
 var _enrolled := false
+## Whether the API answered at all. NOT the same thing as `_enrolled`, and the
+## menu needs the difference: an unenrolled device behind a working server should
+## be offered cloud save, while a build with no backend wired up should say
+## nothing rather than offer a door that opens onto nothing.
+var _server_reachable := false
 var _dirty := false
 var _since_dirty := 0.0
 var _in_flight := false
@@ -103,13 +108,18 @@ func _earn_ping() -> void:
 func is_enrolled() -> bool:
 	return _enrolled
 
+func has_server() -> bool:
+	return _server_reachable
+
 # ── enrollment ──────────────────────────────────────────────────────────────
 
 func _refresh_session() -> void:
 	var res := await _request(HTTPClient.METHOD_GET, "/auth/session", {})
 	var was := _enrolled
-	_enrolled = res["ok"] and res["json"] is Dictionary and bool(res["json"].get("enrolled", false))
-	if was != _enrolled:
+	var was_reachable := _server_reachable
+	_server_reachable = bool(res["ok"])
+	_enrolled = _server_reachable and res["json"] is Dictionary and bool(res["json"].get("enrolled", false))
+	if was != _enrolled or was_reachable != _server_reachable:
 		state_changed.emit(_enrolled)
 
 ## Ask the server to email a sign-in link. The link must be opened on THIS
