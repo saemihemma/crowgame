@@ -174,12 +174,12 @@
     "npcs": [
       {
         "npc_id": "owl_teacher_01",
-        "x": 26,
+        "x": 29,
         "y": 16
       },
       {
         "npc_id": "owl_twin_chain",
-        "x": 82,
+        "x": 81,
         "y": 16
       }
     ],

@@ -57,6 +57,7 @@ func _ready() -> void:
 		_sprite.texture = tex
 	_sprite.offset = SpriteSheet.anchor_offset(sprite_key, SpriteSheet.grounding_sink())
 	_sprite_base_y = _sprite.position.y
+	_size_zone(sprite_key)
 	var npc_tuning := DataManager.get_dict("NPC_TUNING")
 	_bob_amp = float(npc_tuning.get("float_bob_amplitude", 8))
 	_bob_speed = float(npc_tuning.get("float_bob_speed", 1.5))
@@ -103,6 +104,33 @@ func _update_idle_bob(delta: float) -> void:
 ## chain owls: appending "1 question" to every single-question owl in the game
 ## would be noise on the overwhelmingly common case, and would make the number
 ## stop being a warning.
+## Fit the interact zone to the owl, from sprite_spec.json.
+##
+## The scene stated it: a 96x96 box at y = -32, three tiles by three. Encounters
+## fire on proximity - Npc._on_body_entered starts one the moment the player
+## enters this shape - so that number decided how far away an owl could reach out
+## and stop a child who was only running past. It reached about two tiles, and
+## nothing said it should.
+##
+## The owl is drawn 44x53 inside its 64px frame, so the zone is the bird. A child
+## has to walk up to an owl to meet it, which is the thing the encounter is
+## supposed to mean.
+##
+## A fresh shape rather than resizing the scene's: sub-resources are shared
+## between instances of a PackedScene, and every owl in a level is one of those.
+func _size_zone(sprite_key: String) -> void:
+	var box := SpriteSheet.body_box(sprite_key)
+	if _zone == null or box == Vector2.ZERO:
+		return
+	var collider := _zone.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if collider == null:
+		return
+	var shape := RectangleShape2D.new()
+	shape.size = box
+	collider.shape = shape
+	# Grown upward from the feet, which sit on the node origin.
+	collider.position = Vector2(0.0, -box.y * 0.5)
+
 func _build_prompt() -> void:
 	_prompt = Label.new()
 	_prompt.text = _prompt_text()

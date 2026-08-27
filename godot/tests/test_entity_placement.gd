@@ -113,6 +113,44 @@ func test_player_never_spawns_inside_the_ground() -> void:
 		game.free()
 	assert_true(checked >= 5, "every level's player spawn was checked")
 
+## An owl is a thing a child walks up to and then stands still next to, so it
+## needs floor on both sides of it - not just under it.
+##
+## Three owls stood on the last solid column before a drop, which meant the only
+## place to stand and answer a question was the lip of a pit. They were placed
+## by a generator, not by hand, and the generator's own rule was two clear tiles
+## either side; the rule was applied to the wrong coordinate. An NPC spawn's `x`
+## is its LEFT EDGE and its box is two tiles wide, so the column it stands in is
+## one to the right of the number in the spec. Every fix here now reads that
+## offset off the compiled object instead of assuming it.
+const CLEAR_TILES_BESIDE := 2
+
+func test_npcs_have_floor_on_both_sides() -> void:
+	var checked := 0
+	for key in _level_keys():
+		var level := _level_json(key)
+		if level.is_empty():
+			continue
+		var tile := int(level.get("tilewidth", 32))
+		var game: Node2D = GAME_SCENE.instantiate()
+		game.level_key = key
+		Engine.get_main_loop().root.add_child(game)
+		var world: Node = game.get_node_or_null("World")
+		if world != null:
+			for node in world.get_children():
+				if node.scene_file_path.get_file() != "Npc.tscn":
+					continue
+				var at: Vector2 = (node as Node2D).global_position
+				checked += 1
+				for step in range(1, CLEAR_TILES_BESIDE + 1):
+					for dir in [-1, 1]:
+						var x := at.x + float(dir * step * tile)
+						assert_true(_solid_at(level, x, at.y + 1.0),
+							"%s: NPC at (%d, %d) has no floor %d tile(s) to its %s - it is standing on the lip of a drop" % [
+								key, int(at.x), int(at.y), step, "left" if dir < 0 else "right"])
+		game.free()
+	assert_true(checked >= 20, "every level's NPCs were checked for a place to stand")
+
 ## The other direction. A fix that simply subtracted a constant would satisfy
 ## every check above while leaving the owls hovering in mid-air, so the distance
 ## from an NPC's feet down to the ground is bounded too.
