@@ -258,6 +258,34 @@ overlay but not the state behind it.
 *Done when:* those two are variants too, or are checked some other way and the
 check is written down.
 
+### The crow's collider is centred on its frame, but the crow is not
+
+Measured, not suspected: `test_collision_fidelity` proves the box never reaches
+outside the drawing, and the tile squares are the tile art to within a pixel. The
+remaining mismatch is that the crow is drawn *off-centre* in its 64px frame -
+tail to the left, head and beak to the right - while `sprite_spec.json` gives it
+a 40px box centred on the frame. At its widest the art spans the full 64, so
+roughly 12px of bird hangs outside the collider on each side.
+
+What that costs: walking into a wall, the beak enters it about a third of a tile
+before the crow stops, and the same on the left with the tail. It is not a bug -
+a box around a tail and a beak would stop the crow a third of a tile short of
+every wall, which is worse - and it is not what makes collision *feel* wide
+either. It is simply the last place where the collider and the drawing disagree,
+and the disagreement is asymmetric, which is the part that would bother someone
+watching closely.
+
+Three ways to go, in increasing cost: leave it (the current answer, and a
+defensible one); give `body` an x-offset so the box sits on the bird's mass
+rather than the frame's middle; or re-register the walk sheet so the crow is
+drawn centred and the box needs no offset. The third is the real fix and needs
+an artist, because every frame of the cycle has to move together or the crow
+swims.
+
+*Done when:* someone plays with walls and ledges and says whether the beak
+overlapping a wall is visible enough to spend art time on — and then either the
+box moves or this entry is deleted.
+
 ## P3 — Content and localisation
 
 ### Visual and richer worded prompts

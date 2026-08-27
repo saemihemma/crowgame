@@ -192,8 +192,8 @@
     },
     {
       "type": "platform",
-      "x": 106,
-      "width": 2,
+      "x": 103,
+      "width": 5,
       "y": 4
     }
   ],
@@ -215,7 +215,7 @@
       },
       {
         "npc_id": "owl_gauntlet",
-        "x": 106,
+        "x": 104,
         "y": 4,
         "bonus": true,
         "requiresAbility": "double_jump"

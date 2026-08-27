@@ -161,8 +161,8 @@
     },
     {
       "type": "platform",
-      "x": 105,
-      "width": 2,
+      "x": 107,
+      "width": 5,
       "y": 4
     }
   ],
@@ -174,12 +174,12 @@
     "npcs": [
       {
         "npc_id": "owl_teacher_01",
-        "x": 22,
+        "x": 25,
         "y": 16
       },
       {
         "npc_id": "owl_tough_01",
-        "x": 58,
+        "x": 57,
         "y": 16
       },
       {
@@ -189,7 +189,7 @@
       },
       {
         "npc_id": "owl_gauntlet",
-        "x": 105,
+        "x": 108,
         "y": 4,
         "bonus": true,
         "requiresAbility": "double_jump"
