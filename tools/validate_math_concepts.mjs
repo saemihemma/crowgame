@@ -425,9 +425,16 @@ checkDeclared('knownThin', ladder.knownThin, actualThin,
 const OWL_MAX_OPERAND = (() => {
     const src = readFileSync(join(ROOT, 'godot', 'scripts', 'entities', 'npc', 'math_challenge_component.gd'), 'utf8');
     const found = [...src.matchAll(/"maxOperand"\s*:\s*(\d+)/g)];
+    // ZERO literals is the shipped state: the blanket rail was removed by the
+    // owner's grade-4 decision (2026-08) — it froze every player at sums of
+    // ~20 — and the step ladder now carries the age protection per child. No
+    // cap means every authored problem is reachable, so knownUnreachable must
+    // be empty (enforced below). Reintroducing a literal re-runs this audit
+    // and reports exactly which concepts it closes.
+    if (found.length === 0) return Infinity;
     if (found.length !== 1) {
         fail(
-            `expected exactly one "maxOperand" literal in math_challenge_component.gd, found ${found.length}. `
+            `expected at most one "maxOperand" literal in math_challenge_component.gd, found ${found.length}. `
             + 'The reachability check cannot tell which cap the owl uses, so it is not running.',
         );
         return Infinity;

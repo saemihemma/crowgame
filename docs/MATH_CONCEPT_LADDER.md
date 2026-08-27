@@ -33,12 +33,18 @@ rots in silence — this one cannot.
 plus **9** overlays keyed on problem shape — of which **47** open with a
 **4**-card lesson from `godot/data/curriculum/tutorials.json`: **47** lessons,
 **188** cards. The two without one are `addition.multi_digit` and
-`subtraction.multi_digit`, deliberately, because the owl's operand cap of 20
-means no child can reach them.
+`subtraction.multi_digit`: they were authored while the owl's blanket operand
+cap of 20 made them unreachable. That cap was removed by the owner's grade-4
+decision (2026-08) — the step ladder now paces each child instead, so a child
+only meets multi-digit work after ~20 mastered rungs — which makes both
+concepts reachable and their lessons owed (roadmap: "Multi-digit concepts need
+their lessons").
 
 `reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,
-including the **0** empty and **3** thin rungs, and the **6** concepts the cap
-puts out of reach — all declared. Separately, **8** rungs are dead zones the step
+including the **0** empty and **3** thin rungs, and the **0** concepts the cap
+puts out of reach — the rail is gone; if a numeric rail ever returns,
+`tools/validate_math_concepts.mjs` re-runs the reachability audit and
+repopulates that obligation. Separately, **8** rungs are dead zones the step
 derivation cannot emit at all: not authoring debt, and measured rather than
 asserted by `npm run math:step-domains`.
 

@@ -22,12 +22,12 @@
     "steadyFirstSubtractionSelectionAttempt": 40,
     "strugglingFirstSubtractionSelectionAttempt": -1,
     "depthProbeFirstSubtractionSelectionAttempt": 40,
-    "owlEligibleProblemCount": 1955,
-    "owlEligibleUniquePromptCount": 1955,
-    "owlEligibleUniqueFactCount": 807,
-    "openingUnlockedInventoryProblemCount": 621,
-    "openingUnlockedInventoryUniquePromptCount": 621,
-    "openingUnlockedInventoryUniqueFactCount": 179,
+    "owlEligibleProblemCount": 2332,
+    "owlEligibleUniquePromptCount": 2332,
+    "owlEligibleUniqueFactCount": 1077,
+    "openingUnlockedInventoryProblemCount": 806,
+    "openingUnlockedInventoryUniquePromptCount": 806,
+    "openingUnlockedInventoryUniqueFactCount": 307,
     "freshReachableProblemCount": 57,
     "freshReachableUniquePromptCount": 57,
     "freshReachableUniqueFactCount": 23,
@@ -64,6 +64,6 @@
   "caveats": [
     "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
     "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-    "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1955 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
+    "The 3000 headline is total shipped runtime inventory; the current owl rails expose 2332 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
   ]
 }

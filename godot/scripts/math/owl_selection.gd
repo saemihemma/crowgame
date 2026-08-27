@@ -98,17 +98,23 @@ static func select_owl_problem(manager: Node, config: Dictionary, previous_domai
 		primary = config.get("primaryDomain", "addition")
 	var plans := build_owl_domain_plans(allowed, previous_domain, primary)
 
+	# The operand rail applies only when the caller's config carries one — a
+	# default here would silently cap every player (the maxOperand:20 fossil).
 	for plan in plans:
 		var elo_options := {
 			"difficultyRange": config.get("difficultyRange", [1, 2]),
 			"maxCurriculumStep": config.get("maxCurriculumStep", 20),
-			"maxOperand": config.get("maxOperand", 20),
 			"primaryDomain": plan["primaryDomain"],
 		}
 		# ABSENT means no cap, and it has to stay absent. A sentinel here would be
 		# actively harmful: the filter rejects a glyph row whose answer exceeds the
 		# cap, so a -1 "no cap" would reject EVERY counting row instead of none.
 		_apply_ungrouped_cap(elo_options, config)
+		# Same rule for the operand rail: applied only when the caller's config
+		# carries one. A default here was the maxOperand:20 fossil that silently
+		# froze every player at sums of ~20; validate_docs fails any reintroduction.
+		if config.has("maxOperand"):
+			elo_options["maxOperand"] = config["maxOperand"]
 		var problem = manager.get_next_problem_elo_aware(plan["domains"], elo_options)
 		if problem != null:
 			return problem
@@ -119,9 +125,10 @@ static func select_owl_problem(manager: Node, config: Dictionary, previous_domai
 				"domains": [domain],
 				"difficultyRange": config.get("difficultyRange", [1, 2]),
 				"maxCurriculumStep": mini(int(config.get("maxCurriculumStep", 20)), LearnerStateManager.get_current_step(String(domain))),
-				"maxOperand": config.get("maxOperand", 20),
 			}
 			_apply_ungrouped_cap(options, config)
+			if config.has("maxOperand"):
+				options["maxOperand"] = config["maxOperand"]
 			var problem = manager.get_next_problem(options)
 			if problem != null:
 				return problem

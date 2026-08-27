@@ -227,31 +227,29 @@ func _selection_config() -> Dictionary:
 			allowed.append(d)
 	if allowed.is_empty():
 		allowed = ["addition"] if configured.has("addition") else [configured[0]]
+	# NO OPERAND RAIL, BY THE OWNER'S DECISION (2026-08).
+	#
+	# There used to be a maxOperand-20 config line here, documented as the age band:
+	# Hörmann taught 5-7 year olds and the Icelandic first-year curriculum works
+	# inside 0-20. That was true, and then the product changed: the owner asked
+	# for coverage through 4. bekkur, the grade 1-4 ladders shipped, and a
+	# perfect-player simulation through the kernel proved the blanket rail was
+	# freezing every player at sums of ~20 forever — promotion stalled with no
+	# reachable content above it, which is the exact bug a parent reported.
+	#
+	# The age protection did not go away; it moved to the fence that can tell
+	# children apart. A six-year-old cannot meet an operand above 20 without
+	# first climbing ~20 curriculum steps at 3 demonstrated wins each — the step
+	# gate is a personalised age band, where the number 20 was a blanket one.
+	# The level's difficultyBand and problem ELO are the other two fences.
+	# tools/validate_math_concepts.mjs still reads this file: reintroducing a
+	# numeric rail re-runs the reachability audit and tells you which concepts
+	# you just closed, and tools/validate_docs.js fails any default sneaking
+	# into owl_selection. docs/MATH_CONCEPT_LADDER.md carries the full history.
 	var config_out := {
 		"domains": allowed,
 		"difficultyRange": effective_range,
 		"maxCurriculumStep": maxi(0, int(round(float(effective_range[1]) * 10.0))),
-		# THE AGE BAND, AS A NUMBER. Do not raise this to unlock content.
-		#
-		# Horman teaches 5-7 year olds, and the Icelandic first-year curriculum
-		# works inside 0-20: number sense, writing the numerals 0-20, and meeting
-		# addition and subtraction within that range. Twenty is that boundary,
-		# not a placeholder.
-		#
-		# It is load-bearing in a way that is easy to miss. Every problem from
-		# addition step 20 and subtraction step 17 upward has an operand above
-		# 20, so this one number decides whether four whole concepts --
-		# addition.tens_and_ones, addition.carrying, subtraction.tens_and_ones,
-		# subtraction.borrowing, 1024 authored problems and four lessons -- are
-		# reachable at all. They are declared in `knownUnreachable` in
-		# data/curriculum/concept_ladder.json, and
-		# tools/validate_math_concepts.mjs reads THIS LINE to check that
-		# declaration: change the number and the build tells you what you just
-		# handed a six-year-old.
-		#
-		# Raising it is a product decision about who the game is for, not a
-		# content unlock. docs/MATH_CONCEPT_LADDER.md carries the reasoning.
-		"maxOperand": 20,
 		"primaryDomain": allowed[0],
 		# How often each subject comes due. Data, so "how much addition does a
 		# child meet" is a designer's dial rather than an accident of the order
@@ -264,7 +262,7 @@ func _selection_config() -> Dictionary:
 	}
 	# The representation floor. Resolved HERE rather than in the selector because
 	# it takes a curriculum question -- can this child compose a ten yet? -- and
-	# the selector deals in caps it has already been handed, like maxOperand above.
+	# the selector deals only in caps it has already been handed.
 	var floor_cap: Variant = _ungrouped_count_cap()
 	if floor_cap != null:
 		config_out["maxUngroupedCount"] = floor_cap
