@@ -34,7 +34,7 @@
       "mapFile": "data/levels/compiled/level_01_forest.json",
       "music": "level_01_music",
       "unlockRequirement": null,
-      "order": 2,
+      "order": 1,
       "mathGating": {
         "skills": [
           "counting",
@@ -57,7 +57,7 @@
         "level": "level_01",
         "minStars": 0
       },
-      "order": 3,
+      "order": 2,
       "mathGating": {
         "skills": [
           "subtraction",
@@ -80,7 +80,7 @@
         "level": "level_02",
         "minStars": 0
       },
-      "order": 4,
+      "order": 3,
       "mathGating": {
         "skills": [
           "comparison",
@@ -104,7 +104,7 @@
         "level": "level_03",
         "minStars": 0
       },
-      "order": 5,
+      "order": 4,
       "mathGating": {
         "skills": [
           "addition",
@@ -128,7 +128,7 @@
         "level": "level_04",
         "minStars": 0
       },
-      "order": 6,
+      "order": 5,
       "mathGating": {
         "skills": [
           "number_sequence",
@@ -154,7 +154,7 @@
         "level": "level_05",
         "minStars": 0
       },
-      "order": 7,
+      "order": 6,
       "mathGating": {
         "skills": [
           "addition",
@@ -177,7 +177,7 @@
         "level": "level_06",
         "minStars": 0
       },
-      "order": 8,
+      "order": 7,
       "mathGating": {
         "skills": [
           "multiplication",
@@ -200,7 +200,7 @@
         "level": "level_07",
         "minStars": 0
       },
-      "order": 9,
+      "order": 8,
       "mathGating": {
         "skills": [
           "division",
