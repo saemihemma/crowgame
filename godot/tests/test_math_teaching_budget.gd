@@ -244,28 +244,60 @@ func test_the_debt_survives_with_no_event_to_remember_it() -> void:
 
 # --- the help button ---------------------------------------------------------
 
-## The lesson for where a child STANDS, seen or not. This is the whole point:
-## asking for help must work on the idea they are stuck on, which is by
-## definition one they have already been taught.
-func test_help_returns_the_current_lesson_even_once_seen() -> void:
+## The lesson for the PROBLEM, seen or not. This is the whole point: asking for
+## help must answer the question in front of the child, which is by definition
+## one they may already have been taught.
+func test_help_returns_the_problems_lesson_even_once_seen() -> void:
 	var seen := SaveManager.get_tutorials_seen().duplicate(true)
 	_clear_seen()
-	var domain := "addition"
-	var before := TutorialManager.current_lesson_for(domain)
-	assert_true(not before.is_empty(), "there is a lesson for where the child stands")
-	SaveManager.mark_tutorial_seen(String(before.get("id", "")), false)
-	var after := TutorialManager.current_lesson_for(domain)
+	var problem := {"domain": "addition", "curriculumStep": 7, "skills": ["basic_addition"]}
+	var before := TutorialManager.lesson_for_problem(problem)
+	assert_eq(String(before.get("id", "")), "addition.make_ten",
+		"help answers the rung the QUESTION came from")
+	SaveManager.mark_tutorial_seen("addition.make_ten", false)
+	var after := TutorialManager.lesson_for_problem(problem)
 	assert_eq(String(after.get("id", "")), String(before.get("id", "")),
 		"and having seen it does not take it away -- that is what help IS")
 	_restore_seen(seen)
+
+## Help follows the QUESTION, not the ladder.
+##
+## The lanes are weighted comfort 0.4, review 0.2, at_level 0.3, stretch 0.1, so
+## 70% of questions come from a rung the child is not standing on. Keying help off
+## the ladder position -- which the first version of this did -- handed back the
+## lesson for a rung they were not being asked about, most of the time.
+func test_help_follows_the_question_not_the_ladder() -> void:
+	var was := LearnerStateManager.get_current_step("addition")
+	_stand_on("addition", 12)
+	var comfort := {"domain": "addition", "curriculumStep": 0, "skills": ["basic_addition"]}
+	assert_eq(String(TutorialManager.lesson_for_problem(comfort).get("id", "")), "addition.count_all",
+		"a comfort-lane question offers ITS lesson, not the one for where the ladder says the child is")
+	assert_eq(String(TutorialManager.current_lesson_for("addition").get("id", "")), "addition.teen_numbers",
+		"while the automatic lesson still tracks the rung the child stands on")
+	_stand_on("addition", was)
+
+## An overlay is claimed by problem SHAPE, and only the problem can reach it.
+##
+## "5 + ? = 8" derives onto the same rung as "5 + 3 = 8" -- correctly, it is the
+## same bond -- so a rung lookup hands back the make-ten lesson, which teaches
+## nothing about where an unknown may sit. concept_for() can never return an
+## overlay by design, which is exactly why help must not ask it. 106 problems
+## across nine overlays depend on this.
+func test_help_reaches_the_overlay_lessons() -> void:
+	var relational := {"domain": "addition", "curriculumStep": 7, "skills": ["missing_addend"]}
+	assert_eq(String(TutorialManager.lesson_for_problem(relational).get("id", "")),
+		"addition.missing_part", "a missing-addend question offers the missing-part lesson")
+	var ordinary := {"domain": "addition", "curriculumStep": 7, "skills": ["basic_addition"]}
+	assert_eq(String(TutorialManager.lesson_for_problem(ordinary).get("id", "")),
+		"addition.make_ten", "and an ordinary question on the same rung keeps the rung's lesson")
 
 ## Asking for help records nothing. A child checking the explanation has not
 ## answered anything, and must not look to the ladder like they have.
 func test_asking_for_help_marks_nothing_seen() -> void:
 	var seen := SaveManager.get_tutorials_seen().duplicate(true)
 	_clear_seen()
-	TutorialManager.current_lesson_for("addition")
-	TutorialManager.current_lesson_for("subtraction")
+	TutorialManager.lesson_for_problem({"domain": "addition", "curriculumStep": 7})
+	TutorialManager.lesson_for_problem({"domain": "subtraction", "curriculumStep": 3})
 	assert_true(SaveManager.get_tutorials_seen().is_empty(),
 		"looking a lesson up is not being taught it")
 	_restore_seen(seen)
@@ -273,9 +305,23 @@ func test_asking_for_help_marks_nothing_seen() -> void:
 ## An unknown category has no lesson, so the button hides rather than opening on
 ## nothing.
 func test_help_is_absent_where_there_is_no_lesson() -> void:
-	assert_true(TutorialManager.current_lesson_for("").is_empty(), "no domain, no lesson")
-	assert_true(TutorialManager.current_lesson_for("not_a_domain").is_empty(),
+	assert_true(TutorialManager.lesson_for_problem({}).is_empty(), "no problem, no lesson")
+	assert_true(TutorialManager.lesson_for_problem({"domain": "not_a_domain", "curriculumStep": 0}).is_empty(),
 		"an unknown category offers no help rather than an empty board")
+	assert_true(TutorialManager.current_lesson_for("not_a_domain").is_empty(),
+		"and the automatic side is just as unbothered by one")
+
+## The two rungs with no authored lesson, named so the gap is a fact rather than
+## a surprise. A child working in three-digit addition or subtraction gets no
+## lesson and no "?" -- 356 problems, 8.5% of the pool. Authoring either lesson
+## should delete its line here.
+func test_the_rungs_that_have_no_lesson_are_known() -> void:
+	for concept_id in ["addition.multi_digit", "subtraction.multi_digit"]:
+		assert_true(TutorialManager.get_tutorial(concept_id).is_empty(),
+			"%s still has no authored lesson" % concept_id)
+	assert_true(TutorialManager.lesson_for_problem(
+		{"domain": "addition", "curriculumStep": ConceptLadder.by_id("addition.multi_digit").get("steps", [0, 0])[0]}
+	).is_empty(), "so a question from that rung offers no help button rather than an empty board")
 
 
 # --- the help button, on the actual board ------------------------------------

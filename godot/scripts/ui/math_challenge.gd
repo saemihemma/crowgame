@@ -415,19 +415,22 @@ func _build_ui(opts: Dictionary) -> void:
 ## Absent rather than dead when the rung has no authored lesson: a button that
 ## does nothing teaches a child that buttons do nothing.
 func _add_help_button(row: HBoxContainer) -> void:
-	var domain := String(current_problem.get("domain", ""))
-	if TutorialManager.current_lesson_for(domain).is_empty():
+	# Keyed on the PROBLEM, not the child's ladder position. 70% of questions come
+	# from a rung the child is not standing on (comfort, review and stretch lanes
+	# together), and a relational problem is claimed by an overlay that a rung
+	# lookup cannot reach at all -- see TutorialManager.lesson_for_problem.
+	if TutorialManager.lesson_for_problem(current_problem).is_empty():
 		return
 	var help := BrandButton.make(TextManager.t("math.help"), BrandButton.Role.GHOST,
-		func(): _open_help(domain))
+		_open_help)
 	var size := float(Config.ui("math_challenge/help_button_size", 88))
 	help.custom_minimum_size = Vector2(size, size)
 	help.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/help_font_size", 30)))
 	help.tooltip_text = TextManager.t("math.help_tooltip")
 	row.add_child(help)
 
-func _open_help(domain: String) -> void:
-	var lesson := TutorialManager.current_lesson_for(domain)
+func _open_help() -> void:
+	var lesson := TutorialManager.lesson_for_problem(current_problem)
 	if lesson.is_empty():
 		return
 	var game := _game()
@@ -436,6 +439,10 @@ func _open_help(domain: String) -> void:
 	# BRIEF, always. A child pressing this is not meeting the idea, they are
 	# checking one thing about it, and the four-card arc starts two cards before
 	# the part they came for.
+	#
+	# Not marked seen either, here or on close: looking something up is not being
+	# taught it, and recording it would silence the automatic lesson for a rung
+	# the child never actually got.
 	game.launch_math_tutorial(lesson, func(_payload: Dictionary): pass,
 		TutorialManager.DEPTH_BRIEF, true)
 

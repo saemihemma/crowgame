@@ -124,12 +124,43 @@ func pending_lesson_any(preferred_domain: String) -> Dictionary:
 			return lesson
 	return {}
 
+## The lesson for the problem ON SCREEN, seen or not. This is the help button.
+##
+## Takes the problem, not the domain, and the difference is most of the value.
+## The selection lanes are weighted comfort 0.4, review 0.2, at_level 0.3,
+## stretch 0.1 -- so SEVENTY PERCENT of questions come from a rung that is not
+## where the ladder says the child stands. Answering "?" from the ladder position
+## would hand back the lesson for a rung they are not being asked about, most of
+## the time.
+##
+## And `concept_for` can never return an overlay, deliberately: an overlay is
+## claimed by problem SHAPE rather than by difficulty, so a step on its own must
+## not select one. "5 + ? = 8" derives onto the same rung as "5 + 3 = 8" --
+## correctly, it is the same bond -- and a child pressing "?" on it would have got
+## the make-ten lesson, which teaches nothing about where an unknown may sit. That
+## is the exact mistake the overlays exist to prevent, and asking from the ladder
+## rebuilt it for all 106 relational problems.
+##
+## Ignores `tutorialsSeen` on purpose: the whole point is to re-open a lesson the
+## child has already been given. Returns {} when the concept has no authored
+## lesson -- `addition.multi_digit` and `subtraction.multi_digit` are the two --
+## so the button hides rather than opening on nothing.
+func lesson_for_problem(problem: Dictionary) -> Dictionary:
+	if problem.is_empty():
+		return {}
+	var concept := ConceptLadder.concept_for_problem(problem)
+	if concept.is_empty():
+		return {}
+	return get_tutorial(ConceptLadder.tutorial_id(concept))
+
 ## The lesson for where this child stands in a category, seen or not.
 ##
-## This is the help button, and it deliberately ignores `tutorialsSeen`: the
-## whole point is to re-open a lesson the child has already been given. Returns
-## {} when the rung has no authored lesson, so the button can hide itself rather
-## than open on nothing.
+## The automatic half, and the one place the LADDER position is the right
+## question: a lesson is owed for the rung a child has climbed onto, which is
+## what makes levelling up the thing that earns it. The help button above asks
+## the opposite question and must not share this.
+##
+## Returns {} when the rung has no authored lesson.
 func current_lesson_for(domain: String) -> Dictionary:
 	# Checked against the roster rather than trusted: get_current_step() indexes
 	# the snapshot directly and throws on a domain that is not in it, and the
