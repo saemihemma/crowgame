@@ -355,7 +355,13 @@ function validateMathAndLearnerContracts() {
     ensureSourcePattern('godot/scripts/ui/math_challenge.gd', /var options: Array = answer\.get\("options", \[\]\)/, 'MCQ options drive the answer buttons');
     ensureSourcePattern('godot/scripts/scenes/login.gd', /func _finish_login\(\) -> void:/, 'login success rehydrate owner');
     ensureSourcePattern('godot/scripts/scenes/login.gd', /SaveManager\.switch_profile\(\)/, 'profile-switch on login');
-    ensureSourcePattern('godot/scripts/math/owl_selection.gd', /"maxOperand": config\.get\("maxOperand", 20\)/, 'local owl max-operand ceiling');
+    // The operand rail must stay OPT-IN: a defaulted rail was the maxOperand:20
+    // fossil that froze every player at sums of ~20 (see
+    // MATH_SYSTEM_ARCHITECTURE.md "Local kid-safe filter").
+    ensureSourcePattern('godot/scripts/math/owl_selection.gd', /if config\.has\("maxOperand"\):/, 'opt-in owl max-operand rail');
+    if (/config\.get\("maxOperand", \d/.test(readText('godot/scripts/math/owl_selection.gd'))) {
+        fail('owl_selection.gd: maxOperand has a numeric default again — the rail must apply only when the config carries it');
+    }
 
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', 'default starting global ELO: `150`', 'starting ELO contract');
     ensureDocContains('MATH_SYSTEM_ARCHITECTURE.md', '- `16` before 30 attempts', 'K-factor first band');

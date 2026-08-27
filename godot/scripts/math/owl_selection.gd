@@ -34,24 +34,30 @@ static func select_owl_problem(manager: Node, config: Dictionary, previous_domai
 	var primary = allowed[0] if allowed.size() > 0 else config.get("primaryDomain", "addition")
 	var plans := build_owl_domain_plans(allowed, previous_domain, primary)
 
+	# The operand rail applies only when the caller's config carries one — a
+	# default here would silently cap every player (the maxOperand:20 fossil).
 	for plan in plans:
-		var problem = manager.get_next_problem_elo_aware(plan["domains"], {
+		var options := {
 			"difficultyRange": config.get("difficultyRange", [1, 2]),
 			"maxCurriculumStep": config.get("maxCurriculumStep", 20),
-			"maxOperand": config.get("maxOperand", 20),
 			"primaryDomain": plan["primaryDomain"],
-		})
+		}
+		if config.has("maxOperand"):
+			options["maxOperand"] = config["maxOperand"]
+		var problem = manager.get_next_problem_elo_aware(plan["domains"], options)
 		if problem != null:
 			return problem
 
 	for plan in plans:
 		for domain in _order_fallback_domains(plan["domains"], plan["primaryDomain"]):
-			var problem = manager.get_next_problem({
+			var filter := {
 				"domains": [domain],
 				"difficultyRange": config.get("difficultyRange", [1, 2]),
 				"maxCurriculumStep": mini(int(config.get("maxCurriculumStep", 20)), LearnerStateManager.get_current_step(String(domain))),
-				"maxOperand": config.get("maxOperand", 20),
-			})
+			}
+			if config.has("maxOperand"):
+				filter["maxOperand"] = config["maxOperand"]
+			var problem = manager.get_next_problem(filter)
 			if problem != null:
 				return problem
 	return null

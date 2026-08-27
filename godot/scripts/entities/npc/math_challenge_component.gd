@@ -164,10 +164,16 @@ func _selection_config() -> Dictionary:
 			allowed.append(d)
 	if allowed.is_empty():
 		allowed = ["addition"] if configured.has("addition") else [configured[0]]
+	# No maxOperand rail here, deliberately. It was a fossil from when all
+	# content lived under 20: it silently filtered out every problem with an
+	# operand above 20, so a perfect player froze at sums of ~20 forever and
+	# promotion stalled with no reachable content above (proved by the kernel
+	# perfect-player simulation, 2026-08). Difficulty is governed by the
+	# curriculum step gate (the child's own pace), the level's difficultyBand
+	# (this place's identity), and problem ELO — three fences is enough.
 	return {
 		"domains": allowed,
 		"difficultyRange": effective_range,
 		"maxCurriculumStep": maxi(0, int(round(float(effective_range[1]) * 10.0))),
-		"maxOperand": 20,
 		"primaryDomain": allowed[0],
 	}

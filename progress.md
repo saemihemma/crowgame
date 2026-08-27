@@ -217,3 +217,17 @@ Original prompt: Export tighter runtime assets and wire the game to them so game
   in every extended domain. 43 server + 154 Godot tests green, full validate
   clean, export rebuilt. Deferred with roadmap entries: remainders (needs a
   new answer mode), fractions/negatives (new domains).
+
+- 2026-08-25: Progression ceiling root-caused and fixed. Symptom: perfect play
+  never got harder numbers. A kernel perfect-player simulation through the
+  real selection+promotion pipeline proved the cause: the owl component
+  hardcoded maxOperand:20 into every selection config, filtering out all
+  problems above operand 20 — served difficulty froze at sums of ~20 by
+  ~answer 120 and step promotion stalled with no reachable content above.
+  Fix: the rail is now opt-in (applies only when a config carries it; no
+  defaults anywhere), mirrored in kernel owlSelection.ts, owl_selection.gd,
+  the component, and the authoring rails model. With the fix the same
+  simulated player climbs to step 42 / 3-digit addition by ~600 answers
+  through mixed teacher/tough/gauntlet owls. New validate_docs guard fails if
+  the rail ever grows a numeric default again. Not a server issue — the whole
+  loop is client-side; no Postgres needed to debug it.

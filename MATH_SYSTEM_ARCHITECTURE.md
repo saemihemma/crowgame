@@ -312,11 +312,20 @@ Local mixed-domain policy:
 
 Local kid-safe filter:
 
-- the owl path currently caps `maxOperand` at `20`
-- this keeps two-digit addition and subtraction out of the live local owl loop until a denser later ladder exists
+- the blanket `maxOperand: 20` rail was REMOVED in 2026-08: the denser later
+  ladder it was waiting for now exists (grade 3-4 content to four digits), and
+  the rail had become the bug — it silently filtered out every problem above
+  operand 20, so a perfect player froze at sums of ~20 and step promotion
+  stalled with no reachable content (proved by a kernel perfect-player
+  simulation)
+- the `maxOperand` mechanism still exists but is opt-in: it applies only when
+  a caller's selection config carries the key, and it must never grow a
+  default again
+- difficulty is governed by three remaining fences: the child's own
+  current-step cap, the level's `difficultyBand`, and problem ELO
 - Bridge Pack A now gives local owl play dense middle-band coverage for addition steps `10-19` and subtraction steps `6-13`.
 - Subtraction step `5` remains intentionally tiny because the current derivation only yields a narrow `10 - 0` / `10 - 10` style prompt shape there.
-- The repo now ships `3150` total runtime problems, but the current owl-safe local subset is smaller; use `reports/math-batches/owl-surface-summary.json` when you need the owl-safe inventory and fresh-profile subset instead of the full inventory headline.
+- The repo now ships `3851` total runtime problems, but the current owl-safe local subset is smaller; use `reports/math-batches/owl-surface-summary.json` when you need the owl-safe inventory and fresh-profile subset instead of the full inventory headline.
 - `openingUnlockedInventory*` in that report means unlocked-domain inventory before current-step clamping.
 - `freshReachable*` in that report means the real fresh-profile day-one reachable subset after current-step clamping.
 - The owl-safe surface is not arithmetic-only anymore: early fresh encounters can mix addition with counting, while pattern matching joins later and subtraction still waits for addition stability.

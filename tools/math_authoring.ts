@@ -273,7 +273,9 @@ function loadLiveOwlMathConfig(): LiveOwlMathConfig {
         domains,
         difficultyRange,
         maxCurriculumStep: Math.max(0, Math.round(difficultyRange[1] * 10)),
-        maxOperand: 20,
+        // No operand rail: the live component stopped sending one (it froze
+        // progression at sums of ~20). The rails model must match what ships.
+        maxOperand: Number.POSITIVE_INFINITY,
         problemCount: typeof mathComponent.problemCount === 'number' ? mathComponent.problemCount : 1,
         primaryDomain: domains[0],
     };
