@@ -155,13 +155,14 @@ func layout_for(view: Vector2) -> void:
 	for pad in _pads:
 		pad.queue_redraw()
 
-## `at` is where the PLATE goes. The node sits a margin outside it, because the
-## pressable square is larger than the plate the child sees -- see
-## TouchPad.HIT_MARGIN.
+## `at` is the plate's TOP-LEFT, which is how the layout above reads. The pad is
+## positioned by its CENTRE, because that is the point both its plate and its
+## pressable square are centred on -- see TouchPad._bare for why that is the fact
+## to build on.
 func _place(action: String, at: Vector2) -> void:
 	var pad: TouchPad = _by_action.get(action, null)
 	if pad != null:
-		pad.position = at - Vector2(TouchPad.HIT_MARGIN, TouchPad.HIT_MARGIN)
+		pad.position = at + Vector2(pad.box, pad.box) * 0.5
 
 ## Every pad's DRAWN rect in viewport space, for the gates.
 ##

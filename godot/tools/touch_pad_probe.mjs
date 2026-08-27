@@ -40,6 +40,7 @@ import { spawn } from 'child_process';
 import { mkdir } from 'fs/promises';
 import { resolve } from 'path';
 import { chromium } from 'playwright-core';
+import { inflateSync as zlibInflate } from 'zlib';
 
 const ROOT = '/home/user/crowgame';
 const WEB_DIR = resolve(ROOT, 'output/web');
@@ -73,6 +74,60 @@ async function boot(page) {
     await wait(page, 9000);
     await page.keyboard.press('Enter');
     await wait(page, 2500);
+}
+
+
+/**
+ * Just enough PNG to read a screenshot's pixels: 8-bit RGB or RGBA, no
+ * interlacing, which is what Playwright emits. Written out rather than pulled in
+ * because this repo has no image dependency and one function is cheaper than one.
+ */
+function decodePng(buf) {
+    let i = 8, width = 0, height = 0, colourType = 6;
+    const idat = [];
+    while (i < buf.length) {
+        const len = buf.readUInt32BE(i);
+        const type = buf.toString('ascii', i + 4, i + 8);
+        const data = buf.subarray(i + 8, i + 8 + len);
+        if (type === 'IHDR') {
+            width = data.readUInt32BE(0);
+            height = data.readUInt32BE(4);
+            colourType = data[9];
+        } else if (type === 'IDAT') {
+            idat.push(data);
+        } else if (type === 'IEND') break;
+        i += 12 + len;
+    }
+    const raw = zlibInflate(Buffer.concat(idat));
+    const channels = colourType === 6 ? 4 : 3;
+    const stride = width * channels;
+    const out = Buffer.alloc(width * height * 3);
+    let prev = Buffer.alloc(stride);
+    let pos = 0;
+    for (let y = 0; y < height; y += 1) {
+        const filter = raw[pos]; pos += 1;
+        const line = Buffer.from(raw.subarray(pos, pos + stride)); pos += stride;
+        for (let x = 0; x < stride; x += 1) {
+            const a = x >= channels ? line[x - channels] : 0;
+            const b = prev[x];
+            const c = x >= channels ? prev[x - channels] : 0;
+            if (filter === 1) line[x] = (line[x] + a) & 255;
+            else if (filter === 2) line[x] = (line[x] + b) & 255;
+            else if (filter === 3) line[x] = (line[x] + ((a + b) >> 1)) & 255;
+            else if (filter === 4) {
+                const p = a + b - c;
+                const pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);
+                line[x] = (line[x] + (pa <= pb && pa <= pc ? a : pb <= pc ? b : c)) & 255;
+            }
+        }
+        for (let x = 0; x < width; x += 1) {
+            out[(y * width + x) * 3] = line[x * channels];
+            out[(y * width + x) * 3 + 1] = line[x * channels + 1];
+            out[(y * width + x) * 3 + 2] = line[x * channels + 2];
+        }
+        prev = line;
+    }
+    return { width, height, rgb: out };
 }
 
 async function main() {
@@ -117,42 +172,81 @@ async function main() {
             ['jump', css(jumpX + JUMP / 2, floorY - JUMP + JUMP / 2)],
         ];
 
-        // A pad answers by turning its own square bright coin. Sampled inside that
-        // pad's own footprint, so nothing else on screen can move the number --
-        // and the pad lighting is the right signal because TouchScreenButton only
-        // highlights when the press landed inside its shape.
-        const lit = (name, box) => page.evaluate(({ box, W, H }) => {
-            const c = document.querySelector('canvas');
-            const g = c.getContext('webgl2') || c.getContext('webgl');
-            const sx = Math.round(box.x0 * c.width / W), ex = Math.round(box.x1 * c.width / W);
-            const sy = Math.round(box.y0 * c.height / H), ey = Math.round(box.y1 * c.height / H);
-            const w = ex - sx, h = ey - sy;
-            const px = new Uint8Array(4 * w * h);
-            g.readPixels(sx, c.height - ey, w, h, g.RGBA, g.UNSIGNED_BYTE, px);
+        // A pad answers by turning its own square bright coin, and that is read
+        // off a SCREENSHOT rather than out of WebGL.
+        //
+        // WHY NOT readPixels, WHICH EVERY EARLIER VERSION OF THIS USED. Godot's
+        // canvas is created without preserveDrawingBuffer, so the colour buffer is
+        // undefined once the frame has been composited -- a read from outside a
+        // frame callback returns the current frame sometimes and a cleared buffer
+        // other times. That is not a subtle bias, it is a coin flip, and it is why
+        // this probe kept reporting pads as ignored whose own screenshot from the
+        // same press showed them lit. Every detector in this file's history died
+        // of it. A screenshot is a real composite and cannot lie that way.
+        // ONE screenshot per press, sampled for the pad's own square.
+        //
+        // Not a separate clipped screenshot: a clip and a full frame are two
+        // captures at two instants, and the sprint pad read as ignored in its clip
+        // while the full frame from the same press showed it plainly lit. Sampling
+        // the frame that gets saved means the tool and a human looking at the
+        // saved file cannot disagree about what happened.
+        const litInShot = (shot, box) => {
+            const { width, height, rgb } = decodePng(shot);
+            const sx = Math.max(0, Math.round(box.x0 * width / IPAD.width));
+            const ex = Math.min(width, Math.round(box.x1 * width / IPAD.width));
+            const sy = Math.max(0, Math.round(box.y0 * height / IPAD.height));
+            const ey = Math.min(height, Math.round(box.y1 * height / IPAD.height));
             let coin = 0, n = 0;
-            for (let i = 0; i < px.length; i += 4) {
-                n += 1;
-                if (px[i] >= 240 && px[i + 1] >= 170 && px[i + 1] <= 230 && px[i + 2] <= 120) coin += 1;
+            for (let y = sy; y < ey; y += 1) {
+                for (let x = sx; x < ex; x += 1) {
+                    const o = (y * width + x) * 3;
+                    n += 1;
+                    const r = rgb[o], g = rgb[o + 1], b = rgb[o + 2];
+                    // r>=215, not 240. The plate is 92% opaque, so 8% of whatever
+                    // the level is drawing behind it bleeds through: a lit pad over
+                    // bright ground measures (240,176,48) and the same lit pad over
+                    // darker ground measures (224,176,48). A 240 cutoff called the
+                    // sprint pad unlit while its own saved screenshot showed it
+                    // plainly amber. An unlit plate is dark ink and nowhere near
+                    // this, so the wider band costs nothing.
+                    if (r >= 215 && g >= 160 && g <= 235 && b <= 130) coin += 1;
+                }
             }
-            return coin / n;
-        }, { box, W, H });
+            return coin / Math.max(1, n);
+        };
 
         const plate = (centre, size) => ({
             x0: centre.x - size * scale / 2, x1: centre.x + size * scale / 2,
             y0: centre.y - size * scale / 2, y1: centre.y + size * scale / 2,
         });
 
+        // A FRESH TOUCH ID PER PRESS. Reusing id 1 made every second press appear
+        // to be ignored -- an alternating pass/fail pattern that is a state
+        // artefact, not geometry: a browser and an engine both track a touch by
+        // its identifier, and a new press carrying an identifier they still
+        // believe is down is not a new press.
+        let touchId = 0;
         const results = [];
         for (const [name, pt] of pads) {
+            touchId += 1;
             const box = plate(pt, name === 'jump' ? JUMP : BTN);
-            const before = await lit(name, box);
-            await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: pt.x, y: pt.y, id: 1 }] });
+            // ABSOLUTE, not a difference. The delta version reported pads as
+            // ignored whose own screenshot from the same press showed them lit --
+            // a before/after reading races the press-grow animation and the scene
+            // moving behind a translucent plate. A lit plate is most of a square
+            // of coin and an unlit one has essentially none, so the reading needs
+            // no baseline at all.
+            await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: pt.x, y: pt.y, id: touchId }] });
             await wait(page, 320);
-            const during = await lit(name, box);
-            await page.screenshot({ path: resolve(SHOT_DIR, `pad-${name}.png`) });
+            const shot = await page.screenshot({ path: resolve(SHOT_DIR, `pad-${name}.png`) });
+            const during = litInShot(shot, box);
             await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
             await wait(page, 800);
-            const answered = during - before > 0.25;
+            // 0.30, from the measured range: an unlit plate reads essentially
+            // zero coin and a lit one 0.4 to 0.8 depending on how much of it the
+            // icon covers. 0.45 clipped the sprint pad, whose chevrons-and-speed-
+            // lines icon eats more of the square than a solid arrow does.
+            const answered = during > 0.30;
             results.push({ name, pt, answered });
             console.log(`  ${answered ? 'answers  ' : 'IGNORES  '} ${name.padEnd(11)} pressed at its drawn centre (${pt.x},${pt.y})`);
         }
@@ -160,19 +254,18 @@ async function main() {
         // And the pair the report is about: forward held, jump landing second.
         const right = pads[1], jump = pads[4];
         const jumpBox = plate(jump[1], JUMP);
-        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...right[1], id: 1 }] });
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...right[1], id: 101 }] });
         await wait(page, 400);
-        const beforePair = await lit('jump', jumpBox);
         await cdp.send('Input.dispatchTouchEvent', {
             type: 'touchStart',
-            touchPoints: [{ ...right[1], id: 1 }, { ...jump[1], id: 2 }],
+            touchPoints: [{ ...right[1], id: 101 }, { ...jump[1], id: 102 }],
         });
         await wait(page, 320);
-        const duringPair = await lit('jump', jumpBox);
-        await page.screenshot({ path: resolve(SHOT_DIR, 'pad-forward-and-jump.png') });
+        const pairShot = await page.screenshot({ path: resolve(SHOT_DIR, 'pad-forward-and-jump.png') });
+        const duringPair = litInShot(pairShot, jumpBox);
         await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
         await wait(page, 500);
-        const pairOk = duringPair - beforePair > 0.25;
+        const pairOk = duringPair > 0.30;
         console.log(`  ${pairOk ? 'answers  ' : 'IGNORES  '} jump while forward is held`);
 
         const dead = results.filter(r => !r.answered).map(r => r.name);
