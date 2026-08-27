@@ -83,6 +83,7 @@ func _ready() -> void:
 	# rebuilding: rebuilding destroys live TouchScreenButtons and drops a press
 	# the player is holding at that moment.
 	get_viewport().size_changed.connect(_layout)
+	visibility_changed.connect(_on_visibility_changed)
 
 func _build() -> void:
 	_pads.clear()
@@ -154,14 +155,44 @@ func layout_for(view: Vector2) -> void:
 	for pad in _pads:
 		pad.queue_redraw()
 
+## `at` is where the PLATE goes. The node sits a margin outside it, because the
+## pressable square is larger than the plate the child sees -- see
+## TouchPad.HIT_MARGIN.
 func _place(action: String, at: Vector2) -> void:
 	var pad: TouchPad = _by_action.get(action, null)
 	if pad != null:
-		pad.position = at
+		pad.position = at - Vector2(TouchPad.HIT_MARGIN, TouchPad.HIT_MARGIN)
 
-## Every pad's rect in viewport space, for the gates.
+## Every pad's DRAWN rect in viewport space, for the gates.
+##
+## Drawn, not pressable. Gate B3 asks whether a child can see and aim at a
+## target, and measuring the invisible margin instead would let a plate too small
+## to find pass on the strength of a generous hit area.
 func pad_rects() -> Array[Rect2]:
 	var out: Array[Rect2] = []
 	for pad in _pads:
-		out.append(Rect2(pad.position, (pad.shape as RectangleShape2D).size))
+		out.append(pad.drawn_rect())
 	return out
+
+## Every pad's PRESSABLE rect, which is what a thumb actually meets.
+func hit_rects() -> Array[Rect2]:
+	var out: Array[Rect2] = []
+	for pad in _pads:
+		out.append(pad.hit_rect())
+	return out
+
+## Let go of every pad.
+##
+## The controls are hidden the moment an owl opens a maths board, and a board
+## opens on PROXIMITY -- no button, no warning -- so it can happen with a thumb
+## already down on a pad. A hidden TouchScreenButton never sees that thumb lift,
+## so its action stays pressed: the child answers the question, the board closes,
+## and the crow is already walking. Into the next owl, or off the next edge.
+##
+## Hooked to visibility rather than called from game.gd, so it holds for every
+## way the controls can go away rather than the one that was noticed.
+func _on_visibility_changed() -> void:
+	if visible:
+		return
+	for pad in _pads:
+		pad.release()

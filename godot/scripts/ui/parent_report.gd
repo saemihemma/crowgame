@@ -27,14 +27,38 @@ func _ready() -> void:
 	shade.anchor_bottom = 1.0
 	add_child(shade)
 
+	var margin: float = Config.ui("parent_report/margin", 48)
+	var bar_h: float = Config.ui("parent_report/button_height", 64)
+
 	var scroll := ScrollContainer.new()
 	scroll.anchor_right = 1.0
 	scroll.anchor_bottom = 1.0
-	scroll.offset_left = Config.ui("parent_report/margin", 48)
-	scroll.offset_top = Config.ui("parent_report/margin", 48)
-	scroll.offset_right = -Config.ui("parent_report/margin", 48)
-	scroll.offset_bottom = -Config.ui("parent_report/margin", 48)
+	scroll.offset_left = margin
+	# Below the pinned bar, so the report scrolls under a way out that stays put.
+	scroll.offset_top = margin + bar_h + Config.ui("parent_report/separation", 12)
+	scroll.offset_right = -margin
+	scroll.offset_bottom = -margin
 	add_child(scroll)
+
+	# THE WAY OUT, PINNED.
+	#
+	# There was one back button and it was the last child of the scrolling
+	# column, under every child's report and the whole flag panel. So on any real
+	# family the only way to leave this screen was to scroll past everything to
+	# find it, and a parent who opened the report saw no exit at all. It was also
+	# a bare Button.new() -- Godot's default flat grey, in a game where every
+	# other button is a BrandButton -- so even once found it did not read as a
+	# button. "Extremely unclear" was the report, and both halves of that are
+	# fixed here: it is a BrandButton, and it is nailed to the top-left corner
+	# where it cannot scroll away.
+	var pinned := BrandButton.make(TextManager.t("menu.back"), BrandButton.Role.SECONDARY,
+		func() -> void:
+			closed.emit()
+			queue_free())
+	pinned.custom_minimum_size = Vector2(Config.ui("parent_report/button_width", 320), bar_h)
+	pinned.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	pinned.position = Vector2(margin, margin)
+	add_child(pinned)
 
 	_column = VBoxContainer.new()
 	_column.custom_minimum_size = Vector2(Config.ui("parent_report/width", 860), 0)
@@ -55,14 +79,16 @@ func _ready() -> void:
 
 	_render_flag_panel()
 
-	var back := Button.new()
-	back.text = TextManager.t("menu.back")
+	# Kept as well as the pinned one: a parent who has read to the bottom should
+	# not have to travel back up to leave. Same role and same size as the pinned
+	# one, so the two read as the same control rather than two different offers.
+	var back := BrandButton.make(TextManager.t("menu.back"), BrandButton.Role.SECONDARY,
+		func() -> void:
+			closed.emit()
+			queue_free())
 	back.custom_minimum_size = Vector2(
 		Config.ui("parent_report/button_width", 320), Config.ui("parent_report/button_height", 64))
-	back.pressed.connect(func() -> void:
-		closed.emit()
-		queue_free())
-	UiFx.attach_focus_highlight(back)
+	back.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_column.add_child(back)
 
 # ─── The grown-up's toggles ───────────────────────────────
