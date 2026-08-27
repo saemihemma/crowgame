@@ -2821,8 +2821,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        6,
+        7,
         0,
         0,
         0,
@@ -3490,9 +3490,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        6,
+        3,
+        7,
         0,
         0,
         0,
@@ -3822,9 +3822,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        6,
+        3,
+        7,
         0,
         0,
         0,
@@ -6812,6 +6812,32 @@
         },
         {
           "id": 4,
+          "name": "owl_gauntlet",
+          "type": "npc",
+          "x": 3392,
+          "y": 128,
+          "width": 64,
+          "height": 64,
+          "properties": [
+            {
+              "name": "npc_id",
+              "type": "string",
+              "value": "owl_gauntlet"
+            },
+            {
+              "name": "bonus",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "requires_ability",
+              "type": "string",
+              "value": "double_jump"
+            }
+          ]
+        },
+        {
+          "id": 5,
           "name": "coin",
           "type": "collectible",
           "x": 192,
@@ -6827,7 +6853,7 @@
           ]
         },
         {
-          "id": 5,
+          "id": 6,
           "name": "coin",
           "type": "collectible",
           "x": 224,
@@ -6843,7 +6869,7 @@
           ]
         },
         {
-          "id": 6,
+          "id": 7,
           "name": "coin",
           "type": "collectible",
           "x": 352,
@@ -6859,7 +6885,7 @@
           ]
         },
         {
-          "id": 7,
+          "id": 8,
           "name": "coin",
           "type": "collectible",
           "x": 384,
@@ -6875,7 +6901,7 @@
           ]
         },
         {
-          "id": 8,
+          "id": 9,
           "name": "coin",
           "type": "collectible",
           "x": 704,
@@ -6891,7 +6917,7 @@
           ]
         },
         {
-          "id": 9,
+          "id": 10,
           "name": "big_coin",
           "type": "big_coin",
           "x": 928,
@@ -6912,7 +6938,7 @@
           ]
         },
         {
-          "id": 10,
+          "id": 11,
           "name": "coin",
           "type": "collectible",
           "x": 960,
@@ -6928,7 +6954,7 @@
           ]
         },
         {
-          "id": 11,
+          "id": 12,
           "name": "coin",
           "type": "collectible",
           "x": 1056,
@@ -6944,7 +6970,7 @@
           ]
         },
         {
-          "id": 12,
+          "id": 13,
           "name": "coin",
           "type": "collectible",
           "x": 1344,
@@ -6960,7 +6986,7 @@
           ]
         },
         {
-          "id": 13,
+          "id": 14,
           "name": "coin",
           "type": "collectible",
           "x": 1472,
@@ -6976,7 +7002,7 @@
           ]
         },
         {
-          "id": 14,
+          "id": 15,
           "name": "big_coin",
           "type": "big_coin",
           "x": 1536,
@@ -6997,7 +7023,7 @@
           ]
         },
         {
-          "id": 15,
+          "id": 16,
           "name": "coin",
           "type": "collectible",
           "x": 1792,
@@ -7013,7 +7039,7 @@
           ]
         },
         {
-          "id": 16,
+          "id": 17,
           "name": "coin",
           "type": "collectible",
           "x": 1824,
@@ -7029,7 +7055,7 @@
           ]
         },
         {
-          "id": 17,
+          "id": 18,
           "name": "coin",
           "type": "collectible",
           "x": 1952,
@@ -7045,7 +7071,7 @@
           ]
         },
         {
-          "id": 18,
+          "id": 19,
           "name": "coin",
           "type": "collectible",
           "x": 2240,
@@ -7061,7 +7087,7 @@
           ]
         },
         {
-          "id": 19,
+          "id": 20,
           "name": "coin",
           "type": "collectible",
           "x": 2368,
@@ -7077,7 +7103,7 @@
           ]
         },
         {
-          "id": 20,
+          "id": 21,
           "name": "big_coin",
           "type": "big_coin",
           "x": 2432,
@@ -7098,26 +7124,10 @@
           ]
         },
         {
-          "id": 21,
-          "name": "coin",
-          "type": "collectible",
-          "x": 2720,
-          "y": 384,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
           "id": 22,
           "name": "coin",
           "type": "collectible",
-          "x": 2752,
+          "x": 2720,
           "y": 384,
           "width": 32,
           "height": 32,
@@ -7133,7 +7143,7 @@
           "id": 23,
           "name": "coin",
           "type": "collectible",
-          "x": 2880,
+          "x": 2752,
           "y": 384,
           "width": 32,
           "height": 32,
@@ -7149,8 +7159,8 @@
           "id": 24,
           "name": "coin",
           "type": "collectible",
-          "x": 3200,
-          "y": 448,
+          "x": 2880,
+          "y": 384,
           "width": 32,
           "height": 32,
           "properties": [
@@ -7163,22 +7173,6 @@
         },
         {
           "id": 25,
-          "name": "coin",
-          "type": "collectible",
-          "x": 3232,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
-          "id": 26,
           "name": "exit",
           "type": "door",
           "x": 3392,
@@ -7194,7 +7188,7 @@
           ]
         },
         {
-          "id": 27,
+          "id": 26,
           "name": "spikes",
           "type": "hazard",
           "x": 384,
@@ -7210,7 +7204,7 @@
           ]
         },
         {
-          "id": 28,
+          "id": 27,
           "name": "spikes",
           "type": "hazard",
           "x": 736,
@@ -7226,7 +7220,7 @@
           ]
         },
         {
-          "id": 29,
+          "id": 28,
           "name": "spikes",
           "type": "hazard",
           "x": 896,
@@ -7242,7 +7236,7 @@
           ]
         },
         {
-          "id": 30,
+          "id": 29,
           "name": "spikes",
           "type": "hazard",
           "x": 1120,
@@ -7258,7 +7252,7 @@
           ]
         },
         {
-          "id": 31,
+          "id": 30,
           "name": "spikes",
           "type": "hazard",
           "x": 1632,
@@ -7274,7 +7268,7 @@
           ]
         },
         {
-          "id": 32,
+          "id": 31,
           "name": "spikes",
           "type": "hazard",
           "x": 2016,
@@ -7290,7 +7284,7 @@
           ]
         },
         {
-          "id": 33,
+          "id": 32,
           "name": "spikes",
           "type": "hazard",
           "x": 2496,
@@ -7306,7 +7300,7 @@
           ]
         },
         {
-          "id": 34,
+          "id": 33,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 512,
@@ -7322,7 +7316,7 @@
           ]
         },
         {
-          "id": 35,
+          "id": 34,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 1344,
@@ -7338,7 +7332,7 @@
           ]
         },
         {
-          "id": 36,
+          "id": 35,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 2720,
@@ -7354,11 +7348,43 @@
           ]
         },
         {
-          "id": 37,
+          "id": 36,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 1792,
           "y": 480,
+          "width": 48,
+          "height": 32,
+          "properties": [
+            {
+              "name": "enemy_id",
+              "type": "string",
+              "value": "cockroach_basic"
+            }
+          ]
+        },
+        {
+          "id": 37,
+          "name": "cockroach_basic",
+          "type": "enemy",
+          "x": 3200,
+          "y": 384,
+          "width": 48,
+          "height": 32,
+          "properties": [
+            {
+              "name": "enemy_id",
+              "type": "string",
+              "value": "cockroach_basic"
+            }
+          ]
+        },
+        {
+          "id": 38,
+          "name": "cockroach_basic",
+          "type": "enemy",
+          "x": 3328,
+          "y": 288,
           "width": 48,
           "height": 32,
           "properties": [

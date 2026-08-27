@@ -152,6 +152,24 @@
       "x": 140,
       "width": 12,
       "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 141,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 145,
+      "width": 3,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 148,
+      "width": 2,
+      "y": 4
     }
   ],
   "spawns": {
@@ -169,6 +187,13 @@
         "npc_id": "owl_tough_01",
         "x": 90,
         "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 148,
+        "y": 4,
+        "bonus": true,
+        "requiresAbility": "double_jump"
       }
     ],
     "collectibles": [
@@ -402,11 +427,6 @@
       },
       {
         "type": "coin",
-        "x": 143,
-        "y": 14
-      },
-      {
-        "type": "coin",
         "x": 146,
         "y": 14
       },
@@ -448,6 +468,16 @@
       "enemy_id": "cockroach_basic",
       "x": 110,
       "y": 15
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 142,
+      "y": 12
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 146,
+      "y": 9
     }
   ],
   "exits": [

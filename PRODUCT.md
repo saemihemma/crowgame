@@ -50,6 +50,27 @@ per-owl in the registry rather than global, so a later gated owl can ask more
 without changing the loop for every other one. A fresh profile opens on addition
 and counting; other domains join through the normal unlock rules.
 
+## What finishing means
+
+Three things a child can point at, per level: the level is cleared, its three big
+coins are found, its owls are free. The completion percentage is the mean of the
+levels, so every level weighs the same -- a global ratio would make the practice
+arena, which holds far more owls than any level, worth more than the game.
+
+Big coins are the unit of progress rather than ordinary coins on purpose. A coin
+drops into a lifetime purse that only rises, so "412 of 530" tells a six-year-old
+nothing and barely moves; three per level is countable on one hand. One you have
+already found comes back as a hollow ghost you walk through, which is what makes
+a second visit worth making.
+
+A run only counts if it reaches the door. Records are best-of, so replaying a
+level and doing worse takes nothing away.
+
+Each level also ends with one owl the crow cannot reach yet, guarded and up a
+climb whose last hop is beyond the current jump. It counts toward the
+percentage, and the door never waits for it -- so 100% is deliberately out of
+reach until the crow can do more than it can today.
+
 Desired feel: friendly, readable on small screens, rewarding without being noisy,
 playful rather than school-like.
 

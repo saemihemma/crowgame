@@ -9,7 +9,7 @@
 #   bash godot/tools/capture.sh level_01 play "" "" is       # in Icelandic
 #
 # Variants: play | math | math-wrong | math-count | pause | complete |
-#           door-locked | door-locked-part | bigcoins | bigcoins-ghost |
+#           door-locked | door-locked-part | bigcoins | bigcoins-ghost | bonus-owl |
 #           hud-hurt | hud-streak | hud-ability
 #           (see tools/capture/capture.gd).
 # Writes output/godot-shots/<level>-<variant>.png.

@@ -3919,8 +3919,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        6,
+        7,
         0,
         0,
         0,
@@ -4852,9 +4852,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        6,
+        3,
+        7,
         0,
         0,
         0,
@@ -5316,9 +5316,9 @@
         7,
         0,
         0,
-        0,
-        0,
-        0,
+        6,
+        3,
+        7,
         0,
         0,
         0,
@@ -9452,6 +9452,32 @@
         },
         {
           "id": 4,
+          "name": "owl_gauntlet",
+          "type": "npc",
+          "x": 4736,
+          "y": 128,
+          "width": 64,
+          "height": 64,
+          "properties": [
+            {
+              "name": "npc_id",
+              "type": "string",
+              "value": "owl_gauntlet"
+            },
+            {
+              "name": "bonus",
+              "type": "bool",
+              "value": true
+            },
+            {
+              "name": "requires_ability",
+              "type": "string",
+              "value": "double_jump"
+            }
+          ]
+        },
+        {
+          "id": 5,
           "name": "coin",
           "type": "collectible",
           "x": 0,
@@ -9467,7 +9493,7 @@
           ]
         },
         {
-          "id": 5,
+          "id": 6,
           "name": "coin",
           "type": "collectible",
           "x": 96,
@@ -9483,7 +9509,7 @@
           ]
         },
         {
-          "id": 6,
+          "id": 7,
           "name": "big_coin",
           "type": "big_coin",
           "x": 192,
@@ -9504,7 +9530,7 @@
           ]
         },
         {
-          "id": 7,
+          "id": 8,
           "name": "coin",
           "type": "collectible",
           "x": 288,
@@ -9520,7 +9546,7 @@
           ]
         },
         {
-          "id": 8,
+          "id": 9,
           "name": "coin",
           "type": "collectible",
           "x": 480,
@@ -9536,7 +9562,7 @@
           ]
         },
         {
-          "id": 9,
+          "id": 10,
           "name": "coin",
           "type": "collectible",
           "x": 576,
@@ -9552,7 +9578,7 @@
           ]
         },
         {
-          "id": 10,
+          "id": 11,
           "name": "coin",
           "type": "collectible",
           "x": 672,
@@ -9568,7 +9594,7 @@
           ]
         },
         {
-          "id": 11,
+          "id": 12,
           "name": "coin",
           "type": "collectible",
           "x": 768,
@@ -9584,7 +9610,7 @@
           ]
         },
         {
-          "id": 12,
+          "id": 13,
           "name": "coin",
           "type": "collectible",
           "x": 800,
@@ -9600,7 +9626,7 @@
           ]
         },
         {
-          "id": 13,
+          "id": 14,
           "name": "coin",
           "type": "collectible",
           "x": 928,
@@ -9616,7 +9642,7 @@
           ]
         },
         {
-          "id": 14,
+          "id": 15,
           "name": "coin",
           "type": "collectible",
           "x": 1056,
@@ -9632,7 +9658,7 @@
           ]
         },
         {
-          "id": 15,
+          "id": 16,
           "name": "coin",
           "type": "collectible",
           "x": 1184,
@@ -9648,7 +9674,7 @@
           ]
         },
         {
-          "id": 16,
+          "id": 17,
           "name": "coin",
           "type": "collectible",
           "x": 1280,
@@ -9664,7 +9690,7 @@
           ]
         },
         {
-          "id": 17,
+          "id": 18,
           "name": "coin",
           "type": "collectible",
           "x": 1376,
@@ -9680,7 +9706,7 @@
           ]
         },
         {
-          "id": 18,
+          "id": 19,
           "name": "coin",
           "type": "collectible",
           "x": 1472,
@@ -9696,7 +9722,7 @@
           ]
         },
         {
-          "id": 19,
+          "id": 20,
           "name": "coin",
           "type": "collectible",
           "x": 1568,
@@ -9712,7 +9738,7 @@
           ]
         },
         {
-          "id": 20,
+          "id": 21,
           "name": "coin",
           "type": "collectible",
           "x": 1632,
@@ -9728,7 +9754,7 @@
           ]
         },
         {
-          "id": 21,
+          "id": 22,
           "name": "coin",
           "type": "collectible",
           "x": 1760,
@@ -9744,7 +9770,7 @@
           ]
         },
         {
-          "id": 22,
+          "id": 23,
           "name": "coin",
           "type": "collectible",
           "x": 1888,
@@ -9760,7 +9786,7 @@
           ]
         },
         {
-          "id": 23,
+          "id": 24,
           "name": "coin",
           "type": "collectible",
           "x": 2016,
@@ -9776,7 +9802,7 @@
           ]
         },
         {
-          "id": 24,
+          "id": 25,
           "name": "coin",
           "type": "collectible",
           "x": 2144,
@@ -9792,7 +9818,7 @@
           ]
         },
         {
-          "id": 25,
+          "id": 26,
           "name": "coin",
           "type": "collectible",
           "x": 2240,
@@ -9808,7 +9834,7 @@
           ]
         },
         {
-          "id": 26,
+          "id": 27,
           "name": "coin",
           "type": "collectible",
           "x": 2336,
@@ -9824,7 +9850,7 @@
           ]
         },
         {
-          "id": 27,
+          "id": 28,
           "name": "coin",
           "type": "collectible",
           "x": 2432,
@@ -9840,7 +9866,7 @@
           ]
         },
         {
-          "id": 28,
+          "id": 29,
           "name": "big_coin",
           "type": "big_coin",
           "x": 2528,
@@ -9861,7 +9887,7 @@
           ]
         },
         {
-          "id": 29,
+          "id": 30,
           "name": "coin",
           "type": "collectible",
           "x": 2656,
@@ -9877,7 +9903,7 @@
           ]
         },
         {
-          "id": 30,
+          "id": 31,
           "name": "coin",
           "type": "collectible",
           "x": 2752,
@@ -9893,7 +9919,7 @@
           ]
         },
         {
-          "id": 31,
+          "id": 32,
           "name": "coin",
           "type": "collectible",
           "x": 2848,
@@ -9909,7 +9935,7 @@
           ]
         },
         {
-          "id": 32,
+          "id": 33,
           "name": "coin",
           "type": "collectible",
           "x": 2944,
@@ -9925,7 +9951,7 @@
           ]
         },
         {
-          "id": 33,
+          "id": 34,
           "name": "coin",
           "type": "collectible",
           "x": 3040,
@@ -9941,7 +9967,7 @@
           ]
         },
         {
-          "id": 34,
+          "id": 35,
           "name": "coin",
           "type": "collectible",
           "x": 3136,
@@ -9957,7 +9983,7 @@
           ]
         },
         {
-          "id": 35,
+          "id": 36,
           "name": "coin",
           "type": "collectible",
           "x": 3168,
@@ -9973,7 +9999,7 @@
           ]
         },
         {
-          "id": 36,
+          "id": 37,
           "name": "coin",
           "type": "collectible",
           "x": 3264,
@@ -9989,7 +10015,7 @@
           ]
         },
         {
-          "id": 37,
+          "id": 38,
           "name": "coin",
           "type": "collectible",
           "x": 3360,
@@ -10005,7 +10031,7 @@
           ]
         },
         {
-          "id": 38,
+          "id": 39,
           "name": "coin",
           "type": "collectible",
           "x": 3456,
@@ -10021,7 +10047,7 @@
           ]
         },
         {
-          "id": 39,
+          "id": 40,
           "name": "coin",
           "type": "collectible",
           "x": 3552,
@@ -10037,7 +10063,7 @@
           ]
         },
         {
-          "id": 40,
+          "id": 41,
           "name": "coin",
           "type": "collectible",
           "x": 3648,
@@ -10053,7 +10079,7 @@
           ]
         },
         {
-          "id": 41,
+          "id": 42,
           "name": "coin",
           "type": "collectible",
           "x": 3680,
@@ -10069,7 +10095,7 @@
           ]
         },
         {
-          "id": 42,
+          "id": 43,
           "name": "coin",
           "type": "collectible",
           "x": 3808,
@@ -10085,7 +10111,7 @@
           ]
         },
         {
-          "id": 43,
+          "id": 44,
           "name": "coin",
           "type": "collectible",
           "x": 3936,
@@ -10101,7 +10127,7 @@
           ]
         },
         {
-          "id": 44,
+          "id": 45,
           "name": "coin",
           "type": "collectible",
           "x": 4064,
@@ -10117,7 +10143,7 @@
           ]
         },
         {
-          "id": 45,
+          "id": 46,
           "name": "big_coin",
           "type": "big_coin",
           "x": 4160,
@@ -10138,7 +10164,7 @@
           ]
         },
         {
-          "id": 46,
+          "id": 47,
           "name": "coin",
           "type": "collectible",
           "x": 4224,
@@ -10154,7 +10180,7 @@
           ]
         },
         {
-          "id": 47,
+          "id": 48,
           "name": "coin",
           "type": "collectible",
           "x": 4352,
@@ -10170,26 +10196,10 @@
           ]
         },
         {
-          "id": 48,
-          "name": "coin",
-          "type": "collectible",
-          "x": 4480,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
           "id": 49,
           "name": "coin",
           "type": "collectible",
-          "x": 4576,
+          "x": 4480,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -10319,6 +10329,38 @@
           "type": "enemy",
           "x": 3520,
           "y": 480,
+          "width": 48,
+          "height": 32,
+          "properties": [
+            {
+              "name": "enemy_id",
+              "type": "string",
+              "value": "cockroach_basic"
+            }
+          ]
+        },
+        {
+          "id": 58,
+          "name": "cockroach_basic",
+          "type": "enemy",
+          "x": 4544,
+          "y": 384,
+          "width": 48,
+          "height": 32,
+          "properties": [
+            {
+              "name": "enemy_id",
+              "type": "string",
+              "value": "cockroach_basic"
+            }
+          ]
+        },
+        {
+          "id": 59,
+          "name": "cockroach_basic",
+          "type": "enemy",
+          "x": 4672,
+          "y": 288,
           "width": 48,
           "height": 32,
           "properties": [

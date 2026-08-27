@@ -66,20 +66,38 @@ func test_collide_ids() -> void:
 		assert_true(not collide.has(id),
 			"decoration tile %d does not collide -- a tuft of grass is not a wall" % id)
 
+## Object properties reach `props`, which is the whole reason spawns are parsed
+## rather than positioned.
+##
+## This used to keep the LAST npc it saw and assert it was owl_teacher_01, which
+## broke the moment a bonus owl was appended to level_01 -- it was pinned to the
+## level's cast list rather than to the parser. It asserts the FLAGS on the bonus
+## owl now, which is a stronger check of the same thing: three properties of three
+## different kinds off one object, including the boolean that decides whether the
+## door waits for it.
 func test_object_spawns() -> void:
 	var types := {}
 	var player_spawn: Variant = null
-	var npc: Variant = null
+	var bonus_owl: Variant = null
+	var npcs := 0
 	for s in _parsed["spawns"]:
 		types[s["type"]] = true
 		if s["type"] == "player_spawn":
 			player_spawn = s
 		elif s["type"] == "npc":
-			npc = s
+			npcs += 1
+			if bool(s["props"].get("bonus", false)):
+				bonus_owl = s
 	assert_true(player_spawn != null, "has player_spawn")
-	assert_true(npc != null, "has npc")
-	if npc != null:
-		assert_eq(String(npc["props"].get("npc_id", "")), "owl_teacher_01", "npc_id property parsed")
+	assert_true(npcs >= 2, "level_01 spawns its owls (%d)" % npcs)
+	assert_true(bonus_owl != null, "and one of them is flagged as the bonus owl")
+	if bonus_owl != null:
+		assert_true(String(bonus_owl["props"].get("npc_id", "")) != "",
+			"a string property parsed")
+		assert_eq(bool(bonus_owl["props"].get("bonus", false)), true,
+			"a bool property parsed -- this is what keeps the door from waiting for it")
+		assert_eq(String(bonus_owl["props"].get("requires_ability", "")), "double_jump",
+			"and the ability it is gated behind")
 
 func test_image_path_resolution() -> void:
 	assert_eq(LevelLoader.resolve_image_path("../../assets/tilesets/forest_tiles.png"), "res://assets/tilesets/forest_tiles.png", "image path")

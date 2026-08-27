@@ -9,6 +9,7 @@ var _current_level_key := ""
 ## Cached per level: level select asks for all six at once, every time it opens.
 var _owl_counts: Dictionary = {}
 var _big_coin_counts: Dictionary = {}
+var _clearing_owl_counts: Dictionary = {}
 
 func _ready() -> void:
 	init(DataManager.get_dict("LEVEL_REGISTRY"))
@@ -80,7 +81,7 @@ func _load_map(key: String) -> Dictionary:
 	f.close()
 	return level if level is Dictionary else {}
 
-func _count_owls(key: String) -> int:
+func _count_owls(key: String, exclude_bonus: bool = false) -> int:
 	var level := _load_map(key)
 	if level.is_empty():
 		return 0
@@ -101,8 +102,11 @@ func _count_owls(key: String) -> int:
 				if String(prop.get("name", "")) == "npc_id":
 					id = String(prop.get("value", ""))
 			# Only challengers count. A signpost NPC is not a goal.
-			if String(by_id.get(id, {}).get("behavior", "")) == "math_challenger":
-				count += 1
+			if String(by_id.get(id, {}).get("behavior", "")) != "math_challenger":
+				continue
+			if exclude_bonus and _is_bonus(obj):
+				continue
+			count += 1
 	return count
 
 ## How many owls the magic door asks for before it opens.
@@ -121,7 +125,22 @@ func owls_required_for_door(key: String) -> int:
 	var entry: Variant = get_level(key)
 	if entry == null:
 		return 0
-	return required_for_door(entry as Dictionary, owl_count(key))
+	# The default is every NON-BONUS owl, derived from the level rather than
+	# written down. A hand-written "this level needs 2" beside a level that holds
+	# 3 is one typo away from a door that never opens, and the failure is silent:
+	# the child just walks into it forever.
+	return required_for_door(entry as Dictionary, owls_that_clear_the_level(key))
+
+
+## The owls whose freeing is what CLEARS a level -- everything the level holds
+## except the bonus one, which is meant to be revisited later with a better crow
+## and must never be able to lock the level behind itself.
+func owls_that_clear_the_level(key: String) -> int:
+	if _clearing_owl_counts.has(key):
+		return int(_clearing_owl_counts[key])
+	var count := _count_owls(key, true)
+	_clearing_owl_counts[key] = count
+	return count
 
 
 ## The decision, with the registry lookup taken out of it, so the cases that
@@ -139,6 +158,18 @@ static func required_for_door(entry: Dictionary, total: int) -> int:
 ## the HUD row. Read off the level rather than assumed to be three: a level that
 ## holds two must not draw three sockets and send a child looking for one that
 ## does not exist.
+## Whether a spawned NPC is the level's bonus owl.
+##
+## A property on the SPAWN rather than on the roster entry, because the same owl
+## definition can be an ordinary owl in one level and the hard one in another --
+## what makes it a bonus is where it was put, not what it is.
+static func _is_bonus(obj: Dictionary) -> bool:
+	for prop in obj.get("properties", []):
+		if String(prop.get("name", "")) == "bonus":
+			return bool(prop.get("value", false))
+	return false
+
+
 func big_coin_count(key: String) -> int:
 	if _big_coin_counts.has(key):
 		return int(_big_coin_counts[key])

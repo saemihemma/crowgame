@@ -78,7 +78,7 @@ export interface LevelSpec {
     }>;
     spawns: {
         player: { x: number; y: number };
-        npcs?: Array<{ npc_id: string; x: number; y: number }>;
+        npcs?: Array<{ npc_id: string; x: number; y: number; bonus?: boolean; requiresAbility?: string }>;
         collectibles?: Array<{ type: string; x: number; y: number; id?: string }>;
     };
     hazards?: Array<{ type: string; x: number; y: number; width?: number; height?: number }>;
@@ -138,6 +138,28 @@ interface TiledTileset {
         id: number;
         properties: Array<{ name: string; type: string; value: boolean }>;
     }>;
+}
+
+// A bonus owl is not part of what clears the level.
+//
+// The door waits for the level's owls, and one hard-to-reach owl meant to be
+// revisited with a better crow must never be able to lock a level behind it. So
+// `bonus` travels with the spawn and LevelManager derives the door's requirement
+// from it, rather than a human writing "this level needs 2" next to a level that
+// holds 3 and getting it wrong once.
+//
+// `requiresAbility` is the other half: check_level_reachability.py reads it and
+// INVERTS its rule for that owl -- a declared owl that the crow can already
+// reach fails, because then the climb is not a climb.
+function npcProperties(npc: { npc_id: string; bonus?: boolean; requiresAbility?: string }) {
+    const props: Array<{ name: string; type: string; value: string | boolean }> = [
+        { name: 'npc_id', type: 'string', value: npc.npc_id },
+    ];
+    if (npc.bonus) props.push({ name: 'bonus', type: 'bool', value: true });
+    if (npc.requiresAbility) {
+        props.push({ name: 'requires_ability', type: 'string', value: npc.requiresAbility });
+    }
+    return props;
 }
 
 export function compileLevel(spec: LevelSpec): TiledMap {
@@ -222,9 +244,7 @@ export function compileLevel(spec: LevelSpec): TiledMap {
             y: npc.y * TILE_SIZE,
             width: TILE_SIZE * 2,
             height: TILE_SIZE * 2,
-            properties: [
-                { name: 'npc_id', type: 'string', value: npc.npc_id },
-            ],
+            properties: npcProperties(npc),
         });
     }
 

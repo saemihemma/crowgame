@@ -53,8 +53,14 @@ func test_the_shipped_registry_gates_every_story_level() -> void:
 			assert_eq(required, 0, "the practice arena's door is not gated")
 			continue
 		assert_true(owls > 0, "'%s' holds at least one owl to free" % key)
-		assert_eq(required, owls,
-			"'%s' is a story level, so its door waits for all %d owls" % [key, owls])
+		# All the owls that CLEAR the level, which is everything except the bonus
+		# one. That owl is meant to be revisited later with a better crow, so a
+		# door waiting for it would be a door that never opens.
+		var clearing: int = lm.owls_that_clear_the_level(key)
+		assert_true(clearing < owls,
+			"'%s' holds a bonus owl outside the door's requirement (%d of %d)" % [key, clearing, owls])
+		assert_eq(required, clearing,
+			"'%s' is a story level, so its door waits for its %d clearing owls" % [key, clearing])
 		story += 1
 	assert_true(story >= 8, "the check reached the story levels (%d)" % story)
 
@@ -227,3 +233,79 @@ func test_a_level_above_the_pip_cap_still_says_the_number() -> void:
 	assert_true(texts.has(str(many)),
 		"the number carries it alone above the cap (got %s)" % str(texts))
 	layer.queue_free()
+
+
+# --- 5. the bonus owl -------------------------------------------------------
+
+## Every story level ends with one owl the crow cannot reach yet.
+##
+## It is the reason to come back with a better crow, and it counts toward 100% --
+## so the two things that must hold are that it exists and that the DOOR does not
+## wait for it. A door waiting for an owl nobody can reach is a level nobody can
+## finish, and the failure is silent: the child walks into it forever.
+func test_every_story_level_ends_with_an_owl_out_of_reach() -> void:
+	var lm := _levels()
+	var abilities := {}
+	for a in DataManager.get_dict("ABILITIES").get("abilities", []):
+		abilities[String((a as Dictionary).get("id", ""))] = true
+	assert_true(abilities.size() > 0, "abilities.json declares something to gate on")
+
+	var story := 0
+	for entry in lm.get_levels():
+		var key := String(entry.get("key", ""))
+		if key == "level_99":
+			continue
+		story += 1
+		var bonus := 0
+		var gated := 0
+		for spawn in _npc_spawns(key):
+			if not bool((spawn as Dictionary).get("bonus", false)):
+				continue
+			bonus += 1
+			var needs := String((spawn as Dictionary).get("requires_ability", ""))
+			assert_true(abilities.has(needs),
+				"'%s': the bonus owl is gated behind '%s', which abilities.json does not declare -- a typo reads as a deliberate gate"
+					% [key, needs])
+			gated += 1
+		assert_eq(bonus, 1, "'%s' has exactly one bonus owl" % key)
+		assert_eq(gated, 1, "'%s' declares what it is gated behind" % key)
+	assert_true(story >= 8, "every story level was checked (%d)" % story)
+
+## And it is outside the door's requirement while still being one of the level's
+## owls -- it counts toward completion, it just does not hold the door shut.
+func test_the_bonus_owl_counts_for_progress_but_not_for_the_door() -> void:
+	var lm := _levels()
+	for entry in lm.get_levels():
+		var key := String(entry.get("key", ""))
+		if key == "level_99":
+			continue
+		var all_owls: int = lm.owl_count(key)
+		var clearing: int = lm.owls_that_clear_the_level(key)
+		assert_eq(clearing, all_owls - 1,
+			"'%s': exactly one of its %d owls is outside the door's requirement" % [key, all_owls])
+		assert_eq(int(lm.owls_required_for_door(key)), clearing,
+			"'%s': and that is what the door asks for" % key)
+
+
+## The npc spawns in a level's compiled map, with their properties flattened.
+func _npc_spawns(key: String) -> Array:
+	var path := "res://%s" % String((_levels().get_level(key) as Dictionary).get("mapFile", ""))
+	if not FileAccess.file_exists(path):
+		return []
+	var f := FileAccess.open(path, FileAccess.READ)
+	var level: Variant = JSON.parse_string(f.get_as_text())
+	f.close()
+	if not (level is Dictionary):
+		return []
+	var out: Array = []
+	for layer in (level as Dictionary).get("layers", []):
+		if String(layer.get("type", "")) != "objectgroup":
+			continue
+		for obj in layer.get("objects", []):
+			if String(obj.get("type", "")) != "npc":
+				continue
+			var flat := {}
+			for prop in obj.get("properties", []):
+				flat[String(prop.get("name", ""))] = prop.get("value", null)
+			out.append(flat)
+	return out

@@ -291,6 +291,20 @@ func _stage(variant: String) -> bool:
 	# the same coin already banked, which is what a child sees on their second
 	# visit -- and the whole reason to come back, so it is worth a shot of its own.
 	# The record for the ghost is written in _load_next, before the level spawns.
+	# The bonus owl on its perch, with the climb below it and the cockroaches on
+	# the climb. Framed on the OWL rather than on the crow, because the whole
+	# question this shot answers is whether the last hop reads as out of reach.
+	if variant == "bonus-owl":
+		var perch := _find_bonus_owl()
+		if perch == null:
+			printerr("[capture] %s has no bonus owl" % LevelManager.get_current_level_key())
+			return false
+		# The CAMERA moves, not the crow. _stand_at puts the player on top of the
+		# owl, which for an owl means opening its maths board -- the first attempt
+		# at this shot photographed a tutorial card with the perch hidden behind
+		# it. Framing something you must not touch needs its own move.
+		_frame_on(perch.global_position)
+		return true
 	if variant.begins_with("bigcoins"):
 		var coin := _find_big_coin()
 		if coin == null:
@@ -451,6 +465,29 @@ func _stand_at(owl: Node2D) -> void:
 		camera.reset_smoothing()
 		camera.force_update_scroll()
 
+## Point the camera at a place without sending the crow there.
+##
+## The crow is parked far away with its physics off so nothing it is near can
+## trigger, and the camera is detached from it for the shot. Anything the player
+## must NOT touch -- an owl, a hazard, a door -- has to be framed this way.
+func _frame_on(where: Vector2) -> void:
+	var player = _game.get_player()
+	if player == null or not is_instance_valid(player):
+		return
+	player.set_physics_process(false)
+	# Parked ABOVE, not below. Below is a pit, and a pit is a death: the first
+	# version of this shot came back dimmed red with "Oops!" across the middle
+	# and a heart missing, because the harness had killed the crow to get it out
+	# of frame.
+	player.global_position = where + Vector2(0, -4000.0)
+	var camera := player.get_node_or_null("Camera") as Camera2D
+	if camera == null:
+		return
+	camera.top_level = true
+	camera.global_position = where
+	camera.reset_smoothing()
+	camera.force_update_scroll()
+
 func _wrong_index(problem: Dictionary) -> int:
 	var answer: Dictionary = problem.get("answer", {})
 	var options: Array = answer.get("options", [])
@@ -480,6 +517,20 @@ func _seed_progress() -> void:
 		"level_02": {"bigCoins": ["c1"], "owls": 2},
 		"level_03": {"bigCoins": [], "owls": 1},
 	}
+
+
+## The owl on the perch: the one whose spawn carried the bonus flag.
+func _find_bonus_owl() -> Node2D:
+	var world := _game.get_node_or_null("World")
+	if world == null:
+		return null
+	var highest: Node2D = null
+	for c in world.get_children():
+		if c.scene_file_path.get_file() != "Npc.tscn":
+			continue
+		if highest == null or (c as Node2D).position.y < highest.position.y:
+			highest = c as Node2D
+	return highest
 
 
 ## The first big coin in the level, so the shot is of a real spawned one rather
