@@ -104,8 +104,8 @@ html = open(path).read()
 if 'id="crow-rotate"' not in html:
     overlay = (
         '<div id="crow-rotate" aria-hidden="true">'
-        '<svg viewBox="0 0 100 100" fill="none" stroke="#FDF6E3" stroke-width="5" '
-        'stroke-linecap="round" stroke-linejoin="round">'
+        '<svg class="crow-rotate-device" viewBox="0 0 100 100" fill="none" stroke="#FDF6E3" '
+        'stroke-width="5" stroke-linecap="round" stroke-linejoin="round">'
         # A tablet, stood upright, with an arrow curving it onto its side.
         '<rect x="34" y="14" width="32" height="52" rx="5"/>'
         '<line x1="43" y1="60" x2="57" y2="60"/>'
@@ -113,13 +113,30 @@ if 'id="crow-rotate"' not in html:
         '<polyline points="22 62 22 75 35 75"/>'
         '<polyline points="78 62 78 75 65 75"/>'
         '</svg>'
-        '<p>Snúðu spjaldtölvunni á hliðina</p>'
-        '<p class="crow-rotate-sub">Turn your tablet sideways to play</p>'
-        # A rotation lock makes the line above impossible to follow, and a child
-        # handed a locked tablet has no way to know that is what is wrong. Said
-        # quietly, under the instruction, rather than instead of it.
-        '<p class="crow-rotate-hint">Ef skjárinn snýst ekki: taktu snúningslásinn af.'
-        '<br>If the screen will not turn, switch off rotation lock.</p>'
+        # ONE BLOCK PER LANGUAGE, each led by its own flag.
+        #
+        # This used to alternate -- Icelandic headline, English headline,
+        # Icelandic hint, English hint -- which reads as four unrelated lines
+        # rather than the same message said twice. A parent scanning it has to
+        # skip every other line to follow their own language.
+        #
+        # The flags are drawn, not emoji, for the reason flag_icon.gd already
+        # documents at length: a flag emoji is a pair of regional-indicator code
+        # points and Windows ships no glyph for them, so the pair renders as two
+        # tofu boxes. Same colours and the same seven-stripe simplification as
+        # the in-game flags, so the two surfaces agree.
+        '<div class="crow-lang">'
+        '<svg class="crow-flag" viewBox="0 0 25 18" aria-hidden="true"><rect width="25" height="18" fill="#02529c"/><rect x="6.84" y="0" width="4.32" height="18" fill="#fff"/><rect x="0" y="6.84" width="25" height="4.32" fill="#fff"/><rect x="7.92" y="0" width="2.16" height="18" fill="#dc1e35"/><rect x="0" y="7.92" width="25" height="2.16" fill="#dc1e35"/></svg>'
+        '<div class="crow-lang-text">'
+        '<p class="crow-rotate-head">Snúðu spjaldtölvunni á hliðina</p>'
+        '<p class="crow-rotate-hint">Ef skjárinn snýst ekki, taktu snúningslásinn af.</p>'
+        '</div></div>'
+        '<div class="crow-lang">'
+        '<svg class="crow-flag" viewBox="0 0 25 18" aria-hidden="true"><rect width="25" height="18" fill="#fff"/><rect x="0" y="0.000" width="25" height="2.571" fill="#b22234"/><rect x="0" y="5.143" width="25" height="2.571" fill="#b22234"/><rect x="0" y="10.286" width="25" height="2.571" fill="#b22234"/><rect x="0" y="15.429" width="25" height="2.571" fill="#b22234"/><rect x="0" y="0" width="10.5" height="10.286" fill="#3c3b6e"/><circle cx="2.73" cy="3.29" r="0.85" fill="#fff"/><circle cx="5.25" cy="3.29" r="0.85" fill="#fff"/><circle cx="7.77" cy="3.29" r="0.85" fill="#fff"/><circle cx="2.73" cy="6.99" r="0.85" fill="#fff"/><circle cx="5.25" cy="6.99" r="0.85" fill="#fff"/><circle cx="7.77" cy="6.99" r="0.85" fill="#fff"/></svg>'
+        '<div class="crow-lang-text">'
+        '<p class="crow-rotate-head">Turn your tablet sideways to play</p>'
+        '<p class="crow-rotate-hint">If the screen will not turn, switch off rotation lock.</p>'
+        '</div></div>'
         '</div>'
     )
     html = html.replace('<body>', '<body>' + overlay, 1)

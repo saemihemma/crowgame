@@ -100,7 +100,17 @@
         var b = styleButton(document.createElement('button'), true);
         b.className = 'crow-go-full';
         b.style.position = 'static';
-        b.textContent = 'Fylla skjáinn / Fill the screen';
+        // Two lines, not "Fylla skjáinn / Fill the screen". The screen above says
+        // each language as its own block; a slash-joined label would put the two
+        // back into the one string the blocks exist to avoid.
+        b.innerHTML = '';
+        var is = document.createElement('span');
+        is.textContent = 'Fylla skjáinn';
+        var en = document.createElement('span');
+        en.className = 'en';
+        en.textContent = 'Fill the screen';
+        b.appendChild(is);
+        b.appendChild(en);
         b.addEventListener('click', enter);
         overlay.appendChild(b);
     }
