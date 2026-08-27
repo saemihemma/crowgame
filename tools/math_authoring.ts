@@ -84,6 +84,25 @@ export interface ArithmeticTemplateSpec extends BaseTemplateSpec {
     forceDivisible?: boolean;
     maxOperand?: number;
     minOperand?: number;
+    /**
+     * Emit relational prompts -- the unknown somewhere other than alone on the
+     * right -- INSTEAD of the plain framings.
+     *
+     * "1 + ? = 2" is the same bond as "1 + 1 = ?" asked from the other end, and
+     * `deriveCurriculumStep` gives it the same rung, so these land exactly where
+     * the plain facts do. They are the number-bond half of early addition: a
+     * child who can only answer the plain form has learnt a procedure, and one
+     * who can answer both has learnt the bond.
+     *
+     * `both_sides` ("8 + 7 = ? + 6") is the Falkner/Levi/Carpenter form that
+     * separates "=" as a relation from "=" as an instruction. It is a harder
+     * idea than a missing part and belongs above the bottom of the ladder.
+     *
+     * The shapes and the arithmetic that reads them back live in
+     * RELATIONAL_PATTERNS in tools/math_verifier.ts -- this only writes text
+     * that file can already parse.
+     */
+    relationalShapes?: Array<'missing_right' | 'missing_left' | 'total_first'>;
 }
 
 export interface CountingTemplateSpec extends BaseTemplateSpec {
@@ -252,6 +271,17 @@ type RawCandidate = {
     complexity: number;
     ageBand: [number, number];
     domain: MathDomain;
+    /**
+     * Set only by candidates whose hint, explanation or distractors cannot be
+     * derived from the template's strategy fields alone.
+     *
+     * A relational prompt is the reason this exists: "1 + ? = 2" and "? + 1 = 2"
+     * are the same fact, but they hand the child a different KNOWN number, so
+     * one hint sentence cannot serve both. The shape picks the sentence.
+     */
+    hint?: string;
+    explanation?: string;
+    optionPreference?: number[];
 };
 
 function readJson<T>(filePath: string): T {
@@ -629,6 +659,13 @@ function buildArithmeticOptions(kind: AuthoringTemplateKind, left: number, right
         preferred.push(correct - 1, correct + 1, right, left - 1);
     } else if (kind === 'multiplication') {
         preferred.push(correct - right, correct + right, left + right, correct + 1);
+    } else if (kind === 'number_sequence' || kind === 'pattern_matching') {
+        // The two ways a child gets a sequence wrong: stopping one term short
+        // (repeating the last visible number) and running one term too far.
+        // `right` here is the step, so both are expressed in it -- which also
+        // means a count-back run gets count-back distractors rather than the
+        // generic +1/-1 pair.
+        preferred.push(correct - right, correct + right, correct - 1, correct + 1);
     } else {
         preferred.push(correct - 1, correct + 1, right, left);
     }
@@ -679,6 +716,13 @@ function renderHint(strategy: string, values: Record<string, number>): string {
             return `Look at which number has more value.`;
         case 'sequence_step':
             return `Look at how the numbers are changing each time.`;
+        // Counting back is its own skill, not addition with a minus sign, and
+        // `count_back` above would render "count back -1" for a sequence whose
+        // step is negative.
+        case 'sequence_back':
+            return `Count backwards!`;
+        case 'sequence_back_from':
+            return `Count back from ${left}!`;
         case 'pattern_repeat':
             return `See which numbers are repeating in order.`;
         default:
@@ -784,6 +828,95 @@ function normalizedProgress(value: number, range: NumericRange): number {
     return (value - range[0]) / (range[1] - range[0]);
 }
 
+/**
+ * One relational prompt, with the hint and explanation its shape earns.
+ *
+ * `left`/`right` are the plain fact's operands and `result` is what the plain
+ * fact evaluates to, so for addition the written total is `result` and for
+ * subtraction it is the difference. Which of the three numbers is the ANSWER
+ * depends on the shape, which is the whole point of the form.
+ *
+ * The wording is not free text: every sentence below has to render exactly from
+ * a template in tools/math_phrasing_catalog.mjs, or the problem ships in English
+ * to an Icelandic child. The math.hint.rel.* / math.expl.rel.* family was
+ * already there, translated, for the hand-authored relational problems in the
+ * gaps pool -- this reuses it rather than inventing new strings.
+ */
+function buildRelationalCandidate(
+    shape: 'missing_right' | 'missing_left' | 'total_first',
+    kind: 'addition' | 'subtraction',
+    left: number,
+    right: number,
+    result: number,
+): { promptText: string; correct: number; hint: string; explanation: string; optionPreference: number[] } | null {
+    const operator = kind === 'addition' ? '+' : '-';
+    // For addition the number the child reads on the far side is the total; for
+    // subtraction it is what is left. `whole` is the bigger of the two either
+    // way, which is what the additive hints want to name.
+    const written = result;
+
+    if (kind === 'addition') {
+        const explanation = (known: number, unknown: number) => `${known} and ${unknown} makes ${written}.`;
+        // The distractor that matters: answering the TOTAL. A child who reads
+        // "=" as "work it out" answers 5 to "2 + ? = 5", and that is a
+        // diagnosis, not noise. Then the off-by-ones, then the known part.
+        const options = (unknown: number, known: number) => [written, unknown - 1, unknown + 1, known];
+
+        if (shape === 'missing_right') {
+            return {
+                promptText: `${left} ${operator} ? = ${written}`,
+                correct: right,
+                hint: `You have ${left}. How many more to make ${written}?`,
+                explanation: explanation(left, right),
+                optionPreference: options(right, left),
+            };
+        }
+        if (shape === 'missing_left') {
+            return {
+                promptText: `? ${operator} ${right} = ${written}`,
+                correct: left,
+                hint: `Something and ${right} makes ${written}. Start at ${right} and count up to ${written}.`,
+                explanation: explanation(right, left),
+                optionPreference: options(left, right),
+            };
+        }
+        return {
+            promptText: `${written} = ${left} ${operator} ?`,
+            correct: right,
+            hint: `${written} is the whole, and ${left} is one part. What is the other part?`,
+            explanation: explanation(left, right),
+            optionPreference: options(right, left),
+        };
+    }
+
+    const explanation = `${left} take away ${right} leaves ${written}.`;
+    if (shape === 'missing_right') {
+        return {
+            promptText: `${left} ${operator} ? = ${written}`,
+            correct: right,
+            hint: `You had ${left}. Now there are ${written}. How many went?`,
+            explanation,
+            optionPreference: [written, right - 1, right + 1, left],
+        };
+    }
+    if (shape === 'missing_left') {
+        return {
+            promptText: `? ${operator} ${right} = ${written}`,
+            correct: left,
+            hint: `Something lost ${right} and ${written} were left. How many were there to start?`,
+            explanation,
+            optionPreference: [written, left - 1, left + 1, right],
+        };
+    }
+    return {
+        promptText: `${written} = ${left} ${operator} ?`,
+        correct: right,
+        hint: `${written} is what is left when you take some away from ${left}. How many were taken?`,
+        explanation,
+        optionPreference: [written, right - 1, right + 1, left],
+    };
+}
+
 function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandidate[] {
     const operator = toOperator(template.kind);
     const candidates: RawCandidate[] = [];
@@ -841,6 +974,38 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
                 'equation', 'question', 'blank_equals', 'complete', 'equals',
                 'solve', 'answer', 'how_much', 'quick_check', 'mental_math',
             ]);
+
+            // A relational template emits ONLY relational prompts. Mixing the
+            // two in one template makes its `count` unaccountable -- the hash
+            // lottery would decide how many number bonds a batch actually got.
+            if (template.relationalShapes && template.relationalShapes.length > 0) {
+                if (template.kind !== 'addition' && template.kind !== 'subtraction') {
+                    throw new Error(
+                        `Template ${template.id}: relationalShapes is additive only; `
+                        + `${template.kind} relational prompts read a different fact `
+                        + `(see the \`fact\` doc in tools/math_verifier.ts).`,
+                    );
+                }
+                for (const shape of template.relationalShapes) {
+                    const relational = buildRelationalCandidate(shape, template.kind, left, right, correct);
+                    // Nothing in this age band has an answer below zero, and a
+                    // prompt whose blank is 0 ("2 + ? = 2") reads as a trick
+                    // rather than a bond.
+                    if (!relational || relational.correct <= 0) continue;
+                    candidates.push({
+                        values: { left, right, correct: relational.correct },
+                        promptText: applyPromptLeadIn(relational.promptText, template.promptLeadIn),
+                        correct: relational.correct,
+                        complexity,
+                        ageBand: template.ageBand ?? [5, 7],
+                        domain: template.kind,
+                        hint: relational.hint,
+                        explanation: relational.explanation,
+                        optionPreference: relational.optionPreference,
+                    });
+                }
+                continue;
+            }
 
             for (const variant of promptVariants) {
                 if (storyFree && !EARLY_FRAMINGS.has(variant)) continue;
@@ -944,10 +1109,17 @@ function renderSequenceCandidates(template: SequenceTemplateSpec): RawCandidate[
         for (const step of template.stepChoices) {
             const sequence = Array.from({ length: template.length }, (_, index) => start + (index * step));
             const correct = start + (template.length * step);
+            // Counting back is a grade-1 skill in its own right (Sproti 1:
+            // talning aftur a bak), which means stepChoices may be negative --
+            // and negative numbers are outside this game's format entirely
+            // (docs/MATH_AUTHORING_STANDARDS.md section 8), so a run that would
+            // walk past zero is not a hard problem, it is an unanswerable one.
+            if (correct < 0 || sequence.some(value => value < 0)) continue;
             const maxValue = Math.max(correct, ...sequence);
+            const minValue = Math.min(correct, ...sequence);
             const complexity = clamp(
                 ((Math.abs(step) - 1) / 9) * 0.45 +
-                normalizedProgress(maxValue, [start, Math.max(correct, start + 1)]) * 0.55,
+                normalizedProgress(maxValue, [minValue, Math.max(maxValue, minValue + 1)]) * 0.55,
                 0,
                 1,
             );
@@ -1052,8 +1224,9 @@ function buildProblemFromCandidate(batch: MathBatchSpec, template: BatchTemplate
             correct: candidate.correct,
             options: [],
         },
-        hint: renderHint(template.hintStrategy, { ...candidate.values, correct: candidate.correct }),
-        explanation: renderExplanation(template.explanationStrategy, { ...candidate.values, correct: candidate.correct }),
+        hint: candidate.hint ?? renderHint(template.hintStrategy, { ...candidate.values, correct: candidate.correct }),
+        explanation: candidate.explanation
+            ?? renderExplanation(template.explanationStrategy, { ...candidate.values, correct: candidate.correct }),
         misconceptionTags: template.misconceptionTags,
         generator: buildGeneratorMetadata(batch, template, band, candidate.values),
     };
@@ -1074,7 +1247,9 @@ function buildProblemFromCandidate(batch: MathBatchSpec, template: BatchTemplate
     }
 
     const problemId = buildProblemId(batch, template, candidate.values, candidate.promptText);
-    const answerOptions = template.kind === 'comparison'
+    const answerOptions = candidate.optionPreference
+        ? buildOptions(candidate.correct, candidate.optionPreference)
+        : template.kind === 'comparison'
         ? buildOptions(candidate.correct, [candidate.values.left ?? candidate.correct, candidate.values.right ?? candidate.correct, candidate.correct - 1, candidate.correct + 1])
         : buildArithmeticOptions(
             template.kind,

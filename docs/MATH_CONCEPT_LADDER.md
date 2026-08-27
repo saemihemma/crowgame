@@ -27,7 +27,7 @@ reason: `tools/validate_math_concepts.mjs` matches every figure below against th
 data and fails the build when one drifts. A count nobody checks is a claim that
 rots in silence — this one cannot.
 
-`DataManager` loads 4 maths pools totalling 4149 problems (`curriculum` 3846,
+`DataManager` loads 4 maths pools totalling 4205 problems (`curriculum` 3902,
 `gaps` 248, `dataset` 40, `easy` 15). Those are grouped into **49** concepts by
 `godot/data/curriculum/concept_ladder.json` — **40** rungs keyed on step range
 plus **9** overlays keyed on problem shape — of which **47** open with a

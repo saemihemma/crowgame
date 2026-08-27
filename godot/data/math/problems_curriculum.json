@@ -60731,10 +60731,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
-          1,
           8,
-          9,
-          7
+          7,
+          5,
+          9
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -60794,10 +60794,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -60858,9 +60858,9 @@
         "correct": 9,
         "options": [
           8,
-          1,
           9,
-          10
+          10,
+          6
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -60921,9 +60921,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -60984,9 +60984,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61048,8 +61048,8 @@
         "options": [
           10,
           11,
-          1,
-          9
+          9,
+          7
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61109,10 +61109,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
-          1,
           8,
-          9,
-          7
+          7,
+          5,
+          9
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61172,10 +61172,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61236,9 +61236,9 @@
         "correct": 9,
         "options": [
           8,
-          1,
           9,
-          10
+          10,
+          6
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61299,9 +61299,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61361,10 +61361,10 @@
         "mode": "mcq",
         "correct": 14,
         "options": [
-          15,
-          2,
+          14,
           13,
-          14
+          12,
+          16
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61424,10 +61424,10 @@
         "mode": "mcq",
         "correct": 15,
         "options": [
+          17,
+          13,
           15,
-          16,
-          14,
-          2
+          14
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61487,10 +61487,10 @@
         "mode": "mcq",
         "correct": 12,
         "options": [
-          2,
-          12,
-          13,
-          11
+          10,
+          11,
+          14,
+          12
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61550,10 +61550,10 @@
         "mode": "mcq",
         "correct": 10,
         "options": [
-          2,
-          11,
-          10,
-          9
+          8,
+          9,
+          12,
+          10
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61614,9 +61614,9 @@
         "correct": 11,
         "options": [
           11,
-          12,
-          2,
-          10
+          10,
+          13,
+          9
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61676,10 +61676,10 @@
         "mode": "mcq",
         "correct": 16,
         "options": [
-          2,
-          17,
-          15,
-          16
+          16,
+          18,
+          14,
+          15
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61739,9 +61739,9 @@
         "mode": "mcq",
         "correct": 13,
         "options": [
-          2,
-          14,
+          11,
           12,
+          15,
           13
         ]
       },
@@ -61802,10 +61802,10 @@
         "mode": "mcq",
         "correct": 14,
         "options": [
-          15,
-          2,
+          14,
           13,
-          14
+          12,
+          16
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61865,10 +61865,10 @@
         "mode": "mcq",
         "correct": 15,
         "options": [
+          17,
+          13,
           15,
-          16,
-          14,
-          2
+          14
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61928,10 +61928,10 @@
         "mode": "mcq",
         "correct": 10,
         "options": [
-          2,
-          11,
-          10,
-          9
+          8,
+          9,
+          12,
+          10
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -61991,10 +61991,10 @@
         "mode": "mcq",
         "correct": 16,
         "options": [
-          17,
           15,
-          16,
-          3
+          13,
+          19,
+          16
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62054,10 +62054,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
-          18,
+          14,
           16,
           17,
-          3
+          20
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62118,9 +62118,9 @@
         "correct": 13,
         "options": [
           12,
-          14,
+          10,
           13,
-          3
+          16
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62181,9 +62181,9 @@
         "correct": 15,
         "options": [
           15,
-          3,
-          14,
-          16
+          12,
+          18,
+          14
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62243,10 +62243,10 @@
         "mode": "mcq",
         "correct": 21,
         "options": [
-          3,
-          22,
+          20,
           21,
-          20
+          18,
+          24
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62306,10 +62306,10 @@
         "mode": "mcq",
         "correct": 14,
         "options": [
-          15,
-          3,
           14,
-          13
+          17,
+          13,
+          11
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62369,10 +62369,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
-          19,
-          17,
-          3,
-          18
+          21,
+          15,
+          18,
+          17
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62432,10 +62432,10 @@
         "mode": "mcq",
         "correct": 20,
         "options": [
-          21,
-          3,
           20,
-          19
+          17,
+          19,
+          23
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62495,10 +62495,10 @@
         "mode": "mcq",
         "correct": 19,
         "options": [
-          19,
+          22,
           18,
-          20,
-          3
+          19,
+          16
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62559,9 +62559,9 @@
         "correct": 13,
         "options": [
           12,
-          14,
+          10,
           13,
-          3
+          16
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62621,10 +62621,10 @@
         "mode": "mcq",
         "correct": 33,
         "options": [
-          5,
-          34,
+          33,
           32,
-          33
+          28,
+          38
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62684,10 +62684,10 @@
         "mode": "mcq",
         "correct": 28,
         "options": [
-          27,
-          29,
           28,
-          5
+          33,
+          27,
+          23
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62747,10 +62747,10 @@
         "mode": "mcq",
         "correct": 24,
         "options": [
-          24,
-          25,
+          29,
+          19,
           23,
-          5
+          24
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62810,10 +62810,10 @@
         "mode": "mcq",
         "correct": 26,
         "options": [
+          26,
+          31,
           25,
-          27,
-          5,
-          26
+          21
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62874,9 +62874,9 @@
         "correct": 23,
         "options": [
           23,
-          5,
-          22,
-          24
+          28,
+          18,
+          22
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62936,10 +62936,10 @@
         "mode": "mcq",
         "correct": 29,
         "options": [
-          5,
-          28,
-          30,
-          29
+          24,
+          34,
+          29,
+          28
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -62999,9 +62999,9 @@
         "mode": "mcq",
         "correct": 20,
         "options": [
-          5,
           20,
-          21,
+          25,
+          15,
           19
         ]
       },
@@ -63062,9 +63062,9 @@
         "mode": "mcq",
         "correct": 31,
         "options": [
+          26,
           30,
-          5,
-          32,
+          36,
           31
         ]
       },
@@ -63125,10 +63125,10 @@
         "mode": "mcq",
         "correct": 25,
         "options": [
+          30,
           25,
           24,
-          5,
-          26
+          20
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63188,10 +63188,10 @@
         "mode": "mcq",
         "correct": 22,
         "options": [
+          27,
+          17,
           21,
-          23,
-          22,
-          5
+          22
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63252,9 +63252,9 @@
         "correct": 16,
         "options": [
           15,
-          17,
           16,
-          1
+          17,
+          13
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63314,10 +63314,10 @@
         "mode": "mcq",
         "correct": 19,
         "options": [
-          1,
-          18,
           19,
-          20
+          20,
+          16,
+          18
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63378,9 +63378,9 @@
         "correct": 22,
         "options": [
           21,
+          19,
           22,
-          23,
-          1
+          23
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63440,10 +63440,10 @@
         "mode": "mcq",
         "correct": 21,
         "options": [
-          1,
-          21,
           22,
-          20
+          21,
+          20,
+          18
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63503,10 +63503,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
-          16,
+          14,
           17,
           18,
-          1
+          16
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63566,10 +63566,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
-          1,
           18,
-          19,
-          17
+          15,
+          17,
+          19
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63629,9 +63629,9 @@
         "mode": "mcq",
         "correct": 15,
         "options": [
-          1,
-          16,
           14,
+          12,
+          16,
           15
         ]
       },
@@ -63692,10 +63692,10 @@
         "mode": "mcq",
         "correct": 23,
         "options": [
-          1,
           23,
-          24,
-          22
+          20,
+          22,
+          24
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63755,10 +63755,10 @@
         "mode": "mcq",
         "correct": 20,
         "options": [
-          1,
+          21,
           20,
-          19,
-          21
+          17,
+          19
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -63818,10 +63818,10 @@
         "mode": "mcq",
         "correct": 21,
         "options": [
-          1,
-          21,
           22,
-          20
+          21,
+          20,
+          18
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -64007,10 +64007,10 @@
         "mode": "mcq",
         "correct": 3,
         "options": [
+          0,
           4,
-          3,
-          1,
-          2
+          2,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -64070,10 +64070,10 @@
         "mode": "mcq",
         "correct": 3,
         "options": [
+          0,
           4,
-          3,
-          1,
-          2
+          2,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -64511,10 +64511,10 @@
         "mode": "mcq",
         "correct": 3,
         "options": [
+          0,
           4,
-          3,
-          1,
-          2
+          2,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -64827,9 +64827,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -64890,9 +64890,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -64952,10 +64952,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65016,9 +65016,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65079,9 +65079,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65141,10 +65141,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
-          1,
           8,
-          9,
-          7
+          7,
+          5,
+          9
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65205,9 +65205,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65268,9 +65268,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65330,10 +65330,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65393,10 +65393,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65456,10 +65456,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
-          1,
           8,
-          9,
-          7
+          7,
+          5,
+          9
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65519,10 +65519,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
-          1,
           8,
-          9,
-          7
+          7,
+          5,
+          9
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65583,9 +65583,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65645,10 +65645,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
-          1,
           8,
-          9,
-          7
+          7,
+          5,
+          9
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65708,10 +65708,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -65772,9 +65772,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -66213,9 +66213,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -66276,9 +66276,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -66338,10 +66338,10 @@
         "mode": "mcq",
         "correct": 3,
         "options": [
+          0,
           4,
-          3,
-          1,
-          2
+          2,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -66591,9 +66591,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -66716,10 +66716,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -66843,9 +66843,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -66906,9 +66906,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67032,9 +67032,9 @@
         "correct": 9,
         "options": [
           8,
-          1,
           9,
-          10
+          10,
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67095,9 +67095,9 @@
         "correct": 9,
         "options": [
           8,
-          1,
           9,
-          10
+          10,
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67158,9 +67158,9 @@
         "correct": 9,
         "options": [
           8,
-          1,
           9,
-          10
+          10,
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67221,9 +67221,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67283,10 +67283,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67347,9 +67347,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67410,9 +67410,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67472,10 +67472,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
-          1,
           8,
-          9,
-          7
+          7,
+          5,
+          9
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67535,10 +67535,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
-          1,
           8,
-          9,
-          7
+          7,
+          5,
+          9
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67599,9 +67599,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67661,10 +67661,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67725,9 +67725,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -67850,10 +67850,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -68040,9 +68040,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -68102,10 +68102,10 @@
         "mode": "mcq",
         "correct": 3,
         "options": [
+          0,
           4,
-          3,
-          1,
-          2
+          2,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -68166,9 +68166,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -68229,9 +68229,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -68292,9 +68292,9 @@
         "correct": 6,
         "options": [
           7,
-          1,
           5,
-          6
+          6,
+          3
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -68481,9 +68481,9 @@
         "correct": 5,
         "options": [
           6,
-          1,
-          5,
-          4
+          2,
+          4,
+          5
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -68543,10 +68543,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          1,
-          6,
+          8,
+          4,
           7,
-          8
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -71146,10 +71146,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
+          19,
           17,
           16,
-          2,
-          18
+          15
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -71209,9 +71209,9 @@
         "mode": "mcq",
         "correct": 20,
         "options": [
-          4,
           20,
-          21,
+          24,
+          16,
           19
         ]
       },
@@ -71272,9 +71272,9 @@
         "mode": "mcq",
         "correct": 27,
         "options": [
-          28,
+          31,
           26,
-          4,
+          23,
           27
         ]
       },
@@ -71335,10 +71335,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
+          16,
           18,
-          17,
-          2,
-          19
+          20,
+          17
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -71398,10 +71398,10 @@
         "mode": "mcq",
         "correct": 12,
         "options": [
-          2,
-          12,
-          13,
-          11
+          10,
+          11,
+          14,
+          12
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -71461,10 +71461,10 @@
         "mode": "mcq",
         "correct": 28,
         "options": [
-          27,
-          29,
           28,
-          5
+          33,
+          27,
+          23
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -71524,10 +71524,10 @@
         "mode": "mcq",
         "correct": 25,
         "options": [
-          26,
           25,
-          3,
-          24
+          22,
+          24,
+          28
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -71587,10 +71587,10 @@
         "mode": "mcq",
         "correct": 22,
         "options": [
-          22,
-          3,
           21,
-          23
+          25,
+          22,
+          19
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -71650,10 +71650,10 @@
         "mode": "mcq",
         "correct": 27,
         "options": [
-          26,
-          28,
+          22,
+          32,
           27,
-          5
+          26
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -71713,10 +71713,10 @@
         "mode": "mcq",
         "correct": 25,
         "options": [
+          30,
           25,
           24,
-          5,
-          26
+          20
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -147587,10 +147587,10 @@
         "mode": "mcq",
         "correct": 43,
         "options": [
+          48,
           43,
-          5,
           42,
-          44
+          38
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -147651,9 +147651,9 @@
         "correct": 51,
         "options": [
           50,
-          5,
-          52,
-          51
+          51,
+          46,
+          56
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -147713,10 +147713,10 @@
         "mode": "mcq",
         "correct": 47,
         "options": [
-          48,
+          52,
+          42,
           47,
-          46,
-          5
+          46
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -147777,9 +147777,9 @@
         "correct": 40,
         "options": [
           39,
-          41,
+          45,
           40,
-          5
+          35
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -147839,10 +147839,10 @@
         "mode": "mcq",
         "correct": 48,
         "options": [
-          48,
-          49,
-          5,
-          47
+          47,
+          53,
+          43,
+          48
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -147903,9 +147903,9 @@
         "correct": 49,
         "options": [
           49,
-          50,
-          48,
-          5
+          54,
+          44,
+          48
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -147965,10 +147965,10 @@
         "mode": "mcq",
         "correct": 55,
         "options": [
-          5,
-          55,
+          50,
           54,
-          56
+          60,
+          55
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148028,10 +148028,10 @@
         "mode": "mcq",
         "correct": 52,
         "options": [
-          52,
-          5,
-          53,
-          51
+          47,
+          57,
+          51,
+          52
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148091,10 +148091,10 @@
         "mode": "mcq",
         "correct": 50,
         "options": [
-          5,
+          55,
           49,
-          50,
-          51
+          45,
+          50
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148154,10 +148154,10 @@
         "mode": "mcq",
         "correct": 59,
         "options": [
+          54,
           58,
-          60,
-          5,
-          59
+          59,
+          64
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148217,10 +148217,10 @@
         "mode": "mcq",
         "correct": 74,
         "options": [
-          73,
-          75,
+          64,
           74,
-          10
+          73,
+          84
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148281,9 +148281,9 @@
         "correct": 79,
         "options": [
           79,
-          10,
-          80,
-          78
+          89,
+          78,
+          69
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148343,10 +148343,10 @@
         "mode": "mcq",
         "correct": 60,
         "options": [
-          59,
-          61,
           60,
-          10
+          50,
+          70,
+          59
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148406,10 +148406,10 @@
         "mode": "mcq",
         "correct": 80,
         "options": [
-          81,
-          80,
+          90,
           79,
-          10
+          80,
+          70
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148469,10 +148469,10 @@
         "mode": "mcq",
         "correct": 73,
         "options": [
+          83,
+          73,
           72,
-          10,
-          74,
-          73
+          63
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148532,10 +148532,10 @@
         "mode": "mcq",
         "correct": 63,
         "options": [
-          10,
+          62,
           63,
-          64,
-          62
+          73,
+          53
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148595,10 +148595,10 @@
         "mode": "mcq",
         "correct": 76,
         "options": [
-          10,
-          76,
+          86,
           75,
-          77
+          66,
+          76
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148658,10 +148658,10 @@
         "mode": "mcq",
         "correct": 70,
         "options": [
-          70,
           69,
-          71,
-          10
+          80,
+          60,
+          70
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148721,10 +148721,10 @@
         "mode": "mcq",
         "correct": 65,
         "options": [
-          10,
+          75,
+          55,
           65,
-          64,
-          66
+          64
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -148784,10 +148784,10 @@
         "mode": "mcq",
         "correct": 69,
         "options": [
-          69,
-          70,
           68,
-          10
+          59,
+          69,
+          79
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -158288,8 +158288,8 @@
         "options": [
           10,
           11,
-          1,
-          9
+          9,
+          7
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -158349,9 +158349,9 @@
         "mode": "mcq",
         "correct": 15,
         "options": [
-          1,
-          16,
           14,
+          12,
+          16,
           15
         ]
       },
@@ -158412,10 +158412,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
-          16,
+          14,
           17,
           18,
-          1
+          16
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -158475,10 +158475,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
-          1,
           18,
-          19,
-          17
+          15,
+          17,
+          19
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -158538,10 +158538,10 @@
         "mode": "mcq",
         "correct": 14,
         "options": [
-          13,
           15,
-          1,
-          14
+          11,
+          14,
+          13
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -158602,9 +158602,9 @@
         "correct": 16,
         "options": [
           15,
-          17,
           16,
-          1
+          17,
+          13
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -158665,9 +158665,9 @@
         "correct": 9,
         "options": [
           8,
-          1,
           9,
-          10
+          10,
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -158727,9 +158727,9 @@
         "mode": "mcq",
         "correct": 11,
         "options": [
-          10,
-          1,
           11,
+          10,
+          8,
           12
         ]
       },
@@ -158790,10 +158790,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
-          1,
           18,
-          19,
-          17
+          15,
+          17,
+          19
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -158854,9 +158854,9 @@
         "correct": 16,
         "options": [
           15,
-          17,
           16,
-          1
+          17,
+          13
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -158917,9 +158917,9 @@
         "correct": 16,
         "options": [
           15,
-          17,
           16,
-          1
+          17,
+          13
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -158979,10 +158979,10 @@
         "mode": "mcq",
         "correct": 12,
         "options": [
+          9,
           13,
           12,
-          11,
-          1
+          11
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -159042,9 +159042,9 @@
         "mode": "mcq",
         "correct": 15,
         "options": [
-          1,
-          16,
           14,
+          12,
+          16,
           15
         ]
       },
@@ -159105,10 +159105,10 @@
         "mode": "mcq",
         "correct": 14,
         "options": [
-          13,
           15,
-          1,
-          14
+          11,
+          14,
+          13
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -159170,8 +159170,8 @@
         "options": [
           10,
           11,
-          1,
-          9
+          9,
+          7
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -159231,10 +159231,10 @@
         "mode": "mcq",
         "correct": 12,
         "options": [
+          9,
           13,
           12,
-          11,
-          1
+          11
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -159294,9 +159294,9 @@
         "mode": "mcq",
         "correct": 11,
         "options": [
-          10,
-          1,
           11,
+          10,
+          8,
           12
         ]
       },
@@ -159357,10 +159357,10 @@
         "mode": "mcq",
         "correct": 20,
         "options": [
-          1,
+          21,
           20,
-          19,
-          21
+          17,
+          19
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -159420,10 +159420,10 @@
         "mode": "mcq",
         "correct": 12,
         "options": [
+          9,
           13,
           12,
-          11,
-          1
+          11
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -159484,9 +159484,9 @@
         "correct": 9,
         "options": [
           8,
-          1,
           9,
-          10
+          10,
+          6
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -168401,10 +168401,10 @@
         "mode": "mcq",
         "correct": 29,
         "options": [
-          30,
-          4,
+          29,
+          25,
           28,
-          29
+          33
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -168465,9 +168465,9 @@
         "correct": 35,
         "options": [
           34,
+          31,
           35,
-          36,
-          4
+          39
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -168527,10 +168527,10 @@
         "mode": "mcq",
         "correct": 26,
         "options": [
+          24,
           26,
-          2,
-          25,
-          27
+          28,
+          25
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -168590,10 +168590,10 @@
         "mode": "mcq",
         "correct": 31,
         "options": [
-          31,
           30,
-          32,
-          4
+          27,
+          35,
+          31
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -168653,10 +168653,10 @@
         "mode": "mcq",
         "correct": 38,
         "options": [
-          39,
-          38,
+          34,
           37,
-          4
+          42,
+          38
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -168716,10 +168716,10 @@
         "mode": "mcq",
         "correct": 32,
         "options": [
-          4,
-          32,
-          33,
-          31
+          31,
+          28,
+          36,
+          32
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -168779,10 +168779,10 @@
         "mode": "mcq",
         "correct": 22,
         "options": [
-          21,
           22,
-          23,
-          2
+          20,
+          21,
+          24
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -168842,10 +168842,10 @@
         "mode": "mcq",
         "correct": 31,
         "options": [
-          30,
-          32,
-          2,
-          31
+          31,
+          33,
+          29,
+          30
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -168906,9 +168906,9 @@
         "correct": 24,
         "options": [
           23,
-          2,
+          22,
           24,
-          25
+          26
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -168968,10 +168968,10 @@
         "mode": "mcq",
         "correct": 37,
         "options": [
-          37,
           36,
-          38,
-          4
+          41,
+          37,
+          33
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -169032,9 +169032,9 @@
         "correct": 44,
         "options": [
           43,
-          44,
-          5,
-          45
+          49,
+          39,
+          44
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -169094,10 +169094,10 @@
         "mode": "mcq",
         "correct": 50,
         "options": [
-          5,
+          55,
           49,
-          50,
-          51
+          45,
+          50
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -169157,10 +169157,10 @@
         "mode": "mcq",
         "correct": 37,
         "options": [
-          36,
-          38,
+          32,
+          42,
           37,
-          5
+          36
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -169220,10 +169220,10 @@
         "mode": "mcq",
         "correct": 35,
         "options": [
+          30,
           34,
           35,
-          36,
-          5
+          40
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -169283,10 +169283,10 @@
         "mode": "mcq",
         "correct": 47,
         "options": [
-          48,
+          52,
+          42,
           47,
-          46,
-          5
+          46
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -169346,10 +169346,10 @@
         "mode": "mcq",
         "correct": 41,
         "options": [
-          42,
-          5,
+          36,
+          40,
           41,
-          40
+          46
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -169410,9 +169410,9 @@
         "correct": 49,
         "options": [
           49,
-          50,
-          48,
-          5
+          54,
+          44,
+          48
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -169473,9 +169473,9 @@
         "correct": 39,
         "options": [
           39,
-          5,
           38,
-          40
+          44,
+          34
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -169535,9 +169535,9 @@
         "mode": "mcq",
         "correct": 36,
         "options": [
-          5,
-          37,
           35,
+          41,
+          31,
           36
         ]
       },
@@ -169600,8 +169600,8 @@
         "options": [
           46,
           45,
-          5,
-          47
+          41,
+          51
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -177651,10 +177651,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
-          1,
           18,
-          19,
-          17
+          15,
+          17,
+          19
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -177714,10 +177714,10 @@
         "mode": "mcq",
         "correct": 13,
         "options": [
-          12,
-          1,
+          13,
           14,
-          13
+          10,
+          12
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -177777,10 +177777,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
-          16,
+          14,
           17,
           18,
-          1
+          16
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -177841,9 +177841,9 @@
         "correct": 16,
         "options": [
           15,
-          17,
           16,
-          1
+          17,
+          13
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -177903,10 +177903,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
-          16,
+          14,
           17,
           18,
-          1
+          16
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -177966,10 +177966,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
-          16,
+          14,
           17,
           18,
-          1
+          16
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178029,9 +178029,9 @@
         "mode": "mcq",
         "correct": 15,
         "options": [
-          1,
-          16,
           14,
+          12,
+          16,
           15
         ]
       },
@@ -178092,10 +178092,10 @@
         "mode": "mcq",
         "correct": 13,
         "options": [
-          12,
-          1,
+          13,
           14,
-          13
+          10,
+          12
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178155,10 +178155,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
-          1,
           18,
-          19,
-          17
+          15,
+          17,
+          19
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178218,10 +178218,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
-          1,
           18,
-          19,
-          17
+          15,
+          17,
+          19
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178281,10 +178281,10 @@
         "mode": "mcq",
         "correct": 14,
         "options": [
-          13,
           15,
-          1,
-          14
+          11,
+          14,
+          13
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178344,10 +178344,10 @@
         "mode": "mcq",
         "correct": 20,
         "options": [
-          1,
+          21,
           20,
-          19,
-          21
+          17,
+          19
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178407,9 +178407,9 @@
         "mode": "mcq",
         "correct": 11,
         "options": [
-          10,
-          1,
           11,
+          10,
+          8,
           12
         ]
       },
@@ -178470,9 +178470,9 @@
         "mode": "mcq",
         "correct": 15,
         "options": [
-          1,
-          16,
           14,
+          12,
+          16,
           15
         ]
       },
@@ -178533,10 +178533,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
-          16,
+          14,
           17,
           18,
-          1
+          16
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178596,9 +178596,9 @@
         "mode": "mcq",
         "correct": 11,
         "options": [
-          10,
-          1,
           11,
+          10,
+          8,
           12
         ]
       },
@@ -178659,10 +178659,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
-          16,
+          14,
           17,
           18,
-          1
+          16
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178723,9 +178723,9 @@
         "correct": 16,
         "options": [
           15,
-          17,
           16,
-          1
+          17,
+          13
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178785,10 +178785,10 @@
         "mode": "mcq",
         "correct": 13,
         "options": [
-          12,
-          1,
+          13,
           14,
-          13
+          10,
+          12
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178848,10 +178848,10 @@
         "mode": "mcq",
         "correct": 14,
         "options": [
-          13,
           15,
-          1,
-          14
+          11,
+          14,
+          13
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -178911,10 +178911,10 @@
         "mode": "mcq",
         "correct": 32,
         "options": [
-          33,
+          35,
           32,
-          3,
-          31
+          31,
+          29
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -178974,9 +178974,9 @@
         "mode": "mcq",
         "correct": 32,
         "options": [
-          33,
-          2,
           32,
+          34,
+          30,
           31
         ]
       },
@@ -179037,10 +179037,10 @@
         "mode": "mcq",
         "correct": 33,
         "options": [
-          3,
-          33,
-          34,
-          32
+          32,
+          36,
+          30,
+          33
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179100,10 +179100,10 @@
         "mode": "mcq",
         "correct": 30,
         "options": [
+          33,
           29,
           30,
-          3,
-          31
+          27
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179163,10 +179163,10 @@
         "mode": "mcq",
         "correct": 38,
         "options": [
+          35,
           38,
-          39,
-          3,
-          37
+          37,
+          41
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179226,10 +179226,10 @@
         "mode": "mcq",
         "correct": 37,
         "options": [
-          36,
-          38,
-          3,
-          37
+          40,
+          34,
+          37,
+          36
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179289,10 +179289,10 @@
         "mode": "mcq",
         "correct": 26,
         "options": [
+          24,
           26,
-          2,
-          25,
-          27
+          28,
+          25
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179352,10 +179352,10 @@
         "mode": "mcq",
         "correct": 28,
         "options": [
-          29,
           27,
-          3,
-          28
+          28,
+          25,
+          31
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179415,9 +179415,9 @@
         "mode": "mcq",
         "correct": 23,
         "options": [
-          24,
           23,
-          2,
+          21,
+          25,
           22
         ]
       },
@@ -179478,10 +179478,10 @@
         "mode": "mcq",
         "correct": 31,
         "options": [
-          30,
-          32,
-          2,
-          31
+          31,
+          33,
+          29,
+          30
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179542,9 +179542,9 @@
         "correct": 44,
         "options": [
           43,
-          44,
-          5,
-          45
+          49,
+          39,
+          44
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179604,10 +179604,10 @@
         "mode": "mcq",
         "correct": 54,
         "options": [
-          53,
-          5,
           54,
-          55
+          59,
+          49,
+          53
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179667,10 +179667,10 @@
         "mode": "mcq",
         "correct": 46,
         "options": [
-          47,
+          42,
           46,
-          4,
-          45
+          45,
+          50
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179730,10 +179730,10 @@
         "mode": "mcq",
         "correct": 52,
         "options": [
-          52,
-          5,
-          53,
-          51
+          47,
+          57,
+          51,
+          52
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179794,9 +179794,9 @@
         "correct": 40,
         "options": [
           39,
-          41,
+          45,
           40,
-          5
+          35
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179856,10 +179856,10 @@
         "mode": "mcq",
         "correct": 50,
         "options": [
-          4,
-          49,
+          54,
           50,
-          51
+          49,
+          46
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179919,10 +179919,10 @@
         "mode": "mcq",
         "correct": 37,
         "options": [
-          37,
           36,
-          38,
-          4
+          41,
+          37,
+          33
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -179983,9 +179983,9 @@
         "correct": 44,
         "options": [
           43,
-          4,
           44,
-          45
+          40,
+          48
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -180045,10 +180045,10 @@
         "mode": "mcq",
         "correct": 43,
         "options": [
+          48,
           43,
-          5,
           42,
-          44
+          38
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -180108,10 +180108,10 @@
         "mode": "mcq",
         "correct": 52,
         "options": [
-          51,
           52,
-          4,
-          53
+          48,
+          56,
+          51
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -201508,9 +201508,9 @@
         "mode": "mcq",
         "correct": 15,
         "options": [
-          1,
-          16,
           14,
+          12,
+          16,
           15
         ]
       },
@@ -201571,10 +201571,10 @@
         "mode": "mcq",
         "correct": 13,
         "options": [
-          12,
-          1,
+          13,
           14,
-          13
+          10,
+          12
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -201634,10 +201634,10 @@
         "mode": "mcq",
         "correct": 21,
         "options": [
-          1,
-          21,
           22,
-          20
+          21,
+          20,
+          18
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -201697,10 +201697,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
-          1,
           18,
-          19,
-          17
+          15,
+          17,
+          19
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -201760,10 +201760,10 @@
         "mode": "mcq",
         "correct": 19,
         "options": [
-          1,
-          18,
           19,
-          20
+          20,
+          16,
+          18
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -201823,10 +201823,10 @@
         "mode": "mcq",
         "correct": 12,
         "options": [
+          9,
           13,
           12,
-          11,
-          1
+          11
         ]
       },
       "hint": "See which numbers are repeating in order.",
@@ -201886,10 +201886,10 @@
         "mode": "mcq",
         "correct": 74,
         "options": [
-          73,
-          75,
+          64,
           74,
-          10
+          73,
+          84
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -201949,9 +201949,9 @@
         "mode": "mcq",
         "correct": 72,
         "options": [
-          73,
           72,
-          10,
+          82,
+          62,
           71
         ]
       },
@@ -259498,9 +259498,9 @@
         "correct": 190,
         "options": [
           190,
+          180,
           189,
-          10,
-          191
+          200
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -259560,10 +259560,10 @@
         "mode": "mcq",
         "correct": 191,
         "options": [
-          192,
-          191,
           190,
-          10
+          191,
+          181,
+          201
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -259623,9 +259623,9 @@
         "mode": "mcq",
         "correct": 308,
         "options": [
-          10,
+          318,
+          298,
           307,
-          309,
           308
         ]
       },
@@ -259686,10 +259686,10 @@
         "mode": "mcq",
         "correct": 305,
         "options": [
-          304,
+          315,
           305,
-          10,
-          306
+          304,
+          295
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -259749,10 +259749,10 @@
         "mode": "mcq",
         "correct": 152,
         "options": [
-          10,
-          151,
+          142,
+          162,
           152,
-          153
+          151
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -259812,10 +259812,10 @@
         "mode": "mcq",
         "correct": 229,
         "options": [
-          229,
+          219,
+          239,
           228,
-          10,
-          230
+          229
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -259876,9 +259876,9 @@
         "correct": 161,
         "options": [
           161,
-          160,
-          162,
-          10
+          151,
+          171,
+          160
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -259938,10 +259938,10 @@
         "mode": "mcq",
         "correct": 186,
         "options": [
-          187,
-          186,
+          176,
+          196,
           185,
-          10
+          186
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260002,9 +260002,9 @@
         "correct": 325,
         "options": [
           324,
-          10,
-          326,
-          325
+          325,
+          335,
+          315
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260064,10 +260064,10 @@
         "mode": "mcq",
         "correct": 164,
         "options": [
-          163,
+          174,
           164,
-          165,
-          10
+          163,
+          154
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260127,10 +260127,10 @@
         "mode": "mcq",
         "correct": 491,
         "options": [
-          492,
-          25,
+          490,
+          516,
           491,
-          490
+          466
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260190,10 +260190,10 @@
         "mode": "mcq",
         "correct": 429,
         "options": [
-          430,
-          429,
           428,
-          25
+          429,
+          454,
+          404
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260253,10 +260253,10 @@
         "mode": "mcq",
         "correct": 311,
         "options": [
-          312,
-          310,
           311,
-          25
+          310,
+          286,
+          336
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260316,9 +260316,9 @@
         "mode": "mcq",
         "correct": 205,
         "options": [
-          25,
           204,
-          206,
+          230,
+          180,
           205
         ]
       },
@@ -260380,9 +260380,9 @@
         "correct": 352,
         "options": [
           352,
-          25,
-          353,
-          351
+          327,
+          351,
+          377
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260442,10 +260442,10 @@
         "mode": "mcq",
         "correct": 308,
         "options": [
-          309,
+          333,
+          283,
           307,
-          308,
-          25
+          308
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260506,9 +260506,9 @@
         "correct": 345,
         "options": [
           344,
-          345,
-          25,
-          346
+          370,
+          320,
+          345
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260568,10 +260568,10 @@
         "mode": "mcq",
         "correct": 402,
         "options": [
-          25,
           402,
-          401,
-          403
+          377,
+          427,
+          401
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260631,10 +260631,10 @@
         "mode": "mcq",
         "correct": 226,
         "options": [
-          227,
+          251,
+          201,
           226,
-          225,
-          25
+          225
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260694,10 +260694,10 @@
         "mode": "mcq",
         "correct": 275,
         "options": [
-          275,
           274,
-          276,
-          25
+          250,
+          275,
+          300
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260757,10 +260757,10 @@
         "mode": "mcq",
         "correct": 601,
         "options": [
-          601,
+          551,
           600,
-          602,
-          50
+          651,
+          601
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260820,9 +260820,9 @@
         "mode": "mcq",
         "correct": 462,
         "options": [
-          463,
-          50,
           462,
+          512,
+          412,
           461
         ]
       },
@@ -260883,10 +260883,10 @@
         "mode": "mcq",
         "correct": 482,
         "options": [
-          50,
-          482,
+          432,
+          532,
           481,
-          483
+          482
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -260946,10 +260946,10 @@
         "mode": "mcq",
         "correct": 442,
         "options": [
-          50,
-          443,
           442,
-          441
+          492,
+          441,
+          392
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261009,10 +261009,10 @@
         "mode": "mcq",
         "correct": 626,
         "options": [
-          627,
-          50,
           625,
-          626
+          676,
+          626,
+          576
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261072,10 +261072,10 @@
         "mode": "mcq",
         "correct": 441,
         "options": [
-          50,
           440,
-          442,
-          441
+          391,
+          441,
+          491
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261135,10 +261135,10 @@
         "mode": "mcq",
         "correct": 514,
         "options": [
-          514,
-          50,
+          564,
+          464,
           513,
-          515
+          514
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261198,9 +261198,9 @@
         "mode": "mcq",
         "correct": 517,
         "options": [
-          518,
-          50,
           516,
+          467,
+          567,
           517
         ]
       },
@@ -261261,10 +261261,10 @@
         "mode": "mcq",
         "correct": 569,
         "options": [
-          50,
-          569,
-          570,
-          568
+          519,
+          619,
+          568,
+          569
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261324,10 +261324,10 @@
         "mode": "mcq",
         "correct": 686,
         "options": [
-          50,
           686,
-          685,
-          687
+          636,
+          736,
+          685
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261387,10 +261387,10 @@
         "mode": "mcq",
         "correct": 585,
         "options": [
+          685,
           584,
-          100,
-          586,
-          585
+          585,
+          485
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261450,9 +261450,9 @@
         "mode": "mcq",
         "correct": 706,
         "options": [
-          707,
+          606,
+          806,
           706,
-          100,
           705
         ]
       },
@@ -261513,10 +261513,10 @@
         "mode": "mcq",
         "correct": 460,
         "options": [
-          100,
-          460,
+          560,
+          360,
           459,
-          461
+          460
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261576,10 +261576,10 @@
         "mode": "mcq",
         "correct": 624,
         "options": [
-          624,
-          625,
+          724,
+          524,
           623,
-          100
+          624
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261639,10 +261639,10 @@
         "mode": "mcq",
         "correct": 764,
         "options": [
+          864,
           763,
-          100,
           764,
-          765
+          664
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261702,10 +261702,10 @@
         "mode": "mcq",
         "correct": 826,
         "options": [
-          100,
-          825,
+          926,
+          726,
           826,
-          827
+          825
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261765,10 +261765,10 @@
         "mode": "mcq",
         "correct": 498,
         "options": [
-          498,
-          499,
-          100,
-          497
+          497,
+          398,
+          598,
+          498
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261829,9 +261829,9 @@
         "correct": 681,
         "options": [
           680,
+          581,
           681,
-          682,
-          100
+          781
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261891,10 +261891,10 @@
         "mode": "mcq",
         "correct": 700,
         "options": [
-          100,
           700,
+          600,
           699,
-          701
+          800
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -261954,10 +261954,10 @@
         "mode": "mcq",
         "correct": 470,
         "options": [
-          470,
-          471,
           469,
-          100
+          470,
+          570,
+          370
         ]
       },
       "hint": "Look at how the numbers are changing each time.",
@@ -269241,6 +269241,3656 @@
             "a": 3,
             "b": 1,
             "sum": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_nb6oey",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "2 = 0 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          0
+        ]
+      },
+      "hint": "2 is the whole, and 0 is one part. What is the other part?",
+      "explanation": "0 and 2 makes 2.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 0,
+          "right": 2,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 2,
+            "known": 0
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 2,
+            "total": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_j034jx",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.36,
+      "curriculumStep": 0,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 1,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "0 + ? = 1",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          3,
+          2
+        ]
+      },
+      "hint": "You have 0. How many more to make 1?",
+      "explanation": "0 and 1 makes 1.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 0,
+          "right": 1,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 0,
+            "total": 1
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 1,
+            "total": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_1s3c5aa",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.36,
+      "curriculumStep": 0,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 1 = 2",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          3,
+          2
+        ]
+      },
+      "hint": "Something and 1 makes 2. Start at 1 and count up to 2.",
+      "explanation": "1 and 1 makes 2.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 1,
+          "right": 1,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 1,
+            "total": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 1,
+            "unknown": 1,
+            "total": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_18oomwf",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 1 = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          0
+        ]
+      },
+      "hint": "Something and 1 makes 3. Start at 1 and count up to 3.",
+      "explanation": "1 and 2 makes 3.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 2,
+          "right": 1,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 1,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 1,
+            "unknown": 2,
+            "total": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_ojrxoj",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "3 = 1 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          0
+        ]
+      },
+      "hint": "3 is the whole, and 1 is one part. What is the other part?",
+      "explanation": "1 and 2 makes 3.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 1,
+          "right": 2,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 3,
+            "known": 1
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 1,
+            "unknown": 2,
+            "total": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_15ue8tw",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 2 = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          4,
+          2,
+          3
+        ]
+      },
+      "hint": "Something and 2 makes 4. Start at 2 and count up to 4.",
+      "explanation": "2 and 2 makes 4.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 2,
+          "right": 2,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 2,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 2,
+            "total": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_qm1e23",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 2 = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          3,
+          2
+        ]
+      },
+      "hint": "Something and 2 makes 3. Start at 2 and count up to 3.",
+      "explanation": "2 and 1 makes 3.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 1,
+          "right": 2,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 2,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 1,
+            "total": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_urlrjz",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "3 = 2 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          3,
+          2
+        ]
+      },
+      "hint": "3 is the whole, and 2 is one part. What is the other part?",
+      "explanation": "2 and 1 makes 3.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 2,
+          "right": 1,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 3,
+            "known": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 1,
+            "total": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_3k70d2",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 0 = 2",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          0
+        ]
+      },
+      "hint": "Something and 0 makes 2. Start at 0 and count up to 2.",
+      "explanation": "0 and 2 makes 2.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 2,
+          "right": 0,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 0,
+            "total": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 2,
+            "total": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_m3zq59",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.36,
+      "curriculumStep": 0,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 1,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 0 = 1",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          3,
+          2
+        ]
+      },
+      "hint": "Something and 0 makes 1. Start at 0 and count up to 1.",
+      "explanation": "0 and 1 makes 1.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 1,
+          "right": 0,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 0,
+            "total": 1
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 1,
+            "total": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_232mre",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "0 + ? = 2",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          0
+        ]
+      },
+      "hint": "You have 0. How many more to make 2?",
+      "explanation": "0 and 2 makes 2.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 0,
+          "right": 2,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 0,
+            "total": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 2,
+            "total": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_16kfbv1",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.36,
+      "curriculumStep": 0,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 1,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "1 = 0 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          3,
+          2
+        ]
+      },
+      "hint": "1 is the whole, and 0 is one part. What is the other part?",
+      "explanation": "0 and 1 makes 1.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 0,
+          "right": 1,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 1,
+            "known": 0
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 1,
+            "total": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_1nchpc2",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.36,
+      "curriculumStep": 0,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 2,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "2 = 1 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          3,
+          2
+        ]
+      },
+      "hint": "2 is the whole, and 1 is one part. What is the other part?",
+      "explanation": "1 and 1 makes 2.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 1,
+          "right": 1,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 2,
+            "known": 1
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 1,
+            "unknown": 1,
+            "total": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_first_facts_t3mtuc",
+      "domain": "addition",
+      "skills": [
+        "basic_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "4 = 2 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          4,
+          2,
+          3
+        ]
+      },
+      "hint": "4 is the whole, and 2 is one part. What is the other part?",
+      "explanation": "2 and 2 makes 4.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_first_facts",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 2,
+          "right": 2,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 4,
+            "known": 2
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 2,
+            "total": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_kfbshi",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.48,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "4 + ? = 8",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          8,
+          4,
+          5,
+          3
+        ]
+      },
+      "hint": "You have 4. How many more to make 8?",
+      "explanation": "4 and 4 makes 8.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 4,
+          "right": 4,
+          "correct": 4
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 4,
+            "total": 8
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 4,
+            "total": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_1lubewj",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.48,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "4 + ? = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          2,
+          1,
+          5,
+          0
+        ]
+      },
+      "hint": "You have 4. How many more to make 5?",
+      "explanation": "4 and 1 makes 5.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 4,
+          "right": 1,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 4,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 1,
+            "total": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_10h6wbh",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.48,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "4 + ? = 7",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          7,
+          3,
+          2
+        ]
+      },
+      "hint": "You have 4. How many more to make 7?",
+      "explanation": "4 and 3 makes 7.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 4,
+          "right": 3,
+          "correct": 3
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 4,
+            "total": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 3,
+            "total": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_1k5mtq6",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.4,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "4 = 3 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          2,
+          4,
+          1,
+          0
+        ]
+      },
+      "hint": "4 is the whole, and 3 is one part. What is the other part?",
+      "explanation": "3 and 1 makes 4.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 3,
+          "right": 1,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 4,
+            "known": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 3,
+            "unknown": 1,
+            "total": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_11ma5fb",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "9 = 5 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          4,
+          9,
+          5,
+          3
+        ]
+      },
+      "hint": "9 is the whole, and 5 is one part. What is the other part?",
+      "explanation": "5 and 4 makes 9.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 5,
+          "right": 4,
+          "correct": 4
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 9,
+            "known": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 5,
+            "unknown": 4,
+            "total": 9
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_1pffhqr",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.48,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "1 + ? = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          4,
+          1,
+          5,
+          3
+        ]
+      },
+      "hint": "You have 1. How many more to make 5?",
+      "explanation": "1 and 4 makes 5.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 1,
+          "right": 4,
+          "correct": 4
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 1,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 1,
+            "unknown": 4,
+            "total": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_160zil8",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "1 + ? = 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          1,
+          5,
+          4
+        ]
+      },
+      "hint": "You have 1. How many more to make 6?",
+      "explanation": "1 and 5 makes 6.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 1,
+          "right": 5,
+          "correct": 5
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 1,
+            "total": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 1,
+            "unknown": 5,
+            "total": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_omug92",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 8,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 3 = 8",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          4,
+          6,
+          8,
+          5
+        ]
+      },
+      "hint": "Something and 3 makes 8. Start at 3 and count up to 8.",
+      "explanation": "3 and 5 makes 8.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 5,
+          "right": 3,
+          "correct": 5
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 3,
+            "total": 8
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 3,
+            "unknown": 5,
+            "total": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_1e6el1t",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "2 + ? = 7",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          7,
+          6,
+          5,
+          4
+        ]
+      },
+      "hint": "You have 2. How many more to make 7?",
+      "explanation": "2 and 5 makes 7.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 2,
+          "right": 5,
+          "correct": 5
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.how_many_more",
+          "params": {
+            "known": 2,
+            "total": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 2,
+            "unknown": 5,
+            "total": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_jmkn6o",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.4,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 6,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 3 = 6",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          2,
+          6,
+          4,
+          3
+        ]
+      },
+      "hint": "Something and 3 makes 6. Start at 3 and count up to 6.",
+      "explanation": "3 and 3 makes 6.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 3,
+          "right": 3,
+          "correct": 3
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 3,
+            "total": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 3,
+            "unknown": 3,
+            "total": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_qfxgky",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.48,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "4 = 0 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          4,
+          3,
+          5,
+          0
+        ]
+      },
+      "hint": "4 is the whole, and 0 is one part. What is the other part?",
+      "explanation": "0 and 4 makes 4.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 0,
+          "right": 4,
+          "correct": 4
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 4,
+            "known": 0
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 4,
+            "total": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_eq2hoq",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.4,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 3 = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          2,
+          4,
+          1,
+          0
+        ]
+      },
+      "hint": "Something and 3 makes 4. Start at 3 and count up to 4.",
+      "explanation": "3 and 1 makes 4.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 1,
+          "right": 3,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 3,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 3,
+            "unknown": 1,
+            "total": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_18fvtyf",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.4,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 3 = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          5,
+          3,
+          1,
+          2
+        ]
+      },
+      "hint": "Something and 3 makes 5. Start at 3 and count up to 5.",
+      "explanation": "3 and 2 makes 5.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 2,
+          "right": 3,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 3,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 3,
+            "unknown": 2,
+            "total": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_11uwvgn",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.4,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "5 = 3 + ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          5,
+          3,
+          1,
+          2
+        ]
+      },
+      "hint": "5 is the whole, and 3 is one part. What is the other part?",
+      "explanation": "3 and 2 makes 5.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 3,
+          "right": 2,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.other_part",
+          "params": {
+            "total": 5,
+            "known": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 3,
+            "unknown": 2,
+            "total": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_mqncel",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.4,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 3,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 0 = 3",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          0,
+          4,
+          2,
+          3
+        ]
+      },
+      "hint": "Something and 0 makes 3. Start at 0 and count up to 3.",
+      "explanation": "0 and 3 makes 3.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 3,
+          "right": 0,
+          "correct": 3
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 0,
+            "total": 3
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 3,
+            "total": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_yctpr",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 9,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 4 = 9",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          9,
+          5,
+          4
+        ]
+      },
+      "hint": "Something and 4 makes 9. Start at 4 and count up to 9.",
+      "explanation": "4 and 5 makes 9.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 5,
+          "right": 4,
+          "correct": 5
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 4,
+            "total": 9
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 5,
+            "total": 9
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_1mjup0z",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.56,
+      "curriculumStep": 4,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 0 = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          5,
+          6,
+          0,
+          4
+        ]
+      },
+      "hint": "Something and 0 makes 5. Start at 0 and count up to 5.",
+      "explanation": "0 and 5 makes 5.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 5,
+          "right": 0,
+          "correct": 5
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 0,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 5,
+            "total": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_1m8ylqa",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.48,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 4,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 0 = 4",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          4,
+          3,
+          5,
+          0
+        ]
+      },
+      "hint": "Something and 0 makes 4. Start at 0 and count up to 4.",
+      "explanation": "0 and 4 makes 4.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 4,
+          "right": 0,
+          "correct": 4
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 0,
+            "total": 4
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 0,
+            "unknown": 4,
+            "total": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_1szubyb",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.48,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 5,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 4 = 5",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          2,
+          1,
+          5,
+          0
+        ]
+      },
+      "hint": "Something and 4 makes 5. Start at 4 and count up to 5.",
+      "explanation": "4 and 1 makes 5.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 1,
+          "right": 4,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 4,
+            "total": 5
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 1,
+            "total": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_bond_within_five_1u7xfdd",
+      "domain": "addition",
+      "skills": [
+        "single_digit_addition"
+      ],
+      "difficulty": 1.48,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "difficultyTraits": {
+        "maxOperand": 7,
+        "requiresCarry": false
+      },
+      "prompt": {
+        "text": "? + 4 = 7",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          4,
+          7,
+          3,
+          2
+        ]
+      },
+      "hint": "Something and 4 makes 7. Start at 4 and count up to 7.",
+      "explanation": "4 and 3 makes 7.",
+      "misconceptionTags": [
+        "off_by_one"
+      ],
+      "generator": {
+        "template": "offline_addition",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "bond_within_five",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "left": 3,
+          "right": 4,
+          "correct": 3
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "hint": {
+          "key": "math.hint.rel.count_up",
+          "params": {
+            "known": 4,
+            "total": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.rel.parts",
+          "params": {
+            "known": 4,
+            "unknown": 3,
+            "total": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_1g5w65p",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Keep the pattern going: 7, 6, 5, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          4,
+          1,
+          5,
+          3
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 4.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 7,
+          "step": -1,
+          "correct": 4
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.keep_pattern",
+          "params": {
+            "seq": "7, 6, 5, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_15sy4du",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 6, 5, 4, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          0,
+          4,
+          2,
+          3
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 3.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 6,
+          "step": -1,
+          "correct": 3
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "6, 5, 4, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_vz8mv4",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 8, 7, 6, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          6,
+          2,
+          4,
+          5
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 5.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 8,
+          "step": -1,
+          "correct": 5
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "8, 7, 6, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_hiyjz2",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 10, 9, 8, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          8,
+          4,
+          7,
+          6
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 7.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 10,
+          "step": -1,
+          "correct": 7
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "10, 9, 8, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_1gxujko",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 9, 8, 7, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          7,
+          5,
+          6,
+          3
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 6.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 9,
+          "step": -1,
+          "correct": 6
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "9, 8, 7, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_jpyhpb",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 0,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Keep the pattern going: 5, 4, 3, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          0
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 2.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 5,
+          "step": -1,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.keep_pattern",
+          "params": {
+            "seq": "5, 4, 3, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_ceyja1",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 11, 10, 9, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          8,
+          7,
+          5,
+          9
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 8.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 11,
+          "step": -1,
+          "correct": 8
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "11, 10, 9, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_1xr1m7a",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Keep the pattern going: 12, 11, 10, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          8,
+          9,
+          10,
+          6
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 9.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 12,
+          "step": -1,
+          "correct": 9
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.keep_pattern",
+          "params": {
+            "seq": "12, 11, 10, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 9
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_89lurs",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 0,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Keep the pattern going: 4, 3, 2, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          3,
+          2
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 1.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 4,
+          "step": -1,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.keep_pattern",
+          "params": {
+            "seq": "4, 3, 2, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_rtnaiz",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Keep the pattern going: 9, 8, 7, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          7,
+          5,
+          6,
+          3
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 6.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 9,
+          "step": -1,
+          "correct": 6
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.keep_pattern",
+          "params": {
+            "seq": "9, 8, 7, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_1buk2t6",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 1,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 7, 6, 5, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          4,
+          1,
+          5,
+          3
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 4.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 7,
+          "step": -1,
+          "correct": 4
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "7, 6, 5, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_ones_23r323",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.77,
+      "curriculumStep": 0,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 5, 4, 3, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          1,
+          2,
+          3,
+          0
+        ]
+      },
+      "hint": "Count backwards!",
+      "explanation": "The pattern keeps going to 2.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_ones",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 5,
+          "step": -1,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "5, 4, 3, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_backwards",
+          "params": {}
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_vpe5y0",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 12, 10, 8, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 6,
+        "options": [
+          4,
+          6,
+          8,
+          5
+        ]
+      },
+      "hint": "Count back from 12!",
+      "explanation": "The pattern keeps going to 6.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 12,
+          "step": -2,
+          "correct": 6
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "12, 10, 8, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 12
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 6
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_1m8nitl",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 6, 4, 2, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 0,
+        "options": [
+          1,
+          3,
+          2,
+          0
+        ]
+      },
+      "hint": "Count back from 6!",
+      "explanation": "The pattern keeps going to 0.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 6,
+          "step": -2,
+          "correct": 0
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "6, 4, 2, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 6
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 0
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_nxd113",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 14, 12, 10, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 8,
+        "options": [
+          6,
+          10,
+          7,
+          8
+        ]
+      },
+      "hint": "Count back from 14!",
+      "explanation": "The pattern keeps going to 8.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 14,
+          "step": -2,
+          "correct": 8
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "14, 12, 10, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 14
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 8
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_34u03",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Keep the pattern going: 10, 8, 6, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 4,
+        "options": [
+          3,
+          6,
+          4,
+          2
+        ]
+      },
+      "hint": "Count back from 10!",
+      "explanation": "The pattern keeps going to 4.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 10,
+          "step": -2,
+          "correct": 4
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.keep_pattern",
+          "params": {
+            "seq": "10, 8, 6, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 10
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 4
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_1dk9t8r",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Keep the pattern going: 8, 6, 4, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 2,
+        "options": [
+          2,
+          1,
+          4,
+          0
+        ]
+      },
+      "hint": "Count back from 8!",
+      "explanation": "The pattern keeps going to 2.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 8,
+          "step": -2,
+          "correct": 2
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.keep_pattern",
+          "params": {
+            "seq": "8, 6, 4, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 8
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 2
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_9sy08o",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Keep the pattern going: 9, 7, 5, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 3,
+        "options": [
+          1,
+          5,
+          2,
+          3
+        ]
+      },
+      "hint": "Count back from 9!",
+      "explanation": "The pattern keeps going to 3.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 9,
+          "step": -2,
+          "correct": 3
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.keep_pattern",
+          "params": {
+            "seq": "9, 7, 5, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 9
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 3
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_1lcafyf",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "Keep the pattern going: 13, 11, 9, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 7,
+        "options": [
+          7,
+          9,
+          6,
+          5
+        ]
+      },
+      "hint": "Count back from 13!",
+      "explanation": "The pattern keeps going to 7.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 13,
+          "step": -2,
+          "correct": 7
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.keep_pattern",
+          "params": {
+            "seq": "13, 11, 9, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 13
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 7
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_4s8y0r",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What comes next in the number pattern: 15, 13, 11, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 9,
+        "options": [
+          8,
+          11,
+          7,
+          9
+        ]
+      },
+      "hint": "Count back from 15!",
+      "explanation": "The pattern keeps going to 9.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 15,
+          "step": -2,
+          "correct": 9
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.next_number_pattern",
+          "params": {
+            "seq": "15, 13, 11, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 15
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 9
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_1blnnn2",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 3,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 11, 9, 7, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 5,
+        "options": [
+          5,
+          4,
+          3,
+          7
+        ]
+      },
+      "hint": "Count back from 11!",
+      "explanation": "The pattern keeps going to 5.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 11,
+          "step": -2,
+          "correct": 5
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "11, 9, 7, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 11
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 5
+          }
+        }
+      }
+    },
+    {
+      "id": "auth_batch_29_early_number_sense_count_back_twos_10kahj2",
+      "domain": "number_sequence",
+      "skills": [
+        "number_ordering"
+      ],
+      "difficulty": 1.84,
+      "curriculumStep": 2,
+      "ageBand": [
+        5,
+        7
+      ],
+      "prompt": {
+        "text": "What number comes next? 7, 5, 3, ?",
+        "assets": null
+      },
+      "answer": {
+        "mode": "mcq",
+        "correct": 1,
+        "options": [
+          0,
+          1,
+          3,
+          2
+        ]
+      },
+      "hint": "Count back from 7!",
+      "explanation": "The pattern keeps going to 1.",
+      "misconceptionTags": [
+        "pattern_jump_confusion"
+      ],
+      "generator": {
+        "template": "offline_number_sequence",
+        "params": {
+          "batchId": "batch_29_early_number_sense",
+          "templateId": "count_back_twos",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "start": 7,
+          "step": -2,
+          "correct": 1
+        },
+        "evaluator": "tools/math_authoring.ts"
+      },
+      "phrasing": {
+        "prompt": {
+          "key": "math.prompt.seq.what_number_next",
+          "params": {
+            "seq": "7, 5, 3, ?"
+          }
+        },
+        "hint": {
+          "key": "math.hint.count_back_from_x",
+          "params": {
+            "a": 7
+          }
+        },
+        "explanation": {
+          "key": "math.expl.pattern_to",
+          "params": {
+            "n": 1
           }
         }
       }

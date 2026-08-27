@@ -152,6 +152,28 @@ step 8 by end of 3. bekkur, step 15 by end of 4. **Format limit: no
 remainders** — the answer format is a single MCQ number; "deiling með afgangi"
 needs a new answer mode first (documented in roadmap, not faked).
 
+### Number bonds (the same addition rung, asked from the other end)
+`a + ? = c`, `? + b = c` and `c = a + ?` are the same bond as `a + b = ?`, and
+`deriveCurriculumStep` gives them the same rung by reading the fact underneath
+(`parseRelationalPrompt` in `tools/math_verifier.ts`). They are authored with
+`relationalShapes` on an addition/subtraction template, which emits them
+*instead of* the plain framings so a batch's count stays accountable. Their text
+is pure symbols, so nothing new needs translating; the hint and explanation come
+from the `math.hint.rel.*` / `math.expl.rel.*` family and are chosen by the
+shape, because each shape hands the child a different KNOWN number. The
+distractor set leads with the **total** — a child who reads "=" as "work it out"
+answers 5 to `2 + ? = 5`, and that is a diagnosis, not noise.
+
+`both_sides` (`8 + 7 = ? + 6`) is the Falkner/Levi/Carpenter form and a harder
+idea than a missing part; it is parsed but not yet authored from a template.
+
+### Counting back
+`stepChoices` may be negative — Sproti 1 teaches *talning aftur á bak* alongside
+counting on. The step is derived from `|delta|` and magnitude, so a descending
+run lands on the same rung as the ascending one and no served step moves. Runs
+that would walk past zero are dropped: negative numbers are outside this game's
+answer format (§8), so such a run is unanswerable rather than hard.
+
 ### Comparison / number sequence
 Existing factor scores are frozen (served content). New magnitude factors sit
 strictly above today's data: comparison adds >30 / >120 / >500 tiers (steps

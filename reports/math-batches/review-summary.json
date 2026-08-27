@@ -4,18 +4,18 @@
     "independentReview": false,
     "note": "This is a deterministic repository-side review stack. It proves mechanical consistency and local-safe runtime rail coverage, not telemetry-backed pedagogy or independent ELO calibration."
   },
-  "generatedProblemCount": 3661,
+  "generatedProblemCount": 3717,
   "acceptedBatchCount": 29,
   "averageAcceptedGrade": 9.84,
   "domainTotals": {
-    "addition": 1262,
+    "addition": 1296,
     "subtraction": 1196,
     "multiplication": 604,
     "division": 415,
     "counting": 199,
     "comparison": 165,
     "pattern_matching": 125,
-    "number_sequence": 183
+    "number_sequence": 205
   },
   "owlSurface": {
     "domains": [
@@ -32,62 +32,62 @@
       "addition",
       "counting"
     ],
-    "owlEligibleProblemCount": 2065,
-    "owlEligibleUniquePromptCount": 2065,
-    "owlEligibleUniqueFactCount": 854,
+    "owlEligibleProblemCount": 2121,
+    "owlEligibleUniquePromptCount": 2121,
+    "owlEligibleUniqueFactCount": 907,
     "domainCounts": {
-      "addition": 532,
+      "addition": 566,
       "counting": 199,
       "pattern_matching": 125,
       "subtraction": 544,
       "comparison": 125,
-      "number_sequence": 143,
+      "number_sequence": 165,
       "multiplication": 233,
       "division": 164
     },
-    "openingUnlockedInventoryProblemCount": 731,
-    "openingUnlockedInventoryUniquePromptCount": 731,
-    "openingUnlockedInventoryUniqueFactCount": 177,
-    "freshReachableProblemCount": 193,
-    "freshReachableUniquePromptCount": 193,
-    "freshReachableUniqueFactCount": 22,
+    "openingUnlockedInventoryProblemCount": 765,
+    "openingUnlockedInventoryUniquePromptCount": 765,
+    "openingUnlockedInventoryUniqueFactCount": 211,
+    "freshReachableProblemCount": 213,
+    "freshReachableUniquePromptCount": 213,
+    "freshReachableUniqueFactCount": 42,
     "freshReachableDomainCounts": {
-      "addition": 101,
+      "addition": 121,
       "counting": 92
     },
-    "freshReachableAdditionFactCount": 14,
+    "freshReachableAdditionFactCount": 34,
     "freshReachableCountingFactCount": 8,
     "currentInteractionProblemCount": 1,
     "owlAdditionByStep": [
       {
         "step": 0,
-        "rowCount": 31,
-        "uniquePromptCount": 31,
-        "uniqueFactCount": 3
-      },
-      {
-        "step": 1,
-        "rowCount": 26,
-        "uniquePromptCount": 26,
-        "uniqueFactCount": 3
-      },
-      {
-        "step": 2,
-        "rowCount": 44,
-        "uniquePromptCount": 44,
+        "rowCount": 36,
+        "uniquePromptCount": 36,
         "uniqueFactCount": 8
       },
       {
-        "step": 3,
-        "rowCount": 45,
-        "uniquePromptCount": 45,
+        "step": 1,
+        "rowCount": 35,
+        "uniquePromptCount": 35,
+        "uniqueFactCount": 12
+      },
+      {
+        "step": 2,
+        "rowCount": 50,
+        "uniquePromptCount": 50,
         "uniqueFactCount": 14
       },
       {
+        "step": 3,
+        "rowCount": 53,
+        "uniquePromptCount": 53,
+        "uniqueFactCount": 22
+      },
+      {
         "step": 4,
-        "rowCount": 37,
-        "uniquePromptCount": 37,
-        "uniqueFactCount": 10
+        "rowCount": 43,
+        "uniquePromptCount": 43,
+        "uniqueFactCount": 16
       },
       {
         "step": 5,
@@ -3326,26 +3326,26 @@
       "criticalIssues": [],
       "templateReview": {
         "category": {
-          "grade": 9.7,
-          "summary": "Template coverage is stable: 8 templates, 3 families, steps 0-3.",
+          "grade": 9.8,
+          "summary": "Template coverage is stable: 12 templates, 5 families, steps 0-4.",
           "metrics": {
-            "templateCount": 8,
-            "familyCount": 3,
+            "templateCount": 12,
+            "familyCount": 5,
             "minStep": 0,
-            "maxStep": 3,
-            "promptVariantCount": 32,
+            "maxStep": 4,
+            "promptVariantCount": 38,
             "averageProblemsPerTemplate": 13.8
           }
         },
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.7,
+            "grade": 9.8,
             "rationale": "Batch shape is dense enough to scale without a cliff."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.8,
+            "grade": 10,
             "rationale": "Families and wording variants support replay and gentle pacing."
           },
           {
@@ -3360,7 +3360,7 @@
           "grade": 10,
           "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
           "metrics": {
-            "problemCount": 110,
+            "problemCount": 166,
             "arithmeticErrors": 0,
             "metadataErrors": 0,
             "optionErrors": 0,
@@ -3396,8 +3396,8 @@
             "strugglingChildGrade": 10,
             "strongChildGrade": 10,
             "openingProbeStep": 0,
-            "middleProbeStep": 1,
-            "upperProbeStep": 3,
+            "middleProbeStep": 2,
+            "upperProbeStep": 4,
             "uniqueStartAnchors": 3,
             "probeCount": 9,
             "exhaustionWarnings": 0
@@ -3447,31 +3447,31 @@
       "recentWindowFallbackPreserved": true,
       "uninitializedFallbackPreserved": true,
       "currentStepFallbackPreserved": true,
-      "maxOperandSeen": 15,
-      "maxCurriculumStepSeen": 14,
+      "maxOperandSeen": 10,
+      "maxCurriculumStepSeen": 9,
       "followUpSelections": 0,
       "alternateFollowUpSelections": 0,
       "followUpAlternateRate": 1,
-      "steadyFirstSubtractionUnlockAttempt": 37,
+      "steadyFirstSubtractionUnlockAttempt": -1,
       "strugglingFirstSubtractionUnlockAttempt": -1,
-      "depthProbeFirstSubtractionUnlockAttempt": 39,
-      "steadyFirstSubtractionSelectionAttempt": 38,
+      "depthProbeFirstSubtractionUnlockAttempt": 50,
+      "steadyFirstSubtractionSelectionAttempt": -1,
       "strugglingFirstSubtractionSelectionAttempt": -1,
-      "depthProbeFirstSubtractionSelectionAttempt": 40,
-      "owlEligibleProblemCount": 2065,
-      "owlEligibleUniquePromptCount": 2065,
-      "owlEligibleUniqueFactCount": 854,
-      "openingUnlockedInventoryProblemCount": 731,
-      "openingUnlockedInventoryUniquePromptCount": 731,
-      "openingUnlockedInventoryUniqueFactCount": 177,
-      "freshReachableProblemCount": 193,
-      "freshReachableUniquePromptCount": 193,
-      "freshReachableUniqueFactCount": 22,
-      "freshReachableAdditionFactCount": 14,
+      "depthProbeFirstSubtractionSelectionAttempt": 51,
+      "owlEligibleProblemCount": 2121,
+      "owlEligibleUniquePromptCount": 2121,
+      "owlEligibleUniqueFactCount": 907,
+      "openingUnlockedInventoryProblemCount": 765,
+      "openingUnlockedInventoryUniquePromptCount": 765,
+      "openingUnlockedInventoryUniqueFactCount": 211,
+      "freshReachableProblemCount": 213,
+      "freshReachableUniquePromptCount": 213,
+      "freshReachableUniqueFactCount": 42,
+      "freshReachableAdditionFactCount": 34,
       "freshReachableCountingFactCount": 8,
-      "openingAdditionStep0Facts": 3,
-      "openingAdditionStep1Facts": 3,
-      "openingAdditionStep2Facts": 8,
+      "openingAdditionStep0Facts": 8,
+      "openingAdditionStep1Facts": 12,
+      "openingAdditionStep2Facts": 14,
       "interactionProblemCount": 1,
       "owlDomains": "addition,counting,pattern_matching,subtraction,comparison,number_sequence,multiplication,division",
       "openingUnlockedDomains": "addition,counting"
@@ -3500,7 +3500,7 @@
     "caveats": [
       "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
       "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 2065 local-safe rows overall, while a fresh profile currently reaches 193 step-capped rows across addition, counting and 1 problems per owl interaction."
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 2121 local-safe rows overall, while a fresh profile currently reaches 213 step-capped rows across addition, counting and 1 problems per owl interaction."
     ]
   }
 }

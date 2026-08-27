@@ -7242,8 +7242,8 @@
     {
       "id": "batch_29_early_number_sense",
       "title": "Early number sense: subitising, one-to-one, and the first facts",
-      "theme": "the bottom of the ladder, where the shapes and the framings are the only things that can vary",
-      "targetCount": 110,
+      "theme": "the bottom of the ladder: subitising, one-to-one counting, number bonds, counting back, and every short framing of the four facts that exist down there",
+      "targetCount": 166,
       "templates": [
         {
           "id": "count_subitize_1_2",
@@ -7530,6 +7530,124 @@
             0,
             2
           ]
+        },
+        {
+          "id": "bond_first_facts",
+          "kind": "addition",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "count": 14,
+          "skill": "basic_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            0,
+            2
+          ],
+          "rightRange": [
+            0,
+            2
+          ],
+          "allowZero": true,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ],
+          "templateStepRange": [
+            0,
+            2
+          ]
+        },
+        {
+          "id": "bond_within_five",
+          "kind": "addition",
+          "family": "number_bonds",
+          "bandId": "add_under_10",
+          "count": 20,
+          "skill": "single_digit_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "leftRange": [
+            0,
+            5
+          ],
+          "rightRange": [
+            0,
+            5
+          ],
+          "allowZero": true,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ],
+          "templateStepRange": [
+            2,
+            4
+          ]
+        },
+        {
+          "id": "count_back_ones",
+          "kind": "number_sequence",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "count": 12,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going"
+          ],
+          "hintStrategy": "sequence_back",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            4,
+            12
+          ],
+          "stepChoices": [
+            -1
+          ],
+          "length": 3
+        },
+        {
+          "id": "count_back_twos",
+          "kind": "number_sequence",
+          "family": "count_back",
+          "bandId": "sequence_basics",
+          "count": 10,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_back_from",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "startRange": [
+            6,
+            16
+          ],
+          "stepChoices": [
+            -2
+          ],
+          "length": 3
         }
       ]
     }

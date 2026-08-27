@@ -221,6 +221,19 @@
                   "type": "integer",
                   "minimum": 0
                 },
+                "relationalShapes": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "missing_right",
+                      "missing_left",
+                      "total_first"
+                    ]
+                  },
+                  "description": "Emit relational prompts (the unknown not alone on the right) instead of the plain framings. Additive kinds only."
+                },
                 "countRange": {
                   "type": "array",
                   "items": {
@@ -265,9 +278,10 @@
                   "minItems": 1,
                   "items": {
                     "type": "integer",
-                    "minimum": 1,
+                    "minimum": -100,
                     "maximum": 100
-                  }
+                  },
+                  "description": "Sequence step deltas. Negative counts back (Sproti 1: talning aftur a bak); a run that would walk past zero is dropped, since negative numbers are outside this game's answer format."
                 },
                 "length": {
                   "type": "integer",

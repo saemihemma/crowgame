@@ -1,7 +1,7 @@
 {
   "generatedBy": "tools/validate_math_concepts.mjs",
   "minPerStep": 6,
-  "totalProblems": 4149,
+  "totalProblems": 4205,
   "concepts": [
     {
       "id": "addition.count_all",
@@ -12,21 +12,21 @@
         2
       ],
       "tutorial": "addition.count_all",
-      "total": 97,
+      "total": 117,
       "empty": [],
       "thin": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 31
+          "problems": 36
         },
         {
           "step": 1,
-          "problems": 26
+          "problems": 35
         },
         {
           "step": 2,
-          "problems": 40
+          "problems": 46
         }
       ],
       "skillsAuthored": [
@@ -37,7 +37,7 @@
         "basic_addition",
         "single_digit_addition"
       ],
-      "servable": 97
+      "servable": 117
     },
     {
       "id": "addition.count_on",
@@ -48,17 +48,17 @@
         5
       ],
       "tutorial": "addition.count_on",
-      "total": 98,
+      "total": 112,
       "empty": [],
       "thin": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 38
+          "problems": 46
         },
         {
           "step": 4,
-          "problems": 30
+          "problems": 36
         },
         {
           "step": 5,
@@ -76,7 +76,7 @@
         "single_digit_addition",
         "single_digit_with_carry"
       ],
-      "servable": 98
+      "servable": 112
     },
     {
       "id": "addition.make_ten",
@@ -1422,21 +1422,21 @@
         2
       ],
       "tutorial": "number_sequence.one_more",
-      "total": 26,
+      "total": 43,
       "empty": [],
       "thin": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 7
+          "problems": 10
         },
         {
           "step": 1,
-          "problems": 8
+          "problems": 15
         },
         {
           "step": 2,
-          "problems": 11
+          "problems": 18
         }
       ],
       "skillsAuthored": [
@@ -1447,7 +1447,7 @@
         "number_ordering",
         "simple_sequences"
       ],
-      "servable": 26
+      "servable": 43
     },
     {
       "id": "number_sequence.skip_two",
@@ -1458,13 +1458,13 @@
         4
       ],
       "tutorial": "number_sequence.skip_two",
-      "total": 25,
+      "total": 30,
       "empty": [],
       "thin": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 8
+          "problems": 13
         },
         {
           "step": 4,
@@ -1477,7 +1477,7 @@
       "skillsDeclared": [
         "number_ordering"
       ],
-      "servable": 25
+      "servable": 30
     },
     {
       "id": "number_sequence.bigger_jumps",
