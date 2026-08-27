@@ -196,3 +196,66 @@ func test_a_second_miss_announces_nothing_new() -> void:
 	assert_eq(count[0], 0, "an already-paused streak stays quiet")
 	EventBus.streak_changed.disconnect(cb)
 	g.free()
+
+# --- which level the game thinks it is in ------------------------------------
+
+## Loading a level is what tells the rest of the game where the player is.
+##
+## _load_level is reached from two places -- _ready on the way in, and
+## _swap_level once per door -- and only the first of them used to set the key.
+## Everything keyed by level then read the level BEFORE this one for the whole
+## rest of the session. The loudest symptom was the big coins: ids are `c1`,
+## `c2`, `c3` in every level, so a child who had banked all three in world 1
+## walked into world 2 and found three walk-through ghosts, and never found a
+## big coin again in any level.
+##
+## Asserted on _load_level rather than on the callers because it is the one
+## function both paths funnel through, which is the whole point of the fix.
+func test_loading_a_level_sets_the_current_level_key() -> void:
+	var was_level: String = LevelManager.get_current_level_key()
+	var was_theme: String = ThemeManager.get_theme_id()
+	var g := _make_game()
+	assert_eq(LevelManager.get_current_level_key(), "level_01",
+		"_ready leaves the game in the level it loaded")
+	g._load_level("level_02")
+	assert_eq(LevelManager.get_current_level_key(), "level_02",
+		"and loading another one moves it")
+	# The palette came from the same broken place, so it is pinned here too: it
+	# is the same one-line failure, not a second bug that happens to look alike.
+	assert_eq(ThemeManager.get_theme_id(), "prism_hollow",
+		"the world wears its own palette, not the previous level's")
+	g.free()
+	LevelManager.set_current_level(was_level)
+	ThemeManager.set_theme(was_theme)
+
+## A level that cannot be loaded leaves the game where it was.
+##
+## The key is set after the map file is known to exist, so a bad target strands
+## nobody: a door pointing at a level that was renamed refuses rather than
+## teleporting the save into a level with no map.
+func test_a_level_that_cannot_load_does_not_move_the_key() -> void:
+	var was_level: String = LevelManager.get_current_level_key()
+	var g := _make_game()
+	g._load_level("level_does_not_exist")
+	assert_eq(LevelManager.get_current_level_key(), "level_01",
+		"an unknown level leaves the game in the one it was already in")
+	g.free()
+	LevelManager.set_current_level(was_level)
+
+## The door path, end to end: the swap has to move the game, not just the map.
+##
+## _swap_level is what a door and a death both go through, and it is the caller
+## that never set the key. Awaited because it yields a frame to let the old
+## world actually leave the tree before the new one is built.
+func test_swapping_levels_moves_the_current_level_key() -> void:
+	var was_level: String = LevelManager.get_current_level_key()
+	var was_theme: String = ThemeManager.get_theme_id()
+	var g := _make_game()
+	await g._swap_level("level_03")
+	assert_eq(LevelManager.get_current_level_key(), "level_03",
+		"walking through a door moves the game into the level behind it")
+	assert_eq(ThemeManager.get_theme_id(), "sugarstorm",
+		"and into that level's palette")
+	g.free()
+	LevelManager.set_current_level(was_level)
+	ThemeManager.set_theme(was_theme)

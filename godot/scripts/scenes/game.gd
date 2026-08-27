@@ -95,14 +95,14 @@ func _ready() -> void:
 		key = LevelManager.get_current_level_key()
 	if key == "":
 		key = "level_01"
-	LevelManager.set_current_level(key)
-	_apply_level_theme(key)
 	_load_level(key)
 
 ## Dress the level in its own world theme before anything reads a colour.
 ##
-## Runs before _load_level so the sky, the HUD and every themed component build
-## from the right palette on their first frame rather than being re-tinted after.
+## Called from _load_level, before the sky is painted, so every themed component
+## builds from the right palette rather than being re-tinted after. It used to be
+## called from _ready instead, which meant only the FIRST level of a session ever
+## got its own palette -- see the note on _load_level.
 func _apply_level_theme(key: String) -> void:
 	var entry = LevelManager.get_level(key)
 	if entry == null:
@@ -117,6 +117,28 @@ func _apply_level_theme(key: String) -> void:
 		ThemeManager.set_theme(theme_id)
 
 
+## Build a level, from either direction into it.
+##
+## THIS is where the game learns which level it is in, and it has to be: the
+## function is reached twice -- once from _ready, and once per door from
+## _swap_level -- and for a long time only the caller in _ready ever told
+## LevelManager. Everything keyed by level therefore read the level BEFORE this
+## one for the whole rest of the session, and each symptom looked like its own
+## unrelated bug:
+##
+##   - the three big coins asked SaveManager whether level_01's `c1` was banked
+##     while standing in level_02. Coin ids are `c1`/`c2`/`c3` in every level, so
+##     a child who had found all three in world 1 walked into world 2 and found
+##     three walk-through ghosts. From world 2 onward there were no big coins
+##     left to find, in any level, ever;
+##   - dying reloaded level_01 rather than the level being played;
+##   - the run banked at the next door was written into level_01's record, and
+##     the level actually finished was never marked complete;
+##   - and the palette stayed on world 1's, because the theme was applied from
+##     the same place.
+##
+## Set after the level is known to be loadable, so a bad key leaves the game
+## where it was instead of stranding it somewhere that does not exist.
 func _load_level(key: String) -> void:
 	var entry = LevelManager.get_level(key)
 	if entry == null:
@@ -127,6 +149,10 @@ func _load_level(key: String) -> void:
 	if not FileAccess.file_exists(map_path):
 		push_error("[Game] missing map file: %s" % map_path)
 		return
+	LevelManager.set_current_level(key)
+	_apply_level_theme(key)
+	# A new level, a fresh teaching budget -- see TutorialManager.begin_level().
+	TutorialManager.begin_level()
 	var f := FileAccess.open(map_path, FileAccess.READ)
 	var level: Dictionary = JSON.parse_string(f.get_as_text())
 	f.close()
