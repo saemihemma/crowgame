@@ -264,12 +264,45 @@ export const TEMPLATES = {
     'math.prompt.wrap.borrow_solve': 'Borrow and solve: {inner}',
 
     // ── prompts: counting a run of glyphs ─────────────────────────────────
+    // The run is a marker the board never shows: CountRow replaces it with drawn
+    // objects and keeps only the caption. So the caption is the whole prompt a
+    // child reads, and there are two families of it -- ones that name the shape
+    // ("Count the leaves") and ones that do not ("How many are here"). A named
+    // one MUST agree with the shape count_row.gd actually draws for that marker;
+    // godot/tests/test_count_row.gd checks the pairing on the real pool.
     'math.prompt.count.these': 'Count these: {glyphs}',
-    'math.prompt.count.dots': 'Count the dots: {glyphs}',
     'math.prompt.count.marks': 'Count the marks: {glyphs}',
     'math.prompt.count.how_many': 'How many are here: {glyphs}',
-    'math.prompt.count.how_many_stars': 'How many stars? {glyphs}',
+    'math.prompt.count.see': 'How many do you see: {glyphs}',
+    'math.prompt.count.altogether': 'How many altogether: {glyphs}',
+    'math.prompt.count.say_number': 'Say the number: {glyphs}',
+    'math.prompt.count.point_count': 'Point and count: {glyphs}',
+
+    // Shape-named, one pair per drawn token shape.
+    'math.prompt.count.dots': 'Count the dots: {glyphs}',
+    'math.prompt.count.rings': 'Count the rings: {glyphs}',
+    'math.prompt.count.squares': 'Count the squares: {glyphs}',
+    'math.prompt.count.diamonds': 'Count the diamonds: {glyphs}',
+    'math.prompt.count.leaves': 'Count the leaves: {glyphs}',
+    'math.prompt.count.flowers': 'Count the flowers: {glyphs}',
+    'math.prompt.count.stars': 'Count the stars: {glyphs}',
+    'math.prompt.count.triangles': 'Count the triangles: {glyphs}',
+    'math.prompt.count.hexagons': 'Count the hexagons: {glyphs}',
+    'math.prompt.count.hearts': 'Count the hearts: {glyphs}',
+    'math.prompt.count.eggs': 'Count the eggs: {glyphs}',
+    'math.prompt.count.moons': 'Count the moons: {glyphs}',
     'math.prompt.count.how_many_dots': 'How many dots? {glyphs}',
+    'math.prompt.count.how_many_rings': 'How many rings? {glyphs}',
+    'math.prompt.count.how_many_squares': 'How many squares? {glyphs}',
+    'math.prompt.count.how_many_diamonds': 'How many diamonds? {glyphs}',
+    'math.prompt.count.how_many_leaves': 'How many leaves? {glyphs}',
+    'math.prompt.count.how_many_flowers': 'How many flowers? {glyphs}',
+    'math.prompt.count.how_many_stars': 'How many stars? {glyphs}',
+    'math.prompt.count.how_many_triangles': 'How many triangles? {glyphs}',
+    'math.prompt.count.how_many_hexagons': 'How many hexagons? {glyphs}',
+    'math.prompt.count.how_many_hearts': 'How many hearts? {glyphs}',
+    'math.prompt.count.how_many_eggs': 'How many eggs? {glyphs}',
+    'math.prompt.count.how_many_moons': 'How many moons? {glyphs}',
 
     // ── prompts: comparison ───────────────────────────────────────────────
     'math.prompt.cmp.which_greater': 'Which number is greater: {a} or {b}?',
@@ -321,6 +354,14 @@ export const TEMPLATES = {
     'math.hint.share': 'Share {a} into groups of {b}.',
     'math.hint.changing': 'Look at how the numbers are changing each time.',
     'math.hint.touch_each': 'Touch each one once as you count.',
+    // The counting principles, one hint each, so a counting question is not
+    // always answered with the same sentence. One-to-one correspondence, the
+    // subitising look, and the two landmarks the ten-frame draws for free: the
+    // gap after five and the wrap after ten.
+    'math.hint.whole_group': 'Look at the whole group and say how many.',
+    'math.hint.one_number_each': 'Say one number for each one you touch.',
+    'math.hint.gap_after_five': 'There is a gap after five. Start at five and count on.',
+    'math.hint.row_of_ten': 'A full row is ten. Start at ten and count on.',
     'math.hint.more_value': 'Look at which number has more value.',
     'math.hint.repeating': 'See which numbers are repeating in order.',
     // Grade 3-4 place-value strategies (multi-digit tiers and beyond-tables).
@@ -503,6 +544,12 @@ export const TEMPLATES = {
     'math.expl.still': '{a} plus {b} is still {sum}!',
     'math.expl.total': 'There are {n} altogether.',
     'math.expl.total.one': 'There is {n} altogether.',
+    // The cardinality principle said out loud, and the two structural readings
+    // of a ten-frame. A child who can recite the sequence and still cannot
+    // answer "how many" is missing exactly the first of these.
+    'math.expl.last_number': 'The last number you say is {n}.',
+    'math.expl.five_and': 'Five and {rest} more makes {n}.',
+    'math.expl.ten_and': 'Ten and {rest} more makes {n}.',
     'math.expl.stars': 'There are {n} stars!',
     'math.expl.stars.one': 'There is {n} star!',
     'math.expl.dots': 'There are {n} dots!',
@@ -681,11 +728,36 @@ export const SEMANTICS = {
     'math.prompt.arith.try_this': arith,
 
     'math.prompt.count.these': counted,
-    'math.prompt.count.dots': counted,
     'math.prompt.count.marks': counted,
     'math.prompt.count.how_many': counted,
-    'math.prompt.count.how_many_stars': counted,
+    'math.prompt.count.see': counted,
+    'math.prompt.count.altogether': counted,
+    'math.prompt.count.say_number': counted,
+    'math.prompt.count.point_count': counted,
+    'math.prompt.count.dots': counted,
+    'math.prompt.count.rings': counted,
+    'math.prompt.count.squares': counted,
+    'math.prompt.count.diamonds': counted,
+    'math.prompt.count.leaves': counted,
+    'math.prompt.count.flowers': counted,
+    'math.prompt.count.stars': counted,
+    'math.prompt.count.triangles': counted,
+    'math.prompt.count.hexagons': counted,
+    'math.prompt.count.hearts': counted,
+    'math.prompt.count.eggs': counted,
+    'math.prompt.count.moons': counted,
     'math.prompt.count.how_many_dots': counted,
+    'math.prompt.count.how_many_rings': counted,
+    'math.prompt.count.how_many_squares': counted,
+    'math.prompt.count.how_many_diamonds': counted,
+    'math.prompt.count.how_many_leaves': counted,
+    'math.prompt.count.how_many_flowers': counted,
+    'math.prompt.count.how_many_stars': counted,
+    'math.prompt.count.how_many_triangles': counted,
+    'math.prompt.count.how_many_hexagons': counted,
+    'math.prompt.count.how_many_hearts': counted,
+    'math.prompt.count.how_many_eggs': counted,
+    'math.prompt.count.how_many_moons': counted,
 
     'math.prompt.cmp.which_greater': compare(Math.max),
     'math.prompt.cmp.which_bigger': compare(Math.max),
@@ -901,6 +973,11 @@ export const SEMANTICS = {
     'math.expl.div': (p, problem) => holds(p.a / p.b === p.n, `${p.a}÷${p.b}=${p.n}`)
         ?? isAnswer(p.n, problem, 'quotient'),
     'math.expl.total': (p, problem) => isAnswer(p.n, problem, 'total'),
+    'math.expl.last_number': (p, problem) => isAnswer(p.n, problem, 'total'),
+    'math.expl.five_and': (p, problem) => holds(5 + p.rest === p.n, `5+${p.rest}=${p.n}`)
+        ?? isAnswer(p.n, problem, 'total'),
+    'math.expl.ten_and': (p, problem) => holds(10 + p.rest === p.n, `10+${p.rest}=${p.n}`)
+        ?? isAnswer(p.n, problem, 'total'),
     'math.expl.stars': (p, problem) => isAnswer(p.n, problem, 'total'),
     'math.expl.dots': (p, problem) => isAnswer(p.n, problem, 'total'),
     'math.expl.choice': (p, problem) => isAnswer(p.n, problem, 'choice'),

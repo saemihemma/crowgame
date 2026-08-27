@@ -308,7 +308,7 @@
         6
       ],
       "prompt": {
-        "text": "How many stars? * * * * *",
+        "text": "How many stars? ^ ^ ^ ^ ^",
         "assets": null
       },
       "answer": {
@@ -329,7 +329,7 @@
         "prompt": {
           "key": "math.prompt.count.how_many_stars",
           "params": {
-            "glyphs": "* * * * *"
+            "glyphs": "^ ^ ^ ^ ^"
           }
         },
         "hint": {
@@ -357,7 +357,7 @@
         6
       ],
       "prompt": {
-        "text": "How many dots? . . .",
+        "text": "How many dots? o o o",
         "assets": null
       },
       "answer": {
@@ -378,7 +378,7 @@
         "prompt": {
           "key": "math.prompt.count.how_many_dots",
           "params": {
-            "glyphs": ". . ."
+            "glyphs": "o o o"
           }
         },
         "hint": {

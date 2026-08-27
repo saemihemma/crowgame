@@ -2,7 +2,7 @@
   "batchId": "batch_18_division_6_9_and_variance",
   "title": "Division 6-9 plus lighter-domain variance",
   "accepted": true,
-  "averageGrade": 9.8,
+  "averageGrade": 9.9,
   "criticalIssues": [],
   "templateReview": {
     "category": {
@@ -69,12 +69,12 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.8,
+      "grade": 10,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.7,
-        "strugglingChildGrade": 9.9,
-        "strongChildGrade": 9.7,
+        "steadyChildGrade": 10,
+        "strugglingChildGrade": 10,
+        "strongChildGrade": 10,
         "openingProbeStep": 2,
         "middleProbeStep": 6,
         "upperProbeStep": 11,
@@ -86,17 +86,17 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.7,
+        "grade": 10,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.7,
+        "grade": 10,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
         "role": "role-qa-engineer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],

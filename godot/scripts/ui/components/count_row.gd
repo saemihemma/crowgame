@@ -36,34 +36,53 @@ const HALF_GAP := 14.0
 const PER_ROW := 10
 const HALF := 5
 
-## SIX TOKEN SHAPES, and which one a prompt gets.
+## TWELVE TOKEN SHAPES, and which one a prompt gets.
 ##
-## The curriculum cycles through twelve symbols to write its counting prompts
-## (? o * # + x @ % & ^ $ !) and this renderer used to collapse every one of them
-## to a single sprite -- so all 123 counting problems looked identical, and the
-## twelve-way variety the authors had encoded was thrown away one layer before
-## the child. A playtester put it as "we need more variety of symbols as well,
-## not just a circle with a plus in it".
+## The curriculum writes its counting prompts with a repeated marker symbol, and
+## this renderer used to collapse every one of them to a single sprite -- so all
+## 123 counting problems looked identical. A playtester put it as "we need more
+## variety of symbols as well, not just a circle with a plus in it".
 ##
 ## That sprite was also, literally, a plus sign inside a circle: the worst
 ## available choice for a countable object in a maths game, where a child has
-## just been taught that "+" means put together. Six drawn shapes replace it.
+## just been taught that "+" means put together. Drawn shapes replace it.
+##
+## Six became twelve because six is not enough at the BOTTOM of the ladder. A
+## marker used to be pinned to one count range in the authoring templates (o was
+## always 1-4, * always 5-8), so a five-year-old counting one to four met exactly
+## one shape, forever, and the shape itself leaked the size of the answer. The
+## templates now draw from the whole marker alphabet at every count, which only
+## buys variety if the alphabet is wide enough to keep two neighbouring questions
+## looking different: twelve shapes over four counts, not one.
 ##
 ## Shape follows the prompt's own symbol, so a given problem always looks the
 ## same -- a child who meets it again meets the same picture, and a screenshot is
 ## reproducible. Deliberately not random per render.
-const SHAPES := ["disc", "ring", "square", "diamond", "leaf", "flower"]
+const SHAPES := [
+	"disc", "ring", "square", "diamond", "leaf", "flower",
+	"star", "triangle", "hexagon", "heart", "egg", "crescent",
+]
 
 ## Which shape a marker draws as. Unmapped symbols hash into the set rather than
-## falling back to one default, so a thirteenth symbol appearing in the
-## curriculum gets variety for free instead of quietly becoming a disc.
+## falling back to one default, so a new symbol appearing in the curriculum gets
+## variety for free instead of quietly becoming a disc.
+##
+## The marker never reaches the child -- the row it labels is replaced by drawn
+## objects -- so these characters are an internal shape selector, not typography.
+## That is why the alphabet can afford ")" and ";": nobody reads them.
 const SHAPE_BY_MARKER := {
 	"o": "disc", "O": "disc",
-	"*": "flower", "^": "flower",
+	"@": "ring", "?": "ring",
 	"#": "square", "$": "square",
-	"x": "diamond", "X": "diamond", "%": "diamond",
-	"&": "leaf", "@": "leaf",
-	"?": "ring", "!": "ring",
+	"%": "diamond", "x": "diamond", "X": "diamond",
+	"&": "leaf",
+	"*": "flower",
+	"^": "star",
+	"<": "triangle", ">": "triangle",
+	"~": "hexagon",
+	";": "heart",
+	"(": "egg", "!": "egg",
+	")": "crescent",
 	# "+" maps anywhere EXCEPT a plus-shaped token. See the note above.
 	"+": "disc",
 }
@@ -86,11 +105,41 @@ static func marker_in(text: String) -> String:
 static func tokens_in(text: String) -> int:
 	return int(_parse(text)[1])
 
-## Deliberately strict: the tail after the final colon must be one symbol
-## repeated, nothing else. A prompt that merely contains an asterisk, or ends in
-## a number, or trails off into words, is left alone.
-static func _parse(text: String) -> Array:
+## The question without its marker run -- what the label should say once the row
+## itself is drawn underneath. Keeps the caption's own punctuation, so
+## "How many stars? * * *" reads "How many stars?" and not "How many stars".
+## Returns the whole text unchanged when there is nothing countable in it.
+static func caption_in(text: String) -> String:
+	if int(_parse(text)[1]) <= 0:
+		return text
+	var cut := _separator(text)
+	if cut < 0:
+		return text
+	# A colon is punctuation the caption does not need once the row replaces the
+	# list it introduced; a question mark is part of the question.
+	return text.substr(0, cut if text[cut] == ":" else cut + 1).strip_edges()
+
+## Where the caption stops and the marker run begins.
+##
+## The colon is the curriculum's own convention and wins whenever there is one --
+## which matters, because "?" is itself a marker ("How many are here: ? ? ?") and
+## searching for the last "?" in that prompt would land past the run and find
+## nothing. A question mark is only a separator for the captions that have no
+## colon at all: "How many stars? * * * * *" in the easy pool, and the Icelandic
+## translations of it, which used to render the asterisks as literal text --
+## exactly the typography this file exists to remove.
+static func _separator(text: String) -> int:
 	var colon := text.rfind(":")
+	if colon >= 0:
+		return colon
+	return text.rfind("?")
+
+## Deliberately strict: the tail after the caption's final colon (or, failing
+## that, its question mark) must be one symbol repeated, nothing else. A prompt
+## that merely contains an asterisk, or ends in a number, or trails off into
+## words, is left alone.
+static func _parse(text: String) -> Array:
+	var colon := _separator(text)
 	if colon < 0:
 		return ["", 0]
 	var tail := text.substr(colon + 1).strip_edges()
@@ -208,11 +257,86 @@ func _draw_shape(shape: String, at: Vector2, radius: float, fill: Color, edge: C
 				var a := TAU * float(i) / 5.0 - PI * 0.5
 				draw_circle(at + Vector2(cos(a), sin(a)) * radius * 0.52, radius * 0.46, fill)
 			draw_circle(at, radius * 0.42, edge)
+		"star":
+			# Five points, alternating full and inner radius. Concave, so it goes
+			# through _fill rather than draw_colored_polygon directly.
+			var star := PackedVector2Array()
+			for i in 10:
+				var a := TAU * float(i) / 10.0 - PI * 0.5
+				var r := radius if i % 2 == 0 else radius * 0.46
+				star.append(at + Vector2(cos(a), sin(a)) * r)
+			_fill(star, fill, edge)
+		"triangle":
+			var tri := PackedVector2Array()
+			for i in 3:
+				var a := TAU * float(i) / 3.0 - PI * 0.5
+				tri.append(at + Vector2(cos(a), sin(a)) * radius)
+			draw_colored_polygon(tri, fill)
+			draw_polyline(_closed(tri), edge, RIM)
+		"hexagon":
+			var hex := PackedVector2Array()
+			for i in 6:
+				var a := TAU * float(i) / 6.0 - PI * 0.5
+				hex.append(at + Vector2(cos(a), sin(a)) * radius)
+			draw_colored_polygon(hex, fill)
+			draw_polyline(_closed(hex), edge, RIM)
+		"heart":
+			# The standard heart curve, sampled. Scaled so the widest span matches
+			# the shared token radius: every shape has to read as the same size.
+			var heart := PackedVector2Array()
+			for i in 25:
+				var t := TAU * float(i) / 24.0
+				var hx := pow(sin(t), 3.0) * 16.0
+				var hy := 13.0 * cos(t) - 5.0 * cos(2.0 * t) - 2.0 * cos(3.0 * t) - cos(4.0 * t)
+				heart.append(at + Vector2(hx, -hy) * radius / 16.0)
+			_fill(heart, fill, edge)
+		"egg":
+			# An oval that narrows toward the top, so it is not read as a squashed
+			# disc -- and the game's own word problems are about eggs in nests.
+			var egg := PackedVector2Array()
+			for i in 24:
+				var t := TAU * float(i) / 24.0
+				var width := radius * 0.72 * (1.0 - 0.20 * cos(t))
+				egg.append(at + Vector2(sin(t) * width, -cos(t) * radius))
+			draw_colored_polygon(egg, fill)
+			draw_polyline(_closed(egg), edge, RIM)
+		"crescent":
+			# Outer arc down one side, inner arc back on a shifted centre: the gap
+			# between the two circles is the moon.
+			var moon := PackedVector2Array()
+			for i in 17:
+				var t := lerpf(PI * 0.36, PI * 1.64, float(i) / 16.0)
+				moon.append(at + Vector2(sin(t), -cos(t)) * radius)
+			for i in 17:
+				var t := lerpf(PI * 1.64, PI * 0.36, float(i) / 16.0)
+				moon.append(at + Vector2(radius * 0.46, 0.0) + Vector2(sin(t), -cos(t)) * radius * 0.94)
+			_fill(moon, fill, edge)
 		_:
 			# "disc": a disc with a hard rim. Countable at a glance and the
 			# baseline every other shape is calibrated against.
 			draw_circle(at, radius, fill)
 			draw_arc(at, radius, 0, TAU, 32, edge, RIM)
+
+## Fill a possibly concave outline, then rim it.
+##
+## draw_colored_polygon only draws a convex polygon correctly, and the star, the
+## heart and the crescent are all concave -- drawn straight they come out as a
+## smeared fan. Triangulating first is the difference between a star and a
+## mistake. If the triangulator refuses the outline we still draw something
+## rather than nothing, because a missing token means a child counts the wrong
+## number.
+func _fill(points: PackedVector2Array, fill: Color, edge: Color) -> void:
+	const RIM := 3.0
+	var indices := Geometry2D.triangulate_polygon(points)
+	if indices.size() >= 3:
+		var i := 0
+		while i + 2 < indices.size():
+			draw_colored_polygon(PackedVector2Array([
+				points[indices[i]], points[indices[i + 1]], points[indices[i + 2]]]), fill)
+			i += 3
+	else:
+		draw_colored_polygon(points, fill)
+	draw_polyline(_closed(points), edge, RIM)
 
 ## A polyline needs its first point repeated to close; a polygon does not.
 static func _closed(points: PackedVector2Array) -> PackedVector2Array:

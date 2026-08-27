@@ -4,15 +4,15 @@
     "independentReview": false,
     "note": "This is a deterministic repository-side review stack. It proves mechanical consistency and local-safe runtime rail coverage, not telemetry-backed pedagogy or independent ELO calibration."
   },
-  "generatedProblemCount": 3551,
-  "acceptedBatchCount": 28,
+  "generatedProblemCount": 3661,
+  "acceptedBatchCount": 29,
   "averageAcceptedGrade": 9.84,
   "domainTotals": {
-    "addition": 1226,
+    "addition": 1262,
     "subtraction": 1196,
     "multiplication": 604,
     "division": 415,
-    "counting": 125,
+    "counting": 199,
     "comparison": 165,
     "pattern_matching": 125,
     "number_sequence": 183
@@ -32,12 +32,12 @@
       "addition",
       "counting"
     ],
-    "owlEligibleProblemCount": 1955,
-    "owlEligibleUniquePromptCount": 1955,
-    "owlEligibleUniqueFactCount": 807,
+    "owlEligibleProblemCount": 2065,
+    "owlEligibleUniquePromptCount": 2065,
+    "owlEligibleUniqueFactCount": 854,
     "domainCounts": {
-      "addition": 496,
-      "counting": 125,
+      "addition": 532,
+      "counting": 199,
       "pattern_matching": 125,
       "subtraction": 544,
       "comparison": 125,
@@ -45,54 +45,54 @@
       "multiplication": 233,
       "division": 164
     },
-    "openingUnlockedInventoryProblemCount": 621,
-    "openingUnlockedInventoryUniquePromptCount": 621,
-    "openingUnlockedInventoryUniqueFactCount": 179,
-    "freshReachableProblemCount": 57,
-    "freshReachableUniquePromptCount": 57,
-    "freshReachableUniqueFactCount": 23,
+    "openingUnlockedInventoryProblemCount": 731,
+    "openingUnlockedInventoryUniquePromptCount": 731,
+    "openingUnlockedInventoryUniqueFactCount": 177,
+    "freshReachableProblemCount": 193,
+    "freshReachableUniquePromptCount": 193,
+    "freshReachableUniqueFactCount": 22,
     "freshReachableDomainCounts": {
-      "addition": 28,
-      "counting": 29
+      "addition": 101,
+      "counting": 92
     },
-    "freshReachableAdditionFactCount": 15,
+    "freshReachableAdditionFactCount": 14,
     "freshReachableCountingFactCount": 8,
     "currentInteractionProblemCount": 1,
     "owlAdditionByStep": [
       {
         "step": 0,
-        "rowCount": 5,
-        "uniquePromptCount": 5,
+        "rowCount": 31,
+        "uniquePromptCount": 31,
         "uniqueFactCount": 3
       },
       {
         "step": 1,
-        "rowCount": 7,
-        "uniquePromptCount": 7,
+        "rowCount": 26,
+        "uniquePromptCount": 26,
         "uniqueFactCount": 3
       },
       {
         "step": 2,
-        "rowCount": 16,
-        "uniquePromptCount": 16,
-        "uniqueFactCount": 9
+        "rowCount": 44,
+        "uniquePromptCount": 44,
+        "uniqueFactCount": 8
       },
       {
         "step": 3,
-        "rowCount": 60,
-        "uniquePromptCount": 60,
-        "uniqueFactCount": 15
+        "rowCount": 45,
+        "uniquePromptCount": 45,
+        "uniqueFactCount": 14
       },
       {
         "step": 4,
-        "rowCount": 41,
-        "uniquePromptCount": 41,
+        "rowCount": 37,
+        "uniquePromptCount": 37,
         "uniqueFactCount": 10
       },
       {
         "step": 5,
-        "rowCount": 34,
-        "uniquePromptCount": 34,
+        "rowCount": 32,
+        "uniquePromptCount": 32,
         "uniqueFactCount": 6
       }
     ]
@@ -102,7 +102,7 @@
       "batchId": "batch_01_addition_under_10",
       "title": "Addition under 10",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.9,
       "criticalIssues": [],
       "templateReview": {
         "category": {
@@ -169,11 +169,11 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.7,
+          "grade": 9.8,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
             "steadyChildGrade": 9.7,
-            "strugglingChildGrade": 9.7,
+            "strugglingChildGrade": 9.9,
             "strongChildGrade": 9.7,
             "openingProbeStep": 0,
             "middleProbeStep": 4,
@@ -196,7 +196,7 @@
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.7,
+            "grade": 9.9,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -208,7 +208,7 @@
       "samplePrompts": [
         "Complete: 0 + 6 = ?",
         "0 + 5 = ?",
-        "Complete: 0 + 5 = ?",
+        "Complete: 0 + 1 = ?",
         "0 + 7 =",
         "0 + 9 = ?"
       ]
@@ -222,11 +222,11 @@
       "templateReview": {
         "category": {
           "grade": 9.6,
-          "summary": "Template coverage is stable: 10 templates, 6 families, steps 6-19.",
+          "summary": "Template coverage is stable: 10 templates, 6 families, steps 5-19.",
           "metrics": {
             "templateCount": 10,
             "familyCount": 6,
-            "minStep": 6,
+            "minStep": 5,
             "maxStep": 19,
             "promptVariantCount": 27,
             "averageProblemsPerTemplate": 15
@@ -284,13 +284,13 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.7,
+          "grade": 9.6,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.7,
-            "strugglingChildGrade": 9.7,
+            "steadyChildGrade": 9.6,
+            "strugglingChildGrade": 9.6,
             "strongChildGrade": 9.6,
-            "openingProbeStep": 6,
+            "openingProbeStep": 5,
             "middleProbeStep": 12,
             "upperProbeStep": 19,
             "uniqueStartAnchors": 3,
@@ -306,12 +306,12 @@
           },
           {
             "role": "role-game-designer",
-            "grade": 9.7,
+            "grade": 9.6,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.7,
+            "grade": 9.6,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -403,7 +403,7 @@
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
             "steadyChildGrade": 10,
-            "strugglingChildGrade": 9.9,
+            "strugglingChildGrade": 10,
             "strongChildGrade": 10,
             "openingProbeStep": 0,
             "middleProbeStep": 3,
@@ -426,7 +426,7 @@
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.9,
+            "grade": 10,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -436,11 +436,11 @@
         }
       },
       "samplePrompts": [
+        "Complete: 4 - 0 = ?",
         "6 - 0 = ?",
+        "Solve: 2 - 0",
         "Complete: 8 - 0 = ?",
-        "Complete: 10 - 0 = ?",
-        "4 - 0 = ?",
-        "Try this: 9 - 0"
+        "How much is 3 - 0?"
       ]
     },
     {
@@ -554,8 +554,8 @@
         "Solve: 13 - 4",
         "Solve: 13 - 5",
         "You have 11 berries. You eat 5. How many are left?",
-        "Complete: 13 - 4 = ?",
-        "What is 12 - 4?"
+        "What is 12 - 4?",
+        "11 - 4 ="
       ]
     },
     {
@@ -666,11 +666,11 @@
         }
       },
       "samplePrompts": [
+        "Count the hearts: ; ; ;",
+        "How many do you see: ; ; ; ;",
+        "Count these: ^ ^",
         "Count these: o",
-        "Count the dots: o o",
-        "Count these: o o",
-        "How many are here: o",
-        "Count the dots: o o o"
+        "How many are here: & & &"
       ]
     },
     {
@@ -899,8 +899,8 @@
         "You have 22 berries. You find 2 more. How many berries?",
         "Complete: 24 + 1 = ?",
         "How much is 24 + 3?",
-        "How much is 24 + 1?",
-        "23 + 4 = ?"
+        "23 + 4 = ?",
+        "What is 23 + 1?"
       ]
     },
     {
@@ -1015,7 +1015,7 @@
         "What is 23 + 8?",
         "What is 23 + 9?",
         "24 + 9 equals ?",
-        "23 + 8 ="
+        "24 + 8 equals ?"
       ]
     },
     {
@@ -1130,7 +1130,7 @@
         "Complete: 24 - 3 = ?",
         "Complete: 22 - 1 = ?",
         "Complete: 23 - 1 = ?",
-        "24 - 2 ="
+        "Complete: 22 - 2 = ?"
       ]
     },
     {
@@ -1360,7 +1360,7 @@
         "What is 2 × 4?",
         "What is 2 × 5?",
         "2 × 9 =",
-        "2 × 9 equals ?"
+        "Solve: 2 × 10"
       ]
     },
     {
@@ -1482,7 +1482,7 @@
       "batchId": "batch_13_addition_50_100_no_carry",
       "title": "Addition 50-100 without carry plus lighter-domain variance",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.7,
       "criticalIssues": [],
       "templateReview": {
         "category": {
@@ -1549,12 +1549,12 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.9,
+          "grade": 9.8,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.9,
+            "steadyChildGrade": 9.7,
             "strugglingChildGrade": 9.9,
-            "strongChildGrade": 9.9,
+            "strongChildGrade": 9.7,
             "openingProbeStep": 1,
             "middleProbeStep": 27,
             "upperProbeStep": 36,
@@ -1566,12 +1566,12 @@
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.9,
+            "grade": 9.7,
             "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.9,
+            "grade": 9.7,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
@@ -1589,8 +1589,8 @@
         "53 + 1 =",
         "52 birds sit on a branch. 2 more land. How many birds?",
         "Quick check: 51 + 2",
-        "Complete: 53 + 1 = ?",
-        "Quick check: 51 + 3"
+        "Quick check: 51 + 3",
+        "What is 51 + 1?"
       ]
     },
     {
@@ -1668,7 +1668,7 @@
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
             "steadyChildGrade": 9.9,
-            "strugglingChildGrade": 9.9,
+            "strugglingChildGrade": 10,
             "strongChildGrade": 9.9,
             "openingProbeStep": 1,
             "middleProbeStep": 27,
@@ -1691,7 +1691,7 @@
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.9,
+            "grade": 10,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -1704,8 +1704,8 @@
         "Answer: 54 + 8",
         "Answer: 54 + 9",
         "Quick check: 51 + 9",
-        "You have 54 berries. You find 8 more. How many berries?",
-        "You have 52 berries. You find 8 more. How many berries?"
+        "You have 52 berries. You find 8 more. How many berries?",
+        "Answer: 54 + 6"
       ]
     },
     {
@@ -1779,12 +1779,12 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.8,
+          "grade": 10,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.9,
-            "strugglingChildGrade": 9.9,
-            "strongChildGrade": 9.7,
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 9.9,
             "openingProbeStep": 2,
             "middleProbeStep": 27,
             "upperProbeStep": 36,
@@ -1796,17 +1796,17 @@
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.7,
+            "grade": 9.9,
             "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.9,
+            "grade": 10,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.9,
+            "grade": 10,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -1819,15 +1819,15 @@
         "53 birds sit on a branch. 3 fly away. How many are left?",
         "Complete: 54 - 2 = ?",
         "Try this: 54 - 4",
-        "Answer: 53 - 3",
-        "Try this: 54 - 3"
+        "Try this: 54 - 3",
+        "Answer: 53 - 2"
       ]
     },
     {
       "batchId": "batch_16_subtraction_50_100_borrow",
       "title": "Subtraction 50-100 with borrow plus lighter-domain variance",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.7,
       "criticalIssues": [],
       "templateReview": {
         "category": {
@@ -1894,11 +1894,11 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.9,
+          "grade": 9.8,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.9,
-            "strugglingChildGrade": 10,
+            "steadyChildGrade": 9.7,
+            "strugglingChildGrade": 9.9,
             "strongChildGrade": 9.9,
             "openingProbeStep": 2,
             "middleProbeStep": 27,
@@ -1916,12 +1916,12 @@
           },
           {
             "role": "role-game-designer",
-            "grade": 9.9,
+            "grade": 9.7,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
             "role": "role-qa-engineer",
-            "grade": 10,
+            "grade": 9.9,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -2046,18 +2046,18 @@
         }
       },
       "samplePrompts": [
-        "Solve: 6 × 10",
         "6 × 5 equals ?",
         "What is 6 × 6?",
         "What is 6 × 3?",
-        "What is 6 × 8?"
+        "What is 6 × 8?",
+        "6 × 7 ="
       ]
     },
     {
       "batchId": "batch_18_division_6_9_and_variance",
       "title": "Division 6-9 plus lighter-domain variance",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.9,
       "criticalIssues": [],
       "templateReview": {
         "category": {
@@ -2124,12 +2124,12 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.8,
+          "grade": 10,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.7,
-            "strugglingChildGrade": 9.9,
-            "strongChildGrade": 9.7,
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
             "openingProbeStep": 2,
             "middleProbeStep": 6,
             "upperProbeStep": 11,
@@ -2141,17 +2141,17 @@
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.7,
+            "grade": 10,
             "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.7,
+            "grade": 10,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.9,
+            "grade": 10,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -2172,7 +2172,7 @@
       "batchId": "batch_19_subtraction_teens_upper",
       "title": "Subtraction upper teens to 20",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.9,
       "criticalIssues": [],
       "templateReview": {
         "category": {
@@ -2239,11 +2239,11 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.9,
+          "grade": 10,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.9,
-            "strugglingChildGrade": 9.7,
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 9.9,
             "strongChildGrade": 10,
             "openingProbeStep": 9,
             "middleProbeStep": 12,
@@ -2261,12 +2261,12 @@
           },
           {
             "role": "role-game-designer",
-            "grade": 9.9,
+            "grade": 10,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.7,
+            "grade": 9.9,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -2394,8 +2394,8 @@
         "Solve: 1 × 10",
         "Complete: 1 × 9 = ?",
         "1 × 4 =",
-        "Complete: 1 × 3 = ?",
-        "1 × 7 ="
+        "1 × 7 =",
+        "Complete: 1 × 5 = ?"
       ]
     },
     {
@@ -2584,11 +2584,11 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.8,
+          "grade": 9.9,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
             "steadyChildGrade": 9.9,
-            "strugglingChildGrade": 9.7,
+            "strugglingChildGrade": 9.9,
             "strongChildGrade": 9.9,
             "openingProbeStep": 2,
             "middleProbeStep": 6,
@@ -2611,7 +2611,7 @@
           },
           {
             "role": "role-qa-engineer",
-            "grade": 9.7,
+            "grade": 9.9,
             "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
           }
         ],
@@ -2624,8 +2624,8 @@
         "Solve: 70 ÷ 10",
         "20 ÷ 10 =",
         "What is 90 ÷ 10?",
-        "How much is 70 ÷ 10?",
-        "What is 20 ÷ 10?"
+        "Solve: 100 ÷ 10",
+        "30 ÷ 10 ="
       ]
     },
     {
@@ -3317,6 +3317,121 @@
         "Which number is greater: 42 or 89?",
         "Pick the greater number: 41 or 98"
       ]
+    },
+    {
+      "batchId": "batch_29_early_number_sense",
+      "title": "Early number sense: subitising, one-to-one, and the first facts",
+      "accepted": true,
+      "averageGrade": 9.9,
+      "criticalIssues": [],
+      "templateReview": {
+        "category": {
+          "grade": 9.7,
+          "summary": "Template coverage is stable: 8 templates, 3 families, steps 0-3.",
+          "metrics": {
+            "templateCount": 8,
+            "familyCount": 3,
+            "minStep": 0,
+            "maxStep": 3,
+            "promptVariantCount": 32,
+            "averageProblemsPerTemplate": 13.8
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 9.7,
+            "rationale": "Batch shape is dense enough to scale without a cliff."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 9.8,
+            "rationale": "Families and wording variants support replay and gentle pacing."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 9.6,
+            "rationale": "Template volume and spread are consistent enough for later measurement."
+          }
+        ]
+      },
+      "concreteReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
+          "metrics": {
+            "problemCount": 110,
+            "arithmeticErrors": 0,
+            "metadataErrors": 0,
+            "optionErrors": 0,
+            "promptDuplicates": 0,
+            "protectedPromptOverlaps": 0,
+            "bandMismatches": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "Concrete problems match the batch contract closely enough to trust them."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "Arithmetic truth, metadata truth, and option integrity are the first acceptance gate."
+          },
+          {
+            "role": "role-analytics-engineer",
+            "grade": 10,
+            "rationale": "Difficulty alignment and replay-surface hygiene must stay measurable and trustworthy."
+          }
+        ]
+      },
+      "simulationReview": {
+        "category": {
+          "grade": 10,
+          "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
+          "metrics": {
+            "steadyChildGrade": 10,
+            "strugglingChildGrade": 10,
+            "strongChildGrade": 10,
+            "openingProbeStep": 0,
+            "middleProbeStep": 1,
+            "upperProbeStep": 3,
+            "uniqueStartAnchors": 3,
+            "probeCount": 9,
+            "exhaustionWarnings": 0
+          }
+        },
+        "roleGrades": [
+          {
+            "role": "Lead Producer",
+            "grade": 10,
+            "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
+          },
+          {
+            "role": "role-game-designer",
+            "grade": 10,
+            "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
+          },
+          {
+            "role": "role-qa-engineer",
+            "grade": 10,
+            "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
+          }
+        ],
+        "devilAdvocate": {
+          "passed": true,
+          "note": "Devils Advocate: the selection proxy stayed inside the populated batch slice across opening, middle, and upper entry anchors without exhausting or skipping upper-band coverage."
+        }
+      },
+      "samplePrompts": [
+        "Point and count: <",
+        "Count these: ~ ~",
+        "Point and count: ;",
+        "Point and count: # #",
+        "Say the number: o o"
+      ]
     }
   ],
   "runtimeSelectorSmoke": {
@@ -3332,31 +3447,31 @@
       "recentWindowFallbackPreserved": true,
       "uninitializedFallbackPreserved": true,
       "currentStepFallbackPreserved": true,
-      "maxOperandSeen": 12,
-      "maxCurriculumStepSeen": 11,
+      "maxOperandSeen": 15,
+      "maxCurriculumStepSeen": 14,
       "followUpSelections": 0,
       "alternateFollowUpSelections": 0,
       "followUpAlternateRate": 1,
-      "steadyFirstSubtractionUnlockAttempt": 39,
+      "steadyFirstSubtractionUnlockAttempt": 37,
       "strugglingFirstSubtractionUnlockAttempt": -1,
-      "depthProbeFirstSubtractionUnlockAttempt": 38,
-      "steadyFirstSubtractionSelectionAttempt": 40,
+      "depthProbeFirstSubtractionUnlockAttempt": 39,
+      "steadyFirstSubtractionSelectionAttempt": 38,
       "strugglingFirstSubtractionSelectionAttempt": -1,
       "depthProbeFirstSubtractionSelectionAttempt": 40,
-      "owlEligibleProblemCount": 1955,
-      "owlEligibleUniquePromptCount": 1955,
-      "owlEligibleUniqueFactCount": 807,
-      "openingUnlockedInventoryProblemCount": 621,
-      "openingUnlockedInventoryUniquePromptCount": 621,
-      "openingUnlockedInventoryUniqueFactCount": 179,
-      "freshReachableProblemCount": 57,
-      "freshReachableUniquePromptCount": 57,
-      "freshReachableUniqueFactCount": 23,
-      "freshReachableAdditionFactCount": 15,
+      "owlEligibleProblemCount": 2065,
+      "owlEligibleUniquePromptCount": 2065,
+      "owlEligibleUniqueFactCount": 854,
+      "openingUnlockedInventoryProblemCount": 731,
+      "openingUnlockedInventoryUniquePromptCount": 731,
+      "openingUnlockedInventoryUniqueFactCount": 177,
+      "freshReachableProblemCount": 193,
+      "freshReachableUniquePromptCount": 193,
+      "freshReachableUniqueFactCount": 22,
+      "freshReachableAdditionFactCount": 14,
       "freshReachableCountingFactCount": 8,
       "openingAdditionStep0Facts": 3,
       "openingAdditionStep1Facts": 3,
-      "openingAdditionStep2Facts": 9,
+      "openingAdditionStep2Facts": 8,
       "interactionProblemCount": 1,
       "owlDomains": "addition,counting,pattern_matching,subtraction,comparison,number_sequence,multiplication,division",
       "openingUnlockedDomains": "addition,counting"
@@ -3385,7 +3500,7 @@
     "caveats": [
       "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
       "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 1955 local-safe rows overall, while a fresh profile currently reaches 57 step-capped rows across addition, counting and 1 problems per owl interaction."
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 2065 local-safe rows overall, while a fresh profile currently reaches 193 step-capped rows across addition, counting and 1 problems per owl interaction."
     ]
   }
 }

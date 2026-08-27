@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
-    "Solve: 6 × 10",
     "6 × 5 equals ?",
     "What is 6 × 6?",
     "What is 6 × 3?",
-    "What is 6 × 8?"
+    "What is 6 × 8?",
+    "6 × 7 ="
   ]
 }

@@ -63,7 +63,7 @@ made a decision from it. The decision — is a first launch acceptable on home w
 
 | | Raw | gzip |
 | --- | --- | --- |
-| **whole payload** | **52 MB** | **~17.6 MB** |
+| **whole payload** | **52.2 MB** | **~17.7 MB** |
 
 Gzip is node's zlib at level 9; a server's own encoder will differ by a few
 tenths. Per-file sizes are `ls -la output/web` when you need them.
@@ -76,7 +76,7 @@ tree the bytes were built from, which matters because production error triage
 keys on that field. Read it as "built from this source", not "shipped in this
 commit".
 
-So a first launch transfers about **17.6 MB**, and a returning player transfers
+So a first launch transfers about **17.7 MB**, and a returning player transfers
 **nothing at all** for the payload — no bytes, no conditional request, no `304`.
 Only the 5 KB shell is re-fetched.
 

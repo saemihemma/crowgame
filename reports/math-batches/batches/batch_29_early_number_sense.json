@@ -1,31 +1,31 @@
 {
-  "batchId": "batch_22_division_ladder_fill",
-  "title": "Division ladder fill",
+  "batchId": "batch_29_early_number_sense",
+  "title": "Early number sense: subitising, one-to-one, and the first facts",
   "accepted": true,
-  "averageGrade": 9.8,
+  "averageGrade": 9.9,
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.6,
-      "summary": "Template coverage is stable: 4 templates, 3 families, steps 2-13.",
+      "grade": 9.7,
+      "summary": "Template coverage is stable: 8 templates, 3 families, steps 0-3.",
       "metrics": {
-        "templateCount": 4,
+        "templateCount": 8,
         "familyCount": 3,
-        "minStep": 2,
-        "maxStep": 13,
-        "promptVariantCount": 10,
-        "averageProblemsPerTemplate": 23.3
+        "minStep": 0,
+        "maxStep": 3,
+        "promptVariantCount": 32,
+        "averageProblemsPerTemplate": 13.8
       }
     },
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.6,
+        "grade": 9.7,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.6,
+        "grade": 9.8,
         "rationale": "Families and wording variants support replay and gentle pacing."
       },
       {
@@ -40,7 +40,7 @@
       "grade": 10,
       "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
       "metrics": {
-        "problemCount": 93,
+        "problemCount": 110,
         "arithmeticErrors": 0,
         "metadataErrors": 0,
         "optionErrors": 0,
@@ -69,15 +69,15 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.9,
+      "grade": 10,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.9,
-        "strugglingChildGrade": 9.9,
-        "strongChildGrade": 9.9,
-        "openingProbeStep": 2,
-        "middleProbeStep": 6,
-        "upperProbeStep": 13,
+        "steadyChildGrade": 10,
+        "strugglingChildGrade": 10,
+        "strongChildGrade": 10,
+        "openingProbeStep": 0,
+        "middleProbeStep": 1,
+        "upperProbeStep": 3,
         "uniqueStartAnchors": 3,
         "probeCount": 9,
         "exhaustionWarnings": 0
@@ -86,17 +86,17 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
         "role": "role-qa-engineer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],
@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
-    "Solve: 70 ÷ 10",
-    "20 ÷ 10 =",
-    "What is 90 ÷ 10?",
-    "Solve: 100 ÷ 10",
-    "30 ÷ 10 ="
+    "Point and count: <",
+    "Count these: ~ ~",
+    "Point and count: ;",
+    "Point and count: # #",
+    "Say the number: o o"
   ]
 }

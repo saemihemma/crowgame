@@ -122,6 +122,14 @@ function runReplayKeys() {
     { domain: 'multiplication', prompt: { text: '6 × 2' }, answer: { correct: 12 } },
     { domain: 'division', prompt: { text: '8 ÷ 2' }, answer: { correct: 4 } },
     { domain: 'counting', prompt: { text: 'Count these: apples' }, answer: { correct: 7 } },
+    // The shape-named and question-mark-separated counting captions. All four
+    // must collapse to the same `count:5` key -- the anti-repeat window is about
+    // the QUANTITY, so twelve token shapes and eight framings over one count
+    // must not read as twelve different problems.
+    { domain: 'counting', prompt: { text: 'Count the leaves: & & & & &' }, answer: { correct: 5 } },
+    { domain: 'counting', prompt: { text: 'How many hearts? ; ; ; ; ;' }, answer: { correct: 5 } },
+    { domain: 'counting', prompt: { text: 'Point and count: ~ ~ ~ ~ ~' }, answer: { correct: 5 } },
+    { domain: 'counting', prompt: { text: 'Say the number: ) ) ) ) )' }, answer: { correct: 5 } },
     { domain: 'comparison', prompt: { text: 'Which number is greater: 10 or 5?' }, answer: { correct: '10' } },
     { domain: 'number_sequence', prompt: { text: '1, 2, 3, ?' }, answer: { correct: 4 } },
     { domain: 'pattern_matching', prompt: { text: 'Pattern 2 4 6 then ?' }, answer: { correct: 8 } },

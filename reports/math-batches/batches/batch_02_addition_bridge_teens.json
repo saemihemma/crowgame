@@ -7,11 +7,11 @@
   "templateReview": {
     "category": {
       "grade": 9.6,
-      "summary": "Template coverage is stable: 10 templates, 6 families, steps 6-19.",
+      "summary": "Template coverage is stable: 10 templates, 6 families, steps 5-19.",
       "metrics": {
         "templateCount": 10,
         "familyCount": 6,
-        "minStep": 6,
+        "minStep": 5,
         "maxStep": 19,
         "promptVariantCount": 27,
         "averageProblemsPerTemplate": 15
@@ -69,13 +69,13 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.7,
+      "grade": 9.6,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.7,
-        "strugglingChildGrade": 9.7,
+        "steadyChildGrade": 9.6,
+        "strugglingChildGrade": 9.6,
         "strongChildGrade": 9.6,
-        "openingProbeStep": 6,
+        "openingProbeStep": 5,
         "middleProbeStep": 12,
         "upperProbeStep": 19,
         "uniqueStartAnchors": 3,
@@ -91,12 +91,12 @@
       },
       {
         "role": "role-game-designer",
-        "grade": 9.7,
+        "grade": 9.6,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
         "role": "role-qa-engineer",
-        "grade": 9.7,
+        "grade": 9.6,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],

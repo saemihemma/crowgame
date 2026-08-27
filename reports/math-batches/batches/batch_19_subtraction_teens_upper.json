@@ -2,7 +2,7 @@
   "batchId": "batch_19_subtraction_teens_upper",
   "title": "Subtraction upper teens to 20",
   "accepted": true,
-  "averageGrade": 9.8,
+  "averageGrade": 9.9,
   "criticalIssues": [],
   "templateReview": {
     "category": {
@@ -69,11 +69,11 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.9,
+      "grade": 10,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.9,
-        "strugglingChildGrade": 9.7,
+        "steadyChildGrade": 10,
+        "strugglingChildGrade": 9.9,
         "strongChildGrade": 10,
         "openingProbeStep": 9,
         "middleProbeStep": 12,
@@ -91,12 +91,12 @@
       },
       {
         "role": "role-game-designer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
         "role": "role-qa-engineer",
-        "grade": 9.7,
+        "grade": 9.9,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],

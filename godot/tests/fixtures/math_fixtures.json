@@ -486,6 +486,54 @@
     },
     {
       "problem": {
+        "domain": "counting",
+        "prompt": {
+          "text": "Count the leaves: & & & & &"
+        },
+        "answer": {
+          "correct": 5
+        }
+      },
+      "key": "count:5"
+    },
+    {
+      "problem": {
+        "domain": "counting",
+        "prompt": {
+          "text": "How many hearts? ; ; ; ; ;"
+        },
+        "answer": {
+          "correct": 5
+        }
+      },
+      "key": "count:5"
+    },
+    {
+      "problem": {
+        "domain": "counting",
+        "prompt": {
+          "text": "Point and count: ~ ~ ~ ~ ~"
+        },
+        "answer": {
+          "correct": 5
+        }
+      },
+      "key": "count:5"
+    },
+    {
+      "problem": {
+        "domain": "counting",
+        "prompt": {
+          "text": "Say the number: ) ) ) ) )"
+        },
+        "answer": {
+          "correct": 5
+        }
+      },
+      "key": "count:5"
+    },
+    {
+      "problem": {
         "domain": "comparison",
         "prompt": {
           "text": "Which number is greater: 10 or 5?"

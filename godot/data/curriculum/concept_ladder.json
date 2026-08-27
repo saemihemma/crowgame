@@ -36,20 +36,6 @@
   ],
   "knownThin": [
     {
-      "domain": "addition",
-      "steps": [
-        0
-      ],
-      "why": "Five problems: 0+1, 1+0, 1+1 and their wordings. The set of true facts with both operands at most one is genuinely almost this small."
-    },
-    {
-      "domain": "subtraction",
-      "steps": [
-        2
-      ],
-      "why": "Five problems. Narrow but serviceable."
-    },
-    {
       "domain": "subtraction",
       "steps": [
         15

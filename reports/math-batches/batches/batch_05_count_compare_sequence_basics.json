@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
+    "Count the hearts: ; ; ;",
+    "How many do you see: ; ; ; ;",
+    "Count these: ^ ^",
     "Count these: o",
-    "Count the dots: o o",
-    "Count these: o o",
-    "How many are here: o",
-    "Count the dots: o o o"
+    "How many are here: & & &"
   ]
 }

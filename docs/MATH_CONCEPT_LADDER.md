@@ -27,7 +27,7 @@ reason: `tools/validate_math_concepts.mjs` matches every figure below against th
 data and fails the build when one drifts. A count nobody checks is a claim that
 rots in silence — this one cannot.
 
-`DataManager` loads 4 maths pools totalling 4039 problems (`curriculum` 3736,
+`DataManager` loads 4 maths pools totalling 4149 problems (`curriculum` 3846,
 `gaps` 248, `dataset` 40, `easy` 15). Those are grouped into **49** concepts by
 `godot/data/curriculum/concept_ladder.json` — **40** rungs keyed on step range
 plus **9** overlays keyed on problem shape — of which **47** open with a
@@ -37,7 +37,7 @@ plus **9** overlays keyed on problem shape — of which **47** open with a
 means no child can reach them.
 
 `reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,
-including the **0** empty and **3** thin rungs, and the **6** concepts the cap
+including the **0** empty and **1** thin rungs, and the **6** concepts the cap
 puts out of reach — all declared. Separately, **8** rungs are dead zones the step
 derivation cannot emit at all: not authoring debt, and measured rather than
 asserted by `npm run math:step-domains`.

@@ -89,7 +89,21 @@ export interface ArithmeticTemplateSpec extends BaseTemplateSpec {
 export interface CountingTemplateSpec extends BaseTemplateSpec {
     kind: 'counting';
     countRange: NumericRange;
+    /** A single marker for the whole template. Superseded by `symbols`. */
     symbol?: string;
+    /**
+     * The markers this template may draw its tokens from, cycled across counts.
+     *
+     * The point is that the shape must NOT tell a child how big the answer is.
+     * Every counting template used to pin one marker to one count range -- `o`
+     * was always 1-4, `*` always 5-8, `x` always 17-20 -- so the drawn shape was
+     * a perfect predictor of the magnitude, and a five-year-old working inside
+     * four met exactly one shape for as long as they stayed there. Listing
+     * markers here spreads the whole alphabet across every count instead.
+     *
+     * Omit for the default alphabet (COUNTING_MARKER_ALPHABET).
+     */
+    symbols?: string[];
 }
 
 export interface ComparisonTemplateSpec extends BaseTemplateSpec {
@@ -426,15 +440,63 @@ function formatArithmeticPrompt(variant: string, left: number, operator: string,
     }
 }
 
+/**
+ * The counting markers, and what the object each one draws is called.
+ *
+ * A marker is an internal SHAPE SELECTOR, never typography. The board replaces
+ * the run it labels with drawn objects (godot/scripts/ui/components/count_row.gd),
+ * so no child ever reads a ";" -- which is why the alphabet can afford one.
+ *
+ * These pairs must mirror SHAPE_BY_MARKER in count_row.gd. A prompt that says
+ * "How many hearts?" over a row of drawn discs is worse than one that says
+ * nothing at all, and godot/tests/test_count_row.gd is what holds the two files
+ * to each other.
+ *
+ * Twelve, because the low band is where the variety is needed and there is not
+ * much else to vary down there: counting one to four is four questions, and
+ * without shape variety it is four questions that always look the same.
+ */
+const COUNTING_MARKERS: ReadonlyArray<{ marker: string; noun: string }> = [
+    { marker: 'o', noun: 'dots' },
+    { marker: '@', noun: 'rings' },
+    { marker: '#', noun: 'squares' },
+    { marker: '%', noun: 'diamonds' },
+    { marker: '&', noun: 'leaves' },
+    { marker: '*', noun: 'flowers' },
+    { marker: '^', noun: 'stars' },
+    { marker: '<', noun: 'triangles' },
+    { marker: '~', noun: 'hexagons' },
+    { marker: ';', noun: 'hearts' },
+    { marker: '(', noun: 'eggs' },
+    { marker: ')', noun: 'moons' },
+];
+
+export const COUNTING_MARKER_ALPHABET: readonly string[] = COUNTING_MARKERS.map(entry => entry.marker);
+
+const COUNTING_NOUN_BY_MARKER = new Map(COUNTING_MARKERS.map(entry => [entry.marker, entry.noun]));
+
 function formatCountingPrompt(variant: string, symbol: string, count: number): string {
     const items = Array.from({ length: count }, () => symbol).join(' ');
+    // "marks" is the honest word for a marker with no shape of its own; every
+    // marker in the alphabet has one, so this is the fallback, not the norm.
+    const noun = COUNTING_NOUN_BY_MARKER.get(symbol) ?? 'marks';
     switch (variant) {
         case 'how_many':
             return `How many are here: ${items}`;
         case 'count_them':
             return `Count these: ${items}`;
+        case 'see':
+            return `How many do you see: ${items}`;
+        case 'altogether':
+            return `How many altogether: ${items}`;
+        case 'say_number':
+            return `Say the number: ${items}`;
+        case 'point_count':
+            return `Point and count: ${items}`;
+        case 'how_many_of':
+            return `How many ${noun}? ${items}`;
         default:
-            return `Count the ${symbol === 'o' ? 'dots' : 'marks'}: ${items}`;
+            return `Count the ${noun}: ${items}`;
     }
 }
 
@@ -487,7 +549,10 @@ function withFallbackVariants(kind: AuthoringTemplateKind, promptVariants: strin
         subtraction: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check', 'story_eat', 'story_fly'],
         multiplication: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals'],
         division: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals'],
-        counting: ['count', 'how_many', 'count_them'],
+        counting: [
+            'count', 'how_many', 'count_them', 'how_many_of',
+            'see', 'altogether', 'say_number', 'point_count',
+        ],
         comparison: ['which', 'pick', 'find'],
         pattern_matching: ['repeat', 'keep_going'],
         number_sequence: ['next', 'keep_going', 'number_pattern'],
@@ -507,14 +572,21 @@ function buildOptions(correct: number, preferred: number[]): number[] {
         }
     }
 
+    // TOP-OF-LOOP, not bottom. Tested at the bottom this loop always ran once,
+    // so a template whose misconception-driven distractors had already filled the
+    // four slots got a fifth mechanical option (correct - 3) added anyway -- and
+    // the `.slice(0, 4)` below then kept the four SMALLEST, silently throwing the
+    // authored top distractor away. "Count fourteen" was authored {13, 14, 15, 16}
+    // and shipped {11, 13, 14, 15}. The offsets are a fallback for when the
+    // preferred list cannot fill four, which is what this now is.
     const fallbackOffsets = [-3, -2, -1, 1, 2, 3, 4, 5, 6];
     for (const offset of fallbackOffsets) {
+        if (options.size >= 4) {
+            break;
+        }
         const next = correct + offset;
         if (next >= 0) {
             options.add(next);
-        }
-        if (options.size >= 4) {
-            break;
         }
     }
 
@@ -535,8 +607,21 @@ function buildOptions(correct: number, preferred: number[]): number[] {
     return finalOptions;
 }
 
-function buildArithmeticOptions(kind: ArithmeticTemplateSpec['kind'], left: number, right: number, correct: number): number[] {
+function buildArithmeticOptions(kind: AuthoringTemplateKind, left: number, right: number, correct: number): number[] {
     const preferred: number[] = [];
+
+    // Counting has its OWN misconceptions and they are all near misses: skipping
+    // one (n-1), counting one twice (n+1), losing or double-counting a pair in a
+    // long row (n±2). It used to fall through to the generic branch below, whose
+    // third distractor is `right` -- and `right` for a counting candidate is the
+    // constant 1, so "count fourteen" was offered {14, 13, 11, 1}. A child who
+    // has counted anything at all can eliminate 1 without counting, which makes
+    // it a free option rather than a distractor (docs/MATH_AUTHORING_STANDARDS.md
+    // §4: every distractor plausible in magnitude).
+    if (kind === 'counting') {
+        preferred.push(correct - 1, correct + 1, correct + 2, correct - 2);
+        return buildOptions(correct, preferred);
+    }
 
     if (kind === 'addition') {
         preferred.push(correct - 1, correct + 1, Math.max(left, right), correct + 2);
@@ -578,6 +663,18 @@ function renderHint(strategy: string, values: Record<string, number>): string {
             return `Share ${left} into groups of ${right}.`;
         case 'count_symbols':
             return `Touch each one once as you count.`;
+        // The counting principles, one hint each, so a counting question is not
+        // always answered with the same sentence. One-to-one correspondence, the
+        // subitising look, and the two structural landmarks the ten-frame draws:
+        // the gap after five and the wrap after ten.
+        case 'count_whole_group':
+            return `Look at the whole group and say how many.`;
+        case 'count_one_each':
+            return `Say one number for each one you touch.`;
+        case 'count_from_five':
+            return `There is a gap after five. Start at five and count on.`;
+        case 'count_from_ten':
+            return `A full row is ten. Start at ten and count on.`;
         case 'compare_numbers':
             return `Look at which number has more value.`;
         case 'sequence_step':
@@ -619,6 +716,15 @@ function renderExplanation(strategy: string, values: Record<string, number>): st
             return `${left} split into groups of ${right} makes ${correct} ${plural(correct, 'group', 'groups')}.`;
         case 'count_result':
             return `There ${plural(correct, 'is', 'are')} ${correct} altogether.`;
+        // The cardinality principle, said out loud: the last number you say IS
+        // the answer. Children who can recite the sequence and still cannot
+        // answer "how many" are missing exactly this.
+        case 'count_last_number':
+            return `The last number you say is ${correct}.`;
+        case 'count_five_and':
+            return `Five and ${correct - 5} more makes ${correct}.`;
+        case 'count_ten_and':
+            return `Ten and ${correct - 10} more makes ${correct}.`;
         case 'comparison_result':
             return `${correct} is the correct choice.`;
         case 'sequence_result':
@@ -716,16 +822,28 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
                 : normalizedProgress(correct, [0, Math.max(correct, 1)]);
             const complexity = clamp((complexityOperand * 0.7) + (complexityResult * 0.3), 0, 1);
 
-            // Steps 0-2 belong to brand-new readers: keep the framing to the
-            // bare equation and the simplest question form so the words never
-            // add load on top of the math.
+            // Steps 0-2 belong to brand-new readers, so nothing down there gets a
+            // STORY: a narrative is a second thing to decode on top of the fact.
+            //
+            // It used to be narrower than that -- `equation` and `question` only
+            // -- and the cost was measurable. Addition step 0 is the four facts
+            // inside 0+0..1+1 and nothing else can ever join them, so two
+            // framings over four facts is the entire first-ever experience of the
+            // game: a child met "1 + 1 = ?" and "What is 1 + 1?" and then met
+            // them again. The framings below are all short and wordless or nearly
+            // so ("Solve:", "Answer:", "Quick check:"), which is what the rule was
+            // protecting; they carry no extra math to read.
             const maxOperandValue = Math.max(left, right);
-            const plainOnly = template.kind === 'addition'
+            const storyFree = template.kind === 'addition'
                 ? maxOperandValue <= 3
                 : template.kind === 'subtraction' && maxOperandValue <= 7;
+            const EARLY_FRAMINGS = new Set([
+                'equation', 'question', 'blank_equals', 'complete', 'equals',
+                'solve', 'answer', 'how_much', 'quick_check', 'mental_math',
+            ]);
 
             for (const variant of promptVariants) {
-                if (plainOnly && variant !== 'equation' && variant !== 'question') continue;
+                if (storyFree && !EARLY_FRAMINGS.has(variant)) continue;
                 // Story shapes need both quantities present to read naturally.
                 if (variant.startsWith('story_') && (left < 1 || right < 1)) continue;
                 // Multiplicative stories keep both quantities >= 2 so plural
@@ -754,23 +872,32 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
 }
 
 function renderCountingCandidates(template: CountingTemplateSpec): RawCandidate[] {
-    const symbol = template.symbol ?? 'o';
+    // `symbols` first, then a single legacy `symbol`, then the whole alphabet.
+    // The default is the alphabet rather than "o" on purpose: a template that
+    // says nothing about shape should get variety, not the same disc every time.
+    const symbols = template.symbols && template.symbols.length > 0
+        ? template.symbols
+        : template.symbol
+            ? [template.symbol]
+            : [...COUNTING_MARKER_ALPHABET];
     const promptVariants = withFallbackVariants(template.kind, template.promptVariants, template.strictVariants);
     const counts = enumerateRange(template.countRange);
     const candidates: RawCandidate[] = [];
 
     for (const count of counts) {
         const complexity = normalizedProgress(count, template.countRange);
-        for (const variant of promptVariants) {
-            const promptText = applyPromptLeadIn(formatCountingPrompt(variant, symbol, count), template.promptLeadIn);
-            candidates.push({
-                values: { count, correct: count },
-                promptText,
-                correct: count,
-                complexity,
-                ageBand: template.ageBand ?? [5, 7],
-                domain: 'counting',
-            });
+        for (const symbol of symbols) {
+            for (const variant of promptVariants) {
+                const promptText = applyPromptLeadIn(formatCountingPrompt(variant, symbol, count), template.promptLeadIn);
+                candidates.push({
+                    values: { count, correct: count },
+                    promptText,
+                    correct: count,
+                    complexity,
+                    ageBand: template.ageBand ?? [5, 7],
+                    domain: 'counting',
+                });
+            }
         }
     }
 
@@ -950,7 +1077,7 @@ function buildProblemFromCandidate(batch: MathBatchSpec, template: BatchTemplate
     const answerOptions = template.kind === 'comparison'
         ? buildOptions(candidate.correct, [candidate.values.left ?? candidate.correct, candidate.values.right ?? candidate.correct, candidate.correct - 1, candidate.correct + 1])
         : buildArithmeticOptions(
-            template.kind as ArithmeticTemplateSpec['kind'],
+            template.kind,
             candidate.values.left ?? candidate.values.count ?? candidate.values.start ?? candidate.correct,
             candidate.values.right ?? candidate.values.step ?? 1,
             candidate.correct,
@@ -981,12 +1108,38 @@ function createBatchProblems(
             throw new Error(`Missing band ${template.bandId} for template ${batch.id}/${template.id}`);
         }
 
+        // COVER EVERY FACT BEFORE REPEATING ONE.
+        //
+        // A template renders one candidate per (fact x framing) -- and for
+        // counting, per (count x marker x framing) -- then keeps the first
+        // `count` of them by hash. A flat hash sort is a lottery over that whole
+        // cross product, so a template asking for ten problems out of 384 could
+        // hand back six ways of saying "three" and never ask for two at all. The
+        // wider the framing and marker sets got, the worse the lottery behaved:
+        // adding variety to the presentation was quietly costing coverage of the
+        // content.
+        //
+        // So candidates are dealt round by round instead. Round 0 takes the best
+        // candidate for each distinct fact, round 1 the second-best, and so on;
+        // within a round the hash still decides, so the choice of framing and
+        // marker stays arbitrary and stable. A template can no longer ask the
+        // same fact twice while another fact in its range goes unasked.
         const candidates = renderCandidates(template)
             .map(candidate => ({
                 candidate,
+                coverageKey: JSON.stringify(candidate.values),
                 hash: stableHash(`${batch.id}|${template.id}|${candidate.promptText}`),
+                round: 0,
             }))
             .sort((left, right) => left.hash - right.hash);
+
+        const dealt = new Map<string, number>();
+        for (const entry of candidates) {
+            const round = dealt.get(entry.coverageKey) ?? 0;
+            entry.round = round;
+            dealt.set(entry.coverageKey, round + 1);
+        }
+        candidates.sort((left, right) => left.round - right.round || left.hash - right.hash);
 
         const templateProblems: MathProblem[] = [];
         for (const entry of candidates) {

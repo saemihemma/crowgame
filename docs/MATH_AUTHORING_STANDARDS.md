@@ -6,7 +6,7 @@ ladders. The executable halves are `tools/math_curriculum.ts` (step derivation),
 `authoring/math/**` (bands + batches), and the guards in
 `tools/validate-content.ts` / `tools/validate_i18n.mjs`. Grade anchors live in
 `docs/GRADE_EXPECTATIONS.md`.
-Last verified against code: 2026-08-25
+Last verified against code: 2026-08-27
 
 ## 1. Research foundation (what the ladder design is based on)
 
@@ -40,6 +40,26 @@ is a distinct misconception, not a hard fact.
 sits one step after the multiplication fact it inverts. Sharing stories
 (partitive) are the natural intro framing.
 
+**Early number sense is presentation-bound, so presentation is content.** At the
+bottom of the ladder there is almost nothing to vary: addition step 0 is the four
+facts inside 0+0..1+1 and no authoring can add a fifth, and counting step 0 is
+the quantities one to four. What CAN vary is how the question looks, and the
+evidence says varying it is the work, not decoration. Number conservation — the
+same quantity stays the same quantity however it is arranged — is a thing
+children have to learn, so the drawn shape must never predict the answer;
+arrangement itself changes difficulty (rectangular and dice arrangements are
+easier to count than scattered or circular ones); and children need small
+quantities both in regular arrangements and in irregular ones. Hence the
+twelve-marker alphabet, cycled across every count (§4), and the ten-frame's
+gap after five.
+
+**The counting principles are separate skills, and each earns its own hint.**
+One-to-one correspondence (one number word per object), cardinality (the last
+number said IS the total), and subitising (reading a small set without counting)
+are distinct, and a child can have one without the others — which is why a
+counting problem's hint names a principle rather than always saying "touch each
+one".
+
 **Word problems have a taxonomy (CGI — Carpenter et al.).** Additive
 situations: join, separate, part-part-whole, compare — with the unknown's
 position driving difficulty (result < change < start unknown). Multiplicative
@@ -48,6 +68,11 @@ maps to one of these; our current shapes are join-result (find), separate-result
 (eat/fly away), equal-groups (nests), and partitive sharing (shared by birds).
 
 Sources: [Baroody — subtraction-as-addition](https://www.sciencedirect.com/science/article/abs/pii/S0885200619301012) ·
+[NCETM — cardinality and counting](https://www.ncetm.org.uk/classroom-resources/ey-cardinality-and-counting/) ·
+[the five counting principles](https://mathsuccess.dmtinstitute.com/p/the-five-counting-principles) ·
+[subitizing](https://thirdspacelearning.com/us/blog/what-is-subitizing/) ·
+[structure sense in first graders (eye-tracking)](https://link.springer.com/article/10.1007/s10649-023-10290-5) ·
+[groupitizing](https://www.sciencedirect.com/science/article/pii/S0022096514000630) ·
 [Bay-Williams — procedural fluency](https://mysavvastraining.com/assets/files/documents/enV%20White%20Papers_Developing%20the%20Full%20Package%20of%20Procedural%20Fluency%20by%20Dr%20Jenny%20Bay-Williams_1725630916.pdf) ·
 [times-table difficulty data](https://www.hachettelearning.com/blog/times-tables-matter-working-towards-multiplication-mastery) ·
 [teaching order for facts](https://shelleygrayteaching.com/suggested-order-teaching-basic-multiplication-facts/) ·
@@ -135,23 +160,48 @@ tölum" criterion); sequence adds >90 / >300 / >900 magnitude tiers and a
 step-delta >12 tier for skip-counting by 25/50/100 (steps 7–10).
 
 ### Counting, pattern matching
-Deliberately not extended: talning is a grade-1 skill (counting past 20 is
-place-value work, covered by sequence/comparison), and Sproti's later pattern
-work is geometric/symmetry — not expressible in this game's numeric MCQ format.
+The ladders are deliberately not extended: talning is a grade-1 skill (counting
+past 20 is place-value work, covered by sequence/comparison), and Sproti's later
+pattern work is geometric/symmetry — not expressible in this game's numeric MCQ
+format. Counting is instead **densified downward** — more shapes, more framings,
+more problems per step inside 1–20 — which is where a five-year-old actually
+lives (Sproti 1a/1b work inside 1–10 and then 10–20).
 
 ## 4. Problem quality bar (every generated problem)
 
 - **Prompt**: one skill, one question, no compound sentences a 6–10-year-old
-  must re-read. Steps 0–2 use bare equation/question forms only (words must
-  never add load on top of the math).
+  must re-read. Steps 0–2 carry **no story**: a narrative is a second thing to
+  decode on top of the fact. They may use any of the short framings
+  (`equation`, `question`, `solve`, `answer`, `complete`, `blank_equals`,
+  `how_much`, `equals`, `quick_check`, `mental_math`), because those add a word
+  of scaffolding and no math. The rule used to be `equation`/`question` only,
+  which meant two framings over the four facts that exist at addition step 0 —
+  the whole first-ever experience of the game, twice.
 - **Options**: 4 choices, exactly one correct. Distractors are
   misconception-driven, not random noise: off-by-one, forgot-the-carry,
   digit-swap, added-instead-of-subtracted, adjacent table fact (7×8 next to
-  7×7 and 8×8). Every distractor plausible in magnitude.
+  7×7 and 8×8), and for counting the near misses a miscount produces (n±1,
+  n±2). Every distractor plausible in magnitude — the mechanical
+  `correct ± offset` list in `buildOptions` is a fallback for when the
+  authored distractors cannot fill four slots, never a top-up on them.
 - **Hints teach a strategy, never reveal the answer** (`renderHint`
   strategies: count_on, make_ten, bridge_ten, add_place_value,
-  multiply_groups, split_tens, …). Explanations state the fact in strategy
-  language.
+  multiply_groups, split_tens, and for counting one per counting principle:
+  count_one_each, count_whole_group, count_from_five, count_from_ten).
+  Explanations state the fact in strategy language.
+- **Counting markers are a shape selector, not typography.** A counting prompt
+  ends in a run of one repeated marker; the board (`count_row.gd`) replaces the
+  run with drawn objects and keeps only the caption, so no child reads the
+  marker. Twelve markers draw twelve shapes, and a template lists `symbols` so
+  the shape it draws is **independent of the count**. Pinning one marker to one
+  count range (the old `symbol` field) made the shape a perfect predictor of the
+  magnitude and gave the lowest band exactly one shape. A caption that NAMES a
+  shape ("Count the leaves") must agree with what is drawn;
+  `godot/tests/test_count_row.gd` checks the pairing on the real pools.
+- **Cover every fact before repeating one.** A template renders one candidate
+  per (fact × framing × marker) and keeps the first `count` by hash. Candidates
+  are dealt in rounds — every distinct fact once, then again — so widening the
+  framing or marker set cannot cost coverage of the content.
 - **Word problems must parse.** Every story shape has a matching pattern in
   `math-kernel/math/wordedArithmetic.ts` — that is what keeps the analytics
   kind labels, replay keys, and the verifier honest. A story the parser cannot
@@ -173,6 +223,10 @@ work is geometric/symmetry — not expressible in this game's numeric MCQ format
 - ≥ 20 problems per populated step per domain (existing density ≈ 25).
 - ≥ 2 prompt shapes per step; word-problem share ≥ 15% wherever the domain has
   a word form and operands fit the story constraint.
+- At the bottom (steps 0–2 of the two domains a new child has unlocked,
+  `addition` and `counting`) the floor is on **variety**, because the facts
+  themselves are nearly fixed: every short framing available, and most of the
+  twelve token shapes. `godot/tests/test_count_row.gd` holds the shape half.
 - A step with fewer problems than the floor either gets more authoring or is
   merged — never shipped thin (thin steps make promotion streaky).
 

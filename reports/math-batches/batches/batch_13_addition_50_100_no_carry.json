@@ -2,7 +2,7 @@
   "batchId": "batch_13_addition_50_100_no_carry",
   "title": "Addition 50-100 without carry plus lighter-domain variance",
   "accepted": true,
-  "averageGrade": 9.8,
+  "averageGrade": 9.7,
   "criticalIssues": [],
   "templateReview": {
     "category": {
@@ -69,12 +69,12 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.9,
+      "grade": 9.8,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.9,
+        "steadyChildGrade": 9.7,
         "strugglingChildGrade": 9.9,
-        "strongChildGrade": 9.9,
+        "strongChildGrade": 9.7,
         "openingProbeStep": 1,
         "middleProbeStep": 27,
         "upperProbeStep": 36,
@@ -86,12 +86,12 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.9,
+        "grade": 9.7,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.9,
+        "grade": 9.7,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
@@ -109,7 +109,7 @@
     "53 + 1 =",
     "52 birds sit on a branch. 2 more land. How many birds?",
     "Quick check: 51 + 2",
-    "Complete: 53 + 1 = ?",
-    "Quick check: 51 + 3"
+    "Quick check: 51 + 3",
+    "What is 51 + 1?"
   ]
 }

@@ -352,7 +352,7 @@ func _build_ui(opts: Dictionary) -> void:
 	# Counting problems get objects instead of a row of asterisks.
 	var tokens := CountRow.tokens_in(prompt_text)
 	if tokens > 0:
-		_question_label.text = prompt_text.substr(0, prompt_text.rfind(":"))
+		_question_label.text = CountRow.caption_in(prompt_text)
 		var count_row := CountRow.new()
 		var centred := CenterContainer.new()
 		centred.add_child(count_row)
