@@ -317,7 +317,9 @@ function loadLiveOwlMathConfig(): LiveOwlMathConfig {
         domains,
         difficultyRange,
         maxCurriculumStep: Math.max(0, Math.round(difficultyRange[1] * 10)),
-        maxOperand: 20,
+        // No operand rail: the live component stopped sending one (it froze
+        // progression at sums of ~20). The rails model must match what ships.
+        maxOperand: Number.POSITIVE_INFINITY,
         problemCount: typeof mathComponent.problemCount === 'number' ? mathComponent.problemCount : 1,
         primaryDomain: domains[0],
     };
@@ -334,9 +336,10 @@ function isProblemWithinOwlRails(problem: MathProblem, owlConfig: LiveOwlMathCon
         return false;
     }
 
+    // An absent rail means no operand cap (the shipped state since 2026-08).
     if (
         problem.difficultyTraits?.maxOperand !== undefined &&
-        problem.difficultyTraits.maxOperand > owlConfig.maxOperand
+        problem.difficultyTraits.maxOperand > (owlConfig.maxOperand ?? Number.POSITIVE_INFINITY)
     ) {
         return false;
     }
@@ -2076,7 +2079,7 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                 localMaxOperand = Math.max(localMaxOperand, visibleMaxOperand);
                 localMaxCurriculumStep = Math.max(localMaxCurriculumStep, problem.curriculumStep);
 
-                if (visibleMaxOperand > owlConfig.maxOperand) {
+                if (visibleMaxOperand > (owlConfig.maxOperand ?? Number.POSITIVE_INFINITY)) {
                     capBreaches++;
                     profileGrade -= 2;
                 }

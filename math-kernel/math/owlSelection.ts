@@ -6,7 +6,12 @@ export interface OwlSelectionConfig extends Omit<ELOSelectionOptions, 'excludedR
     domains: MathDomain[];
     difficultyRange: [number, number];
     maxCurriculumStep: number;
-    maxOperand: number;
+    /**
+     * Optional operand rail: applies only when the caller's config carries
+     * one. It must never have a default — a blanket rail was the maxOperand:20
+     * fossil that froze every player at sums of ~20 (2026-08).
+     */
+    maxOperand?: number;
     primaryDomain: MathDomain;
     /** How often each subject comes due, from math_tuning.json. */
     domainWeights?: Partial<Record<MathDomain, number>>;

@@ -220,8 +220,14 @@ strategy steps **down** only — it never falls back to any problem in the domai
 Mixed-domain play: the first configured domain gets `70%` of selections, the
 remaining unlocked domains share `30%`, and each still obeys its own step cap.
 
-Kid-safe filter: the owl path caps `maxOperand` at `20`, keeping two-digit
-arithmetic out of the live owl loop until a denser later ladder exists.
+Kid-safe pacing: the blanket `maxOperand: 20` rail was removed in 2026-08 by
+the owner's grade-4 decision — it silently filtered every problem above
+operand 20, freezing perfect players at sums of ~20 with promotion stalled.
+The operand rail still exists but is opt-in (applied only when a selection
+config carries it; `tools/validate_docs.js` fails any default). Age
+protection now comes from the fence that can tell children apart: the child's
+own curriculum-step cap (~20 mastered rungs before any operand above 20),
+plus the level's `difficultyBand` and problem ELO.
 
 Recently seen facts are suppressed by **replay key**, not just problem id, so
 wording variants of the same fact do not bounce straight back. Every worded shape

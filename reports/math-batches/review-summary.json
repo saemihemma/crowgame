@@ -32,22 +32,22 @@
       "addition",
       "counting"
     ],
-    "owlEligibleProblemCount": 2121,
-    "owlEligibleUniquePromptCount": 2121,
-    "owlEligibleUniqueFactCount": 907,
+    "owlEligibleProblemCount": 2494,
+    "owlEligibleUniquePromptCount": 2494,
+    "owlEligibleUniqueFactCount": 1222,
     "domainCounts": {
-      "addition": 566,
+      "addition": 749,
       "counting": 199,
       "pattern_matching": 125,
-      "subtraction": 544,
+      "subtraction": 729,
       "comparison": 125,
       "number_sequence": 165,
       "multiplication": 233,
-      "division": 164
+      "division": 169
     },
-    "openingUnlockedInventoryProblemCount": 765,
-    "openingUnlockedInventoryUniquePromptCount": 765,
-    "openingUnlockedInventoryUniqueFactCount": 211,
+    "openingUnlockedInventoryProblemCount": 948,
+    "openingUnlockedInventoryUniquePromptCount": 948,
+    "openingUnlockedInventoryUniqueFactCount": 362,
     "freshReachableProblemCount": 213,
     "freshReachableUniquePromptCount": 213,
     "freshReachableUniqueFactCount": 42,
@@ -3458,12 +3458,12 @@
       "steadyFirstSubtractionSelectionAttempt": -1,
       "strugglingFirstSubtractionSelectionAttempt": -1,
       "depthProbeFirstSubtractionSelectionAttempt": 51,
-      "owlEligibleProblemCount": 2121,
-      "owlEligibleUniquePromptCount": 2121,
-      "owlEligibleUniqueFactCount": 907,
-      "openingUnlockedInventoryProblemCount": 765,
-      "openingUnlockedInventoryUniquePromptCount": 765,
-      "openingUnlockedInventoryUniqueFactCount": 211,
+      "owlEligibleProblemCount": 2494,
+      "owlEligibleUniquePromptCount": 2494,
+      "owlEligibleUniqueFactCount": 1222,
+      "openingUnlockedInventoryProblemCount": 948,
+      "openingUnlockedInventoryUniquePromptCount": 948,
+      "openingUnlockedInventoryUniqueFactCount": 362,
       "freshReachableProblemCount": 213,
       "freshReachableUniquePromptCount": 213,
       "freshReachableUniqueFactCount": 42,
@@ -3500,7 +3500,7 @@
     "caveats": [
       "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
       "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 2121 local-safe rows overall, while a fresh profile currently reaches 213 step-capped rows across addition, counting and 1 problems per owl interaction."
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 2494 local-safe rows overall, while a fresh profile currently reaches 213 step-capped rows across addition, counting and 1 problems per owl interaction."
     ]
   }
 }

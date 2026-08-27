@@ -7,33 +7,8 @@
     "minPerStep": 6
   },
   "knownGaps": [],
-  "_unreachableComment": "A concept every one of whose problems the owl filters out. The cap that does it is `maxOperand` in godot/scripts/entities/npc/math_challenge_component.gd, and tools/validate_math_concepts.mjs reads it from there rather than restating it: raise the cap and these entries must be deleted, lower it and new ones must be added. Distinct from knownGaps, which is about whether problems were WRITTEN. These were written, and are unservable.",
-  "knownUnreachable": [
-    {
-      "concept": "addition.tens_and_ones",
-      "why": "Every problem from addition step 21 up has an operand above 20, so the owl's cap drops all 445 of them. A child tops out at addition.bridge_ten."
-    },
-    {
-      "concept": "addition.carrying",
-      "why": "Same cap, one concept further on. Nothing in steps 30-36 has an operand at or below 20."
-    },
-    {
-      "concept": "subtraction.tens_and_ones",
-      "why": "Steps 17-20 have no problems at all and steps 21-29 are all above the operand cap, so the concept is empty on both counts. A child tops out at subtraction.teens_back."
-    },
-    {
-      "concept": "subtraction.borrowing",
-      "why": "Same cap as its neighbour. Nothing in steps 30-36 has an operand at or below 20."
-    },
-    {
-      "concept": "addition.multi_digit",
-      "why": "Every problem here has an operand between 121 and 4788 and the owl caps at 20. Authored for a wider audience than the owl currently serves; carries tutorial: null on purpose, because a lesson for content no child can reach is waste."
-    },
-    {
-      "concept": "subtraction.multi_digit",
-      "why": "Same as addition.multi_digit: operands far above the cap, tutorial deliberately absent."
-    }
-  ],
+  "_unreachableComment": "Concepts with authored problems that the owl can never serve, each with a reason. EMPTY as shipped: the blanket operand rail was removed by the owner's grade-4 decision (2026-08) — the step ladder paces each child instead — so every authored concept is reachable. tools/validate_math_concepts.mjs re-populates this obligation automatically if a numeric rail ever returns.",
+  "knownUnreachable": [],
   "knownThin": [
     {
       "domain": "subtraction",

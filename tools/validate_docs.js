@@ -206,7 +206,8 @@ function validateLearnerConstants() {
     ensureSourcePattern('math-kernel/systems/LearnerStateManager.ts', /case\s+'day_7':/, 'day_7 review stage');
     ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /mathTuning\(\)\.laneWeights/, 'lane weights read from shared tuning');
     ensureSourcePattern('math-kernel/math/selection/ELOAwareStrategy.ts', /canUseStretchLane\(domain\)/, 'stretch lane gate');
-    ensureSourcePattern('godot/scripts/math/owl_selection.gd', /"maxOperand": config\.get\("maxOperand", 20\)/, 'local owl max-operand ceiling');
+    // The old "maxOperand ceiling" pin lived here; the rail is opt-in now and
+    // validateOperandRailStaysOptIn() below owns both directions of that truth.
     ensureSourcePattern('godot/scripts/ui/math_challenge.gd', /var options: Array = answer\.get\("options", \[\]\)/, 'MCQ options drive the answer buttons');
     ensureSourcePattern('godot/scripts/scenes/login.gd', /func _finish_login\(\) -> void:/, 'login success rehydrate owner');
     ensureSourcePattern('godot/scripts/scenes/login.gd', /SaveManager\.switch_profile\(\)/, 'profile-switch on login');
@@ -361,6 +362,21 @@ function validateRetentionPromises() {
             }
         }
     }
+}
+
+/**
+ * The owl's operand rail must stay OPT-IN: applied only when a selection
+ * config actually carries `maxOperand`, never defaulted. The defaulted rail
+ * (maxOperand: 20) silently filtered out every problem above operand 20, froze
+ * every player at sums of ~20 and stalled step promotion — proved by a kernel
+ * perfect-player simulation (2026-08). Derived from the source, per this
+ * file's rule. The reachability side (which concepts a numeric rail would
+ * close) lives in tools/validate_math_concepts.mjs.
+ */
+function validateOperandRailStaysOptIn() {
+    const SELECTOR = 'godot/scripts/math/owl_selection.gd';
+    ensureSourcePattern(SELECTOR, /if config\.has\("maxOperand"\):/, 'opt-in owl max-operand rail');
+    ensureNoPattern(SELECTOR, /config\.get\("maxOperand",\s*\d/, 'a numeric default for maxOperand — the rail must apply only when the config carries it');
 }
 
 function validateLiveSourceReferences() {
@@ -557,6 +573,7 @@ function main() {
     validateMathAuthoringReports();
     validateRetentionPromises();
     validateLiveSourceReferences();
+    validateOperandRailStaysOptIn();
     validateWireContract();
     validateRoadmapHasNoCompletedItems();
     validateDeployPayloadTable();

@@ -272,7 +272,7 @@
         "addition_with_carry",
         "two_digit_addition"
       ],
-      "servable": 0
+      "servable": 404
     },
     {
       "id": "addition.carrying",
@@ -324,7 +324,7 @@
         "addition_with_carry",
         "two_digit_addition"
       ],
-      "servable": 0
+      "servable": 148
     },
     {
       "id": "addition.multi_digit",
@@ -386,7 +386,7 @@
       "skillsDeclared": [
         "multi_digit_addition"
       ],
-      "servable": 0
+      "servable": 178
     },
     {
       "id": "addition.missing_part",
@@ -995,7 +995,7 @@
         "teens_subtraction",
         "two_digit_subtraction"
       ],
-      "servable": 0
+      "servable": 370
     },
     {
       "id": "subtraction.borrowing",
@@ -1047,7 +1047,7 @@
         "subtraction_with_borrow",
         "two_digit_subtraction"
       ],
-      "servable": 0
+      "servable": 102
     },
     {
       "id": "subtraction.multi_digit",
@@ -1109,7 +1109,7 @@
       "skillsDeclared": [
         "multi_digit_subtraction"
       ],
-      "servable": 0
+      "servable": 178
     },
     {
       "id": "counting.to_five",
@@ -1717,7 +1717,7 @@
         "multiplication_tables",
         "multiplication_word_problems"
       ],
-      "servable": 91
+      "servable": 106
     },
     {
       "id": "multiplication.two_digit",
@@ -1747,7 +1747,7 @@
       "skillsDeclared": [
         "multiplication_two_digit"
       ],
-      "servable": 17
+      "servable": 60
     },
     {
       "id": "division.sharing",
@@ -1959,7 +1959,7 @@
         "division_place_value",
         "division_two_digit"
       ],
-      "servable": 23
+      "servable": 65
     },
     {
       "id": "multiplication.missing_factor",
