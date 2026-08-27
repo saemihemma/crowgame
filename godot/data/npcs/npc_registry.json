@@ -4,10 +4,10 @@
     "id": "what a level spec's npc_id points at",
     "spriteKey": "sprite_registry.json key; the path and frame grid live there",
     "behavior": "which component set to build; 'math_challenger' is the only one",
-    "components[math_challenge].problemCount": "how many questions this owl asks before it is freed. MUST equal behaviorConfig.chainLinks - the chain across the perch is how a child reads the cost from across the screen, and test_owl_chains.gd enforces the pair.",
+    "components[math_challenge].problemCount": "How many questions this owl asks before it is freed. ALWAYS 1, and test_owl_chains.gd fails the build on anything else: one owl, one question is the loop, and a two- or three-link owl stops a platformer run to sit a short test. The field stays rather than becoming a constant so the chain drawing has something to read, and so the rule is visible where an author would go to break it.",
     "components[math_challenge].difficultyRange": "[low, high] band this owl draws from - the easier/harder dial. Intersected with the level's mathGating band; the curriculum ladder still owns how hard within it.",
     "components[math_challenge].problemTypes": "which operations this owl may ask about at all. Intersected with the level's gated skills.",
-    "behaviorConfig.chainLinks": "how many links are drawn across the perch. See problemCount.",
+    "behaviorConfig.chainLinks": "How many links are drawn across the perch. MUST equal problemCount, which is always 1.",
     "behaviorConfig.rewardType / rewardAmount": "what breaking the last link pays out",
     "note": "why this variant exists, for whoever places it"
   },
@@ -118,76 +118,6 @@
       "note": "One answer, harder band. A spike without costing time."
     },
     {
-      "id": "owl_twin_chain",
-      "name": "Professor Hoot",
-      "spriteKey": "owl",
-      "behavior": "math_challenger",
-      "components": [
-        {
-          "type": "interactable"
-        },
-        {
-          "type": "math_challenge",
-          "problemTypes": [
-            "addition",
-            "counting",
-            "pattern_matching",
-            "subtraction",
-            "comparison",
-            "number_sequence",
-            "multiplication",
-            "division"
-          ],
-          "difficultyRange": [
-            1,
-            3
-          ],
-          "problemCount": 2
-        }
-      ],
-      "behaviorConfig": {
-        "rewardType": "stars",
-        "rewardAmount": 1,
-        "chainLinks": 2
-      },
-      "note": "Two links. Costs more time than difficulty."
-    },
-    {
-      "id": "owl_triple_chain",
-      "name": "Professor Hoot",
-      "spriteKey": "owl",
-      "behavior": "math_challenger",
-      "components": [
-        {
-          "type": "interactable"
-        },
-        {
-          "type": "math_challenge",
-          "problemTypes": [
-            "addition",
-            "counting",
-            "pattern_matching",
-            "subtraction",
-            "comparison",
-            "number_sequence",
-            "multiplication",
-            "division"
-          ],
-          "difficultyRange": [
-            1,
-            3
-          ],
-          "problemCount": 3
-        }
-      ],
-      "behaviorConfig": {
-        "rewardType": "stars",
-        "rewardAmount": 1,
-        "chainLinks": 3
-      },
-      "note": "Three links. A set piece, not a roadside owl - it stops the run for a while."
-    },
-    {
       "id": "owl_gauntlet",
       "name": "Professor Hoot",
       "spriteKey": "owl",
@@ -212,15 +142,15 @@
             3,
             5
           ],
-          "problemCount": 3
+          "problemCount": 1
         }
       ],
       "behaviorConfig": {
         "rewardType": "stars",
         "rewardAmount": 1,
-        "chainLinks": 3
+        "chainLinks": 1
       },
-      "note": "Three links at the hardest band. Reserve for a world's final owl."
+      "note": "One answer, hardest band. Reserve for a world's final owl -- the spike is the difficulty, never the length."
     }
   ]
 }

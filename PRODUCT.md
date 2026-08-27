@@ -42,13 +42,20 @@ with the tuning work in `roadmap.md`.
 1. Choose or resume a child profile.
 2. Move through a readable platforming level.
 3. Meet an owl.
-4. Answer a small, high-confidence question set.
+4. Answer one question.
 5. Return to movement with clear feedback and visible progress.
 
-An owl encounter is deliberately short — as shipped, one question. The length is
-per-owl in the registry rather than global, so a later gated owl can ask more
-without changing the loop for every other one. A fresh profile opens on addition
-and counting; other domains join through the normal unlock rules.
+**One owl, one question — every owl, with no exception available.** The length
+used to be per-owl in the registry, so that a later gated owl could ask more
+without changing the loop for everything else. Played, that was not a dial, it
+was a stall: every level carried a three-question owl and one carried three of
+them, so a child running a platformer was stopped for three questions in a row,
+repeatedly. The roster still has range, and the range is difficulty — an easier
+owl, a harder one — which is the dial that was actually wanted.
+`godot/tests/test_owl_chains.gd` fails the build on any owl that asks for more.
+
+A fresh profile opens on addition and counting; other domains join through the
+normal unlock rules.
 
 ## What finishing means
 
@@ -93,6 +100,21 @@ available is deliberately converted into the best one.
 **First contact with new maths cannot hurt.** When a level introduces a domain a
 child has never attempted, the owl opens with a worked example, then a freebie: a
 win records, a miss records nothing at all.
+
+**A lesson answers something the child just did; it is never a toll on something
+they are about to do.** Teaching used to fire in front of any question whose idea
+the child had not met. Each of those lessons was justified on its own, and
+together they were an ambush — a board of cards between a child and the owl they
+walked up to, on an idea they had not asked about. So there is **one lesson per
+maths category**: the one for the rung they are standing on, delivered after an
+answer, and never more than one at a single owl. Levelling up in a category is
+what moves a child onto a rung they have not been taught, which is why it reads
+as "when I level up, I get taught".
+
+**Asking for the lesson again is always allowed.** Every question carries a "?"
+that re-opens the lesson for that category, however many times a child wants it.
+It records nothing — looking something up is not being tested — and it is what
+makes the automatic teaching safe to keep rare.
 
 **Difficulty drops faster than it climbs, and demotions are silent.** A step-up
 is celebrated; a step-down is never signalled. The child should never be told

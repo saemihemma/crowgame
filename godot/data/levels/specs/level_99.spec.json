@@ -40,7 +40,7 @@
         "y": 16
       },
       {
-        "npc_id": "owl_twin_chain",
+        "npc_id": "owl_teacher_01",
         "x": 40,
         "y": 16
       },
@@ -50,7 +50,7 @@
         "y": 16
       },
       {
-        "npc_id": "owl_triple_chain",
+        "npc_id": "owl_teacher_01",
         "x": 60,
         "y": 16
       },
@@ -80,7 +80,7 @@
         "y": 16
       },
       {
-        "npc_id": "owl_twin_chain",
+        "npc_id": "owl_teacher_01",
         "x": 120,
         "y": 16
       },
@@ -90,7 +90,7 @@
         "y": 16
       },
       {
-        "npc_id": "owl_triple_chain",
+        "npc_id": "owl_teacher_01",
         "x": 140,
         "y": 16
       },
@@ -120,7 +120,7 @@
         "y": 16
       },
       {
-        "npc_id": "owl_twin_chain",
+        "npc_id": "owl_teacher_01",
         "x": 195,
         "y": 16
       }
