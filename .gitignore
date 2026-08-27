@@ -69,3 +69,4 @@ output/focus-repro/
 # Frames from pin_entry_probe.mjs and touch_target_probe.mjs, same category.
 output/pin-probe/
 output/touch-probe/
+output/pad-probe/
