@@ -318,6 +318,20 @@ async function main() {
                 const c = document.getElementById('canvas') || document.querySelector('canvas');
                 window.__crowCanvasKeys = 0;
                 c.addEventListener('keydown', () => { window.__crowCanvasKeys += 1; });
+                // Clear a focused FIELD first, then the canvas.
+                //
+                // The flow above ends on the login form, so a LineEdit is focused
+                // and Godot's virtual-keyboard <input> holds the DOM focus. Blur
+                // the canvas from there and nothing changes: focus was never on
+                // the canvas to lose, so the gate measured a text field being left
+                // alone -- which is the other half of this gate, deliberately, and
+                // not the failure it exists to catch.
+                //
+                // Blurring the input is also the real-world case, exactly:
+                // GodotDisplayVK.hide() calls elem.blur() when a child finishes
+                // typing their PIN, and hands focus back to nothing.
+                const active = document.activeElement;
+                if (active && active !== c && typeof active.blur === 'function') active.blur();
                 c.blur();
             });
             await page.waitForTimeout(500);
@@ -344,6 +358,54 @@ async function main() {
             return { droppedTo, keysReachCanvas, textFieldKeepsFocus };
         })();
 
+        // Whether the game says it needs landscape — gate B5.
+        //
+        // Portrait is not supported: a level fills the top 45% of a tall viewport
+        // and leaves a black band under it. So the game has to SAY so, and the
+        // saying is an overlay in the <head> — early enough to reach a child who
+        // opened the game holding the tablet upright, before the wasm has loaded.
+        //
+        // Gated because this exact thing already failed silently for the whole
+        // life of the feature. build_web.sh injected the overlay only when the
+        // string 'crow-rotate' was absent from index.html, and it never is: the
+        // CSS that styles it is part of html/head_include, which the Godot export
+        // writes in first. Stylesheet in every build, element in none. Nothing
+        // noticed, because nothing looked.
+        //
+        // Both states are checked. Present at all, hidden in landscape, and
+        // showing in portrait — a hint that is always up is as broken as one that
+        // never is, and only one of those is visible in a landscape screenshot.
+        const rotateGate = await (async () => {
+            const landscape = await page.evaluate(() => {
+                const el = document.getElementById('crow-rotate');
+                return { present: !!el, display: el ? getComputedStyle(el).display : null };
+            });
+            await page.setViewportSize({ width: IPAD.height, height: IPAD.width });
+            await page.waitForTimeout(600);
+            const portrait = await page.evaluate(() => {
+                const el = document.getElementById('crow-rotate');
+                if (!el) return { present: false, display: null, covers: false };
+                const css = getComputedStyle(el);
+                const box = el.getBoundingClientRect();
+                return {
+                    present: true,
+                    display: css.display,
+                    // It has to actually cover the game, not merely exist.
+                    covers: css.display !== 'none'
+                        && box.width >= window.innerWidth - 2
+                        && box.height >= window.innerHeight - 2,
+                };
+            });
+            await page.setViewportSize(IPAD);
+            await page.waitForTimeout(600);
+            return {
+                present: landscape.present,
+                hiddenInLandscape: landscape.display === 'none',
+                showsInPortrait: portrait.display === 'flex',
+                coversInPortrait: portrait.covers,
+            };
+        })();
+
         const result = {
             // GATED, not merely recorded. `distinctColors > 1` accepted a
             // two-colour frame as a render, and nothing checked the geometry at
@@ -360,7 +422,11 @@ async function main() {
                 && vk.experimentalVK
                 && vk.inputSelectable
                 && focusLoss.keysReachCanvas
-                && focusLoss.textFieldKeepsFocus,
+                && focusLoss.textFieldKeepsFocus
+                && rotateGate.present
+                && rotateGate.hiddenInLandscape
+                && rotateGate.showsInPortrait
+                && rotateGate.coversInPortrait,
             kind: 'web_export_boot_smoke',
             whatThisIs: 'Exported output/web build booted in Chromium at an iPad landscape viewport with touch enabled.',
             whatThisIsNot: 'Not real iPad Safari verification. WebKit audio unlock, memory ceilings and WASM limits are unproven here.',
@@ -370,6 +436,7 @@ async function main() {
             letterbox,
             virtualKeyboard: vk,
             focusLoss,
+            rotateGate,
             consoleErrors,
             failedRequests,
             screenshot: 'output/playwright/web-boot-smoke/ipad-boot.png',
@@ -384,6 +451,7 @@ async function main() {
         console.log(`flow steps      : ${flow.length} (clicks and keys after boot)`);
         console.log(`touch keyboard  : experimentalVK=${vk.experimentalVK}, input selectable=${vk.inputSelectable}`);
         console.log(`focus recovery  : after canvas.blur() focus went to ${focusLoss.droppedTo}, keys reach canvas=${focusLoss.keysReachCanvas}, text field keeps focus=${focusLoss.textFieldKeepsFocus}`);
+        console.log(`landscape hint  : present=${rotateGate.present}, hidden in landscape=${rotateGate.hiddenInLandscape}, shows and covers in portrait=${rotateGate.showsInPortrait && rotateGate.coversInPortrait}`);
         console.log(`console errors  : ${consoleErrors.length}`);
         if (distinctColors < MIN_DISTINCT_COLORS) {
             console.error(`FAIL: only ${distinctColors} distinct colours (floor ${MIN_DISTINCT_COLORS}) — the build booted but did not render`);
@@ -397,6 +465,16 @@ async function main() {
         if (!vk.experimentalVK) {
             console.error("FAIL: experimentalVK is off — a touch device cannot type, so no child can create an account. "
                 + "Set html/experimental_virtual_keyboard=true in godot/export_presets.cfg and re-export.");
+        }
+        if (!rotateGate.present) {
+            console.error("FAIL: no #crow-rotate element in index.html — gate B5. The landscape hint is not shipping. "
+                + "build_web.sh injects it after export; check the guard looks for the ELEMENT and not for the string, "
+                + "which its own stylesheet in html/head_include always puts in the page.");
+        } else if (!rotateGate.hiddenInLandscape) {
+            console.error("FAIL: the landscape hint is showing in LANDSCAPE — gate B5. It would cover the game.");
+        } else if (!rotateGate.showsInPortrait || !rotateGate.coversInPortrait) {
+            console.error("FAIL: the landscape hint does not cover the screen in portrait — gate B5. "
+                + "Portrait is unsupported, so a child holding the tablet upright has to be told.");
         }
         if (!focusLoss.keysReachCanvas) {
             console.error("FAIL: after focus left the canvas, key presses no longer reach it — gate B3. "

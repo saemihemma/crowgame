@@ -72,23 +72,52 @@ stamp_build_id
 cp "$ROOT/deploy/web/crow-errors.js" "$OUT/crow-errors.js"
 cp "$ROOT/deploy/web/crow-focus.js" "$OUT/crow-focus.js"
 
-# NO PORTRAIT HINT. There used to be an attempt at one here -- an overlay
-# reading "Turn your tablet sideways", injected into index.html after export.
+# LANDSCAPE ONLY, said out loud.
 #
-# It never once shipped. The guard asked whether the string 'crow-rotate'
-# appeared anywhere in the file, and it always does, because the CSS that styles
-# the overlay is part of html/head_include and the Godot export writes that in
-# before this script runs. So the stylesheet shipped in every build and the
-# element it styled shipped in none of them, for as long as the feature has
-# existed. Nobody noticed, because the thing it was meant to do -- stop portrait
-# play -- was not wanted: the owner plays in portrait and asked for it to work.
+# The game is landscape (project.godot orientation=0) and portrait is not
+# supported: a level fills the top 45% of a tall viewport and leaves a black band
+# under it, because the parallax horizon is a fraction of the SCREEN tuned on
+# 16:9. Rather than half-support it, the game says so.
 #
-# Fixing the guard would have taken portrait away rather than fixed anything, so
-# the overlay is gone, stylesheet and all. What portrait actually needs is the
-# world laid out for a tall viewport: menus already render correctly, while a
-# level fills the top 45% and leaves a black band under it, because the parallax
-# horizon is a fraction of the SCREEN (0.86, game.gd PARALLAX_HORIZON) tuned on
-# 16:9. That is a real change to the camera and backdrop, not a banner.
+# THIS OVERLAY DID NOT SHIP FOR THE WHOLE LIFE OF THE FEATURE, and the reason is
+# worth keeping. The guard asked whether the string 'crow-rotate' appeared
+# anywhere in index.html -- and it always does, because the CSS that styles the
+# overlay is part of html/head_include and the Godot export writes that in before
+# this script runs. So the stylesheet shipped in every build and the element it
+# styled shipped in none of them. The guard now looks for the ELEMENT, and
+# web_boot_smoke.mjs gate B5 fails the build if it is missing or if it is not
+# showing at a portrait viewport, so it cannot go quiet again.
+#
+# In the <head>, not in the engine: a child who opens the game holding the tablet
+# upright has to be told before the wasm has finished loading, and this is the
+# only layer that exists that early. Both languages for the same reason -- the
+# locale lives in IndexedDB and reading it here would mean an async hop before
+# the one message that must never be late. The icon carries it for a five-year-old
+# who cannot read either line.
+python3 - "$OUT/index.html" <<'ROTATE'
+import sys
+path = sys.argv[1]
+html = open(path).read()
+# The ELEMENT, not the string: see above.
+if 'id="crow-rotate"' not in html:
+    overlay = (
+        '<div id="crow-rotate" aria-hidden="true">'
+        '<svg viewBox="0 0 100 100" fill="none" stroke="#FDF6E3" stroke-width="5" '
+        'stroke-linecap="round" stroke-linejoin="round">'
+        # A tablet, stood upright, with an arrow curving it onto its side.
+        '<rect x="34" y="14" width="32" height="52" rx="5"/>'
+        '<line x1="43" y1="60" x2="57" y2="60"/>'
+        '<path d="M22 74a34 34 0 0 0 56 0"/>'
+        '<polyline points="22 62 22 75 35 75"/>'
+        '<polyline points="78 62 78 75 65 75"/>'
+        '</svg>'
+        '<p>Snúðu spjaldtölvunni á hliðina</p>'
+        '<p class="crow-rotate-sub">Turn your tablet sideways to play</p>'
+        '</div>'
+    )
+    html = html.replace('<body>', '<body>' + overlay, 1)
+    open(path, 'w').write(html)
+ROTATE
 
 # build_info.json is inside the pck for main_menu.gd, but crow-errors.js fetches
 # it over HTTP to tag reports with the build, so it also needs to sit next to
