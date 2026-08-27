@@ -37,91 +37,20 @@ signal tutorial_finished(payload: Dictionary)
 const DEPTH_FULL := "full"
 const DEPTH_BRIEF := "brief"
 
-## The tutorial to play before this problem, or an empty dictionary if the child
-## has already met the idea -- which is the overwhelmingly common case, so this
-## is the cheap path.
+## What used to live here: `tutorial_for_problem`, `depth_for_problem`,
+## `_is_behind`, `_learner_has_reached`, `BELOW_OFF`, and the
+## `math/tutorial_below_level` flag they read.
 ##
-## Takes the problem rather than the learner's current step: the child is about
-## to be shown THIS problem, and the selection lanes routinely hand out one a
-## rung below or above where the ladder says they are.
+## They were the machinery of teaching IN FRONT OF a question -- decide whether
+## this particular problem's concept was unseen, whether the learner had reached
+## it, whether they had climbed past it, and how much lesson a past-it concept
+## deserved. Three guards, a three-valued feature flag and a row on the parent
+## screen, all of them answering "is it safe to interrupt with this one".
 ##
-## But NOT above. The stretch lane deals a problem one step past the ladder at a
-## tuned rate, and teaching its concept would open a lesson for an idea the
-## child has not earned, in the middle of a run, on a question that exists to be
-## a reach rather than a lesson. A concept is teachable once its own first rung
-## is at or below where the learner stands; the stretch problem is then answered
-## on its merits, and the lesson arrives when the ladder does.
-func tutorial_for_problem(problem: Dictionary) -> Dictionary:
-	var concept := ConceptLadder.concept_for_problem(problem)
-	if concept.is_empty():
-		return {}
-	var tutorial_id := ConceptLadder.tutorial_id(concept)
-	if tutorial_id == "" or has_seen(tutorial_id):
-		return {}
-	if not _learner_has_reached(concept):
-		return {}
-	if _is_behind(concept) and String(Config.flag("math/tutorial_below_level", DEPTH_BRIEF)) == BELOW_OFF:
-		return {}
-	return get_tutorial(tutorial_id)
-
-## Teaching depth for a lesson that is about to open on a specific problem.
+## The lane is gone, so the guards guard nothing. A lesson now arrives after an
+## answer, for the rung the child is standing on, which needs none of it: you
+## cannot be below or above where you are.
 ##
-## Callers with a problem in hand should prefer this over depth_for(): the gate
-## above lets a below-level lesson through, and this is what stops it arriving as
-## the full four-card treatment.
-func depth_for_problem(problem: Dictionary, tutorial_id: String) -> String:
-	var concept := ConceptLadder.concept_for_problem(problem)
-	if not concept.is_empty() and _is_behind(concept):
-		if String(Config.flag("math/tutorial_below_level", DEPTH_BRIEF)) == DEPTH_BRIEF:
-			return DEPTH_BRIEF
-	return depth_for(tutorial_id)
-
-## `math/tutorial_below_level` value meaning "do not teach it at all". The other
-## two values are DEPTH_FULL and DEPTH_BRIEF, which is why they are not restated:
-## the flag says what a below-level lesson LOOKS like, and "nothing" is the third
-## option rather than a separate axis.
-const BELOW_OFF := "off"
-
-## Is this concept entirely behind where the learner now stands?
-##
-## The gate in tutorial_for_problem is one-sided, and that asymmetry was the bug.
-## It refuses to teach a concept ABOVE the learner, for a good reason spelled out
-## above -- the stretch lane deals a reach and a lesson for it would be a lesson
-## nobody earned. Nothing guarded the other direction, and the other direction is
-## where 60% of the questions come from: comfort is 40% and review another 20%,
-## both drawing at or below the current rung.
-##
-## Combined with placement that seeds a child forward from their birth year and
-## then moves them a WHOLE CONCEPT per answer for three answers, a child can be
-## carried past rungs 3 to 5 without one problem ever being served from them.
-## Every rung skipped that way is a landmine: the first time the comfort lane
-## deals a problem from it, its concept is unseen, `_learner_has_reached` is
-## trivially satisfied, and a four-card lesson opens mid-run for an idea the child
-## left behind long ago. That is the playtest note about "að telja áfram" -- the
-## counting-on lesson -- arriving unmotivated and out of order.
-##
-## Behind means the concept's LAST rung is below the learner's current step, not
-## its first. A concept the learner is standing inside is the one they are working
-## on, and teaching that is the whole point of the system.
-func _is_behind(concept: Dictionary) -> bool:
-	var domain := String(concept.get("domain", ""))
-	var steps: Variant = concept.get("steps", null)
-	if domain == "" or not (steps is Array) or (steps as Array).size() < 2:
-		return false
-	return LearnerStateManager.get_current_step(domain) > int((steps as Array)[1])
-
-## Has the learner's ladder actually arrived at this concept's first rung?
-##
-## A concept with no readable step range is treated as reached: an authoring gap
-## should cost a child a lesson they did not need, never silence a lesson they
-## did.
-func _learner_has_reached(concept: Dictionary) -> bool:
-	var domain := String(concept.get("domain", ""))
-	var steps: Variant = concept.get("steps", null)
-	if domain == "" or not (steps is Array) or (steps as Array).is_empty():
-		return true
-	return LearnerStateManager.get_current_step(domain) >= int((steps as Array)[0])
-
 ## FULL for the first lesson a child ever gets in a domain, BRIEF after that.
 ##
 ## Derived rather than authored: a `teachDepth` field on all forty-seven concept
@@ -143,54 +72,74 @@ func has_seen(tutorial_id: String) -> bool:
 	return SaveManager.has_seen_tutorial(tutorial_id)
 
 
-# --- how often, as opposed to how deep ---------------------------------------
+# --- WHEN a lesson arrives ---------------------------------------------------
 #
-# Everything above this line decides WHETHER an idea is new and HOW MUCH of a
-# lesson it earns. Nothing decided how OFTEN, and that turned out to be the part
-# a child feels.
+# Everything above this line decides whether an idea is new and how much of a
+# lesson it earns. What was missing was WHEN, and that is the part a child feels.
 #
-# Each lesson is once-ever and individually justified, which is exactly why the
-# frequency went unnoticed: no single one of them is wrong. But they are not
-# spread evenly. A child climbing the ladder meets new rungs in bursts, `seen` is
-# per concept rather than per sitting, and the only limit was one lesson per OWL
-# -- so a level with three owls could hand out three lessons, each of them a
-# board of cards to tap through, in one run of a platformer. That is the
-# "step-by-step teaching for each level" complaint: not any lesson, the rate.
+# The old answer was "in front of the next question whose concept you have not
+# seen". Every one of those lessons was justified on its own -- which is exactly
+# why the shape went unnoticed -- but the child's experience was an ambush: they
+# walked up to an owl to answer something and got a board of cards first, on an
+# idea they had not asked about, at a moment they had not chosen. Two owls into a
+# level and the platformer had become a slideshow.
 #
-# So the budget is per LEVEL. What does not fit waits for the next one; nothing
-# is lost, because an unseen concept stays unseen and is taught the next time its
-# rung comes up.
+# The new answer is one lesson per CATEGORY: the one for the rung the child is
+# standing on, delivered after an answer rather than before one, and re-openable
+# from the board's "?" forever.
+#
+# DERIVED, NOT REMEMBERED. The first version of this held the debt in a
+# dictionary filled by curriculum_step_up. It was wrong twice over: the
+# dictionary died with the session, so a child who quit before the next owl was
+# never taught that rung at all; and a debt could sit behind an unrelated
+# first-contact lesson for owls on end with nothing to re-raise it. Asking the
+# ladder directly has neither problem -- "the lesson for where you stand, if you
+# have not seen it" is true again the moment it is asked, after a quit, a
+# reinstall, or ten owls later.
+#
+# So there is no step-up listener and no pending state. Levelling up IS what
+# moves a child onto a rung whose lesson they have not seen, which is what makes
+# this the same rule the child described: when I level up, I get taught.
 
-## Lessons already spent in this level.
+## The lesson this category owes the child: the one for the rung they stand on,
+## or {} if they have already been shown it.
+func pending_lesson(domain: String) -> Dictionary:
+	var lesson := current_lesson_for(domain)
+	if lesson.is_empty() or has_seen(String(lesson.get("id", ""))):
+		return {}
+	return lesson
+
+## Any category's outstanding lesson, preferring the one just answered.
 ##
-## Runtime only, deliberately NOT in the save: the budget is about the pacing of
-## one sitting, and a child who quits and comes back should get taught, not find
-## a spent counter waiting for them.
-var _lessons_this_level := 0
+## A child can level up in counting and then not meet a counting question for a
+## whole level; preferring the current domain keeps the common case in order,
+## and falling through to the others stops a debt going stale.
+func pending_lesson_any(preferred_domain: String) -> Dictionary:
+	var lesson := pending_lesson(preferred_domain)
+	if not lesson.is_empty():
+		return lesson
+	for domain in MathDomains.ALL:
+		lesson = pending_lesson(String(domain))
+		if not lesson.is_empty():
+			return lesson
+	return {}
 
-## A new level, a fresh budget. Called from Game._load_level, which is the one
-## place a level begins -- first entry, the door, and a death reload all reach it.
-func begin_level() -> void:
-	_lessons_this_level = 0
-
-## Is there room to teach in this level?
+## The lesson for where this child stands in a category, seen or not.
 ##
-## A cap below zero means no cap, which is what the pre-budget game did and the
-## only way back to it without a code change.
-func can_teach_now() -> bool:
-	var cap := int(Config.tutorial("lessons_per_level", 1))
-	return cap < 0 or _lessons_this_level < cap
-
-## Record that this level spent a lesson.
-##
-## Called for FIRST CONTACT too, even though first contact never asks
-## can_teach_now(). PRODUCT.md commits that meeting a brand-new domain always
-## opens with a worked example, so that lesson is exempt from the check -- but it
-## is still a board of cards the child just tapped through, and letting it not
-## count would put a rung reminder straight after it in the same level, which is
-## the exact double-lesson the budget exists to stop.
-func spend_lesson() -> void:
-	_lessons_this_level += 1
+## This is the help button, and it deliberately ignores `tutorialsSeen`: the
+## whole point is to re-open a lesson the child has already been given. Returns
+## {} when the rung has no authored lesson, so the button can hide itself rather
+## than open on nothing.
+func current_lesson_for(domain: String) -> Dictionary:
+	# Checked against the roster rather than trusted: get_current_step() indexes
+	# the snapshot directly and throws on a domain that is not in it, and the
+	# caller here is a UI button reading a `domain` field off problem data.
+	if domain == "" or not MathDomains.ALL.has(domain):
+		return {}
+	var concept := ConceptLadder.concept_for(domain, LearnerStateManager.get_current_step(domain))
+	if concept.is_empty():
+		return {}
+	return get_tutorial(ConceptLadder.tutorial_id(concept))
 
 ## Look a tutorial up by id. Returns {} for an id with no authored lesson, so a
 ## concept can name an idea before the lesson for it exists without bricking the

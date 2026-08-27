@@ -142,6 +142,8 @@
   "math.greeting_3": "Geturðu hjálpað mér með þetta?",
   "math.greeting_4": "Smá stærðfræðistund!",
   "math.greeting_5": "Taktu þér tíma!",
+  "math.help": "?",
+  "math.help_tooltip": "Sýndu mér hvernig",
   "math.hint.add_nothing": "Þú hefur {a} og bætir engu við. Enn {a}!",
   "math.hint.add_tens_ones": "Leggðu tugina saman: {a} + {b} = {sum}, leggðu svo einingarnar saman: {c} + {d} = {sum2}. Samtals: {total}!",
   "math.hint.best_friends": "{a} og {b} eru bestu vinir sem gera {sum}!",

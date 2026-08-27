@@ -330,6 +330,7 @@ func _build_ui(opts: Dictionary) -> void:
 			icon.custom_minimum_size = Vector2(HEADER_ICON, HEADER_ICON)
 			head.add_child(icon)
 		head.add_child(header)
+		_add_help_button(head)
 		vbox.add_child(head)
 
 	_question_label = Label.new()
@@ -396,6 +397,57 @@ func _build_ui(opts: Dictionary) -> void:
 		_buttons.append(b)
 	# Elastic pop-in once the layout has computed sizes.
 	_pop_in.call_deferred(vbox)
+
+## "I don't get it" as a button.
+##
+## The lessons used to arrive whether or not a child wanted one, and never when
+## they did: teaching fired in front of a question whose concept was unseen, and
+## after that the idea was marked seen and gone forever. A child stuck on the
+## board had no way back to the explanation of the very thing they were being
+## asked.
+##
+## So the lesson for wherever this child stands in this question's category is
+## permanently one tap away, and asking costs nothing -- no mark, no record, no
+## effect on what the ladder thinks they know. It opens OVER the board (layer 11
+## against 10) and the question is untouched underneath, because a child who
+## looks something up has not answered anything yet.
+##
+## Absent rather than dead when the rung has no authored lesson: a button that
+## does nothing teaches a child that buttons do nothing.
+func _add_help_button(row: HBoxContainer) -> void:
+	var domain := String(current_problem.get("domain", ""))
+	if TutorialManager.current_lesson_for(domain).is_empty():
+		return
+	var help := BrandButton.make(TextManager.t("math.help"), BrandButton.Role.GHOST,
+		func(): _open_help(domain))
+	var size := float(Config.ui("math_challenge/help_button_size", 88))
+	help.custom_minimum_size = Vector2(size, size)
+	help.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/help_font_size", 30)))
+	help.tooltip_text = TextManager.t("math.help_tooltip")
+	row.add_child(help)
+
+func _open_help(domain: String) -> void:
+	var lesson := TutorialManager.current_lesson_for(domain)
+	if lesson.is_empty():
+		return
+	var game := _game()
+	if game == null:
+		return
+	# BRIEF, always. A child pressing this is not meeting the idea, they are
+	# checking one thing about it, and the four-card arc starts two cards before
+	# the part they came for.
+	game.launch_math_tutorial(lesson, func(_payload: Dictionary): pass,
+		TutorialManager.DEPTH_BRIEF, true)
+
+## The Game hosting this board. Walked rather than held, because the overlay is
+## added to whatever opened it and nothing guarantees a fixed depth.
+func _game() -> Node:
+	var n: Node = get_parent()
+	while n != null:
+		if n.has_method("launch_math_tutorial"):
+			return n
+		n = n.get_parent()
+	return null
 
 ## The board's surface. Themed roles rather than fixed colours, so each world
 ## brings its own slate - and swappable for a nine-slice texture the day one is

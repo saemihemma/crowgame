@@ -139,6 +139,8 @@
   "math.greeting_3": "Can you help with this?",
   "math.greeting_4": "A little math moment!",
   "math.greeting_5": "Take your time!",
+  "math.help": "?",
+  "math.help_tooltip": "Show me how",
   "math.hint.add_nothing": "You have {a} and add nothing. Still {a}!",
   "math.hint.add_tens_ones": "Add the tens: {a} + {b} = {sum}, then add the ones: {c} + {d} = {sum2}. Total: {total}!",
   "math.hint.best_friends": "{a} and {b} are best friends that make {sum}!",

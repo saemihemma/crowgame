@@ -117,28 +117,6 @@ func test_a_single_card_lesson_shows_no_progress_dots() -> void:
 
 # --- when a lesson is allowed to fire -------------------------------------
 
-## The stretch lane deals a problem one step past the ladder at a tuned rate.
-## Teaching its concept would open a lesson for an idea the child has not
-## reached, mid-run, on a question that exists to be a reach.
-func test_a_concept_above_the_learner_is_not_taught() -> void:
-	var seen := SaveManager.get_tutorials_seen().duplicate(true)
-	var snapshot := LearnerStateManager.get_snapshot().duplicate(true)
-	_clear_seen()
-	LearnerStateManager.replace_snapshot(
-		MathPlacement.place_snapshot(LearnerStateManager.get_snapshot(), "addition", 0))
-
-	var reachable := TutorialManager.tutorial_for_problem(_problem("addition", 0))
-	assert_true(not reachable.is_empty(), "the rung the child is standing on is teachable")
-
-	var stretch_step := ConceptLadder.next_concept_step("addition", 0)
-	assert_true(stretch_step > 0, "there is a concept above step 0 to reach for")
-	var above := TutorialManager.tutorial_for_problem(_problem("addition", stretch_step))
-	assert_true(above.is_empty(),
-		"a concept starting at step %d is not taught to a child on step 0" % stretch_step)
-
-	LearnerStateManager.replace_snapshot(snapshot)
-	_restore_seen(seen)
-
 
 # --- helpers ---------------------------------------------------------------
 
@@ -170,64 +148,180 @@ func _restore_seen(seen: Dictionary) -> void:
 		SaveManager.mark_tutorial_seen(String(id), bool((seen[id] as Dictionary).get("skipped", false)))
 
 
-# --- how often ---------------------------------------------------------------
+
+# --- WHEN a lesson arrives ---------------------------------------------------
 #
-# The rules above are all about ONE lesson: is this idea new, and how much of a
-# lesson does it earn. None of them looked at the next lesson, and the child
-# feels the sequence rather than any single board. The only limit used to be one
-# lesson per OWL, so a level with three owls could open three of them in one run.
+# The rules above are all about ONE lesson: is this idea new, and how much of it
+# does the child get. None of them looked at the moment it lands, and that is
+# what the child actually feels. Teaching used to fire in front of any question
+# whose concept was unseen -- an ambush on an idea nobody asked about -- and once
+# fired, the idea was marked seen and there was no way back to it.
+#
+# Now: one lesson per CATEGORY, for the rung the child is standing on, delivered
+# after an answer, and re-openable forever from the board's "?".
 
-## A level teaches, and then it has taught.
-func test_a_level_spends_its_teaching_budget() -> void:
-	TutorialManager.begin_level()
-	assert_true(TutorialManager.can_teach_now(), "a fresh level has room for a lesson")
-	TutorialManager.spend_lesson()
-	assert_true(not TutorialManager.can_teach_now(),
-		"and having taught once, it is done for this level")
+func _stand_on(domain: String, step: int) -> void:
+	var snapshot := LearnerStateManager.get_snapshot()
+	(snapshot["curriculumProgress"][domain] as Dictionary)["currentStep"] = step
+	LearnerStateManager.replace_snapshot(snapshot)
 
-## The budget is per level, not per game: the next level teaches again.
-##
-## This is what keeps the cap from being a silent cut. Nothing is lost when a
-## lesson is refused -- the concept stays unseen, so it is taught the next time
-## its rung comes up.
-func test_the_next_level_can_teach_again() -> void:
-	TutorialManager.begin_level()
-	TutorialManager.spend_lesson()
-	assert_true(not TutorialManager.can_teach_now(), "spent")
-	TutorialManager.begin_level()
-	assert_true(TutorialManager.can_teach_now(), "the next level starts with a full budget")
-
-## A refused lesson is not a forgotten one.
-##
-## The cap must never write to `seen`: a concept that did not fit in this level
-## has to still be unseen, or the child is silently never taught it at all.
-func test_a_budget_refusal_does_not_mark_anything_seen() -> void:
+## Standing on a rung whose lesson has never been shown is what owes a lesson.
+## Levelling up is simply what puts a child there.
+func test_the_rung_a_child_stands_on_owes_its_lesson() -> void:
 	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	var was := LearnerStateManager.get_current_step("addition")
 	_clear_seen()
-	TutorialManager.begin_level()
-	TutorialManager.spend_lesson()
-	assert_true(SaveManager.get_tutorials_seen().is_empty(),
-		"spending the budget teaches nobody anything by itself")
-	assert_true(not TutorialManager.has_seen("addition.count_all"),
-		"and the concept that did not fit is still waiting to be taught")
+	_stand_on("addition", 7)
+	assert_eq(String(TutorialManager.pending_lesson("addition").get("id", "")), "addition.make_ten",
+		"the lesson owed is the one for where the child stands")
+	_stand_on("addition", was)
 	_restore_seen(seen)
 
-## The cap is a tuning number, and -1 is the way back to the old behaviour
-## without editing a .gd.
-func test_a_negative_cap_means_no_cap() -> void:
-	var tuning: Dictionary = DataManager.get_dict("TUTORIAL_TUNING")
-	var before: Variant = tuning.get("lessons_per_level", 1)
-	tuning["lessons_per_level"] = -1
-	TutorialManager.begin_level()
-	for i in 5:
-		TutorialManager.spend_lesson()
-	assert_true(TutorialManager.can_teach_now(),
-		"an uncapped level keeps teaching however many rungs it meets")
-	tuning["lessons_per_level"] = before
-	TutorialManager.begin_level()
+## A lesson already given is not owed again.
+func test_a_seen_lesson_is_never_owed_again() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	var was := LearnerStateManager.get_current_step("addition")
+	_clear_seen()
+	_stand_on("addition", 7)
+	SaveManager.mark_tutorial_seen("addition.make_ten", false)
+	assert_true(TutorialManager.pending_lesson("addition").is_empty(),
+		"a lesson the child has had is not owed a second time")
+	_stand_on("addition", was)
+	_restore_seen(seen)
 
-## The shipped number, pinned. Changing it is a product decision about how a
-## level feels, so it should fail here and be changed on purpose.
-func test_the_shipped_budget_is_one_lesson_per_level() -> void:
-	assert_eq(int(Config.tutorial("lessons_per_level", -99)), 1,
-		"one lesson per level is what ships")
+## ONE per category, and the categories owe independently: settling addition
+## leaves counting exactly where it was.
+func test_categories_owe_independently() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	var add_id := String(TutorialManager.pending_lesson("addition").get("id", ""))
+	assert_true(add_id != "", "addition owes something")
+	assert_true(not TutorialManager.pending_lesson("counting").is_empty(), "so does counting")
+	SaveManager.mark_tutorial_seen(add_id, false)
+	assert_true(TutorialManager.pending_lesson("addition").is_empty(), "addition settled")
+	assert_true(not TutorialManager.pending_lesson("counting").is_empty(),
+		"and settling addition left counting untouched")
+	_restore_seen(seen)
+
+## A debt in another category is still found at the next owl.
+##
+## A child can level up in counting and then not meet a counting question for a
+## whole level. Preferring the answered domain keeps the common case in order;
+## falling through to the others stops the debt going stale.
+func test_a_debt_in_another_category_is_still_found() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	# Settle addition so the only thing outstanding is somewhere else.
+	for domain in MathDomains.ALL:
+		if String(domain) == "counting":
+			continue
+		var id := String(TutorialManager.pending_lesson(String(domain)).get("id", ""))
+		if id != "":
+			SaveManager.mark_tutorial_seen(id, false)
+	var lesson := TutorialManager.pending_lesson_any("addition")
+	assert_true(not lesson.is_empty(), "answering an addition question finds the counting debt")
+	assert_true(String(lesson.get("id", "")).begins_with("counting."),
+		"and it is counting's lesson: %s" % String(lesson.get("id", "")))
+	_restore_seen(seen)
+
+## The debt is DERIVED, not stored -- which is what makes it survive quitting.
+##
+## The first version of this held pending lessons in a runtime dictionary filled
+## by curriculum_step_up. A child who levelled up and then closed the game was
+## never taught that rung at all, because nothing re-raised the debt.
+func test_the_debt_survives_with_no_event_to_remember_it() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	var was := LearnerStateManager.get_current_step("addition")
+	_clear_seen()
+	_stand_on("addition", 12)
+	var first := String(TutorialManager.pending_lesson("addition").get("id", ""))
+	assert_eq(first, "addition.teen_numbers", "owed on arrival")
+	assert_eq(String(TutorialManager.pending_lesson("addition").get("id", "")), first,
+		"and still owed later, with no step-up event in between to remember it")
+	_stand_on("addition", was)
+	_restore_seen(seen)
+
+
+# --- the help button ---------------------------------------------------------
+
+## The lesson for where a child STANDS, seen or not. This is the whole point:
+## asking for help must work on the idea they are stuck on, which is by
+## definition one they have already been taught.
+func test_help_returns_the_current_lesson_even_once_seen() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	var domain := "addition"
+	var before := TutorialManager.current_lesson_for(domain)
+	assert_true(not before.is_empty(), "there is a lesson for where the child stands")
+	SaveManager.mark_tutorial_seen(String(before.get("id", "")), false)
+	var after := TutorialManager.current_lesson_for(domain)
+	assert_eq(String(after.get("id", "")), String(before.get("id", "")),
+		"and having seen it does not take it away -- that is what help IS")
+	_restore_seen(seen)
+
+## Asking for help records nothing. A child checking the explanation has not
+## answered anything, and must not look to the ladder like they have.
+func test_asking_for_help_marks_nothing_seen() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	TutorialManager.current_lesson_for("addition")
+	TutorialManager.current_lesson_for("subtraction")
+	assert_true(SaveManager.get_tutorials_seen().is_empty(),
+		"looking a lesson up is not being taught it")
+	_restore_seen(seen)
+
+## An unknown category has no lesson, so the button hides rather than opening on
+## nothing.
+func test_help_is_absent_where_there_is_no_lesson() -> void:
+	assert_true(TutorialManager.current_lesson_for("").is_empty(), "no domain, no lesson")
+	assert_true(TutorialManager.current_lesson_for("not_a_domain").is_empty(),
+		"an unknown category offers no help rather than an empty board")
+
+
+# --- the help button, on the actual board ------------------------------------
+
+const MATH_CHALLENGE := preload("res://scenes/MathChallenge.tscn")
+
+func _board_for(domain: String) -> Node:
+	var panel: Node = MATH_CHALLENGE.instantiate()
+	Engine.get_main_loop().root.add_child(panel)
+	panel.present({
+		"id": "help_probe",
+		"domain": domain,
+		"prompt": {"text": "1 + 1 = ?"},
+		"answer": {"mode": "mcq", "correct": 2, "options": [2, 3, 4, 5]},
+	}, {"npcName": "Hoot", "npcGreeting": "Hi", "problemCount": 1, "currentProblemIndex": 1})
+	return panel
+
+func _find_help(node: Node) -> Node:
+	if node is BrandButton and node.text == TextManager.t("math.help"):
+		return node
+	for child in node.get_children():
+		var found := _find_help(child)
+		if found != null:
+			return found
+	return null
+
+## The button exists on a real board, not just in the function that would draw
+## it. Everything else about help is logic; this is the half a child touches, and
+## a header row that silently never got the button would pass every other test
+## here.
+func test_the_board_carries_a_help_button() -> void:
+	var panel := _board_for("addition")
+	await Engine.get_main_loop().process_frame
+	var help := _find_help(panel)
+	assert_true(help != null, "an addition question offers its lesson from the board")
+	if help != null:
+		var floor_px := float(Config.ui("math_challenge/help_button_size", 88))
+		assert_true(help.custom_minimum_size.x >= floor_px and help.custom_minimum_size.y >= floor_px,
+			"and it clears the 88px tap-target floor a struggling child has to hit")
+	panel.queue_free()
+
+## A domain with no lesson to give shows no button, rather than one that opens on
+## nothing. `domain` comes off problem data, so this is also the guard against a
+## malformed problem taking the board down.
+func test_no_help_button_where_there_is_no_lesson() -> void:
+	var panel := _board_for("not_a_domain")
+	await Engine.get_main_loop().process_frame
+	assert_true(_find_help(panel) == null, "no lesson, no button")
+	panel.queue_free()

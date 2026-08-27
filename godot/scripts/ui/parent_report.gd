@@ -110,7 +110,6 @@ const FLAG_ROWS: Array = [
 	"math/retire_exhausted_domains",
 	"math/representation_floor",
 	"math/group_tokens_in_fives",
-	"math/tutorial_below_level",
 	"input/space_is_sprint",
 	"input/sprint_pad_latches",
 	"levels/wide_gap_pass",
@@ -121,12 +120,10 @@ const FLAG_ROWS: Array = [
 ## The values a non-boolean flag cycles through, in order. A flag absent from
 ## here is a boolean and cycles true/false.
 ##
-## Data rather than a parse of the current value: `tutorial_below_level` has
-## three named modes and `hold_ms` is a duration, and inferring "what could this
-## become next" from "what is it now" would mean a typo in the JSON silently
-## reduces a three-way to a two-way.
+## Data rather than a parse of the current value: `hold_ms` is a duration, and
+## inferring "what could this become next" from "what is it now" would mean a
+## typo in the JSON silently reduces the list to whatever it happens to be.
 const FLAG_CHOICES: Dictionary = {
-	"math/tutorial_below_level": ["full", "brief", "off"],
 	"death/hold_ms": [0, 800, 1200, 1800, 2500],
 }
 

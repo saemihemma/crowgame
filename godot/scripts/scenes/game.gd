@@ -151,8 +151,6 @@ func _load_level(key: String) -> void:
 		return
 	LevelManager.set_current_level(key)
 	_apply_level_theme(key)
-	# A new level, a fresh teaching budget -- see TutorialManager.begin_level().
-	TutorialManager.begin_level()
 	var f := FileAccess.open(map_path, FileAccess.READ)
 	var level: Dictionary = JSON.parse_string(f.get_as_text())
 	f.close()
@@ -954,16 +952,32 @@ func is_math_tutorial_active() -> bool:
 func get_math_tutorial() -> CanvasLayer:
 	return _math_tutorial
 
-func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable, depth: String = TutorialManager.DEPTH_FULL) -> void:
-	if is_math_challenge_active() or is_math_tutorial_active():
+## Open a lesson.
+##
+## `over_challenge` is the help button's door in. Normally a lesson refuses to
+## open while a question is on screen, because every automatic lesson either
+## precedes a question or follows one and two boards at once would be a bug. The
+## "?" on the board is the one case where the child asked for both: the tutorial
+## is CanvasLayer 11 against the challenge's 10, so it lands on top and the
+## question is exactly where they left it when they close it.
+func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable,
+		depth: String = TutorialManager.DEPTH_FULL, over_challenge: bool = false) -> void:
+	if is_math_tutorial_active():
+		return
+	if is_math_challenge_active() and not over_challenge:
 		return
 	_math_tutorial = MATH_TUTORIAL_SCENE.instantiate()
 	add_child(_math_tutorial)
 	_math_tutorial.closed.connect(func(payload: Dictionary):
 		_math_tutorial = null
-		_set_touch_visible(true)
-		if _player:
-			_player.set_physics_process(true)
+		# Hand the screen back to whatever was under the lesson. When the help
+		# button opened it OVER a question, that is the question -- and giving the
+		# crow its controls back there would put live touch pads under the board,
+		# where a thumb reaching for an answer jumps instead.
+		if not is_math_challenge_active():
+			_set_touch_visible(true)
+			if _player:
+				_player.set_physics_process(true)
 		if on_closed.is_valid():
 			on_closed.call(payload)
 	)
