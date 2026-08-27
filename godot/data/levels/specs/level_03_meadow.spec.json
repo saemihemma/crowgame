@@ -185,9 +185,10 @@
     ],
     "collectibles": [
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 7,
-        "y": 12
+        "y": 12,
+        "id": "c1"
       },
       {
         "type": "coin",
@@ -235,9 +236,10 @@
         "y": 10
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 42,
-        "y": 11
+        "y": 11,
+        "id": "c2"
       },
       {
         "type": "coin",
@@ -275,9 +277,10 @@
         "y": 11
       },
       {
-        "type": "coin",
+        "type": "big_coin",
         "x": 75,
-        "y": 10
+        "y": 10,
+        "id": "c3"
       },
       {
         "type": "coin",

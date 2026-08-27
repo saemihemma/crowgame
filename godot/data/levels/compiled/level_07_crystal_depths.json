@@ -8584,8 +8584,8 @@
         },
         {
           "id": 6,
-          "name": "coin",
-          "type": "collectible",
+          "name": "big_coin",
+          "type": "big_coin",
           "x": 192,
           "y": 448,
           "width": 32,
@@ -8594,7 +8594,12 @@
             {
               "name": "collectible_type",
               "type": "string",
-              "value": "coin"
+              "value": "big_coin"
+            },
+            {
+              "name": "coin_id",
+              "type": "string",
+              "value": "c1"
             }
           ]
         },
@@ -8856,8 +8861,8 @@
         },
         {
           "id": 23,
-          "name": "coin",
-          "type": "collectible",
+          "name": "big_coin",
+          "type": "big_coin",
           "x": 1984,
           "y": 352,
           "width": 32,
@@ -8866,7 +8871,12 @@
             {
               "name": "collectible_type",
               "type": "string",
-              "value": "coin"
+              "value": "big_coin"
+            },
+            {
+              "name": "coin_id",
+              "type": "string",
+              "value": "c2"
             }
           ]
         },
@@ -9112,8 +9122,8 @@
         },
         {
           "id": 39,
-          "name": "coin",
-          "type": "collectible",
+          "name": "big_coin",
+          "type": "big_coin",
           "x": 3680,
           "y": 160,
           "width": 32,
@@ -9122,7 +9132,12 @@
             {
               "name": "collectible_type",
               "type": "string",
-              "value": "coin"
+              "value": "big_coin"
+            },
+            {
+              "name": "coin_id",
+              "type": "string",
+              "value": "c3"
             }
           ]
         },
