@@ -292,9 +292,10 @@ function isProblemWithinOwlRails(problem: MathProblem, owlConfig: LiveOwlMathCon
         return false;
     }
 
+    // An absent rail means no operand cap (the shipped state since 2026-08).
     if (
         problem.difficultyTraits?.maxOperand !== undefined &&
-        problem.difficultyTraits.maxOperand > owlConfig.maxOperand
+        problem.difficultyTraits.maxOperand > (owlConfig.maxOperand ?? Number.POSITIVE_INFINITY)
     ) {
         return false;
     }
@@ -1750,7 +1751,7 @@ function reviewRuntimeSelectorSmoke(materialized: MaterializationResult): Review
                 localMaxOperand = Math.max(localMaxOperand, visibleMaxOperand);
                 localMaxCurriculumStep = Math.max(localMaxCurriculumStep, problem.curriculumStep);
 
-                if (visibleMaxOperand > owlConfig.maxOperand) {
+                if (visibleMaxOperand > (owlConfig.maxOperand ?? Number.POSITIVE_INFINITY)) {
                     capBreaches++;
                     profileGrade -= 2;
                 }
