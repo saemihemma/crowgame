@@ -87,6 +87,14 @@ func _launch() -> bool:
 				continue
 			_pending_freebie_domain = domain
 			_taught_this_encounter = true
+			# Spends the level's teaching budget without ever asking for it.
+			# First contact with a domain is a product commitment (PRODUCT.md,
+			# "First contact with new maths cannot hurt"), so it is never
+			# budgeted away -- but it is still a board of cards the child just
+			# tapped through, and not counting it would let a rung reminder
+			# follow it in the same level, which is the double lesson the budget
+			# exists to stop.
+			TutorialManager.spend_lesson()
 			game.launch_math_tutorial(opening_lesson, _on_tutorial_closed,
 				TutorialManager.depth_for(String(opening_lesson["id"])))
 			return true
@@ -114,10 +122,16 @@ func _launch() -> bool:
 	# ever fires once per domain, so without this the first two-digit sum, the
 	# first bridge past ten and the first borrow all arrive with no warning at
 	# all -- they are just "addition" and "subtraction" to the runtime.
-	if freebie_domain == null and not _taught_this_encounter:
+	#
+	# Budgeted, unlike first contact above: this is the lane that fires several
+	# times in one level, because a climbing child meets new rungs in bursts.
+	# Refusing here costs the child nothing -- the concept stays unseen, and it is
+	# taught the next time its rung comes up, in a level that has room for it.
+	if freebie_domain == null and not _taught_this_encounter and TutorialManager.can_teach_now():
 		var lesson := TutorialManager.tutorial_for_problem(problem)
 		if not lesson.is_empty():
 			_taught_this_encounter = true
+			TutorialManager.spend_lesson()
 			_pending_problem = problem
 			_pending_freebie_domain = problem["domain"]
 			# FULL the first time this child is taught anything in this domain,

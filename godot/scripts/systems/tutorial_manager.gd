@@ -142,6 +142,56 @@ func depth_for(tutorial_id: String) -> String:
 func has_seen(tutorial_id: String) -> bool:
 	return SaveManager.has_seen_tutorial(tutorial_id)
 
+
+# --- how often, as opposed to how deep ---------------------------------------
+#
+# Everything above this line decides WHETHER an idea is new and HOW MUCH of a
+# lesson it earns. Nothing decided how OFTEN, and that turned out to be the part
+# a child feels.
+#
+# Each lesson is once-ever and individually justified, which is exactly why the
+# frequency went unnoticed: no single one of them is wrong. But they are not
+# spread evenly. A child climbing the ladder meets new rungs in bursts, `seen` is
+# per concept rather than per sitting, and the only limit was one lesson per OWL
+# -- so a level with three owls could hand out three lessons, each of them a
+# board of cards to tap through, in one run of a platformer. That is the
+# "step-by-step teaching for each level" complaint: not any lesson, the rate.
+#
+# So the budget is per LEVEL. What does not fit waits for the next one; nothing
+# is lost, because an unseen concept stays unseen and is taught the next time its
+# rung comes up.
+
+## Lessons already spent in this level.
+##
+## Runtime only, deliberately NOT in the save: the budget is about the pacing of
+## one sitting, and a child who quits and comes back should get taught, not find
+## a spent counter waiting for them.
+var _lessons_this_level := 0
+
+## A new level, a fresh budget. Called from Game._load_level, which is the one
+## place a level begins -- first entry, the door, and a death reload all reach it.
+func begin_level() -> void:
+	_lessons_this_level = 0
+
+## Is there room to teach in this level?
+##
+## A cap below zero means no cap, which is what the pre-budget game did and the
+## only way back to it without a code change.
+func can_teach_now() -> bool:
+	var cap := int(Config.tutorial("lessons_per_level", 1))
+	return cap < 0 or _lessons_this_level < cap
+
+## Record that this level spent a lesson.
+##
+## Called for FIRST CONTACT too, even though first contact never asks
+## can_teach_now(). PRODUCT.md commits that meeting a brand-new domain always
+## opens with a worked example, so that lesson is exempt from the check -- but it
+## is still a board of cards the child just tapped through, and letting it not
+## count would put a rung reminder straight after it in the same level, which is
+## the exact double-lesson the budget exists to stop.
+func spend_lesson() -> void:
+	_lessons_this_level += 1
+
 ## Look a tutorial up by id. Returns {} for an id with no authored lesson, so a
 ## concept can name an idea before the lesson for it exists without bricking the
 ## owl.

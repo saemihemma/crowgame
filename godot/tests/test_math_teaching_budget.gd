@@ -168,3 +168,66 @@ func _restore_seen(seen: Dictionary) -> void:
 	_clear_seen()
 	for id in seen:
 		SaveManager.mark_tutorial_seen(String(id), bool((seen[id] as Dictionary).get("skipped", false)))
+
+
+# --- how often ---------------------------------------------------------------
+#
+# The rules above are all about ONE lesson: is this idea new, and how much of a
+# lesson does it earn. None of them looked at the next lesson, and the child
+# feels the sequence rather than any single board. The only limit used to be one
+# lesson per OWL, so a level with three owls could open three of them in one run.
+
+## A level teaches, and then it has taught.
+func test_a_level_spends_its_teaching_budget() -> void:
+	TutorialManager.begin_level()
+	assert_true(TutorialManager.can_teach_now(), "a fresh level has room for a lesson")
+	TutorialManager.spend_lesson()
+	assert_true(not TutorialManager.can_teach_now(),
+		"and having taught once, it is done for this level")
+
+## The budget is per level, not per game: the next level teaches again.
+##
+## This is what keeps the cap from being a silent cut. Nothing is lost when a
+## lesson is refused -- the concept stays unseen, so it is taught the next time
+## its rung comes up.
+func test_the_next_level_can_teach_again() -> void:
+	TutorialManager.begin_level()
+	TutorialManager.spend_lesson()
+	assert_true(not TutorialManager.can_teach_now(), "spent")
+	TutorialManager.begin_level()
+	assert_true(TutorialManager.can_teach_now(), "the next level starts with a full budget")
+
+## A refused lesson is not a forgotten one.
+##
+## The cap must never write to `seen`: a concept that did not fit in this level
+## has to still be unseen, or the child is silently never taught it at all.
+func test_a_budget_refusal_does_not_mark_anything_seen() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	TutorialManager.begin_level()
+	TutorialManager.spend_lesson()
+	assert_true(SaveManager.get_tutorials_seen().is_empty(),
+		"spending the budget teaches nobody anything by itself")
+	assert_true(not TutorialManager.has_seen("addition.count_all"),
+		"and the concept that did not fit is still waiting to be taught")
+	_restore_seen(seen)
+
+## The cap is a tuning number, and -1 is the way back to the old behaviour
+## without editing a .gd.
+func test_a_negative_cap_means_no_cap() -> void:
+	var tuning: Dictionary = DataManager.get_dict("TUTORIAL_TUNING")
+	var before: Variant = tuning.get("lessons_per_level", 1)
+	tuning["lessons_per_level"] = -1
+	TutorialManager.begin_level()
+	for i in 5:
+		TutorialManager.spend_lesson()
+	assert_true(TutorialManager.can_teach_now(),
+		"an uncapped level keeps teaching however many rungs it meets")
+	tuning["lessons_per_level"] = before
+	TutorialManager.begin_level()
+
+## The shipped number, pinned. Changing it is a product decision about how a
+## level feels, so it should fail here and be changed on purpose.
+func test_the_shipped_budget_is_one_lesson_per_level() -> void:
+	assert_eq(int(Config.tutorial("lessons_per_level", -99)), 1,
+		"one lesson per level is what ships")
