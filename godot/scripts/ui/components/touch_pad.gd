@@ -75,9 +75,25 @@ static func _bare(which: int, at: Vector2, size: float) -> TouchPad:
 	pad.box = size
 	pad.position = at
 	var shape := RectangleShape2D.new()
-	# The pressable square is the plate plus a margin on every side. The node's
-	# position is the HIT origin; the plate is drawn inset by HIT_MARGIN, so
-	# drawn_rect() is what the child sees and this is what answers a thumb.
+	# The pressable square is the plate plus a margin on every side, and BOTH are
+	# centred on the node's position -- which is why this file now thinks in
+	# centres rather than corners.
+	#
+	# THE PADS USED TO ANSWER SOMEWHERE ELSE THAN THEY WERE DRAWN. The node's
+	# position was treated as the top-left of both the plate and the hit area, so
+	# `_draw` drew from the origin outward while TouchScreenButton hit-tested a
+	# rectangle CENTRED on that origin -- the pressable square sat half a button up
+	# and to the left of the button. Four of five pads then ignored a press at
+	# their own drawn centre, and the fifth answered only because its centre
+	# happened to land a pixel inside the displaced rectangle's corner, which is
+	# what made it feel sporadic rather than dead.
+	#
+	# Measured, not reasoned: on the jump pad a press at the drawn centre did
+	# nothing while a press at the node position -- off the plate entirely -- lit
+	# it and made the crow jump. So the hit rectangle is centred on `position`,
+	# and everything here is now built around that fact rather than around a
+	# reading of `shape_centered`, whose obvious interpretation was tried and did
+	# not move the offset.
 	shape.size = Vector2(size + HIT_MARGIN * 2.0, size + HIT_MARGIN * 2.0)
 	pad.shape = shape
 	pad.shape_centered = false
@@ -98,11 +114,11 @@ static func _bare(which: int, at: Vector2, size: float) -> TouchPad:
 ## can see and aim at a target, and a generous invisible margin must not be
 ## allowed to paper over a plate that is too small to find.
 func drawn_rect() -> Rect2:
-	return Rect2(position + Vector2(HIT_MARGIN, HIT_MARGIN), Vector2(box, box))
+	return Rect2(position - Vector2(box, box) * 0.5, Vector2(box, box))
 
 func hit_rect() -> Rect2:
-	var size := (shape as RectangleShape2D).size if shape is RectangleShape2D else Vector2.ZERO
-	return Rect2(position, size)
+	var size: Vector2 = (shape as RectangleShape2D).size if shape is RectangleShape2D else Vector2.ZERO
+	return Rect2(position - size * 0.5, size)
 
 ## Let go of whatever this pad is holding.
 ##
@@ -171,8 +187,10 @@ func _draw() -> void:
 	var grow := PRESS_GROW if down else 0.0
 	# Inset by HIT_MARGIN: the node's origin is the hit area's corner, and the
 	# plate is drawn inside it.
-	var rect := Rect2(Vector2(HIT_MARGIN - grow, HIT_MARGIN - grow),
-		Vector2(box + grow * 2.0, box + grow * 2.0))
+	# Centred on the node origin, the same point the hit rectangle is centred on,
+	# so what the child aims at and what answers are the same square.
+	var half := box * 0.5 + grow
+	var rect := Rect2(Vector2(-half, -half), Vector2(half * 2.0, half * 2.0))
 
 	var plate := StyleBoxFlat.new()
 	plate.bg_color = Color(coin, 0.92) if down else Color(ink, 0.42)
