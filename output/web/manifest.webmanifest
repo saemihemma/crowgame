@@ -1,0 +1,17 @@
+{
+  "name": "Hörmann",
+  "short_name": "Hörmann",
+  "description": "Reiknileikur fyrir fimm til sjö ára. A counting and arithmetic platformer for five- to seven-year-olds.",
+  "lang": "is",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#123a2e",
+  "theme_color": "#87ceeb",
+  "icons": [
+    { "src": "index.icon.png", "sizes": "128x128", "type": "image/png" },
+    { "src": "index.apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -71,6 +71,8 @@ stamp_build_id
 
 cp "$ROOT/deploy/web/crow-errors.js" "$OUT/crow-errors.js"
 cp "$ROOT/deploy/web/crow-focus.js" "$OUT/crow-focus.js"
+cp "$ROOT/deploy/web/crow-fullscreen.js" "$OUT/crow-fullscreen.js"
+cp "$ROOT/deploy/web/manifest.webmanifest" "$OUT/manifest.webmanifest"
 
 # LANDSCAPE ONLY, said out loud.
 #
@@ -113,6 +115,11 @@ if 'id="crow-rotate"' not in html:
         '</svg>'
         '<p>Snúðu spjaldtölvunni á hliðina</p>'
         '<p class="crow-rotate-sub">Turn your tablet sideways to play</p>'
+        # A rotation lock makes the line above impossible to follow, and a child
+        # handed a locked tablet has no way to know that is what is wrong. Said
+        # quietly, under the instruction, rather than instead of it.
+        '<p class="crow-rotate-hint">Ef skjárinn snýst ekki: taktu snúningslásinn af.'
+        '<br>If the screen will not turn, switch off rotation lock.</p>'
         '</div>'
     )
     html = html.replace('<body>', '<body>' + overlay, 1)
