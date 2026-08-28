@@ -490,6 +490,28 @@ function formatArithmeticPrompt(variant: string, left: number, operator: string,
             return `There are ${left} nests. Each nest has ${right} eggs. How many eggs in all?`;
         case 'story_share':
             return `${left} berries are shared by ${right} birds. How many berries does each bird get?`;
+        // CGI compare. The two shapes read the SAME two numbers and run opposite
+        // ways: "a bird has 3 more" adds, "a bird has 3 berries" subtracts.
+        // Telling them apart is the skill, which is why both ship.
+        case 'story_more_than':
+            return `You have ${left} berries. A bird has ${right} more. How many does the bird have?`;
+        case 'story_difference':
+            return `You have ${left} berries. A bird has ${right} berries. How many more do you have?`;
+        // CGI part-part-whole: no event, just two parts and a whole. The hardest
+        // additive situation for a child who has learnt "story means something
+        // happens".
+        case 'story_two_colours':
+            return `There are ${left} red berries and ${right} blue berries. How many berries in all?`;
+        case 'story_the_rest':
+            return `There are ${left} berries. ${right} are red. How many are blue?`;
+        // The array: the same product said the other way round, and the picture
+        // behind the commutative law.
+        case 'story_rows':
+            return `There are ${left} rows of ${right} eggs. How many eggs in all?`;
+        // Quotative (measurement) division: how many GROUPS, where sharing asks
+        // how many EACH.
+        case 'story_each_nest':
+            return `You have ${left} berries. You put ${right} in each nest. How many nests?`;
         default:
             return `${left} ${operator} ${right} = ?`;
     }
@@ -574,6 +596,16 @@ function formatSequencePrompt(variant: string, sequence: number[]): string {
             return `Keep the pattern going: ${prefix}, ?`;
         case 'number_pattern':
             return `What comes next in the number pattern: ${prefix}, ?`;
+        // These two NAME the strategy rather than describing the shape, and
+        // Sproti 1 names them the same way: talning áfram and talning aftur á
+        // bak are two skills, not one skill run in two directions. The generator
+        // only offers each to a run that actually goes that way -- a framing that
+        // lied about the direction would be worse than the third wording the low
+        // rungs were stuck with.
+        case 'count_on':
+            return `Count on: ${prefix}, ?`;
+        case 'count_back':
+            return `Count back: ${prefix}, ?`;
         default:
             return `What number comes next? ${prefix}, ?`;
     }
@@ -600,17 +632,25 @@ function withFallbackVariants(kind: AuthoringTemplateKind, promptVariants: strin
         return Array.from(new Set(promptVariants));
     }
     const fallbackByKind: Record<AuthoringTemplateKind, string[]> = {
-        addition: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check', 'story_find', 'story_land'],
-        subtraction: ['equation', 'question', 'solve', 'equals', 'complete', 'mental_math', 'how_much', 'answer', 'blank_equals', 'quick_check', 'story_eat', 'story_fly'],
-        multiplication: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals'],
-        division: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals'],
+        addition: [
+            'equation', 'question', 'solve', 'equals', 'complete', 'mental_math',
+            'how_much', 'answer', 'blank_equals', 'quick_check',
+            'story_find', 'story_land', 'story_more_than', 'story_two_colours',
+        ],
+        subtraction: [
+            'equation', 'question', 'solve', 'equals', 'complete', 'mental_math',
+            'how_much', 'answer', 'blank_equals', 'quick_check',
+            'story_eat', 'story_fly', 'story_difference', 'story_the_rest',
+        ],
+        multiplication: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals', 'story_rows'],
+        division: ['equation', 'question', 'solve', 'equals', 'complete', 'how_much', 'answer', 'blank_equals', 'story_each_nest'],
         counting: [
             'count', 'how_many', 'count_them', 'how_many_of',
             'see', 'altogether', 'say_number', 'point_count',
         ],
         comparison: ['which', 'pick', 'find'],
         pattern_matching: ['repeat', 'keep_going'],
-        number_sequence: ['next', 'keep_going', 'number_pattern'],
+        number_sequence: ['next', 'keep_going', 'number_pattern', 'count_on', 'count_back'],
     };
 
     return Array.from(new Set([...(promptVariants.length > 0 ? promptVariants : []), ...fallbackByKind[kind]]));
@@ -1083,6 +1123,37 @@ function buildBothSidesCandidate(
     };
 }
 
+/**
+ * Per-shape constraints a story needs beyond "both quantities >= 2".
+ *
+ * Two kinds of reason, and both are about the sentence rather than the sum.
+ *
+ * A CAP, where the Icelandic wording puts a numeral next to a word that
+ * inflects with it. "Það eru 21 rauð ber" wants "Það er 21 rautt ber", because
+ * Icelandic counts 21, 31 and 101 as singular, and one phrasing key can carry
+ * only one plural parameter while these sentences have two sensitive numbers.
+ * The existing equal-groups story avoids the same trap by keeping its factors
+ * under ten; these keep their whole under twenty-one, which is also where
+ * part-part-whole belongs on the ladder (CGI puts it in the first two years).
+ * `npm run validate:agreement` is what would catch a slip.
+ *
+ * And a SENSE constraint: "You have 5 berries. A bird has 5 berries. How many
+ * more do you have?" has the answer none, which is a riddle rather than a
+ * comparison.
+ */
+function storyFits(variant: string, left: number, right: number, correct: number): boolean {
+    switch (variant) {
+        case 'story_two_colours':
+            return left + right <= 20;
+        case 'story_the_rest':
+            return left <= 20 && right <= 20 && correct >= 2;
+        case 'story_difference':
+            return left > right;
+        default:
+            return true;
+    }
+}
+
 function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandidate[] {
     const operator = toOperator(template.kind);
     const candidates: RawCandidate[] = [];
@@ -1228,6 +1299,7 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
                     (template.kind === 'multiplication' || template.kind === 'division') &&
                     correct < 2
                 ) continue;
+                if (!storyFits(variant, left, right, correct)) continue;
 
                 const promptText = applyPromptLeadIn(formatArithmeticPrompt(variant, left, operator, right), template.promptLeadIn);
                 candidates.push({
@@ -1333,6 +1405,10 @@ function renderSequenceCandidates(template: SequenceTemplateSpec): RawCandidate[
                 1,
             );
             for (const variant of promptVariants) {
+                // A run that climbs is not "counting back", whatever the template
+                // asked for.
+                if (variant === 'count_on' && step <= 0) continue;
+                if (variant === 'count_back' && step >= 0) continue;
                 const promptText = applyPromptLeadIn(formatSequencePrompt(variant, sequence), template.promptLeadIn);
                 candidates.push({
                     values: { start, step, correct },

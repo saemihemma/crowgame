@@ -8713,7 +8713,7 @@
       "id": "batch_31_subtraction_low_and_teens_density",
       "title": "Subtraction low and teens density",
       "theme": "the thin rungs of the subtraction ladder - the top of ten, the top of twenty, and take-away bonds asked from the other end",
-      "targetCount": 85,
+      "targetCount": 92,
       "templates": [
         {
           "id": "sub_low_wide_1",
@@ -8794,6 +8794,45 @@
           ]
         },
         {
+          "id": "sub_low_wide_3",
+          "kind": "subtraction",
+          "family": "low_density",
+          "bandId": "sub_to_10",
+          "count": 4,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            3,
+            3
+          ],
+          "leftRange": [
+            0,
+            10
+          ],
+          "rightRange": [
+            0,
+            10
+          ]
+        },
+        {
           "id": "sub_low_wide_4",
           "kind": "subtraction",
           "family": "low_density",
@@ -8837,7 +8876,7 @@
           "kind": "subtraction",
           "family": "low_density",
           "bandId": "sub_to_10",
-          "count": 12,
+          "count": 15,
           "skill": "single_digit_subtraction",
           "promptVariants": [
             "equation",
@@ -11170,7 +11209,7 @@
       "id": "batch_36_multiplication_division_density",
       "title": "Multiplication and division density",
       "theme": "the identity rung, the beyond-tables rung, and the equal-groups and sharing stories the table ladder was missing",
-      "targetCount": 64,
+      "targetCount": 75,
       "templates": [
         {
           "id": "div_by_one",
@@ -11245,6 +11284,108 @@
           "rightRange": [
             2,
             9
+          ]
+        },
+        {
+          "id": "div_hard_cluster_top",
+          "kind": "division",
+          "family": "fact_families",
+          "bandId": "div_6_9",
+          "count": 6,
+          "skill": "division_facts",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_each_nest"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            11,
+            11
+          ],
+          "leftRange": [
+            2,
+            99
+          ],
+          "rightRange": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "div_hard_cluster_top_bond",
+          "kind": "division",
+          "family": "missing_divisor",
+          "bandId": "div_6_9",
+          "count": 3,
+          "skill": "missing_divisor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            11,
+            11
+          ],
+          "leftRange": [
+            2,
+            99
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_right",
+            "total_first"
+          ]
+        },
+        {
+          "id": "div_hard_cluster_top_dividend",
+          "kind": "division",
+          "family": "missing_dividend",
+          "bandId": "div_6_9",
+          "count": 2,
+          "skill": "missing_dividend",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            11,
+            11
+          ],
+          "leftRange": [
+            2,
+            99
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_left"
           ]
         },
         {
@@ -11378,7 +11519,7 @@
       "id": "batch_37_number_sense_density",
       "title": "Number sense density",
       "theme": "counting, comparison, sequence, and pattern rungs that shipped under the density floor",
-      "targetCount": 237,
+      "targetCount": 246,
       "templates": [
         {
           "id": "count_five_six_wide",
@@ -11864,7 +12005,7 @@
           "kind": "number_sequence",
           "family": "sequence_density",
           "bandId": "sequence_basics",
-          "count": 12,
+          "count": 18,
           "skill": "number_ordering",
           "promptVariants": [
             "next",
@@ -11957,7 +12098,7 @@
           "kind": "number_sequence",
           "family": "sequence_density",
           "bandId": "sequence_basics",
-          "count": 12,
+          "count": 15,
           "skill": "number_ordering",
           "promptVariants": [
             "next",
@@ -12308,7 +12449,7 @@
       "id": "batch_38_relational_shapes",
       "title": "Relational shapes across the operations",
       "theme": "the times table asked from the other end, sharing asked backwards, and an operation on both sides of the equals sign",
-      "targetCount": 154,
+      "targetCount": 148,
       "templates": [
         {
           "id": "mult_missing_factor_missing_right_1",
@@ -12594,7 +12735,7 @@
           "kind": "division",
           "family": "missing_divisor",
           "bandId": "div_6_9",
-          "count": 12,
+          "count": 9,
           "skill": "missing_divisor",
           "promptVariants": [
             "equation"
@@ -12656,7 +12797,7 @@
           "kind": "division",
           "family": "missing_dividend",
           "bandId": "div_6_9",
-          "count": 12,
+          "count": 9,
           "skill": "missing_dividend",
           "promptVariants": [
             "equation"

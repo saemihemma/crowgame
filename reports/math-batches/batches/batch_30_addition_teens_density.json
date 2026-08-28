@@ -107,9 +107,9 @@
   },
   "samplePrompts": [
     "11 + 10 =",
+    "You have 7 berries. A bird has 11 more. How many does the bird have?",
     "Solve: 11 + 3",
-    "You have 7 berries. You find 11 more. How many berries?",
-    "What is 11 + 11?",
-    "Quick check: 6 + 11"
+    "There are 11 red berries and 7 blue berries. How many berries in all?",
+    "What is 11 + 11?"
   ]
 }

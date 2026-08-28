@@ -64,8 +64,18 @@ one".
 situations: join, separate, part-part-whole, compare — with the unknown's
 position driving difficulty (result < change < start unknown). Multiplicative
 situations: equal groups, arrays, comparison. Every word-problem shape we ship
-maps to one of these; our current shapes are join-result (find), separate-result
-(eat/fly away), equal-groups (nests), and partitive sharing (shared by birds).
+maps to one of these, and as of 2026-08 all four additive situations ship:
+join-result (find, land), separate-result (eat, fly away), compare with the
+quantity unknown (`a bird has 3 more`) and with the difference unknown (`how many
+more do you have`), and part-part-whole both ways (`4 red and 5 blue`; `9
+berries, 4 are red`). The compare pair is why each shape carries its own parser
+pattern AND its own semantic check: both members read the same two numbers and
+must run opposite ways, so a shape falling through to a shared default would be
+verified against the wrong arithmetic and still pass. Multiplicatively: equal
+groups (nests), the array that says the same product differently (rows),
+partitive sharing (shared by birds), and quotative measurement (`you put 3 in
+each nest — how many nests?`), which is the natural partner of the
+missing-divisor relational shape.
 
 Sources: [Baroody — subtraction-as-addition](https://www.sciencedirect.com/science/article/abs/pii/S0885200619301012) ·
 [NCETM — cardinality and counting](https://www.ncetm.org.uk/classroom-resources/ey-cardinality-and-counting/) ·
@@ -290,14 +300,24 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
   where it was. Widening a framing set is therefore never a fix for a narrow
   rung, and the width must be measured before any framing set is widened.
   `tools/validate_math_concepts.mjs` fails the build on an undeclared narrow
-  rung and, symmetrically, on a declaration for a rung that has since widened;
-  the three currently declared (subtraction 5 and 15, division 11) are at a
-  structural ceiling that no authoring moves.
-- Some rungs sit under the PROBLEM floor for the same structural reason:
-  number_sequence step 0 has six possible runs (0,1,2 up to 2,3,4 and the same
-  counting back) across three framings, and division steps 10 and 11 invert what
-  is left of ×8 and ×9. There, a wider framing set is the only lever, and it is
-  a phrasing-catalog change rather than an authoring one.
+  rung and, symmetrically, on a declaration for a rung that has since widened.
+  A fact is the multiset of numbers in play — what the prompt writes plus what
+  it asks for — so `11 + 3`, `3 + 11` and `11 + ? = 14` count once between them,
+  the same collapsing the step derivation already does. The six currently
+  declared (subtraction 5 and 15, multiplication 9 and 10, division 10 and 11)
+  are at a structural ceiling that no authoring moves: the top of the table
+  ladder is nearly empty by design, because a fact belongs to the earliest table
+  that contains it.
+- Since 2026-08 **every rung the derivation can reach clears the problem
+  floor.** The last two to do so needed different fixes, and the difference is
+  the rule: division step 11 only needed authoring, because its two facts had
+  ten framings between them and thirteen problems drawn from them; number
+  sequence step 0 could not be authored past eighteen, because six possible runs
+  across three framings is eighteen prompts and there is no nineteenth. That one
+  needed a wider framing set — `count_on` and `count_back`, which name the
+  strategy the way Sproti does — and a framing set is a phrasing-catalog change,
+  not an authoring one. Reach for it only when the arithmetic is genuinely
+  exhausted, and never as a way past a narrow rung: it cannot widen one.
 
 ## 6. Categorization rules
 

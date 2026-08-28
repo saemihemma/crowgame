@@ -443,14 +443,23 @@ at least six problems on it. What remains below is two other things entirely,
 and the difference decides what a fix would even be.
 
 A third declared class, `knownNarrow`, measures something the problem count
-cannot see: how many DISTINCT facts a rung asks. Twenty problems drawn from
-three facts is a rung a child can pass by remembering three answers, and adding
-framings raises the count while leaving the width exactly where it was — which
-is why the width has to be measured before any framing set is widened. Three
-rungs are declared narrow, all at a structural ceiling: subtraction step 5 has
-two facts, subtraction step 15 has three, and division step 11 has five, because
-step 11 inverts what is left of the eight-times table once every fact belonging
-to an earlier table has been taken out of it.
+cannot see: how many DISTINCT facts a rung asks. Twenty problems drawn from two
+facts is a rung a child can pass by remembering two answers, and adding framings
+raises the count while leaving the width exactly where it was — which is why the
+width has to be measured before any framing set is widened. A fact here is the
+multiset of numbers in play, what the prompt writes plus what it asks for, so
+`11 + 3`, `3 + 11` and `11 + ? = 14` count once between them — the same
+collapsing `deriveCurriculumStep` already does when it puts all three on one
+rung.
+
+Six rungs are declared narrow and every one of them is at a structural ceiling
+rather than short of authoring. Subtraction step 5 is a maximum operand of ten
+with no borrow, and ten's ones digit is zero, so only `10 - 0` and `10 - 10`
+land there — the two halves of one bond. Subtraction step 15 has two triples.
+Multiplication steps 9 and 10 are the seven- and eight-times tables under the
+earliest-table rule, which leaves `7×8`, `7×9` and `8×9` between them, and
+division steps 10 and 11 inherit exactly those by inverting them. That the top
+of the table ladder is nearly empty is the pedagogical point, not a gap.
 
 ### Dead zones: rungs nothing can land on
 

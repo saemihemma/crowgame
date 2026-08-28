@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
+    "You have 58 berries. A bird has 2 berries. How many more do you have?",
     "59 - 8 = ?",
     "Quick check: 57 - 2",
     "56 birds sit on a branch. 4 fly away. How many are left?",
-    "Quick check: 57 - 3",
-    "How much is 59 - 6?"
+    "Quick check: 57 - 3"
   ]
 }

@@ -108,8 +108,8 @@
   "samplePrompts": [
     "Solve: 13 - 4",
     "Solve: 13 - 5",
-    "You have 11 berries. You eat 5. How many are left?",
-    "What is 12 - 4?",
-    "11 - 4 ="
+    "You have 11 berries. A bird has 5 berries. How many more do you have?",
+    "You have 12 berries. A bird has 4 berries. How many more do you have?",
+    "There are 12 berries. 5 are red. How many are blue?"
   ]
 }

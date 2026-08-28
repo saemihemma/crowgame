@@ -2,7 +2,7 @@
   "batchId": "batch_02_addition_bridge_teens",
   "title": "Addition bridge to 10 and teens",
   "accepted": true,
-  "averageGrade": 9.7,
+  "averageGrade": 9.8,
   "criticalIssues": [],
   "templateReview": {
     "category": {
@@ -69,11 +69,11 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.7,
+      "grade": 9.8,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
         "steadyChildGrade": 9.7,
-        "strugglingChildGrade": 9.6,
+        "strugglingChildGrade": 9.9,
         "strongChildGrade": 9.7,
         "openingProbeStep": 5,
         "middleProbeStep": 12,
@@ -96,7 +96,7 @@
       },
       {
         "role": "role-qa-engineer",
-        "grade": 9.6,
+        "grade": 9.9,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],

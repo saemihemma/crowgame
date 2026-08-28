@@ -73,7 +73,7 @@
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
         "steadyChildGrade": 10,
-        "strugglingChildGrade": 10,
+        "strugglingChildGrade": 9.9,
         "strongChildGrade": 10,
         "openingProbeStep": 27,
         "middleProbeStep": 31,
@@ -96,7 +96,7 @@
       },
       {
         "role": "role-qa-engineer",
-        "grade": 10,
+        "grade": 9.9,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],
@@ -108,8 +108,8 @@
   "samplePrompts": [
     "How much is 57 + 1?",
     "60 + 9 =",
+    "You have 60 berries. A bird has 7 more. How many does the bird have?",
     "What is 57 + 2?",
-    "56 + 3 =",
-    "What is 60 + 8?"
+    "56 + 3 ="
   ]
 }

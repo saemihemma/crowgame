@@ -338,6 +338,26 @@ export const TEMPLATES = {
     'math.prompt.word.nests_eggs': 'There are {a} nests. Each nest has {b} eggs. How many eggs in all?',
     'math.prompt.word.berries_shared': '{a} berries are shared by {b} birds. How many berries does each bird get?',
     'math.prompt.word.berries_shared.one': '{a} berry is shared by {b} birds. How many berries does each bird get?',
+    // CGI compare and part-part-whole, added 2026-08. The compare pair reads the
+    // SAME two numbers in opposite directions; part-part-whole has no event in
+    // it at all, which is what makes it hard for a child who has learnt that a
+    // story means something happens.
+    //
+    // Both quantities are >= 2 by the generator, and the two part-part-whole
+    // shapes are additionally capped (see storyFits in tools/math_authoring.ts):
+    // their Icelandic puts a numeral against a word that inflects with it, and a
+    // key can carry only one plural parameter while these sentences have two
+    // sensitive numbers. Capping is what the equal-groups story already does
+    // with its factors.
+    'math.prompt.word.berries_more_than': 'You have {a} berries. A bird has {b} more. How many does the bird have?',
+    'math.prompt.word.berries_difference': 'You have {a} berries. A bird has {b} berries. How many more do you have?',
+    'math.prompt.word.berries_two_colours': 'There are {a} red berries and {b} blue berries. How many berries in all?',
+    'math.prompt.word.berries_the_rest': 'There are {a} berries. {b} are red. How many are blue?',
+    // The array says the same product the other way round -- the picture behind
+    // the commutative law -- and quotative division asks how many GROUPS where
+    // sharing asks how many EACH.
+    'math.prompt.word.rows_eggs': 'There are {a} rows of {b} eggs. How many eggs in all?',
+    'math.prompt.word.berries_each_nest': 'You have {a} berries. You put {b} in each nest. How many nests?',
 
     // ── prompts: sequences and patterns ───────────────────────────────────
     'math.prompt.seq.next_number_pattern': 'What comes next in the number pattern: {seq}',
@@ -346,6 +366,11 @@ export const TEMPLATES = {
     'math.prompt.seq.keep_repeat': 'Keep the repeat going: {seq}',
     'math.prompt.seq.what_number_next': 'What number comes next? {seq}',
     'math.prompt.seq.what_next': 'What comes next? {seq}',
+    // These two name the STRATEGY rather than the shape, the way Sproti 1 names
+    // them: talning áfram and talning aftur á bak are two skills. The generator
+    // only offers each to a run that goes that way.
+    'math.prompt.seq.count_on': 'Count on: {seq}',
+    'math.prompt.seq.count_back': 'Count back: {seq}',
     'math.prompt.seq.fill_blank': 'Fill in the blank: {seq}',
     'math.prompt.seq.after': 'What comes after {a}?',
     'math.prompt.seq.before': 'What comes before {a}?',
@@ -783,6 +808,8 @@ export const SEMANTICS = {
     'math.prompt.seq.keep_repeat': sequence,
     'math.prompt.seq.what_number_next': sequence,
     'math.prompt.seq.what_next': sequence,
+    'math.prompt.seq.count_on': sequence,
+    'math.prompt.seq.count_back': sequence,
     // Word problems: the narrative names which way the arithmetic runs.
     'math.prompt.word.birds_land': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
     'math.prompt.word.berries_find': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
@@ -791,6 +818,16 @@ export const SEMANTICS = {
     'math.expl.share_each': (p) => holds(p.a / p.b === p.n, `${p.a}÷${p.b}=${p.n}`),
     'math.prompt.word.birds_fly': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
     'math.prompt.word.berries_eat': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
+    // The compare pair is the reason every worded shape gets its own entry
+    // rather than one shared adder: these two carry the same two numbers and
+    // must resolve opposite ways, so a shape that fell through to a default
+    // would be verified against the wrong arithmetic and still pass.
+    'math.prompt.word.berries_more_than': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
+    'math.prompt.word.berries_difference': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
+    'math.prompt.word.berries_two_colours': (p, problem) => isAnswer(p.a + p.b, problem, `${p.a}+${p.b}`),
+    'math.prompt.word.berries_the_rest': (p, problem) => isAnswer(p.a - p.b, problem, `${p.a}-${p.b}`),
+    'math.prompt.word.rows_eggs': (p, problem) => isAnswer(p.a * p.b, problem, `${p.a}×${p.b}`),
+    'math.prompt.word.berries_each_nest': (p, problem) => isAnswer(p.a / p.b, problem, `${p.a}÷${p.b}`),
 
     'math.prompt.seq.after': (p, problem) => isAnswer(p.a + 1, problem, `after ${p.a}`),
     'math.prompt.seq.before': (p, problem) => isAnswer(p.a - 1, problem, `before ${p.a}`),

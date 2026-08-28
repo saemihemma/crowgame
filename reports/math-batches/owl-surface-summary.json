@@ -13,27 +13,27 @@
     "addition",
     "counting"
   ],
-  "owlEligibleProblemCount": 3069,
-  "owlEligibleUniquePromptCount": 3069,
-  "owlEligibleUniqueFactCount": 1587,
+  "owlEligibleProblemCount": 3083,
+  "owlEligibleUniquePromptCount": 3083,
+  "owlEligibleUniqueFactCount": 1592,
   "domainCounts": {
-    "addition": 975,
+    "addition": 974,
     "counting": 209,
     "pattern_matching": 193,
-    "subtraction": 814,
+    "subtraction": 821,
     "comparison": 185,
-    "number_sequence": 213,
+    "number_sequence": 222,
     "multiplication": 266,
-    "division": 214
+    "division": 213
   },
-  "openingUnlockedInventoryProblemCount": 1184,
-  "openingUnlockedInventoryUniquePromptCount": 1184,
-  "openingUnlockedInventoryUniqueFactCount": 496,
-  "freshReachableProblemCount": 225,
-  "freshReachableUniquePromptCount": 225,
+  "openingUnlockedInventoryProblemCount": 1183,
+  "openingUnlockedInventoryUniquePromptCount": 1183,
+  "openingUnlockedInventoryUniqueFactCount": 497,
+  "freshReachableProblemCount": 224,
+  "freshReachableUniquePromptCount": 224,
   "freshReachableUniqueFactCount": 42,
   "freshReachableDomainCounts": {
-    "addition": 123,
+    "addition": 122,
     "counting": 102
   },
   "freshReachableAdditionFactCount": 34,
@@ -42,8 +42,8 @@
   "owlAdditionByStep": [
     {
       "step": 0,
-      "rowCount": 36,
-      "uniquePromptCount": 36,
+      "rowCount": 35,
+      "uniquePromptCount": 35,
       "uniqueFactCount": 8
     },
     {
@@ -60,8 +60,8 @@
     },
     {
       "step": 3,
-      "rowCount": 50,
-      "uniquePromptCount": 50,
+      "rowCount": 51,
+      "uniquePromptCount": 51,
       "uniqueFactCount": 19
     },
     {

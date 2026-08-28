@@ -14,7 +14,7 @@
         "minStep": 0,
         "maxStep": 9,
         "promptVariantCount": 88,
-        "averageProblemsPerTemplate": 7.9
+        "averageProblemsPerTemplate": 8.2
       }
     },
     "roleGrades": [
@@ -40,7 +40,7 @@
       "grade": 10,
       "summary": "Concrete batch review found 0 arithmetic issues, 0 metadata issues, 0 option issues, 0 duplicate prompts, 0 protected-prompt overlaps, and 0 band mismatches.",
       "metrics": {
-        "problemCount": 237,
+        "problemCount": 246,
         "arithmeticErrors": 0,
         "metadataErrors": 0,
         "optionErrors": 0,

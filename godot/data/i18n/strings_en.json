@@ -639,5 +639,13 @@
   "math.expl.five_and": "Five and {rest} more makes {n}.",
   "math.expl.ten_and": "Ten and {rest} more makes {n}.",
   "math.hint.rel.how_many_went.one": "You had {start}. Now there is {left}. How many went?",
-  "math.hint.rel.how_many_started.one": "Something lost {gone} and {left} was left. How many were there to start?"
+  "math.hint.rel.how_many_started.one": "Something lost {gone} and {left} was left. How many were there to start?",
+  "math.prompt.word.berries_more_than": "You have {a} berries. A bird has {b} more. How many does the bird have?",
+  "math.prompt.word.berries_difference": "You have {a} berries. A bird has {b} berries. How many more do you have?",
+  "math.prompt.word.berries_two_colours": "There are {a} red berries and {b} blue berries. How many berries in all?",
+  "math.prompt.word.berries_the_rest": "There are {a} berries. {b} are red. How many are blue?",
+  "math.prompt.word.rows_eggs": "There are {a} rows of {b} eggs. How many eggs in all?",
+  "math.prompt.word.berries_each_nest": "You have {a} berries. You put {b} in each nest. How many nests?",
+  "math.prompt.seq.count_on": "Count on: {seq}",
+  "math.prompt.seq.count_back": "Count back: {seq}"
 }

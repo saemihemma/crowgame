@@ -369,17 +369,29 @@ const countAt = (domain, step) =>
  * This is that record, generalised, and the prerequisite for widening framings
  * anywhere: more framings raise the count and never the fact width.
  *
- * The fact key is a PROXY and says so: the numerals in the prompt, in the order
- * written. "11 + 3 = ?" and "What is 11 + 3?" collapse to one fact, which is the
- * point. A prompt with no numerals is a counting prompt, where the drawn shape
- * IS the content (MATH_AUTHORING_STANDARDS.md §4) -- so its key is the count
- * plus the marker, and twelve shapes over two counts reads as the twenty-four
- * distinct questions a child actually meets.
+ * The fact key is a PROXY and says so: every number IN PLAY, sorted -- the
+ * numerals the prompt writes down plus the one it asks for. Sorting is what
+ * makes it a fact rather than a phrasing: "11 + 3 = ?", "What is 11 + 3?",
+ * "3 + 11 = ?" and "11 + ? = 14" all reduce to 3,11,14, which is right, because
+ * `deriveCurriculumStep` already puts all four on the same rung for the same
+ * reason -- they are one bond asked four ways. Counting the written numerals
+ * alone made a relational prompt look like a new fact, and division step 11
+ * (which has exactly two facts, 72÷8 and 72÷9) reported six.
+ *
+ * A prompt with no numerals is a counting prompt, where the drawn shape IS the
+ * content (MATH_AUTHORING_STANDARDS.md §4) -- so its key is the count plus the
+ * marker, and twelve shapes over two counts reads as the twenty-four distinct
+ * questions a child actually meets.
  */
 function factKey(problem) {
     const text = String(problem.prompt?.text ?? '');
     const numerals = text.match(/\d+/g);
-    if (numerals) return numerals.join(',');
+    if (numerals) {
+        const answer = Number(problem.answer?.correct);
+        const inPlay = numerals.map(Number);
+        if (Number.isFinite(answer)) inPlay.push(answer);
+        return inPlay.sort((a, b) => a - b).join(',');
+    }
     const markers = [...new Set(text.match(/[^\w\s]/g) ?? [])].sort().join('');
     return `${problem.answer?.correct}|${markers}`;
 }
