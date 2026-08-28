@@ -1,7 +1,7 @@
 {
   "generatedBy": "tools/gen_step_domains.ts",
   "note": "A step in `unreachable` is one the derivation cannot produce for any input. It is not a content gap and cannot be filled by authoring.",
-  "inputsHash": "3c08df1d78ec3f50b407ce832f2e7069498bf389a77c55fa683c6cf5a0bc88b8",
+  "inputsHash": "0101794764b22f065bfb0a0a4c2c89c784b00ba078a55a058e50baa335c37ccc",
   "domains": {
     "addition": {
       "emittable": [

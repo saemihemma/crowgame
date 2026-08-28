@@ -4,6 +4,7 @@ import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
 import { compileLevel, GID, COLLIDING_TILE_IDS, type LevelSpec } from './level_compiler';
 import { deriveCurriculumStep, deriveDifficultyTraits } from './math_curriculum';
+import { parseWordedArithmetic } from '../math-kernel/math/wordedArithmetic';
 import {
     computeInitialProblemELO,
     loadBandTable,
@@ -212,6 +213,7 @@ function validateMathAuthoringFiles(): void {
     validateFile(bandPath, join(AUTHORING_DIR, 'schemas', 'math-band-table.schema.json'), 'band-table.json');
     validateFile(batchPath, join(AUTHORING_DIR, 'schemas', 'math-batches.schema.json'), 'batches.json');
     validateMathBandMonotonicity(bandPath);
+    validateStoryOperandCeiling();
 }
 
 /**
@@ -272,6 +274,53 @@ function validateMathBandMonotonicity(bandPath: string): void {
 
     if (inversions === 0) {
         console.log(`  OK: ${bands.length} ELO bands climb with their step ranges in every domain`);
+        validated++;
+    }
+}
+
+/**
+ * Big numbers stay abstract.
+ *
+ * MATH_AUTHORING_STANDARDS.md §4: "Story framing stops at two-digit facts; a
+ * child sharing 847 berries is not a story, it is noise. Three- and four-digit
+ * steps use equation forms only." The rule was written and nothing enforced it,
+ * so 56 of the 300 multi-digit problems on main were word problems — because a
+ * template that lists framings without `strictVariants` gets the whole fallback
+ * set unioned in, stories included, and four batches did exactly that.
+ *
+ * Stated over the FACT rather than the step, because the fact is what makes the
+ * sentence silly: a three-digit story is noise wherever it lands.
+ */
+function validateStoryOperandCeiling(): void {
+    const TWO_DIGIT_MAX = 99;
+    const mathDir = join(DATA_DIR, 'math');
+    if (!existsSync(mathDir)) return;
+
+    let checked = 0;
+    let offenders = 0;
+    for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+        const pool = JSON.parse(readFileSync(join(mathDir, file), 'utf-8')) as { problems?: MathProblem[] };
+        for (const problem of pool.problems ?? []) {
+            const worded = parseWordedArithmetic(problem.prompt.text);
+            if (!worded) continue;
+            checked++;
+            if (Math.max(worded.left, worded.right) <= TWO_DIGIT_MAX) continue;
+            offenders++;
+            errors++;
+            if (offenders <= 5) {
+                console.error(
+                    `  FAIL: ${problem.id} tells a story about ${Math.max(worded.left, worded.right)} `
+                    + `(step ${problem.curriculumStep}). §4: story framing stops at two-digit facts. `
+                    + 'Set strictVariants on the template so the fallback set cannot union stories in.',
+                );
+            }
+        }
+    }
+    if (offenders > 5) {
+        console.error(`  FAIL: ...and ${offenders - 5} more three- or four-digit stories`);
+    }
+    if (offenders === 0) {
+        console.log(`  OK: all ${checked} word problems keep their numbers inside two digits`);
         validated++;
     }
 }

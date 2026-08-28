@@ -276,7 +276,13 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
   (ber, egg, hreiður are identical singular/plural).
 - **Big numbers stay abstract.** Story framing stops at two-digit facts; a
   child sharing 847 berries is not a story, it is noise. Three- and four-digit
-  steps use equation forms only.
+  steps use equation forms only. This lives in `storyFits` rather than in the
+  templates, because a template that lists framings without `strictVariants`
+  gets the whole fallback set unioned in and the stories arrive uninvited —
+  which is how 56 three-digit stories, and one sharing 150 berries between five
+  birds, reached the pools while the rule sat written and unenforced.
+  `validate-content.ts` now states it over the fact rather than the step, since
+  a three-digit story is noise wherever it lands.
 - **Language**: all prompt/hint/explanation English lives in the phrasing
   catalog (`tools/math_phrasing_catalog.mjs`) with an Icelandic translation in
   both bundles, plural-correct in both languages, inside the pixel fit budget

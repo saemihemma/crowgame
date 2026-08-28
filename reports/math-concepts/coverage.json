@@ -1,7 +1,7 @@
 {
   "generatedBy": "tools/validate_math_concepts.mjs",
   "minPerStep": 6,
-  "totalProblems": 5426,
+  "totalProblems": 5616,
   "concepts": [
     {
       "id": "addition.count_all",
@@ -82,7 +82,8 @@
       "skillsDeclared": [
         "basic_addition",
         "single_digit_addition",
-        "single_digit_with_carry"
+        "single_digit_with_carry",
+        "teens_addition"
       ],
       "servable": 109
     },
@@ -359,7 +360,7 @@
         {
           "step": 36,
           "problems": 34,
-          "facts": 26
+          "facts": 25
         }
       ],
       "skillsAuthored": [
@@ -383,7 +384,7 @@
         46
       ],
       "tutorial": null,
-      "total": 274,
+      "total": 346,
       "empty": [],
       "thin": [],
       "narrow": [],
@@ -410,33 +411,33 @@
         },
         {
           "step": 41,
-          "problems": 30,
-          "facts": 30
+          "problems": 42,
+          "facts": 40
         },
         {
           "step": 42,
-          "problems": 30,
-          "facts": 30
+          "problems": 42,
+          "facts": 41
         },
         {
           "step": 43,
-          "problems": 30,
-          "facts": 30
+          "problems": 42,
+          "facts": 41
         },
         {
           "step": 44,
-          "problems": 20,
-          "facts": 20
+          "problems": 32,
+          "facts": 28
         },
         {
           "step": 45,
-          "problems": 20,
-          "facts": 20
+          "problems": 32,
+          "facts": 29
         },
         {
           "step": 46,
-          "problems": 20,
-          "facts": 20
+          "problems": 32,
+          "facts": 29
         }
       ],
       "skillsAuthored": [
@@ -449,7 +450,7 @@
         "two_digit_addition",
         "two_digit_addition_carry"
       ],
-      "servable": 274
+      "servable": 346
     },
     {
       "id": "addition.missing_part",
@@ -457,10 +458,10 @@
       "overlay": "missing_addend",
       "steps": [
         2,
-        36
+        46
       ],
       "tutorial": "addition.missing_part",
-      "total": 88,
+      "total": 104,
       "empty": [],
       "thin": [],
       "narrow": [],
@@ -639,6 +640,56 @@
           "step": 36,
           "problems": 4,
           "facts": 4
+        },
+        {
+          "step": 37,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 38,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 39,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 40,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 41,
+          "problems": 3,
+          "facts": 3
+        },
+        {
+          "step": 42,
+          "problems": 5,
+          "facts": 5
+        },
+        {
+          "step": 43,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 44,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 45,
+          "problems": 2,
+          "facts": 2
+        },
+        {
+          "step": 46,
+          "problems": 5,
+          "facts": 5
         }
       ],
       "skillsAuthored": [
@@ -647,7 +698,7 @@
       "skillsDeclared": [
         "missing_addend"
       ],
-      "servable": 88
+      "servable": 104
     },
     {
       "id": "addition.balance",
@@ -655,10 +706,10 @@
       "overlay": "relational_equals",
       "steps": [
         2,
-        36
+        46
       ],
       "tutorial": "addition.balance",
-      "total": 52,
+      "total": 59,
       "empty": [],
       "thin": [],
       "narrow": [],
@@ -837,6 +888,56 @@
           "step": 36,
           "problems": 1,
           "facts": 1
+        },
+        {
+          "step": 37,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 38,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 39,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 40,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 41,
+          "problems": 3,
+          "facts": 3
+        },
+        {
+          "step": 42,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 43,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 44,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 45,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 46,
+          "problems": 2,
+          "facts": 2
         }
       ],
       "skillsAuthored": [
@@ -845,7 +946,7 @@
       "skillsDeclared": [
         "relational_equals"
       ],
-      "servable": 52
+      "servable": 59
     },
     {
       "id": "subtraction.missing_part",
@@ -853,10 +954,10 @@
       "overlay": "missing_subtrahend",
       "steps": [
         3,
-        12
+        46
       ],
       "tutorial": "subtraction.missing_part",
-      "total": 18,
+      "total": 27,
       "empty": [],
       "thin": [],
       "narrow": [],
@@ -910,6 +1011,176 @@
           "step": 12,
           "problems": 6,
           "facts": 5
+        },
+        {
+          "step": 13,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 14,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 15,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 16,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 17,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 18,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 19,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 20,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 21,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 22,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 23,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 24,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 25,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 26,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 27,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 28,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 29,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 30,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 31,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 32,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 33,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 34,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 35,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 36,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 37,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 38,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 39,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 40,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 41,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 42,
+          "problems": 2,
+          "facts": 2
+        },
+        {
+          "step": 43,
+          "problems": 2,
+          "facts": 2
+        },
+        {
+          "step": 44,
+          "problems": 2,
+          "facts": 2
+        },
+        {
+          "step": 45,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 46,
+          "problems": 1,
+          "facts": 1
         }
       ],
       "skillsAuthored": [
@@ -918,7 +1189,7 @@
       "skillsDeclared": [
         "missing_subtrahend"
       ],
-      "servable": 18
+      "servable": 27
     },
     {
       "id": "subtraction.start_unknown",
@@ -926,10 +1197,10 @@
       "overlay": "missing_minuend",
       "steps": [
         6,
-        16
+        46
       ],
       "tutorial": "subtraction.start_unknown",
-      "total": 16,
+      "total": 23,
       "empty": [],
       "thin": [],
       "narrow": [],
@@ -988,6 +1259,156 @@
           "step": 16,
           "problems": 1,
           "facts": 1
+        },
+        {
+          "step": 17,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 18,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 19,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 20,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 21,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 22,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 23,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 24,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 25,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 26,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 27,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 28,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 29,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 30,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 31,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 32,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 33,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 34,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 35,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 36,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 37,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 38,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 39,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 40,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 41,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 42,
+          "problems": 2,
+          "facts": 2
+        },
+        {
+          "step": 43,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 44,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 45,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 46,
+          "problems": 1,
+          "facts": 1
         }
       ],
       "skillsAuthored": [
@@ -996,7 +1417,7 @@
       "skillsDeclared": [
         "missing_minuend"
       ],
-      "servable": 16
+      "servable": 23
     },
     {
       "id": "subtraction.balance",
@@ -1004,10 +1425,10 @@
       "overlay": "subtraction_relational",
       "steps": [
         4,
-        14
+        46
       ],
       "tutorial": "subtraction.balance",
-      "total": 14,
+      "total": 21,
       "empty": [],
       "thin": [],
       "narrow": [],
@@ -1066,6 +1487,166 @@
           "step": 14,
           "problems": 1,
           "facts": 1
+        },
+        {
+          "step": 15,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 16,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 17,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 18,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 19,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 20,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 21,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 22,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 23,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 24,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 25,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 26,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 27,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 28,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 29,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 30,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 31,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 32,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 33,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 34,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 35,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 36,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 37,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 38,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 39,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 40,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 41,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 42,
+          "problems": 0,
+          "facts": 0
+        },
+        {
+          "step": 43,
+          "problems": 3,
+          "facts": 3
+        },
+        {
+          "step": 44,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 45,
+          "problems": 1,
+          "facts": 1
+        },
+        {
+          "step": 46,
+          "problems": 1,
+          "facts": 1
         }
       ],
       "skillsAuthored": [
@@ -1074,7 +1655,7 @@
       "skillsDeclared": [
         "subtraction_relational"
       ],
-      "servable": 14
+      "servable": 21
     },
     {
       "id": "addition.both_sides",
@@ -1534,7 +2115,7 @@
         46
       ],
       "tutorial": null,
-      "total": 274,
+      "total": 346,
       "empty": [],
       "thin": [],
       "narrow": [],
@@ -1561,33 +2142,33 @@
         },
         {
           "step": 41,
-          "problems": 30,
-          "facts": 30
+          "problems": 42,
+          "facts": 41
         },
         {
           "step": 42,
-          "problems": 30,
-          "facts": 30
+          "problems": 42,
+          "facts": 41
         },
         {
           "step": 43,
-          "problems": 30,
-          "facts": 30
+          "problems": 42,
+          "facts": 39
         },
         {
           "step": 44,
-          "problems": 20,
-          "facts": 20
+          "problems": 32,
+          "facts": 29
         },
         {
           "step": 45,
-          "problems": 20,
-          "facts": 20
+          "problems": 32,
+          "facts": 28
         },
         {
           "step": 46,
-          "problems": 20,
-          "facts": 20
+          "problems": 32,
+          "facts": 29
         }
       ],
       "skillsAuthored": [
@@ -1600,7 +2181,7 @@
         "two_digit_subtraction",
         "two_digit_subtraction_borrow"
       ],
-      "servable": 274
+      "servable": 346
     },
     {
       "id": "counting.to_five",
@@ -2517,6 +3098,7 @@
         "simple_division"
       ],
       "skillsDeclared": [
+        "division_facts",
         "division_word_problems",
         "simple_division"
       ],
@@ -2786,16 +3368,5 @@
       "servable": 35
     }
   ],
-  "skillDrift": [
-    {
-      "concept": "addition.count_on",
-      "skill": "teens_addition",
-      "state": "authored but not declared"
-    },
-    {
-      "concept": "division.harder_tables",
-      "skill": "division_facts",
-      "state": "authored but not declared"
-    }
-  ]
+  "skillDrift": []
 }

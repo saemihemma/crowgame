@@ -69,11 +69,11 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.8,
+      "grade": 9.9,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
         "steadyChildGrade": 9.9,
-        "strugglingChildGrade": 9.7,
+        "strugglingChildGrade": 9.9,
         "strongChildGrade": 9.9,
         "openingProbeStep": 2,
         "middleProbeStep": 6,
@@ -96,7 +96,7 @@
       },
       {
         "role": "role-qa-engineer",
-        "grade": 9.7,
+        "grade": 9.9,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],

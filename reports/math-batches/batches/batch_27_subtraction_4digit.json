@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
-    "You have 6789 berries. You eat 3212. How many are left?",
     "Solve: 4876 - 3212",
-    "Answer: 5987 - 2132",
-    "Try this: 3456 - 234",
-    "4567 - 312 ="
+    "Solve: 5678 - 2341",
+    "What is 4876 - 2341?",
+    "What is 8756 - 312?",
+    "Solve: 3456 - 1234"
   ]
 }

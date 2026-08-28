@@ -107,9 +107,9 @@
   },
   "samplePrompts": [
     "What is 214 + 134?",
-    "121 + 232 = ?",
-    "621 + 105 =",
     "424 + 253 equals ?",
-    "You have 214 berries. You find 123 more. How many berries?"
+    "432 + 11 equals ?",
+    "621 + 112 equals ?",
+    "What is 312 + 232?"
   ]
 }

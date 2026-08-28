@@ -1142,6 +1142,16 @@ function buildBothSidesCandidate(
  * comparison.
  */
 function storyFits(variant: string, left: number, right: number, correct: number): boolean {
+    if (!variant.startsWith('story_')) return true;
+
+    // §4, structurally rather than per template: "Story framing stops at
+    // two-digit facts; a child sharing 847 berries is not a story, it is noise."
+    // A template that lists framings without `strictVariants` gets the whole
+    // fallback set unioned in, so the rule cannot live in the templates -- four
+    // batches proved that by shipping 56 three-digit stories, and one shared 150
+    // berries between five birds.
+    if (Math.max(left, right) > 99) return false;
+
     switch (variant) {
         case 'story_two_colours':
             return left + right <= 20;

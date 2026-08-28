@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
-    "578 birds sit on a branch. 12 fly away. How many are left?",
-    "Quick check: 643 - 203",
     "987 - 212 equals ?",
-    "Quick check: 532 - 112",
-    "Try this: 987 - 221"
+    "Complete: 976 - 203 = ?",
+    "532 - 212 equals ?",
+    "Solve: 754 - 103",
+    "Solve: 865 - 203"
   ]
 }

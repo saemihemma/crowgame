@@ -106,10 +106,10 @@
     }
   },
   "samplePrompts": [
-    "2241 birds sit on a branch. 352 more land. How many birds?",
-    "Answer: 2314 + 1203",
-    "Answer: 1123 + 1312",
-    "Try this: 1332 + 352",
-    "2241 + 1312 equals ?"
+    "2241 + 1312 equals ?",
+    "1214 + 1421 equals ?",
+    "How much is 3231 + 352?",
+    "How much is 1214 + 423?",
+    "Complete: 5132 + 1312 = ?"
   ]
 }
