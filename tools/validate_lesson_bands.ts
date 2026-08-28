@@ -134,9 +134,14 @@ function factOf(card: Card): Fact | null {
             return has('groups', 'each') ? { op: '×', left: n('groups')!, right: n('each')! } : null;
         case 'tens_and_ones': {
             if (!has('tens', 'ones')) return null;
-            const whole = n('tens')! * 10 + n('ones')!;
-            if (has('addOnes')) return { op: '+', left: whole, right: n('addOnes')! };
-            if (has('takeOnes')) return { op: '-', left: whole, right: n('takeOnes')! };
+            // `hundreds` is the third place, and it has to be read here or a
+            // multi-digit card bands as the two-digit number underneath it --
+            // 214 + 134 would check as 14 + 134 and land nine rungs low.
+            const whole = (n('hundreds') ?? 0) * 100 + n('tens')! * 10 + n('ones')!;
+            const added = (n('addHundreds') ?? 0) * 100 + (n('addTens') ?? 0) * 10 + (n('addOnes') ?? 0);
+            if (added > 0) return { op: '+', left: whole, right: added };
+            const taken = (n('takeHundreds') ?? 0) * 100 + (n('takeTens') ?? 0) * 10 + (n('takeOnes') ?? 0);
+            if (taken > 0) return { op: '-', left: whole, right: taken };
             return null;
         }
         // balance (two quantities compared), numbers (a sequence) and

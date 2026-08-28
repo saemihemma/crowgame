@@ -311,17 +311,39 @@ func test_help_is_absent_where_there_is_no_lesson() -> void:
 	assert_true(TutorialManager.current_lesson_for("not_a_domain").is_empty(),
 		"and the automatic side is just as unbothered by one")
 
-## The two rungs with no authored lesson, named so the gap is a fact rather than
-## a surprise. A child working in three-digit addition or subtraction gets no
-## lesson and no "?" -- 356 problems, 8.5% of the pool. Authoring either lesson
-## should delete its line here.
-func test_the_rungs_that_have_no_lesson_are_known() -> void:
-	for concept_id in ["addition.multi_digit", "subtraction.multi_digit"]:
-		assert_true(TutorialManager.get_tutorial(concept_id).is_empty(),
-			"%s still has no authored lesson" % concept_id)
-	assert_true(TutorialManager.lesson_for_problem(
-		{"domain": "addition", "curriculumStep": ConceptLadder.by_id("addition.multi_digit").get("steps", [0, 0])[0]}
-	).is_empty(), "so a question from that rung offers no help button rather than an empty board")
+## EVERY concept opens a lesson. No exceptions, and this is what keeps it that
+## way.
+##
+## This test used to name `addition.multi_digit` and `subtraction.multi_digit` as
+## known holes -- 356 problems, 8.5% of the pool, where a child got no worked
+## example and no "?" button. Both are authored now, so the test asserts the
+## whole rather than the exception: a concept added later without a lesson fails
+## here rather than going quiet in a child's hands.
+func test_every_concept_opens_a_lesson() -> void:
+	var missing: Array[String] = []
+	for concept in ConceptLadder.all():
+		var id := String((concept as Dictionary).get("id", "?"))
+		var tutorial_id := ConceptLadder.tutorial_id(concept)
+		if tutorial_id == "" or TutorialManager.get_tutorial(tutorial_id).is_empty():
+			missing.append(id)
+	assert_eq(missing.size(), 0,
+		"every concept names a lesson that exists; without one: %s" % str(missing))
+
+## And the two that were last to get one are reachable through the help button,
+## which is the surface a child stuck on three-digit work actually reaches for.
+func test_the_multi_digit_rungs_offer_help() -> void:
+	for pair in [["addition", "addition.multi_digit"], ["subtraction", "subtraction.multi_digit"]]:
+		var domain := String(pair[0])
+		var concept: Dictionary = ConceptLadder.by_id(String(pair[1]))
+		var steps: Array = concept.get("steps", [])
+		assert_true(steps.size() == 2, "%s declares a step range" % String(pair[1]))
+		if steps.size() != 2:
+			continue
+		var lesson := TutorialManager.lesson_for_problem({
+			"domain": domain, "curriculumStep": int(steps[0]), "skills": [],
+		})
+		assert_eq(String(lesson.get("id", "")), String(pair[1]),
+			"a question from %s offers its own lesson" % String(pair[1]))
 
 
 # --- the help button, on the actual board ------------------------------------

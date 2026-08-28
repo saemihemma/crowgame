@@ -2384,6 +2384,114 @@
           }
         }
       ]
+    },
+    {
+      "id": "addition.multi_digit",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "tens_and_ones",
+          "params": {
+            "hundreds": 2,
+            "tens": 1,
+            "ones": 4,
+            "addHundreds": 1,
+            "addTens": 3,
+            "addOnes": 4
+          }
+        },
+        {
+          "body": "model",
+          "visual": "tens_and_ones",
+          "params": {
+            "hundreds": 2,
+            "tens": 0,
+            "ones": 0,
+            "addHundreds": 1
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 256,
+            "op": "+",
+            "b": 137,
+            "result": 393
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 218,
+            "op": "+",
+            "b": 145
+          },
+          "choice": {
+            "options": [
+              363,
+              353,
+              373
+            ],
+            "correct": 363
+          }
+        }
+      ]
+    },
+    {
+      "id": "subtraction.multi_digit",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "tens_and_ones",
+          "params": {
+            "hundreds": 3,
+            "tens": 4,
+            "ones": 8,
+            "takeHundreds": 1,
+            "takeTens": 3,
+            "takeOnes": 4
+          }
+        },
+        {
+          "body": "model",
+          "visual": "tens_and_ones",
+          "params": {
+            "hundreds": 3,
+            "tens": 0,
+            "ones": 0,
+            "takeHundreds": 1
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "equation",
+          "params": {
+            "a": 352,
+            "op": "-",
+            "b": 137,
+            "result": 215
+          }
+        },
+        {
+          "body": "try",
+          "visual": "equation",
+          "params": {
+            "a": 364,
+            "op": "-",
+            "b": 128
+          },
+          "choice": {
+            "options": [
+              236,
+              244,
+              226
+            ],
+            "correct": 236
+          }
+        }
+      ]
     }
   ]
 }

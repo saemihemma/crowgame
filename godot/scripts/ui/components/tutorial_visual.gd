@@ -36,6 +36,10 @@ const RENDERERS := {
 ## Written as constants because _draw_part_whole has to agree with itself in
 ## three places -- what it measures, where it puts the bar, and where it puts the
 ## numerals -- and the first version of this fix only changed one of them.
+## A hundred flat is ten rods wide, and it is scored to say so.
+const FLAT_SCORING := 10
+const FLAT_SCORE_WIDTH := 1.0
+
 const ABOVE_BAR := 1.75
 const BELOW_BAR := 1.2
 
@@ -470,32 +474,92 @@ func _draw_groups() -> void:
 
 ## Rods and units. Twenty-four is two rods and four cubes, and a child who has
 ## seen that will never again read the 2 in 24 as a two.
+## Base-ten blocks: flats of a hundred, rods of ten, single units.
+##
+## `hundreds` and `addHundreds` are the third place, and they are what let a
+## multi-digit lesson be drawn at all. Without them the biggest picture available
+## was ninety-nine, so three-digit addition had no concrete card and its concept
+## went unauthored -- which is the gap this closes.
+##
+## A flat is drawn as a SQUARE of rod height rather than as ten rods side by
+## side. Ten rods is what it means, and a child who has used the plastic ones
+## knows it; drawing ten separate bars for each hundred would put thirty bars on
+## a card for 214 + 134, at which point nothing is countable and the picture has
+## stopped being a picture.
 func _draw_tens_and_ones() -> void:
+	var hundreds := _int("hundreds")
 	var tens := _int("tens")
 	var ones := _int("ones")
+	var add_hundreds := _int("addHundreds")
 	var add_tens := _int("addTens")
 	var add_ones := _int("addOnes")
+	var take_hundreds := _int("takeHundreds")
+	var take_tens := _int("takeTens")
 	var take_ones := _int("takeOnes")
 	var rod_w := _tune("rod_width", 16.0)
 	var rod_h := _tune("rod_height", 84.0)
 	var rod_gap := _tune("rod_gap", 8.0)
 	var unit := rod_w
+	var total_flats := hundreds + add_hundreds
 	var total_rods := tens + add_tens
 	var total_units := ones + add_ones
 	var unit_columns: int = maxi(1, mini(total_units, 5))
 	var units_w := unit_columns * (unit + rod_gap)
 	var rods_w := total_rods * (rod_w + rod_gap)
-	var total_w := rods_w + (rod_gap * 2.0 if total_rods > 0 and total_units > 0 else 0.0) + units_w
+	var flat_w := rod_h
+	var flats_w := total_flats * (flat_w + rod_gap)
+	# One group gap between each place that is actually present, so the three
+	# places read as three places rather than as one long row of shapes.
+	var places := int(total_flats > 0) + int(total_rods > 0) + int(total_units > 0)
+	var group_gap := rod_gap * 2.0 * maxf(0.0, places - 1)
+	var total_w := flats_w + rods_w + units_w + group_gap
 	_fit(total_w, rod_h)
 	var top := size.y * 0.5 - rod_h * 0.5
 	var x := size.x * 0.5 - total_w * 0.5
 	var outline := _role("outline", "ink")
 
+	# The flats first, left to right, biggest place first -- the order the
+	# numeral is written in and the order the places are added in.
+	# Taking is drawn from the RIGHT of each place -- the last flats, the last
+	# rods, the last units go grey and get a cross. Same vocabulary in all three
+	# places, so "these are the ones leaving" reads the same wherever it happens.
+	var flats_kept := maxi(0, hundreds - take_hundreds)
+	for i in total_flats:
+		var flat_colour := _role("token_a", "owl") if i < hundreds else _role("token_b", "accent")
+		if i >= flats_kept and i < hundreds:
+			flat_colour = _role("token_gone", "text_dim")
+		var flat := Rect2(Vector2(x + i * (flat_w + rod_gap), top), Vector2(flat_w, rod_h))
+		draw_rect(flat, flat_colour)
+		draw_rect(flat, outline, false, 2.0)
+		# Scored into TEN RODS, not into a hundred little cells.
+		#
+		# Both were tried. A three-by-three grid is clean and says "nine", which
+		# is the worst possible lie on the one card whose whole job is what a
+		# hundred is made of. A true ten-by-ten grid is honest and unreadable:
+		# ninety-nine hairlines land on inconsistent pixel boundaries once _fit
+		# has scaled the card, and it renders as a smear.
+		#
+		# Ten stripes is the third answer and the best one. It is exactly what a
+		# hundred flat IS -- ten of the bars standing next to it -- so the picture
+		# states the fact the lesson is teaching instead of decorating it, and
+		# nine clean lines survive any scale.
+		for k in range(1, FLAT_SCORING):
+			var fx := flat.position.x + flat.size.x * float(k) / float(FLAT_SCORING)
+			draw_line(Vector2(fx, flat.position.y), Vector2(fx, flat.end.y), outline, FLAT_SCORE_WIDTH)
+		if i >= flats_kept and i < hundreds:
+			_cross(flat.get_center(), flat_w * 0.36)
+
+	x += flats_w + (rod_gap * 2.0 if total_flats > 0 and (total_rods > 0 or total_units > 0) else 0.0)
+	var rods_kept := maxi(0, tens - take_tens)
 	for i in total_rods:
 		var colour := _role("token_a", "owl") if i < tens else _role("token_b", "accent")
+		if i >= rods_kept and i < tens:
+			colour = _role("token_gone", "text_dim")
 		var at := Rect2(Vector2(x + i * (rod_w + rod_gap), top), Vector2(rod_w, rod_h))
 		draw_rect(at, colour)
 		draw_rect(at, outline, false, 2.0)
+		if i >= rods_kept and i < tens:
+			_cross(at.get_center(), rod_w * 0.36)
 
 	var ux := x + rods_w + (rod_gap * 2.0 if total_rods > 0 and total_units > 0 else 0.0)
 	var kept := maxi(0, ones - take_ones)

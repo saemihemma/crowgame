@@ -443,6 +443,11 @@
   "tutorial.addition.missing_part.title": "Faldi hlutinn",
   "tutorial.addition.missing_part.try": "Tíu alls, sex af þeim hér. Teldu upp frá sex. Hvað eru mörg falin?",
   "tutorial.addition.missing_part.worked": "Fimm og þrír gera átta. Spurningarmerkið var þrír. Að telja upp finnur hluta.",
+  "tutorial.addition.multi_digit.title": "Einn dálkur í viðbót",
+  "tutorial.addition.multi_digit.see": "Tvö hundruð, ein stöng, fjórir ferningar. Og eitt hundrað, þrjár stangir, fjórir ferningar.",
+  "tutorial.addition.multi_digit.model": "Leggðu saman hverja stærð fyrir sig. Tvö hundruð og eitt hundrað gera þrjú hundruð.",
+  "tutorial.addition.multi_digit.worked": "Sex og sjö fylla stöng. Skrifaðu þrjá og geymdu stöngina. Svo restin.",
+  "tutorial.addition.multi_digit.try": "Tíu ferningar verða aftur að stöng. Hvað færðu?",
   "tutorial.addition.teen_numbers.model": "Langa stöngin er tugur. Litlu ferningarnir eru einingar. Þrettán eru ein stöng, þrír ferningar.",
   "tutorial.addition.teen_numbers.see": "Einn heill rammi og þrír í viðbót við hliðina. Það eru þrettán: einn tugur og þrír.",
   "tutorial.addition.teen_numbers.title": "Tíu og nokkur í viðbót",
@@ -642,5 +647,10 @@
   "tutorial.subtraction.tens_and_ones.see": "Tuttugu og fjórir eru tvær stangir og fjórir ferningar. Taktu þrjá ferninga. Stangirnar eru ósnertar.",
   "tutorial.subtraction.tens_and_ones.title": "Að taka af einingunum",
   "tutorial.subtraction.tens_and_ones.try": "Þrjátíu og átta, fimm til baka. Hvar stoppar þú?",
-  "tutorial.subtraction.tens_and_ones.worked": "Tuttugu og fjórir mínus þrír eru tuttugu og einn. Taktu af einingunum. Tugirnir hreyfast bara ef einingarnar klárast."
+  "tutorial.subtraction.tens_and_ones.worked": "Tuttugu og fjórir mínus þrír eru tuttugu og einn. Taktu af einingunum. Tugirnir hreyfast bara ef einingarnar klárast.",
+  "tutorial.subtraction.multi_digit.title": "Að taka úr hverjum dálki",
+  "tutorial.subtraction.multi_digit.see": "Þrjú hundruð, fjórar stangir, átta ferningar. Taktu eitt hundrað, þrjár stangir, fjóra ferninga.",
+  "tutorial.subtraction.multi_digit.model": "Taktu frá hverri stærð fyrir sig. Þrjú hundruð mínus eitt hundrað eru tvö hundruð.",
+  "tutorial.subtraction.multi_digit.worked": "Tveir ferningar duga ekki fyrir sjö. Brjóttu fyrst stöng. Taktu svo frá.",
+  "tutorial.subtraction.multi_digit.try": "Það eru ekki nógu margir ferningar. Hvað er eftir?"
 }

@@ -30,15 +30,31 @@ rots in silence — this one cannot.
 `DataManager` loads 4 maths pools totalling 4205 problems (`curriculum` 3902,
 `gaps` 248, `dataset` 40, `easy` 15). Those are grouped into **49** concepts by
 `godot/data/curriculum/concept_ladder.json` — **40** rungs keyed on step range
-plus **9** overlays keyed on problem shape — of which **47** open with a
-**4**-card lesson from `godot/data/curriculum/tutorials.json`: **47** lessons,
-**188** cards. The two without one are `addition.multi_digit` and
-`subtraction.multi_digit`: they were authored while the owl's blanket operand
-cap of 20 made them unreachable. That cap was removed by the owner's grade-4
-decision (2026-08) — the step ladder now paces each child instead, so a child
-only meets multi-digit work after ~20 mastered rungs — which makes both
-concepts reachable and their lessons owed (roadmap: "Multi-digit concepts need
-their lessons").
+plus **9** overlays keyed on problem shape — of which **49** open with a
+**4**-card lesson from `godot/data/curriculum/tutorials.json`: **49** lessons,
+**196** cards. Every concept now has one.
+
+The last two to be written were `addition.multi_digit` and
+`subtraction.multi_digit`, which had been authored while the owl's blanket
+operand cap of 20 made them unreachable. That cap was removed by the owner's
+grade-4 decision (2026-08) — the step ladder paces each child instead, so a
+child only meets multi-digit work after ~20 mastered rungs — which made both
+concepts reachable and their lessons owed. They covered **356** problems, 8.5%
+of the pool, with no lesson and no help button behind them.
+
+Both are drawn with base-ten blocks, which is why `tens_and_ones` grew a third
+place (`hundreds`/`addHundreds`/`takeHundreds`, and `takeTens` to match): before
+that the largest number the lesson deck could draw was ninety-nine, so
+three-digit work had no concrete card and could not be taught honestly. A flat
+is drawn as one scored square rather than as ten rods — ten rods per hundred
+would put thirty bars on the card for 214 + 134, at which point nothing is
+countable.
+
+**The worked example carries a regroup on purpose.** 65% of the problems in
+this band need one (194 of 300 measured), and the worked-example effect only
+holds if the example resembles the practice that follows — so `addition` works
+256 + 137 and `subtraction` works 352 - 137, both of which cross a column,
+rather than the tidy no-carry pair the `see` card opens with.
 
 `reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,
 including the **0** empty and **1** thin rungs, and the **0** concepts the cap

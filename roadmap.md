@@ -110,17 +110,6 @@ accepts the new mode, a `division` band authored with `forceDivisible: false`
 passes materialize, and the golden math fixtures are regenerated.
 
 
-### Multi-digit concepts need their lessons
-`addition.multi_digit` and `subtraction.multi_digit` (steps 37-46) became
-reachable when the blanket operand rail was removed, but both still have
-`tutorial: null` — a child's first three-digit sum arrives without the worked
-example every other concept gets. Author the two 4-card lessons in
-`godot/data/curriculum/tutorials.json` (en+is, existing visual renderers,
-place-value strategy per docs/MATH_AUTHORING_STANDARDS.md).
-
-*Done when:* both concepts name a tutorial and `npm run validate` passes with
-the lesson-quality gates.
-
 ## P2 — Experience decisions that need making
 
 
