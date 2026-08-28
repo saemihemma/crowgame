@@ -611,6 +611,60 @@
         9
       ],
       "notes": "Skip counting by 10/25/50/100 into the hundreds."
+    },
+    {
+      "id": "add_100_120",
+      "domain": "addition",
+      "family": "top_two_digit_addition",
+      "curriculumStepRange": [
+        37,
+        40
+      ],
+      "targetEloRange": [
+        760,
+        880
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": "Operand tiers 101-120 close the gap between the two-digit ladder and three-digit columns."
+    },
+    {
+      "id": "sub_100_120",
+      "domain": "subtraction",
+      "family": "top_two_digit_subtraction",
+      "curriculumStepRange": [
+        37,
+        40
+      ],
+      "targetEloRange": [
+        780,
+        900
+      ],
+      "ageBand": [
+        7,
+        9
+      ],
+      "notes": "Operand tiers 101-120 close the gap between the two-digit ladder and three-digit columns."
+    },
+    {
+      "id": "div_identity",
+      "domain": "division",
+      "family": "division_identity",
+      "curriculumStepRange": [
+        1,
+        1
+      ],
+      "targetEloRange": [
+        300,
+        420
+      ],
+      "ageBand": [
+        6,
+        8
+      ],
+      "notes": "Dividing by one is the inverse of the identity table and the easiest rung division has."
     }
   ]
 }

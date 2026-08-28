@@ -9,15 +9,7 @@
   "knownGaps": [],
   "_unreachableComment": "Concepts with authored problems that the owl can never serve, each with a reason. EMPTY as shipped: the blanket operand rail was removed by the owner's grade-4 decision (2026-08) — the step ladder paces each child instead — so every authored concept is reachable. tools/validate_math_concepts.mjs re-populates this obligation automatically if a numeric rail ever returns.",
   "knownUnreachable": [],
-  "knownThin": [
-    {
-      "domain": "subtraction",
-      "steps": [
-        15
-      ],
-      "why": "Three facts exist and three is the ceiling: 20-0, 20-10 and 20-20 are the only subtractions inside twenty that derive onto step 15. One is authored. Structurally thin rather than under-authored."
-    }
-  ],
+  "knownThin": [],
   "concepts": [
     {
       "id": "addition.count_all",
@@ -95,7 +87,8 @@
       ],
       "skills": [
         "two_digit_addition",
-        "addition_with_carry"
+        "addition_with_carry",
+        "two_digit_addition_carry"
       ],
       "tutorial": "addition.tens_and_ones"
     },
@@ -108,7 +101,8 @@
       ],
       "skills": [
         "two_digit_addition",
-        "addition_with_carry"
+        "addition_with_carry",
+        "two_digit_addition_carry"
       ],
       "tutorial": "addition.carrying"
     },
@@ -120,7 +114,9 @@
         46
       ],
       "skills": [
-        "multi_digit_addition"
+        "multi_digit_addition",
+        "two_digit_addition",
+        "two_digit_addition_carry"
       ],
       "tutorial": null
     },
@@ -284,7 +280,8 @@
       "skills": [
         "two_digit_subtraction",
         "subtraction_with_borrow",
-        "teens_subtraction"
+        "teens_subtraction",
+        "two_digit_subtraction_borrow"
       ],
       "tutorial": "subtraction.tens_and_ones"
     },
@@ -297,7 +294,8 @@
       ],
       "skills": [
         "two_digit_subtraction",
-        "subtraction_with_borrow"
+        "subtraction_with_borrow",
+        "two_digit_subtraction_borrow"
       ],
       "tutorial": "subtraction.borrowing"
     },
@@ -309,7 +307,9 @@
         46
       ],
       "skills": [
-        "multi_digit_subtraction"
+        "multi_digit_subtraction",
+        "two_digit_subtraction",
+        "two_digit_subtraction_borrow"
       ],
       "tutorial": null
     },
@@ -394,7 +394,8 @@
         2
       ],
       "skills": [
-        "simple_patterns"
+        "simple_patterns",
+        "pattern_recognition"
       ],
       "tutorial": "pattern_matching.ab_repeat"
     },
@@ -407,7 +408,8 @@
       ],
       "skills": [
         "simple_patterns",
-        "number_patterns"
+        "number_patterns",
+        "pattern_recognition"
       ],
       "tutorial": "pattern_matching.longer_core"
     },
@@ -419,7 +421,8 @@
         7
       ],
       "skills": [
-        "simple_patterns"
+        "simple_patterns",
+        "pattern_recognition"
       ],
       "tutorial": "pattern_matching.tricky_core"
     },
@@ -468,7 +471,8 @@
         9
       ],
       "skills": [
-        "skip_counting"
+        "skip_counting",
+        "number_ordering"
       ],
       "tutorial": "number_sequence.big_skips"
     },
@@ -546,7 +550,8 @@
         14
       ],
       "skills": [
-        "multiplication_two_digit"
+        "multiplication_two_digit",
+        "multiplication_word_problems"
       ],
       "tutorial": "multiplication.two_digit"
     },
@@ -559,7 +564,8 @@
       ],
       "skills": [
         "division_word_problems",
-        "simple_division"
+        "simple_division",
+        "division_facts"
       ],
       "tutorial": "division.sharing"
     },
@@ -624,7 +630,9 @@
       ],
       "skills": [
         "division_place_value",
-        "division_two_digit"
+        "division_two_digit",
+        "division_beyond_tables",
+        "division_word_problems"
       ],
       "tutorial": "division.two_digit"
     },

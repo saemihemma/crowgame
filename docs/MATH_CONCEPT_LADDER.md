@@ -41,7 +41,7 @@ concepts reachable and their lessons owed (roadmap: "Multi-digit concepts need
 their lessons").
 
 `reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,
-including the **0** empty and **1** thin rungs, and the **0** concepts the cap
+including the **0** empty and **0** thin rungs, and the **0** concepts the cap
 puts out of reach — the rail is gone; if a numeric rail ever returns,
 `tools/validate_math_concepts.mjs` re-runs the reachability audit and
 repopulates that obligation. Separately, **8** rungs are dead zones the step

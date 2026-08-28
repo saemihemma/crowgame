@@ -7650,6 +7650,4165 @@
           "length": 3
         }
       ]
+    },
+    {
+      "id": "batch_30_addition_teens_density",
+      "title": "Addition teens density",
+      "theme": "every teens rung gets the full spread of framings, stories, and number bonds instead of a handful of bare equations",
+      "targetCount": 200,
+      "templates": [
+        {
+          "id": "teens_wide_10",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            10,
+            10
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_10",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            10,
+            10
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "teens_wide_11",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            11,
+            11
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_11",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            11,
+            11
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "teens_wide_12",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            12,
+            12
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_12",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            12,
+            12
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "teens_wide_13",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            13,
+            13
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_13",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            13,
+            13
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "teens_wide_14",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            14,
+            14
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_14",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            14,
+            14
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "teens_wide_15",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            15,
+            15
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_15",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            15,
+            15
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "teens_wide_16",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            16,
+            16
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_16",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            16,
+            16
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "teens_wide_17",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            17,
+            17
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_17",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            17,
+            17
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "teens_wide_18",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            18,
+            18
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_18",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            18,
+            18
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "teens_wide_19",
+          "kind": "addition",
+          "family": "teens_density",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            19,
+            19
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1
+        },
+        {
+          "id": "teens_bond_19",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 8,
+          "skill": "teens_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            19,
+            19
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_31_subtraction_low_and_teens_density",
+      "title": "Subtraction low and teens density",
+      "theme": "the thin rungs of the subtraction ladder - the top of ten, the top of twenty, and take-away bonds asked from the other end",
+      "targetCount": 85,
+      "templates": [
+        {
+          "id": "sub_low_wide_1",
+          "kind": "subtraction",
+          "family": "low_density",
+          "bandId": "sub_to_10",
+          "count": 8,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            1,
+            1
+          ],
+          "leftRange": [
+            0,
+            10
+          ],
+          "rightRange": [
+            0,
+            10
+          ]
+        },
+        {
+          "id": "sub_low_wide_2",
+          "kind": "subtraction",
+          "family": "low_density",
+          "bandId": "sub_to_10",
+          "count": 8,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            2,
+            2
+          ],
+          "leftRange": [
+            0,
+            10
+          ],
+          "rightRange": [
+            0,
+            10
+          ]
+        },
+        {
+          "id": "sub_low_wide_4",
+          "kind": "subtraction",
+          "family": "low_density",
+          "bandId": "sub_to_10",
+          "count": 8,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            4,
+            4
+          ],
+          "leftRange": [
+            0,
+            10
+          ],
+          "rightRange": [
+            0,
+            10
+          ]
+        },
+        {
+          "id": "sub_low_wide_5",
+          "kind": "subtraction",
+          "family": "low_density",
+          "bandId": "sub_to_10",
+          "count": 12,
+          "skill": "single_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            5,
+            5
+          ],
+          "leftRange": [
+            0,
+            10
+          ],
+          "rightRange": [
+            0,
+            10
+          ]
+        },
+        {
+          "id": "sub_top_of_teens_15",
+          "kind": "subtraction",
+          "family": "teens_upper_no_borrow",
+          "bandId": "sub_under_20_borrow",
+          "count": 19,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            15,
+            15
+          ],
+          "leftRange": [
+            0,
+            20
+          ],
+          "rightRange": [
+            0,
+            20
+          ]
+        },
+        {
+          "id": "sub_bond_teens_7_11",
+          "kind": "subtraction",
+          "family": "teens_number_bonds",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            7,
+            11
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "sub_bond_teens_12_16",
+          "kind": "subtraction",
+          "family": "teens_number_bonds",
+          "bandId": "sub_under_20_borrow",
+          "count": 15,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            12,
+            16
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_32_addition_upper_two_digit_density",
+      "title": "Addition upper two-digit density",
+      "theme": "the 56-100 operand tiers that shipped thin, each with carry and no-carry work plus two-digit number bonds",
+      "targetCount": 144,
+      "templates": [
+        {
+          "id": "a56_60_wide_nocarry",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 6,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            28,
+            28
+          ],
+          "leftRange": [
+            56,
+            60
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a56_60_wide_carry",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 6,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            28,
+            28
+          ],
+          "leftRange": [
+            56,
+            60
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a61_65_wide_nocarry",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 6,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            29,
+            29
+          ],
+          "leftRange": [
+            61,
+            65
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a61_65_wide_carry",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 6,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            29,
+            29
+          ],
+          "leftRange": [
+            61,
+            65
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a66_70_wide_nocarry",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 10,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            30,
+            30
+          ],
+          "leftRange": [
+            66,
+            70
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a66_70_wide_carry",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 10,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            30,
+            30
+          ],
+          "leftRange": [
+            66,
+            70
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a71_75_wide_nocarry",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 6,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            31,
+            31
+          ],
+          "leftRange": [
+            71,
+            75
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a71_75_wide_carry",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 6,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            31,
+            31
+          ],
+          "leftRange": [
+            71,
+            75
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a76_80_wide_nocarry",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 10,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            32,
+            32
+          ],
+          "leftRange": [
+            76,
+            80
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a76_80_wide_carry",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 10,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            32,
+            32
+          ],
+          "leftRange": [
+            76,
+            80
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a81_85_wide_nocarry",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 6,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            33,
+            33
+          ],
+          "leftRange": [
+            81,
+            85
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a81_85_wide_carry",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 6,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            33,
+            33
+          ],
+          "leftRange": [
+            81,
+            85
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a86_90_wide_nocarry",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 10,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            34,
+            34
+          ],
+          "leftRange": [
+            86,
+            90
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a86_90_wide_carry",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 10,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            34,
+            34
+          ],
+          "leftRange": [
+            86,
+            90
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a96_100_wide_nocarry",
+          "kind": "addition",
+          "family": "upper_no_carry",
+          "bandId": "add_50_100_no_carry",
+          "count": 6,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            36,
+            36
+          ],
+          "leftRange": [
+            96,
+            100
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a96_100_wide_carry",
+          "kind": "addition",
+          "family": "upper_carry",
+          "bandId": "add_50_100_carry",
+          "count": 6,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_find",
+            "story_land"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            36,
+            36
+          ],
+          "leftRange": [
+            96,
+            100
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a_upper_bond_low",
+          "kind": "addition",
+          "family": "upper_number_bonds",
+          "bandId": "add_50_100_no_carry",
+          "count": 12,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            27,
+            31
+          ],
+          "leftRange": [
+            50,
+            80
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        },
+        {
+          "id": "a_upper_bond_high",
+          "kind": "addition",
+          "family": "upper_number_bonds",
+          "bandId": "add_50_100_no_carry",
+          "count": 12,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            32,
+            36
+          ],
+          "leftRange": [
+            80,
+            100
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "relationalShapes": [
+            "missing_right",
+            "missing_left",
+            "total_first"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_33_subtraction_upper_two_digit_density",
+      "title": "Subtraction upper two-digit density",
+      "theme": "the 56-100 operand tiers that shipped thin, each split into borrow and no-borrow work",
+      "targetCount": 124,
+      "templates": [
+        {
+          "id": "s56_60_wide_noborrow",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 6,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            28,
+            28
+          ],
+          "leftRange": [
+            56,
+            60
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s56_60_wide_borrow",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 6,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            28,
+            28
+          ],
+          "leftRange": [
+            56,
+            60
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s61_65_wide_noborrow",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 8,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            29,
+            29
+          ],
+          "leftRange": [
+            61,
+            65
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s61_65_wide_borrow",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 8,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            29,
+            29
+          ],
+          "leftRange": [
+            61,
+            65
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s66_70_wide_noborrow",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 8,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            30,
+            30
+          ],
+          "leftRange": [
+            66,
+            70
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s66_70_wide_borrow",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 8,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            30,
+            30
+          ],
+          "leftRange": [
+            66,
+            70
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s71_75_wide_noborrow",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 8,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            31,
+            31
+          ],
+          "leftRange": [
+            71,
+            75
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s71_75_wide_borrow",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 8,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            31,
+            31
+          ],
+          "leftRange": [
+            71,
+            75
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s76_80_wide_noborrow",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 10,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            32,
+            32
+          ],
+          "leftRange": [
+            76,
+            80
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s76_80_wide_borrow",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 10,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            32,
+            32
+          ],
+          "leftRange": [
+            76,
+            80
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s81_85_wide_noborrow",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 10,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            33,
+            33
+          ],
+          "leftRange": [
+            81,
+            85
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s81_85_wide_borrow",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 10,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            33,
+            33
+          ],
+          "leftRange": [
+            81,
+            85
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s86_90_wide_noborrow",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 6,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            34,
+            34
+          ],
+          "leftRange": [
+            86,
+            90
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s86_90_wide_borrow",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 6,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            34,
+            34
+          ],
+          "leftRange": [
+            86,
+            90
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s96_100_wide_noborrow",
+          "kind": "subtraction",
+          "family": "upper_no_borrow",
+          "bandId": "sub_50_100_no_borrow",
+          "count": 6,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            36,
+            36
+          ],
+          "leftRange": [
+            96,
+            100
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s96_100_wide_borrow",
+          "kind": "subtraction",
+          "family": "upper_borrow",
+          "bandId": "sub_50_100_borrow",
+          "count": 6,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math",
+            "story_eat",
+            "story_fly"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            36,
+            36
+          ],
+          "leftRange": [
+            96,
+            100
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "requireBorrow": true
+        }
+      ]
+    },
+    {
+      "id": "batch_34_addition_101_120",
+      "title": "Addition across 100 to 120",
+      "theme": "the last rung of the tier-2 addition ladder: operands 101-120, abstract framings only",
+      "targetCount": 96,
+      "templates": [
+        {
+          "id": "a101_105_nocarry",
+          "kind": "addition",
+          "family": "top_tier_no_carry",
+          "bandId": "add_100_120",
+          "count": 12,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            37,
+            37
+          ],
+          "leftRange": [
+            101,
+            105
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a101_105_carry",
+          "kind": "addition",
+          "family": "top_tier_carry",
+          "bandId": "add_100_120",
+          "count": 12,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            37,
+            37
+          ],
+          "leftRange": [
+            101,
+            105
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a106_110_nocarry",
+          "kind": "addition",
+          "family": "top_tier_no_carry",
+          "bandId": "add_100_120",
+          "count": 12,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            38,
+            38
+          ],
+          "leftRange": [
+            106,
+            110
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a106_110_carry",
+          "kind": "addition",
+          "family": "top_tier_carry",
+          "bandId": "add_100_120",
+          "count": 12,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            38,
+            38
+          ],
+          "leftRange": [
+            106,
+            110
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a111_115_nocarry",
+          "kind": "addition",
+          "family": "top_tier_no_carry",
+          "bandId": "add_100_120",
+          "count": 12,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            39,
+            39
+          ],
+          "leftRange": [
+            111,
+            115
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a111_115_carry",
+          "kind": "addition",
+          "family": "top_tier_carry",
+          "bandId": "add_100_120",
+          "count": 12,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            39,
+            39
+          ],
+          "leftRange": [
+            111,
+            115
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireCarry": true
+        },
+        {
+          "id": "a116_120_nocarry",
+          "kind": "addition",
+          "family": "top_tier_no_carry",
+          "bandId": "add_100_120",
+          "count": 12,
+          "skill": "two_digit_addition",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            40,
+            40
+          ],
+          "leftRange": [
+            116,
+            120
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireCarry": false
+        },
+        {
+          "id": "a116_120_carry",
+          "kind": "addition",
+          "family": "top_tier_carry",
+          "bandId": "add_100_120",
+          "count": 12,
+          "skill": "two_digit_addition_carry",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "add_place_value",
+          "explanationStrategy": "sum_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "forgot_carry"
+          ],
+          "templateStepRange": [
+            40,
+            40
+          ],
+          "leftRange": [
+            116,
+            120
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireCarry": true
+        }
+      ]
+    },
+    {
+      "id": "batch_35_subtraction_101_120",
+      "title": "Subtraction across 100 to 120",
+      "theme": "the last rung of the tier-2 subtraction ladder: operands 101-120, abstract framings only",
+      "targetCount": 96,
+      "templates": [
+        {
+          "id": "s101_105_noborrow",
+          "kind": "subtraction",
+          "family": "top_tier_no_borrow",
+          "bandId": "sub_100_120",
+          "count": 12,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            37,
+            37
+          ],
+          "leftRange": [
+            101,
+            105
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s101_105_borrow",
+          "kind": "subtraction",
+          "family": "top_tier_borrow",
+          "bandId": "sub_100_120",
+          "count": 12,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            37,
+            37
+          ],
+          "leftRange": [
+            101,
+            105
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s106_110_noborrow",
+          "kind": "subtraction",
+          "family": "top_tier_no_borrow",
+          "bandId": "sub_100_120",
+          "count": 12,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            38,
+            38
+          ],
+          "leftRange": [
+            106,
+            110
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s106_110_borrow",
+          "kind": "subtraction",
+          "family": "top_tier_borrow",
+          "bandId": "sub_100_120",
+          "count": 12,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            38,
+            38
+          ],
+          "leftRange": [
+            106,
+            110
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s111_115_noborrow",
+          "kind": "subtraction",
+          "family": "top_tier_no_borrow",
+          "bandId": "sub_100_120",
+          "count": 12,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            39,
+            39
+          ],
+          "leftRange": [
+            111,
+            115
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s111_115_borrow",
+          "kind": "subtraction",
+          "family": "top_tier_borrow",
+          "bandId": "sub_100_120",
+          "count": 12,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            39,
+            39
+          ],
+          "leftRange": [
+            111,
+            115
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireBorrow": true
+        },
+        {
+          "id": "s116_120_noborrow",
+          "kind": "subtraction",
+          "family": "top_tier_no_borrow",
+          "bandId": "sub_100_120",
+          "count": 12,
+          "skill": "two_digit_subtraction",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            40,
+            40
+          ],
+          "leftRange": [
+            116,
+            120
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireBorrow": false
+        },
+        {
+          "id": "s116_120_borrow",
+          "kind": "subtraction",
+          "family": "top_tier_borrow",
+          "bandId": "sub_100_120",
+          "count": 12,
+          "skill": "two_digit_subtraction_borrow",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "subtract_place_value",
+          "explanationStrategy": "difference_place_value",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "borrow_slip"
+          ],
+          "templateStepRange": [
+            40,
+            40
+          ],
+          "leftRange": [
+            116,
+            120
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "requireBorrow": true
+        }
+      ]
+    },
+    {
+      "id": "batch_36_multiplication_division_density",
+      "title": "Multiplication and division density",
+      "theme": "the identity rung, the beyond-tables rung, and the equal-groups and sharing stories the table ladder was missing",
+      "targetCount": 64,
+      "templates": [
+        {
+          "id": "div_by_one",
+          "kind": "division",
+          "family": "division_identity",
+          "bandId": "div_identity",
+          "count": 16,
+          "skill": "division_facts",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "identity_confusion"
+          ],
+          "templateStepRange": [
+            1,
+            1
+          ],
+          "leftRange": [
+            2,
+            20
+          ],
+          "rightValues": [
+            1
+          ]
+        },
+        {
+          "id": "div_beyond_tables_wide",
+          "kind": "division",
+          "family": "beyond_tables",
+          "bandId": "div_beyond_tables",
+          "count": 14,
+          "skill": "division_beyond_tables",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_result",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            15,
+            15
+          ],
+          "leftRange": [
+            51,
+            99
+          ],
+          "rightRange": [
+            2,
+            9
+          ]
+        },
+        {
+          "id": "mult_hard_cluster_top",
+          "kind": "multiplication",
+          "family": "table_8_mix",
+          "bandId": "mult_6_9",
+          "count": 2,
+          "skill": "multiplication_tables",
+          "promptVariants": [
+            "equation",
+            "question",
+            "solve",
+            "equals",
+            "complete",
+            "how_much",
+            "answer",
+            "blank_equals",
+            "quick_check",
+            "mental_math"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            10,
+            10
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightRange": [
+            2,
+            10
+          ]
+        },
+        {
+          "id": "mult_story_tens",
+          "kind": "multiplication",
+          "family": "equal_groups_story",
+          "bandId": "mult_ladder_fill",
+          "count": 8,
+          "skill": "multiplication_word_problems",
+          "promptVariants": [
+            "story_nests"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "added_instead"
+          ],
+          "templateStepRange": [
+            12,
+            12
+          ],
+          "leftRange": [
+            2,
+            9
+          ],
+          "rightRange": [
+            10,
+            90
+          ]
+        },
+        {
+          "id": "mult_story_beyond",
+          "kind": "multiplication",
+          "family": "equal_groups_story",
+          "bandId": "mult_beyond_tables",
+          "count": 14,
+          "skill": "multiplication_word_problems",
+          "promptVariants": [
+            "story_nests"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "added_instead"
+          ],
+          "templateStepRange": [
+            13,
+            14
+          ],
+          "leftRange": [
+            2,
+            9
+          ],
+          "rightRange": [
+            11,
+            40
+          ]
+        },
+        {
+          "id": "div_story_beyond",
+          "kind": "division",
+          "family": "sharing_story",
+          "bandId": "div_beyond_tables",
+          "count": 10,
+          "skill": "division_word_problems",
+          "promptVariants": [
+            "story_share"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "strictVariants": true,
+          "misconceptionTags": [
+            "subtracted_instead"
+          ],
+          "templateStepRange": [
+            14,
+            15
+          ],
+          "leftRange": [
+            51,
+            99
+          ],
+          "rightRange": [
+            2,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "id": "batch_37_number_sense_density",
+      "title": "Number sense density",
+      "theme": "counting, comparison, sequence, and pattern rungs that shipped under the density floor",
+      "targetCount": 237,
+      "templates": [
+        {
+          "id": "count_five_six_wide",
+          "kind": "counting",
+          "family": "counting_objects",
+          "bandId": "counting_basics",
+          "count": 10,
+          "skill": "counting_objects",
+          "promptVariants": [
+            "count",
+            "how_many",
+            "count_them",
+            "how_many_of",
+            "see",
+            "altogether",
+            "say_number",
+            "point_count"
+          ],
+          "hintStrategy": "count_from_five",
+          "explanationStrategy": "count_five_and",
+          "misconceptionTags": [
+            "counting_skip"
+          ],
+          "templateStepRange": [
+            1,
+            1
+          ],
+          "countRange": [
+            5,
+            6
+          ],
+          "symbols": [
+            "o",
+            "@",
+            "#",
+            "%",
+            "&",
+            "*",
+            "^",
+            "<",
+            "~",
+            ";",
+            "(",
+            ")"
+          ]
+        },
+        {
+          "id": "cmp_greater_0",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 6,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            0,
+            0
+          ],
+          "leftRange": [
+            0,
+            5
+          ],
+          "rightRange": [
+            0,
+            5
+          ],
+          "relation": "greater"
+        },
+        {
+          "id": "cmp_smaller_0",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 6,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            0,
+            0
+          ],
+          "leftRange": [
+            0,
+            5
+          ],
+          "rightRange": [
+            0,
+            5
+          ],
+          "relation": "smaller"
+        },
+        {
+          "id": "cmp_greater_1",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 7,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            1,
+            1
+          ],
+          "leftRange": [
+            0,
+            8
+          ],
+          "rightRange": [
+            0,
+            8
+          ],
+          "relation": "greater"
+        },
+        {
+          "id": "cmp_smaller_1",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 7,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            1,
+            1
+          ],
+          "leftRange": [
+            0,
+            8
+          ],
+          "rightRange": [
+            0,
+            8
+          ],
+          "relation": "smaller"
+        },
+        {
+          "id": "cmp_greater_2",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 6,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            2,
+            2
+          ],
+          "leftRange": [
+            0,
+            10
+          ],
+          "rightRange": [
+            0,
+            10
+          ],
+          "relation": "greater"
+        },
+        {
+          "id": "cmp_smaller_2",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 6,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            2,
+            2
+          ],
+          "leftRange": [
+            0,
+            10
+          ],
+          "rightRange": [
+            0,
+            10
+          ],
+          "relation": "smaller"
+        },
+        {
+          "id": "cmp_greater_3",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 7,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            3,
+            3
+          ],
+          "leftRange": [
+            0,
+            12
+          ],
+          "rightRange": [
+            0,
+            12
+          ],
+          "relation": "greater"
+        },
+        {
+          "id": "cmp_smaller_3",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 7,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            3,
+            3
+          ],
+          "leftRange": [
+            0,
+            12
+          ],
+          "rightRange": [
+            0,
+            12
+          ],
+          "relation": "smaller"
+        },
+        {
+          "id": "cmp_greater_4",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 4,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            4,
+            4
+          ],
+          "leftRange": [
+            0,
+            15
+          ],
+          "rightRange": [
+            0,
+            15
+          ],
+          "relation": "greater"
+        },
+        {
+          "id": "cmp_smaller_4",
+          "kind": "comparison",
+          "family": "comparison_density",
+          "bandId": "comparison_basics",
+          "count": 4,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "comparison_confusion"
+          ],
+          "templateStepRange": [
+            4,
+            4
+          ],
+          "leftRange": [
+            0,
+            15
+          ],
+          "rightRange": [
+            0,
+            15
+          ],
+          "relation": "smaller"
+        },
+        {
+          "id": "cmp_greater_7",
+          "kind": "comparison",
+          "family": "comparison_ordering",
+          "bandId": "comparison_big",
+          "count": 6,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "magnitude_slip"
+          ],
+          "templateStepRange": [
+            7,
+            7
+          ],
+          "leftRange": [
+            31,
+            120
+          ],
+          "rightRange": [
+            31,
+            120
+          ],
+          "relation": "greater"
+        },
+        {
+          "id": "cmp_smaller_7",
+          "kind": "comparison",
+          "family": "comparison_ordering",
+          "bandId": "comparison_big",
+          "count": 6,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "magnitude_slip"
+          ],
+          "templateStepRange": [
+            7,
+            7
+          ],
+          "leftRange": [
+            31,
+            120
+          ],
+          "rightRange": [
+            31,
+            120
+          ],
+          "relation": "smaller"
+        },
+        {
+          "id": "cmp_greater_8",
+          "kind": "comparison",
+          "family": "comparison_ordering",
+          "bandId": "comparison_big",
+          "count": 6,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "magnitude_slip"
+          ],
+          "templateStepRange": [
+            8,
+            8
+          ],
+          "leftRange": [
+            121,
+            300
+          ],
+          "rightRange": [
+            121,
+            300
+          ],
+          "relation": "greater"
+        },
+        {
+          "id": "cmp_smaller_8",
+          "kind": "comparison",
+          "family": "comparison_ordering",
+          "bandId": "comparison_big",
+          "count": 6,
+          "skill": "number_comparison",
+          "promptVariants": [
+            "which",
+            "pick",
+            "find"
+          ],
+          "hintStrategy": "compare_numbers",
+          "explanationStrategy": "comparison_result",
+          "misconceptionTags": [
+            "magnitude_slip"
+          ],
+          "templateStepRange": [
+            8,
+            8
+          ],
+          "leftRange": [
+            121,
+            300
+          ],
+          "rightRange": [
+            121,
+            300
+          ],
+          "relation": "smaller"
+        },
+        {
+          "id": "seq_density_0",
+          "kind": "number_sequence",
+          "family": "sequence_density",
+          "bandId": "sequence_basics",
+          "count": 12,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "templateStepRange": [
+            0,
+            0
+          ],
+          "startRange": [
+            0,
+            6
+          ],
+          "stepChoices": [
+            1,
+            -1
+          ],
+          "length": 3
+        },
+        {
+          "id": "seq_density_1",
+          "kind": "number_sequence",
+          "family": "sequence_density",
+          "bandId": "sequence_basics",
+          "count": 12,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "templateStepRange": [
+            1,
+            1
+          ],
+          "startRange": [
+            0,
+            12
+          ],
+          "stepChoices": [
+            1,
+            -1
+          ],
+          "length": 3
+        },
+        {
+          "id": "seq_density_2",
+          "kind": "number_sequence",
+          "family": "sequence_density",
+          "bandId": "sequence_basics",
+          "count": 6,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "templateStepRange": [
+            2,
+            2
+          ],
+          "startRange": [
+            0,
+            18
+          ],
+          "stepChoices": [
+            1,
+            -1
+          ],
+          "length": 3
+        },
+        {
+          "id": "seq_density_3",
+          "kind": "number_sequence",
+          "family": "sequence_density",
+          "bandId": "sequence_basics",
+          "count": 12,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "templateStepRange": [
+            3,
+            3
+          ],
+          "startRange": [
+            0,
+            30
+          ],
+          "stepChoices": [
+            1,
+            -1
+          ],
+          "length": 3
+        },
+        {
+          "id": "seq_density_4",
+          "kind": "number_sequence",
+          "family": "sequence_density",
+          "bandId": "sequence_basics",
+          "count": 6,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "pattern_jump_confusion"
+          ],
+          "templateStepRange": [
+            4,
+            4
+          ],
+          "startRange": [
+            0,
+            24
+          ],
+          "stepChoices": [
+            2,
+            -2
+          ],
+          "length": 3
+        },
+        {
+          "id": "seq_skip_big_7",
+          "kind": "number_sequence",
+          "family": "skip_counting",
+          "bandId": "sequence_big",
+          "count": 13,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "step_slip"
+          ],
+          "templateStepRange": [
+            7,
+            7
+          ],
+          "startRange": [
+            25,
+            900
+          ],
+          "stepChoices": [
+            10,
+            25,
+            50,
+            100
+          ],
+          "length": 4
+        },
+        {
+          "id": "seq_skip_big_8",
+          "kind": "number_sequence",
+          "family": "skip_counting",
+          "bandId": "sequence_big",
+          "count": 8,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "step_slip"
+          ],
+          "templateStepRange": [
+            8,
+            8
+          ],
+          "startRange": [
+            25,
+            900
+          ],
+          "stepChoices": [
+            10,
+            25,
+            50,
+            100
+          ],
+          "length": 4
+        },
+        {
+          "id": "seq_skip_big_9",
+          "kind": "number_sequence",
+          "family": "skip_counting",
+          "bandId": "sequence_big",
+          "count": 6,
+          "skill": "number_ordering",
+          "promptVariants": [
+            "next",
+            "keep_going",
+            "number_pattern"
+          ],
+          "hintStrategy": "sequence_step",
+          "explanationStrategy": "sequence_result",
+          "misconceptionTags": [
+            "step_slip"
+          ],
+          "templateStepRange": [
+            9,
+            9
+          ],
+          "startRange": [
+            25,
+            900
+          ],
+          "stepChoices": [
+            10,
+            25,
+            50,
+            100
+          ],
+          "length": 4
+        },
+        {
+          "id": "pattern_density_0",
+          "kind": "pattern_matching",
+          "family": "pattern_density",
+          "bandId": "pattern_basics",
+          "count": 12,
+          "skill": "pattern_recognition",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "templateStepRange": [
+            0,
+            0
+          ],
+          "patternLength": 2,
+          "valueRange": [
+            0,
+            3
+          ],
+          "cycles": 3
+        },
+        {
+          "id": "pattern_density_1",
+          "kind": "pattern_matching",
+          "family": "pattern_density",
+          "bandId": "pattern_basics",
+          "count": 10,
+          "skill": "pattern_recognition",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "templateStepRange": [
+            1,
+            1
+          ],
+          "patternLength": 2,
+          "valueRange": [
+            0,
+            6
+          ],
+          "cycles": 3
+        },
+        {
+          "id": "pattern_density_2",
+          "kind": "pattern_matching",
+          "family": "pattern_density",
+          "bandId": "pattern_basics",
+          "count": 8,
+          "skill": "pattern_recognition",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "templateStepRange": [
+            2,
+            2
+          ],
+          "patternLength": 2,
+          "valueRange": [
+            0,
+            10
+          ],
+          "cycles": 3
+        },
+        {
+          "id": "pattern_density_3",
+          "kind": "pattern_matching",
+          "family": "pattern_density",
+          "bandId": "pattern_basics",
+          "count": 8,
+          "skill": "pattern_recognition",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "templateStepRange": [
+            3,
+            3
+          ],
+          "patternLength": 3,
+          "valueRange": [
+            0,
+            6
+          ],
+          "cycles": 2
+        },
+        {
+          "id": "pattern_density_5",
+          "kind": "pattern_matching",
+          "family": "pattern_density",
+          "bandId": "pattern_basics",
+          "count": 10,
+          "skill": "pattern_recognition",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "templateStepRange": [
+            5,
+            5
+          ],
+          "patternLength": 3,
+          "valueRange": [
+            4,
+            12
+          ],
+          "cycles": 2
+        },
+        {
+          "id": "pattern_density_6",
+          "kind": "pattern_matching",
+          "family": "pattern_density",
+          "bandId": "pattern_basics",
+          "count": 6,
+          "skill": "pattern_recognition",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "templateStepRange": [
+            6,
+            6
+          ],
+          "patternLength": 4,
+          "valueRange": [
+            4,
+            14
+          ],
+          "cycles": 2
+        },
+        {
+          "id": "pattern_density_7",
+          "kind": "pattern_matching",
+          "family": "pattern_density",
+          "bandId": "pattern_basics",
+          "count": 14,
+          "skill": "pattern_recognition",
+          "promptVariants": [
+            "repeat",
+            "keep_going"
+          ],
+          "hintStrategy": "pattern_repeat",
+          "explanationStrategy": "pattern_result",
+          "misconceptionTags": [
+            "pattern_swap"
+          ],
+          "templateStepRange": [
+            7,
+            7
+          ],
+          "patternLength": 4,
+          "valueRange": [
+            10,
+            20
+          ],
+          "cycles": 2
+        }
+      ]
     }
   ]
 }
