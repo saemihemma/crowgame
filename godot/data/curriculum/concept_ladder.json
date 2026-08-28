@@ -125,7 +125,7 @@
       "domain": "addition",
       "steps": [
         2,
-        9
+        36
       ],
       "requires": {
         "skill": "missing_addend"
@@ -140,7 +140,7 @@
       "domain": "addition",
       "steps": [
         2,
-        12
+        36
       ],
       "requires": {
         "skill": "relational_equals"
@@ -155,7 +155,7 @@
       "domain": "subtraction",
       "steps": [
         3,
-        11
+        12
       ],
       "requires": {
         "skill": "missing_subtrahend"
@@ -170,7 +170,7 @@
       "domain": "subtraction",
       "steps": [
         6,
-        13
+        16
       ],
       "requires": {
         "skill": "missing_minuend"
@@ -185,7 +185,7 @@
       "domain": "subtraction",
       "steps": [
         4,
-        13
+        14
       ],
       "requires": {
         "skill": "subtraction_relational"
@@ -200,7 +200,7 @@
       "domain": "addition",
       "steps": [
         3,
-        9
+        14
       ],
       "requires": {
         "skill": "both_sides_equals"
@@ -641,7 +641,7 @@
       "domain": "multiplication",
       "steps": [
         1,
-        7
+        10
       ],
       "requires": {
         "skill": "missing_factor"
@@ -656,7 +656,7 @@
       "domain": "division",
       "steps": [
         2,
-        8
+        11
       ],
       "requires": {
         "skill": "missing_divisor"
@@ -671,7 +671,7 @@
       "domain": "division",
       "steps": [
         2,
-        8
+        11
       ],
       "requires": {
         "skill": "missing_dividend"

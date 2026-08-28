@@ -7,14 +7,14 @@
   "templateReview": {
     "category": {
       "grade": 9.3,
-      "summary": "Template coverage is stable: 7 templates, 3 families, steps 1-16.",
+      "summary": "Template coverage is stable: 11 templates, 3 families, steps 1-16.",
       "metrics": {
-        "templateCount": 7,
+        "templateCount": 11,
         "familyCount": 3,
         "minStep": 1,
         "maxStep": 16,
-        "promptVariantCount": 62,
-        "averageProblemsPerTemplate": 12.1
+        "promptVariantCount": 66,
+        "averageProblemsPerTemplate": 7.7
       }
     },
     "roleGrades": [
@@ -30,7 +30,7 @@
       },
       {
         "role": "role-analytics-engineer",
-        "grade": 9.5,
+        "grade": 9.3,
         "rationale": "Template volume and spread are consistent enough for later measurement."
       }
     ]
@@ -69,12 +69,12 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.9,
+      "grade": 9.8,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.9,
-        "strugglingChildGrade": 9.9,
-        "strongChildGrade": 9.9,
+        "steadyChildGrade": 9.7,
+        "strugglingChildGrade": 10,
+        "strongChildGrade": 9.6,
         "openingProbeStep": 1,
         "middleProbeStep": 9,
         "upperProbeStep": 16,
@@ -86,17 +86,17 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.9,
+        "grade": 9.6,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.9,
+        "grade": 9.7,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {
         "role": "role-qa-engineer",
-        "grade": 9.9,
+        "grade": 10,
         "rationale": "The struggling-child probes check for exhaustion and cliffs across opening, middle, and upper populated steps."
       }
     ],

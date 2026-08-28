@@ -2,25 +2,25 @@
   "batchId": "batch_30_addition_teens_density",
   "title": "Addition teens density",
   "accepted": true,
-  "averageGrade": 9.9,
+  "averageGrade": 9.8,
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.6,
-      "summary": "Template coverage is stable: 20 templates, 2 families, steps 10-19.",
+      "grade": 9.5,
+      "summary": "Template coverage is stable: 30 templates, 2 families, steps 10-19.",
       "metrics": {
-        "templateCount": 20,
+        "templateCount": 30,
         "familyCount": 2,
         "minStep": 10,
         "maxStep": 19,
-        "promptVariantCount": 130,
-        "averageProblemsPerTemplate": 10
+        "promptVariantCount": 140,
+        "averageProblemsPerTemplate": 6.7
       }
     },
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.6,
+        "grade": 9.5,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
@@ -30,7 +30,7 @@
       },
       {
         "role": "role-analytics-engineer",
-        "grade": 9.4,
+        "grade": 9.3,
         "rationale": "Template volume and spread are consistent enough for later measurement."
       }
     ]

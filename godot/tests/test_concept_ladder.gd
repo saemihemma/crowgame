@@ -259,11 +259,13 @@ func test_promotion_can_step_over_every_impossible_rung() -> void:
 
 ## Relational shapes across both operations.
 ##
-## Six overlays now claim problems by the position of the unknown rather than by
+## Nine overlays now claim problems by the position of the unknown rather than by
 ## difficulty. The thing worth failing a build over is that a problem lands on
 ## the overlay that teaches ITS shape: "12 - ? = 5" and "? - 3 = 9" derive onto
 ## nearby rungs and would otherwise both get the take-away lesson, which teaches
-## neither of them.
+## neither of them. The multiplicative three are the same idea in the other
+## direction: "3 x ? = 12" is a times fact asked from the other end and "? / 4 = 3"
+## is a share asked backwards, and neither is the plain-table lesson.
 const RELATIONAL_SHAPES := {
 	"missing_addend": "addition.missing_part",
 	"relational_equals": "addition.balance",
@@ -271,6 +273,9 @@ const RELATIONAL_SHAPES := {
 	"missing_subtrahend": "subtraction.missing_part",
 	"missing_minuend": "subtraction.start_unknown",
 	"subtraction_relational": "subtraction.balance",
+	"missing_factor": "multiplication.missing_factor",
+	"missing_divisor": "division.missing_groups",
+	"missing_dividend": "division.start_unknown",
 }
 
 func test_every_relational_shape_reaches_its_own_lesson() -> void:
@@ -287,15 +292,61 @@ func test_every_relational_shape_reaches_its_own_lesson() -> void:
 		assert_true(int(counted.get(skill, 0)) >= 6,
 			"%s has enough authored problems to practise (%d)" % [skill, int(counted.get(skill, 0))])
 
-func test_every_relational_problem_is_inside_the_owl_cap() -> void:
-	# These exist to be PLAYED. Six concepts in this pack already teach content no
-	# child can reach; the relational ones must not join them.
+## The tightest operand rail any owl declares, or -1 for no rail.
+##
+## This used to be the literal 20, which was the rail math_challenge_component
+## carried until the owner's grade-4 decision removed it (2026-08) -- see the
+## long NO OPERAND RAIL note in that file. Hard-coding it outlived the rail and
+## would have failed every two-digit number bond and every "? / 4 = 3" for a rule
+## that no longer exists. Read from the registry instead, so the assertion is
+## about what the owl is actually configured to serve: silent while there is no
+## rail, and biting again the moment one comes back.
+func _owl_operand_rail() -> int:
+	var f := FileAccess.open("res://data/npcs/npc_registry.json", FileAccess.READ)
+	if f == null:
+		return -1
+	var parsed: Variant = JSON.parse_string(f.get_as_text())
+	f.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return -1
+	var rail := -1
+	for npc: Variant in (parsed as Dictionary).get("npcs", []):
+		for component: Variant in (npc as Dictionary).get("components", []):
+			var config := component as Dictionary
+			if String(config.get("type", "")) != "math_challenge":
+				continue
+			if not config.has("maxOperand"):
+				continue
+			var declared := int(config["maxOperand"])
+			rail = declared if rail < 0 else mini(rail, declared)
+	return rail
+
+func test_every_relational_problem_is_reachable() -> void:
+	# These exist to be PLAYED. Reachability is the step ladder's job now, so the
+	# thing to prove is that a relational problem sits inside the span its own
+	# overlay declares -- an overlay only teaches the rungs it claims, and a
+	# problem outside them is a shape with no lesson. If an operand rail ever
+	# returns to the registry, it is checked too.
+	var rail := _owl_operand_rail()
+	var checked := 0
 	for problem: Variant in DataManager.get_all_math_problems():
-		var is_relational := false
+		var shape := ""
 		for skill: Variant in problem.get("skills", []):
 			if RELATIONAL_SHAPES.has(skill):
-				is_relational = true
-		if not is_relational:
+				shape = String(skill)
+		if shape == "":
 			continue
-		var operand := int((problem.get("difficultyTraits", {}) as Dictionary).get("maxOperand", 0))
-		assert_true(operand <= 20, "%s has maxOperand %d, inside the owl's cap" % [problem.get("id", "?"), operand])
+		checked += 1
+		var concept := ConceptLadder.concept_for_problem(problem)
+		var steps: Array = concept.get("steps", [])
+		assert_eq(steps.size(), 2, "%s reaches an overlay with a declared span" % problem.get("id", "?"))
+		if steps.size() == 2:
+			var step := int(problem.get("curriculumStep", -1))
+			assert_true(step >= int(steps[0]) and step <= int(steps[1]),
+				"%s sits on step %d, inside %s's declared %d-%d" % [
+					problem.get("id", "?"), step, concept.get("id", "?"), int(steps[0]), int(steps[1])])
+		if rail >= 0:
+			var operand := int((problem.get("difficultyTraits", {}) as Dictionary).get("maxOperand", 0))
+			assert_true(operand <= rail,
+				"%s has maxOperand %d, inside the owl's rail of %d" % [problem.get("id", "?"), operand, rail])
+	assert_true(checked > 0, "the pools carry relational problems to check (%d)" % checked)

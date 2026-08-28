@@ -7698,12 +7698,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_10",
+          "id": "teens_bond_part_10",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -7727,7 +7727,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_10",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            10,
+            10
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
@@ -7772,12 +7803,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_11",
+          "id": "teens_bond_part_11",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -7801,7 +7832,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_11",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            11,
+            11
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
@@ -7846,12 +7908,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_12",
+          "id": "teens_bond_part_12",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -7875,7 +7937,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_12",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            12,
+            12
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
@@ -7920,12 +8013,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_13",
+          "id": "teens_bond_part_13",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -7949,7 +8042,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_13",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            13,
+            13
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
@@ -7994,12 +8118,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_14",
+          "id": "teens_bond_part_14",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -8023,7 +8147,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_14",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            14,
+            14
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
@@ -8068,12 +8223,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_15",
+          "id": "teens_bond_part_15",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -8097,7 +8252,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_15",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            15,
+            15
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
@@ -8142,12 +8328,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_16",
+          "id": "teens_bond_part_16",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -8171,7 +8357,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_16",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            16,
+            16
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
@@ -8216,12 +8433,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_17",
+          "id": "teens_bond_part_17",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -8245,7 +8462,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_17",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            17,
+            17
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
@@ -8290,12 +8538,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_18",
+          "id": "teens_bond_part_18",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -8319,7 +8567,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_18",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            18,
+            18
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
@@ -8364,12 +8643,12 @@
           "minOperand": 1
         },
         {
-          "id": "teens_bond_19",
+          "id": "teens_bond_part_19",
           "kind": "addition",
           "family": "teens_number_bonds",
           "bandId": "add_teens_bridge",
-          "count": 8,
-          "skill": "teens_addition",
+          "count": 5,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -8393,7 +8672,38 @@
           "minOperand": 1,
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "teens_bond_balance_19",
+          "kind": "addition",
+          "family": "teens_number_bonds",
+          "bandId": "add_teens_bridge",
+          "count": 3,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            19,
+            19
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         }
@@ -8601,12 +8911,12 @@
           ]
         },
         {
-          "id": "sub_bond_teens_7_11",
+          "id": "sub_bond_missing_subtrahend_7_11",
           "kind": "subtraction",
           "family": "teens_number_bonds",
           "bandId": "sub_under_20_borrow",
-          "count": 15,
-          "skill": "two_digit_subtraction",
+          "count": 6,
+          "skill": "missing_subtrahend",
           "promptVariants": [
             "equation"
           ],
@@ -8629,18 +8939,80 @@
           ],
           "minOperand": 1,
           "relationalShapes": [
-            "missing_right",
-            "missing_left",
+            "missing_right"
+          ]
+        },
+        {
+          "id": "sub_bond_missing_minuend_7_11",
+          "kind": "subtraction",
+          "family": "teens_number_bonds",
+          "bandId": "sub_under_20_borrow",
+          "count": 5,
+          "skill": "missing_minuend",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            7,
+            11
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_left"
+          ]
+        },
+        {
+          "id": "sub_bond_subtraction_relational_7_11",
+          "kind": "subtraction",
+          "family": "teens_number_bonds",
+          "bandId": "sub_under_20_borrow",
+          "count": 4,
+          "skill": "subtraction_relational",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            7,
+            11
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         },
         {
-          "id": "sub_bond_teens_12_16",
+          "id": "sub_bond_missing_subtrahend_12_16",
           "kind": "subtraction",
           "family": "teens_number_bonds",
           "bandId": "sub_under_20_borrow",
-          "count": 15,
-          "skill": "two_digit_subtraction",
+          "count": 6,
+          "skill": "missing_subtrahend",
           "promptVariants": [
             "equation"
           ],
@@ -8663,8 +9035,70 @@
           ],
           "minOperand": 1,
           "relationalShapes": [
-            "missing_right",
-            "missing_left",
+            "missing_right"
+          ]
+        },
+        {
+          "id": "sub_bond_missing_minuend_12_16",
+          "kind": "subtraction",
+          "family": "teens_number_bonds",
+          "bandId": "sub_under_20_borrow",
+          "count": 5,
+          "skill": "missing_minuend",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            12,
+            16
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "missing_left"
+          ]
+        },
+        {
+          "id": "sub_bond_subtraction_relational_12_16",
+          "kind": "subtraction",
+          "family": "teens_number_bonds",
+          "bandId": "sub_under_20_borrow",
+          "count": 4,
+          "skill": "subtraction_relational",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_back",
+          "explanationStrategy": "difference_result",
+          "misconceptionTags": [
+            "counting_back_error"
+          ],
+          "templateStepRange": [
+            12,
+            16
+          ],
+          "leftRange": [
+            1,
+            20
+          ],
+          "rightRange": [
+            1,
+            20
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
             "total_first"
           ]
         }
@@ -9317,12 +9751,12 @@
           "requireCarry": true
         },
         {
-          "id": "a_upper_bond_low",
+          "id": "a_upper_bond_part_27_31",
           "kind": "addition",
           "family": "upper_number_bonds",
           "bandId": "add_50_100_no_carry",
-          "count": 12,
-          "skill": "two_digit_addition",
+          "count": 8,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -9345,17 +9779,47 @@
           ],
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "a_upper_bond_balance_27_31",
+          "kind": "addition",
+          "family": "upper_number_bonds",
+          "bandId": "add_50_100_no_carry",
+          "count": 4,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            27,
+            31
+          ],
+          "leftRange": [
+            50,
+            80
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "relationalShapes": [
             "total_first"
           ]
         },
         {
-          "id": "a_upper_bond_high",
+          "id": "a_upper_bond_part_32_36",
           "kind": "addition",
           "family": "upper_number_bonds",
           "bandId": "add_50_100_no_carry",
-          "count": 12,
-          "skill": "two_digit_addition",
+          "count": 8,
+          "skill": "missing_addend",
           "promptVariants": [
             "equation"
           ],
@@ -9378,7 +9842,37 @@
           ],
           "relationalShapes": [
             "missing_right",
-            "missing_left",
+            "missing_left"
+          ]
+        },
+        {
+          "id": "a_upper_bond_balance_32_36",
+          "kind": "addition",
+          "family": "upper_number_bonds",
+          "bandId": "add_50_100_no_carry",
+          "count": 4,
+          "skill": "relational_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "place_value_slip"
+          ],
+          "templateStepRange": [
+            32,
+            36
+          ],
+          "leftRange": [
+            80,
+            100
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "relationalShapes": [
             "total_first"
           ]
         }
@@ -11807,6 +12301,466 @@
             20
           ],
           "cycles": 2
+        }
+      ]
+    },
+    {
+      "id": "batch_38_relational_shapes",
+      "title": "Relational shapes across the operations",
+      "theme": "the times table asked from the other end, sharing asked backwards, and an operation on both sides of the equals sign",
+      "targetCount": 154,
+      "templates": [
+        {
+          "id": "mult_missing_factor_missing_right_1",
+          "kind": "multiplication",
+          "family": "missing_factor",
+          "bandId": "mult_2_5",
+          "count": 12,
+          "skill": "missing_factor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "templateStepRange": [
+            1,
+            7
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_right"
+          ]
+        },
+        {
+          "id": "mult_missing_factor_missing_left_1",
+          "kind": "multiplication",
+          "family": "missing_factor",
+          "bandId": "mult_2_5",
+          "count": 12,
+          "skill": "missing_factor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "templateStepRange": [
+            1,
+            7
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_left"
+          ]
+        },
+        {
+          "id": "mult_missing_factor_total_first_1",
+          "kind": "multiplication",
+          "family": "missing_factor",
+          "bandId": "mult_2_5",
+          "count": 8,
+          "skill": "missing_factor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "skip_count_error"
+          ],
+          "templateStepRange": [
+            1,
+            7
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "total_first"
+          ]
+        },
+        {
+          "id": "mult_missing_factor_missing_right_8",
+          "kind": "multiplication",
+          "family": "missing_factor",
+          "bandId": "mult_6_9",
+          "count": 12,
+          "skill": "missing_factor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            8,
+            11
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_right"
+          ]
+        },
+        {
+          "id": "mult_missing_factor_missing_left_8",
+          "kind": "multiplication",
+          "family": "missing_factor",
+          "bandId": "mult_6_9",
+          "count": 12,
+          "skill": "missing_factor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            8,
+            11
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_left"
+          ]
+        },
+        {
+          "id": "mult_missing_factor_total_first_8",
+          "kind": "multiplication",
+          "family": "missing_factor",
+          "bandId": "mult_6_9",
+          "count": 8,
+          "skill": "missing_factor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "multiply_groups",
+          "explanationStrategy": "product_result",
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            8,
+            11
+          ],
+          "leftRange": [
+            2,
+            10
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "total_first"
+          ]
+        },
+        {
+          "id": "div_missing_divisor_2",
+          "kind": "division",
+          "family": "missing_divisor",
+          "bandId": "div_2_5",
+          "count": 12,
+          "skill": "missing_divisor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "templateStepRange": [
+            2,
+            8
+          ],
+          "leftRange": [
+            4,
+            90
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_right"
+          ]
+        },
+        {
+          "id": "div_missing_divisor_total_first_2",
+          "kind": "division",
+          "family": "missing_divisor",
+          "bandId": "div_2_5",
+          "count": 8,
+          "skill": "missing_divisor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "templateStepRange": [
+            2,
+            8
+          ],
+          "leftRange": [
+            4,
+            90
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "total_first"
+          ]
+        },
+        {
+          "id": "div_missing_dividend_2",
+          "kind": "division",
+          "family": "missing_dividend",
+          "bandId": "div_2_5",
+          "count": 12,
+          "skill": "missing_dividend",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "equal_groups_confusion"
+          ],
+          "templateStepRange": [
+            2,
+            8
+          ],
+          "leftRange": [
+            4,
+            90
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_left"
+          ]
+        },
+        {
+          "id": "div_missing_divisor_9",
+          "kind": "division",
+          "family": "missing_divisor",
+          "bandId": "div_6_9",
+          "count": 12,
+          "skill": "missing_divisor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            9,
+            12
+          ],
+          "leftRange": [
+            4,
+            90
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_right"
+          ]
+        },
+        {
+          "id": "div_missing_divisor_total_first_9",
+          "kind": "division",
+          "family": "missing_divisor",
+          "bandId": "div_6_9",
+          "count": 8,
+          "skill": "missing_divisor",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            9,
+            12
+          ],
+          "leftRange": [
+            4,
+            90
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "total_first"
+          ]
+        },
+        {
+          "id": "div_missing_dividend_9",
+          "kind": "division",
+          "family": "missing_dividend",
+          "bandId": "div_6_9",
+          "count": 12,
+          "skill": "missing_dividend",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "divide_groups",
+          "explanationStrategy": "quotient_share",
+          "misconceptionTags": [
+            "hard_cluster"
+          ],
+          "templateStepRange": [
+            9,
+            12
+          ],
+          "leftRange": [
+            4,
+            90
+          ],
+          "rightRange": [
+            2,
+            10
+          ],
+          "relationalShapes": [
+            "missing_left"
+          ]
+        },
+        {
+          "id": "add_both_sides_3_9",
+          "kind": "addition",
+          "family": "both_sides",
+          "bandId": "add_under_10",
+          "count": 14,
+          "skill": "both_sides_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            3,
+            9
+          ],
+          "leftRange": [
+            1,
+            9
+          ],
+          "rightRange": [
+            1,
+            9
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "both_sides"
+          ],
+          "bothSidesOffsets": [
+            -3,
+            -2,
+            -1,
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "id": "add_both_sides_10_14",
+          "kind": "addition",
+          "family": "both_sides",
+          "bandId": "add_teens_bridge",
+          "count": 12,
+          "skill": "both_sides_equals",
+          "promptVariants": [
+            "equation"
+          ],
+          "hintStrategy": "count_on",
+          "explanationStrategy": "sum_result",
+          "misconceptionTags": [
+            "off_by_one"
+          ],
+          "templateStepRange": [
+            10,
+            14
+          ],
+          "leftRange": [
+            1,
+            15
+          ],
+          "rightRange": [
+            1,
+            15
+          ],
+          "minOperand": 1,
+          "relationalShapes": [
+            "both_sides"
+          ],
+          "bothSidesOffsets": [
+            -3,
+            -2,
+            -1,
+            1,
+            2,
+            3
+          ]
         }
       ]
     }

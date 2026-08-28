@@ -97,12 +97,34 @@ export interface ArithmeticTemplateSpec extends BaseTemplateSpec {
      * `both_sides` ("8 + 7 = ? + 6") is the Falkner/Levi/Carpenter form that
      * separates "=" as a relation from "=" as an instruction. It is a harder
      * idea than a missing part and belongs above the bottom of the ladder.
+     * Addition only, and the second right-hand addend comes from
+     * `bothSidesOffsets`.
+     *
+     * MULTIPLICATION and DIVISION take the three one-sided shapes too, and they
+     * are not decoration: "3 x ? = 12" is the question a times table answers
+     * from the other end, and "? / 4 = 3" is the same fact asked backwards
+     * rather than a separate ritual. `godot/data/curriculum/concept_ladder.json`
+     * has carried `multiplication.missing_factor`, `division.missing_groups`
+     * and `division.start_unknown` -- with tutorials -- since before any
+     * template could author them.
      *
      * The shapes and the arithmetic that reads them back live in
      * RELATIONAL_PATTERNS in tools/math_verifier.ts -- this only writes text
      * that file can already parse.
      */
-    relationalShapes?: Array<'missing_right' | 'missing_left' | 'total_first'>;
+    relationalShapes?: Array<'missing_right' | 'missing_left' | 'total_first' | 'both_sides'>;
+    /**
+     * The second addend on the RIGHT of a `both_sides` prompt, as an offset from
+     * this candidate's own `right`. "8 + 7 = ? + 6" is offset -1.
+     *
+     * It has to be authored rather than derived, because `d` is a free number:
+     * the fact underneath is still a + b, and every d between 1 and a + b - 1
+     * gives a different question about the same fact. A fixed spread keeps the
+     * template's `count` accountable and keeps the answer near the addend the
+     * child can see, which is what makes the form about the equals sign rather
+     * than about arithmetic they cannot do yet.
+     */
+    bothSidesOffsets?: number[];
 }
 
 export interface CountingTemplateSpec extends BaseTemplateSpec {
@@ -920,6 +942,143 @@ function buildRelationalCandidate(
     };
 }
 
+/**
+ * One multiplicative relational prompt, with the hint and explanation its shape
+ * earns.
+ *
+ * `left`/`right`/`result` are the plain fact: for multiplication the two factors
+ * and their product, for division the dividend, the divisor and the quotient.
+ * Which of the three is the ANSWER depends on the shape.
+ *
+ * As with the additive builder, none of this wording is free text. Every
+ * sentence renders exactly from a template in tools/math_phrasing_catalog.mjs --
+ * the math.hint.rel.each_group_size / how_many_groups / shared_into /
+ * how_many_shared family, plus math.expl.rel.grouped and math.expl.share_each --
+ * all of which were already there, translated, for the hand-authored relational
+ * problems in the gaps pool.
+ *
+ * Every sentence here is written in the PLURAL, because the catalog entries it
+ * has to round-trip through are: math.expl.share_each and
+ * math.hint.rel.each_group_size / how_many_shared have no singular variant. The
+ * caller therefore keeps both the group count and the divisor at 2 or more --
+ * which costs nothing, since "3 x ? = 3" and "6 / ? = 6" are not questions
+ * about grouping anyway.
+ */
+function buildMultiplicativeRelationalCandidate(
+    shape: 'missing_right' | 'missing_left' | 'total_first',
+    kind: 'multiplication' | 'division',
+    left: number,
+    right: number,
+    result: number,
+): { promptText: string; correct: number; hint: string; explanation: string; optionPreference: number[] } | null {
+    if (kind === 'multiplication') {
+        // groups x each = product. The explanation names the same two numbers
+        // whichever slot was blanked, because it states the fact, not the search.
+        const explanation = `${left} groups of ${right} makes ${result} in all.`;
+        // Leading distractor: the product already written on the far side. A
+        // child who reads "=" as "work it out" reaches for the number that is
+        // there, and answering it is a diagnosis rather than noise. Then the
+        // adjacent facts either side, then the factor they can see.
+        const options = (unknown: number, known: number) => [result, unknown - 1, unknown + 1, known];
+
+        if (shape === 'missing_right') {
+            return {
+                promptText: `${left} \u00D7 ? = ${result}`,
+                correct: right,
+                hint: `${left} groups make ${result} altogether. How many in each group?`,
+                explanation,
+                optionPreference: options(right, left),
+            };
+        }
+        if (shape === 'missing_left') {
+            return {
+                promptText: `? \u00D7 ${right} = ${result}`,
+                correct: left,
+                hint: `Groups of ${right} make ${result} altogether. How many groups?`,
+                explanation,
+                optionPreference: options(left, right),
+            };
+        }
+        return {
+            promptText: `${result} = ${left} \u00D7 ?`,
+            correct: right,
+            hint: `${left} groups make ${result} altogether. How many in each group?`,
+            explanation,
+            optionPreference: options(right, left),
+        };
+    }
+
+    // dividend / divisor = quotient.
+    const explanation = `${left} shared into ${right} equal groups gives ${result} each.`;
+    // The two unknowns sit at opposite ends of the magnitude range -- a missing
+    // divisor is small, a missing dividend is the biggest number in the problem
+    // -- so they cannot share one distractor list without one of them offering
+    // a free elimination (docs/MATH_AUTHORING_STANDARDS.md section 4: every
+    // distractor plausible in magnitude).
+    const divisorOptions = [result, right - 1, right + 1, left - result];
+    const dividendOptions = [right + result, left + right, left - right, result];
+
+    if (shape === 'missing_right') {
+        return {
+            promptText: `${left} \u00F7 ? = ${result}`,
+            correct: right,
+            hint: `${left} shared out gives ${result} in each group. How many groups?`,
+            explanation,
+            optionPreference: divisorOptions,
+        };
+    }
+    if (shape === 'missing_left') {
+        return {
+            promptText: `? \u00F7 ${right} = ${result}`,
+            correct: left,
+            // "Add the two numbers" is the error this form actually produces,
+            // and one group too many or too few are the other two.
+            hint: `Shared into ${right} groups it gives ${result} each. How many were there to start?`,
+            explanation,
+            optionPreference: dividendOptions,
+        };
+    }
+    return {
+        promptText: `${result} = ${left} \u00F7 ?`,
+        correct: right,
+        hint: `${left} shared out gives ${result} in each group. How many groups?`,
+        explanation,
+        optionPreference: divisorOptions,
+    };
+}
+
+/**
+ * "8 + 7 = ? + 6" -- an operation on BOTH sides of the equals sign.
+ *
+ * The Falkner/Levi/Carpenter form, and the one place a child's reading of "="
+ * is actually measured: answering 15 means "=" was read as "now work it out",
+ * and answering 7 means the right-hand side was copied from the left. Both are
+ * in the option list on purpose, so the answer diagnoses the reading.
+ *
+ * `other` is the addend written on the right. A prompt where it equals `right`
+ * is dropped: "8 + 7 = ? + 7" can be answered by matching shapes without ever
+ * meeting the idea.
+ */
+function buildBothSidesCandidate(
+    left: number,
+    right: number,
+    other: number,
+): { promptText: string; correct: number; hint: string; explanation: string; optionPreference: number[] } | null {
+    const total = left + right;
+    const unknown = total - other;
+    if (other < 1 || other === right || unknown < 1 || unknown === right) return null;
+
+    return {
+        promptText: `${left} + ${right} = ? + ${other}`,
+        correct: unknown,
+        hint: `This side makes ${total}. The other side has ${other}, so it needs enough to reach ${total} too.`,
+        explanation: `${other} and ${unknown} makes ${total}.`,
+        // The total first (the "work it out" reading), then the left-hand
+        // addend a copier reaches for, then the near misses.
+        optionPreference: [total, right, unknown - 1, unknown + 1],
+    };
+}
+
 function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandidate[] {
     const operator = toOperator(template.kind);
     const candidates: RawCandidate[] = [];
@@ -982,15 +1141,53 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
             // two in one template makes its `count` unaccountable -- the hash
             // lottery would decide how many number bonds a batch actually got.
             if (template.relationalShapes && template.relationalShapes.length > 0) {
-                if (template.kind !== 'addition' && template.kind !== 'subtraction') {
-                    throw new Error(
-                        `Template ${template.id}: relationalShapes is additive only; `
-                        + `${template.kind} relational prompts read a different fact `
-                        + `(see the \`fact\` doc in tools/math_verifier.ts).`,
-                    );
-                }
+                const additive = template.kind === 'addition' || template.kind === 'subtraction';
                 for (const shape of template.relationalShapes) {
-                    const relational = buildRelationalCandidate(shape, template.kind, left, right, correct);
+                    if (shape === 'both_sides') {
+                        // Addition only. The multiplicative two-sided form asks a
+                        // child to hold two products at once, which is a
+                        // working-memory problem rather than a relational one --
+                        // the same reason math_verifier.ts does not parse it.
+                        if (template.kind !== 'addition') {
+                            throw new Error(
+                                `Template ${template.id}: both_sides is an addition shape; `
+                                + `${template.kind} has no two-sided form in this age band `
+                                + '(see RELATIONAL_PATTERNS in tools/math_verifier.ts).',
+                            );
+                        }
+                        for (const offset of template.bothSidesOffsets ?? [-2, -1, 1, 2]) {
+                            const twoSided = buildBothSidesCandidate(left, right, right + offset);
+                            if (!twoSided) continue;
+                            candidates.push({
+                                values: { left, right, correct: twoSided.correct },
+                                promptText: applyPromptLeadIn(twoSided.promptText, template.promptLeadIn),
+                                correct: twoSided.correct,
+                                complexity,
+                                ageBand: template.ageBand ?? [5, 7],
+                                domain: template.kind,
+                                hint: twoSided.hint,
+                                explanation: twoSided.explanation,
+                                optionPreference: twoSided.optionPreference,
+                            });
+                        }
+                        continue;
+                    }
+
+                    // A times or share fact read from the other end. The grouping
+                    // sentences are plural-only in the phrasing catalog, and
+                    // "3 x ? = 3" is not a question about grouping, so one group
+                    // and one share are both refused here rather than rendered.
+                    const relational = additive
+                        ? buildRelationalCandidate(shape, template.kind as 'addition' | 'subtraction', left, right, correct)
+                        : (left >= 2 && right >= 2 && correct >= 2)
+                            ? buildMultiplicativeRelationalCandidate(
+                                shape,
+                                template.kind as 'multiplication' | 'division',
+                                left,
+                                right,
+                                correct,
+                            )
+                            : null;
                     // Nothing in this age band has an answer below zero, and a
                     // prompt whose blank is 0 ("2 + ? = 2") reads as a trick
                     // rather than a bond.

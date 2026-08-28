@@ -13,22 +13,22 @@
     "addition",
     "counting"
   ],
-  "owlEligibleProblemCount": 2982,
-  "owlEligibleUniquePromptCount": 2982,
-  "owlEligibleUniqueFactCount": 1528,
+  "owlEligibleProblemCount": 3069,
+  "owlEligibleUniquePromptCount": 3069,
+  "owlEligibleUniqueFactCount": 1590,
   "domainCounts": {
-    "addition": 949,
+    "addition": 975,
     "counting": 209,
     "pattern_matching": 193,
     "subtraction": 814,
     "comparison": 185,
     "number_sequence": 213,
-    "multiplication": 234,
-    "division": 185
+    "multiplication": 266,
+    "division": 214
   },
-  "openingUnlockedInventoryProblemCount": 1158,
-  "openingUnlockedInventoryUniquePromptCount": 1158,
-  "openingUnlockedInventoryUniqueFactCount": 498,
+  "openingUnlockedInventoryProblemCount": 1184,
+  "openingUnlockedInventoryUniquePromptCount": 1184,
+  "openingUnlockedInventoryUniqueFactCount": 499,
   "freshReachableProblemCount": 223,
   "freshReachableUniquePromptCount": 223,
   "freshReachableUniqueFactCount": 42,
@@ -66,8 +66,8 @@
     },
     {
       "step": 4,
-      "rowCount": 43,
-      "uniquePromptCount": 43,
+      "rowCount": 48,
+      "uniquePromptCount": 48,
       "uniqueFactCount": 16
     },
     {

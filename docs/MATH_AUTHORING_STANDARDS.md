@@ -165,7 +165,39 @@ distractor set leads with the **total** — a child who reads "=" as "work it ou
 answers 5 to `2 + ? = 5`, and that is a diagnosis, not noise.
 
 `both_sides` (`8 + 7 = ? + 6`) is the Falkner/Levi/Carpenter form and a harder
-idea than a missing part; it is parsed but not yet authored from a template.
+idea than a missing part. It is authored from a template too, with the
+right-hand addend coming from `bothSidesOffsets` — the fact underneath is still
+`a + b`, so every offset asks a different question about the same fact, and a
+fixed spread keeps a batch's count accountable. A prompt whose two right-hand
+numbers match the left is dropped: `8 + 7 = ? + 7` can be answered by matching
+shapes without meeting the idea at all.
+
+**A template must carry the shape's own skill.** The three additive shapes are
+three different ideas — `missing_addend`, `relational_equals`,
+`subtraction_relational` and the rest — and
+`godot/data/curriculum/concept_ladder.json` routes a problem to its lesson by
+that skill, not by its step. One template per shape, therefore: a template
+emitting all three under one skill hands two of them the wrong lesson.
+
+### Multiplication and division read relationally too
+`3 × ? = 12` is the question a times table answers from the other end, and
+`? ÷ 4 = 3` is the same fact asked backwards rather than a separate ritual.
+The same `relationalShapes` field authors them (`both_sides` stays additive —
+the multiplicative two-sided form is a working-memory problem, not a relational
+one, and nothing in the literature places it in this age band). Their wording
+comes from the `math.hint.rel.each_group_size` / `how_many_groups` /
+`shared_into` / `how_many_shared` family, which was already translated for the
+hand-authored gaps-pool problems.
+
+Two constraints are not optional. Both operands and the result stay at 2 or
+more, because the grouping sentences are plural-only in the catalog and
+"shared into 1 equal groups" is not a sentence — and `3 × ? = 3` is not a
+question about grouping anyway. And the distractors differ per shape, because
+a missing divisor is a small number while a missing dividend is the biggest one
+in the problem: sharing one list would offer a free elimination on one of them.
+A missing dividend is offered `divisor + quotient` (the add-instead error) and
+one group either side; a missing divisor is offered the quotient already
+written down and `dividend - quotient`.
 
 ### Counting back
 `stepChoices` may be negative — Sproti 1 teaches *talning aftur á bak* alongside
@@ -251,6 +283,13 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
   twelve token shapes. `godot/tests/test_count_row.gd` holds the shape half.
 - A step with fewer problems than the floor either gets more authoring or is
   merged — never shipped thin (thin steps make promotion streaky).
+- Three rungs sit under the floor at their **structural ceiling**, not through
+  under-authoring, and no amount of authoring moves them: number_sequence step 0
+  has six possible runs (0,1,2 up to 2,3,4 and the same counting back) across
+  three framings; division steps 10 and 11 invert ×8 and ×9, which between them
+  contain four facts and two. Widening a framing set is the only thing that
+  would lift any of them, and that is a phrasing-catalog change, not an
+  authoring one.
 
 ## 6. Categorization rules
 

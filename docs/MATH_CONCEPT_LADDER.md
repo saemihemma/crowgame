@@ -102,15 +102,15 @@ below.
 
 | Overlay | Spans | Claims | The idea |
 | --- | --- | --- | --- |
-| `addition.missing_part` | 2-9 | `missing_addend` | The unknown is a PART, not the result. Count up inside the whole to find it. |
-| `addition.balance` | 2-12 | `relational_equals` | The whole can be written first. `=` means both sides are the same amount. |
-| `subtraction.missing_part` | 3-11 | `missing_subtrahend` | How many went. Count back to the amount that is left, and the hops are the answer. |
-| `subtraction.start_unknown` | 6-13 | `missing_minuend` | How many there were to begin with. Put the part that went back on -- the hardest CGI tier. |
-| `subtraction.balance` | 4-13 | `subtraction_relational` | The answer written first: `5 = 12 - ?`. |
-| `addition.both_sides` | 3-9 | `both_sides_equals` | An operation on BOTH sides. The form that separates `=` as a relation from `=` as an instruction. |
-| `multiplication.missing_factor` | 1-7 | `missing_factor` | `3 × ? = 12`. A times fact asked from the other end, which is what a table is for. |
-| `division.missing_groups` | 2-8 | `missing_divisor` | `12 ÷ ? = 4`. The share is known; the question is how many groups. |
-| `division.start_unknown` | 2-8 | `missing_dividend` | `? ÷ 4 = 3`. Only the ending is written down -- division's hardest shape, the counterpart of `subtraction.start_unknown`. |
+| `addition.missing_part` | 2-36 | `missing_addend` | The unknown is a PART, not the result. Count up inside the whole to find it. |
+| `addition.balance` | 2-36 | `relational_equals` | The whole can be written first. `=` means both sides are the same amount. |
+| `subtraction.missing_part` | 3-12 | `missing_subtrahend` | How many went. Count back to the amount that is left, and the hops are the answer. |
+| `subtraction.start_unknown` | 6-16 | `missing_minuend` | How many there were to begin with. Put the part that went back on -- the hardest CGI tier. |
+| `subtraction.balance` | 4-14 | `subtraction_relational` | The answer written first: `5 = 12 - ?`. |
+| `addition.both_sides` | 3-14 | `both_sides_equals` | An operation on BOTH sides. The form that separates `=` as a relation from `=` as an instruction. |
+| `multiplication.missing_factor` | 1-10 | `missing_factor` | `3 × ? = 12`. A times fact asked from the other end, which is what a table is for. |
+| `division.missing_groups` | 2-11 | `missing_divisor` | `12 ÷ ? = 4`. The share is known; the question is how many groups. |
+| `division.start_unknown` | 2-11 | `missing_dividend` | `? ÷ 4 = 3`. Only the ending is written down -- division's hardest shape, the counterpart of `subtraction.start_unknown`. |
 
 ### Overlays
 

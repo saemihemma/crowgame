@@ -229,10 +229,21 @@
                     "enum": [
                       "missing_right",
                       "missing_left",
-                      "total_first"
+                      "total_first",
+                      "both_sides"
                     ]
                   },
-                  "description": "Emit relational prompts (the unknown not alone on the right) instead of the plain framings. Additive kinds only."
+                  "description": "Emit relational prompts (the unknown not alone on the right) instead of the plain framings. The three one-sided shapes read additive AND multiplicative facts; both_sides (\"8 + 7 = ? + 6\") is addition only and takes its right-hand addend from bothSidesOffsets."
+                },
+                "bothSidesOffsets": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "integer",
+                    "minimum": -20,
+                    "maximum": 20
+                  },
+                  "description": "For the both_sides shape: the right-hand addend, as an offset from this candidate's own right operand. Defaults to [-2, -1, 1, 2]."
                 },
                 "countRange": {
                   "type": "array",

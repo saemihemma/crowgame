@@ -2,25 +2,25 @@
   "batchId": "batch_32_addition_upper_two_digit_density",
   "title": "Addition upper two-digit density",
   "accepted": true,
-  "averageGrade": 9.9,
+  "averageGrade": 9.8,
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.6,
-      "summary": "Template coverage is stable: 18 templates, 3 families, steps 27-36.",
+      "grade": 9.5,
+      "summary": "Template coverage is stable: 20 templates, 3 families, steps 27-36.",
       "metrics": {
-        "templateCount": 18,
+        "templateCount": 20,
         "familyCount": 3,
         "minStep": 27,
         "maxStep": 36,
-        "promptVariantCount": 194,
-        "averageProblemsPerTemplate": 8
+        "promptVariantCount": 196,
+        "averageProblemsPerTemplate": 7.2
       }
     },
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.6,
+        "grade": 9.5,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
