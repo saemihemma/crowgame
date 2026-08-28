@@ -176,6 +176,13 @@ Boot ──▶ Login ("Who's playing?")  ──▶ MainMenu ──▶ LevelSelec
    origin first.
 8. **Editing compiled levels.** They are generated. Author the spec, then
    compile.
+9. **"Improving coverage" by pushing a child forward.** A report showing
+   concepts a learner never reached is the ELO working, not a gap to close. The
+   pace belongs to the child; content they do not meet is the accepted cost of
+   that, and widening a gate or adding a nudge to raise the number is against
+   the design. See [PRODUCT.md](./PRODUCT.md#coverage-is-not-a-goal-and-never-becomes-one)
+   — *unreached by this child* is the design, *unreachable by anyone* is a
+   defect, and only the second one is yours to fix.
 
 ### Hotspots
 

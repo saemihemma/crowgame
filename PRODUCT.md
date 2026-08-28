@@ -37,6 +37,41 @@ that a child feels successful, low enough that the questions are not free. The
 number that expresses it is a tuning target, not a product promise, and it lives
 with the tuning work in `roadmap.md`.
 
+### Coverage is not a goal, and never becomes one
+
+**This game meets a child where they are. It does not move them through a
+syllabus.** That is the whole reason the ELO and the step ladder exist: the pace
+is the child's, and the content a particular child meets is an outcome of that
+pace rather than a target to hit.
+
+So a great many things in the data are, correctly, never reached by a given
+child — and none of them are bugs:
+
+- The journey simulator reports concepts "never reached" for a struggling
+  learner. That is the system working. A child who is still consolidating
+  addition should not be handed division because division exists.
+- Nine of the concepts are overlays claimed by problem shape rather than by
+  difficulty, so whether a child meets one depends on which problems the lanes
+  actually deal them. Uneven is expected.
+- Every domain is unlocked on its own evidence, and a child can sit on one rung
+  for a long time. Sitting there is not being stuck; it is the band doing its
+  job.
+
+**The failure this invites, and the rule that prevents it.** The tempting fix,
+whenever a report shows unreached content, is to widen a gate, add a nudge, or
+push a child forward "so they see it". Do not. Content that goes unmet is the
+cost of a pace that belongs to the child, and it is a cost this product accepts
+deliberately. If a change would make a child meet more material *faster than
+their own evidence earns it*, that change is against the design — however good
+the coverage number looks afterwards.
+
+The one thing that IS a bug is content a child could never reach **no matter how
+well they did**: a concept with no problems behind it, an unlock whose condition
+cannot be satisfied, a lesson whose rung the derivation cannot emit. Those are
+gaps in the ladder rather than in a child, and `npm run validate` gates them.
+The distinction is the whole of it — *unreached by this child* is the design,
+*unreachable by anyone* is a defect.
+
 ## The intended loop
 
 1. Choose or resume a child profile.
