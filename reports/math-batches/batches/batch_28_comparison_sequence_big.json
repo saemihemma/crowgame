@@ -2,30 +2,30 @@
   "batchId": "batch_28_comparison_sequence_big",
   "title": "Big-number ordering and skip counting",
   "accepted": true,
-  "averageGrade": 9.8,
+  "averageGrade": 9.9,
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.5,
+      "grade": 9.6,
       "summary": "Template coverage is stable: 8 templates, 2 families, steps 7-9.",
       "metrics": {
         "templateCount": 8,
         "familyCount": 2,
         "minStep": 7,
         "maxStep": 9,
-        "promptVariantCount": 16,
+        "promptVariantCount": 32,
         "averageProblemsPerTemplate": 10
       }
     },
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.5,
+        "grade": 9.6,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.6,
+        "grade": 9.7,
         "rationale": "Families and wording variants support replay and gentle pacing."
       },
       {

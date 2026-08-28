@@ -335,7 +335,7 @@
   "math.prompt.word.berries_shared": "{a} ber eru til skiptanna. {b} fuglar skipta þeim jafnt. Hvað fær hver fugl mörg ber?",
   "math.prompt.word.berries_shared.one": "{a} ber er til skiptanna. {b} fuglar skipta þeim jafnt. Hvað fær hver fugl mörg ber?",
   "math.prompt.word.berries_the_rest": "Það eru {a} ber. {b} eru rauð. Hvað eru mörg blá ber?",
-  "math.prompt.word.berries_two_colours": "Það eru {a} rauð ber og {b} blá ber. Hvað eru berin mörg alls?",
+  "math.prompt.word.berries_two_colours": "Það eru {a} rauð ber og {b} blá ber. Hvað eru berin mörg samtals?",
   "math.prompt.word.birds_fly": "{a} fuglar sitja á grein. Þeim fækkar um {b}. Hversu margir eru eftir?",
   "math.prompt.word.birds_fly.one": "{a} fugl situr á grein. Þeim fækkar um {b}. Hversu margir eru eftir?",
   "math.prompt.word.birds_land": "{a} fuglar sitja á grein. Þeim fjölgar um {b}. Hvað eru fuglarnir margir?",

@@ -2,30 +2,30 @@
   "batchId": "batch_21_multiplication_beyond_tables",
   "title": "Two-digit by one-digit",
   "accepted": true,
-  "averageGrade": 9.8,
+  "averageGrade": 9.9,
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.5,
+      "grade": 9.6,
       "summary": "Template coverage is stable: 2 templates, 1 families, steps 13-14.",
       "metrics": {
         "templateCount": 2,
         "familyCount": 1,
         "minStep": 13,
         "maxStep": 14,
-        "promptVariantCount": 10,
+        "promptVariantCount": 18,
         "averageProblemsPerTemplate": 30
       }
     },
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.5,
+        "grade": 9.6,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.4,
+        "grade": 9.5,
         "rationale": "Families and wording variants support replay and gentle pacing."
       },
       {

@@ -79,6 +79,22 @@ const PLURAL_ADJECTIVES = {
     is: new Set(['rauð', 'blá', 'græn', 'gul']),
 };
 
+/**
+ * ...but only in front of a noun that cannot show number itself.
+ *
+ * `rauð` and `blá` are the neuter PLURAL and the feminine SINGULAR at once, so
+ * the rule as first written flagged "Það er 1 rauð stjarna" -- correct
+ * Icelandic. It is inert today only because `ber` is the one colour-bearing noun
+ * in the catalog, and `stjarna` is already in this file's own vocabulary. This
+ * file's docstring says a marker that fires on a correct sentence is a bug in
+ * the list, so the rule is narrowed to where the adjective is genuinely the only
+ * word carrying number: a neuter noun identical in both numbers.
+ */
+const NEUTER_INVARIANT_NOUNS = {
+    en: new Set(),
+    is: new Set(['ber', 'egg', 'hreiður']),
+};
+
 /** Rule 1: plural nouns, checked immediately after the numeral. */
 const PLURAL_NOUNS = {
     en: new Set([
@@ -181,8 +197,12 @@ export function disagreements(text, locale) {
             continue;
         }
 
-        if (after !== undefined && (PLURAL_ADJECTIVES[locale] ?? new Set()).has(after)) {
-            found.push(`plural adjective after a singular numeral: "${numeral} ${after}"`);
+        if (
+            after !== undefined
+            && (PLURAL_ADJECTIVES[locale] ?? new Set()).has(after)
+            && (NEUTER_INVARIANT_NOUNS[locale] ?? new Set()).has(tokens[i + 2]?.word)
+        ) {
+            found.push(`plural adjective after a singular numeral: "${numeral} ${after} ${tokens[i + 2]?.word}"`);
             continue;
         }
         if (counted !== undefined && nouns.has(counted)) {
@@ -236,6 +256,7 @@ const SELF_TEST = [
     // The converse: a `.one` form chosen off the wrong parameter.
     { text: '5 bird sits on a branch. 3 more land. How many birds?', locale: 'en', fires: true },
     { text: 'Það eru 5 hópur.', locale: 'is', fires: true },
+    { text: 'Það er 21 blá stjarna á himni.', locale: 'is', fires: false },
     { text: '3 take away 1 leaves 2.', locale: 'en', fires: false },
     { text: '3 hópar af 1 gera 3.', locale: 'is', fires: false },
     { text: 'Deildu 21 í hópa af 3.', locale: 'is', fires: false },
@@ -268,6 +289,11 @@ function markerPins() {
     }
     for (const [locale, set] of Object.entries(PLURAL_ADJECTIVES)) {
         for (const adjective of set) pins.push({ text: `1 ${adjective} ber`, locale, fires: true });
+    }
+    // And the narrowing itself: the same adjective in front of a noun that CAN
+    // show number is the feminine singular and is correct.
+    for (const [locale, set] of Object.entries(PLURAL_ADJECTIVES)) {
+        for (const adjective of set) pins.push({ text: `Það er 1 ${adjective} stjarna.`, locale, fires: false });
     }
     return pins;
 }

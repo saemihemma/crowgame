@@ -6,7 +6,7 @@
   },
   "generatedProblemCount": 5120,
   "acceptedBatchCount": 39,
-  "averageAcceptedGrade": 9.84,
+  "averageAcceptedGrade": 9.85,
   "domainTotals": {
     "addition": 1857,
     "subtraction": 1603,
@@ -113,7 +113,7 @@
             "familyCount": 6,
             "minStep": 0,
             "maxStep": 9,
-            "promptVariantCount": 30,
+            "promptVariantCount": 140,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -228,7 +228,7 @@
             "familyCount": 6,
             "minStep": 5,
             "maxStep": 19,
-            "promptVariantCount": 27,
+            "promptVariantCount": 140,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -343,7 +343,7 @@
             "familyCount": 6,
             "minStep": 0,
             "maxStep": 6,
-            "promptVariantCount": 26,
+            "promptVariantCount": 140,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -458,7 +458,7 @@
             "familyCount": 1,
             "minStep": 7,
             "maxStep": 14,
-            "promptVariantCount": 35,
+            "promptVariantCount": 140,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -573,7 +573,7 @@
             "familyCount": 4,
             "minStep": 0,
             "maxStep": 6,
-            "promptVariantCount": 30,
+            "promptVariantCount": 80,
             "averageProblemsPerTemplate": 10
           }
         },
@@ -688,7 +688,7 @@
             "familyCount": 7,
             "minStep": 0,
             "maxStep": 7,
-            "promptVariantCount": 26,
+            "promptVariantCount": 60,
             "averageProblemsPerTemplate": 11.5
           }
         },
@@ -803,7 +803,7 @@
             "familyCount": 1,
             "minStep": 21,
             "maxStep": 26,
-            "promptVariantCount": 27,
+            "promptVariantCount": 140,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -918,7 +918,7 @@
             "familyCount": 1,
             "minStep": 21,
             "maxStep": 26,
-            "promptVariantCount": 27,
+            "promptVariantCount": 140,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -1033,7 +1033,7 @@
             "familyCount": 1,
             "minStep": 21,
             "maxStep": 26,
-            "promptVariantCount": 27,
+            "promptVariantCount": 140,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -1148,7 +1148,7 @@
             "familyCount": 1,
             "minStep": 21,
             "maxStep": 26,
-            "promptVariantCount": 27,
+            "promptVariantCount": 140,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -1263,7 +1263,7 @@
             "familyCount": 10,
             "minStep": 0,
             "maxStep": 7,
-            "promptVariantCount": 22,
+            "promptVariantCount": 90,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -1378,7 +1378,7 @@
             "familyCount": 7,
             "minStep": 1,
             "maxStep": 8,
-            "promptVariantCount": 26,
+            "promptVariantCount": 86,
             "averageProblemsPerTemplate": 13.6
           }
         },
@@ -1493,7 +1493,7 @@
             "familyCount": 4,
             "minStep": 1,
             "maxStep": 36,
-            "promptVariantCount": 26,
+            "promptVariantCount": 126,
             "averageProblemsPerTemplate": 13.6
           }
         },
@@ -1608,7 +1608,7 @@
             "familyCount": 4,
             "minStep": 1,
             "maxStep": 36,
-            "promptVariantCount": 26,
+            "promptVariantCount": 120,
             "averageProblemsPerTemplate": 13.6
           }
         },
@@ -1723,7 +1723,7 @@
             "familyCount": 6,
             "minStep": 2,
             "maxStep": 36,
-            "promptVariantCount": 32,
+            "promptVariantCount": 139,
             "averageProblemsPerTemplate": 10.7
           }
         },
@@ -1838,7 +1838,7 @@
             "familyCount": 5,
             "minStep": 2,
             "maxStep": 36,
-            "promptVariantCount": 32,
+            "promptVariantCount": 137,
             "averageProblemsPerTemplate": 10.7
           }
         },
@@ -1953,7 +1953,7 @@
             "familyCount": 10,
             "minStep": 1,
             "maxStep": 10,
-            "promptVariantCount": 22,
+            "promptVariantCount": 90,
             "averageProblemsPerTemplate": 15
           }
         },
@@ -2068,7 +2068,7 @@
             "familyCount": 8,
             "minStep": 2,
             "maxStep": 11,
-            "promptVariantCount": 28,
+            "promptVariantCount": 91,
             "averageProblemsPerTemplate": 12.5
           }
         },
@@ -2176,26 +2176,26 @@
       "criticalIssues": [],
       "templateReview": {
         "category": {
-          "grade": 9.6,
+          "grade": 9.7,
           "summary": "Template coverage is stable: 5 templates, 3 families, steps 9-16.",
           "metrics": {
             "templateCount": 5,
             "familyCount": 3,
             "minStep": 9,
             "maxStep": 16,
-            "promptVariantCount": 15,
+            "promptVariantCount": 70,
             "averageProblemsPerTemplate": 30
           }
         },
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.6,
+            "grade": 9.7,
             "rationale": "Batch shape is dense enough to scale without a cliff."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.7,
+            "grade": 9.8,
             "rationale": "Families and wording variants support replay and gentle pacing."
           },
           {
@@ -2298,7 +2298,7 @@
             "familyCount": 6,
             "minStep": 0,
             "maxStep": 12,
-            "promptVariantCount": 27,
+            "promptVariantCount": 76,
             "averageProblemsPerTemplate": 12.8
           }
         },
@@ -2402,30 +2402,30 @@
       "batchId": "batch_21_multiplication_beyond_tables",
       "title": "Two-digit by one-digit",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.9,
       "criticalIssues": [],
       "templateReview": {
         "category": {
-          "grade": 9.5,
+          "grade": 9.6,
           "summary": "Template coverage is stable: 2 templates, 1 families, steps 13-14.",
           "metrics": {
             "templateCount": 2,
             "familyCount": 1,
             "minStep": 13,
             "maxStep": 14,
-            "promptVariantCount": 10,
+            "promptVariantCount": 18,
             "averageProblemsPerTemplate": 30
           }
         },
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.5,
+            "grade": 9.6,
             "rationale": "Batch shape is dense enough to scale without a cliff."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.4,
+            "grade": 9.5,
             "rationale": "Families and wording variants support replay and gentle pacing."
           },
           {
@@ -2517,30 +2517,30 @@
       "batchId": "batch_22_division_ladder_fill",
       "title": "Division ladder fill",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.9,
       "criticalIssues": [],
       "templateReview": {
         "category": {
-          "grade": 9.6,
+          "grade": 9.7,
           "summary": "Template coverage is stable: 4 templates, 3 families, steps 2-13.",
           "metrics": {
             "templateCount": 4,
             "familyCount": 3,
             "minStep": 2,
             "maxStep": 13,
-            "promptVariantCount": 10,
+            "promptVariantCount": 20,
             "averageProblemsPerTemplate": 23.3
           }
         },
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.6,
+            "grade": 9.7,
             "rationale": "Batch shape is dense enough to scale without a cliff."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.6,
+            "grade": 9.8,
             "rationale": "Families and wording variants support replay and gentle pacing."
           },
           {
@@ -2636,26 +2636,26 @@
       "criticalIssues": [],
       "templateReview": {
         "category": {
-          "grade": 9.4,
+          "grade": 9.5,
           "summary": "Template coverage is stable: 1 templates, 1 families, steps 14-15.",
           "metrics": {
             "templateCount": 1,
             "familyCount": 1,
             "minStep": 14,
             "maxStep": 15,
-            "promptVariantCount": 5,
+            "promptVariantCount": 9,
             "averageProblemsPerTemplate": 40
           }
         },
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.4,
+            "grade": 9.5,
             "rationale": "Batch shape is dense enough to scale without a cliff."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.2,
+            "grade": 9.3,
             "rationale": "Families and wording variants support replay and gentle pacing."
           },
           {
@@ -3207,30 +3207,30 @@
       "batchId": "batch_28_comparison_sequence_big",
       "title": "Big-number ordering and skip counting",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.9,
       "criticalIssues": [],
       "templateReview": {
         "category": {
-          "grade": 9.5,
+          "grade": 9.6,
           "summary": "Template coverage is stable: 8 templates, 2 families, steps 7-9.",
           "metrics": {
             "templateCount": 8,
             "familyCount": 2,
             "minStep": 7,
             "maxStep": 9,
-            "promptVariantCount": 16,
+            "promptVariantCount": 32,
             "averageProblemsPerTemplate": 10
           }
         },
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.5,
+            "grade": 9.6,
             "rationale": "Batch shape is dense enough to scale without a cliff."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.6,
+            "grade": 9.7,
             "rationale": "Families and wording variants support replay and gentle pacing."
           },
           {
@@ -3333,7 +3333,7 @@
             "familyCount": 5,
             "minStep": 0,
             "maxStep": 4,
-            "promptVariantCount": 38,
+            "promptVariantCount": 114,
             "averageProblemsPerTemplate": 13.8
           }
         },
@@ -3448,7 +3448,7 @@
             "familyCount": 2,
             "minStep": 10,
             "maxStep": 19,
-            "promptVariantCount": 140,
+            "promptVariantCount": 420,
             "averageProblemsPerTemplate": 6.7
           }
         },
@@ -3563,7 +3563,7 @@
             "familyCount": 3,
             "minStep": 1,
             "maxStep": 16,
-            "promptVariantCount": 78,
+            "promptVariantCount": 168,
             "averageProblemsPerTemplate": 7.7
           }
         },
@@ -3678,7 +3678,7 @@
             "familyCount": 3,
             "minStep": 27,
             "maxStep": 36,
-            "promptVariantCount": 196,
+            "promptVariantCount": 280,
             "averageProblemsPerTemplate": 7.2
           }
         },
@@ -3793,7 +3793,7 @@
             "familyCount": 2,
             "minStep": 28,
             "maxStep": 36,
-            "promptVariantCount": 192,
+            "promptVariantCount": 224,
             "averageProblemsPerTemplate": 7.8
           }
         },
@@ -4138,7 +4138,7 @@
             "familyCount": 8,
             "minStep": 1,
             "maxStep": 15,
-            "promptVariantCount": 45,
+            "promptVariantCount": 61,
             "averageProblemsPerTemplate": 8.4
           }
         },
@@ -4253,7 +4253,7 @@
             "familyCount": 6,
             "minStep": 0,
             "maxStep": 9,
-            "promptVariantCount": 88,
+            "promptVariantCount": 104,
             "averageProblemsPerTemplate": 8.2
           }
         },
@@ -4357,30 +4357,30 @@
       "batchId": "batch_38_relational_shapes",
       "title": "Relational shapes across the operations",
       "accepted": true,
-      "averageGrade": 9.7,
+      "averageGrade": 9.8,
       "criticalIssues": [],
       "templateReview": {
         "category": {
-          "grade": 9.3,
+          "grade": 9.4,
           "summary": "Template coverage is stable: 14 templates, 4 families, steps 1-14.",
           "metrics": {
             "templateCount": 14,
             "familyCount": 4,
             "minStep": 1,
             "maxStep": 14,
-            "promptVariantCount": 14,
+            "promptVariantCount": 136,
             "averageProblemsPerTemplate": 10.6
           }
         },
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.3,
+            "grade": 9.4,
             "rationale": "Batch shape is dense enough to scale without a cliff."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.2,
+            "grade": 9.3,
             "rationale": "Families and wording variants support replay and gentle pacing."
           },
           {
@@ -4483,7 +4483,7 @@
             "familyCount": 5,
             "minStep": 41,
             "maxStep": 46,
-            "promptVariantCount": 72,
+            "promptVariantCount": 228,
             "averageProblemsPerTemplate": 7.9
           }
         },

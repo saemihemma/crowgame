@@ -6,26 +6,26 @@
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.6,
+      "grade": 9.7,
       "summary": "Template coverage is stable: 5 templates, 3 families, steps 9-16.",
       "metrics": {
         "templateCount": 5,
         "familyCount": 3,
         "minStep": 9,
         "maxStep": 16,
-        "promptVariantCount": 15,
+        "promptVariantCount": 70,
         "averageProblemsPerTemplate": 30
       }
     },
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.6,
+        "grade": 9.7,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.7,
+        "grade": 9.8,
         "rationale": "Families and wording variants support replay and gentle pacing."
       },
       {

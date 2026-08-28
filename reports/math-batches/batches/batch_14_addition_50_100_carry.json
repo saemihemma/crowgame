@@ -13,7 +13,7 @@
         "familyCount": 4,
         "minStep": 1,
         "maxStep": 36,
-        "promptVariantCount": 26,
+        "promptVariantCount": 120,
         "averageProblemsPerTemplate": 13.6
       }
     },

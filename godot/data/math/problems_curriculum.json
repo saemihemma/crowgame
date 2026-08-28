@@ -12997,7 +12997,6 @@
       "hint": "Start at 4, then count 4 more.",
       "explanation": "4 plus 4 makes 8.",
       "misconceptionTags": [
-        "subtracted_instead",
         "off_by_one"
       ],
       "generator": {
@@ -18186,10 +18185,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
-          3,
-          8,
+          1,
           6,
-          7
+          7,
+          8
         ]
       },
       "hint": "Start at 3, then count 4 more.",
@@ -19361,9 +19360,9 @@
         "mode": "mcq",
         "correct": 9,
         "options": [
-          8,
-          2,
           10,
+          8,
+          5,
           9
         ]
       },
@@ -20677,9 +20676,9 @@
         "mode": "mcq",
         "correct": 10,
         "options": [
-          2,
-          11,
           10,
+          11,
+          6,
           9
         ]
       },
@@ -26267,7 +26266,6 @@
       "hint": "Start at 6, then count 6 more.",
       "explanation": "6 plus 6 makes 12.",
       "misconceptionTags": [
-        "subtracted_instead",
         "off_by_one"
       ],
       "generator": {
@@ -35466,10 +35464,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
-          7,
+          2,
           8,
-          9,
-          2
+          12,
+          7
         ]
       },
       "hint": "10 is the whole, and 2 is one part. What is the other part?",
@@ -36495,7 +36493,7 @@
         "correct": 5,
         "options": [
           4,
-          10,
+          15,
           6,
           5
         ]
@@ -36790,10 +36788,10 @@
         "mode": "mcq",
         "correct": 3,
         "options": [
-          4,
-          7,
           3,
-          2
+          7,
+          2,
+          17
         ]
       },
       "hint": "10 is the whole, and 7 is one part. What is the other part?",
@@ -39843,9 +39841,9 @@
         "correct": 7,
         "options": [
           6,
-          2,
           7,
-          8
+          11,
+          2
         ]
       },
       "hint": "9 is the whole, and 2 is one part. What is the other part?",
@@ -40871,7 +40869,7 @@
         "correct": 7,
         "options": [
           3,
-          8,
+          13,
           6,
           7
         ]
@@ -43470,10 +43468,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
+          17,
           7,
-          6,
           5,
-          8
+          6
         ]
       },
       "hint": "12 is the whole, and 5 is one part. What is the other part?",
@@ -44499,9 +44497,9 @@
         "correct": 5,
         "options": [
           7,
-          6,
-          5,
-          4
+          19,
+          4,
+          5
         ]
       },
       "hint": "12 is the whole, and 7 is one part. What is the other part?",
@@ -46226,10 +46224,10 @@
         "mode": "mcq",
         "correct": 4,
         "options": [
-          4,
+          3,
           9,
-          5,
-          3
+          22,
+          4
         ]
       },
       "hint": "13 is the whole, and 9 is one part. What is the other part?",
@@ -47994,10 +47992,10 @@
         "mode": "mcq",
         "correct": 8,
         "options": [
+          8,
           9,
           7,
-          15,
-          8
+          22
         ]
       },
       "hint": "15 is the whole, and 7 is one part. What is the other part?",
@@ -49170,10 +49168,10 @@
         "mode": "mcq",
         "correct": 5,
         "options": [
-          6,
+          4,
+          23,
           9,
-          5,
-          4
+          5
         ]
       },
       "hint": "14 is the whole, and 9 is one part. What is the other part?",
@@ -49540,10 +49538,10 @@
         "mode": "mcq",
         "correct": 7,
         "options": [
+          7,
+          25,
           9,
-          8,
-          6,
-          7
+          6
         ]
       },
       "hint": "16 is the whole, and 9 is one part. What is the other part?",
@@ -95867,7 +95865,7 @@
           20
         ]
       },
-      "hint": "Something and 4 makes 24. Start at 4 and count up to 24.",
+      "hint": "24 is the whole, and 4 is one part. What is the other part?",
       "explanation": "4 and 20 makes 24.",
       "misconceptionTags": [
         "added_instead",
@@ -95895,10 +95893,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 4,
-            "total": 24
+            "total": 24,
+            "known": 4
           }
         },
         "explanation": {
@@ -96599,7 +96597,7 @@
           27
         ]
       },
-      "hint": "Something and 2 makes 28. Start at 2 and count up to 28.",
+      "hint": "28 is the whole, and 2 is one part. What is the other part?",
       "explanation": "2 and 26 makes 28.",
       "misconceptionTags": [
         "added_instead",
@@ -96627,10 +96625,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 2,
-            "total": 28
+            "total": 28,
+            "known": 2
           }
         },
         "explanation": {
@@ -96739,7 +96737,7 @@
           19
         ]
       },
-      "hint": "Something and 5 makes 25. Start at 5 and count up to 25.",
+      "hint": "25 is the whole, and 5 is one part. What is the other part?",
       "explanation": "5 and 20 makes 25.",
       "misconceptionTags": [
         "added_instead",
@@ -96767,10 +96765,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 5,
-            "total": 25
+            "total": 25,
+            "known": 5
           }
         },
         "explanation": {
@@ -98303,7 +98301,7 @@
           29
         ]
       },
-      "hint": "Something and 3 makes 33. Start at 3 and count up to 33.",
+      "hint": "33 is the whole, and 3 is one part. What is the other part?",
       "explanation": "3 and 30 makes 33.",
       "misconceptionTags": [
         "added_instead",
@@ -98331,10 +98329,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 3,
-            "total": 33
+            "total": 33,
+            "known": 3
           }
         },
         "explanation": {
@@ -98747,7 +98745,7 @@
           34
         ]
       },
-      "hint": "Something and 5 makes 39. Start at 5 and count up to 39.",
+      "hint": "39 is the whole, and 5 is one part. What is the other part?",
       "explanation": "5 and 34 makes 39.",
       "misconceptionTags": [
         "added_instead",
@@ -98775,10 +98773,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 5,
-            "total": 39
+            "total": 39,
+            "known": 5
           }
         },
         "explanation": {
@@ -99463,7 +99461,7 @@
           33
         ]
       },
-      "hint": "Something and 4 makes 38. Start at 4 and count up to 38.",
+      "hint": "38 is the whole, and 4 is one part. What is the other part?",
       "explanation": "4 and 34 makes 38.",
       "misconceptionTags": [
         "added_instead",
@@ -99491,10 +99489,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 4,
-            "total": 38
+            "total": 38,
+            "known": 4
           }
         },
         "explanation": {
@@ -99899,7 +99897,7 @@
           42
         ]
       },
-      "hint": "Something and 2 makes 43. Start at 2 and count up to 43.",
+      "hint": "43 is the whole, and 2 is one part. What is the other part?",
       "explanation": "2 and 41 makes 43.",
       "misconceptionTags": [
         "added_instead",
@@ -99927,10 +99925,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 2,
-            "total": 43
+            "total": 43,
+            "known": 2
           }
         },
         "explanation": {
@@ -103083,7 +103081,7 @@
           28
         ]
       },
-      "hint": "Something and 10 makes 39. Start at 10 and count up to 39.",
+      "hint": "39 is the whole, and 10 is one part. What is the other part?",
       "explanation": "10 and 29 makes 39.",
       "misconceptionTags": [
         "added_instead",
@@ -103111,10 +103109,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 10,
-            "total": 39
+            "total": 39,
+            "known": 10
           }
         },
         "explanation": {
@@ -103231,7 +103229,7 @@
           28
         ]
       },
-      "hint": "Something and 11 makes 39. Start at 11 and count up to 39.",
+      "hint": "39 is the whole, and 11 is one part. What is the other part?",
       "explanation": "11 and 28 makes 39.",
       "misconceptionTags": [
         "added_instead",
@@ -103259,10 +103257,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 11,
-            "total": 39
+            "total": 39,
+            "known": 11
           }
         },
         "explanation": {
@@ -103453,7 +103451,7 @@
           23
         ]
       },
-      "hint": "Something and 12 makes 34. Start at 12 and count up to 34.",
+      "hint": "34 is the whole, and 12 is one part. What is the other part?",
       "explanation": "12 and 22 makes 34.",
       "misconceptionTags": [
         "added_instead",
@@ -103481,10 +103479,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 12,
-            "total": 34
+            "total": 34,
+            "known": 12
           }
         },
         "explanation": {
@@ -103749,7 +103747,7 @@
           24
         ]
       },
-      "hint": "Something and 14 makes 39. Start at 14 and count up to 39.",
+      "hint": "39 is the whole, and 14 is one part. What is the other part?",
       "explanation": "14 and 25 makes 39.",
       "misconceptionTags": [
         "added_instead",
@@ -103777,10 +103775,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 14,
-            "total": 39
+            "total": 39,
+            "known": 14
           }
         },
         "explanation": {
@@ -104185,7 +104183,7 @@
           38
         ]
       },
-      "hint": "Something and 10 makes 47. Start at 10 and count up to 47.",
+      "hint": "47 is the whole, and 10 is one part. What is the other part?",
       "explanation": "10 and 37 makes 47.",
       "misconceptionTags": [
         "added_instead",
@@ -104213,10 +104211,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 10,
-            "total": 47
+            "total": 47,
+            "known": 10
           }
         },
         "explanation": {
@@ -105107,7 +105105,7 @@
           59
         ]
       },
-      "hint": "Something and 13 makes 46. Start at 13 and count up to 46.",
+      "hint": "46 is the whole, and 13 is one part. What is the other part?",
       "explanation": "13 and 33 makes 46.",
       "misconceptionTags": [
         "added_instead",
@@ -105135,10 +105133,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 13,
-            "total": 46
+            "total": 46,
+            "known": 13
           }
         },
         "explanation": {
@@ -105181,7 +105179,7 @@
           58
         ]
       },
-      "hint": "Something and 14 makes 44. Start at 14 and count up to 44.",
+      "hint": "44 is the whole, and 14 is one part. What is the other part?",
       "explanation": "14 and 30 makes 44.",
       "misconceptionTags": [
         "added_instead",
@@ -105209,10 +105207,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 14,
-            "total": 44
+            "total": 44,
+            "known": 14
           }
         },
         "explanation": {
@@ -106045,7 +106043,7 @@
           41
         ]
       },
-      "hint": "Something and 4 makes 37. Start at 4 and count up to 37.",
+      "hint": "37 is the whole, and 4 is one part. What is the other part?",
       "explanation": "4 and 33 makes 37.",
       "misconceptionTags": [
         "added_instead",
@@ -106073,10 +106071,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 4,
-            "total": 37
+            "total": 37,
+            "known": 4
           }
         },
         "explanation": {
@@ -106629,7 +106627,7 @@
           16
         ]
       },
-      "hint": "Something and 6 makes 21. Start at 6 and count up to 21.",
+      "hint": "21 is the whole, and 6 is one part. What is the other part?",
       "explanation": "6 and 15 makes 21.",
       "misconceptionTags": [
         "added_instead",
@@ -106657,10 +106655,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 6,
-            "total": 21
+            "total": 21,
+            "known": 6
           }
         },
         "explanation": {
@@ -107723,7 +107721,7 @@
           31
         ]
       },
-      "hint": "Something and 6 makes 25. Start at 6 and count up to 25.",
+      "hint": "25 is the whole, and 6 is one part. What is the other part?",
       "explanation": "6 and 19 makes 25.",
       "misconceptionTags": [
         "added_instead",
@@ -107751,10 +107749,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 6,
-            "total": 25
+            "total": 25,
+            "known": 6
           }
         },
         "explanation": {
@@ -110981,7 +110979,7 @@
           33
         ]
       },
-      "hint": "Something and 6 makes 40. Start at 6 and count up to 40.",
+      "hint": "40 is the whole, and 6 is one part. What is the other part?",
       "explanation": "6 and 34 makes 40.",
       "misconceptionTags": [
         "added_instead",
@@ -111009,10 +111007,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 6,
-            "total": 40
+            "total": 40,
+            "known": 6
           }
         },
         "explanation": {
@@ -111055,7 +111053,7 @@
           50
         ]
       },
-      "hint": "Something and 6 makes 44. Start at 6 and count up to 44.",
+      "hint": "44 is the whole, and 6 is one part. What is the other part?",
       "explanation": "6 and 38 makes 44.",
       "misconceptionTags": [
         "added_instead",
@@ -111083,10 +111081,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 6,
-            "total": 44
+            "total": 44,
+            "known": 6
           }
         },
         "explanation": {
@@ -111927,7 +111925,7 @@
           38
         ]
       },
-      "hint": "Something and 7 makes 46. Start at 7 and count up to 46.",
+      "hint": "46 is the whole, and 7 is one part. What is the other part?",
       "explanation": "7 and 39 makes 46.",
       "misconceptionTags": [
         "added_instead",
@@ -111955,10 +111953,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 7,
-            "total": 46
+            "total": 46,
+            "known": 7
           }
         },
         "explanation": {
@@ -112519,7 +112517,7 @@
           36
         ]
       },
-      "hint": "Something and 9 makes 46. Start at 9 and count up to 46.",
+      "hint": "46 is the whole, and 9 is one part. What is the other part?",
       "explanation": "9 and 37 makes 46.",
       "misconceptionTags": [
         "added_instead",
@@ -112547,10 +112545,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 9,
-            "total": 46
+            "total": 46,
+            "known": 9
           }
         },
         "explanation": {
@@ -112741,7 +112739,7 @@
           38
         ]
       },
-      "hint": "Something and 9 makes 48. Start at 9 and count up to 48.",
+      "hint": "48 is the whole, and 9 is one part. What is the other part?",
       "explanation": "9 and 39 makes 48.",
       "misconceptionTags": [
         "added_instead",
@@ -112769,10 +112767,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 9,
-            "total": 48
+            "total": 48,
+            "known": 9
           }
         },
         "explanation": {
@@ -115447,7 +115445,7 @@
           22
         ]
       },
-      "hint": "Something and 17 makes 40. Start at 17 and count up to 40.",
+      "hint": "40 is the whole, and 17 is one part. What is the other part?",
       "explanation": "17 and 23 makes 40.",
       "misconceptionTags": [
         "added_instead",
@@ -115475,10 +115473,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 17,
-            "total": 40
+            "total": 40,
+            "known": 17
           }
         },
         "explanation": {
@@ -115521,7 +115519,7 @@
           26
         ]
       },
-      "hint": "Something and 17 makes 43. Start at 17 and count up to 43.",
+      "hint": "43 is the whole, and 17 is one part. What is the other part?",
       "explanation": "17 and 26 makes 43.",
       "misconceptionTags": [
         "added_instead",
@@ -115549,10 +115547,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 17,
-            "total": 43
+            "total": 43,
+            "known": 17
           }
         },
         "explanation": {
@@ -116023,7 +116021,7 @@
           30
         ]
       },
-      "hint": "Something and 14 makes 43. Start at 14 and count up to 43.",
+      "hint": "43 is the whole, and 14 is one part. What is the other part?",
       "explanation": "14 and 29 makes 43.",
       "misconceptionTags": [
         "added_instead",
@@ -116051,10 +116049,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 14,
-            "total": 43
+            "total": 43,
+            "known": 14
           }
         },
         "explanation": {
@@ -116673,7 +116671,7 @@
           25
         ]
       },
-      "hint": "Something and 7 makes 31. Start at 7 and count up to 31.",
+      "hint": "31 is the whole, and 7 is one part. What is the other part?",
       "explanation": "7 and 24 makes 31.",
       "misconceptionTags": [
         "added_instead",
@@ -116701,10 +116699,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 7,
-            "total": 31
+            "total": 31,
+            "known": 7
           }
         },
         "explanation": {
@@ -117175,7 +117173,7 @@
           17
         ]
       },
-      "hint": "Something and 8 makes 24. Start at 8 and count up to 24.",
+      "hint": "24 is the whole, and 8 is one part. What is the other part?",
       "explanation": "8 and 16 makes 24.",
       "misconceptionTags": [
         "added_instead",
@@ -117203,10 +117201,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 8,
-            "total": 24
+            "total": 24,
+            "known": 8
           }
         },
         "explanation": {
@@ -161656,7 +161654,7 @@
           52
         ]
       },
-      "hint": "Something and 2 makes 55. Start at 2 and count up to 55.",
+      "hint": "55 is the whole, and 2 is one part. What is the other part?",
       "explanation": "2 and 53 makes 55.",
       "misconceptionTags": [
         "added_instead",
@@ -161684,10 +161682,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 2,
-            "total": 55
+            "total": 55,
+            "known": 2
           }
         },
         "explanation": {
@@ -164348,7 +164346,7 @@
           80
         ]
       },
-      "hint": "Something and 5 makes 86. Start at 5 and count up to 86.",
+      "hint": "86 is the whole, and 5 is one part. What is the other part?",
       "explanation": "5 and 81 makes 86.",
       "misconceptionTags": [
         "added_instead",
@@ -164376,10 +164374,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 5,
-            "total": 86
+            "total": 86,
+            "known": 5
           }
         },
         "explanation": {
@@ -164488,7 +164486,7 @@
           95
         ]
       },
-      "hint": "Something and 2 makes 93. Start at 2 and count up to 93.",
+      "hint": "93 is the whole, and 2 is one part. What is the other part?",
       "explanation": "2 and 91 makes 93.",
       "misconceptionTags": [
         "added_instead",
@@ -164516,10 +164514,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 2,
-            "total": 93
+            "total": 93,
+            "known": 2
           }
         },
         "explanation": {
@@ -171878,7 +171876,7 @@
           48
         ]
       },
-      "hint": "Something and 7 makes 55. Start at 7 and count up to 55.",
+      "hint": "55 is the whole, and 7 is one part. What is the other part?",
       "explanation": "7 and 48 makes 55.",
       "misconceptionTags": [
         "added_instead",
@@ -171906,10 +171904,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 7,
-            "total": 55
+            "total": 55,
+            "known": 7
           }
         },
         "explanation": {
@@ -173786,7 +173784,7 @@
           64
         ]
       },
-      "hint": "Something and 6 makes 70. Start at 6 and count up to 70.",
+      "hint": "70 is the whole, and 6 is one part. What is the other part?",
       "explanation": "6 and 64 makes 70.",
       "misconceptionTags": [
         "added_instead",
@@ -173814,10 +173812,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 6,
-            "total": 70
+            "total": 70,
+            "known": 6
           }
         },
         "explanation": {
@@ -173860,7 +173858,7 @@
           68
         ]
       },
-      "hint": "Something and 8 makes 75. Start at 8 and count up to 75.",
+      "hint": "75 is the whole, and 8 is one part. What is the other part?",
       "explanation": "8 and 67 makes 75.",
       "misconceptionTags": [
         "added_instead",
@@ -173888,10 +173886,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 8,
-            "total": 75
+            "total": 75,
+            "known": 8
           }
         },
         "explanation": {
@@ -174938,7 +174936,7 @@
           85
         ]
       },
-      "hint": "Something and 7 makes 91. Start at 7 and count up to 91.",
+      "hint": "91 is the whole, and 7 is one part. What is the other part?",
       "explanation": "7 and 84 makes 91.",
       "misconceptionTags": [
         "added_instead",
@@ -174966,10 +174964,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 7,
-            "total": 91
+            "total": 91,
+            "known": 7
           }
         },
         "explanation": {
@@ -203278,7 +203276,7 @@
           12
         ]
       },
-      "hint": "Something and 5 makes 18. Start at 5 and count up to 18.",
+      "hint": "18 is the whole, and 5 is one part. What is the other part?",
       "explanation": "5 and 13 makes 18.",
       "misconceptionTags": [
         "added_instead",
@@ -203306,10 +203304,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 5,
-            "total": 18
+            "total": 18,
+            "known": 5
           }
         },
         "explanation": {
@@ -203348,8 +203346,8 @@
         "options": [
           4,
           12,
-          13,
-          14
+          21,
+          13
         ]
       },
       "hint": "17 is the whole, and 4 is one part. What is the other part?",
@@ -203865,9 +203863,9 @@
         "correct": 10,
         "options": [
           9,
-          10,
           8,
-          11
+          10,
+          26
         ]
       },
       "hint": "18 is the whole, and 8 is one part. What is the other part?",
@@ -204012,9 +204010,9 @@
         "mode": "mcq",
         "correct": 15,
         "options": [
-          15,
-          16,
           14,
+          15,
+          19,
           2
         ]
       },
@@ -204528,7 +204526,7 @@
           24
         ]
       },
-      "hint": "Something and 6 makes 18. Start at 6 and count up to 18.",
+      "hint": "18 is the whole, and 6 is one part. What is the other part?",
       "explanation": "6 and 12 makes 18.",
       "misconceptionTags": [
         "added_instead",
@@ -204556,10 +204554,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 6,
-            "total": 18
+            "total": 18,
+            "known": 6
           }
         },
         "explanation": {
@@ -204744,10 +204742,10 @@
         "mode": "mcq",
         "correct": 11,
         "options": [
-          11,
           6,
-          12,
-          10
+          10,
+          11,
+          23
         ]
       },
       "hint": "17 is the whole, and 6 is one part. What is the other part?",
@@ -205402,10 +205400,10 @@
         "mode": "mcq",
         "correct": 16,
         "options": [
+          20,
+          16,
           2,
-          17,
-          15,
-          16
+          15
         ]
       },
       "hint": "18 is the whole, and 2 is one part. What is the other part?",
@@ -206428,7 +206426,7 @@
           15
         ]
       },
-      "hint": "Something and 3 makes 19. Start at 3 and count up to 19.",
+      "hint": "19 is the whole, and 3 is one part. What is the other part?",
       "explanation": "3 and 16 makes 19.",
       "misconceptionTags": [
         "added_instead",
@@ -206456,10 +206454,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 3,
-            "total": 19
+            "total": 19,
+            "known": 3
           }
         },
         "explanation": {
@@ -206576,7 +206574,7 @@
           23
         ]
       },
-      "hint": "Something and 4 makes 19. Start at 4 and count up to 19.",
+      "hint": "19 is the whole, and 4 is one part. What is the other part?",
       "explanation": "4 and 15 makes 19.",
       "misconceptionTags": [
         "added_instead",
@@ -206604,10 +206602,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 4,
-            "total": 19
+            "total": 19,
+            "known": 4
           }
         },
         "explanation": {
@@ -206938,7 +206936,7 @@
           27
         ]
       },
-      "hint": "Something and 8 makes 19. Start at 8 and count up to 19.",
+      "hint": "19 is the whole, and 8 is one part. What is the other part?",
       "explanation": "8 and 11 makes 19.",
       "misconceptionTags": [
         "added_instead",
@@ -206966,10 +206964,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 8,
-            "total": 19
+            "total": 19,
+            "known": 8
           }
         },
         "explanation": {
@@ -207080,10 +207078,10 @@
         "mode": "mcq",
         "correct": 16,
         "options": [
-          17,
-          15,
+          22,
+          3,
           16,
-          3
+          15
         ]
       },
       "hint": "19 is the whole, and 3 is one part. What is the other part?",
@@ -208048,7 +208046,7 @@
           18
         ]
       },
-      "hint": "Something and 2 makes 19. Start at 2 and count up to 19.",
+      "hint": "19 is the whole, and 2 is one part. What is the other part?",
       "explanation": "2 and 17 makes 19.",
       "misconceptionTags": [
         "added_instead",
@@ -208076,10 +208074,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 2,
-            "total": 19
+            "total": 19,
+            "known": 2
           }
         },
         "explanation": {
@@ -208336,7 +208334,7 @@
           14
         ]
       },
-      "hint": "Something and 5 makes 19. Start at 5 and count up to 19.",
+      "hint": "19 is the whole, and 5 is one part. What is the other part?",
       "explanation": "5 and 14 makes 19.",
       "misconceptionTags": [
         "added_instead",
@@ -208364,10 +208362,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 5,
-            "total": 19
+            "total": 19,
+            "known": 5
           }
         },
         "explanation": {
@@ -208698,7 +208696,7 @@
           14
         ]
       },
-      "hint": "Something and 6 makes 19. Start at 6 and count up to 19.",
+      "hint": "19 is the whole, and 6 is one part. What is the other part?",
       "explanation": "6 and 13 makes 19.",
       "misconceptionTags": [
         "added_instead",
@@ -208726,10 +208724,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 6,
-            "total": 19
+            "total": 19,
+            "known": 6
           }
         },
         "explanation": {
@@ -209060,7 +209058,7 @@
           11
         ]
       },
-      "hint": "Something and 7 makes 19. Start at 7 and count up to 19.",
+      "hint": "19 is the whole, and 7 is one part. What is the other part?",
       "explanation": "7 and 12 makes 19.",
       "misconceptionTags": [
         "added_instead",
@@ -209088,10 +209086,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 7,
-            "total": 19
+            "total": 19,
+            "known": 7
           }
         },
         "explanation": {
@@ -209202,10 +209200,10 @@
         "mode": "mcq",
         "correct": 17,
         "options": [
-          17,
-          16,
           2,
-          18
+          16,
+          17,
+          21
         ]
       },
       "hint": "19 is the whole, and 2 is one part. What is the other part?",
@@ -210749,9 +210747,9 @@
         "correct": 11,
         "options": [
           10,
-          11,
-          12,
-          9
+          9,
+          29,
+          11
         ]
       },
       "hint": "20 is the whole, and 9 is one part. What is the other part?",
@@ -211174,7 +211172,7 @@
           16
         ]
       },
-      "hint": "Something and 3 makes 20. Start at 3 and count up to 20.",
+      "hint": "20 is the whole, and 3 is one part. What is the other part?",
       "explanation": "3 and 17 makes 20.",
       "misconceptionTags": [
         "added_instead",
@@ -211202,10 +211200,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 3,
-            "total": 20
+            "total": 20,
+            "known": 3
           }
         },
         "explanation": {
@@ -211314,7 +211312,7 @@
           12
         ]
       },
-      "hint": "Something and 8 makes 20. Start at 8 and count up to 20.",
+      "hint": "20 is the whole, and 8 is one part. What is the other part?",
       "explanation": "8 and 12 makes 20.",
       "misconceptionTags": [
         "added_instead",
@@ -211342,10 +211340,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 8,
-            "total": 20
+            "total": 20,
+            "known": 8
           }
         },
         "explanation": {
@@ -211892,10 +211890,10 @@
         "mode": "mcq",
         "correct": 3,
         "options": [
-          4,
-          2,
           12,
-          3
+          2,
+          3,
+          27
         ]
       },
       "hint": "15 is the whole, and 12 is one part. What is the other part?",
@@ -212994,10 +212992,10 @@
         "mode": "mcq",
         "correct": 5,
         "options": [
-          5,
           4,
           11,
-          6
+          27,
+          5
         ]
       },
       "hint": "16 is the whole, and 11 is one part. What is the other part?",
@@ -273677,10 +273675,10 @@
         "mode": "mcq",
         "correct": 18,
         "options": [
-          17,
           18,
+          17,
           19,
-          7
+          4
         ]
       },
       "hint": "Start at 7, then count 11 more.",
@@ -274480,7 +274478,7 @@
           11
         ]
       },
-      "hint": "Something and 3 makes 14. Start at 3 and count up to 14.",
+      "hint": "You have 3. How many more to make 14?",
       "explanation": "3 and 11 makes 14.",
       "misconceptionTags": [
         "off_by_one"
@@ -274500,7 +274498,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 3,
             "total": 14
@@ -274678,7 +274676,7 @@
           11
         ]
       },
-      "hint": "Something and 11 makes 22. Start at 11 and count up to 22.",
+      "hint": "You have 11. How many more to make 22?",
       "explanation": "11 and 11 makes 22.",
       "misconceptionTags": [
         "off_by_one"
@@ -274698,7 +274696,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 11,
             "total": 22
@@ -275002,10 +275000,10 @@
         "mode": "mcq",
         "correct": 19,
         "options": [
-          19,
+          5,
+          20,
           18,
-          7,
-          20
+          19
         ]
       },
       "hint": "Start at 7, then count 12 more.",
@@ -275894,7 +275892,7 @@
           11
         ]
       },
-      "hint": "Something and 5 makes 17. Start at 5 and count up to 17.",
+      "hint": "You have 5. How many more to make 17?",
       "explanation": "5 and 12 makes 17.",
       "misconceptionTags": [
         "off_by_one"
@@ -275914,7 +275912,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 5,
             "total": 17
@@ -275960,7 +275958,7 @@
           13
         ]
       },
-      "hint": "Something and 7 makes 19. Start at 7 and count up to 19.",
+      "hint": "You have 7. How many more to make 19?",
       "explanation": "7 and 12 makes 19.",
       "misconceptionTags": [
         "off_by_one"
@@ -275980,7 +275978,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 7,
             "total": 19
@@ -276026,7 +276024,7 @@
           13
         ]
       },
-      "hint": "Something and 2 makes 14. Start at 2 and count up to 14.",
+      "hint": "You have 2. How many more to make 14?",
       "explanation": "2 and 12 makes 14.",
       "misconceptionTags": [
         "off_by_one"
@@ -276046,7 +276044,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 2,
             "total": 14
@@ -276092,7 +276090,7 @@
           20
         ]
       },
-      "hint": "Something and 9 makes 20. Start at 9 and count up to 20.",
+      "hint": "You have 9. How many more to make 20?",
       "explanation": "9 and 11 makes 20.",
       "misconceptionTags": [
         "off_by_one"
@@ -276112,7 +276110,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 9,
             "total": 20
@@ -276778,10 +276776,10 @@
         "mode": "mcq",
         "correct": 21,
         "options": [
+          3,
+          22,
           21,
-          20,
-          9,
-          22
+          20
         ]
       },
       "hint": "Start at 9, then count 12 more.",
@@ -280020,9 +280018,9 @@
         "correct": 22,
         "options": [
           21,
-          22,
           23,
-          8
+          6,
+          22
         ]
       },
       "hint": "Start at 8, then count 14 more.",
@@ -280363,7 +280361,7 @@
           11
         ]
       },
-      "hint": "Something and 15 makes 27. Start at 15 and count up to 27.",
+      "hint": "You have 15. How many more to make 27?",
       "explanation": "15 and 12 makes 27.",
       "misconceptionTags": [
         "off_by_one"
@@ -280383,7 +280381,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 15,
             "total": 27
@@ -281498,7 +281496,7 @@
           26
         ]
       },
-      "hint": "Something and 10 makes 26. Start at 10 and count up to 26.",
+      "hint": "You have 10. How many more to make 26?",
       "explanation": "10 and 16 makes 26.",
       "misconceptionTags": [
         "off_by_one"
@@ -281518,7 +281516,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 10,
             "total": 26
@@ -281696,7 +281694,7 @@
           12
         ]
       },
-      "hint": "Something and 16 makes 29. Start at 16 and count up to 29.",
+      "hint": "You have 16. How many more to make 29?",
       "explanation": "16 and 13 makes 29.",
       "misconceptionTags": [
         "off_by_one"
@@ -281716,7 +281714,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 16,
             "total": 29
@@ -284321,7 +284319,7 @@
           16
         ]
       },
-      "hint": "Something and 5 makes 22. Start at 5 and count up to 22.",
+      "hint": "You have 5. How many more to make 22?",
       "explanation": "5 and 17 makes 22.",
       "misconceptionTags": [
         "off_by_one"
@@ -284341,7 +284339,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 5,
             "total": 22
@@ -284387,7 +284385,7 @@
           10
         ]
       },
-      "hint": "Something and 18 makes 29. Start at 18 and count up to 29.",
+      "hint": "You have 18. How many more to make 29?",
       "explanation": "18 and 11 makes 29.",
       "misconceptionTags": [
         "off_by_one"
@@ -284407,7 +284405,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 18,
             "total": 29
@@ -285919,7 +285917,7 @@
           19
         ]
       },
-      "hint": "Something and 8 makes 26. Start at 8 and count up to 26.",
+      "hint": "You have 8. How many more to make 26?",
       "explanation": "8 and 18 makes 26.",
       "misconceptionTags": [
         "off_by_one"
@@ -285939,7 +285937,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 8,
             "total": 26
@@ -286680,9 +286678,9 @@
         "correct": 25,
         "options": [
           24,
-          6,
           26,
-          25
+          25,
+          13
         ]
       },
       "hint": "Start at 6, then count 19 more.",
@@ -287327,7 +287325,7 @@
           19
         ]
       },
-      "hint": "Something and 10 makes 30. Start at 10 and count up to 30.",
+      "hint": "You have 10. How many more to make 30?",
       "explanation": "10 and 20 makes 30.",
       "misconceptionTags": [
         "off_by_one"
@@ -287347,7 +287345,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 10,
             "total": 30
@@ -289100,7 +289098,7 @@
         "correct": 5,
         "options": [
           6,
-          9,
+          13,
           5,
           4
         ]
@@ -303153,7 +303151,7 @@
           65
         ]
       },
-      "hint": "Something and 4 makes 69. Start at 4 and count up to 69.",
+      "hint": "You have 4. How many more to make 69?",
       "explanation": "4 and 65 makes 69.",
       "misconceptionTags": [
         "place_value_slip"
@@ -303173,7 +303171,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 4,
             "total": 69
@@ -303285,7 +303283,7 @@
           65
         ]
       },
-      "hint": "Something and 4 makes 68. Start at 4 and count up to 68.",
+      "hint": "You have 4. How many more to make 68?",
       "explanation": "4 and 64 makes 68.",
       "misconceptionTags": [
         "place_value_slip"
@@ -303305,7 +303303,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 4,
             "total": 68
@@ -303615,7 +303613,7 @@
           97
         ]
       },
-      "hint": "Something and 3 makes 100. Start at 3 and count up to 100.",
+      "hint": "You have 3. How many more to make 100?",
       "explanation": "3 and 97 makes 100.",
       "misconceptionTags": [
         "place_value_slip"
@@ -303635,7 +303633,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 3,
             "total": 100
@@ -303681,7 +303679,7 @@
           98
         ]
       },
-      "hint": "Something and 3 makes 101. Start at 3 and count up to 101.",
+      "hint": "You have 3. How many more to make 101?",
       "explanation": "3 and 98 makes 101.",
       "misconceptionTags": [
         "place_value_slip"
@@ -303701,7 +303699,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 3,
             "total": 101
@@ -303747,7 +303745,7 @@
           99
         ]
       },
-      "hint": "Something and 3 makes 102. Start at 3 and count up to 102.",
+      "hint": "You have 3. How many more to make 102?",
       "explanation": "3 and 99 makes 102.",
       "misconceptionTags": [
         "place_value_slip"
@@ -303767,7 +303765,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 3,
             "total": 102
@@ -303813,7 +303811,7 @@
           103
         ]
       },
-      "hint": "Something and 3 makes 103. Start at 3 and count up to 103.",
+      "hint": "You have 3. How many more to make 103?",
       "explanation": "3 and 100 makes 103.",
       "misconceptionTags": [
         "place_value_slip"
@@ -303833,7 +303831,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 3,
             "total": 103
@@ -304407,7 +304405,7 @@
           60
         ]
       },
-      "hint": "Something and 2 makes 58. Start at 2 and count up to 58.",
+      "hint": "58 is the whole, and 2 is one part. What is the other part?",
       "explanation": "2 and 56 makes 58.",
       "misconceptionTags": [
         "added_instead",
@@ -304435,10 +304433,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 2,
-            "total": 58
+            "total": 58,
+            "known": 2
           }
         },
         "explanation": {
@@ -308865,7 +308863,7 @@
           81
         ]
       },
-      "hint": "Something and 5 makes 76. Start at 5 and count up to 76.",
+      "hint": "76 is the whole, and 5 is one part. What is the other part?",
       "explanation": "5 and 71 makes 76.",
       "misconceptionTags": [
         "added_instead",
@@ -308893,10 +308891,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 5,
-            "total": 76
+            "total": 76,
+            "known": 5
           }
         },
         "explanation": {
@@ -309729,7 +309727,7 @@
           70
         ]
       },
-      "hint": "Something and 9 makes 78. Start at 9 and count up to 78.",
+      "hint": "78 is the whole, and 9 is one part. What is the other part?",
       "explanation": "9 and 69 makes 78.",
       "misconceptionTags": [
         "added_instead",
@@ -309757,10 +309755,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 9,
-            "total": 78
+            "total": 78,
+            "known": 9
           }
         },
         "explanation": {
@@ -309877,7 +309875,7 @@
           77
         ]
       },
-      "hint": "Something and 4 makes 80. Start at 4 and count up to 80.",
+      "hint": "80 is the whole, and 4 is one part. What is the other part?",
       "explanation": "4 and 76 makes 80.",
       "misconceptionTags": [
         "added_instead",
@@ -309905,10 +309903,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 4,
-            "total": 80
+            "total": 80,
+            "known": 4
           }
         },
         "explanation": {
@@ -310617,7 +310615,7 @@
           81
         ]
       },
-      "hint": "Something and 5 makes 85. Start at 5 and count up to 85.",
+      "hint": "85 is the whole, and 5 is one part. What is the other part?",
       "explanation": "5 and 80 makes 85.",
       "misconceptionTags": [
         "added_instead",
@@ -310645,10 +310643,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 5,
-            "total": 85
+            "total": 85,
+            "known": 5
           }
         },
         "explanation": {
@@ -312517,7 +312515,7 @@
           81
         ]
       },
-      "hint": "Something and 9 makes 90. Start at 9 and count up to 90.",
+      "hint": "90 is the whole, and 9 is one part. What is the other part?",
       "explanation": "9 and 81 makes 90.",
       "misconceptionTags": [
         "added_instead",
@@ -312545,10 +312543,10 @@
           }
         },
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.other_part",
           "params": {
-            "known": 9,
-            "total": 90
+            "total": 90,
+            "known": 9
           }
         },
         "explanation": {
@@ -366246,7 +366244,7 @@
           237
         ]
       },
-      "hint": "Something and 112 makes 237. Start at 112 and count up to 237.",
+      "hint": "You have 112. How many more to make 237?",
       "explanation": "112 and 125 makes 237.",
       "misconceptionTags": [
         "place_value_slip"
@@ -366266,7 +366264,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 112,
             "total": 237
@@ -366312,7 +366310,7 @@
           476
         ]
       },
-      "hint": "Something and 278 makes 754. Start at 278 and count up to 754.",
+      "hint": "You have 278. How many more to make 754?",
       "explanation": "278 and 476 makes 754.",
       "misconceptionTags": [
         "place_value_slip"
@@ -366332,7 +366330,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 278,
             "total": 754
@@ -366378,7 +366376,7 @@
           395
         ]
       },
-      "hint": "Something and 178 makes 395. Start at 178 and count up to 395.",
+      "hint": "You have 178. How many more to make 395?",
       "explanation": "178 and 217 makes 395.",
       "misconceptionTags": [
         "place_value_slip"
@@ -366398,7 +366396,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 178,
             "total": 395
@@ -366444,7 +366442,7 @@
           309
         ]
       },
-      "hint": "Something and 78 makes 309. Start at 78 and count up to 309.",
+      "hint": "You have 78. How many more to make 309?",
       "explanation": "78 and 231 makes 309.",
       "misconceptionTags": [
         "place_value_slip"
@@ -366464,7 +366462,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 78,
             "total": 309
@@ -367038,7 +367036,7 @@
           1488
         ]
       },
-      "hint": "Something and 789 makes 2278. Start at 789 and count up to 2278.",
+      "hint": "You have 789. How many more to make 2278?",
       "explanation": "789 and 1489 makes 2278.",
       "misconceptionTags": [
         "place_value_slip"
@@ -367058,7 +367056,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 789,
             "total": 2278
@@ -367104,7 +367102,7 @@
           1380
         ]
       },
-      "hint": "Something and 516 makes 1895. Start at 516 and count up to 1895.",
+      "hint": "You have 516. How many more to make 1895?",
       "explanation": "516 and 1379 makes 1895.",
       "misconceptionTags": [
         "place_value_slip"
@@ -367124,7 +367122,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 516,
             "total": 1895
@@ -367170,7 +367168,7 @@
           3504
         ]
       },
-      "hint": "Something and 345 makes 3504. Start at 345 and count up to 3504.",
+      "hint": "You have 345. How many more to make 3504?",
       "explanation": "345 and 3159 makes 3504.",
       "misconceptionTags": [
         "place_value_slip"
@@ -367190,7 +367188,7 @@
       },
       "phrasing": {
         "hint": {
-          "key": "math.hint.rel.count_up",
+          "key": "math.hint.rel.how_many_more",
           "params": {
             "known": 345,
             "total": 3504

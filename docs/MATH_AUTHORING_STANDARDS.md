@@ -273,6 +273,18 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
 - **A picture has to be picturable.** Equal-groups and array stories keep both
   quantities inside twelve. `8 nests, each with 90 eggs` and `48 rows of 4 eggs`
   both parse and both multiply correctly, and neither is a nest or a row.
+- **A hint that names counting has to mean counting.** The relational and
+  compare hints name counting-up, and the pools now reach four-digit number
+  bonds, so `? + 345 = 3504` was teaching "Start at 345 and count up to 3504" —
+  in both languages. Above a countable gap (ten) the sentence states the
+  relation and stops: the child still has to find the missing part and is no
+  longer told to find it a way nobody can. Same rule the sequence framings got,
+  where *talning áfram* is refused to a run that jumps by twenty-five.
+- **A declared misconception must be answerable.** A problem tagged
+  `added_instead` whose options contain no added-instead value claims a
+  diagnosis it cannot make. The subtracted-instead value is `|a - b|`, not
+  `a - b`: a child who subtracts takes the smaller from the larger whichever way
+  round the story named them.
 - **Hints teach a strategy, never reveal the answer** (`renderHint`
   strategies: count_on, make_ten, bridge_ten, add_place_value,
   multiply_groups, split_tens, and for counting one per counting principle:

@@ -407,8 +407,12 @@ function factKey(problem) {
     // board replaces with drawn objects. Everything before it is the caption.
     const tokens = text.split(/\s+/).filter(t => t !== '');
     const glyphs = [];
+    // Any SINGLE-CHARACTER trailing token, not just a non-word one: "o" is one
+    // of the twelve shipped markers and a /\w/ test excluded it, so the one
+    // glyph the docstring names was the one glyph the key could not see. Harmless
+    // only because it is the alphabet's sole alphanumeric.
     for (let i = tokens.length - 1; i >= 0; i--) {
-        if (tokens[i].length !== 1 || /[\w]/.test(tokens[i])) break;
+        if (tokens[i].length !== 1) break;
         glyphs.push(tokens[i]);
     }
     const markers = [...new Set(glyphs)].sort().join('');

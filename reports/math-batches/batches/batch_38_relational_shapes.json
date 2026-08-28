@@ -2,30 +2,30 @@
   "batchId": "batch_38_relational_shapes",
   "title": "Relational shapes across the operations",
   "accepted": true,
-  "averageGrade": 9.7,
+  "averageGrade": 9.8,
   "criticalIssues": [],
   "templateReview": {
     "category": {
-      "grade": 9.3,
+      "grade": 9.4,
       "summary": "Template coverage is stable: 14 templates, 4 families, steps 1-14.",
       "metrics": {
         "templateCount": 14,
         "familyCount": 4,
         "minStep": 1,
         "maxStep": 14,
-        "promptVariantCount": 14,
+        "promptVariantCount": 136,
         "averageProblemsPerTemplate": 10.6
       }
     },
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.3,
+        "grade": 9.4,
         "rationale": "Batch shape is dense enough to scale without a cliff."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.2,
+        "grade": 9.3,
         "rationale": "Families and wording variants support replay and gentle pacing."
       },
       {

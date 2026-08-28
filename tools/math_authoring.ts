@@ -902,6 +902,19 @@ function normalizedProgress(value: number, range: NumericRange): number {
 }
 
 /**
+ * How far a child can be asked to count.
+ *
+ * Ten is the line because the strategies these hints name are counting
+ * strategies: counting on, counting back, counting up to a whole. Past a
+ * handful they stop being strategies and become instructions -- and a pool that
+ * reaches four-digit number bonds can produce a gap of three thousand, which is
+ * what it did.
+ */
+function countableGap(gap: number): boolean {
+    return gap <= 10;
+}
+
+/**
  * One relational prompt, with the hint and explanation its shape earns.
  *
  * `left`/`right` are the plain fact's operands and `result` is what the plain
@@ -948,7 +961,16 @@ function buildRelationalCandidate(
             return {
                 promptText: `? ${operator} ${right} = ${written}`,
                 correct: left,
-                hint: `Something and ${right} makes ${written}. Start at ${right} and count up to ${written}.`,
+                // "Start at 345 and count up to 3504" is not a strategy, it is an
+                // instruction nobody can follow, and §4 asks a hint to teach one.
+                // Above a countable gap the sentence states the RELATION and
+                // stops: the child still has to find the missing part, and is no
+                // longer told to find it a way that cannot be done. Same rule the
+                // sequence framings got -- a hint that names counting has to mean
+                // counting.
+                hint: countableGap(written - right)
+                    ? `Something and ${right} makes ${written}. Start at ${right} and count up to ${written}.`
+                    : `You have ${right}. How many more to make ${written}?`,
                 explanation: explanation(right, left),
                 optionPreference: options(left, right),
             };
@@ -1222,7 +1244,9 @@ function storyScaffold(
         // correct is the gap. Count up from the smaller to the larger.
         case 'story_difference':
             return {
-                hint: `Something and ${right} makes ${left}. Start at ${right} and count up to ${left}.`,
+                hint: countableGap(left - right)
+                    ? `Something and ${right} makes ${left}. Start at ${right} and count up to ${left}.`
+                    : `${left} is the whole, and ${right} is one part. What is the other part?`,
                 explanation: `${right} and ${correct} makes ${left}.`,
                 optionPreference: [left + right, correct - 1, correct + 1, right],
                 misconceptionTags: ['added_instead', 'off_by_one'],
@@ -1233,11 +1257,19 @@ function storyScaffold(
         // and a child eliminates it without doing any arithmetic (§4: every
         // distractor plausible in magnitude).
         case 'story_more_than':
+            // The subtracted-instead answer is the DIFFERENCE, whichever way
+            // round the two numbers came: a child who subtracts takes the
+            // smaller from the larger regardless of which the story named first.
+            // Writing it as `left - right` left 12 problems declaring a
+            // misconception their options could not express -- the same defect,
+            // one field down, that the tag-replacement rule above fixed.
             return {
-                optionPreference: left - right >= 1
-                    ? [left - right, correct - 1, correct + 1, left]
+                optionPreference: Math.abs(left - right) >= 1
+                    ? [Math.abs(left - right), correct - 1, correct + 1, left]
                     : [correct - 1, correct + 1, left, correct + 2],
-                misconceptionTags: ['subtracted_instead', 'off_by_one'],
+                misconceptionTags: Math.abs(left - right) >= 1
+                    ? ['subtracted_instead', 'off_by_one']
+                    : ['off_by_one'],
             };
         // Part-part-whole, part unknown. left is the whole, right the known
         // part. Nothing happened to anything; there are two parts and a whole.
@@ -1245,7 +1277,11 @@ function storyScaffold(
             return {
                 hint: `${left} is the whole, and ${right} is one part. What is the other part?`,
                 explanation: `${right} and ${correct} makes ${left}.`,
-                optionPreference: [right, correct - 1, correct + 1, left],
+                // The whole and the known part are both written down, so the
+                // child who adds them instead of taking one from the other lands
+                // on left + right -- and that value has to BE in the list for the
+                // declared tag to mean anything.
+                optionPreference: [left + right, right, correct - 1, correct + 1],
                 misconceptionTags: ['added_instead', 'off_by_one'],
             };
         default:
@@ -1838,7 +1874,19 @@ function reviewTemplateBatch(batch: MathBatchSpec, problems: MathProblem[]): Bat
     const stepValues = problems.map(problem => problem.curriculumStep);
     const minStep = Math.min(...stepValues);
     const maxStep = Math.max(...stepValues);
-    const promptVariantCount = batch.templates.reduce((sum, template) => sum + template.promptVariants.length, 0);
+    // The variants a template ACTUALLY renders, not the ones it lists. Most
+    // templates name a handful and then receive the whole fallback union, so the
+    // listed field describes nothing that ships -- and this number feeds the
+    // pacing grade the batch gate reads. Grading a batch on a field the
+    // generator ignores is grading it on a wish.
+    const promptVariantCount = batch.templates.reduce(
+        (sum, template) => sum + withFallbackVariants(
+            template.kind,
+            template.promptVariants,
+            template.strictVariants,
+        ).length,
+        0,
+    );
     const templateCoverage = problems.length / batch.templates.length;
     const pacingGrade = clamp(
         9 + Math.min(1, familyCount / 10) + Math.min(0.5, promptVariantCount / 40) - Math.max(0, (maxStep - minStep > 12 ? 0.6 : 0)),
