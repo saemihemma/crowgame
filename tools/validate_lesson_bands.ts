@@ -132,6 +132,12 @@ function factOf(card: Card): Fact | null {
         }
         case 'groups':
             return has('groups', 'each') ? { op: '×', left: n('groups')!, right: n('each')! } : null;
+        // The place-value board states the whole sum: top, operator, bottom.
+        case 'place_board': {
+            if (!has('top', 'bottom')) return null;
+            const op = String(p.op ?? '+') as Fact['op'];
+            return { op, left: n('top')!, right: n('bottom')! };
+        }
         case 'tens_and_ones': {
             if (!has('tens', 'ones')) return null;
             // `hundreds` is the third place, and it has to be read here or a

@@ -158,7 +158,20 @@ function truthOf(visual, params) {
         case 'part_whole':
             return n('total') - n('known');
         case 'tens_and_ones':
-            return n('tens') * 10 + n('ones') + n('addTens') * 10 + n('addOnes') - n('takeOnes');
+            return n('hundreds') * 100 + n('tens') * 10 + n('ones')
+                + n('addHundreds') * 100 + n('addTens') * 10 + n('addOnes')
+                - (n('takeHundreds') * 100 + n('takeTens') * 10 + n('takeOnes'));
+        // The place-value board states the whole written sum, so it asserts its
+        // answer whether or not the answer row is filled in -- which is what lets
+        // a `try` card leave that row blank and still be checkable.
+        case 'place_board': {
+            if (params.top === undefined || params.bottom === undefined) return null;
+            switch (params.op) {
+                case '+': return n('top') + n('bottom');
+                case '-': return n('top') - n('bottom');
+                default: return null;
+            }
+        }
         case 'numbers': {
             const values = params.values ?? [];
             if (values.length < 2) return null;

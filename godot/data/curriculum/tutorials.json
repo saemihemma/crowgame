@@ -2402,31 +2402,33 @@
         },
         {
           "body": "model",
-          "visual": "tens_and_ones",
+          "visual": "place_board",
           "params": {
-            "hundreds": 2,
-            "tens": 0,
-            "ones": 0,
-            "addHundreds": 1
+            "top": 214,
+            "op": "+",
+            "bottom": 134,
+            "result": 348
           }
         },
         {
           "body": "worked",
-          "visual": "equation",
+          "visual": "place_board",
           "params": {
-            "a": 256,
+            "top": 256,
             "op": "+",
-            "b": 137,
-            "result": 393
+            "bottom": 137,
+            "result": 393,
+            "carry": 1,
+            "carryInto": 1
           }
         },
         {
           "body": "try",
-          "visual": "equation",
+          "visual": "place_board",
           "params": {
-            "a": 218,
+            "top": 218,
             "op": "+",
-            "b": 145
+            "bottom": 145
           },
           "choice": {
             "options": [
@@ -2456,31 +2458,33 @@
         },
         {
           "body": "model",
-          "visual": "tens_and_ones",
+          "visual": "place_board",
           "params": {
-            "hundreds": 3,
-            "tens": 0,
-            "ones": 0,
-            "takeHundreds": 1
+            "top": 348,
+            "op": "-",
+            "bottom": 134,
+            "result": 214
           }
         },
         {
           "body": "worked",
-          "visual": "equation",
+          "visual": "place_board",
           "params": {
-            "a": 352,
+            "top": 352,
             "op": "-",
-            "b": 137,
-            "result": 215
+            "bottom": 137,
+            "result": 215,
+            "carry": 1,
+            "carryInto": 0
           }
         },
         {
           "body": "try",
-          "visual": "equation",
+          "visual": "place_board",
           "params": {
-            "a": 364,
+            "top": 364,
             "op": "-",
-            "b": 128
+            "bottom": 128
           },
           "choice": {
             "options": [

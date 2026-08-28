@@ -26,6 +26,7 @@ const RENDERERS := {
 	"numbers": "_draw_numbers",
 	"groups": "_draw_groups",
 	"tens_and_ones": "_draw_tens_and_ones",
+	"place_board": "_draw_place_board",
 	"part_whole": "_draw_part_whole",
 	"equation": "_draw_equation",
 }
@@ -37,6 +38,9 @@ const RENDERERS := {
 ## three places -- what it measures, where it puts the bar, and where it puts the
 ## numerals -- and the first version of this fix only changed one of them.
 ## A hundred flat is ten rods wide, and it is scored to say so.
+## Four places is a thousand-column board, which is as wide as the strip takes.
+const BOARD_MAX_PLACES := 4
+
 const FLAT_SCORING := 10
 const FLAT_SCORE_WIDTH := 1.0
 
@@ -59,10 +63,26 @@ const FRAME_CAPACITY := FRAME_COLUMNS * FRAME_ROWS
 var _visual := ""
 var _params: Dictionary = {}
 
+## Height is per-VISUAL, not one number for the deck.
+##
+## Almost every card is one picture of some objects and 122px is generous for it
+## -- the band was tuned DOWN to that because most pictures floated in a band
+## they never filled. The place-value board is the exception and cannot be made
+## to fit: it is five stacked bands (the block key, the carried ten, two numbers
+## and an answer) and squeezing those into 98 usable pixels puts the digits at
+## the same size as the sentence underneath, on the one card where the digits ARE
+## the lesson.
+##
+## So a renderer may name its own band -- `layout/visual_height_<name>` -- and
+## everything without one keeps the deck default. A per-card number rather than a
+## bigger default, because raising the default would re-inflate the 160-odd cards
+## that were deliberately brought down.
 func setup(visual: String, params: Dictionary) -> void:
 	_visual = visual
 	_params = params
-	custom_minimum_size = Vector2(0, float(Config.tutorial("layout/visual_height", 190)))
+	var default_h := float(Config.tutorial("layout/visual_height", 190))
+	custom_minimum_size = Vector2(0,
+		float(Config.tutorial("layout/visual_height_%s" % visual, default_h)))
 	queue_redraw()
 
 func _ready() -> void:
@@ -576,6 +596,166 @@ func _draw_tens_and_ones() -> void:
 		draw_rect(cell, outline, false, 2.0)
 		if i >= kept and i < ones:
 			_cross(cell.get_center(), unit * 0.36)
+
+
+## THE PLACE-VALUE BOARD -- the "math house".
+##
+## One column per place, the two numbers stacked in it, a line, and the answer
+## underneath. This is how multi-digit addition is actually taught, and the card
+## it replaces was not teaching it at all: a single row of fifteen yellow shapes
+## with no column, no stack, no operator and no line, explained entirely in a
+## sentence of prose the child had to read first.
+##
+## WHY DIGITS IN THE ROWS AND BLOCKS ONLY IN THE HEADER.
+##
+## Drawing base-ten blocks inside every row is the obvious idea and it does not
+## survive the space: the visual strip is 122px tall, three rows of true
+## ten-to-one blocks do not fit in it, and shrinking them until they do makes
+## three hundreds indistinguishable from three tens -- which is the one
+## distinction the whole lesson exists to make.
+##
+## So the blocks sit ONCE, above their column, as the key: a scored flat over the
+## hundreds, a rod over the tens, a single square over the ones. The child learns
+## what the column means from a picture, and then reads digits -- which a six-year
+## old can do long before they can read a sentence, and which is what place value
+## IS. This is also the form the classroom charts use.
+##
+## Params: `top`, `bottom`, `op` ("+"/"-"), optional `result`, optional
+## `carry` (the digit carried) and `carryInto` (0 = ones, 1 = tens, ...).
+func _draw_place_board() -> void:
+	var top_n := _int("top")
+	var bottom_n := _int("bottom")
+	var op := String(_params.get("op", "+"))
+	var has_result: bool = _params.has("result")
+	var result_n := _int("result")
+	var has_carry: bool = _params.has("carry")
+
+	var places: int = maxi(maxi(_digits(top_n), _digits(bottom_n)), _digits(result_n) if has_result else 1)
+	places = clampi(places, 1, BOARD_MAX_PLACES)
+
+	var col_w := _tune("board_col_width", 56.0)
+	var row_h := _tune("board_row_height", 25.0)
+	var head_h := _tune("board_header_height", 22.0)
+	var carry_h := _tune("board_carry_height", 13.0) if has_carry else 0.0
+	var digit_px := _tune("board_digit_size", 24.0)
+	var rule := _tune("board_rule", 3.0)
+	# The operator sits outside the grid, where it does on paper. Inside a column
+	# it would read as one more place.
+	var op_w := col_w * 0.55
+
+	var grid_w := places * col_w
+	var total_w := op_w + grid_w
+	var rows: float = 2.0 + (1.0 if has_result else 0.0)
+	var total_h := head_h + carry_h + row_h * rows + rule
+	_fit(total_w, total_h)
+
+	var left := size.x * 0.5 - total_w * 0.5 + op_w
+	var y := size.y * 0.5 - total_h * 0.5
+	var ink := _role("outline", "ink")
+	var numeral := _role("numeral", "paper")
+	var accent := _role("mark", "accent")
+
+	# ── the key: one block per column, so the column says what it holds ──
+	for i in places:
+		_place_key(places - 1 - i, Vector2(left + i * col_w + col_w * 0.5, y + head_h * 0.5), head_h)
+	y += head_h
+
+	# ── the carried ten, in its own band above the sum ──
+	#
+	# Where a child writes it, and where the research puts it: a small mark above
+	# the column it lands in, with an arrow out of the column it came from.
+	if has_carry:
+		var into: int = _int("carryInto", 1)
+		var col_i: int = places - 1 - into
+		# WHICH WAY THE TEN TRAVELS, and it is not the same both ways.
+		#
+		# Adding carries LEFT: ten ones become one ten, so the mark comes out of
+		# the ones column and lands in the tens. Subtracting borrows RIGHT: a ten
+		# is broken up and handed down to the ones. Drawing one direction for both
+		# put the subtraction arrow's tail off the right-hand edge of the board,
+		# pointing in from nothing -- which is what the render showed.
+		var source_i: int = col_i + 1 if op == "+" else col_i - 1
+		if col_i >= 0 and col_i < places:
+			var cx := left + col_i * col_w + col_w * 0.5
+			var cy := y + carry_h * 0.5
+			_numeral(str(_int("carry")), Vector2(cx, cy), digit_px * 0.72, accent)
+			if source_i >= 0 and source_i < places:
+				var from_x := left + source_i * col_w + col_w * 0.5
+				var toward: float = -1.0 if op == "+" else 1.0
+				var to_x := cx - toward * digit_px * 0.5
+				draw_line(Vector2(from_x, cy), Vector2(to_x, cy), accent, 2.0)
+				var head := Vector2(to_x, cy)
+				draw_line(head, head + Vector2(-toward * 5.0, -4.0), accent, 2.0)
+				draw_line(head, head + Vector2(-toward * 5.0, 4.0), accent, 2.0)
+	y += carry_h
+
+	# ── the two numbers, and the operator ──
+	_row_digits(top_n, places, left, y, col_w, row_h, digit_px, numeral)
+	_row_digits(bottom_n, places, left, y + row_h, col_w, row_h, digit_px, numeral)
+	_numeral(op, Vector2(left - op_w * 0.5, y + row_h * 1.5), digit_px, accent)
+
+	# ── column rules, so three places read as three places rather than as one
+	# row of six digits ──
+	for i in range(1, places):
+		var x := left + i * col_w
+		draw_line(Vector2(x, y), Vector2(x, y + row_h * rows), ink, 2.0)
+
+	# ── the line you add under ──
+	var line_y := y + row_h * 2.0
+	draw_line(Vector2(left - op_w, line_y), Vector2(left + grid_w, line_y), numeral, rule)
+
+	if has_result:
+		_row_digits(result_n, places, left, line_y, col_w, row_h, digit_px, numeral)
+
+func _digits(n: int) -> int:
+	return str(maxi(0, n)).length()
+
+## One row of digits, right-aligned into the columns the way a written sum is.
+func _row_digits(value: int, places: int, left: float, top_y: float, col_w: float,
+		row_h: float, digit_px: float, colour: Color) -> void:
+	var text := str(maxi(0, value))
+	var offset := places - text.length()
+	for i in text.length():
+		var col := offset + i
+		if col < 0 or col >= places:
+			continue
+		_numeral(text[i], Vector2(left + col * col_w + col_w * 0.5, top_y + row_h * 0.5),
+			digit_px, colour)
+
+## The block that names a column: a scored flat for hundreds, a rod for tens, a
+## single square for ones. No words, on purpose -- this is the part that has to
+## work for a child who cannot read yet.
+##
+## Sized SYMBOLICALLY, not proportionally. True proportion would put the ones
+## square at a fiftieth of the flat -- about two pixels here, which is nothing at
+## all. The first version tried it at 0.26 of the band and the ones column was
+## headed by an invisible dot, so the one place a child is told to start from was
+## the one place with no picture over it. What the key has to carry is small /
+## tall / big-and-made-of-bars, and that survives being drawn at readable sizes.
+func _place_key(place_from_right: int, centre: Vector2, box: float) -> void:
+	var ink := _role("outline", "ink")
+	var fill := _role("token_a", "owl")
+	match place_from_right:
+		0:
+			var u := box * 0.40
+			var r := Rect2(centre - Vector2(u, u) * 0.5, Vector2(u, u))
+			draw_rect(r, fill)
+			draw_rect(r, ink, false, 1.5)
+		1:
+			var rw := box * 0.22
+			var rh := box * 0.94
+			var r2 := Rect2(centre - Vector2(rw, rh) * 0.5, Vector2(rw, rh))
+			draw_rect(r2, fill)
+			draw_rect(r2, ink, false, 1.5)
+		_:
+			var side := box * 0.94
+			var r3 := Rect2(centre - Vector2(side, side) * 0.5, Vector2(side, side))
+			draw_rect(r3, fill)
+			draw_rect(r3, ink, false, 1.5)
+			# Scored into rods, so a hundred says "ten of the bar beside me".
+			for k in range(1, FLAT_SCORING):
+				var fx := r3.position.x + side * float(k) / float(FLAT_SCORING)
+				draw_line(Vector2(fx, r3.position.y), Vector2(fx, r3.end.y), ink, FLAT_SCORE_WIDTH)
 
 ## A whole, with one part known and one part hidden.
 ##

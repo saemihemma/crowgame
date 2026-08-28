@@ -27,7 +27,9 @@
     "option_min_h": 88,
     "option_font_size": 28,
     "option_gap": 20,
-    "_comment": "Retuned after reading all 164 rendered cards, not from the numbers: Skip outweighed the title, every picture floated in a band it never filled, and two-line bodies sat hard against the nav row. Budgeted against the 960x540 design viewport in project.godot: 40 padding + 88 header + 12 dots + 140 visual + 52 body + 88 nav + 4 separations leaves the board inside the screen with the Gate B3 tap-target floor intact on both button rows. Grow visual_height or body_min_h and the nav row walks off the bottom."
+    "_comment": "Retuned after reading all 164 rendered cards, not from the numbers: Skip outweighed the title, every picture floated in a band it never filled, and two-line bodies sat hard against the nav row. Budgeted against the 960x540 design viewport in project.godot: 40 padding + 88 header + 12 dots + 140 visual + 52 body + 88 nav + 4 separations leaves the board inside the screen with the Gate B3 tap-target floor intact on both button rows. Grow visual_height or body_min_h and the nav row walks off the bottom.",
+    "visual_height_place_board": 176,
+    "_visual_height_place_board_comment": "The math house needs five stacked bands and the deck default of 122 cannot hold them legibly. Only this visual gets it -- see TutorialVisual.setup(). Budgeted so the card still clears the nav row at 540 tall, which test_screen_fit.gd gates."
   },
   "brief_cards": [
     "model",
@@ -65,7 +67,14 @@
     "cross_thickness": 4,
     "fit_margin": 24,
     "fit_min_scale": 0.35,
-    "fit_max_scale": 1.6
+    "fit_max_scale": 1.6,
+    "board_col_width": 66,
+    "board_row_height": 36,
+    "board_header_height": 32,
+    "board_digit_size": 32,
+    "_board_comment": "The place-value board (the \"math house\"). One column per place, the two numbers stacked, a line, the answer under it. Sized so three rows plus the block key fit the 122px visual strip without _fit crushing them: 30 + 30*3 + 4 = 124 natural, which lands at ~0.98 scale. Widen board_col_width and a four-place sum stops fitting the board width instead.",
+    "board_carry_height": 18,
+    "board_rule": 3
   },
   "roles": {
     "_comment": "Left side: what the tutorial draws. Right side: a palette role every theme already defines. Remap freely, but token_a and token_b must clear 3:1 against the board in all seven palettes -- test_theme_roles.gd fails the build otherwise. There is deliberately no token_c: the pattern strip used to need a third colour and NO role in these palettes is both legible on the board and distinct from the other two everywhere, so the repeat is carried by SHAPE now (circle, square, diamond) and colour only reinforces it.",
