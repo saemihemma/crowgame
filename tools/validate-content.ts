@@ -211,6 +211,69 @@ function validateMathAuthoringFiles(): void {
     validateFile(seedPath, join(SCHEMA_DIR, 'math-problem.schema.json'), 'problems_curriculum_seed.json');
     validateFile(bandPath, join(AUTHORING_DIR, 'schemas', 'math-band-table.schema.json'), 'band-table.json');
     validateFile(batchPath, join(AUTHORING_DIR, 'schemas', 'math-batches.schema.json'), 'batches.json');
+    validateMathBandMonotonicity(bandPath);
+}
+
+/**
+ * Later rungs get harder windows. Nothing used to check it.
+ *
+ * docs/MATH_AUTHORING_STANDARDS.md §2.5 has always said "later steps get
+ * strictly higher windows; overlap between adjacent bands is fine, inversion is
+ * not", and the only enforcement was that each problem's ELO falls inside its
+ * OWN band -- which stays true no matter how the bands are ordered. A band whose
+ * ceiling dropped below its predecessor's would grade `117 + 19` easier than
+ * `96 + 7`, and every gate would pass. That is exactly what a band added in
+ * 2026-08 did, and this is what caught it.
+ *
+ * Bands are compared in step order, per domain. Two bands STARTING on the same
+ * step are two facets of one rung (carry and no-carry, say), so they are exempt
+ * from each other: the rule is about what a child meets LATER, not about which
+ * of two shapes on the same rung is harder. Equal bounds are fine; only a drop
+ * is an inversion.
+ */
+function validateMathBandMonotonicity(bandPath: string): void {
+    type Band = {
+        id: string;
+        domain: string;
+        curriculumStepRange: [number, number];
+        targetEloRange: [number, number];
+    };
+    const bands = (JSON.parse(readFileSync(bandPath, 'utf-8')) as { bands: Band[] }).bands;
+    const byDomain = new Map<string, Band[]>();
+    for (const band of bands) {
+        const list = byDomain.get(band.domain) ?? [];
+        list.push(band);
+        byDomain.set(band.domain, list);
+    }
+
+    let inversions = 0;
+    for (const [domain, list] of byDomain) {
+        list.sort((left, right) =>
+            left.curriculumStepRange[0] - right.curriculumStepRange[0]
+            || left.curriculumStepRange[1] - right.curriculumStepRange[1]);
+        for (let i = 1; i < list.length; i++) {
+            const earlier = list[i - 1];
+            const later = list[i];
+            if (later.curriculumStepRange[0] === earlier.curriculumStepRange[0]) continue;
+            const droppedFloor = later.targetEloRange[0] < earlier.targetEloRange[0];
+            const droppedCeiling = later.targetEloRange[1] < earlier.targetEloRange[1];
+            if (!droppedFloor && !droppedCeiling) continue;
+            inversions++;
+            errors++;
+            console.error(
+                `  FAIL: ${domain} band ${later.id} (steps ${later.curriculumStepRange.join('-')}, `
+                + `ELO ${later.targetEloRange.join('-')}) starts later than ${earlier.id} `
+                + `(steps ${earlier.curriculumStepRange.join('-')}, ELO ${earlier.targetEloRange.join('-')}) `
+                + `but its ${droppedFloor && droppedCeiling ? 'window' : droppedFloor ? 'floor' : 'ceiling'} is lower. `
+                + 'MATH_AUTHORING_STANDARDS.md §2.5: overlap is fine, inversion is not.',
+            );
+        }
+    }
+
+    if (inversions === 0) {
+        console.log(`  OK: ${bands.length} ELO bands climb with their step ranges in every domain`);
+        validated++;
+    }
 }
 
 function validateProblemMetadata(problem: MathProblem, file: string): void {

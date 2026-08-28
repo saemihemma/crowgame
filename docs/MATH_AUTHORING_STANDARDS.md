@@ -283,13 +283,21 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
   twelve token shapes. `godot/tests/test_count_row.gd` holds the shape half.
 - A step with fewer problems than the floor either gets more authoring or is
   merged — never shipped thin (thin steps make promotion streaky).
-- Three rungs sit under the floor at their **structural ceiling**, not through
-  under-authoring, and no amount of authoring moves them: number_sequence step 0
-  has six possible runs (0,1,2 up to 2,3,4 and the same counting back) across
-  three framings; division steps 10 and 11 invert ×8 and ×9, which between them
-  contain four facts and two. Widening a framing set is the only thing that
-  would lift any of them, and that is a phrasing-catalog change, not an
-  authoring one.
+- **The count is not the width.** A second floor, `minFactsPerStep`, counts the
+  DISTINCT facts on a rung rather than the problems, because twenty problems
+  drawn from three facts is a rung a child can pass by remembering three
+  answers — and adding framings raises the count while leaving the width exactly
+  where it was. Widening a framing set is therefore never a fix for a narrow
+  rung, and the width must be measured before any framing set is widened.
+  `tools/validate_math_concepts.mjs` fails the build on an undeclared narrow
+  rung and, symmetrically, on a declaration for a rung that has since widened;
+  the three currently declared (subtraction 5 and 15, division 11) are at a
+  structural ceiling that no authoring moves.
+- Some rungs sit under the PROBLEM floor for the same structural reason:
+  number_sequence step 0 has six possible runs (0,1,2 up to 2,3,4 and the same
+  counting back) across three framings, and division steps 10 and 11 invert what
+  is left of ×8 and ×9. There, a wider framing set is the only lever, and it is
+  a phrasing-catalog change rather than an authoring one.
 
 ## 6. Categorization rules
 
@@ -314,6 +322,13 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
 5. `npx tsx tools/gen_problem_catalog.ts` (analytics kinds) and, if milestones
    moved, `npx tsx tools/gen_grade_expectations.ts`.
 6. `npm run validate` + server tests + Godot suite; rebuild the web export.
+
+Two of those checks exist because a defect got past all the others. `npm run
+validate:agreement` renders every problem in every locale and reads the
+sentences back, because "You had 15. Now there are 1." / "Nú eru 1." shipped
+past a toolchain that only ever inspected keys. And `validate-content.ts` now
+compares each ELO band against the one before it in step order, because §2.5's
+"inversion is not [fine]" was documented and enforced by nothing.
 
 Everything in this list that can be forgotten is a CI failure, not a memory.
 

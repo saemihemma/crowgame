@@ -3,13 +3,38 @@
   "_overlayComment": "Most concepts partition their domain's steps: contiguous, one rung each, and a problem belongs to exactly one of them by its step. A concept with `requires` is an OVERLAY instead - it claims problems by what they ARE rather than by how hard they are, and it is tried FIRST. This exists because difficulty and shape are different axes: `5 + ? = 8` is exactly as hard as `5 + 3 = 8` and earns the same rung, but it is not the same idea and must not get the same lesson. Overlays are additive: they never claim a step, so the contiguity guarantee below is untouched. The same mechanism is what `requiresCarry` (populated on 995 problems, inexpressible as a step range) will use when carrying gets its own lesson.",
   "_comment": "The concept ladder: how curriculum steps group into TEACHABLE IDEAS. A step is a difficulty rung; a concept is the thing a child has to understand to climb it. Ranges must be contiguous per domain from step 0 - tools/validate_math_concepts.mjs fails the build otherwise, and reports every step inside a range that has no authored problems. Runtime lookup lives in godot/scripts/math/concept_ladder.gd; the tutorial each concept opens with lives in data/tutorials/math_tutorials.json.",
   "_gapsComment": "Every rung of the ladder with no authored problems on it, declared. tools/validate_math_concepts.mjs fails the build on an UNDECLARED hole, and equally on a declared one that has since been filled - so a gap can only be closed by deleting its entry here, and a new one can never appear quietly. `thin` is the same discipline one notch softer: a rung with fewer than `minPerStep` problems, which the ladder can still promote onto but cannot give a child three different questions on.",
+  "_narrowComment": "How WIDE a rung is, as opposed to how many problems sit on it. `thin` counts problems; `narrow` counts distinct facts, because twenty problems drawn from three facts is a rung a child can pass by remembering three answers, and the problem count cannot see the difference. More framings of the same fact raise the count and never the width, which is exactly why this has to be measured separately before any framing set is widened. Same discipline as knownGaps and knownThin: an undeclared narrow rung fails the build, and so does a declaration for a rung that has since widened. The fact key is a proxy -- the numerals in the prompt, or for a counting prompt the count and its drawn marker -- and tools/validate_math_concepts.mjs documents it.",
   "gapPolicy": {
-    "minPerStep": 6
+    "minPerStep": 6,
+    "minFactsPerStep": 6
   },
   "knownGaps": [],
   "_unreachableComment": "Concepts with authored problems that the owl can never serve, each with a reason. EMPTY as shipped: the blanket operand rail was removed by the owner's grade-4 decision (2026-08) — the step ladder paces each child instead — so every authored concept is reachable. tools/validate_math_concepts.mjs re-populates this obligation automatically if a numeric rail ever returns.",
   "knownUnreachable": [],
   "knownThin": [],
+  "knownNarrow": [
+    {
+      "domain": "subtraction",
+      "steps": [
+        5
+      ],
+      "why": "Two facts exist and two is the ceiling. Step 5 is a maximum operand of 10 with no borrow, and a borrow needs the minuend's ones digit to be smaller than the subtrahend's -- ten ends in zero, so nothing can be smaller than it. That leaves 10-0 and 10-10."
+    },
+    {
+      "domain": "subtraction",
+      "steps": [
+        15
+      ],
+      "why": "Three facts exist and three is the ceiling: 20-0, 20-10 and 20-20 are the only subtractions inside twenty that derive onto step 15. Structurally narrow rather than under-authored -- this rung reached the problem-count floor in 2026-08 and its width did not move."
+    },
+    {
+      "domain": "division",
+      "steps": [
+        11
+      ],
+      "why": "Step 11 inverts the multiplication facts on step 10, and step 10 is what is left of the eight-times table once every fact belonging to an earlier table or to the squares has been taken out of it. Five (divisor, quotient) pairs is all there is."
+    }
+  ],
   "concepts": [
     {
       "id": "addition.count_all",

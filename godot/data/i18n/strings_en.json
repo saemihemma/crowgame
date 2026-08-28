@@ -637,5 +637,7 @@
   "math.hint.row_of_ten": "A full row is ten. Start at ten and count on.",
   "math.expl.last_number": "The last number you say is {n}.",
   "math.expl.five_and": "Five and {rest} more makes {n}.",
-  "math.expl.ten_and": "Ten and {rest} more makes {n}."
+  "math.expl.ten_and": "Ten and {rest} more makes {n}.",
+  "math.hint.rel.how_many_went.one": "You had {start}. Now there is {left}. How many went?",
+  "math.hint.rel.how_many_started.one": "Something lost {gone} and {left} was left. How many were there to start?"
 }

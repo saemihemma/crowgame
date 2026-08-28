@@ -69,12 +69,12 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 9.6,
+      "grade": 9.7,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 9.6,
+        "steadyChildGrade": 9.7,
         "strugglingChildGrade": 9.6,
-        "strongChildGrade": 9.6,
+        "strongChildGrade": 9.7,
         "openingProbeStep": 5,
         "middleProbeStep": 12,
         "upperProbeStep": 19,
@@ -86,12 +86,12 @@
     "roleGrades": [
       {
         "role": "Lead Producer",
-        "grade": 9.6,
+        "grade": 9.7,
         "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
       },
       {
         "role": "role-game-designer",
-        "grade": 9.6,
+        "grade": 9.7,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {

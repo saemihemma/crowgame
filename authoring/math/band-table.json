@@ -622,13 +622,13 @@
       ],
       "targetEloRange": [
         760,
-        880
+        920
       ],
       "ageBand": [
         7,
         9
       ],
-      "notes": "Operand tiers 101-120 close the gap between the two-digit ladder and three-digit columns."
+      "notes": "Operand tiers 101-120 close the gap between the two-digit ladder and three-digit columns. The ceiling clears add_50_100_carry's: 117 + 19 carries across a bigger number than 96 + 7 does, so it must not grade easier (MATH_AUTHORING_STANDARDS.md §2.5)."
     },
     {
       "id": "sub_100_120",

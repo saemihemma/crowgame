@@ -12,21 +12,25 @@
         2
       ],
       "tutorial": "addition.count_all",
-      "total": 117,
+      "total": 119,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 36
+          "problems": 36,
+          "facts": 6
         },
         {
           "step": 1,
-          "problems": 35
+          "problems": 36,
+          "facts": 11
         },
         {
           "step": 2,
-          "problems": 46
+          "problems": 47,
+          "facts": 12
         }
       ],
       "skillsAuthored": [
@@ -37,7 +41,7 @@
         "basic_addition",
         "single_digit_addition"
       ],
-      "servable": 117
+      "servable": 119
     },
     {
       "id": "addition.count_on",
@@ -48,21 +52,25 @@
         5
       ],
       "tutorial": "addition.count_on",
-      "total": 112,
+      "total": 108,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 46
+          "problems": 43,
+          "facts": 13
         },
         {
           "step": 4,
-          "problems": 36
+          "problems": 35,
+          "facts": 15
         },
         {
           "step": 5,
-          "problems": 30
+          "problems": 30,
+          "facts": 9
         }
       ],
       "skillsAuthored": [
@@ -76,7 +84,7 @@
         "single_digit_addition",
         "single_digit_with_carry"
       ],
-      "servable": 112
+      "servable": 108
     },
     {
       "id": "addition.make_ten",
@@ -87,25 +95,30 @@
         9
       ],
       "tutorial": "addition.make_ten",
-      "total": 190,
+      "total": 192,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 6,
-          "problems": 34
+          "problems": 34,
+          "facts": 11
         },
         {
           "step": 7,
-          "problems": 32
+          "problems": 33,
+          "facts": 12
         },
         {
           "step": 8,
-          "problems": 28
+          "problems": 28,
+          "facts": 14
         },
         {
           "step": 9,
-          "problems": 96
+          "problems": 97,
+          "facts": 24
         }
       ],
       "skillsAuthored": [
@@ -122,7 +135,7 @@
         "single_digit_with_carry",
         "teens_addition"
       ],
-      "servable": 190
+      "servable": 192
     },
     {
       "id": "addition.teen_numbers",
@@ -133,29 +146,35 @@
         14
       ],
       "tutorial": "addition.teen_numbers",
-      "total": 116,
+      "total": 117,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 10,
-          "problems": 23
+          "problems": 23,
+          "facts": 16
         },
         {
           "step": 11,
-          "problems": 25
+          "problems": 25,
+          "facts": 17
         },
         {
           "step": 12,
-          "problems": 22
+          "problems": 23,
+          "facts": 12
         },
         {
           "step": 13,
-          "problems": 24
+          "problems": 24,
+          "facts": 15
         },
         {
           "step": 14,
-          "problems": 22
+          "problems": 22,
+          "facts": 16
         }
       ],
       "skillsAuthored": [
@@ -164,7 +183,7 @@
       "skillsDeclared": [
         "teens_addition"
       ],
-      "servable": 116
+      "servable": 117
     },
     {
       "id": "addition.bridge_ten",
@@ -175,29 +194,35 @@
         19
       ],
       "tutorial": "addition.bridge_ten",
-      "total": 103,
+      "total": 102,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 15,
-          "problems": 23
+          "problems": 23,
+          "facts": 15
         },
         {
           "step": 16,
-          "problems": 20
+          "problems": 20,
+          "facts": 16
         },
         {
           "step": 17,
-          "problems": 21
+          "problems": 21,
+          "facts": 15
         },
         {
           "step": 18,
-          "problems": 19
+          "problems": 19,
+          "facts": 16
         },
         {
           "step": 19,
-          "problems": 20
+          "problems": 19,
+          "facts": 18
         }
       ],
       "skillsAuthored": [
@@ -206,7 +231,7 @@
       "skillsDeclared": [
         "teens_addition"
       ],
-      "servable": 103
+      "servable": 102
     },
     {
       "id": "addition.tens_and_ones",
@@ -222,46 +247,57 @@
         20
       ],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 20,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 21,
-          "problems": 61
+          "problems": 61,
+          "facts": 48
         },
         {
           "step": 22,
-          "problems": 48
+          "problems": 48,
+          "facts": 43
         },
         {
           "step": 23,
-          "problems": 67
+          "problems": 67,
+          "facts": 52
         },
         {
           "step": 24,
-          "problems": 41
+          "problems": 41,
+          "facts": 38
         },
         {
           "step": 25,
-          "problems": 61
+          "problems": 61,
+          "facts": 45
         },
         {
           "step": 26,
-          "problems": 32
+          "problems": 32,
+          "facts": 28
         },
         {
           "step": 27,
-          "problems": 45
+          "problems": 45,
+          "facts": 34
         },
         {
           "step": 28,
-          "problems": 39
+          "problems": 38,
+          "facts": 32
         },
         {
           "step": 29,
-          "problems": 34
+          "problems": 35,
+          "facts": 29
         }
       ],
       "skillsAuthored": [
@@ -288,34 +324,42 @@
       "total": 244,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 30,
-          "problems": 32
+          "problems": 32,
+          "facts": 28
         },
         {
           "step": 31,
-          "problems": 35
+          "problems": 35,
+          "facts": 28
         },
         {
           "step": 32,
-          "problems": 32
+          "problems": 32,
+          "facts": 29
         },
         {
           "step": 33,
-          "problems": 34
+          "problems": 34,
+          "facts": 29
         },
         {
           "step": 34,
-          "problems": 32
+          "problems": 31,
+          "facts": 26
         },
         {
           "step": 35,
-          "problems": 45
+          "problems": 46,
+          "facts": 36
         },
         {
           "step": 36,
-          "problems": 34
+          "problems": 34,
+          "facts": 27
         }
       ],
       "skillsAuthored": [
@@ -342,46 +386,57 @@
       "total": 274,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 37,
-          "problems": 31
+          "problems": 31,
+          "facts": 31
         },
         {
           "step": 38,
-          "problems": 31
+          "problems": 31,
+          "facts": 29
         },
         {
           "step": 39,
-          "problems": 31
+          "problems": 31,
+          "facts": 31
         },
         {
           "step": 40,
-          "problems": 31
+          "problems": 31,
+          "facts": 30
         },
         {
           "step": 41,
-          "problems": 30
+          "problems": 30,
+          "facts": 30
         },
         {
           "step": 42,
-          "problems": 30
+          "problems": 30,
+          "facts": 30
         },
         {
           "step": 43,
-          "problems": 30
+          "problems": 30,
+          "facts": 30
         },
         {
           "step": 44,
-          "problems": 20
+          "problems": 20,
+          "facts": 20
         },
         {
           "step": 45,
-          "problems": 20
+          "problems": 20,
+          "facts": 20
         },
         {
           "step": 46,
-          "problems": 20
+          "problems": 20,
+          "facts": 20
         }
       ],
       "skillsAuthored": [
@@ -408,146 +463,182 @@
       "total": 88,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 2,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 3,
-          "problems": 4
+          "problems": 4,
+          "facts": 3
         },
         {
           "step": 4,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 5,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 6,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 7,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 8,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 9,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 10,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 11,
-          "problems": 5
+          "problems": 5,
+          "facts": 4
         },
         {
           "step": 12,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 13,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 14,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 15,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 16,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 17,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 18,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 19,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 20,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 21,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 22,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 23,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 24,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 25,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 26,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 27,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 28,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 29,
-          "problems": 4
+          "problems": 4,
+          "facts": 4
         },
         {
           "step": 30,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 31,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 32,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 33,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 34,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 35,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 36,
-          "problems": 4
+          "problems": 4,
+          "facts": 4
         }
       ],
       "skillsAuthored": [
@@ -570,146 +661,182 @@
       "total": 52,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 2,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 3,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 4,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 5,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 6,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 7,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 8,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 9,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 10,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 11,
-          "problems": 4
+          "problems": 4,
+          "facts": 4
         },
         {
           "step": 12,
-          "problems": 4
+          "problems": 4,
+          "facts": 4
         },
         {
           "step": 13,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 14,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 15,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 16,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 17,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 18,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 19,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 20,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 21,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 22,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 23,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 24,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 25,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 26,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 27,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 28,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 29,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 30,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 31,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 32,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 33,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 34,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 35,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 36,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         }
       ],
       "skillsAuthored": [
@@ -732,46 +859,57 @@
       "total": 18,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 4,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 5,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 6,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 7,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 8,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 9,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 10,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 11,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 12,
-          "problems": 6
+          "problems": 6,
+          "facts": 6
         }
       ],
       "skillsAuthored": [
@@ -794,50 +932,62 @@
       "total": 16,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 6,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 7,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 8,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 9,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 10,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 11,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 12,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 13,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 14,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 15,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 16,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         }
       ],
       "skillsAuthored": [
@@ -860,50 +1010,62 @@
       "total": 14,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 4,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 5,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 6,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 7,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 8,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 9,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 10,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 11,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 12,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 13,
-          "problems": 4
+          "problems": 4,
+          "facts": 4
         },
         {
           "step": 14,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         }
       ],
       "skillsAuthored": [
@@ -926,54 +1088,67 @@
       "total": 38,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 4,
-          "problems": 7
+          "problems": 7,
+          "facts": 7
         },
         {
           "step": 5,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 6,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 7,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 8,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 9,
-          "problems": 7
+          "problems": 7,
+          "facts": 7
         },
         {
           "step": 10,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         },
         {
           "step": 11,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 12,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 13,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 14,
-          "problems": 7
+          "problems": 7,
+          "facts": 7
         }
       ],
       "skillsAuthored": [
@@ -996,18 +1171,22 @@
       "total": 105,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 57
+          "problems": 57,
+          "facts": 20
         },
         {
           "step": 1,
-          "problems": 23
+          "problems": 23,
+          "facts": 7
         },
         {
           "step": 2,
-          "problems": 25
+          "problems": 25,
+          "facts": 8
         }
       ],
       "skillsAuthored": [
@@ -1034,22 +1213,29 @@
       "total": 117,
       "empty": [],
       "thin": [],
+      "narrow": [
+        5
+      ],
       "perStep": [
         {
           "step": 3,
-          "problems": 21
+          "problems": 21,
+          "facts": 9
         },
         {
           "step": 4,
-          "problems": 23
+          "problems": 23,
+          "facts": 10
         },
         {
           "step": 5,
-          "problems": 20
+          "problems": 20,
+          "facts": 2
         },
         {
           "step": 6,
-          "problems": 53
+          "problems": 53,
+          "facts": 9
         }
       ],
       "skillsAuthored": [
@@ -1078,22 +1264,27 @@
       "total": 114,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 7,
-          "problems": 21
+          "problems": 21,
+          "facts": 8
         },
         {
           "step": 8,
-          "problems": 23
+          "problems": 23,
+          "facts": 7
         },
         {
           "step": 9,
-          "problems": 29
+          "problems": 29,
+          "facts": 11
         },
         {
           "step": 10,
-          "problems": 41
+          "problems": 41,
+          "facts": 10
         }
       ],
       "skillsAuthored": [
@@ -1124,30 +1315,39 @@
       "total": 247,
       "empty": [],
       "thin": [],
+      "narrow": [
+        15
+      ],
       "perStep": [
         {
           "step": 11,
-          "problems": 32
+          "problems": 32,
+          "facts": 10
         },
         {
           "step": 12,
-          "problems": 49
+          "problems": 49,
+          "facts": 14
         },
         {
           "step": 13,
-          "problems": 54
+          "problems": 54,
+          "facts": 14
         },
         {
           "step": 14,
-          "problems": 62
+          "problems": 62,
+          "facts": 14
         },
         {
           "step": 15,
-          "problems": 20
+          "problems": 20,
+          "facts": 3
         },
         {
           "step": 16,
-          "problems": 30
+          "problems": 30,
+          "facts": 9
         }
       ],
       "skillsAuthored": [
@@ -1181,58 +1381,72 @@
         20
       ],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 17,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 18,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 19,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 20,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 21,
-          "problems": 71
+          "problems": 71,
+          "facts": 56
         },
         {
           "step": 22,
-          "problems": 38
+          "problems": 38,
+          "facts": 33
         },
         {
           "step": 23,
-          "problems": 59
+          "problems": 59,
+          "facts": 50
         },
         {
           "step": 24,
-          "problems": 43
+          "problems": 43,
+          "facts": 33
         },
         {
           "step": 25,
-          "problems": 56
+          "problems": 56,
+          "facts": 45
         },
         {
           "step": 26,
-          "problems": 42
+          "problems": 42,
+          "facts": 35
         },
         {
           "step": 27,
-          "problems": 31
+          "problems": 31,
+          "facts": 30
         },
         {
           "step": 28,
-          "problems": 29
+          "problems": 29,
+          "facts": 25
         },
         {
           "step": 29,
-          "problems": 29
+          "problems": 29,
+          "facts": 23
         }
       ],
       "skillsAuthored": [
@@ -1261,34 +1475,42 @@
       "total": 198,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 30,
-          "problems": 28
+          "problems": 28,
+          "facts": 25
         },
         {
           "step": 31,
-          "problems": 30
+          "problems": 30,
+          "facts": 23
         },
         {
           "step": 32,
-          "problems": 28
+          "problems": 28,
+          "facts": 23
         },
         {
           "step": 33,
-          "problems": 29
+          "problems": 28,
+          "facts": 26
         },
         {
           "step": 34,
-          "problems": 28
+          "problems": 29,
+          "facts": 25
         },
         {
           "step": 35,
-          "problems": 28
+          "problems": 28,
+          "facts": 27
         },
         {
           "step": 36,
-          "problems": 27
+          "problems": 27,
+          "facts": 22
         }
       ],
       "skillsAuthored": [
@@ -1315,46 +1537,57 @@
       "total": 274,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 37,
-          "problems": 31
+          "problems": 31,
+          "facts": 30
         },
         {
           "step": 38,
-          "problems": 31
+          "problems": 31,
+          "facts": 31
         },
         {
           "step": 39,
-          "problems": 31
+          "problems": 31,
+          "facts": 30
         },
         {
           "step": 40,
-          "problems": 31
+          "problems": 31,
+          "facts": 31
         },
         {
           "step": 41,
-          "problems": 30
+          "problems": 30,
+          "facts": 30
         },
         {
           "step": 42,
-          "problems": 30
+          "problems": 30,
+          "facts": 30
         },
         {
           "step": 43,
-          "problems": 30
+          "problems": 30,
+          "facts": 30
         },
         {
           "step": 44,
-          "problems": 20
+          "problems": 20,
+          "facts": 20
         },
         {
           "step": 45,
-          "problems": 20
+          "problems": 20,
+          "facts": 20
         },
         {
           "step": 46,
-          "problems": 20
+          "problems": 20,
+          "facts": 20
         }
       ],
       "skillsAuthored": [
@@ -1381,14 +1614,17 @@
       "total": 78,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 49
+          "problems": 49,
+          "facts": 40
         },
         {
           "step": 1,
-          "problems": 29
+          "problems": 29,
+          "facts": 24
         }
       ],
       "skillsAuthored": [
@@ -1411,14 +1647,17 @@
       "total": 54,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 2,
-          "problems": 24
+          "problems": 24,
+          "facts": 18
         },
         {
           "step": 3,
-          "problems": 30
+          "problems": 30,
+          "facts": 22
         }
       ],
       "skillsAuthored": [
@@ -1443,18 +1682,22 @@
       "total": 77,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 4,
-          "problems": 21
+          "problems": 21,
+          "facts": 20
         },
         {
           "step": 5,
-          "problems": 28
+          "problems": 28,
+          "facts": 21
         },
         {
           "step": 6,
-          "problems": 28
+          "problems": 28,
+          "facts": 24
         }
       ],
       "skillsAuthored": [
@@ -1477,18 +1720,22 @@
       "total": 84,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 29
+          "problems": 29,
+          "facts": 18
         },
         {
           "step": 1,
-          "problems": 26
+          "problems": 26,
+          "facts": 18
         },
         {
           "step": 2,
-          "problems": 29
+          "problems": 29,
+          "facts": 17
         }
       ],
       "skillsAuthored": [
@@ -1511,22 +1758,27 @@
       "total": 101,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 22
+          "problems": 22,
+          "facts": 16
         },
         {
           "step": 4,
-          "problems": 26
+          "problems": 26,
+          "facts": 19
         },
         {
           "step": 5,
-          "problems": 22
+          "problems": 22,
+          "facts": 22
         },
         {
           "step": 6,
-          "problems": 31
+          "problems": 31,
+          "facts": 30
         }
       ],
       "skillsAuthored": [
@@ -1549,18 +1801,22 @@
       "total": 64,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 7,
-          "problems": 22
+          "problems": 22,
+          "facts": 22
         },
         {
           "step": 8,
-          "problems": 22
+          "problems": 22,
+          "facts": 22
         },
         {
           "step": 9,
-          "problems": 20
+          "problems": 20,
+          "facts": 20
         }
       ],
       "skillsAuthored": [
@@ -1583,18 +1839,22 @@
       "total": 62,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 20
+          "problems": 20,
+          "facts": 12
         },
         {
           "step": 1,
-          "problems": 20
+          "problems": 20,
+          "facts": 16
         },
         {
           "step": 2,
-          "problems": 22
+          "problems": 22,
+          "facts": 20
         }
       ],
       "skillsAuthored": [
@@ -1619,18 +1879,22 @@
       "total": 86,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 22
+          "problems": 22,
+          "facts": 21
         },
         {
           "step": 4,
-          "problems": 41
+          "problems": 41,
+          "facts": 41
         },
         {
           "step": 5,
-          "problems": 23
+          "problems": 23,
+          "facts": 23
         }
       ],
       "skillsAuthored": [
@@ -1657,14 +1921,17 @@
       "total": 45,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 6,
-          "problems": 25
+          "problems": 25,
+          "facts": 25
         },
         {
           "step": 7,
-          "problems": 20
+          "problems": 20,
+          "facts": 20
         }
       ],
       "skillsAuthored": [
@@ -1689,18 +1956,22 @@
       "total": 73,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 22
+          "problems": 22,
+          "facts": 10
         },
         {
           "step": 1,
-          "problems": 27
+          "problems": 27,
+          "facts": 15
         },
         {
           "step": 2,
-          "problems": 24
+          "problems": 24,
+          "facts": 19
         }
       ],
       "skillsAuthored": [
@@ -1725,14 +1996,17 @@
       "total": 48,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 25
+          "problems": 25,
+          "facts": 24
         },
         {
           "step": 4,
-          "problems": 23
+          "problems": 23,
+          "facts": 19
         }
       ],
       "skillsAuthored": [
@@ -1755,14 +2029,17 @@
       "total": 92,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 5,
-          "problems": 57
+          "problems": 57,
+          "facts": 52
         },
         {
           "step": 6,
-          "problems": 35
+          "problems": 35,
+          "facts": 35
         }
       ],
       "skillsAuthored": [
@@ -1785,18 +2062,22 @@
       "total": 67,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 7,
-          "problems": 20
+          "problems": 20,
+          "facts": 20
         },
         {
           "step": 8,
-          "problems": 24
+          "problems": 24,
+          "facts": 24
         },
         {
           "step": 9,
-          "problems": 23
+          "problems": 23,
+          "facts": 23
         }
       ],
       "skillsAuthored": [
@@ -1821,14 +2102,17 @@
       "total": 122,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 36
+          "problems": 36,
+          "facts": 18
         },
         {
           "step": 1,
-          "problems": 86
+          "problems": 86,
+          "facts": 17
         }
       ],
       "skillsAuthored": [
@@ -1853,14 +2137,17 @@
       "total": 128,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 2,
-          "problems": 61
+          "problems": 61,
+          "facts": 14
         },
         {
           "step": 3,
-          "problems": 67
+          "problems": 67,
+          "facts": 12
         }
       ],
       "skillsAuthored": [
@@ -1885,14 +2172,17 @@
       "total": 105,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 4,
-          "problems": 54
+          "problems": 54,
+          "facts": 10
         },
         {
           "step": 5,
-          "problems": 51
+          "problems": 51,
+          "facts": 8
         }
       ],
       "skillsAuthored": [
@@ -1917,14 +2207,17 @@
       "total": 67,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 6,
-          "problems": 20
+          "problems": 20,
+          "facts": 18
         },
         {
           "step": 7,
-          "problems": 47
+          "problems": 47,
+          "facts": 8
         }
       ],
       "skillsAuthored": [
@@ -1951,26 +2244,35 @@
         11
       ],
       "thin": [],
+      "narrow": [
+        9,
+        10
+      ],
       "perStep": [
         {
           "step": 8,
-          "problems": 41
+          "problems": 41,
+          "facts": 6
         },
         {
           "step": 9,
-          "problems": 27
+          "problems": 27,
+          "facts": 4
         },
         {
           "step": 10,
-          "problems": 20
+          "problems": 20,
+          "facts": 2
         },
         {
           "step": 11,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 12,
-          "problems": 28
+          "problems": 28,
+          "facts": 28
         }
       ],
       "skillsAuthored": [
@@ -1997,14 +2299,17 @@
       "total": 74,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 13,
-          "problems": 32
+          "problems": 32,
+          "facts": 29
         },
         {
           "step": 14,
-          "problems": 42
+          "problems": 42,
+          "facts": 42
         }
       ],
       "skillsAuthored": [
@@ -2031,18 +2336,22 @@
         0
       ],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 0,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 1,
-          "problems": 22
+          "problems": 22,
+          "facts": 20
         },
         {
           "step": 2,
-          "problems": 57
+          "problems": 57,
+          "facts": 17
         }
       ],
       "skillsAuthored": [
@@ -2069,14 +2378,17 @@
       "total": 93,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 3,
-          "problems": 37
+          "problems": 37,
+          "facts": 13
         },
         {
           "step": 4,
-          "problems": 56
+          "problems": 56,
+          "facts": 12
         }
       ],
       "skillsAuthored": [
@@ -2101,14 +2413,17 @@
       "total": 79,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 5,
-          "problems": 46
+          "problems": 46,
+          "facts": 10
         },
         {
           "step": 6,
-          "problems": 33
+          "problems": 33,
+          "facts": 8
         }
       ],
       "skillsAuthored": [
@@ -2133,14 +2448,17 @@
       "total": 38,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 7,
-          "problems": 8
+          "problems": 8,
+          "facts": 8
         },
         {
           "step": 8,
-          "problems": 30
+          "problems": 30,
+          "facts": 8
         }
       ],
       "skillsAuthored": [
@@ -2167,22 +2485,30 @@
         12
       ],
       "thin": [],
+      "narrow": [
+        10,
+        11
+      ],
       "perStep": [
         {
           "step": 9,
-          "problems": 27
+          "problems": 27,
+          "facts": 6
         },
         {
           "step": 10,
-          "problems": 17
+          "problems": 17,
+          "facts": 4
         },
         {
           "step": 11,
-          "problems": 9
+          "problems": 9,
+          "facts": 2
         },
         {
           "step": 12,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         }
       ],
       "skillsAuthored": [
@@ -2207,18 +2533,22 @@
       "total": 89,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 13,
-          "problems": 25
+          "problems": 25,
+          "facts": 25
         },
         {
           "step": 14,
-          "problems": 24
+          "problems": 24,
+          "facts": 23
         },
         {
           "step": 15,
-          "problems": 40
+          "problems": 40,
+          "facts": 32
         }
       ],
       "skillsAuthored": [
@@ -2247,46 +2577,57 @@
       "total": 80,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 1,
-          "problems": 14
+          "problems": 14,
+          "facts": 12
         },
         {
           "step": 2,
-          "problems": 10
+          "problems": 10,
+          "facts": 8
         },
         {
           "step": 3,
-          "problems": 7
+          "problems": 7,
+          "facts": 6
         },
         {
           "step": 4,
-          "problems": 7
+          "problems": 7,
+          "facts": 7
         },
         {
           "step": 5,
-          "problems": 4
+          "problems": 4,
+          "facts": 4
         },
         {
           "step": 6,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 7,
-          "problems": 6
+          "problems": 6,
+          "facts": 5
         },
         {
           "step": 8,
-          "problems": 16
+          "problems": 16,
+          "facts": 10
         },
         {
           "step": 9,
-          "problems": 10
+          "problems": 10,
+          "facts": 6
         },
         {
           "step": 10,
-          "problems": 6
+          "problems": 6,
+          "facts": 4
         }
       ],
       "skillsAuthored": [
@@ -2309,46 +2650,57 @@
       "total": 52,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 2,
-          "problems": 8
+          "problems": 8,
+          "facts": 8
         },
         {
           "step": 3,
-          "problems": 1
+          "problems": 1,
+          "facts": 1
         },
         {
           "step": 4,
-          "problems": 7
+          "problems": 7,
+          "facts": 7
         },
         {
           "step": 5,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 6,
-          "problems": 6
+          "problems": 6,
+          "facts": 6
         },
         {
           "step": 7,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 8,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 9,
-          "problems": 10
+          "problems": 10,
+          "facts": 10
         },
         {
           "step": 10,
-          "problems": 7
+          "problems": 7,
+          "facts": 7
         },
         {
           "step": 11,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         }
       ],
       "skillsAuthored": [
@@ -2371,46 +2723,57 @@
       "total": 36,
       "empty": [],
       "thin": [],
+      "narrow": [],
       "perStep": [
         {
           "step": 2,
-          "problems": 6
+          "problems": 6,
+          "facts": 6
         },
         {
           "step": 3,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 4,
-          "problems": 5
+          "problems": 5,
+          "facts": 5
         },
         {
           "step": 5,
-          "problems": 7
+          "problems": 7,
+          "facts": 7
         },
         {
           "step": 6,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 7,
-          "problems": 0
+          "problems": 0,
+          "facts": 0
         },
         {
           "step": 8,
-          "problems": 3
+          "problems": 3,
+          "facts": 3
         },
         {
           "step": 9,
-          "problems": 6
+          "problems": 6,
+          "facts": 6
         },
         {
           "step": 10,
-          "problems": 4
+          "problems": 4,
+          "facts": 4
         },
         {
           "step": 11,
-          "problems": 2
+          "problems": 2,
+          "facts": 2
         }
       ],
       "skillsAuthored": [

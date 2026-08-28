@@ -915,11 +915,15 @@ function buildRelationalCandidate(
     }
 
     const explanation = `${left} take away ${right} leaves ${written}.`;
+    // These two sentences inflect a VERB, on the number that is LEFT rather than
+    // the one the problem starts from. "15 - ? = 1" shipped as "Now there are 1."
+    // in English and "Nu eru 1." in Icelandic -- wrong in both, and invisible to
+    // every gate, because nothing in the toolchain rendered the text and read it.
     if (shape === 'missing_right') {
         return {
             promptText: `${left} ${operator} ? = ${written}`,
             correct: right,
-            hint: `You had ${left}. Now there are ${written}. How many went?`,
+            hint: `You had ${left}. Now there ${plural(written, 'is', 'are')} ${written}. How many went?`,
             explanation,
             optionPreference: [written, right - 1, right + 1, left],
         };
@@ -928,7 +932,7 @@ function buildRelationalCandidate(
         return {
             promptText: `? ${operator} ${right} = ${written}`,
             correct: left,
-            hint: `Something lost ${right} and ${written} were left. How many were there to start?`,
+            hint: `Something lost ${right} and ${written} ${plural(written, 'was', 'were')} left. How many were there to start?`,
             explanation,
             optionPreference: [written, left - 1, left + 1, right],
         };
@@ -1209,15 +1213,20 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
 
             for (const variant of promptVariants) {
                 if (storyFree && !EARLY_FRAMINGS.has(variant)) continue;
-                // Story shapes need both quantities present to read naturally.
-                if (variant.startsWith('story_') && (left < 1 || right < 1)) continue;
-                // Multiplicative stories keep both quantities >= 2 so plural
-                // nouns are always correct in both locales without per-number
-                // inflection (docs/MATH_AUTHORING_STANDARDS.md §4).
+                // EVERY story keeps BOTH quantities >= 2, which is what
+                // docs/MATH_AUTHORING_STANDARDS.md §4 has always said and what
+                // only the multiplicative branch actually enforced. The additive
+                // stories inflect their subject noun on the FIRST number only --
+                // "1 bird sits" has a singular sibling, "1 fly away" does not --
+                // so "70 birds sit on a branch. 1 fly away." shipped, ungrammatical
+                // in English. (Icelandic escapes it: "Þeim fækkar um 1" is
+                // impersonal and does not inflect. English is the language with
+                // the bug, which is the opposite of the usual direction here.)
+                if (variant.startsWith('story_') && (left < 2 || right < 2)) continue;
                 if (
                     variant.startsWith('story_') &&
                     (template.kind === 'multiplication' || template.kind === 'division') &&
-                    (left < 2 || right < 2 || correct < 2)
+                    correct < 2
                 ) continue;
 
                 const promptText = applyPromptLeadIn(formatArithmeticPrompt(variant, left, operator, right), template.promptLeadIn);

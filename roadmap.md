@@ -114,7 +114,11 @@ passes materialize, and the golden math fixtures are regenerated.
 `addition.multi_digit` and `subtraction.multi_digit` (steps 37-46) became
 reachable when the blanket operand rail was removed, but both still have
 `tutorial: null` — a child's first three-digit sum arrives without the worked
-example every other concept gets. Author the two 4-card lessons in
+example every other concept gets. The 2026-08 density pass moved the first
+populated step in each from 41 to **37**, so what a child now meets first in
+these concepts is the crossing of a hundred (`104 + 5`, `117 + 19`), not a
+three-digit column — and crossing a hundred is its own place-value idea. Whoever
+writes these two lessons should open on that, not on the columns. Author the two 4-card lessons in
 `godot/data/curriculum/tutorials.json` (en+is, existing visual renderers,
 place-value strategy per docs/MATH_AUTHORING_STANDARDS.md).
 

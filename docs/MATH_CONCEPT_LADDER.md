@@ -423,8 +423,11 @@ the session recap ends on the best moment. Those are in
 
 The Icelandic curriculum for this age band is the practical scope check:
 first-year pupils work on number sense, writing the numerals 0-20, and meeting
-addition and subtraction within that range — which is exactly where the owl-safe
-path sits today, with its operand cap of 20.
+addition and subtraction within that range — which is exactly where a new
+child's first rungs sit. The blanket operand cap of 20 that used to hold every
+player there was removed by the owner's grade-4 decision (2026-08); the step
+ladder is the fence now, and it is a personalised one, so a six-year-old still
+meets nothing above twenty until they have climbed roughly twenty rungs.
 ([aðalnámskrá](https://www.adalnamskra.is/grunnskoli/kafli-25-staerdfraedi-2024))
 
 ## What maths is missing
@@ -438,6 +441,16 @@ a new one can never appear quietly.
 **There are no unauthored rungs left.** Every step the derivation can reach has
 at least six problems on it. What remains below is two other things entirely,
 and the difference decides what a fix would even be.
+
+A third declared class, `knownNarrow`, measures something the problem count
+cannot see: how many DISTINCT facts a rung asks. Twenty problems drawn from
+three facts is a rung a child can pass by remembering three answers, and adding
+framings raises the count while leaving the width exactly where it was — which
+is why the width has to be measured before any framing set is widened. Three
+rungs are declared narrow, all at a structural ceiling: subtraction step 5 has
+two facts, subtraction step 15 has three, and division step 11 has five, because
+step 11 inverts what is left of the eight-times table once every fact belonging
+to an earlier table has been taken out of it.
 
 ### Dead zones: rungs nothing can land on
 

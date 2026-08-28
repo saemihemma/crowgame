@@ -100,6 +100,12 @@ export const PLURAL_PARAM = {
     // Same reason: "1 hópar" would be the same bug. No authored problem drives
     // this to one today, and the variant costs nothing.
     'math.expl.rel.grouped': 'groups',
+    // These two inflect a VERB rather than a noun, and on the number that is
+    // left rather than the one the problem starts from. "15 - ? = 1" shipped as
+    // "Now there are 1." / "Nu eru 1." -- wrong in both languages, and invisible
+    // to every gate because nothing rendered the text and read it.
+    'math.hint.rel.how_many_went': 'left',
+    'math.hint.rel.how_many_started': 'left',
 };
 
 /** CLDR-style category per locale. Only 'one' and 'other' are needed here. */
@@ -495,7 +501,9 @@ export const TEMPLATES = {
     // "how many more to make eight" and "how many went" are different questions
     // and a child should not have to translate between them.
     'math.hint.rel.how_many_went': 'You had {start}. Now there are {left}. How many went?',
+    'math.hint.rel.how_many_went.one': 'You had {start}. Now there is {left}. How many went?',
     'math.hint.rel.how_many_started': 'Something lost {gone} and {left} were left. How many were there to start?',
+    'math.hint.rel.how_many_started.one': 'Something lost {gone} and {left} was left. How many were there to start?',
     'math.hint.rel.left_after': '{left} is what is left when you take some away from {start}. How many were taken?',
     'math.expl.rel.taken': '{start} take away {gone} leaves {left}.',
 

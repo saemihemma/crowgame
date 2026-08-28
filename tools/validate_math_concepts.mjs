@@ -243,6 +243,8 @@ const baseConcepts = ladder.concepts.filter(c => !isOverlay(c));
 const overlays = ladder.concepts.filter(isOverlay);
 
 const MIN_PER_STEP = Number(ladder.gapPolicy?.minPerStep ?? 6);
+/** How many DISTINCT facts a rung needs, regardless of how often it asks them. */
+const MIN_FACTS_PER_STEP = Number(ladder.gapPolicy?.minFactsPerStep ?? 6);
 /** An overlay has no steps to spread across, so it is held to a total instead. */
 const MIN_OVERLAY_PROBLEMS = Number(ladder.gapPolicy?.minPerOverlay ?? 6);
 
@@ -354,8 +356,45 @@ if (orphans.length > 10) fail(`...and ${orphans.length - 10} more problems no co
 const countAt = (domain, step) =>
     problems.filter(p => p.domain === domain && p.curriculumStep === step).length;
 
+/**
+ * WHAT a rung asks, not how many times it asks it.
+ *
+ * The problem-count floor cannot see the difference between a rung with twenty
+ * facts and a rung with three facts asked seven ways each, and the second is
+ * what a streaky ELO signal is made of: a child who has memorised `20 - 10`
+ * answers most of subtraction step 15 without subtracting. The floor was
+ * satisfied on that rung by authoring, and the `knownThin` entry that had
+ * recorded the three-fact ceiling was deleted as a closed gap -- correctly by
+ * the mechanism's own contract, and it took the only written record with it.
+ * This is that record, generalised, and the prerequisite for widening framings
+ * anywhere: more framings raise the count and never the fact width.
+ *
+ * The fact key is a PROXY and says so: the numerals in the prompt, in the order
+ * written. "11 + 3 = ?" and "What is 11 + 3?" collapse to one fact, which is the
+ * point. A prompt with no numerals is a counting prompt, where the drawn shape
+ * IS the content (MATH_AUTHORING_STANDARDS.md §4) -- so its key is the count
+ * plus the marker, and twelve shapes over two counts reads as the twenty-four
+ * distinct questions a child actually meets.
+ */
+function factKey(problem) {
+    const text = String(problem.prompt?.text ?? '');
+    const numerals = text.match(/\d+/g);
+    if (numerals) return numerals.join(',');
+    const markers = [...new Set(text.match(/[^\w\s]/g) ?? [])].sort().join('');
+    return `${problem.answer?.correct}|${markers}`;
+}
+
+const factsAt = new Map();
+for (const problem of problems) {
+    const key = `${problem.domain}|${problem.curriculumStep}`;
+    if (!factsAt.has(key)) factsAt.set(key, new Set());
+    factsAt.get(key).add(factKey(problem));
+}
+const factWidth = (domain, step) => factsAt.get(`${domain}|${step}`)?.size ?? 0;
+
 const actualGaps = new Map();
 const actualThin = new Map();
+const actualNarrow = new Map();
 for (const concept of baseConcepts) {
     const [lo, hi] = concept.steps;
     for (let step = lo; step <= hi; step++) {
@@ -364,9 +403,16 @@ for (const concept of baseConcepts) {
         }
         const n = countAt(concept.domain, step);
         const bucket = n === 0 ? actualGaps : (n < MIN_PER_STEP ? actualThin : null);
-        if (!bucket) continue;
-        if (!bucket.has(concept.domain)) bucket.set(concept.domain, new Set());
-        bucket.get(concept.domain).add(step);
+        if (bucket) {
+            if (!bucket.has(concept.domain)) bucket.set(concept.domain, new Set());
+            bucket.get(concept.domain).add(step);
+        }
+        // A rung can be narrow whether or not it is thin: the two measure
+        // different things, and an empty rung has nothing to measure.
+        if (n > 0 && factWidth(concept.domain, step) < MIN_FACTS_PER_STEP) {
+            if (!actualNarrow.has(concept.domain)) actualNarrow.set(concept.domain, new Set());
+            actualNarrow.get(concept.domain).add(step);
+        }
     }
 }
 
@@ -411,6 +457,9 @@ checkDeclared('knownGaps', ladder.knownGaps, actualGaps,
     'Author problems for it, or add it to knownGaps in concept_ladder.json with a reason.');
 checkDeclared('knownThin', ladder.knownThin, actualThin,
     `Author it up to ${MIN_PER_STEP} problems, or add it to knownThin in concept_ladder.json with a reason.`);
+checkDeclared('knownNarrow', ladder.knownNarrow, actualNarrow,
+    `Author problems on ${MIN_FACTS_PER_STEP} or more distinct facts -- MORE FRAMINGS OF THE SAME FACT WILL NOT `
+    + 'HELP -- or add it to knownNarrow in concept_ladder.json with the reason it cannot be widened.');
 
 // ── 3b. can a child actually be given this concept? ───────────────────────
 //
@@ -700,7 +749,8 @@ const rows = ladder.concepts.map(concept => {
     const mine = problemsFor(concept);
     const steps = [];
     for (let step = lo; step <= hi; step++) {
-        steps.push({ step, problems: mine.filter(p => p.curriculumStep === step).length });
+        const onStep = mine.filter(p => p.curriculumStep === step);
+        steps.push({ step, problems: onStep.length, facts: new Set(onStep.map(factKey)).size });
     }
     const authored = new Set(mine.flatMap(p => p.skills ?? []));
     return {
@@ -714,6 +764,7 @@ const rows = ladder.concepts.map(concept => {
         // so reporting them for one would invent a gap that cannot exist.
         empty: isOverlay(concept) ? [] : steps.filter(s => s.problems === 0).map(s => s.step),
         thin: isOverlay(concept) ? [] : steps.filter(s => s.problems > 0 && s.problems < MIN_PER_STEP).map(s => s.step),
+        narrow: isOverlay(concept) ? [] : steps.filter(s => s.problems > 0 && s.facts < MIN_FACTS_PER_STEP).map(s => s.step),
         perStep: steps,
         skillsAuthored: [...authored].sort(),
         skillsDeclared: [...(concept.skills ?? [])].sort(),
@@ -845,6 +896,7 @@ if (failures.length > 0) {
 }
 const gapCount = [...actualGaps.values()].reduce((a, s) => a + s.size, 0);
 const thinCount = [...actualThin.values()].reduce((a, s) => a + s.size, 0);
+const narrowCount = [...actualNarrow.values()].reduce((a, s) => a + s.size, 0);
 console.log(
     `concept ladder guard: clean (${ladder.concepts.length} concepts, ${tutorials.tutorials.length} tutorials, `
     + `${tutorials.tutorials.reduce((a, t) => a + t.cards.length, 0)} cards verified against their own arithmetic, `
@@ -852,6 +904,7 @@ console.log(
 );
 const deadCount = Object.values(emittable.domains ?? {}).reduce((a, d) => a + (d.unreachable?.length ?? 0), 0);
 console.log(`  ${gapCount} empty rungs and ${thinCount} thin rungs, all declared -- see reports/math-concepts/coverage.json`);
+console.log(`  ${narrowCount} narrow rungs (fewer than ${MIN_FACTS_PER_STEP} distinct facts, however many problems), all declared`);
 console.log(`  ${deadCount} rungs the derivation cannot emit at all, excluded from both counts`);
 console.log(
     `  operand cap ${OWL_MAX_OPERAND}: ${actuallyUnreachable.size} of ${ladder.concepts.length} concepts `

@@ -34,7 +34,7 @@
     ],
     "owlEligibleProblemCount": 3069,
     "owlEligibleUniquePromptCount": 3069,
-    "owlEligibleUniqueFactCount": 1590,
+    "owlEligibleUniqueFactCount": 1587,
     "domainCounts": {
       "addition": 975,
       "counting": 209,
@@ -47,12 +47,12 @@
     },
     "openingUnlockedInventoryProblemCount": 1184,
     "openingUnlockedInventoryUniquePromptCount": 1184,
-    "openingUnlockedInventoryUniqueFactCount": 499,
-    "freshReachableProblemCount": 223,
-    "freshReachableUniquePromptCount": 223,
+    "openingUnlockedInventoryUniqueFactCount": 496,
+    "freshReachableProblemCount": 225,
+    "freshReachableUniquePromptCount": 225,
     "freshReachableUniqueFactCount": 42,
     "freshReachableDomainCounts": {
-      "addition": 121,
+      "addition": 123,
       "counting": 102
     },
     "freshReachableAdditionFactCount": 34,
@@ -67,26 +67,26 @@
       },
       {
         "step": 1,
-        "rowCount": 35,
-        "uniquePromptCount": 35,
+        "rowCount": 36,
+        "uniquePromptCount": 36,
         "uniqueFactCount": 12
       },
       {
         "step": 2,
-        "rowCount": 50,
-        "uniquePromptCount": 50,
+        "rowCount": 51,
+        "uniquePromptCount": 51,
         "uniqueFactCount": 14
       },
       {
         "step": 3,
-        "rowCount": 53,
-        "uniquePromptCount": 53,
-        "uniqueFactCount": 22
+        "rowCount": 50,
+        "uniquePromptCount": 50,
+        "uniqueFactCount": 19
       },
       {
         "step": 4,
-        "rowCount": 48,
-        "uniquePromptCount": 48,
+        "rowCount": 47,
+        "uniquePromptCount": 47,
         "uniqueFactCount": 16
       },
       {
@@ -284,12 +284,12 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 9.6,
+          "grade": 9.7,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.6,
+            "steadyChildGrade": 9.7,
             "strugglingChildGrade": 9.6,
-            "strongChildGrade": 9.6,
+            "strongChildGrade": 9.7,
             "openingProbeStep": 5,
             "middleProbeStep": 12,
             "upperProbeStep": 19,
@@ -301,12 +301,12 @@
         "roleGrades": [
           {
             "role": "Lead Producer",
-            "grade": 9.6,
+            "grade": 9.7,
             "rationale": "The strong-child upper-band probe checks that the batch stays trustworthy beyond the opening slice."
           },
           {
             "role": "role-game-designer",
-            "grade": 9.6,
+            "grade": 9.7,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
@@ -2279,8 +2279,8 @@
         "17 - 5 =",
         "18 - 6 =",
         "17 - 2 =",
-        "You have 18 berries. You eat 1. How many are left?",
-        "18 - 4 equals ?"
+        "18 - 4 equals ?",
+        "Complete: 17 - 7 = ?"
       ]
     },
     {
@@ -4483,24 +4483,24 @@
       "uninitializedFallbackPreserved": true,
       "currentStepFallbackPreserved": true,
       "maxOperandSeen": 80,
-      "maxCurriculumStepSeen": 10,
+      "maxCurriculumStepSeen": 9,
       "followUpSelections": 0,
       "alternateFollowUpSelections": 0,
       "followUpAlternateRate": 1,
       "steadyFirstSubtractionUnlockAttempt": -1,
-      "strugglingFirstSubtractionUnlockAttempt": 46,
-      "depthProbeFirstSubtractionUnlockAttempt": 45,
+      "strugglingFirstSubtractionUnlockAttempt": -1,
+      "depthProbeFirstSubtractionUnlockAttempt": 37,
       "steadyFirstSubtractionSelectionAttempt": -1,
-      "strugglingFirstSubtractionSelectionAttempt": 47,
-      "depthProbeFirstSubtractionSelectionAttempt": 46,
+      "strugglingFirstSubtractionSelectionAttempt": -1,
+      "depthProbeFirstSubtractionSelectionAttempt": 38,
       "owlEligibleProblemCount": 3069,
       "owlEligibleUniquePromptCount": 3069,
-      "owlEligibleUniqueFactCount": 1590,
+      "owlEligibleUniqueFactCount": 1587,
       "openingUnlockedInventoryProblemCount": 1184,
       "openingUnlockedInventoryUniquePromptCount": 1184,
-      "openingUnlockedInventoryUniqueFactCount": 499,
-      "freshReachableProblemCount": 223,
-      "freshReachableUniquePromptCount": 223,
+      "openingUnlockedInventoryUniqueFactCount": 496,
+      "freshReachableProblemCount": 225,
+      "freshReachableUniquePromptCount": 225,
       "freshReachableUniqueFactCount": 42,
       "freshReachableAdditionFactCount": 34,
       "freshReachableCountingFactCount": 8,
@@ -4535,7 +4535,7 @@
     "caveats": [
       "This smoke review exercises the shared owl-selection helper plus live learner-state and owl-config rails. It is runtime-aligned selector evidence, not the literal MathChallengeScene input and retry flow.",
       "It is not telemetry-backed pedagogical proof and it does not independently calibrate the fixed ELO bands to real child success rates.",
-      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 3069 local-safe rows overall, while a fresh profile currently reaches 223 step-capped rows across addition, counting and 1 problems per owl interaction."
+      "The 3000 headline is total shipped runtime inventory; the current owl rails expose 3069 local-safe rows overall, while a fresh profile currently reaches 225 step-capped rows across addition, counting and 1 problems per owl interaction."
     ]
   }
 }

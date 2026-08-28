@@ -4689,7 +4689,8 @@
           "params": {
             "start": 8,
             "left": 5
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -4743,7 +4744,8 @@
           "params": {
             "start": 10,
             "left": 6
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -4797,7 +4799,8 @@
           "params": {
             "start": 12,
             "left": 7
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -4851,7 +4854,8 @@
           "params": {
             "start": 15,
             "left": 9
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -4905,7 +4909,8 @@
           "params": {
             "start": 9,
             "left": 7
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -4959,7 +4964,8 @@
           "params": {
             "start": 14,
             "left": 6
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -5013,7 +5019,8 @@
           "params": {
             "gone": 3,
             "left": 8
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -5067,7 +5074,8 @@
           "params": {
             "gone": 4,
             "left": 9
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -5121,7 +5129,8 @@
           "params": {
             "gone": 7,
             "left": 9
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -5175,7 +5184,8 @@
           "params": {
             "gone": 6,
             "left": 4
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -5229,7 +5239,8 @@
           "params": {
             "gone": 9,
             "left": 8
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
@@ -5283,7 +5294,8 @@
           "params": {
             "gone": 8,
             "left": 4
-          }
+          },
+          "plural": "left"
         },
         "explanation": {
           "key": "math.expl.rel.taken",
