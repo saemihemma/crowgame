@@ -445,7 +445,7 @@
   "tutorial.addition.missing_part.worked": "Fimm og þrír gera átta. Spurningarmerkið var þrír. Að telja upp finnur hluta.",
   "tutorial.addition.multi_digit.title": "Einn dálkur í viðbót",
   "tutorial.addition.multi_digit.see": "Stórir kubbar eru hundruð. Stangir eru tugir. Ferningar eru einingar.",
-  "tutorial.addition.multi_digit.model": "Hver dálkur leggst saman einn. Fyrst einingar, svo tugir, svo hundruð.",
+  "tutorial.addition.multi_digit.model": "Leggðu saman hvern dálk fyrir sig. Fyrst einingar, svo tugi, svo hundruð.",
   "tutorial.addition.multi_digit.worked": "Sex og sjö gera tíu og þrjá. Tugurinn fer í næsta dálk.",
   "tutorial.addition.multi_digit.try": "Byrjaðu á einingunum. Hvað færðu?",
   "tutorial.addition.teen_numbers.model": "Langa stöngin er tugur. Litlu ferningarnir eru einingar. Þrettán eru ein stöng, þrír ferningar.",
@@ -650,7 +650,8 @@
   "tutorial.subtraction.tens_and_ones.worked": "Tuttugu og fjórir mínus þrír eru tuttugu og einn. Taktu af einingunum. Tugirnir hreyfast bara ef einingarnar klárast.",
   "tutorial.subtraction.multi_digit.title": "Að taka úr hverjum dálki",
   "tutorial.subtraction.multi_digit.see": "Stórir kubbar eru hundruð. Stangir eru tugir. Ferningar eru einingar.",
-  "tutorial.subtraction.multi_digit.model": "Hver dálkur dregst frá einn. Fyrst einingar, svo tugir, svo hundruð.",
+  "tutorial.subtraction.multi_digit.model": "Dragðu frá í hverjum dálki fyrir sig. Fyrst einingar, svo tugi, svo hundruð.",
   "tutorial.subtraction.multi_digit.worked": "Tveir eru of fáir fyrir sjö. Fáðu tug að láni úr næsta dálki.",
-  "tutorial.subtraction.multi_digit.try": "Byrjaðu á einingunum. Hvað er eftir?"
+  "tutorial.subtraction.multi_digit.try": "Byrjaðu á einingunum. Hvað er eftir?",
+  "tutorial_replay": "Horfa aftur"
 }

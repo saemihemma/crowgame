@@ -393,3 +393,75 @@ func test_no_help_button_where_there_is_no_lesson() -> void:
 	await Engine.get_main_loop().process_frame
 	assert_true(_find_help(panel) == null, "no lesson, no button")
 	panel.queue_free()
+
+
+# --- the cards that show their action -----------------------------------------
+#
+# The deck's pictures showed the nouns and left the verbs to the sentence
+# underneath, which is the half a pre-reader cannot use. Six visuals now play
+# their action once when the card opens. These pin the rules that make that safe
+# rather than the motion itself, which only a child can judge.
+
+const TUTORIAL_VISUAL := preload("res://scripts/ui/components/tutorial_visual.gd")
+
+func _visual_for(kind: String, params: Dictionary) -> Node:
+	var v: Node = TUTORIAL_VISUAL.new()
+	v.size = Vector2(540, 122)
+	Engine.get_main_loop().root.add_child(v)
+	v.setup(kind, params)
+	return v
+
+## REDUCED MOTION SHOWS THE END, it does not show less.
+##
+## Gate B9's preference is honoured by BrandButton, AnswerButton and StatMedal,
+## and the first version of these actions ignored it entirely. For a decoration
+## the right answer is "do not move"; here the motion IS the explanation, so the
+## card has to land finished rather than land empty.
+func test_reduced_motion_lands_the_action_finished() -> void:
+	var was: Variant = Config.ui("a11y/reduced_motion", false)
+	var ui: Dictionary = DataManager.get_dict("UI_TUNING")
+	var a11y: Dictionary = ui.get("a11y", {})
+	ui["a11y"] = a11y
+	a11y["reduced_motion"] = true
+	var v := _visual_for("count_all", {"a": 2, "b": 1})
+	assert_true(not v.is_action_playing(),
+		"a child who asked for no motion gets the finished picture, not a blank one")
+	v.replay()
+	assert_true(not v.is_action_playing(), "and asking again does not start one either")
+	v.queue_free()
+	a11y["reduced_motion"] = was
+
+## A card that shows a state rather than a doing is untouched by any of this.
+func test_a_still_visual_starts_finished() -> void:
+	var v := _visual_for("balance", {"a": 2, "b": 5})
+	assert_true(not v.is_action_playing(),
+		"a visual with no action time in the tuning file never animates")
+	v.queue_free()
+
+## The action plays, and it ends. A card stuck mid-motion would hold the picture
+## in a half-state a child cannot read, and the capture harness waits on exactly
+## this signal.
+func test_an_action_visual_plays_and_finishes() -> void:
+	var v := _visual_for("count_all", {"a": 2, "b": 1})
+	assert_true(v.is_action_playing(), "the action starts when the card opens")
+	# Longer than the longest action in the tuning file.
+	for i in 200:
+		await Engine.get_main_loop().process_frame
+	assert_true(not v.is_action_playing(), "and it finishes on its own")
+	v.queue_free()
+
+## Every action time is a real number a designer can retune, and every one of
+## them belongs to a visual that exists. A typo in the key is silent otherwise --
+## the card simply never animates and nobody finds out.
+func test_every_action_time_names_a_real_visual() -> void:
+	var pacing: Dictionary = DataManager.get_dict("TUTORIAL_TUNING").get("pacing", {})
+	var checked := 0
+	for key: String in pacing.keys():
+		if not key.begins_with("action_ms_"):
+			continue
+		var visual := key.substr("action_ms_".length())
+		assert_true(TutorialVisual.can_draw(visual),
+			"pacing names '%s', which is not a visual anything can draw" % visual)
+		assert_true(float(pacing[key]) > 0.0, "%s is a positive duration" % key)
+		checked += 1
+	assert_true(checked >= 4, "the action times are actually being checked (%d)" % checked)

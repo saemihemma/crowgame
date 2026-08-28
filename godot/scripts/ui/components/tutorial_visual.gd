@@ -103,6 +103,14 @@ func _process(delta: float) -> void:
 		_t = minf(1.0, _t + delta / _anim_seconds)
 	queue_redraw()
 
+## Does this card have an action to replay at all?
+##
+## Asked by the tutorial before it offers the replay affordance: a still picture
+## and a reduced-motion card have nothing to watch again, and a control that
+## promises one is worse than no control.
+func has_action() -> bool:
+	return _anim_seconds > 0.0
+
 ## Is this card still playing its action?
 ##
 ## Public so the capture harness can wait for the end state instead of counting
@@ -122,7 +130,12 @@ func replay() -> void:
 	queue_redraw()
 
 func _gui_input(event: InputEvent) -> void:
+	# BOTH kinds of press. project.godot turns emulate_touch_from_mouse OFF, and
+	# this game is played on a tablet -- a mouse-only handler would have made the
+	# replay tap work on the developer's desktop and nowhere a child plays.
 	if event is InputEventMouseButton and (event as InputEventMouseButton).pressed:
+		replay()
+	elif event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed:
 		replay()
 
 ## Height is per-VISUAL, not one number for the deck.
@@ -149,6 +162,16 @@ func setup(visual: String, params: Dictionary) -> void:
 	# standing picture and starts finished, so this cannot slow a card down or
 	# hide anything behind a wait.
 	_anim_seconds = float(Config.tutorial("pacing/action_ms_%s" % visual, 0.0)) / 1000.0
+	# REDUCED MOTION SHOWS THE END, it does not show less.
+	#
+	# Gate B9's preference is honoured by every other animated thing in the game
+	# (BrandButton, AnswerButton, StatMedal) and these were ignoring it. For a
+	# decoration the right answer is "do not move"; for a card whose motion IS the
+	# explanation, that would be withholding the lesson. So the action lands
+	# finished, and the replay tap does nothing rather than starting a motion the
+	# child asked not to see.
+	if UiFx.reduced_motion():
+		_anim_seconds = 0.0
 	_t = 0.0 if _anim_seconds > 0.0 else 1.0
 	set_process(_anim_seconds > 0.0)
 	queue_redraw()
@@ -170,6 +193,7 @@ func _draw() -> void:
 	if not RENDERERS.has(_visual):
 		return
 	call(RENDERERS[_visual])
+
 
 # --- shared helpers -------------------------------------------------------
 
@@ -294,12 +318,19 @@ func _draw_ten_frame() -> void:
 			for c in FRAME_COLUMNS:
 				var index := f * FRAME_CAPACITY + r * FRAME_COLUMNS + c
 				var at := Vector2(fx + c * cell + cell * 0.5, origin.y + r * cell + cell * 0.5)
+				# The empty socket is always drawn: the gaps are half the lesson,
+				# because "six" and "four more to ten" are the same picture.
+				if index >= filled:
+					draw_arc(at, token * 0.5, 0.0, TAU, 20, Color(outline, 0.35), 2.0)
 				if index < filled:
 					_token(at, token * 0.5, _role("token_a", "owl"))
 				elif index < total:
-					_token(at, token * 0.5, _role("token_b", "accent"))
-				else:
-					draw_arc(at, token * 0.5, 0.0, TAU, 20, Color(outline, 0.35), 2.0)
+					# COUNTING ON, one cell at a time. The second colour lands in
+					# sequence so "count on to seven" is a thing a child watches
+					# happen rather than a sentence under a finished picture.
+					var k := _step_t(index - filled, maxi(1, second))
+					if k > 0.0:
+						_token(at, token * 0.5 * _ease_out(k), _role("token_b", "accent"))
 
 ## The line, with every number on it a child can reach. Hops are drawn as arcs
 ## rather than a slid marker because the count is the point: four hops IS "add
@@ -352,14 +383,34 @@ func _draw_number_line() -> void:
 	var height := _tune("hop_height", 34.0)
 	var points := maxi(4, int(_tune("hop_points", 20.0)))
 	var hop_colour := _role("hop", "accent")
-	for i in absi(hops):
+	# ONE HOP AT A TIME, because the count IS the method. "Start at four and take
+	# two hops" arrives as two hops arriving, and the marker rides the last one
+	# so a child can see where they have got to rather than only where they end.
+	var total_hops := absi(hops)
+	var landed := start
+	for i in total_hops:
+		var k := _step_t(i, maxi(1, total_hops))
+		if k <= 0.0:
+			break
 		var a: float = at_x.call(start + i * step)
 		var b: float = at_x.call(start + (i + 1) * step)
 		var arc := PackedVector2Array()
-		for p in points + 1:
+		# A hop in progress is drawn as far as it has got, so the arc grows out of
+		# the number it left rather than blinking into place whole.
+		var drawn: int = maxi(1, int(ceil(points * k)))
+		for p in drawn + 1:
 			var t := float(p) / float(points)
 			arc.append(Vector2(lerpf(a, b, t), y - sin(t * PI) * height))
-		draw_polyline(arc, hop_colour, _tune("hop_thickness", 4.0))
+		if arc.size() >= 2:
+			draw_polyline(arc, hop_colour, _tune("hop_thickness", 4.0))
+		if k >= 1.0:
+			landed = start + (i + 1) * step
+		else:
+			# The travelling marker, on the arc it is currently riding.
+			_token(Vector2(lerpf(a, b, k), y - sin(k * PI) * height),
+				_tune("mark_radius", 9.0), _role("mark", "accent"))
+	if landed != start:
+		_token(Vector2(at_x.call(landed), y), _tune("mark_radius", 9.0), _role("highlight", "yes"))
 
 ## What is left, with what went still on the board.
 ## TAKE AWAY, shown as taking away.
@@ -486,6 +537,13 @@ func _draw_pattern_strip() -> void:
 	var x := size.x * 0.5 - total_w * 0.5 + chip * 0.5
 	var numeral_size := _tune("numeral_font_size", 26.0) * 0.8
 	for i in slots:
+		# The repeat RUNS, left to right. A pattern is a thing that keeps going,
+		# and a strip that appears all at once is a row of shapes; a strip that
+		# arrives in order is the going-on itself, which is what the question at
+		# the end is asking the child to continue.
+		var k := _step_t(i, maxi(1, slots))
+		if k <= 0.0:
+			break
 		var at := Vector2(x + i * (chip + gap), y)
 		var last := i == length
 		var value: Variant = _params.get("reveal", null) if last else core[i % core.size()]
@@ -600,14 +658,28 @@ func _draw_groups() -> void:
 	_fit(total_w, ring_h)
 	var origin := Vector2(size.x * 0.5 - total_w * 0.5, size.y * 0.5 - ring_h * 0.5)
 	var outline := _role("outline", "ink")
+	# DEALT OUT -- and the ORDER is the difference between the two lessons that
+	# share this picture.
+	#
+	# Multiplication is "this many groups of this many", so it fills a ring at a
+	# time: three, then three again. Division is SHARING, and sharing is "one for
+	# you, one for you" -- a round of one into every group, then another round.
+	# The fairness is the whole point of the division card ("nobody gets more
+	# than the other"), and filling one box before starting the next demonstrates
+	# the opposite. Round-robin is what makes equal shares visibly equal.
+	var round_robin: bool = String(_params.get("deal", "group")) == "round"
 	for g in count:
 		var gx := origin.x + g * (ring_w + group_gap)
 		draw_rect(Rect2(Vector2(gx, origin.y), Vector2(ring_w, ring_h)), outline, false,
 			_tune("group_ring_border", 3.0))
 		for i in each:
+			var order: int = (i * count + g) if round_robin else (g * each + i)
+			var k := _step_t(order, maxi(1, count * each))
+			if k <= 0.0:
+				continue
 			var at := Vector2(gx + gap + (i % columns) * (token + gap) + token * 0.5,
 				origin.y + gap + (i / columns) * (token + gap) + token * 0.5)
-			_token(at, token * 0.5, _role("token_a", "owl"))
+			_token(at, token * 0.5 * _ease_out(k), _role("token_a", "owl"))
 
 ## Rods and units. Twenty-four is two rods and four cubes, and a child who has
 ## seen that will never again read the 2 in 24 as a two.

@@ -291,16 +291,44 @@ and it doubles as the voice-over script -- but it has to support the picture
 rather than be the only place the idea lives.
 
 **1. The action plays.** A renderer may declare `pacing/action_ms_<visual>` and
-animate itself once when the card opens. `count_all` slides the second group in
-beside the first, so two piles becoming one pile IS the plus sign. `take_away`
-lifts the eaten ones off the row and fades them before the cross lands, so a
-child sees the going rather than the aftermath.
+animate itself once when the card opens. Six do:
 
-Nothing waits on it. The nav is live from the first frame, nothing is hidden
-behind a delay, and tapping the picture plays it again -- the affordance that
+| Visual | The verb it now shows |
+| --- | --- |
+| `count_all` | the second group slides in beside the first -- two piles becoming one pile IS the plus sign |
+| `take_away` | the eaten ones lift off the row and fade before the cross lands: the going, not the aftermath |
+| `number_line` | one hop at a time, with the marker riding the arc, because the count IS the method |
+| `ten_frame` | the second colour lands cell by cell, so "count on to seven" is watched rather than read |
+| `groups` | dealt out -- and see the ORDER note below, because it is not the same deal twice |
+| `pattern_strip` | the repeat runs left to right, because a pattern is a thing that keeps going |
+
+**The dealing order is the difference between two lessons that share one
+picture.** Multiplication is "this many groups of this many", so `groups` fills a
+ring at a time. Division is SHARING, and sharing is "one for you, one for you" --
+a round of one into every group, then another round. The division card's whole
+claim is that nobody gets more than anyone else, and filling one box before
+starting the next demonstrates the opposite. `deal: "round"` is set on every
+division card for that reason.
+
+Nothing waits on any of it. The nav is live from the first frame, nothing is
+hidden behind a delay, and the picture replays on a tap -- the affordance that
 makes an animated explanation safe for a child who needs it three times. A visual
 with no `pacing` entry is a standing picture and starts finished, so this changed
-nothing for cards that show a state rather than a doing.
+nothing for the cards that show a state rather than a doing.
+
+**Reduced motion shows the END, it does not show less.** Gate B9's preference is
+honoured by `BrandButton`, `AnswerButton` and `StatMedal`, and the first version
+of these actions ignored it. For a decoration the right answer is "do not move";
+for a card whose motion IS the explanation that would be withholding the lesson,
+so the action lands finished instead.
+
+**The replay affordance lives beside the progress dots, not inside the picture.**
+Drawn there first, it landed outside the card entirely: `TutorialVisual` is
+`SIZE_EXPAND_FILL` and runs wider than the board, so no inset from its own edges
+is inside anything. The dots row is a known-width child of the board. It is drawn
+(`ReplayHint`) rather than typed, because the circular-arrow glyph is far above
+Latin-1 and would render as a box printing its own hex codepoint -- the same
+lesson the PIN dots, the padlock and the dialog arrow each taught once.
 
 **2. The symbol gets its quantity.** `equation` takes `tokens: true` and draws
 that many dots under every numeral. On the earliest rungs the abstract card is

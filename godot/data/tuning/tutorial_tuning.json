@@ -44,7 +44,11 @@
     "finish_hold_ms": 900,
     "action_ms_count_all": 900,
     "action_ms_take_away": 1100,
-    "_action_comment": "How long a card takes to PLAY ITS ACTION, per visual. A visual with no entry here is a standing picture and starts finished -- which is every card that shows a state rather than a doing. Nothing waits on these: the nav is live from the first frame, and tapping the picture plays it again. They exist because the deck showed nouns and left the verbs to a sentence, and the sentence is the part a five-year-old cannot read."
+    "_action_comment": "How long a card takes to PLAY ITS ACTION, per visual. A visual with no entry here is a standing picture and starts finished -- which is every card that shows a state rather than a doing. Nothing waits on these: the nav is live from the first frame, and tapping the picture plays it again. They exist because the deck showed nouns and left the verbs to a sentence, and the sentence is the part a five-year-old cannot read.",
+    "action_ms_number_line": 1200,
+    "action_ms_ten_frame": 900,
+    "action_ms_groups": 1100,
+    "action_ms_pattern_strip": 1000
   },
   "visual": {
     "token_size": 26,

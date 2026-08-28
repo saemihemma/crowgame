@@ -413,7 +413,7 @@
   "tutorial.addition.missing_part.worked": "Five and three make eight. The question mark was three. Counting up finds a part.",
   "tutorial.addition.multi_digit.title": "One more column",
   "tutorial.addition.multi_digit.see": "Big blocks are hundreds. Bars are tens. Squares are ones.",
-  "tutorial.addition.multi_digit.model": "Each column adds on its own. Ones first, then tens, then hundreds.",
+  "tutorial.addition.multi_digit.model": "Add each column on its own. Ones first, then tens, then hundreds.",
   "tutorial.addition.multi_digit.worked": "Six and seven make ten and three. The ten moves next door.",
   "tutorial.addition.multi_digit.try": "Start with the ones. What do you get?",
   "tutorial.addition.teen_numbers.model": "The tall bar is ten. The small squares are ones. Thirteen is one bar, three squares.",
@@ -650,7 +650,8 @@
   "math.expl.ten_and": "Ten and {rest} more makes {n}.",
   "tutorial.subtraction.multi_digit.title": "Taking from every column",
   "tutorial.subtraction.multi_digit.see": "Big blocks are hundreds. Bars are tens. Squares are ones.",
-  "tutorial.subtraction.multi_digit.model": "Each column takes on its own. Ones first, then tens, then hundreds.",
+  "tutorial.subtraction.multi_digit.model": "Take from each column on its own. Ones first, then tens, then hundreds.",
   "tutorial.subtraction.multi_digit.worked": "Two is too small for seven. Borrow a ten from next door.",
-  "tutorial.subtraction.multi_digit.try": "Start with the ones. What is left?"
+  "tutorial.subtraction.multi_digit.try": "Start with the ones. What is left?",
+  "tutorial_replay": "Watch again"
 }

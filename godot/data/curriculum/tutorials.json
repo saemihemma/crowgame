@@ -823,21 +823,24 @@
           "body": "model",
           "visual": "ten_frame",
           "params": {
-            "filled": 7
+            "filled": 5,
+            "second": 2
           }
         },
         {
           "body": "worked",
           "visual": "ten_frame",
           "params": {
-            "filled": 8
+            "filled": 5,
+            "second": 3
           }
         },
         {
           "body": "try",
           "visual": "ten_frame",
           "params": {
-            "filled": 9
+            "filled": 5,
+            "second": 4
           },
           "choice": {
             "options": [
@@ -873,14 +876,16 @@
           "body": "worked",
           "visual": "ten_frame",
           "params": {
-            "filled": 13
+            "filled": 10,
+            "second": 3
           }
         },
         {
           "body": "try",
           "visual": "ten_frame",
           "params": {
-            "filled": 16
+            "filled": 10,
+            "second": 6
           },
           "choice": {
             "options": [
@@ -1653,7 +1658,8 @@
           "visual": "groups",
           "params": {
             "groups": 2,
-            "each": 3
+            "each": 3,
+            "deal": "round"
           }
         },
         {
@@ -1661,7 +1667,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 2
+            "each": 2,
+            "deal": "round"
           }
         },
         {
@@ -1701,7 +1708,8 @@
           "visual": "groups",
           "params": {
             "groups": 4,
-            "each": 5
+            "each": 5,
+            "deal": "round"
           }
         },
         {
@@ -1709,7 +1717,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 10
+            "each": 10,
+            "deal": "round"
           }
         },
         {
@@ -1749,7 +1758,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 7
+            "each": 7,
+            "deal": "round"
           }
         },
         {
@@ -1757,7 +1767,8 @@
           "visual": "groups",
           "params": {
             "groups": 4,
-            "each": 6
+            "each": 6,
+            "deal": "round"
           }
         },
         {
@@ -1797,7 +1808,8 @@
           "visual": "groups",
           "params": {
             "groups": 4,
-            "each": 0
+            "each": 0,
+            "deal": "round"
           }
         },
         {
@@ -1805,7 +1817,8 @@
           "visual": "groups",
           "params": {
             "groups": 5,
-            "each": 5
+            "each": 5,
+            "deal": "round"
           }
         },
         {
@@ -1845,7 +1858,8 @@
           "visual": "groups",
           "params": {
             "groups": 6,
-            "each": 7
+            "each": 7,
+            "deal": "round"
           }
         },
         {
@@ -1895,7 +1909,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 14
+            "each": 14,
+            "deal": "round"
           }
         },
         {
@@ -2301,7 +2316,8 @@
           "visual": "groups",
           "params": {
             "groups": 4,
-            "each": 3
+            "each": 3,
+            "deal": "round"
           }
         },
         {
@@ -2309,7 +2325,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 4
+            "each": 4,
+            "deal": "round"
           }
         },
         {
@@ -2349,7 +2366,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 5
+            "each": 5,
+            "deal": "round"
           }
         },
         {
@@ -2357,7 +2375,8 @@
           "visual": "groups",
           "params": {
             "groups": 5,
-            "each": 3
+            "each": 3,
+            "deal": "round"
           }
         },
         {
