@@ -6167,7 +6167,7 @@
           "hintStrategy": "divide_groups",
           "explanationStrategy": "quotient_share",
           "misconceptionTags": [
-            "subtracted_instead"
+            "equal_groups_confusion"
           ],
           "leftRange": [
             4,
@@ -6195,7 +6195,7 @@
           "hintStrategy": "divide_groups",
           "explanationStrategy": "quotient_share",
           "misconceptionTags": [
-            "subtracted_instead"
+            "equal_groups_confusion"
           ],
           "leftRange": [
             12,
@@ -11481,7 +11481,7 @@
           "explanationStrategy": "quotient_share",
           "strictVariants": true,
           "misconceptionTags": [
-            "subtracted_instead"
+            "equal_groups_confusion"
           ],
           "templateStepRange": [
             14,

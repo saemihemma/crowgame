@@ -92,7 +92,7 @@ const PLURAL_ADJECTIVES = {
  */
 const NEUTER_INVARIANT_NOUNS = {
     en: new Set(),
-    is: new Set(['ber', 'egg', 'hreiður']),
+    is: new Set(['ber', 'egg', 'hreiður', 'blóm']),
 };
 
 /** Rule 1: plural nouns, checked immediately after the numeral. */
@@ -109,7 +109,11 @@ const PLURAL_NOUNS = {
     ]),
     is: new Set([
         'hópar', 'hópum', 'fuglar', 'fuglarnir', 'punktar', 'stjörnur',
-        'blóm', 'hjörtu', 'hringir', 'ferningar', 'raðir',
+        'hjörtu', 'hringir', 'ferningar', 'raðir',
+        // `blóm` is NOT here. It is neuter and identical in both numbers -- the
+        // same property that qualifies ber, egg and hreiður below -- so "Það er
+        // 1 blóm" is correct Icelandic and this list would have flagged it. The
+        // two lists in this file disagreed about the language until 2026-08.
         // "hópa" is NOT here, and this is the rule's one honest blind spot.
         // Icelandic writes the accusative plural after a preposition whether or
         // not the numeral beside it is what counts the groups: "Deilt í 21 hópa"

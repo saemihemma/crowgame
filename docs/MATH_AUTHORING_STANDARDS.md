@@ -276,10 +276,18 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
 - **A hint that names counting has to mean counting.** The relational and
   compare hints name counting-up, and the pools now reach four-digit number
   bonds, so `? + 345 = 3504` was teaching "Start at 345 and count up to 3504" —
-  in both languages. Above a countable gap (ten) the sentence states the
-  relation and stops: the child still has to find the missing part and is no
-  longer told to find it a way nobody can. Same rule the sequence framings got,
-  where *talning áfram* is refused to a run that jumps by twenty-five.
+  in both languages. Above a countable gap (ten, the ten-frame's full row) the
+  sentence states the relation and stops: the child still has to find the
+  missing part and is no longer told to find it a way nobody can. Same rule the
+  sequence framings got, where *talning áfram* is refused to a run that jumps by
+  twenty-five.
+  **Known and measured, not closed:** `count_on` and `count_back` still render
+  241 hints with a span above ten, worst "Start at 20, then count back 20".
+  Twenty steps is tedious rather than impossible, which is why they are left
+  whole rather than half-fixed — but applying the same line to them needs a
+  strategy to fall back TO, and the catalog has no translated "add the tens,
+  then the ones" that does not also give the answer away. That is a phrasing
+  change with new Icelandic in it.
 - **A declared misconception must be answerable.** A problem tagged
   `added_instead` whose options contain no added-instead value claims a
   diagnosis it cannot make. The subtracted-instead value is `|a - b|`, not

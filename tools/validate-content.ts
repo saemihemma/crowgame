@@ -12,7 +12,7 @@ import {
     reviewMaterializedMathBatches,
     type MaterializationResult,
 } from './math_authoring';
-import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt, isUnrecognisedEquation } from './math_verifier';
+import { buildPromptUniquenessKey, deriveVerifiedDifficultyTraits, evaluateArithmeticPrompt, isUnrecognisedEquation, parseArithmeticPromptIndependent } from './math_verifier';
 import type { MathProblem } from '../math-kernel/utils/Types';
 
 const ROOT = resolve(join(__dirname, '..'));
@@ -214,6 +214,7 @@ function validateMathAuthoringFiles(): void {
     validateFile(batchPath, join(AUTHORING_DIR, 'schemas', 'math-batches.schema.json'), 'batches.json');
     validateMathBandMonotonicity(bandPath);
     validateStoryOperandCeiling();
+    validateMisconceptionsAreAnswerable();
 }
 
 /**
@@ -321,6 +322,67 @@ function validateStoryOperandCeiling(): void {
     }
     if (offenders === 0) {
         console.log(`  OK: all ${checked} word problems keep their numbers inside two digits`);
+        validated++;
+    }
+}
+
+/**
+ * A declared misconception has to be answerable.
+ *
+ * A problem tagged `added_instead` whose options contain no added-instead value
+ * claims a diagnosis it cannot make: whatever the child picks, nothing in the
+ * list distinguishes that mistake from any other. 34 story problems shipped that
+ * way, and 62 sharing stories carried `subtracted_instead` where the
+ * subtracted-instead value is four times the answer and could never have been a
+ * plausible option in the first place.
+ *
+ * Only the tags with a COMPUTABLE value are checked. "place_value_slip" and
+ * "forgot_carry" name mistakes whose wrong answer depends on the written method,
+ * not on arithmetic over the two operands, and guessing at them here would be
+ * worse than not checking. The subtracted-instead value is |a - b| rather than
+ * a - b, because a child who subtracts takes the smaller from the larger
+ * whichever way round the problem named them.
+ */
+function validateMisconceptionsAreAnswerable(): void {
+    const mathDir = join(DATA_DIR, 'math');
+    if (!existsSync(mathDir)) return;
+
+    const expected: Record<string, (left: number, right: number, correct: number) => number[]> = {
+        added_instead: (left, right) => [left + right],
+        subtracted_instead: (left, right) => [Math.abs(left - right)],
+        off_by_one: (_left, _right, correct) => [correct - 1, correct + 1],
+    };
+
+    let checked = 0;
+    let unanswerable = 0;
+    for (const file of readdirSync(mathDir).filter(f => f.endsWith('.json'))) {
+        const pool = JSON.parse(readFileSync(join(mathDir, file), 'utf-8')) as { problems?: MathProblem[] };
+        for (const problem of pool.problems ?? []) {
+            const parsed = parseWordedArithmetic(problem.prompt.text)
+                ?? parseArithmeticPromptIndependent(problem.prompt.text);
+            if (!parsed) continue;
+            const correct = Number(problem.answer.correct);
+            const options = new Set(problem.answer.options.map(Number));
+            for (const tag of problem.misconceptionTags ?? []) {
+                const values = expected[tag];
+                if (!values) continue;
+                checked++;
+                if (values(parsed.left, parsed.right, correct).some(v => options.has(v))) continue;
+                unanswerable++;
+                errors++;
+                if (unanswerable <= 5) {
+                    console.error(
+                        `  FAIL: ${problem.id} declares "${tag}" but no option expresses it `
+                        + `— "${problem.prompt.text}" offers ${problem.answer.options.join(', ')}. `
+                        + 'Give the list the value, or drop the tag; a diagnosis nothing can answer is not one.',
+                    );
+                }
+            }
+        }
+    }
+    if (unanswerable > 5) console.error(`  FAIL: ...and ${unanswerable - 5} more unanswerable misconception tags`);
+    if (unanswerable === 0) {
+        console.log(`  OK: all ${checked} computable misconception tags have an option that expresses them`);
         validated++;
     }
 }

@@ -902,13 +902,28 @@ function normalizedProgress(value: number, range: NumericRange): number {
 }
 
 /**
- * How far a child can be asked to count.
+ * How far a child can be asked to COUNT UP TO A NUMBER THEY CANNOT SEE.
  *
- * Ten is the line because the strategies these hints name are counting
- * strategies: counting on, counting back, counting up to a whole. Past a
- * handful they stop being strategies and become instructions -- and a pool that
- * reaches four-digit number bonds can produce a gap of three thousand, which is
- * what it did.
+ * Ten, because a full row of the ten-frame is ten and this pack's own counting
+ * hints already say so ("A full row is ten. Start at ten and count on"). It is
+ * also, for these shapes, exactly the answer: the gap between the known part and
+ * the whole IS the missing part, so the rule reads "name counting only when the
+ * answer is small".
+ *
+ * SCOPE, deliberately narrow, and the narrowness is a known debt rather than a
+ * principle. This governs the relational and compare hints, where the span is
+ * unbounded -- the pools reach four-digit number bonds and produced "Start at
+ * 345 and count up to 3504", which is not a strategy in any language.
+ *
+ * It does NOT govern `count_on` and `count_back`, and as of 2026-08 those two
+ * render 241 hints with a span above ten, worst case "Start at 20, then count
+ * back 20". That is tedious rather than impossible -- twenty steps is a thing a
+ * seven-year-old can actually do, where counting to 3504 is not -- so they are
+ * left alone rather than half-fixed. Applying the same line to them needs a
+ * strategy to fall back TO, and the phrasing catalog has none: there is no
+ * translated "add the tens, then the ones" that does not also state the answer.
+ * Closing it is a phrasing-catalog change with new Icelandic in it, which is the
+ * owner's call, not a generator change.
  */
 function countableGap(gap: number): boolean {
     return gap <= 10;
