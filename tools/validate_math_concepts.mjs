@@ -243,8 +243,14 @@ const baseConcepts = ladder.concepts.filter(c => !isOverlay(c));
 const overlays = ladder.concepts.filter(isOverlay);
 
 const MIN_PER_STEP = Number(ladder.gapPolicy?.minPerStep ?? 6);
-/** How many DISTINCT facts a rung needs, regardless of how often it asks them. */
-const MIN_FACTS_PER_STEP = Number(ladder.gapPolicy?.minFactsPerStep ?? 6);
+/**
+ * How many DISTINCT facts a rung needs, regardless of how often it asks them.
+ *
+ * The default matches what concept_ladder.json ships rather than sitting above
+ * it: a fallback stricter than the config encodes a second, unstated belief
+ * about the same number, and whichever one a reader trusts, the other is a lie.
+ */
+const MIN_FACTS_PER_STEP = Number(ladder.gapPolicy?.minFactsPerStep ?? 4);
 /** An overlay has no steps to spread across, so it is held to a total instead. */
 const MIN_OVERLAY_PROBLEMS = Number(ladder.gapPolicy?.minPerOverlay ?? 6);
 
@@ -381,7 +387,12 @@ const countAt = (domain, step) =>
  * A prompt with no numerals is a counting prompt, where the drawn shape IS the
  * content (MATH_AUTHORING_STANDARDS.md §4) -- so its key is the count plus the
  * marker, and twelve shapes over two counts reads as the twenty-four distinct
- * questions a child actually meets.
+ * questions a child actually meets. The marker is read from the GLYPH RUN
+ * alone, not from the whole prompt: scanning the whole sentence pulled in the
+ * framing's own punctuation, so "How many dots? o o o" and "How many are here:
+ * o o o" keyed differently and one drawn shape counted as two facts. That made
+ * "more framings raise the count and never the width" false in the one branch
+ * whose whole purpose is to defend it.
  */
 function factKey(problem) {
     const text = String(problem.prompt?.text ?? '');
@@ -392,7 +403,15 @@ function factKey(problem) {
         if (Number.isFinite(answer)) inPlay.push(answer);
         return inPlay.sort((a, b) => a - b).join(',');
     }
-    const markers = [...new Set(text.match(/[^\w\s]/g) ?? [])].sort().join('');
+    // The glyph run is the trailing sequence of single-character tokens the
+    // board replaces with drawn objects. Everything before it is the caption.
+    const tokens = text.split(/\s+/).filter(t => t !== '');
+    const glyphs = [];
+    for (let i = tokens.length - 1; i >= 0; i--) {
+        if (tokens[i].length !== 1 || /[\w]/.test(tokens[i])) break;
+        glyphs.push(tokens[i]);
+    }
+    const markers = [...new Set(glyphs)].sort().join('');
     return `${problem.answer?.correct}|${markers}`;
 }
 
@@ -762,7 +781,18 @@ const rows = ladder.concepts.map(concept => {
     const steps = [];
     for (let step = lo; step <= hi; step++) {
         const onStep = mine.filter(p => p.curriculumStep === step);
-        steps.push({ step, problems: onStep.length, facts: new Set(onStep.map(factKey)).size });
+        const facts = new Set(onStep.map(factKey)).size;
+        // Width alone cannot rank two narrow rungs against each other: division
+        // step 11 (1 fact, 14 problems) and subtraction step 5 (1 fact, 22) are
+        // the same width and not the same problem. The ratio is what says how
+        // often a child meets the same triple, which is the thing that makes an
+        // ELO signal streaky.
+        steps.push({
+            step,
+            problems: onStep.length,
+            facts,
+            problemsPerFact: facts > 0 ? Math.round((onStep.length / facts) * 10) / 10 : 0,
+        });
     }
     const authored = new Set(mine.flatMap(p => p.skills ?? []));
     return {

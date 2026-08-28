@@ -234,8 +234,16 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
 ## 4. Problem quality bar (every generated problem)
 
 - **Prompt**: one skill, one question, no compound sentences a 6–10-year-old
-  must re-read. Steps 0–2 carry **no story**: a narrative is a second thing to
-  decode on top of the fact. They may use any of the short framings
+  must re-read. Steps 0–2 of **addition and subtraction** carry **no story**: a
+  narrative is a second thing to decode on top of the fact. The scope is the
+  rule, not a loophole — this is about reading load for a five-year-old meeting
+  their first sum, and read as a bare step index across every domain it
+  contradicts §1, whose words for division are "Sharing stories (partitive) are
+  the natural intro framing". A child at division step 2 has climbed the whole
+  additive ladder to get there. `buildProblemFromCandidate` checks the derived
+  step rather than the operand size it used to approximate with; for these two
+  domains the two are provably the same test, but the step is what the rule
+  says. They may use any of the short framings
   (`equation`, `question`, `solve`, `answer`, `complete`, `blank_equals`,
   `how_much`, `equals`, `quick_check`, `mental_math`), because those add a word
   of scaffolding and no math. The rule used to be `equation`/`question` only,
@@ -248,6 +256,23 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
   n±2). Every distractor plausible in magnitude — the mechanical
   `correct ± offset` list in `buildOptions` is a fallback for when the
   authored distractors cannot fill four slots, never a top-up on them.
+- **A story's teaching belongs to its situation, not to its template.** A
+  template names one hint strategy for everything it renders, which is right
+  until two CGI situations come off one template. Compare and part-part-whole
+  come off subtraction templates and inherited count-back and take-away, so
+  `You have 10 berries. A bird has 5 berries. How many more do you have?` was
+  taught as `10 take away 5 leaves 5` — a false model of a story in which
+  nothing is taken away. `storyScaffold` gives those shapes the strategy their
+  situation earns (count up from the smaller to the larger; one part and a
+  whole), reusing the already-translated `math.hint.rel.*` family, and gives
+  each the distractor its own misconception needs: the compare pair reads the
+  same two numbers and runs opposite ways, so each one leads with the other's
+  answer. A candidate that names its own misconception tags **replaces** the
+  template's rather than adding to them — "counting_back_error" is not a mistake
+  a compare story can produce.
+- **A picture has to be picturable.** Equal-groups and array stories keep both
+  quantities inside twelve. `8 nests, each with 90 eggs` and `48 rows of 4 eggs`
+  both parse and both multiply correctly, and neither is a nest or a row.
 - **Hints teach a strategy, never reveal the answer** (`renderHint`
   strategies: count_on, make_ten, bridge_ten, add_place_value,
   multiply_groups, split_tens, and for counting one per counting principle:
@@ -309,11 +334,18 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
   rung and, symmetrically, on a declaration for a rung that has since widened.
   A fact is the multiset of numbers in play — what the prompt writes plus what
   it asks for — so `11 + 3`, `3 + 11` and `11 + ? = 14` count once between them,
-  the same collapsing the step derivation already does. The six currently
-  declared (subtraction 5 and 15, multiplication 9 and 10, division 10 and 11)
-  are at a structural ceiling that no authoring moves: the top of the table
-  ladder is nearly empty by design, because a fact belongs to the earliest table
-  that contains it.
+  the same collapsing the step derivation already does. For a counting prompt,
+  which writes no numerals, it is the count plus the marker read **from the
+  glyph run alone**: scanning the whole sentence pulled in the framing's own
+  punctuation, and one drawn shape then counted as two facts — making the very
+  claim this floor exists to defend false inside it. The ten currently declared
+  rungs are at a structural ceiling no authoring moves, in two clusters:
+  addition 0 and 1 at the bottom (§1: no authoring can add a fifth fact), and
+  multiplication 8–10 with division 9–11 at the top, where a fact belongs to the
+  earliest table that contains it and the last tables own almost nothing.
+  The report also carries **problems per fact**, because width alone cannot rank
+  two narrow rungs against each other and the ratio is what says how often a
+  child meets the same triple.
 - Since 2026-08 **every rung the derivation can reach clears the problem
   floor.** The last two to do so needed different fixes, and the difference is
   the rule: division step 11 only needed authoring, because its two facts had
@@ -322,7 +354,11 @@ lives (Sproti 1a/1b work inside 1–10 and then 10–20).
   across three framings is eighteen prompts and there is no nineteenth. That one
   needed a wider framing set — `count_on` and `count_back`, which name the
   strategy the way Sproti does — and a framing set is a phrasing-catalog change,
-  not an authoring one. Reach for it only when the arithmetic is genuinely
+  not an authoring one. A framing that names a strategy is then bound to runs
+  that actually use it: *talning áfram* and *talning aftur á bak* are UNIT
+  counting, so both are refused to any run whose stride is not one. A jump of
+  twenty-five is skip counting, and `keep_pattern` and `number_pattern` are
+  what it is called. Reach for it only when the arithmetic is genuinely
   exhausted, and never as a way past a narrow rung: it cannot widen one.
 
 ## 6. Categorization rules

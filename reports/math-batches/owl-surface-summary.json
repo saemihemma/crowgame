@@ -13,8 +13,8 @@
     "addition",
     "counting"
   ],
-  "owlEligibleProblemCount": 3083,
-  "owlEligibleUniquePromptCount": 3083,
+  "owlEligibleProblemCount": 3082,
+  "owlEligibleUniquePromptCount": 3082,
   "owlEligibleUniqueFactCount": 1592,
   "domainCounts": {
     "addition": 974,
@@ -23,7 +23,7 @@
     "subtraction": 821,
     "comparison": 185,
     "number_sequence": 222,
-    "multiplication": 266,
+    "multiplication": 265,
     "division": 213
   },
   "openingUnlockedInventoryProblemCount": 1183,

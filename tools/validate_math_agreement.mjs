@@ -51,12 +51,40 @@ const BUNDLES = {
     is: 'godot/data/i18n/strings_is.json',
 };
 
+/**
+ * Adjectives that may sit between a numeral and the noun it counts.
+ *
+ * "There are 5 red berries" puts one word between the two, and Rule 1 read only
+ * the next token — so `berries_two_colours`, the very template that needs the
+ * check, defeated it in both locales. Kept to a list rather than "any word",
+ * because any word would step over the preposition in "Deildu 21 í hópa af 3"
+ * and reopen the blind spot below.
+ */
+const COUNTING_ADJECTIVES = {
+    en: new Set(['red', 'blue', 'green', 'yellow']),
+    is: new Set(['rauð', 'blá', 'græn', 'gul', 'rautt', 'blátt', 'grænt', 'gult']),
+};
+
+/**
+ * In Icelandic the adjective inflects too, so it is a marker in its own right.
+ *
+ * "21 blá ber" wants "21 blátt ber", and the noun cannot show it: `ber` is
+ * neuter and identical in both numbers, which is exactly why it was chosen for
+ * these stories. The colour is the only word in the phrase that carries the
+ * number, so the colour is what has to be read. English adjectives do not
+ * inflect and have no entry here.
+ */
+const PLURAL_ADJECTIVES = {
+    en: new Set(),
+    is: new Set(['rauð', 'blá', 'græn', 'gul']),
+};
+
 /** Rule 1: plural nouns, checked immediately after the numeral. */
 const PLURAL_NOUNS = {
     en: new Set([
         'birds', 'berries', 'eggs', 'nests', 'dots', 'stars', 'groups',
         'flowers', 'rings', 'squares', 'diamonds', 'triangles', 'hexagons',
-        'hearts', 'moons',
+        'hearts', 'moons', 'rows',
         // "leaves" is NOT here. It is a counting noun in this catalog AND the
         // third-person verb in "3 take away 1 leaves 2", which is correct
         // English. The noun is never written after a numeral -- a counting
@@ -65,7 +93,7 @@ const PLURAL_NOUNS = {
     ]),
     is: new Set([
         'hópar', 'hópum', 'fuglar', 'fuglarnir', 'punktar', 'stjörnur',
-        'blóm', 'hjörtu', 'hringir', 'ferningar',
+        'blóm', 'hjörtu', 'hringir', 'ferningar', 'raðir',
         // "hópa" is NOT here, and this is the rule's one honest blind spot.
         // Icelandic writes the accusative plural after a preposition whether or
         // not the numeral beside it is what counts the groups: "Deilt í 21 hópa"
@@ -75,6 +103,23 @@ const PLURAL_NOUNS = {
         // What keeps the wrong one out of the pools is the generator: the
         // divisor in a relational division candidate is bounded well under 21.
     ]),
+};
+
+/**
+ * Rule 4, the converse: a SINGULAR noun after a plural numeral.
+ *
+ * Everything above asks whether a singular numeral got a plural word. Nothing
+ * asked the other way round, and the other way round is exactly what a
+ * PLURAL_PARAM keyed to the wrong parameter produces: "5 bird sits on a branch"
+ * renders when the `.one` form is chosen off the wrong number. The round-1 fix
+ * rests on that keying being right, so it needs a check of its own.
+ */
+const SINGULAR_NOUNS = {
+    en: new Set([
+        'bird', 'berry', 'egg', 'nest', 'dot', 'star', 'group', 'flower',
+        'ring', 'square', 'diamond', 'triangle', 'hexagon', 'heart', 'moon', 'row',
+    ]),
+    is: new Set(['hópur', 'fugl', 'punktur', 'stjarna', 'röð', 'hringur', 'ferningur']),
 };
 
 /** Rule 2: copulas, checked immediately before OR after the numeral. */
@@ -117,15 +162,31 @@ export function disagreements(text, locale) {
     const tokens = tokenize(text);
     const found = [];
 
+    const adjectives = COUNTING_ADJECTIVES[locale] ?? new Set();
+    const singulars = SINGULAR_NOUNS[locale] ?? new Set();
+
     for (let i = 0; i < tokens.length; i++) {
         const numeral = tokens[i].word;
         if (!/^\d+$/.test(numeral)) continue;
-        if (isSingular(Number(numeral)) !== 'one') continue;
         const before = tokens[i - 1]?.word;
         const after = tokens[i + 1]?.word;
+        // The noun this numeral counts: the next token, or the one past a single
+        // colour adjective.
+        const counted = after !== undefined && adjectives.has(after) ? tokens[i + 2]?.word : after;
 
-        if (after !== undefined && nouns.has(after)) {
-            found.push(`plural noun after a singular numeral: "${numeral} ${after}"`);
+        if (isSingular(Number(numeral)) !== 'one') {
+            if (counted !== undefined && singulars.has(counted)) {
+                found.push(`singular noun after a plural numeral: "${numeral} ${counted}"`);
+            }
+            continue;
+        }
+
+        if (after !== undefined && (PLURAL_ADJECTIVES[locale] ?? new Set()).has(after)) {
+            found.push(`plural adjective after a singular numeral: "${numeral} ${after}"`);
+            continue;
+        }
+        if (counted !== undefined && nouns.has(counted)) {
+            found.push(`plural noun after a singular numeral: "${numeral} ${counted}"`);
             continue;
         }
         // A list item takes its number from the list, not from the verb.
@@ -164,14 +225,55 @@ const SELF_TEST = [
     { text: 'Something lost 3 and 1 were left. How many were there to start?', locale: 'en', fires: true },
     { text: '70 birds sit on a branch. 1 fly away. How many are left?', locale: 'en', fires: true },
     { text: 'Það eru 21 punktar!', locale: 'is', fires: true },
+    // The adjective gap. `berries_two_colours` puts a colour between the numeral
+    // and its noun in BOTH locales, and the first draft of this rule read only
+    // the next token -- so the one template that most needed the check was the
+    // one template that defeated it.
+    { text: 'There are 5 red berries and 1 blue berries. How many berries in all?', locale: 'en', fires: true },
+    { text: 'Það eru 5 rauð ber og 21 blá ber. Hvað eru berin mörg alls?', locale: 'is', fires: true },
+    { text: 'Það eru 5 rauð ber og 8 blá ber. Hvað eru berin mörg alls?', locale: 'is', fires: false },
+    { text: 'There are 5 rows of 4 eggs. How many eggs in all?', locale: 'en', fires: false },
+    // The converse: a `.one` form chosen off the wrong parameter.
+    { text: '5 bird sits on a branch. 3 more land. How many birds?', locale: 'en', fires: true },
+    { text: 'Það eru 5 hópur.', locale: 'is', fires: true },
     { text: '3 take away 1 leaves 2.', locale: 'en', fires: false },
     { text: '3 hópar af 1 gera 3.', locale: 'is', fires: false },
     { text: 'Deildu 21 í hópa af 3.', locale: 'is', fires: false },
     { text: 'Tölurnar eru 1, 2, 3, 4, 5!', locale: 'is', fires: false },
-    { text: 'The numbers are 1, 2, 3, 4, 5!', locale: 'en', fires: false },
 ];
 
-const selfTestFailures = SELF_TEST.filter(
+/**
+ * Every marker must be load-bearing.
+ *
+ * The hand-written examples above pin the RULES. They do not pin the LISTS: a
+ * reviewer deleted 23 of the 28 markers and every example still passed, which
+ * means most of the vocabulary could rot out without a single test noticing.
+ * These are generated, one per marker, so a marker cannot be removed while the
+ * self-test stands — which is what "the rule cannot be trimmed until it passes"
+ * has to mean if it is to mean anything.
+ */
+function markerPins() {
+    const pins = [];
+    for (const [locale, set] of Object.entries(PLURAL_NOUNS)) {
+        for (const noun of set) pins.push({ text: `1 ${noun}`, locale, fires: true });
+    }
+    for (const [locale, set] of Object.entries(SINGULAR_NOUNS)) {
+        for (const noun of set) pins.push({ text: `5 ${noun}`, locale, fires: true });
+    }
+    for (const [locale, set] of Object.entries(PLURAL_COPULAS)) {
+        for (const verb of set) pins.push({ text: `there ${verb} 1 here`, locale, fires: true });
+    }
+    for (const [locale, set] of Object.entries(BARE_PLURAL_VERBS)) {
+        for (const verb of set) pins.push({ text: `1 ${verb} away`, locale, fires: true });
+    }
+    for (const [locale, set] of Object.entries(PLURAL_ADJECTIVES)) {
+        for (const adjective of set) pins.push({ text: `1 ${adjective} ber`, locale, fires: true });
+    }
+    return pins;
+}
+
+const ALL_SELF_TESTS = [...SELF_TEST, ...markerPins()];
+const selfTestFailures = ALL_SELF_TESTS.filter(
     ({ text, locale, fires }) => (disagreements(text, locale).length > 0) !== fires,
 );
 if (selfTestFailures.length > 0) {
@@ -228,7 +330,7 @@ for (const file of readdirSync(MATH_DIR).filter(f => f.endsWith('.json')).sort()
 
 console.log(
     `number agreement: rendered ${checked} strings across ${Object.keys(bundles).length} locales `
-    + `(self-test: ${SELF_TEST.length} examples)`,
+    + `(self-test: ${SELF_TEST.length} sentences + ${ALL_SELF_TESTS.length - SELF_TEST.length} marker pins)`,
 );
 if (failures.length > 0) {
     console.log(`  FAILED: ${failures.length} disagreement(s)`);

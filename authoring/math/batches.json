@@ -11221,7 +11221,7 @@
       "id": "batch_36_multiplication_division_density",
       "title": "Multiplication and division density",
       "theme": "the identity rung, the beyond-tables rung, and the equal-groups and sharing stories the table ladder was missing",
-      "targetCount": 75,
+      "targetCount": 67,
       "templates": [
         {
           "id": "div_by_one",
@@ -11436,35 +11436,6 @@
           "rightRange": [
             2,
             10
-          ]
-        },
-        {
-          "id": "mult_story_tens",
-          "kind": "multiplication",
-          "family": "equal_groups_story",
-          "bandId": "mult_ladder_fill",
-          "count": 8,
-          "skill": "multiplication_word_problems",
-          "promptVariants": [
-            "story_nests"
-          ],
-          "hintStrategy": "multiply_groups",
-          "explanationStrategy": "product_result",
-          "strictVariants": true,
-          "misconceptionTags": [
-            "added_instead"
-          ],
-          "templateStepRange": [
-            12,
-            12
-          ],
-          "leftRange": [
-            2,
-            9
-          ],
-          "rightRange": [
-            10,
-            90
           ]
         },
         {

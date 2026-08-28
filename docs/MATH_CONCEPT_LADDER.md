@@ -452,14 +452,25 @@ multiset of numbers in play, what the prompt writes plus what it asks for, so
 collapsing `deriveCurriculumStep` already does when it puts all three on one
 rung.
 
-Six rungs are declared narrow and every one of them is at a structural ceiling
-rather than short of authoring. Subtraction step 5 is a maximum operand of ten
-with no borrow, and ten's ones digit is zero, so only `10 - 0` and `10 - 10`
-land there — the two halves of one bond. Subtraction step 15 has two triples.
-Multiplication steps 9 and 10 are the seven- and eight-times tables under the
-earliest-table rule, which leaves `7×8`, `7×9` and `8×9` between them, and
-division steps 10 and 11 inherit exactly those by inverting them. That the top
-of the table ladder is nearly empty is the pedagogical point, not a gap.
+Ten rungs are declared narrow and every one of them is at a structural ceiling
+rather than short of authoring. Two clusters, and they are opposite ends of the
+same ladder. At the **bottom**, addition steps 0 and 1 have three triples each
+because §1 says they can have no more — which is exactly the rung where §5 puts
+the floor on presentation instead, twelve marker shapes and every short framing,
+since the arithmetic cannot be widened and the way it looks can. At the **top**,
+multiplication steps 8, 9 and 10 are the six-, seven- and eight-times tables
+under the earliest-table rule, which between them own only `6×7`, `6×8`, `6×9`,
+`7×8`, `7×9` and `8×9`; division steps 9, 10 and 11 inherit exactly those by
+inverting them. That the top of the table ladder is nearly empty is the
+pedagogical point, not a gap. Subtraction 5 and 15 are the two degenerate ends
+of the twenties: step 5 is a maximum operand of ten with no borrow, and ten's
+ones digit is zero, so only `10 - 0` and `10 - 10` can land there.
+
+The report carries `problemsPerFact` beside the width, because width alone
+cannot rank two narrow rungs against each other — division step 11 and
+subtraction step 5 are both one fact wide and are not the same problem — and how
+often a child meets the same triple is what actually makes an ELO signal
+streaky.
 
 ### Dead zones: rungs nothing can land on
 

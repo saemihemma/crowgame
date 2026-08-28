@@ -6,6 +6,7 @@ import { ELOManager } from '../math-kernel/math/ELOManager';
 import { MathProblemManager } from '../math-kernel/math/MathProblemManager';
 import { selectOwlProblem, type OwlSelectionConfig } from '../math-kernel/math/owlSelection';
 import { buildProblemReplayKey } from '../math-kernel/math/problemReplayKey';
+import { parseWordedArithmetic } from '../math-kernel/math/wordedArithmetic';
 import { LearnerStateManager } from '../math-kernel/systems/LearnerStateManager';
 import { MathTuning } from '../math-kernel/math/MathTuning';
 import type { LearnerAttemptSubmission, MathDomain, MathProblem, MathProblemPool, SelectionLane } from '../math-kernel/utils/Types';
@@ -304,6 +305,13 @@ type RawCandidate = {
     hint?: string;
     explanation?: string;
     optionPreference?: number[];
+    /**
+     * Tags this candidate earns beyond its template's. A compare story and a
+     * plain sum come off the SAME template and are wrong in different ways, so
+     * "the child added instead of subtracting" is a property of the shape, not
+     * of the batch.
+     */
+    misconceptionTags?: string[];
 };
 
 function readJson<T>(filePath: string): T {
@@ -1159,8 +1167,89 @@ function storyFits(variant: string, left: number, right: number, correct: number
             return left <= 20 && right <= 20 && correct >= 2;
         case 'story_difference':
             return left > right;
+        // An array or a set of equal groups is a PICTURE, and the numbers have
+        // to be ones a child can hold in their head as one. "8 nests, each with
+        // 90 eggs" and "48 rows of 4 eggs" both parse, both multiply, and
+        // neither is a nest or a row. The equal-groups story was already inside
+        // these bounds by the shape of the templates feeding it; the array was
+        // not, and nothing said so.
+        case 'story_nests':
+        case 'story_rows':
+            return left <= 12 && right <= 12;
         default:
             return true;
+    }
+}
+
+/**
+ * The teaching a STORY earns, where its template's strategy fields would teach
+ * the wrong thing.
+ *
+ * A template names one hint strategy and one explanation strategy for every
+ * candidate it renders, which is right while every candidate is the same
+ * situation. It stopped being right when compare and part-part-whole arrived:
+ * both come off subtraction templates, so both inherited count-back and
+ * take-away, and
+ *
+ *     You have 10 berries. A bird has 5 berries. How many more do you have?
+ *     hint: Start at 10, then count back 5.
+ *     expl: 10 take away 5 leaves 5.
+ *
+ * shipped. Nothing is taken away in that story. The bird's berries are not
+ * removed from yours; the two sets are matched against each other, and the
+ * strategy is to count up from the smaller to the larger. Teaching take-away
+ * over a compare situation is the exact thing shipping four CGI situations was
+ * meant to stop, undone one field below the prompt.
+ *
+ * Every sentence here renders from a template that is already in the phrasing
+ * catalog and already translated -- the math.hint.rel.* / math.expl.rel.* family
+ * the relational shapes use -- because counting up to a whole is the same
+ * strategy whether the unknown is written as a blank or told as a story.
+ *
+ * The distractors matter as much. §4 requires "added-instead-of-subtracted",
+ * and the compare pair is where that misconception actually lives: the two
+ * shapes read the SAME two numbers and run opposite ways, so each one's
+ * distractor list leads with the other one's answer.
+ */
+function storyScaffold(
+    variant: string,
+    left: number,
+    right: number,
+    correct: number,
+): Pick<RawCandidate, 'hint' | 'explanation' | 'optionPreference' | 'misconceptionTags'> | null {
+    switch (variant) {
+        // Compare, difference unknown. left is yours, right is the bird's,
+        // correct is the gap. Count up from the smaller to the larger.
+        case 'story_difference':
+            return {
+                hint: `Something and ${right} makes ${left}. Start at ${right} and count up to ${left}.`,
+                explanation: `${right} and ${correct} makes ${left}.`,
+                optionPreference: [left + right, correct - 1, correct + 1, right],
+                misconceptionTags: ['added_instead', 'off_by_one'],
+            };
+        // Compare, quantity unknown: the same two numbers, added. Its own
+        // leading distractor is the difference -- the other half of the pair --
+        // except when the two quantities are equal, where the difference is zero
+        // and a child eliminates it without doing any arithmetic (§4: every
+        // distractor plausible in magnitude).
+        case 'story_more_than':
+            return {
+                optionPreference: left - right >= 1
+                    ? [left - right, correct - 1, correct + 1, left]
+                    : [correct - 1, correct + 1, left, correct + 2],
+                misconceptionTags: ['subtracted_instead', 'off_by_one'],
+            };
+        // Part-part-whole, part unknown. left is the whole, right the known
+        // part. Nothing happened to anything; there are two parts and a whole.
+        case 'story_the_rest':
+            return {
+                hint: `${left} is the whole, and ${right} is one part. What is the other part?`,
+                explanation: `${right} and ${correct} makes ${left}.`,
+                optionPreference: [right, correct - 1, correct + 1, left],
+                misconceptionTags: ['added_instead', 'off_by_one'],
+            };
+        default:
+            return null;
     }
 }
 
@@ -1319,6 +1408,7 @@ function renderArithmeticCandidates(template: ArithmeticTemplateSpec): RawCandid
                     complexity,
                     ageBand: template.ageBand ?? [5, 7],
                     domain: template.kind,
+                    ...(storyScaffold(variant, left, right, correct) ?? {}),
                 });
             }
         }
@@ -1417,6 +1507,12 @@ function renderSequenceCandidates(template: SequenceTemplateSpec): RawCandidate[
             for (const variant of promptVariants) {
                 // A run that climbs is not "counting back", whatever the template
                 // asked for.
+                // Talning áfram and talning aftur á bak are UNIT counting. A run
+                // that jumps by 25 is skip counting, and calling it "counting on"
+                // names the wrong strategy in both languages -- the catalog
+                // already has keep_pattern and number_pattern for those. The
+                // direction check alone let 25s and 50s through.
+                if ((variant === 'count_on' || variant === 'count_back') && Math.abs(step) !== 1) continue;
                 if (variant === 'count_on' && step <= 0) continue;
                 if (variant === 'count_back' && step >= 0) continue;
                 const promptText = applyPromptLeadIn(formatSequencePrompt(variant, sequence), template.promptLeadIn);
@@ -1522,12 +1618,45 @@ function buildProblemFromCandidate(batch: MathBatchSpec, template: BatchTemplate
         hint: candidate.hint ?? renderHint(template.hintStrategy, { ...candidate.values, correct: candidate.correct }),
         explanation: candidate.explanation
             ?? renderExplanation(template.explanationStrategy, { ...candidate.values, correct: candidate.correct }),
-        misconceptionTags: template.misconceptionTags,
+        // A candidate that names its own tags REPLACES the template's rather than
+        // adding to them. A compare story comes off a subtraction template, and
+        // "counting_back_error" is not a mistake it can produce -- nothing is
+        // counted back in it. Merging would have left the analytics claiming a
+        // misconception the problem cannot express.
+        misconceptionTags: candidate.misconceptionTags ?? template.misconceptionTags,
         generator: buildGeneratorMetadata(batch, template, band, candidate.values),
     };
 
     placeholder.curriculumStep = deriveCurriculumStep(placeholder);
     placeholder.difficultyTraits = deriveDifficultyTraits(placeholder);
+
+    // §4: "Steps 0-2 carry no story: a narrative is a second thing to decode on
+    // top of the fact."
+    //
+    // Scoped to the two domains a new child actually starts in, and this is a
+    // real reading of the rule rather than a convenient one. The rule is about
+    // READING LOAD at the bottom of the ladder -- a five-year-old meeting their
+    // first sum, who cannot yet decode a sentence and a fact at once. Read as a
+    // step index across every domain it says something else entirely, and
+    // something §1 forbids: division steps 0-2 are sharing by two, and §1's own
+    // words are "Sharing stories (partitive) are the natural intro framing" for
+    // division. A child reaching division step 2 has climbed the whole additive
+    // ladder first; they are eight, not five, and the array is the standard
+    // model for meeting multiplication rather than a second thing to decode.
+    //
+    // Checked on the DERIVED step rather than the operand size the generator
+    // used to approximate it with. For these two domains the two are provably
+    // the same test -- addition step = maxOperand - 1 without a carry, so step
+    // <= 2 is exactly maxOperand <= 3, and subtraction step = maxOperand - 5, so
+    // step <= 2 is exactly maxOperand <= 7 -- but the step is what the rule says
+    // and reading it off an operand was one derivation change away from drifting.
+    if (
+        (placeholder.domain === 'addition' || placeholder.domain === 'subtraction')
+        && placeholder.curriculumStep <= 2
+        && parseWordedArithmetic(placeholder.prompt.text)
+    ) {
+        return null;
+    }
 
     if (template.templateStepRange) {
         const [minTemplateStep, maxTemplateStep] = template.templateStepRange;

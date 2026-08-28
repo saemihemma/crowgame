@@ -6,7 +6,7 @@
   "_narrowComment": "How WIDE a rung is, as opposed to how many problems sit on it. `thin` counts problems; `narrow` counts distinct facts, because twenty problems drawn from two facts is a rung a child can pass by remembering two answers, and the problem count cannot see the difference. More framings of the same fact raise the count and never the width, which is exactly why this has to be measured separately before any framing set is widened. Same discipline as knownGaps and knownThin: an undeclared narrow rung fails the build, and so does a declaration for a rung that has since widened. A fact is the multiset of numbers in play -- what the prompt writes plus what it asks for -- so \"11 + 3\", \"3 + 11\" and \"11 + ? = 14\" are ONE fact, which is also how deriveCurriculumStep already treats them. tools/validate_math_concepts.mjs documents the proxy.",
   "gapPolicy": {
     "minPerStep": 6,
-    "minFactsPerStep": 3
+    "minFactsPerStep": 4
   },
   "knownGaps": [],
   "_unreachableComment": "Concepts with authored problems that the owl can never serve, each with a reason. EMPTY as shipped: the blanket operand rail was removed by the owner's grade-4 decision (2026-08) — the step ladder paces each child instead — so every authored concept is reachable. tools/validate_math_concepts.mjs re-populates this obligation automatically if a numeric rail ever returns.",
@@ -54,6 +54,28 @@
         11
       ],
       "why": "Inverts multiplication step 10, which has one fact. 72/8 and 72/9 are the two halves of 8x9 and therefore one triple."
+    },
+    {
+      "domain": "addition",
+      "steps": [
+        0,
+        1
+      ],
+      "why": "The bottom of the ladder, and §1 says so in as many words: \"addition step 0 is the four facts inside 0+0..1+1 and no authoring can add a fifth\". Three triples each -- {0,0,0}, {0,1,1}, {1,1,2} on step 0, and {0,2,2}, {1,2,3}, {2,2,4} on step 1, since 1+0 is the same triple as 0+1. This is exactly the rung where §5 puts the floor on PRESENTATION instead: twelve marker shapes and every short framing, because the arithmetic cannot be widened and the way it looks can."
+    },
+    {
+      "domain": "multiplication",
+      "steps": [
+        8
+      ],
+      "why": "The six-times table under the earliest-table rule. Every 6x fact belonging to an earlier table is that table's, and 6x6 is a square, which leaves 6x7, 6x8 and 6x9 -- the three the classroom data calls the hardest single facts, so the rung is narrow and heavy at once."
+    },
+    {
+      "domain": "division",
+      "steps": [
+        9
+      ],
+      "why": "Inverts multiplication step 8 and inherits its three facts: 42, 48 and 54, each divisible two ways."
     }
   ],
   "concepts": [

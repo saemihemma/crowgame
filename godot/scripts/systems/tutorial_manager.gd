@@ -103,7 +103,24 @@ const BELOW_OFF := "off"
 ## Behind means the concept's LAST rung is below the learner's current step, not
 ## its first. A concept the learner is standing inside is the one they are working
 ## on, and teaching that is the whole point of the system.
+##
+## AN OVERLAY IS NEVER BEHIND. Its `steps` are a declared span for the coverage
+## report, not a stretch of ladder the child walks along -- an overlay claims
+## problems by SHAPE (concept_ladder.gd::overlay_for_problem matches on skill and
+## never reads the range at all). So the landmine this function exists to defuse
+## cannot happen to one: a child meeting "68 + ? = 73" at step 30 has not left
+## the missing-part idea behind, they have just met it for the first time, and
+## the full lesson is exactly what they are owed.
+##
+## Written down rather than left to the numbers, because it WAS left to the
+## numbers and that was fragile in both directions. While the overlays were
+## declared 2-9 and 3-12, any learner past those rungs got the below-level hedge
+## on an idea they had never seen; widening the spans to 46 in 2026-08 silently
+## flipped the same five overlays to never-behind, which is the right behaviour
+## reached by accident and one edit away from reverting.
 func _is_behind(concept: Dictionary) -> bool:
+	if concept.has("requires"):
+		return false
 	var domain := String(concept.get("domain", ""))
 	var steps: Variant = concept.get("steps", null)
 	if domain == "" or not (steps is Array) or (steps as Array).size() < 2:

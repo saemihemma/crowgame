@@ -278,6 +278,35 @@ const RELATIONAL_SHAPES := {
 	"missing_dividend": "division.start_unknown",
 }
 
+## An overlay teaches a SHAPE, so a learner cannot be past it.
+##
+## The below-level hedge (`math/tutorial_below_level`) exists because placement
+## can carry a child over rungs 3-5 unserved, and the comfort lane then opens a
+## four-card lesson for an idea they left behind. An overlay is not a rung: a
+## child meeting their first number bond at step 30 has met it for the FIRST
+## time, and owes nothing to the ladder they climbed to get there. This pins that
+## the answer does not depend on how wide the overlay's declared span happens to
+## be -- the span moved from 2-9 to 2-46 in 2026-08 and the behaviour must not
+## have moved with it.
+func test_an_overlay_is_never_below_level() -> void:
+	_fresh_save()
+	_stand_on("addition", 30)
+	var bond := {"domain": "addition", "curriculumStep": 30, "skills": ["missing_addend"]}
+	var concept := ConceptLadder.concept_for_problem(bond)
+	assert_eq(String(concept.get("id", "")), "addition.missing_part", "the bond reaches its own overlay")
+	var offered := TutorialManager.tutorial_for_problem(bond)
+	assert_true(not offered.is_empty(), "a first-ever bond is taught, however high the rung")
+	assert_eq(TutorialManager.depth_for_problem(bond, String(offered.get("id", ""))),
+		TutorialManager.depth_for(String(offered.get("id", ""))),
+		"and taught at full depth, not the below-level brief")
+
+	# The base concept on the same rung is still held to the rule.
+	var ordinary := {"domain": "addition", "curriculumStep": 2, "skills": ["basic_addition"]}
+	assert_true(TutorialManager.tutorial_for_problem(ordinary).is_empty()
+			or String(Config.flag("math/tutorial_below_level", "brief")) != "off",
+		"a base concept the learner has walked past is still treated as below level")
+	_fresh_save()
+
 func test_every_relational_shape_reaches_its_own_lesson() -> void:
 	var counted := {}
 	for problem: Variant in DataManager.get_all_math_problems():
