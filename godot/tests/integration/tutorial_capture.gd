@@ -50,6 +50,16 @@ func _ready() -> void:
 			# mid-pop is half transparent and misreads as a contrast bug.
 			for i in 20:
 				await get_tree().process_frame
+			# And long enough for the card to finish DOING whatever it does. A
+			# fixed count was fine while every picture stood still; an action card
+			# shot at frame 20 of 66 shows a berry halfway off the card, which
+			# reads as a layout bug rather than as a frame of an animation. Asked
+			# rather than counted, so retiming an action in the tuning file cannot
+			# silently put these back mid-flight.
+			var guard := 0
+			while overlay.visual_is_animating() and guard < 600:
+				await get_tree().process_frame
+				guard += 1
 			await RenderingServer.frame_post_draw
 			var path := "%s/%s__%s__%d_%s.png" % [
 				out_dir, locale, id.replace(".", "_"), card + 1, String(overlay.current_card().get("body", ""))]

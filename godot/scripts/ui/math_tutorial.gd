@@ -101,6 +101,11 @@ static func _cards_for_depth(tutorial: Dictionary, depth: String) -> Array:
 
 ## FULL or BRIEF. Public so a probe can assert the rule fired, rather than
 ## inferring depth from a card count that two different lessons could share.
+## Whether the card on screen is still playing its action -- see
+## TutorialVisual.is_action_playing().
+func visual_is_animating() -> bool:
+	return _visual != null and _visual.is_action_playing()
+
 func depth() -> String:
 	return _depth
 

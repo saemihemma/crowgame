@@ -274,6 +274,54 @@ The selected problem is held across the lesson and asked afterwards, so the
 child gets the question they were just taught rather than whatever the selector
 would pick a second later.
 
+## Two experiments: showing the verb, and showing the symbol
+
+Both come from one audit finding, worth stating plainly because it shaped the
+deck: **the pictures showed the nouns and the text carried the verbs.**
+`count_all` drew two groups of berries and "put them together" was a sentence.
+`take_away` drew berries already crossed out and "one gets eaten" was a sentence.
+The mathematical ACTION -- the thing being taught -- was never in the picture.
+Across the 24 earliest cards that was 305 words of prose, 12.7 a card, for
+five- to seven-year-olds who are still learning to read.
+
+The research is blunt about the cost: basic maths can be taught and assessed with
+no verbal instruction at all, and *a single word in a spoken instruction can make
+a child fail a task they complete without it*. Text is not the enemy -- it stays,
+and it doubles as the voice-over script -- but it has to support the picture
+rather than be the only place the idea lives.
+
+**1. The action plays.** A renderer may declare `pacing/action_ms_<visual>` and
+animate itself once when the card opens. `count_all` slides the second group in
+beside the first, so two piles becoming one pile IS the plus sign. `take_away`
+lifts the eaten ones off the row and fades them before the cross lands, so a
+child sees the going rather than the aftermath.
+
+Nothing waits on it. The nav is live from the first frame, nothing is hidden
+behind a delay, and tapping the picture plays it again -- the affordance that
+makes an animated explanation safe for a child who needs it three times. A visual
+with no `pacing` entry is a standing picture and starts finished, so this changed
+nothing for cards that show a state rather than a doing.
+
+**2. The symbol gets its quantity.** `equation` takes `tokens: true` and draws
+that many dots under every numeral. On the earliest rungs the abstract card is
+the first place a child meets `+` and `=` at all, and what those symbols meant
+was carried by "the plus sign means put together" -- a sentence, again.
+
+The dots are laid out per part rather than under one drawn string: a numeral is
+narrow and the quantity it stands for is not, so the spacing has to come from the
+dots. And **the total is drawn out of its parts** -- the dots under the answer
+keep the two colours they had either side of the plus, so `4 + 2 = 6` shows four
+pale and two gold making six. That is the part-whole idea stated in the picture,
+which is what a child needs before the symbol means anything.
+
+Capped at ten (`EQUATION_TOKEN_MAX`) and off by default: eight dots under a
+numeral is a picture, eighty is a smear. On for the rungs where the symbol itself
+is new.
+
+Both are experiments in the honest sense: tuned from data, switchable without a
+code change, and the next thing to judge them is a child rather than a test.
+
+
 ## Where to change things
 
 | I want to change… | Edit |

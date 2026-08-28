@@ -39,6 +39,13 @@ const RENDERERS := {
 ## numerals -- and the first version of this fix only changed one of them.
 ## A hundred flat is ten rods wide, and it is scored to say so.
 ## Four places is a thousand-column board, which is as wide as the strip takes.
+## Past this many, dots under a numeral stop being countable and become texture.
+## How far a taken token rises before it is crossed out, as a fraction of one
+## token. Big enough to read as leaving, small enough to stay in the band.
+const LIFT_AWAY := 0.7
+
+const EQUATION_TOKEN_MAX := 10
+
 const BOARD_MAX_PLACES := 4
 
 const FLAT_SCORING := 10
@@ -63,6 +70,61 @@ const FRAME_CAPACITY := FRAME_COLUMNS * FRAME_ROWS
 var _visual := ""
 var _params: Dictionary = {}
 
+## HOW FAR THROUGH ITS ACTION THIS CARD IS, 0 to 1.
+##
+## The deck's pictures showed the NOUNS and left the VERBS to the sentence
+## underneath: count_all drew two groups of berries and "put them together" was
+## text; take_away drew berries already crossed out and "one gets eaten" was
+## text. A child who cannot read the sentence never sees the doing, which is the
+## whole idea being taught -- and this deck is for five- to seven-year-olds.
+##
+## So an opted-in renderer plays its action once when the card opens. It is a
+## demonstration, not a timer on the child: nothing advances, nothing is missed,
+## and tapping the picture plays it again for as long as they want.
+var _t := 1.0
+var _anim_seconds := 0.0
+
+## Eased 0..1 for the k-th step of `count` steps, so a row of tokens arrives one
+## after another rather than all at once. Returns 1.0 when nothing is animating,
+## which is what keeps every non-animated renderer unchanged.
+func _step_t(k: int, count: int) -> float:
+	if count <= 0:
+		return 1.0
+	var span := 1.0 / float(count)
+	return clampf((_t - float(k) * span) / span, 0.0, 1.0)
+
+func _process(delta: float) -> void:
+	if _t >= 1.0:
+		set_process(false)
+		return
+	if _anim_seconds <= 0.0:
+		_t = 1.0
+	else:
+		_t = minf(1.0, _t + delta / _anim_seconds)
+	queue_redraw()
+
+## Is this card still playing its action?
+##
+## Public so the capture harness can wait for the end state instead of counting
+## frames: a still shot fired mid-flight shows a berry halfway off the card and
+## reads as a layout bug, and a frame count goes stale the moment an action is
+## retimed in the tuning file.
+func is_action_playing() -> bool:
+	return _t < 1.0
+
+## Play the action again. The picture is the explanation, so a child who missed
+## it must be able to ask for it back without leaving the card.
+func replay() -> void:
+	if _anim_seconds <= 0.0:
+		return
+	_t = 0.0
+	set_process(true)
+	queue_redraw()
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and (event as InputEventMouseButton).pressed:
+		replay()
+
 ## Height is per-VISUAL, not one number for the deck.
 ##
 ## Almost every card is one picture of some objects and 122px is generous for it
@@ -83,10 +145,19 @@ func setup(visual: String, params: Dictionary) -> void:
 	var default_h := float(Config.tutorial("layout/visual_height", 190))
 	custom_minimum_size = Vector2(0,
 		float(Config.tutorial("layout/visual_height_%s" % visual, default_h)))
+	# Only the renderers that draw an ACTION animate. Everything else is a
+	# standing picture and starts finished, so this cannot slow a card down or
+	# hide anything behind a wait.
+	_anim_seconds = float(Config.tutorial("pacing/action_ms_%s" % visual, 0.0)) / 1000.0
+	_t = 0.0 if _anim_seconds > 0.0 else 1.0
+	set_process(_anim_seconds > 0.0)
 	queue_redraw()
 
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# STOP, not IGNORE: the picture takes taps now, because tapping it replays
+	# the action. The tutorial's own nav is separate buttons, so nothing under
+	# here loses a press.
+	mouse_filter = Control.MOUSE_FILTER_STOP
 	ThemeManager.theme_changed.connect(func(_id): queue_redraw())
 	resized.connect(queue_redraw)
 
@@ -157,6 +228,15 @@ func _int(key: String, fallback: int = 0) -> int:
 
 ## Two groups of objects, side by side and clearly separate. The first picture
 ## of addition a child should ever see: not a symbol, two piles.
+## PUT TOGETHER, shown as putting together.
+##
+## The second group starts off to the side and slides in beside the first, so a
+## child watches two piles become one pile. That motion IS the plus sign, and it
+## is what the card used to leave to the words "put them together and count them
+## all" -- a sentence a five-year-old cannot read.
+##
+## The end state is exactly what the still version drew, so a card with no
+## action time behaves as it always did.
 func _draw_count_all() -> void:
 	var a := _int("a")
 	var b := _int("b")
@@ -173,8 +253,20 @@ func _draw_count_all() -> void:
 		_token(Vector2(x + i * (token + gap), y), token * 0.5, _role("token_a", "owl"))
 	if b > 0:
 		var bx := x + a_w + group_gap
+		# Slide in from a group-gap further out, easing to rest. The travel is one
+		# extra gap rather than off-screen: far enough to read as arriving, near
+		# enough that the group is on the card the whole time and can be counted.
+		var travel := (1.0 - _ease_out(_t)) * (group_gap * 2.0 + token)
 		for i in b:
-			_token(Vector2(bx + i * (token + gap), y), token * 0.5, _role("token_b", "accent"))
+			_token(Vector2(bx + travel + i * (token + gap), y), token * 0.5,
+				_role("token_b", "accent"))
+
+## Ease-out, so a movement decelerates into its resting place instead of
+## stopping dead. The only easing in this file, kept here rather than in a curve
+## resource so a card cannot be authored with a motion nobody can read.
+func _ease_out(t: float) -> float:
+	var c := clampf(t, 0.0, 1.0)
+	return 1.0 - (1.0 - c) * (1.0 - c)
 
 ## Five and five, with the empty cells still drawn. The gaps are half the
 ## lesson: "six" and "four more to ten" are the same picture.
@@ -270,28 +362,53 @@ func _draw_number_line() -> void:
 		draw_polyline(arc, hop_colour, _tune("hop_thickness", 4.0))
 
 ## What is left, with what went still on the board.
+## TAKE AWAY, shown as taking away.
+##
+## The ones being eaten lift off the row and fade as they go, and only then does
+## the cross land. Before this the card drew the aftermath -- berries already
+## crossed out, already grey -- and "one gets eaten" was a sentence. The child
+## saw a result and had to be told what happened to it.
 func _draw_take_away() -> void:
 	var total := _int("total")
 	var gone := _int("gone")
 	var kept := maxi(0, total - gone)
-	var colours: Array = []
-	for i in total:
-		colours.append(_role("token_a", "owl") if i < kept else _role("token_gone", "text_dim"))
 	var token := _tune("token_size", 26.0)
 	var gap := _tune("token_gap", 9.0)
 	var per_row := maxi(1, int((size.x - token) / (token + gap)))
 	var rows: int = int(ceil(float(total) / float(per_row)))
-	_fit(mini(total, per_row) * (token + gap), rows * (token + gap))
-	_token_row(total, Vector2(size.x * 0.5, size.y * 0.5 - token * 0.5), colours)
-	# Cross the taken ones after the row, so the geometry is computed once.
-	for i in range(kept, total):
+	# The lift is part of the picture and has to be BUDGETED, not just drawn: at
+	# full token height the departing berry climbed out of the visual band and
+	# landed on the progress dots above it. Reserving it here lets _fit scale the
+	# whole motion to fit instead.
+	var lift := token * LIFT_AWAY
+	_fit(mini(total, per_row) * (token + gap), rows * (token + gap) + lift)
+
+	var at_of := func(i: int) -> Vector2:
 		var col := i % per_row
 		var row := i / per_row
 		var wide: int = mini(total - row * per_row, per_row)
 		var row_w := wide * token + maxf(0.0, wide - 1) * gap
-		var at := Vector2(size.x * 0.5 - row_w * 0.5 + col * (token + gap) + token * 0.5,
-			size.y * 0.5 - token * 0.5 + row * (token + gap))
-		_cross(at, token * 0.36)
+		# Nudged down by half the lift, so the row sits centred in the band it
+		# shares with the departing berries rather than at the band's middle.
+		return Vector2(size.x * 0.5 - row_w * 0.5 + col * (token + gap) + token * 0.5,
+			size.y * 0.5 - token * 0.5 + lift * 0.5 + row * (token + gap))
+
+	var kept_colour := _role("token_a", "owl")
+	var gone_colour := _role("token_gone", "text_dim")
+	# Only the ones that stay are drawn at rest. An earlier version drew all of
+	# them and then painted the board colour back over the leavers, which leaves
+	# an outlined hole -- _token strokes an outline, so "erasing" with it draws a
+	# ring rather than nothing.
+	for i in kept:
+		_token(at_of.call(i), token * 0.5, kept_colour)
+
+	# The taken ones, one after another, so a child can follow which is leaving.
+	for i in range(kept, total):
+		var k := _step_t(i - kept, maxi(1, gone))
+		var at: Vector2 = at_of.call(i) - Vector2(0.0, _ease_out(k) * lift)
+		_token(at, token * 0.5, Color(gone_colour, 1.0 - _ease_out(k) * 0.5))
+		if k >= 1.0:
+			_cross(at, token * 0.36)
 
 ## Two towers and their numerals, in the shape of the snap cubes a classroom
 ## compares with: squares stacked edge to edge, so the taller tower IS the
@@ -833,12 +950,107 @@ func _draw_part_whole() -> void:
 ## is not a stylistic variant: it is the sentence a child has to be able to read
 ## before "=" can mean "the same amount as" rather than "compute now", and no
 ## other card in the pack shows it.
+## THE EQUATION, and optionally what each numeral MEANS.
+##
+## `tokens: true` draws that many dots under every number in the sum. That is
+## the whole of the second experiment: on the earliest rungs the abstract card
+## was the first place a child met `+` and `=` at all, and what those symbols
+## meant was carried by the sentence underneath -- "the plus sign means put
+## together". A child who cannot read that sentence meets two new symbols with
+## nothing to attach them to.
+##
+## With the tokens drawn, the symbol and the quantity are on screen together and
+## the row under the sum reads as the same picture the `see` card just showed.
+## This is the representational-to-abstract bridge the deck is built on, made
+## literal for the rungs where the abstraction is brand new.
+##
+## Off by default, and it should stay off once the numbers get big: eight dots
+## under a numeral is a picture, eighty is a smear.
 func _draw_equation() -> void:
 	var size_px := _tune("equation_font_size", 46.0)
 	var op := String(_params.get("op", "+"))
 	var left := str(_params["a"]) if _params.has("a") else "?"
 	var right := str(_params["b"]) if _params.has("b") else "?"
 	var whole := str(_params["result"]) if _params.has("result") else "?"
-	var text := "%s = %s %s %s" % [whole, left, op, right] if String(_params.get("form", "")) == "total_first" \
+	var total_first := String(_params.get("form", "")) == "total_first"
+	var text := "%s = %s %s %s" % [whole, left, op, right] if total_first \
 		else "%s %s %s = %s" % [left, op, right, whole]
-	_numeral(text, Vector2(size.x * 0.5, size.y * 0.5), size_px, _role("numeral", "paper"))
+	if not bool(_params.get("tokens", false)):
+		_numeral(text, Vector2(size.x * 0.5, size.y * 0.5), size_px, _role("numeral", "paper"))
+		return
+
+	# LAID OUT PART BY PART, not as one drawn string.
+	#
+	# The first version drew the sum as one string and squeezed the dots into
+	# whatever width each numeral happened to occupy -- about four pixels each,
+	# which reads as dirt on the screen rather than as a quantity. A numeral is
+	# narrow and the thing it stands for is not, so the spacing has to come from
+	# the dots, and that means placing the parts rather than one finished string.
+	var font := _font()
+	# The EQUALS SIGN is a part like any other. Leaving it out of this list --
+	# which the first version did -- drew "2 + 1   3" and quietly deleted the one
+	# symbol the card is there to introduce.
+	var parts: Array = [whole, "=", left, op, right] if total_first \
+		else [left, op, right, "=", whole]
+	var second_i: int = 4 if total_first else 2
+	var dot := _tune("token_size", 26.0) * 0.62
+	var dot_gap := dot * 0.4
+	var pad := dot
+
+	var widths: Array[float] = []
+	var band_w := 0.0
+	for part_i in parts.size():
+		var part := String(parts[part_i])
+		var w := font.get_string_size(part, HORIZONTAL_ALIGNMENT_LEFT, -1, int(size_px)).x
+		var count := _token_count(part)
+		if count > 0:
+			w = maxf(w, count * dot + maxf(0.0, count - 1) * dot_gap)
+		widths.append(w)
+		band_w += w + (pad if part_i < parts.size() - 1 else 0.0)
+
+	_fit(band_w, size_px + dot * 2.2)
+	var y := size.y * 0.5 - dot * 0.7
+	var run := size.x * 0.5 - band_w * 0.5
+	var dot_y := y + size_px * 0.64
+	for part_i in parts.size():
+		var part := String(parts[part_i])
+		var w: float = widths[part_i]
+		var is_operator := not part.is_valid_int()
+		_numeral(part, Vector2(run + w * 0.5, y), size_px,
+			_role("mark", "accent") if is_operator else _role("numeral", "paper"))
+		var count := _token_count(part)
+		if count > 0:
+			# The second operand keeps the colour it had when it arrived on the
+			# `see` card, so "the ones that joined" are the same ones here.
+			var run_w := count * dot + maxf(0.0, count - 1) * dot_gap
+			# THE TOTAL IS DRAWN OUT OF ITS PARTS. On a sum, the dots under the
+			# answer keep the two colours they had on either side of the plus, so
+			# the picture says "these and these ARE these" rather than showing a
+			# third unrelated pile. That is the part-whole idea, and it is the one
+			# a child needs before the symbol means anything.
+			# second_i is the SECOND operand, so the first is two slots back -- the
+			# operator sits between them. Reading one back lands on the "+" and
+			# counts zero, which silently drew the total in one flat colour.
+			var first_count := _token_count(String(parts[second_i - 2]))
+			for k in count:
+				var colour := _role("token_a", "owl")
+				if part_i == second_i:
+					colour = _role("token_b", "accent")
+				elif _is_result(part_i, total_first) and op == "+" and first_count > 0 \
+						and k >= first_count:
+					colour = _role("token_b", "accent")
+				_token(Vector2(run + w * 0.5 - run_w * 0.5 + k * (dot + dot_gap) + dot * 0.5, dot_y),
+					dot * 0.5, colour)
+		run += w + pad
+
+## Which slot of the laid-out sum holds the answer.
+func _is_result(part_i: int, total_first: bool) -> bool:
+	return part_i == 0 if total_first else part_i == 4
+
+## How many dots a part of an equation is worth. Zero for an operator, and zero
+## for a number past the point where dots stop being countable.
+func _token_count(part: String) -> int:
+	if not part.is_valid_int():
+		return 0
+	var n := int(part)
+	return n if n > 0 and n <= EQUATION_TOKEN_MAX else 0
