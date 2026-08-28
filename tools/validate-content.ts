@@ -361,8 +361,12 @@ function validateMisconceptionsAreAnswerable(): void {
             const parsed = parseWordedArithmetic(problem.prompt.text)
                 ?? parseArithmeticPromptIndependent(problem.prompt.text);
             if (!parsed) continue;
+            // Only an MCQ has options to express a misconception WITH. A
+            // numeric-input answer has none, so the question does not arise.
+            if (problem.answer.mode !== 'mcq') continue;
+            const answered = problem.answer.options;
             const correct = Number(problem.answer.correct);
-            const options = new Set(problem.answer.options.map(Number));
+            const options = new Set(answered.map(Number));
             for (const tag of problem.misconceptionTags ?? []) {
                 const values = expected[tag];
                 if (!values) continue;
@@ -373,7 +377,7 @@ function validateMisconceptionsAreAnswerable(): void {
                 if (unanswerable <= 5) {
                     console.error(
                         `  FAIL: ${problem.id} declares "${tag}" but no option expresses it `
-                        + `— "${problem.prompt.text}" offers ${problem.answer.options.join(', ')}. `
+                        + `— "${problem.prompt.text}" offers ${answered.join(', ')}. `
                         + 'Give the list the value, or drop the tag; a diagnosis nothing can answer is not one.',
                     );
                 }

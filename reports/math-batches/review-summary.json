@@ -34,7 +34,7 @@
     ],
     "owlEligibleProblemCount": 3082,
     "owlEligibleUniquePromptCount": 3082,
-    "owlEligibleUniqueFactCount": 1592,
+    "owlEligibleUniqueFactCount": 1594,
     "domainCounts": {
       "addition": 974,
       "counting": 209,
@@ -573,7 +573,7 @@
             "familyCount": 4,
             "minStep": 0,
             "maxStep": 6,
-            "promptVariantCount": 80,
+            "promptVariantCount": 90,
             "averageProblemsPerTemplate": 10
           }
         },
@@ -677,7 +677,7 @@
       "batchId": "batch_06_pattern_and_easy_variance",
       "title": "Pattern basics and mixed easy variance",
       "accepted": true,
-      "averageGrade": 9.8,
+      "averageGrade": 9.9,
       "criticalIssues": [],
       "templateReview": {
         "category": {
@@ -688,7 +688,7 @@
             "familyCount": 7,
             "minStep": 0,
             "maxStep": 7,
-            "promptVariantCount": 60,
+            "promptVariantCount": 64,
             "averageProblemsPerTemplate": 11.5
           }
         },
@@ -747,7 +747,7 @@
           "grade": 9.8,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 9.7,
+            "steadyChildGrade": 9.9,
             "strugglingChildGrade": 10,
             "strongChildGrade": 9.6,
             "openingProbeStep": 0,
@@ -766,7 +766,7 @@
           },
           {
             "role": "role-game-designer",
-            "grade": 9.7,
+            "grade": 9.9,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
@@ -1378,7 +1378,7 @@
             "familyCount": 7,
             "minStep": 1,
             "maxStep": 8,
-            "promptVariantCount": 86,
+            "promptVariantCount": 90,
             "averageProblemsPerTemplate": 13.6
           }
         },
@@ -1723,7 +1723,7 @@
             "familyCount": 6,
             "minStep": 2,
             "maxStep": 36,
-            "promptVariantCount": 139,
+            "promptVariantCount": 143,
             "averageProblemsPerTemplate": 10.7
           }
         },
@@ -1779,10 +1779,10 @@
       },
       "simulationReview": {
         "category": {
-          "grade": 10,
+          "grade": 9.9,
           "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
           "metrics": {
-            "steadyChildGrade": 10,
+            "steadyChildGrade": 9.9,
             "strugglingChildGrade": 10,
             "strongChildGrade": 9.9,
             "openingProbeStep": 2,
@@ -1801,7 +1801,7 @@
           },
           {
             "role": "role-game-designer",
-            "grade": 10,
+            "grade": 9.9,
             "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
           },
           {
@@ -2068,7 +2068,7 @@
             "familyCount": 8,
             "minStep": 2,
             "maxStep": 11,
-            "promptVariantCount": 91,
+            "promptVariantCount": 93,
             "averageProblemsPerTemplate": 12.5
           }
         },
@@ -3218,7 +3218,7 @@
             "familyCount": 2,
             "minStep": 7,
             "maxStep": 9,
-            "promptVariantCount": 32,
+            "promptVariantCount": 40,
             "averageProblemsPerTemplate": 10
           }
         },
@@ -4253,7 +4253,7 @@
             "familyCount": 6,
             "minStep": 0,
             "maxStep": 9,
-            "promptVariantCount": 104,
+            "promptVariantCount": 132,
             "averageProblemsPerTemplate": 8.2
           }
         },
@@ -4610,7 +4610,7 @@
       "depthProbeFirstSubtractionSelectionAttempt": 39,
       "owlEligibleProblemCount": 3082,
       "owlEligibleUniquePromptCount": 3082,
-      "owlEligibleUniqueFactCount": 1592,
+      "owlEligibleUniqueFactCount": 1594,
       "openingUnlockedInventoryProblemCount": 1183,
       "openingUnlockedInventoryUniquePromptCount": 1183,
       "openingUnlockedInventoryUniqueFactCount": 497,

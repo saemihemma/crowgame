@@ -13,7 +13,7 @@
         "familyCount": 6,
         "minStep": 2,
         "maxStep": 36,
-        "promptVariantCount": 139,
+        "promptVariantCount": 143,
         "averageProblemsPerTemplate": 10.7
       }
     },
@@ -69,10 +69,10 @@
   },
   "simulationReview": {
     "category": {
-      "grade": 10,
+      "grade": 9.9,
       "summary": "Selection-proxy simulation stayed stable across 9 profile-anchor probes.",
       "metrics": {
-        "steadyChildGrade": 10,
+        "steadyChildGrade": 9.9,
         "strugglingChildGrade": 10,
         "strongChildGrade": 9.9,
         "openingProbeStep": 2,
@@ -91,7 +91,7 @@
       },
       {
         "role": "role-game-designer",
-        "grade": 10,
+        "grade": 9.9,
         "rationale": "Steady-child probes cover opening, middle, and upper entry points so pacing is not judged only from the first step."
       },
       {

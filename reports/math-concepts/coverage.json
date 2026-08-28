@@ -2639,21 +2639,21 @@
       "perStep": [
         {
           "step": 0,
-          "problems": 29,
-          "facts": 19,
+          "problems": 32,
+          "facts": 21,
           "problemsPerFact": 1.5
         },
         {
           "step": 1,
-          "problems": 26,
+          "problems": 25,
           "facts": 17,
           "problemsPerFact": 1.5
         },
         {
           "step": 2,
-          "problems": 29,
+          "problems": 27,
           "facts": 19,
-          "problemsPerFact": 1.5
+          "problemsPerFact": 1.4
         }
       ],
       "skillsAuthored": [
@@ -2681,25 +2681,25 @@
         {
           "step": 3,
           "problems": 22,
-          "facts": 16,
-          "problemsPerFact": 1.4
+          "facts": 17,
+          "problemsPerFact": 1.3
         },
         {
           "step": 4,
-          "problems": 26,
+          "problems": 24,
           "facts": 19,
-          "problemsPerFact": 1.4
+          "problemsPerFact": 1.3
         },
         {
           "step": 5,
-          "problems": 22,
-          "facts": 20,
-          "problemsPerFact": 1.1
+          "problems": 21,
+          "facts": 17,
+          "problemsPerFact": 1.2
         },
         {
           "step": 6,
-          "problems": 31,
-          "facts": 31,
+          "problems": 34,
+          "facts": 33,
           "problemsPerFact": 1
         }
       ],

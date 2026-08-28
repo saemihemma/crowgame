@@ -587,11 +587,21 @@ function formatCountingPrompt(variant: string, symbol: string, count: number): s
 
 function formatComparisonPrompt(variant: string, relation: 'greater' | 'smaller', left: number, right: number): string {
     const adjective = relation === 'greater' ? 'greater' : 'smaller';
+    // "bigger" and "smaller" are the words a six-year-old actually uses, and the
+    // phrasing catalog has carried them -- translated -- since the hand-authored
+    // seed pool, which is the only place they were ever rendered. The generator
+    // knew three shapes of one question; comparison is the domain with the least
+    // to vary and it was varying least.
+    const plainAdjective = relation === 'greater' ? 'bigger' : 'smaller';
     switch (variant) {
         case 'pick':
             return `Pick the ${adjective} number: ${left} or ${right}`;
         case 'which':
             return `Which number is ${adjective}: ${left} or ${right}?`;
+        case 'which_plain':
+            return `Which number is ${plainAdjective}: ${left} or ${right}?`;
+        case 'is':
+            return `Which is ${plainAdjective}: ${left} or ${right}?`;
         default:
             return `Find the ${adjective} number: ${left} or ${right}`;
     }
@@ -656,7 +666,7 @@ function withFallbackVariants(kind: AuthoringTemplateKind, promptVariants: strin
             'count', 'how_many', 'count_them', 'how_many_of',
             'see', 'altogether', 'say_number', 'point_count',
         ],
-        comparison: ['which', 'pick', 'find'],
+        comparison: ['which', 'pick', 'find', 'which_plain', 'is'],
         pattern_matching: ['repeat', 'keep_going'],
         number_sequence: ['next', 'keep_going', 'number_pattern', 'count_on', 'count_back'],
     };
