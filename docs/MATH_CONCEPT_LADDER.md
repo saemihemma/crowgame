@@ -30,15 +30,31 @@ rots in silence — this one cannot.
 `DataManager` loads 4 maths pools totalling 4205 problems (`curriculum` 3902,
 `gaps` 248, `dataset` 40, `easy` 15). Those are grouped into **49** concepts by
 `godot/data/curriculum/concept_ladder.json` — **40** rungs keyed on step range
-plus **9** overlays keyed on problem shape — of which **47** open with a
-**4**-card lesson from `godot/data/curriculum/tutorials.json`: **47** lessons,
-**188** cards. The two without one are `addition.multi_digit` and
-`subtraction.multi_digit`: they were authored while the owl's blanket operand
-cap of 20 made them unreachable. That cap was removed by the owner's grade-4
-decision (2026-08) — the step ladder now paces each child instead, so a child
-only meets multi-digit work after ~20 mastered rungs — which makes both
-concepts reachable and their lessons owed (roadmap: "Multi-digit concepts need
-their lessons").
+plus **9** overlays keyed on problem shape — of which **49** open with a
+**4**-card lesson from `godot/data/curriculum/tutorials.json`: **49** lessons,
+**196** cards. Every concept now has one.
+
+The last two to be written were `addition.multi_digit` and
+`subtraction.multi_digit`, which had been authored while the owl's blanket
+operand cap of 20 made them unreachable. That cap was removed by the owner's
+grade-4 decision (2026-08) — the step ladder paces each child instead, so a
+child only meets multi-digit work after ~20 mastered rungs — which made both
+concepts reachable and their lessons owed. They covered **356** problems, 8.5%
+of the pool, with no lesson and no help button behind them.
+
+Both are drawn with base-ten blocks, which is why `tens_and_ones` grew a third
+place (`hundreds`/`addHundreds`/`takeHundreds`, and `takeTens` to match): before
+that the largest number the lesson deck could draw was ninety-nine, so
+three-digit work had no concrete card and could not be taught honestly. A flat
+is drawn as one scored square rather than as ten rods — ten rods per hundred
+would put thirty bars on the card for 214 + 134, at which point nothing is
+countable.
+
+**The worked example carries a regroup on purpose.** 65% of the problems in
+this band need one (194 of 300 measured), and the worked-example effect only
+holds if the example resembles the practice that follows — so `addition` works
+256 + 137 and `subtraction` works 352 - 137, both of which cross a column,
+rather than the tidy no-carry pair the `see` card opens with.
 
 `reports/math-concepts/coverage.json` is the generated rung-by-rung inventory,
 including the **0** empty and **1** thin rungs, and the **0** concepts the cap
@@ -257,6 +273,82 @@ Three promises the code keeps, each with a test:
 The selected problem is held across the lesson and asked afterwards, so the
 child gets the question they were just taught rather than whatever the selector
 would pick a second later.
+
+## Two experiments: showing the verb, and showing the symbol
+
+Both come from one audit finding, worth stating plainly because it shaped the
+deck: **the pictures showed the nouns and the text carried the verbs.**
+`count_all` drew two groups of berries and "put them together" was a sentence.
+`take_away` drew berries already crossed out and "one gets eaten" was a sentence.
+The mathematical ACTION -- the thing being taught -- was never in the picture.
+Across the 24 earliest cards that was 305 words of prose, 12.7 a card, for
+five- to seven-year-olds who are still learning to read.
+
+The research is blunt about the cost: basic maths can be taught and assessed with
+no verbal instruction at all, and *a single word in a spoken instruction can make
+a child fail a task they complete without it*. Text is not the enemy -- it stays,
+and it doubles as the voice-over script -- but it has to support the picture
+rather than be the only place the idea lives.
+
+**1. The action plays.** A renderer may declare `pacing/action_ms_<visual>` and
+animate itself once when the card opens. Six do:
+
+| Visual | The verb it now shows |
+| --- | --- |
+| `count_all` | the second group slides in beside the first -- two piles becoming one pile IS the plus sign |
+| `take_away` | the eaten ones lift off the row and fade before the cross lands: the going, not the aftermath |
+| `number_line` | one hop at a time, with the marker riding the arc, because the count IS the method |
+| `ten_frame` | the second colour lands cell by cell, so "count on to seven" is watched rather than read |
+| `groups` | dealt out -- and see the ORDER note below, because it is not the same deal twice |
+| `pattern_strip` | the repeat runs left to right, because a pattern is a thing that keeps going |
+
+**The dealing order is the difference between two lessons that share one
+picture.** Multiplication is "this many groups of this many", so `groups` fills a
+ring at a time. Division is SHARING, and sharing is "one for you, one for you" --
+a round of one into every group, then another round. The division card's whole
+claim is that nobody gets more than anyone else, and filling one box before
+starting the next demonstrates the opposite. `deal: "round"` is set on every
+division card for that reason.
+
+Nothing waits on any of it. The nav is live from the first frame, nothing is
+hidden behind a delay, and the picture replays on a tap -- the affordance that
+makes an animated explanation safe for a child who needs it three times. A visual
+with no `pacing` entry is a standing picture and starts finished, so this changed
+nothing for the cards that show a state rather than a doing.
+
+**Reduced motion shows the END, it does not show less.** Gate B9's preference is
+honoured by `BrandButton`, `AnswerButton` and `StatMedal`, and the first version
+of these actions ignored it. For a decoration the right answer is "do not move";
+for a card whose motion IS the explanation that would be withholding the lesson,
+so the action lands finished instead.
+
+**The replay affordance lives beside the progress dots, not inside the picture.**
+Drawn there first, it landed outside the card entirely: `TutorialVisual` is
+`SIZE_EXPAND_FILL` and runs wider than the board, so no inset from its own edges
+is inside anything. The dots row is a known-width child of the board. It is drawn
+(`ReplayHint`) rather than typed, because the circular-arrow glyph is far above
+Latin-1 and would render as a box printing its own hex codepoint -- the same
+lesson the PIN dots, the padlock and the dialog arrow each taught once.
+
+**2. The symbol gets its quantity.** `equation` takes `tokens: true` and draws
+that many dots under every numeral. On the earliest rungs the abstract card is
+the first place a child meets `+` and `=` at all, and what those symbols meant
+was carried by "the plus sign means put together" -- a sentence, again.
+
+The dots are laid out per part rather than under one drawn string: a numeral is
+narrow and the quantity it stands for is not, so the spacing has to come from the
+dots. And **the total is drawn out of its parts** -- the dots under the answer
+keep the two colours they had either side of the plus, so `4 + 2 = 6` shows four
+pale and two gold making six. That is the part-whole idea stated in the picture,
+which is what a child needs before the symbol means anything.
+
+Capped at ten (`EQUATION_TOKEN_MAX`) and off by default: eight dots under a
+numeral is a picture, eighty is a smear. On for the rungs where the symbol itself
+is new.
+
+Both are experiments in the honest sense: tuned from data, switchable without a
+code change, and the next thing to judge them is a child rather than a test.
+
 
 ## Where to change things
 

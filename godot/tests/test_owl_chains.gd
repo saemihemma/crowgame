@@ -1,9 +1,11 @@
 extends TestCase
-## The owl roster is the difficulty dial the game is tuned with: one owl, one
-## answer by default, with longer chains available per-NPC. These are the two
-## facts that dial depends on, and neither was covered before — the owl probe
-## printed "2 problems solved" from a hardcoded string while the registry said
-## one, and nothing noticed.
+## The owl roster is the difficulty dial the game is tuned with, and difficulty
+## is now the ONLY thing it dials: every owl asks exactly one question. Length
+## used to be per-NPC as well, which read as range on paper and as a stall in the
+## hands of a child — see test_every_owl_asks_exactly_one_question below.
+##
+## These facts were uncovered before — the owl probe printed "2 problems solved"
+## from a hardcoded string while the registry said one, and nothing noticed.
 
 
 func _root() -> Node:
@@ -45,13 +47,39 @@ func test_default_owl_needs_one_answer() -> void:
 		assert_eq(_problem_count(npc), 1, "the default owl asks exactly one question")
 	assert_true(found, "owl_teacher_01 is in the roster")
 
-## The point of the roster is that the dial has range. If every owl converged on
-## the same chain length the variants would be dead weight.
-func test_roster_offers_longer_chains() -> void:
-	var lengths := {}
+## ONE OWL, ONE QUESTION. Every owl, with no exception available.
+##
+## This replaces a test that asserted the opposite -- that the roster spanned
+## more than one chain length, because the length was meant to be a per-owl dial
+## for a later gated owl. Played, it was not a dial, it was a stall: every level
+## carried an owl_gauntlet and level_05 carried two plus a triple, so a child
+## running a platformer was stopped for three questions in a row, repeatedly, in
+## a game whose whole loop is "meet an owl, answer one thing, keep running".
+##
+## The roster still has range -- gentle, mid and hardest bands, which is
+## difficulty, the dial that was actually wanted. Length is not a dial any more,
+## and this test is what stops it becoming one again by accident.
+func test_every_owl_asks_exactly_one_question() -> void:
+	var checked := 0
 	for npc in _npcs():
-		var c := _problem_count(npc)
-		if c > 0:
-			lengths[c] = true
-	assert_true(lengths.has(1), "at least one single-answer owl")
-	assert_true(lengths.size() >= 2, "the roster spans more than one chain length")
+		if String(npc.get("behavior", "")) != "math_challenger":
+			continue
+		var id := String(npc.get("id", "?"))
+		assert_eq(_problem_count(npc), 1, "'%s' asks exactly one question" % id)
+		assert_eq(int(npc.get("behaviorConfig", {}).get("chainLinks", -1)), 1,
+			"'%s' draws exactly one chain link" % id)
+		checked += 1
+	assert_true(checked >= 4, "the whole roster was checked (%d owls)" % checked)
+
+## The dial that survived: difficulty. If every owl also converged on one band,
+## the variants really would be dead weight and the roster should collapse to one
+## entry -- so this is the test that keeps the remaining distinction honest.
+func test_the_roster_still_spans_difficulty_bands() -> void:
+	var bands := {}
+	for npc in _npcs():
+		for c in npc.get("components", []):
+			if String(c.get("type", "")) != "math_challenge":
+				continue
+			bands[str(c.get("difficultyRange", []))] = true
+	assert_true(bands.size() >= 3,
+		"gentle, mid and hard are still three different owls (got %d bands)" % bands.size())

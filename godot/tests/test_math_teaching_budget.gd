@@ -117,28 +117,6 @@ func test_a_single_card_lesson_shows_no_progress_dots() -> void:
 
 # --- when a lesson is allowed to fire -------------------------------------
 
-## The stretch lane deals a problem one step past the ladder at a tuned rate.
-## Teaching its concept would open a lesson for an idea the child has not
-## reached, mid-run, on a question that exists to be a reach.
-func test_a_concept_above_the_learner_is_not_taught() -> void:
-	var seen := SaveManager.get_tutorials_seen().duplicate(true)
-	var snapshot := LearnerStateManager.get_snapshot().duplicate(true)
-	_clear_seen()
-	LearnerStateManager.replace_snapshot(
-		MathPlacement.place_snapshot(LearnerStateManager.get_snapshot(), "addition", 0))
-
-	var reachable := TutorialManager.tutorial_for_problem(_problem("addition", 0))
-	assert_true(not reachable.is_empty(), "the rung the child is standing on is teachable")
-
-	var stretch_step := ConceptLadder.next_concept_step("addition", 0)
-	assert_true(stretch_step > 0, "there is a concept above step 0 to reach for")
-	var above := TutorialManager.tutorial_for_problem(_problem("addition", stretch_step))
-	assert_true(above.is_empty(),
-		"a concept starting at step %d is not taught to a child on step 0" % stretch_step)
-
-	LearnerStateManager.replace_snapshot(snapshot)
-	_restore_seen(seen)
-
 
 # --- helpers ---------------------------------------------------------------
 
@@ -168,3 +146,322 @@ func _restore_seen(seen: Dictionary) -> void:
 	_clear_seen()
 	for id in seen:
 		SaveManager.mark_tutorial_seen(String(id), bool((seen[id] as Dictionary).get("skipped", false)))
+
+
+
+# --- WHEN a lesson arrives ---------------------------------------------------
+#
+# The rules above are all about ONE lesson: is this idea new, and how much of it
+# does the child get. None of them looked at the moment it lands, and that is
+# what the child actually feels. Teaching used to fire in front of any question
+# whose concept was unseen -- an ambush on an idea nobody asked about -- and once
+# fired, the idea was marked seen and there was no way back to it.
+#
+# Now: one lesson per CATEGORY, for the rung the child is standing on, delivered
+# after an answer, and re-openable forever from the board's "?".
+
+func _stand_on(domain: String, step: int) -> void:
+	var snapshot := LearnerStateManager.get_snapshot()
+	(snapshot["curriculumProgress"][domain] as Dictionary)["currentStep"] = step
+	LearnerStateManager.replace_snapshot(snapshot)
+
+## Standing on a rung whose lesson has never been shown is what owes a lesson.
+## Levelling up is simply what puts a child there.
+func test_the_rung_a_child_stands_on_owes_its_lesson() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	var was := LearnerStateManager.get_current_step("addition")
+	_clear_seen()
+	_stand_on("addition", 7)
+	assert_eq(String(TutorialManager.pending_lesson("addition").get("id", "")), "addition.make_ten",
+		"the lesson owed is the one for where the child stands")
+	_stand_on("addition", was)
+	_restore_seen(seen)
+
+## A lesson already given is not owed again.
+func test_a_seen_lesson_is_never_owed_again() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	var was := LearnerStateManager.get_current_step("addition")
+	_clear_seen()
+	_stand_on("addition", 7)
+	SaveManager.mark_tutorial_seen("addition.make_ten", false)
+	assert_true(TutorialManager.pending_lesson("addition").is_empty(),
+		"a lesson the child has had is not owed a second time")
+	_stand_on("addition", was)
+	_restore_seen(seen)
+
+## ONE per category, and the categories owe independently: settling addition
+## leaves counting exactly where it was.
+func test_categories_owe_independently() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	var add_id := String(TutorialManager.pending_lesson("addition").get("id", ""))
+	assert_true(add_id != "", "addition owes something")
+	assert_true(not TutorialManager.pending_lesson("counting").is_empty(), "so does counting")
+	SaveManager.mark_tutorial_seen(add_id, false)
+	assert_true(TutorialManager.pending_lesson("addition").is_empty(), "addition settled")
+	assert_true(not TutorialManager.pending_lesson("counting").is_empty(),
+		"and settling addition left counting untouched")
+	_restore_seen(seen)
+
+## A debt in another category is still found at the next owl.
+##
+## A child can level up in counting and then not meet a counting question for a
+## whole level. Preferring the answered domain keeps the common case in order;
+## falling through to the others stops the debt going stale.
+func test_a_debt_in_another_category_is_still_found() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	# Settle addition so the only thing outstanding is somewhere else.
+	for domain in MathDomains.ALL:
+		if String(domain) == "counting":
+			continue
+		var id := String(TutorialManager.pending_lesson(String(domain)).get("id", ""))
+		if id != "":
+			SaveManager.mark_tutorial_seen(id, false)
+	var lesson := TutorialManager.pending_lesson_any("addition")
+	assert_true(not lesson.is_empty(), "answering an addition question finds the counting debt")
+	assert_true(String(lesson.get("id", "")).begins_with("counting."),
+		"and it is counting's lesson: %s" % String(lesson.get("id", "")))
+	_restore_seen(seen)
+
+## The debt is DERIVED, not stored -- which is what makes it survive quitting.
+##
+## The first version of this held pending lessons in a runtime dictionary filled
+## by curriculum_step_up. A child who levelled up and then closed the game was
+## never taught that rung at all, because nothing re-raised the debt.
+func test_the_debt_survives_with_no_event_to_remember_it() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	var was := LearnerStateManager.get_current_step("addition")
+	_clear_seen()
+	_stand_on("addition", 12)
+	var first := String(TutorialManager.pending_lesson("addition").get("id", ""))
+	assert_eq(first, "addition.teen_numbers", "owed on arrival")
+	assert_eq(String(TutorialManager.pending_lesson("addition").get("id", "")), first,
+		"and still owed later, with no step-up event in between to remember it")
+	_stand_on("addition", was)
+	_restore_seen(seen)
+
+
+# --- the help button ---------------------------------------------------------
+
+## The lesson for the PROBLEM, seen or not. This is the whole point: asking for
+## help must answer the question in front of the child, which is by definition
+## one they may already have been taught.
+func test_help_returns_the_problems_lesson_even_once_seen() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	var problem := {"domain": "addition", "curriculumStep": 7, "skills": ["basic_addition"]}
+	var before := TutorialManager.lesson_for_problem(problem)
+	assert_eq(String(before.get("id", "")), "addition.make_ten",
+		"help answers the rung the QUESTION came from")
+	SaveManager.mark_tutorial_seen("addition.make_ten", false)
+	var after := TutorialManager.lesson_for_problem(problem)
+	assert_eq(String(after.get("id", "")), String(before.get("id", "")),
+		"and having seen it does not take it away -- that is what help IS")
+	_restore_seen(seen)
+
+## Help follows the QUESTION, not the ladder.
+##
+## The lanes are weighted comfort 0.4, review 0.2, at_level 0.3, stretch 0.1, so
+## 70% of questions come from a rung the child is not standing on. Keying help off
+## the ladder position -- which the first version of this did -- handed back the
+## lesson for a rung they were not being asked about, most of the time.
+func test_help_follows_the_question_not_the_ladder() -> void:
+	var was := LearnerStateManager.get_current_step("addition")
+	_stand_on("addition", 12)
+	var comfort := {"domain": "addition", "curriculumStep": 0, "skills": ["basic_addition"]}
+	assert_eq(String(TutorialManager.lesson_for_problem(comfort).get("id", "")), "addition.count_all",
+		"a comfort-lane question offers ITS lesson, not the one for where the ladder says the child is")
+	assert_eq(String(TutorialManager.current_lesson_for("addition").get("id", "")), "addition.teen_numbers",
+		"while the automatic lesson still tracks the rung the child stands on")
+	_stand_on("addition", was)
+
+## An overlay is claimed by problem SHAPE, and only the problem can reach it.
+##
+## "5 + ? = 8" derives onto the same rung as "5 + 3 = 8" -- correctly, it is the
+## same bond -- so a rung lookup hands back the make-ten lesson, which teaches
+## nothing about where an unknown may sit. concept_for() can never return an
+## overlay by design, which is exactly why help must not ask it. 106 problems
+## across nine overlays depend on this.
+func test_help_reaches_the_overlay_lessons() -> void:
+	var relational := {"domain": "addition", "curriculumStep": 7, "skills": ["missing_addend"]}
+	assert_eq(String(TutorialManager.lesson_for_problem(relational).get("id", "")),
+		"addition.missing_part", "a missing-addend question offers the missing-part lesson")
+	var ordinary := {"domain": "addition", "curriculumStep": 7, "skills": ["basic_addition"]}
+	assert_eq(String(TutorialManager.lesson_for_problem(ordinary).get("id", "")),
+		"addition.make_ten", "and an ordinary question on the same rung keeps the rung's lesson")
+
+## Asking for help records nothing. A child checking the explanation has not
+## answered anything, and must not look to the ladder like they have.
+func test_asking_for_help_marks_nothing_seen() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	TutorialManager.lesson_for_problem({"domain": "addition", "curriculumStep": 7})
+	TutorialManager.lesson_for_problem({"domain": "subtraction", "curriculumStep": 3})
+	assert_true(SaveManager.get_tutorials_seen().is_empty(),
+		"looking a lesson up is not being taught it")
+	_restore_seen(seen)
+
+## An unknown category has no lesson, so the button hides rather than opening on
+## nothing.
+func test_help_is_absent_where_there_is_no_lesson() -> void:
+	assert_true(TutorialManager.lesson_for_problem({}).is_empty(), "no problem, no lesson")
+	assert_true(TutorialManager.lesson_for_problem({"domain": "not_a_domain", "curriculumStep": 0}).is_empty(),
+		"an unknown category offers no help rather than an empty board")
+	assert_true(TutorialManager.current_lesson_for("not_a_domain").is_empty(),
+		"and the automatic side is just as unbothered by one")
+
+## EVERY concept opens a lesson. No exceptions, and this is what keeps it that
+## way.
+##
+## This test used to name `addition.multi_digit` and `subtraction.multi_digit` as
+## known holes -- 356 problems, 8.5% of the pool, where a child got no worked
+## example and no "?" button. Both are authored now, so the test asserts the
+## whole rather than the exception: a concept added later without a lesson fails
+## here rather than going quiet in a child's hands.
+func test_every_concept_opens_a_lesson() -> void:
+	var missing: Array[String] = []
+	for concept in ConceptLadder.all():
+		var id := String((concept as Dictionary).get("id", "?"))
+		var tutorial_id := ConceptLadder.tutorial_id(concept)
+		if tutorial_id == "" or TutorialManager.get_tutorial(tutorial_id).is_empty():
+			missing.append(id)
+	assert_eq(missing.size(), 0,
+		"every concept names a lesson that exists; without one: %s" % str(missing))
+
+## And the two that were last to get one are reachable through the help button,
+## which is the surface a child stuck on three-digit work actually reaches for.
+func test_the_multi_digit_rungs_offer_help() -> void:
+	for pair in [["addition", "addition.multi_digit"], ["subtraction", "subtraction.multi_digit"]]:
+		var domain := String(pair[0])
+		var concept: Dictionary = ConceptLadder.by_id(String(pair[1]))
+		var steps: Array = concept.get("steps", [])
+		assert_true(steps.size() == 2, "%s declares a step range" % String(pair[1]))
+		if steps.size() != 2:
+			continue
+		var lesson := TutorialManager.lesson_for_problem({
+			"domain": domain, "curriculumStep": int(steps[0]), "skills": [],
+		})
+		assert_eq(String(lesson.get("id", "")), String(pair[1]),
+			"a question from %s offers its own lesson" % String(pair[1]))
+
+
+# --- the help button, on the actual board ------------------------------------
+
+const MATH_CHALLENGE := preload("res://scenes/MathChallenge.tscn")
+
+func _board_for(domain: String) -> Node:
+	var panel: Node = MATH_CHALLENGE.instantiate()
+	Engine.get_main_loop().root.add_child(panel)
+	panel.present({
+		"id": "help_probe",
+		"domain": domain,
+		"prompt": {"text": "1 + 1 = ?"},
+		"answer": {"mode": "mcq", "correct": 2, "options": [2, 3, 4, 5]},
+	}, {"npcName": "Hoot", "npcGreeting": "Hi", "problemCount": 1, "currentProblemIndex": 1})
+	return panel
+
+func _find_help(node: Node) -> Node:
+	if node is BrandButton and node.text == TextManager.t("math.help"):
+		return node
+	for child in node.get_children():
+		var found := _find_help(child)
+		if found != null:
+			return found
+	return null
+
+## The button exists on a real board, not just in the function that would draw
+## it. Everything else about help is logic; this is the half a child touches, and
+## a header row that silently never got the button would pass every other test
+## here.
+func test_the_board_carries_a_help_button() -> void:
+	var panel := _board_for("addition")
+	await Engine.get_main_loop().process_frame
+	var help := _find_help(panel)
+	assert_true(help != null, "an addition question offers its lesson from the board")
+	if help != null:
+		var floor_px := float(Config.ui("math_challenge/help_button_size", 88))
+		assert_true(help.custom_minimum_size.x >= floor_px and help.custom_minimum_size.y >= floor_px,
+			"and it clears the 88px tap-target floor a struggling child has to hit")
+	panel.queue_free()
+
+## A domain with no lesson to give shows no button, rather than one that opens on
+## nothing. `domain` comes off problem data, so this is also the guard against a
+## malformed problem taking the board down.
+func test_no_help_button_where_there_is_no_lesson() -> void:
+	var panel := _board_for("not_a_domain")
+	await Engine.get_main_loop().process_frame
+	assert_true(_find_help(panel) == null, "no lesson, no button")
+	panel.queue_free()
+
+
+# --- the cards that show their action -----------------------------------------
+#
+# The deck's pictures showed the nouns and left the verbs to the sentence
+# underneath, which is the half a pre-reader cannot use. Six visuals now play
+# their action once when the card opens. These pin the rules that make that safe
+# rather than the motion itself, which only a child can judge.
+
+const TUTORIAL_VISUAL := preload("res://scripts/ui/components/tutorial_visual.gd")
+
+func _visual_for(kind: String, params: Dictionary) -> Node:
+	var v: Node = TUTORIAL_VISUAL.new()
+	v.size = Vector2(540, 122)
+	Engine.get_main_loop().root.add_child(v)
+	v.setup(kind, params)
+	return v
+
+## REDUCED MOTION SHOWS THE END, it does not show less.
+##
+## Gate B9's preference is honoured by BrandButton, AnswerButton and StatMedal,
+## and the first version of these actions ignored it entirely. For a decoration
+## the right answer is "do not move"; here the motion IS the explanation, so the
+## card has to land finished rather than land empty.
+func test_reduced_motion_lands_the_action_finished() -> void:
+	var was: Variant = Config.ui("a11y/reduced_motion", false)
+	var ui: Dictionary = DataManager.get_dict("UI_TUNING")
+	var a11y: Dictionary = ui.get("a11y", {})
+	ui["a11y"] = a11y
+	a11y["reduced_motion"] = true
+	var v := _visual_for("count_all", {"a": 2, "b": 1})
+	assert_true(not v.is_action_playing(),
+		"a child who asked for no motion gets the finished picture, not a blank one")
+	v.replay()
+	assert_true(not v.is_action_playing(), "and asking again does not start one either")
+	v.queue_free()
+	a11y["reduced_motion"] = was
+
+## A card that shows a state rather than a doing is untouched by any of this.
+func test_a_still_visual_starts_finished() -> void:
+	var v := _visual_for("balance", {"a": 2, "b": 5})
+	assert_true(not v.is_action_playing(),
+		"a visual with no action time in the tuning file never animates")
+	v.queue_free()
+
+## The action plays, and it ends. A card stuck mid-motion would hold the picture
+## in a half-state a child cannot read, and the capture harness waits on exactly
+## this signal.
+func test_an_action_visual_plays_and_finishes() -> void:
+	var v := _visual_for("count_all", {"a": 2, "b": 1})
+	assert_true(v.is_action_playing(), "the action starts when the card opens")
+	# Longer than the longest action in the tuning file.
+	for i in 200:
+		await Engine.get_main_loop().process_frame
+	assert_true(not v.is_action_playing(), "and it finishes on its own")
+	v.queue_free()
+
+## Every action time is a real number a designer can retune, and every one of
+## them belongs to a visual that exists. A typo in the key is silent otherwise --
+## the card simply never animates and nobody finds out.
+func test_every_action_time_names_a_real_visual() -> void:
+	var pacing: Dictionary = DataManager.get_dict("TUTORIAL_TUNING").get("pacing", {})
+	var checked := 0
+	for key: String in pacing.keys():
+		if not key.begins_with("action_ms_"):
+			continue
+		var visual := key.substr("action_ms_".length())
+		assert_true(TutorialVisual.can_draw(visual),
+			"pacing names '%s', which is not a visual anything can draw" % visual)
+		assert_true(float(pacing[key]) > 0.0, "%s is a positive duration" % key)
+		checked += 1
+	assert_true(checked >= 4, "the action times are actually being checked (%d)" % checked)

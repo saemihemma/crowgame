@@ -18,7 +18,7 @@ come first.
 | `godot/**` | **The game.** Godot 4.3 / GDScript. The only tree players run. | yes, as `output/web` |
 | `server/**` | **The API.** Node 22 + TypeScript + Postgres: cloud save, family auth, error ingestion. | yes, as a Railway service |
 | `math-kernel/**` | **The reference kernel.** TypeScript implementation of ELO, learner state and problem selection. | never |
-| `tools/**` | Offline authoring and validation for the maths curriculum. | never |
+| `tools/**` | Offline authoring and validation for the maths curriculum, and the localisation CMS (`npm run cms`). | never |
 
 `math-kernel/` is not dead code and not a second game: it generates
 `godot/tests/fixtures/*.json`, which the Godot parity tests assert against, so it

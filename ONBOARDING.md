@@ -69,7 +69,32 @@ DATABASE_URL=postgres://... node godot/tools/error_pipeline_e2e.mjs
 
 npm run math:materialize               # after curriculum authoring
 npm run math:review
+
+npm run cms                            # editing what the game SAYS, in either language
 ```
+
+`npm run cms` serves the localisation editor at
+<http://127.0.0.1:4173/admin/cms>. It is the surface for
+`godot/data/i18n/strings_*.json`, and it exists because that file hides the one
+fact that makes translating this game finishable: the strings are templates and
+the numbers in them are parameters, so 629 phrases cover 11 624 problem
+renderings. The editor sorts by that number, so the top of the list is the most
+valuable work — one edit to `math.expl.rel.taken` is 951 problems.
+
+Three things about it are load-bearing:
+
+- **It runs `tools/validate_i18n.mjs` on every save** — the real one, the same
+  330ms run CI does — and rolls the file back untouched if it fails. A
+  translation that overflows its pixel box, drops a placeholder or reaches for a
+  glyph Godot's font does not have never reaches disk.
+- **English is read-only for every `math.*` phrasing.** That side is generated
+  from `tools/math_phrasing_catalog.mjs` and round-tripped against every problem
+  that uses it; editing it in the bundle would be reverted by
+  `npm run math:phrasing`. Icelandic is hand-authored and fully editable.
+- **It writes files, not a database.** An edit is a `git diff`, reviewed and
+  shipped like any other change. It binds to `127.0.0.1`, has no auth, and lives
+  under `tools/`, which never ships — the deployed API deliberately has no
+  string editor on it, for the reason in `text_manager.gd`.
 
 `npm run validate` covers content, docs, assets, i18n fit and export freshness.
 It does **not** cover the game or the API — `run_tests.sh` and
@@ -94,7 +119,7 @@ shows you. Full-screen cards go in a `FitBox` for that reason, and
 | I want to… | Do this |
 | --- | --- |
 | change a number a player feels | edit `godot/data/tuning/*.json`. Never a `.gd`. |
-| add or change a string | edit BOTH `strings_en.json` and `strings_is.json` |
+| add or change a string | `npm run cms` — it edits both locales together and runs the guard on every save. Hand-editing the bundles still works; keep them key-for-key. |
 | add a level object type | one entry in `spawn_registry.json` + a scene with `setup_from_spawn(spawn)`. No `game.gd` change. |
 | add or replace a sound | [brand/SOUND_DESIGN.md](./brand/SOUND_DESIGN.md) — moment → `sound_events.json` → `audio_manifest.json` → the file |
 | add a sprite | `python3 godot/tools/check_assets.py --spec`, then [the sprite contract](./ARCHITECTURE.md#the-sprite-contract) |
@@ -151,6 +176,13 @@ Boot ──▶ Login ("Who's playing?")  ──▶ MainMenu ──▶ LevelSelec
    origin first.
 8. **Editing compiled levels.** They are generated. Author the spec, then
    compile.
+9. **"Improving coverage" by pushing a child forward.** A report showing
+   concepts a learner never reached is the ELO working, not a gap to close. The
+   pace belongs to the child; content they do not meet is the accepted cost of
+   that, and widening a gate or adding a nudge to raise the number is against
+   the design. See [PRODUCT.md](./PRODUCT.md#coverage-is-not-a-goal-and-never-becomes-one)
+   — *unreached by this child* is the design, *unreachable by anyone* is a
+   defect, and only the second one is yours to fix.
 
 ### Hotspots
 

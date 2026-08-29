@@ -186,3 +186,57 @@ func test_the_row_counts_what_the_child_has_not_what_this_run_added() -> void:
 	EventBus.big_coins_changed.disconnect(cb)
 	g.free()
 	data["levelRecords"] = before
+
+
+# --- 5. the report that started this -----------------------------------------
+
+## A NEW CHILD, LEVEL ONE, ALL THREE COINS, THEN LEVEL TWO.
+##
+## Reported from play: "I created a new char, played first level, collected 3
+## gold big coins, then next level they were transparent -- but I was playing it
+## for the first time."
+##
+## That is this bug seen from the sofa. _load_level is reached from _ready and
+## from _swap_level, and only the first ever told LevelManager where the player
+## was; the coin ids are `c1`/`c2`/`c3` in EVERY level, so level_02's three coins
+## asked whether level_01's `c1` was banked, got yes three times, and spawned as
+## walk-through ghosts in a level the child had never opened.
+##
+## The other tests in this file check the pieces -- that an id is matched per
+## level, that a banked coin becomes a ghost. Both passed throughout, because
+## both are correct. This one walks the route a child walks, which is the only
+## way the pieces were ever wrong together.
+func test_a_new_level_never_opens_with_ghosts_from_the_level_before() -> void:
+	var save := _save()
+	var data: Dictionary = save.get_data()
+	var before: Variant = data.get("levelRecords", {})
+	var was_level: String = _levels().get_current_level_key()
+
+	# Level one, finished, all three found -- exactly what banking at the door
+	# leaves behind.
+	data["levelRecords"] = {"level_01": {"bigCoins": ["c1", "c2", "c3"], "owls": 2}}
+
+	var game: Node2D = load("res://scenes/Game.tscn").instantiate()
+	game.level_key = "level_01"
+	_root().add_child(game)
+	assert_eq(_levels().get_current_level_key(), "level_01", "the child is in world one")
+
+	# Through the door. This is the step that used to change the map and nothing
+	# else.
+	await game._swap_level("level_02")
+
+	var ghosts: Array[String] = []
+	var found := 0
+	for child in game.get_node("World").get_children():
+		if child.scene_file_path.get_file() != "BigCoin.tscn":
+			continue
+		found += 1
+		if child.banked:
+			ghosts.append(child.coin_id)
+	assert_true(found > 0, "world two has big coins to check (%d)" % found)
+	assert_eq(ghosts.size(), 0,
+		"a level opened for the first time has no coins already banked; ghosted: %s" % str(ghosts))
+
+	game.free()
+	data["levelRecords"] = before
+	_levels().set_current_level(was_level)

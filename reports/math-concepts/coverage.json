@@ -334,7 +334,7 @@
         37,
         46
       ],
-      "tutorial": null,
+      "tutorial": "addition.multi_digit",
       "total": 178,
       "empty": [],
       "thin": [],
@@ -1057,7 +1057,7 @@
         37,
         46
       ],
-      "tutorial": null,
+      "tutorial": "subtraction.multi_digit",
       "total": 178,
       "empty": [],
       "thin": [],

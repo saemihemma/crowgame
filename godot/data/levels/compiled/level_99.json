@@ -12348,7 +12348,7 @@
         },
         {
           "id": 5,
-          "name": "owl_twin_chain",
+          "name": "owl_teacher_01",
           "type": "npc",
           "x": 1280,
           "y": 512,
@@ -12358,7 +12358,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_twin_chain"
+              "value": "owl_teacher_01"
             }
           ]
         },
@@ -12380,7 +12380,7 @@
         },
         {
           "id": 7,
-          "name": "owl_triple_chain",
+          "name": "owl_teacher_01",
           "type": "npc",
           "x": 1920,
           "y": 512,
@@ -12390,7 +12390,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_triple_chain"
+              "value": "owl_teacher_01"
             }
           ]
         },
@@ -12476,7 +12476,7 @@
         },
         {
           "id": 13,
-          "name": "owl_twin_chain",
+          "name": "owl_teacher_01",
           "type": "npc",
           "x": 3840,
           "y": 512,
@@ -12486,7 +12486,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_twin_chain"
+              "value": "owl_teacher_01"
             }
           ]
         },
@@ -12508,7 +12508,7 @@
         },
         {
           "id": 15,
-          "name": "owl_triple_chain",
+          "name": "owl_teacher_01",
           "type": "npc",
           "x": 4480,
           "y": 512,
@@ -12518,7 +12518,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_triple_chain"
+              "value": "owl_teacher_01"
             }
           ]
         },
@@ -12604,7 +12604,7 @@
         },
         {
           "id": 21,
-          "name": "owl_twin_chain",
+          "name": "owl_teacher_01",
           "type": "npc",
           "x": 6240,
           "y": 512,
@@ -12614,7 +12614,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_twin_chain"
+              "value": "owl_teacher_01"
             }
           ]
         },

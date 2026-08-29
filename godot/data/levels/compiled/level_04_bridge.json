@@ -7052,7 +7052,7 @@
         },
         {
           "id": 4,
-          "name": "owl_twin_chain",
+          "name": "owl_teacher_01",
           "type": "npc",
           "x": 2880,
           "y": 512,
@@ -7062,7 +7062,7 @@
             {
               "name": "npc_id",
               "type": "string",
-              "value": "owl_twin_chain"
+              "value": "owl_teacher_01"
             }
           ]
         },

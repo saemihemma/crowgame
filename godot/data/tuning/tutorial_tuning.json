@@ -27,16 +27,28 @@
     "option_min_h": 88,
     "option_font_size": 28,
     "option_gap": 20,
-    "_comment": "Retuned after reading all 164 rendered cards, not from the numbers: Skip outweighed the title, every picture floated in a band it never filled, and two-line bodies sat hard against the nav row. Budgeted against the 960x540 design viewport in project.godot: 40 padding + 88 header + 12 dots + 140 visual + 52 body + 88 nav + 4 separations leaves the board inside the screen with the Gate B3 tap-target floor intact on both button rows. Grow visual_height or body_min_h and the nav row walks off the bottom."
+    "_comment": "Retuned after reading all 164 rendered cards, not from the numbers: Skip outweighed the title, every picture floated in a band it never filled, and two-line bodies sat hard against the nav row. Budgeted against the 960x540 design viewport in project.godot: 40 padding + 88 header + 12 dots + 140 visual + 52 body + 88 nav + 4 separations leaves the board inside the screen with the Gate B3 tap-target floor intact on both button rows. Grow visual_height or body_min_h and the nav row walks off the bottom.",
+    "visual_height_place_board": 176,
+    "_visual_height_place_board_comment": "The math house needs five stacked bands and the deck default of 122 cannot hold them legibly. Only this visual gets it -- see TutorialVisual.setup(). Budgeted so the card still clears the nav row at 540 tall, which test_screen_fit.gd gates."
   },
-  "brief_cards": ["model", "worked"],
+  "brief_cards": [
+    "model",
+    "worked"
+  ],
   "_brief_cards_comment": "Which authored cards a BRIEF lesson plays. A brief lesson is what a child gets for a new rung inside a domain they have already been taught -- see role of TutorialManager.depth_for(). Names match the `body` field of a card in data/curriculum/tutorials.json; every lesson is authored as see/model/worked/try. The pair here is the picture that carries the strategy and the equation with the reasoning said out loud, which is the shortest thing that still answers 'how do I do this one'. Dropping `try` is deliberate: a guided question in front of the owl's real question is two questions to answer one owl. Naming a card that does not exist falls the lesson back to all four rather than opening on nothing.",
   "pacing": {
     "_comment": "Nothing auto-advances. A child sets the pace; the only timers are the ones that hold a moment long enough to be read.",
     "card_in_ms": 260,
     "choice_wrong_nudge_ms": 800,
     "choice_right_hold_ms": 1000,
-    "finish_hold_ms": 900
+    "finish_hold_ms": 900,
+    "action_ms_count_all": 900,
+    "action_ms_take_away": 1100,
+    "_action_comment": "How long a card takes to PLAY ITS ACTION, per visual. A visual with no entry here is a standing picture and starts finished -- which is every card that shows a state rather than a doing. Nothing waits on these: the nav is live from the first frame, and tapping the picture plays it again. They exist because the deck showed nouns and left the verbs to a sentence, and the sentence is the part a five-year-old cannot read.",
+    "action_ms_number_line": 1200,
+    "action_ms_ten_frame": 900,
+    "action_ms_groups": 1100,
+    "action_ms_pattern_strip": 1000
   },
   "visual": {
     "token_size": 26,
@@ -62,7 +74,14 @@
     "cross_thickness": 4,
     "fit_margin": 24,
     "fit_min_scale": 0.35,
-    "fit_max_scale": 1.6
+    "fit_max_scale": 1.6,
+    "board_col_width": 66,
+    "board_row_height": 36,
+    "board_header_height": 32,
+    "board_digit_size": 32,
+    "_board_comment": "The place-value board (the \"math house\"). One column per place, the two numbers stacked, a line, the answer under it. Sized so three rows plus the block key fit the 122px visual strip without _fit crushing them: 30 + 30*3 + 4 = 124 natural, which lands at ~0.98 scale. Widen board_col_width and a four-place sum stops fitting the board width instead.",
+    "board_carry_height": 18,
+    "board_rule": 3
   },
   "roles": {
     "_comment": "Left side: what the tutorial draws. Right side: a palette role every theme already defines. Remap freely, but token_a and token_b must clear 3:1 against the board in all seven palettes -- test_theme_roles.gd fails the build otherwise. There is deliberately no token_c: the pattern strip used to need a third colour and NO role in these palettes is both legible on the board and distinct from the other two everywhere, so the repeat is carried by SHAPE now (circle, square, diamond) and colour only reinforces it.",

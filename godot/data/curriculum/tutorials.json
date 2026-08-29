@@ -28,7 +28,8 @@
             "a": 2,
             "op": "+",
             "b": 1,
-            "result": 3
+            "result": 3,
+            "tokens": true
           }
         },
         {
@@ -77,7 +78,8 @@
             "a": 4,
             "op": "+",
             "b": 2,
-            "result": 6
+            "result": 6,
+            "tokens": true
           }
         },
         {
@@ -481,7 +483,8 @@
             "a": 3,
             "op": "-",
             "b": 1,
-            "result": 2
+            "result": 2,
+            "tokens": true
           }
         },
         {
@@ -820,21 +823,24 @@
           "body": "model",
           "visual": "ten_frame",
           "params": {
-            "filled": 7
+            "filled": 5,
+            "second": 2
           }
         },
         {
           "body": "worked",
           "visual": "ten_frame",
           "params": {
-            "filled": 8
+            "filled": 5,
+            "second": 3
           }
         },
         {
           "body": "try",
           "visual": "ten_frame",
           "params": {
-            "filled": 9
+            "filled": 5,
+            "second": 4
           },
           "choice": {
             "options": [
@@ -870,14 +876,16 @@
           "body": "worked",
           "visual": "ten_frame",
           "params": {
-            "filled": 13
+            "filled": 10,
+            "second": 3
           }
         },
         {
           "body": "try",
           "visual": "ten_frame",
           "params": {
-            "filled": 16
+            "filled": 10,
+            "second": 6
           },
           "choice": {
             "options": [
@@ -1650,7 +1658,8 @@
           "visual": "groups",
           "params": {
             "groups": 2,
-            "each": 3
+            "each": 3,
+            "deal": "round"
           }
         },
         {
@@ -1658,7 +1667,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 2
+            "each": 2,
+            "deal": "round"
           }
         },
         {
@@ -1698,7 +1708,8 @@
           "visual": "groups",
           "params": {
             "groups": 4,
-            "each": 5
+            "each": 5,
+            "deal": "round"
           }
         },
         {
@@ -1706,7 +1717,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 10
+            "each": 10,
+            "deal": "round"
           }
         },
         {
@@ -1746,7 +1758,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 7
+            "each": 7,
+            "deal": "round"
           }
         },
         {
@@ -1754,7 +1767,8 @@
           "visual": "groups",
           "params": {
             "groups": 4,
-            "each": 6
+            "each": 6,
+            "deal": "round"
           }
         },
         {
@@ -1794,7 +1808,8 @@
           "visual": "groups",
           "params": {
             "groups": 4,
-            "each": 0
+            "each": 0,
+            "deal": "round"
           }
         },
         {
@@ -1802,7 +1817,8 @@
           "visual": "groups",
           "params": {
             "groups": 5,
-            "each": 5
+            "each": 5,
+            "deal": "round"
           }
         },
         {
@@ -1842,7 +1858,8 @@
           "visual": "groups",
           "params": {
             "groups": 6,
-            "each": 7
+            "each": 7,
+            "deal": "round"
           }
         },
         {
@@ -1892,7 +1909,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 14
+            "each": 14,
+            "deal": "round"
           }
         },
         {
@@ -2298,7 +2316,8 @@
           "visual": "groups",
           "params": {
             "groups": 4,
-            "each": 3
+            "each": 3,
+            "deal": "round"
           }
         },
         {
@@ -2306,7 +2325,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 4
+            "each": 4,
+            "deal": "round"
           }
         },
         {
@@ -2346,7 +2366,8 @@
           "visual": "groups",
           "params": {
             "groups": 3,
-            "each": 5
+            "each": 5,
+            "deal": "round"
           }
         },
         {
@@ -2354,7 +2375,8 @@
           "visual": "groups",
           "params": {
             "groups": 5,
-            "each": 3
+            "each": 3,
+            "deal": "round"
           }
         },
         {
@@ -2381,6 +2403,118 @@
               14
             ],
             "correct": 12
+          }
+        }
+      ]
+    },
+    {
+      "id": "addition.multi_digit",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "tens_and_ones",
+          "params": {
+            "hundreds": 2,
+            "tens": 1,
+            "ones": 4,
+            "addHundreds": 1,
+            "addTens": 3,
+            "addOnes": 4
+          }
+        },
+        {
+          "body": "model",
+          "visual": "place_board",
+          "params": {
+            "top": 214,
+            "op": "+",
+            "bottom": 134,
+            "result": 348
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "place_board",
+          "params": {
+            "top": 256,
+            "op": "+",
+            "bottom": 137,
+            "result": 393,
+            "carry": 1,
+            "carryInto": 1
+          }
+        },
+        {
+          "body": "try",
+          "visual": "place_board",
+          "params": {
+            "top": 218,
+            "op": "+",
+            "bottom": 145
+          },
+          "choice": {
+            "options": [
+              363,
+              353,
+              373
+            ],
+            "correct": 363
+          }
+        }
+      ]
+    },
+    {
+      "id": "subtraction.multi_digit",
+      "cards": [
+        {
+          "body": "see",
+          "visual": "tens_and_ones",
+          "params": {
+            "hundreds": 3,
+            "tens": 4,
+            "ones": 8,
+            "takeHundreds": 1,
+            "takeTens": 3,
+            "takeOnes": 4
+          }
+        },
+        {
+          "body": "model",
+          "visual": "place_board",
+          "params": {
+            "top": 348,
+            "op": "-",
+            "bottom": 134,
+            "result": 214
+          }
+        },
+        {
+          "body": "worked",
+          "visual": "place_board",
+          "params": {
+            "top": 352,
+            "op": "-",
+            "bottom": 137,
+            "result": 215,
+            "carry": 1,
+            "carryInto": 0
+          }
+        },
+        {
+          "body": "try",
+          "visual": "place_board",
+          "params": {
+            "top": 364,
+            "op": "-",
+            "bottom": 128
+          },
+          "choice": {
+            "options": [
+              236,
+              244,
+              226
+            ],
+            "correct": 236
           }
         }
       ]

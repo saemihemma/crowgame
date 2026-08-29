@@ -53,6 +53,11 @@ var _answered := false
 var _board: PanelContainer
 var _title: Label
 var _body: Label
+## The replay affordance beside the dots. Sized to the dot row rather than to
+## Gate B3's 88px tap floor, because the FULL PICTURE is the tap target -- this
+## is the sign that says so, not the button itself.
+const REPLAY_HINT_SIZE := 26.0
+
 var _visual: TutorialVisual
 var _dots: HBoxContainer
 var _controls: HBoxContainer
@@ -101,6 +106,11 @@ static func _cards_for_depth(tutorial: Dictionary, depth: String) -> Array:
 
 ## FULL or BRIEF. Public so a probe can assert the rule fired, rather than
 ## inferring depth from a card count that two different lessons could share.
+## Whether the card on screen is still playing its action -- see
+## TutorialVisual.is_action_playing().
+func visual_is_animating() -> bool:
+	return _visual != null and _visual.is_action_playing()
+
 func depth() -> String:
 	return _depth
 
@@ -294,6 +304,12 @@ func _render_dots() -> void:
 	for i in card_count():
 		var dot := Panel.new()
 		dot.custom_minimum_size = Vector2(diameter, diameter)
+		# SHRINK, not fill. The dots share this row with the replay hint, which is
+		# taller than they are -- and an HBox stretches its children to the row's
+		# height by default, so adding the hint quietly turned every progress dot
+		# into a tall oval. A dot is a dot at whatever height the row happens to
+		# be.
+		dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		var style := StyleBoxFlat.new()
 		style.set_corner_radius_all(int(diameter * 0.5))
 		if i <= _index:
@@ -304,6 +320,34 @@ func _render_dots() -> void:
 			style.border_color = accent
 		dot.add_theme_stylebox_override("panel", style)
 		_dots.add_child(dot)
+	_add_replay_hint(accent)
+
+## "You can watch that again", beside the progress dots.
+##
+## The picture became tappable when it started animating, and a tap target with
+## no affordance is one nobody uses -- least of all a five-year-old, who will not
+## go hunting for it.
+##
+## It lives HERE rather than inside the picture, and that is the second attempt:
+## drawn from inside TutorialVisual it landed outside the card entirely, because
+## that control is SIZE_EXPAND_FILL and runs wider than the board, so no inset
+## from its own edges is inside anything. The dots row is a known-width child of
+## the board, so a mark placed in it is on the card by construction.
+##
+## Drawn, not a character: the circular-arrow glyph is far above Latin-1 and
+## Godot's built-in font has no picture for it, so validate_i18n.mjs would refuse
+## it and a player would get a box printing its own hex codepoint. The PIN dots,
+## the padlock and the dialog arrow all learned that the hard way.
+func _add_replay_hint(accent: Color) -> void:
+	if _visual == null or not _visual.has_action():
+		return
+	var hint := ReplayHint.new()
+	hint.tint = accent
+	hint.custom_minimum_size = Vector2(REPLAY_HINT_SIZE, REPLAY_HINT_SIZE)
+	hint.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	hint.tooltip_text = TextManager.t("tutorial_replay")
+	hint.pressed.connect(func(): _visual.replay())
+	_dots.add_child(hint)
 
 func _render_controls(card: Dictionary) -> void:
 	for child in _controls.get_children():

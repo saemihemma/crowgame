@@ -110,23 +110,22 @@ func _launch() -> bool:
 		return false
 	_last_domain = problem["domain"]
 
-	# A new rung inside a domain the child already knows. First contact above only
-	# ever fires once per domain, so without this the first two-digit sum, the
-	# first bridge past ten and the first borrow all arrive with no warning at
-	# all -- they are just "addition" and "subtraction" to the runtime.
-	if freebie_domain == null and not _taught_this_encounter:
-		var lesson := TutorialManager.tutorial_for_problem(problem)
-		if not lesson.is_empty():
-			_taught_this_encounter = true
-			_pending_problem = problem
-			_pending_freebie_domain = problem["domain"]
-			# FULL the first time this child is taught anything in this domain,
-			# BRIEF for every rung after that -- and BRIEF regardless for a concept
-			# the child has already climbed past, which is what depth_for_problem
-			# adds over depth_for.
-			game.launch_math_tutorial(lesson, _on_tutorial_closed,
-				TutorialManager.depth_for_problem(problem, String(lesson.get("id", ""))))
-			return true
+	# NOTHING TEACHES HERE ANY MORE, and the gap is the point.
+	#
+	# This is where a lesson used to open for any problem whose concept the child
+	# had not met -- the first two-digit sum, the first bridge past ten, the first
+	# borrow. Each was justified; together they were an ambush. The child walked
+	# up to an owl to answer one thing and got a board of cards first, on an idea
+	# they had not asked about, at a moment they did not choose.
+	#
+	# A lesson now arrives at the moment it is wanted instead: straight after the
+	# answer that levels the child up into it (see _on_math_complete), one per
+	# category. And when it is not wanted automatically, it is a button -- the "?"
+	# on the board re-opens the lesson for wherever the child stands.
+	#
+	# First contact with a brand-new domain, above, is the one thing that still
+	# teaches before a question, because a child cannot be asked something in a
+	# subject they have never seen. PRODUCT.md commits to it.
 
 	var reward_amount := int(npc.reward_amount)
 	var reward_for_this := reward_amount if _problems_completed + 1 >= problem_count else 0
@@ -181,7 +180,60 @@ func _on_math_complete(data: Dictionary) -> void:
 			npc.get_tree().create_timer(0.22).timeout.connect(_launch_next, CONNECT_ONE_SHOT)
 			return
 		EventBus.owl_saved.emit()
+		# THE TEACHING MOMENT. curriculum_step_up fired while this answer was
+		# being recorded, so by now TutorialManager knows whether the child just
+		# levelled into an idea they have never been taught.
+		#
+		# After the win rather than before the question: the child has answered,
+		# the owl is free, the banner has said they moved up -- and the lesson is
+		# the explanation of what they moved up INTO. Same cards, opposite
+		# feeling, because it is now an answer to something they just did instead
+		# of a toll on something they were about to do.
+		if _teach_pending_lesson():
+			return
 	npc.end_interaction()
+	npc.fly_away()
+
+## Deliver the lesson this child just earned, if there is one. Returns whether
+## anything opened, so the caller knows to leave the encounter running.
+##
+## The owl is already freed and flies away when the lesson closes, so a child who
+## skips loses nothing and a child who reads is not made to wait for their
+## reward.
+func _teach_pending_lesson() -> bool:
+	# ONE LESSON PER OWL, still, and this is the case that proves it is needed: a
+	# fresh child meets a domain, gets its opening lesson, answers the freebie
+	# correctly, and that very answer levels them up into the next concept.
+	# Without this gate the reward for their first ever correct answer is a second
+	# board of cards, back to back, on one owl -- which is the ambush this whole
+	# change exists to remove, rebuilt at the other end of the encounter.
+	#
+	# Nothing is lost by waiting: the debt is held per category and paid at the
+	# next owl.
+	if _taught_this_encounter:
+		return false
+	var game: Node = npc.get_game()
+	if game == null or game.is_math_tutorial_active():
+		return false
+	var domain := String(_last_domain) if _last_domain != null else ""
+	var lesson := TutorialManager.pending_lesson_any(domain)
+	if lesson.is_empty():
+		return false
+	var tutorial_id := String(lesson.get("id", ""))
+	game.launch_math_tutorial(lesson, _on_earned_lesson_closed,
+		TutorialManager.depth_for(tutorial_id))
+	return true
+
+## An earned lesson ended. Unlike _on_tutorial_closed there is no held question
+## waiting behind it -- the question is already answered -- so this just closes
+## the encounter the win had reached.
+func _on_earned_lesson_closed(payload: Dictionary) -> void:
+	var tutorial_id := String(payload.get("tutorialId", ""))
+	TutorialManager.mark_seen(tutorial_id, bool(payload.get("skipped", false)))
+	if npc == null or not is_instance_valid(npc):
+		return
+	if npc.is_interacting():
+		npc.end_interaction()
 	npc.fly_away()
 
 ## Continue a live encounter. Unlike the opening _launch(), the encounter is

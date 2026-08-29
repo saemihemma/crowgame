@@ -37,18 +37,60 @@ that a child feels successful, low enough that the questions are not free. The
 number that expresses it is a tuning target, not a product promise, and it lives
 with the tuning work in `roadmap.md`.
 
+### Coverage is not a goal, and never becomes one
+
+**This game meets a child where they are. It does not move them through a
+syllabus.** That is the whole reason the ELO and the step ladder exist: the pace
+is the child's, and the content a particular child meets is an outcome of that
+pace rather than a target to hit.
+
+So a great many things in the data are, correctly, never reached by a given
+child — and none of them are bugs:
+
+- The journey simulator reports concepts "never reached" for a struggling
+  learner. That is the system working. A child who is still consolidating
+  addition should not be handed division because division exists.
+- Nine of the concepts are overlays claimed by problem shape rather than by
+  difficulty, so whether a child meets one depends on which problems the lanes
+  actually deal them. Uneven is expected.
+- Every domain is unlocked on its own evidence, and a child can sit on one rung
+  for a long time. Sitting there is not being stuck; it is the band doing its
+  job.
+
+**The failure this invites, and the rule that prevents it.** The tempting fix,
+whenever a report shows unreached content, is to widen a gate, add a nudge, or
+push a child forward "so they see it". Do not. Content that goes unmet is the
+cost of a pace that belongs to the child, and it is a cost this product accepts
+deliberately. If a change would make a child meet more material *faster than
+their own evidence earns it*, that change is against the design — however good
+the coverage number looks afterwards.
+
+The one thing that IS a bug is content a child could never reach **no matter how
+well they did**: a concept with no problems behind it, an unlock whose condition
+cannot be satisfied, a lesson whose rung the derivation cannot emit. Those are
+gaps in the ladder rather than in a child, and `npm run validate` gates them.
+The distinction is the whole of it — *unreached by this child* is the design,
+*unreachable by anyone* is a defect.
+
 ## The intended loop
 
 1. Choose or resume a child profile.
 2. Move through a readable platforming level.
 3. Meet an owl.
-4. Answer a small, high-confidence question set.
+4. Answer one question.
 5. Return to movement with clear feedback and visible progress.
 
-An owl encounter is deliberately short — as shipped, one question. The length is
-per-owl in the registry rather than global, so a later gated owl can ask more
-without changing the loop for every other one. A fresh profile opens on addition
-and counting; other domains join through the normal unlock rules.
+**One owl, one question — every owl, with no exception available.** The length
+used to be per-owl in the registry, so that a later gated owl could ask more
+without changing the loop for everything else. Played, that was not a dial, it
+was a stall: every level carried a three-question owl and one carried three of
+them, so a child running a platformer was stopped for three questions in a row,
+repeatedly. The roster still has range, and the range is difficulty — an easier
+owl, a harder one — which is the dial that was actually wanted.
+`godot/tests/test_owl_chains.gd` fails the build on any owl that asks for more.
+
+A fresh profile opens on addition and counting; other domains join through the
+normal unlock rules.
 
 ## What finishing means
 
@@ -93,6 +135,21 @@ available is deliberately converted into the best one.
 **First contact with new maths cannot hurt.** When a level introduces a domain a
 child has never attempted, the owl opens with a worked example, then a freebie: a
 win records, a miss records nothing at all.
+
+**A lesson answers something the child just did; it is never a toll on something
+they are about to do.** Teaching used to fire in front of any question whose idea
+the child had not met. Each of those lessons was justified on its own, and
+together they were an ambush — a board of cards between a child and the owl they
+walked up to, on an idea they had not asked about. So there is **one lesson per
+maths category**: the one for the rung they are standing on, delivered after an
+answer, and never more than one at a single owl. Levelling up in a category is
+what moves a child onto a rung they have not been taught, which is why it reads
+as "when I level up, I get taught".
+
+**Asking for the lesson again is always allowed.** Every question carries a "?"
+that re-opens the lesson for that category, however many times a child wants it.
+It records nothing — looking something up is not being tested — and it is what
+makes the automatic teaching safe to keep rare.
 
 **Difficulty drops faster than it climbs, and demotions are silent.** A step-up
 is celebrated; a step-down is never signalled. The child should never be told

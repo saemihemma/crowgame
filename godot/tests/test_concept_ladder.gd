@@ -59,38 +59,42 @@ func test_every_concept_names_a_real_tutorial() -> void:
 
 func test_a_lesson_is_offered_once_and_then_never_again() -> void:
 	_fresh_save()
-	# The learner has to be STANDING on the rung, not merely dealt a problem from
-	# it. A lesson is only offered once the ladder has reached the concept's first
-	# step (TutorialManager._learner_has_reached), because the stretch lane deals a
-	# rung the child has not earned and teaching it there would open a lesson for
-	# an idea they have not reached, mid-run, on a question meant to be a reach.
-	# Before that rule this test paired a learner on step 2 with a step-7 problem,
-	# which the selection lanes cannot actually produce -- stretch reaches exactly
-	# one step.
-	var problem := {"domain": "addition", "curriculumStep": 7}
 	_stand_on("addition", 7)
-	var first := TutorialManager.tutorial_for_problem(problem)
-	assert_eq(String(first.get("id", "")), "addition.make_ten", "first contact offers the lesson")
+	var first := TutorialManager.pending_lesson("addition")
+	assert_eq(String(first.get("id", "")), "addition.make_ten",
+		"the rung the child stands on owes its lesson")
 
 	TutorialManager.mark_seen("addition.make_ten", false)
-	assert_true(TutorialManager.tutorial_for_problem(problem).is_empty(), "not offered a second time")
-	# A neighbouring rung is a different idea and still gets taught.
+	assert_true(TutorialManager.pending_lesson("addition").is_empty(),
+		"not offered a second time")
+	# Levelling up onto a neighbouring rung is a different idea, and owes again.
 	_stand_on("addition", 12)
-	assert_eq(String(TutorialManager.tutorial_for_problem({"domain": "addition", "curriculumStep": 12}).get("id", "")),
+	assert_eq(String(TutorialManager.pending_lesson("addition").get("id", "")),
 		"addition.teen_numbers", "the next concept is still unseen")
 	_fresh_save()
 
-## A concept above the ladder is not taught at all, however new it is. This is
-## the stretch lane: a reach is a reach, and the lesson arrives when the ladder
-## does.
-func test_a_concept_the_learner_has_not_reached_is_not_taught() -> void:
+## The debt is DERIVED from where the child stands, not remembered from the
+## step-up that put them there.
+##
+## What this replaces: a test that a concept ABOVE the learner is never taught.
+## That guard belonged to `tutorial_for_problem`, which decided whether a lesson
+## was safe to open in front of a specific PROBLEM -- including a stretch problem
+## one rung above the child, which had to be refused so nobody was taught an idea
+## they had not earned. Nothing teaches in front of a question any more, so a
+## problem's rung decides nothing; the child's own rung does, and it can be
+## neither above nor below itself.
+##
+## Being derived is also what makes the debt survive quitting the game. An
+## earlier version held it in a runtime dictionary filled by curriculum_step_up,
+## and a child who levelled up and then closed the game was never taught that
+## rung at all.
+func test_the_debt_is_recomputed_from_where_the_child_stands() -> void:
 	_fresh_save()
-	_stand_on("addition", 0)
-	assert_true(TutorialManager.tutorial_for_problem({"domain": "addition", "curriculumStep": 12}).is_empty(),
-		"a child on step 0 is not taught teen numbers")
 	_stand_on("addition", 12)
-	assert_true(not TutorialManager.tutorial_for_problem({"domain": "addition", "curriculumStep": 12}).is_empty(),
-		"and is, once the ladder gets them there")
+	var owed := String(TutorialManager.pending_lesson("addition").get("id", ""))
+	assert_eq(owed, "addition.teen_numbers", "standing on the rung owes its lesson")
+	assert_eq(String(TutorialManager.pending_lesson("addition").get("id", "")), owed,
+		"and asking again gives the same answer, with no event in between")
 	_fresh_save()
 
 ## Put the learner on a rung, so a test can pair a problem with a plausible
