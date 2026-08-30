@@ -128,14 +128,27 @@ For each environment (`staging`, then `prod`):
 
 1. **New → Database → PostgreSQL.** Railway sets `DATABASE_URL` for you.
 2. **New → GitHub Repo →** the same repo. Name it `crow-api-<env>`.
-3. **Settings → Build:** Dockerfile Path = `deploy/api/Dockerfile`, Root
-   Directory blank.
+3. **Settings → Config-as-code:** set the path to `deploy/api/railway.json`.
 
-   > **Check the build log before moving on.** A root `railway.json` exists and
-   > pins `deploy/web/Dockerfile`. If it wins, this service silently builds and
-   > runs the *web* image — a Caddy serving static files, which passes a
-   > superficial health check and serves no API at all. Confirm the log names
-   > `deploy/api/Dockerfile`.
+   Not "Settings → Build → Dockerfile Path". That field loses.
+
+   > **THIS IS THE STEP THAT GOES WRONG.** A `railway.json` at the repo root
+   > pins `deploy/web/Dockerfile`, and Railway reads it for any service whose
+   > Root Directory is blank — which is every service here. Config-as-code beats
+   > the UI, so typing `deploy/api/Dockerfile` into the Dockerfile Path box
+   > changes nothing: the service builds the *web* image, a Caddy serving static
+   > files with no Node in it at all.
+   >
+   > What that looks like when it happens, because it is not obvious: the build
+   > SUCCEEDS, in about ten seconds (a real API build takes a minute or more),
+   > and then the pre-deploy command dies after two with `node: not found` —
+   > there is no `node` in `caddy:2-alpine`, and no `dist/` either. It has
+   > happened at least once for real.
+   >
+   > `deploy/api/railway.json` exists to end this: it names the API Dockerfile
+   > and carries the pre-deploy command, so both are versioned with the code
+   > rather than typed into a form. Confirm the build log names
+   > `deploy/api/Dockerfile` before moving on.
 4. **Settings → Source:** branch `main` for staging, `release` for prod.
 5. **Settings → Networking:** do **not** generate a public domain. Private only.
 6. **Variables.** Two are required and the game works completely without the
@@ -176,10 +189,14 @@ For each environment (`staging`, then `prod`):
    The service binds `::` by default. Do not override `HOST` to `0.0.0.0` —
    Railway's private network is IPv6, and that single change is the classic way
    to end up with a service that looks healthy and is unreachable.
-7. **Settings → Deploy → Pre-deploy Command:**
-   ```
-   CROW_JOB=migrate node dist/migrate.js
-   ```
+7. **Pre-deploy command: nothing to do.** `deploy/api/railway.json` already
+   carries `node dist/migrate.js`, so it is versioned with the migrations it
+   runs.
+
+   Note it does NOT set `CROW_JOB=migrate`, and does not need to: `CROW_JOB`
+   selects the role in the image's own `CMD`, which a pre-deploy command
+   replaces outright. Setting it there was harmless but read as load-bearing.
+
    Migrations run here, never at app boot: a boot-time migration races every
    replica that starts at the same time.
 8. On the matching **web** service, add:
