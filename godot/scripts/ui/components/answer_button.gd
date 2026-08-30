@@ -19,6 +19,7 @@ const SHAKE_RADIANS := 0.075
 const SHAKE_SECONDS := 0.34
 
 var _state: int = State.IDLE
+var _selected := false
 
 ## An option is chosen by pointing at it. Nothing else.
 ##
@@ -46,6 +47,21 @@ func set_state(state: int) -> void:
 	_state = state
 	_restyle()
 
+## Under the keyboard cursor.
+##
+## Not focus, and the distinction is the whole reason this exists rather than
+## FOCUS_ALL and a focus stylebox. Godot's focus ring is driven by ui_left and
+## ui_right, which are the arrow keys, which are also how the crow walks -- that
+## coupling is what let the game answer its own first question. This is a mark
+## the board puts on a card and takes off again; nothing but MathChallenge's own
+## keyboard handler ever moves it, and it appears only once a child has pressed
+## an arrow, so a touch or mouse player never sees it at all.
+func set_selected(selected: bool) -> void:
+	if _selected == selected:
+		return
+	_selected = selected
+	_restyle()
+
 func _fill() -> Color:
 	match _state:
 		State.RIGHT:
@@ -55,17 +71,25 @@ func _fill() -> Color:
 		_:
 			return ThemeManager.get_color_value("paper")
 
+## How the card under the keyboard cursor is drawn: the same card, ringed. A
+## thicker accent border rather than a different fill, because the fill already
+## means something (paper, right, not-yet) and a second meaning on it would make
+## the one feedback vocabulary the board has ambiguous.
+const SELECTED_BORDER := 7
+
 func _restyle() -> void:
 	var ink := ThemeManager.get_color_value("ink")
 	var fill := _fill()
-	add_theme_stylebox_override("normal", _face(fill, ink, 3))
-	add_theme_stylebox_override("hover", _face(fill.lightened(0.12), ink, 3))
-	add_theme_stylebox_override("pressed", _face(fill.darkened(0.12), ink, 3))
+	var edge := ThemeManager.get_color_value("accent") if _selected else ink
+	var width := SELECTED_BORDER if _selected else 3
+	add_theme_stylebox_override("normal", _face(fill, edge, width))
+	add_theme_stylebox_override("hover", _face(fill.lightened(0.12), edge, width))
+	add_theme_stylebox_override("pressed", _face(fill.darkened(0.12), edge, width))
 	# No `focus` stylebox: with FOCUS_NONE it can never be drawn, and leaving one
 	# behind would suggest a focus state that no longer exists.
 	# A disabled option during the wrong-answer beat should read as "wait", not
 	# as "broken": it keeps its colour and loses only some of its light.
-	add_theme_stylebox_override("disabled", _face(fill.darkened(0.18), ink, 3))
+	add_theme_stylebox_override("disabled", _face(fill.darkened(0.18), edge, width))
 
 	# Ink on every state: paper, green and orange are all light enough to carry
 	# dark text, which keeps the numeral legible through a colour change.

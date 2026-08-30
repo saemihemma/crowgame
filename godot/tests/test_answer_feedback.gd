@@ -79,3 +79,134 @@ func test_disabled_options_are_visibly_dimmed() -> void:
 
 	panel.queue_free()
 	await Engine.get_main_loop().process_frame
+
+
+# --- the keyboard route to an answer ---------------------------------------
+#
+# A playtester on a PC could not answer with the keys a PC player reaches for.
+# The board took digits only, which was a deliberate choice made after focus-based
+# arrow navigation let the game answer its own first question -- so the route back
+# is a mark the board owns, moved by actions the board names, committed by a key
+# that is not also jump.
+
+func _board() -> Node:
+	var panel: Node = MATH_CHALLENGE.instantiate()
+	Engine.get_main_loop().root.add_child(panel)
+	panel.present({
+		"id": "keyboard_probe",
+		"domain": "addition",
+		"prompt": {"text": "1 + 1 = ?"},
+		"answer": {"mode": "mcq", "correct": 2, "options": [2, 3, 4, 5]},
+	}, {"npcName": "Hoot", "npcGreeting": "Hi", "problemCount": 1, "currentProblemIndex": 1})
+	return panel
+
+## The three actions exist. Without them `is_action_pressed` throws at runtime
+## on the one screen a child cannot walk away from.
+func test_the_board_names_its_keyboard_actions() -> void:
+	for action in ["answer_prev", "answer_next", "answer_confirm"]:
+		assert_true(InputMap.has_action(action), "input action %s" % action)
+
+## Enter, and the keypad's Enter. NOT Space: Space is `jump`, and the whole
+## reason the first keyboard route was torn out is that jump could commit an
+## answer.
+func test_confirm_is_enter_and_never_space() -> void:
+	var keys: Array = []
+	for event in InputMap.action_get_events("answer_confirm"):
+		if event is InputEventKey:
+			keys.append(int((event as InputEventKey).physical_keycode))
+	assert_true(keys.has(KEY_ENTER), "Enter commits the marked answer")
+	assert_true(keys.has(KEY_KP_ENTER), "and so does the keypad's Enter")
+	assert_true(not keys.has(KEY_SPACE), "Space is jump, and jump never answers")
+
+## Nothing is marked until a child asks for a mark. A touch player must never
+## see a selection they did not make.
+func test_a_fresh_board_marks_nothing() -> void:
+	var panel := _board()
+	await Engine.get_main_loop().process_frame
+	assert_eq(panel._cursor, -1, "no option is marked before an arrow is pressed")
+	for b: AnswerButton in panel._buttons:
+		assert_true(not b._selected, "and no option is drawn as selected")
+	panel.queue_free()
+	await Engine.get_main_loop().process_frame
+
+## Right lands on the leftmost option, then walks the row and wraps.
+func test_the_mark_walks_the_row_and_wraps() -> void:
+	var panel := _board()
+	await Engine.get_main_loop().process_frame
+	var count: int = panel._buttons.size()
+	assert_eq(count, 4, "four options to walk")
+
+	panel._move_cursor(1)
+	assert_eq(panel._cursor, 0, "the first press lands on the leftmost option")
+	panel._move_cursor(1)
+	assert_eq(panel._cursor, 1, "and the next moves one right")
+	for _i in count:
+		panel._move_cursor(1)
+	assert_eq(panel._cursor, 1, "a full lap comes back to where it started")
+	panel._move_cursor(-1)
+	assert_eq(panel._cursor, 0, "and left walks back")
+	panel._move_cursor(-1)
+	assert_eq(panel._cursor, count - 1, "off the left edge wraps to the last option")
+
+	var marked := 0
+	for b: AnswerButton in panel._buttons:
+		if b._selected:
+			marked += 1
+	assert_eq(marked, 1, "exactly one option is ever marked")
+	panel.queue_free()
+	await Engine.get_main_loop().process_frame
+
+## Confirm with no mark does nothing at all. A leaned-on key must not be able to
+## commit the one irreversible action on the screen.
+func test_confirming_nothing_answers_nothing() -> void:
+	var panel := _board()
+	await Engine.get_main_loop().process_frame
+	panel._commit_cursor()
+	await Engine.get_main_loop().process_frame
+	assert_true(panel.is_active(), "the question is still open")
+	panel.queue_free()
+	await Engine.get_main_loop().process_frame
+
+## And with a mark, Enter answers the option under it -- the option a child can
+## SEE is marked, which is the shuffled row position, not the pool's index.
+func test_confirm_answers_the_marked_option() -> void:
+	var panel := _board()
+	await Engine.get_main_loop().process_frame
+	panel._move_cursor(1)
+	var at: int = panel._cursor
+	panel._commit_cursor()
+	await Engine.get_main_loop().process_frame
+	# The board answers by marking the option it took, so the mark tells us which
+	# one Enter submitted -- through the same shuffle the mouse path goes through.
+	for i in panel._buttons.size():
+		var answered: bool = (panel._buttons[i] as AnswerButton)._state != AnswerButton.State.IDLE
+		if i == at:
+			assert_true(answered, "Enter submitted the option the mark was standing on")
+		else:
+			assert_true(not answered, "and no other option was touched")
+	panel.queue_free()
+	await Engine.get_main_loop().process_frame
+
+## The "?" is the one BrandButton on the board that cannot hold focus. A focused
+## button eats ui_accept before this node's handlers run, so a focusable "?"
+## would turn every Enter meant for an answer into a lesson opening.
+func test_the_help_button_cannot_hold_focus() -> void:
+	var panel := _board()
+	await Engine.get_main_loop().process_frame
+	var checked := 0
+	for node in _all_children(panel):
+		if node is BrandButton:
+			assert_eq(int((node as BrandButton).focus_mode), int(Control.FOCUS_NONE),
+				"nothing on the board takes the focus Enter would land on")
+			checked += 1
+	assert_true(checked >= 1,
+		"the board carries the '?' this is about (%d focusable candidates)" % checked)
+	panel.queue_free()
+	await Engine.get_main_loop().process_frame
+
+func _all_children(node: Node) -> Array:
+	var out: Array = []
+	for child in node.get_children():
+		out.append(child)
+		out.append_array(_all_children(child))
+	return out

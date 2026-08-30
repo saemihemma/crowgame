@@ -151,27 +151,46 @@ func _finish(correct: bool, first_attempt: bool) -> void:
 	EventBus.math_challenge_complete.emit(_result(correct, first_attempt))
 	_close()
 
-## ANSWERING FROM THE KEYBOARD, by position: 1 is the leftmost option.
+## ANSWERING FROM THE KEYBOARD. Two routes, both by POSITION on screen.
 ##
-## The options deliberately take no focus (see AnswerButton), and that is not
-## being undone here. Focus was the mechanism that broke: ui_left/ui_right are
-## the arrow keys, so a child trying to walk moved the focus ring, and ui_accept
-## is Space and Enter -- Space also being jump -- so the two keys the game had
-## just taught them committed whichever option the ring had landed on.
+## 1. A digit, 1 being the leftmost option: one key, one answer, no state.
+## 2. Left and right to move a mark along the row, Enter to commit it.
 ##
-## Digits have no movement meaning, so no reflex can reach them. A child pressing
-## "2" can only have meant the second answer.
+## The second is what a playtester asked for on a PC, and it is the one that has
+## to be built carefully, because a version of it is what broke the board once
+## before. Godot's focus ring is driven by `ui_left`/`ui_right` -- the arrow keys,
+## which are also how the crow walks -- and by `ui_accept`, which is Enter AND
+## Space, Space also being jump. So the two keys the game had just taught a child
+## committed whichever option the ring had drifted onto, and the game answered its
+## own first question. FOCUS_NONE was the fix, and the options still take no
+## focus: nothing here undoes that.
 ##
-## Deliberately NOT the Ctrl key a playtester suggested. Ctrl alone cannot say
-## WHICH of four answers, so it would need a highlight to commit -- and that is
-## the focus ring again, with a two-step select-then-confirm on the one screen
-## where a five-year-old is already holding a question in their head.
+## What is different is that this is the board's own mark on its own row, moved by
+## the board's own actions, and it does not exist until a child presses an arrow.
+## `answer_prev`/`answer_next` are Left and Right; `answer_confirm` is Enter and
+## the keypad's Enter, and deliberately NOT Space -- Space is jump, and jump must
+## never be able to commit an answer. A touch or mouse player sees no mark at all,
+## which is the overwhelmingly common case and is unchanged.
 ##
 ## Position, not value index: the options are shuffled per render, and "the
-## second thing I can see" is the only thing a digit can honestly mean.
+## second thing I can see" is the only thing a key can honestly mean.
 ## `_display_order[i]` is the translation the mouse path already goes through.
 func _unhandled_input(event: InputEvent) -> void:
-	if _done or not Config.flag("input/space_is_sprint", true):
+	if _done:
+		return
+	if event.is_action_pressed("answer_prev"):
+		_move_cursor(-1)
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("answer_next"):
+		_move_cursor(1)
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("answer_confirm"):
+		_commit_cursor()
+		get_viewport().set_input_as_handled()
+		return
+	if not Config.flag("input/space_is_sprint", true):
 		return
 	for i in mini(_display_order.size(), 4):
 		if not event.is_action_pressed("answer_%d" % (i + 1)):
@@ -186,6 +205,47 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
+## Where the keyboard cursor is standing, as an index into the ROW, or -1 for
+## "no child has touched an arrow key on this board". -1 is the state a touch
+## player is always in, and the reason the mark is invisible to them.
+var _cursor := -1
+
+## Step the mark along the row, skipping options the board has taken away.
+##
+## Wraps, because four options in a row have two ends and a seven-year-old
+## holding Right down should not silently stop. The first press lands on the
+## leftmost option rather than moving from nowhere.
+func _move_cursor(step: int) -> void:
+	var count := _buttons.size()
+	if count == 0:
+		return
+	var at := _cursor
+	for _i in count:
+		at = 0 if at < 0 else posmod(at + step, count)
+		if not _buttons[at].disabled:
+			break
+	if at < 0 or at >= count or _buttons[at].disabled:
+		return
+	_set_cursor(at)
+	AudioManager.play_event("button_focus")
+
+func _set_cursor(at: int) -> void:
+	_cursor = at
+	for i in _buttons.size():
+		_buttons[i].set_selected(i == at)
+
+## Enter commits whatever the mark is on, and nothing when it is on nothing.
+##
+## A confirm with no mark is deliberately inert rather than defaulting to the
+## first option: the one irreversible action on this screen must never happen
+## because a key was leaned on.
+func _commit_cursor() -> void:
+	if _cursor < 0 or _cursor >= _buttons.size() or _buttons[_cursor].disabled:
+		return
+	if _cursor >= _display_order.size():
+		return
+	submit_answer(_display_order[_cursor])
+
 ## Hand the board back for the second try. The wrong option stays marked: it is
 ## a fact about what has already been tried, and clearing it would invite the
 ## same tap again. Nothing is focused - the options take no keyboard focus at
@@ -194,6 +254,10 @@ func _reenable_for_retry() -> void:
 	if _done:
 		return
 	_set_buttons_enabled(true)
+	# The mark comes off. It is standing on the option that was just tried and
+	# missed -- that is how it got submitted -- and leaving it there would put the
+	# cursor on the one answer we already know is wrong, with Enter one key away.
+	_set_cursor(-1)
 
 func _result(correct: bool, first_attempt: bool) -> Dictionary:
 	var has_hint: bool = String(current_problem.get("hint", "")) != "" and _wrong_attempts > 0
@@ -378,6 +442,9 @@ func _build_ui(opts: Dictionary) -> void:
 	vbox.add_child(row)
 
 	_buttons.clear()
+	# A fresh row of options is a fresh question: nothing is marked until this
+	# child touches an arrow key again.
+	_cursor = -1
 	var options: Array = current_problem.get("answer", {}).get("options", [])
 	# Shuffle the on-screen order; submit_answer still takes the index into
 	# answer.options, so callers and tests keep their contract.
@@ -427,6 +494,12 @@ func _add_help_button(row: HBoxContainer) -> void:
 	help.custom_minimum_size = Vector2(size, size)
 	help.add_theme_font_size_override("font_size", int(Config.ui("math_challenge/help_font_size", 30)))
 	help.tooltip_text = TextManager.t("math.help_tooltip")
+	# Not focusable, alone among BrandButtons. Enter is the board's commit key
+	# (see _unhandled_input), and a focused button eats ui_accept before any of
+	# this node's input handlers see it -- so a "?" holding focus would turn every
+	# Enter meant for an answer into a lesson opening instead. The board has one
+	# keyboard action, and this is not it.
+	help.focusable = false
 	row.add_child(help)
 
 func _open_help() -> void:

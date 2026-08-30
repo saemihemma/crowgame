@@ -16,6 +16,17 @@ extends Control
 ##    settings, not the child's path through the menu.
 ## 3. Continue says *where* you are and *how many owls you have brought home*.
 ##    Progress is the reason anyone comes back, and it was invisible.
+##
+## CAPITALS MEAN ONE THING HERE, and until a playtester asked they meant two.
+## The column read SPILA, then a place name, then MITT FERÐALAG, then three rows
+## in sentence case -- "why is MITT FERÐALAG caps and others are not?", which had
+## no answer, because it was not a decision, it was two strings written on
+## different days.
+##
+## The rule, now that there is one: a screen's TITLE shouts (menu.title,
+## level_select.title, pause.title) and so does the ONE primary action on it
+## (menu.play). Nothing else does. Shouting is how this menu says "this is the
+## button", so a second shouting row is the design saying it twice.
 
 const CLOUD_PANEL := preload("res://scenes/CloudPanel.tscn")
 const PARENT_REPORT := preload("res://scenes/ParentReport.tscn")
@@ -39,9 +50,26 @@ func _ready() -> void:
 
 	_build_wordmark(col)
 
+	# ONE WAY TO START PLAYING.
+	#
+	# There used to be two, and a playtester asked the obvious question about
+	# them: PLAY opened the world grid, and under it a second button read
+	# "Prísmahellir · 10 uglur heima" and went straight into that world. Two
+	# buttons, both of which start the game, one of them naming a place the child
+	# has to already recognise -- "why can I choose the level ... why isn't it
+	# just play?"
+	#
+	# So Play IS Continue: it resumes wherever this child got to, and for a child
+	# with no save it starts the first world. Where they are going is said
+	# UNDERNEATH it, as a line rather than as a second button, because it is
+	# information about the button and never was a separate choice.
 	var first := _add(col, TextManager.t("menu.play"), BrandButton.Role.PRIMARY, _on_play)
 	if SaveManager.has_save():
-		_add(col, _continue_label(), BrandButton.Role.SECONDARY, _on_continue)
+		_add_caption(col, _continue_label())
+		# Going somewhere OTHER than where you left off. A real choice, and the
+		# only one of the two that ever was -- quieter than Play, and absent for a
+		# child who has only ever seen one world.
+		_add(col, TextManager.t("menu.choose_world"), BrandButton.Role.SECONDARY, _on_choose_world)
 	# How much of the game is finished, and which bit is missing. Below Continue
 	# because it is a place to LOOK rather than a place to play, and only once
 	# there is a save -- an empty progress screen reading 0% is a worse first
@@ -257,6 +285,23 @@ func _add_build_stamp() -> void:
 ## wordmark now contributes three children before any button exists.
 var _first_button: BrandButton = null
 
+## A line under a button, saying what pressing it does. Not a control: it takes
+## no input and no focus, so a thumb sweeping the column cannot land on it.
+func _add_caption(parent: Node, text: String) -> Label:
+	var l := Label.new()
+	l.text = text
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.add_theme_font_size_override("font_size", CAPTION_SIZE)
+	l.add_theme_color_override("font_color", ThemeManager.get_color_value("paper"))
+	l.add_theme_color_override("font_shadow_color", ThemeManager.get_color_value("ink"))
+	l.add_theme_constant_override("shadow_offset_x", 2)
+	l.add_theme_constant_override("shadow_offset_y", 2)
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	parent.add_child(l)
+	return l
+
+const CAPTION_SIZE := 20
+
 func _add(parent: Node, text: String, role: int, cb: Callable) -> BrandButton:
 	var b := BrandButton.make(text, role, cb)
 	b.custom_minimum_size.x = 340
@@ -349,18 +394,21 @@ func _world_name(key: String) -> String:
 	var entry: Variant = LevelManager.get_level(key)
 	return String(entry.get("name", key)) if entry != null else key
 
+## Play resumes. For a child with no save `resolve_continue_key` returns the
+## first world, so the same button is "start" and "carry on" without the menu
+## having to say which it is -- the child presses the big yellow one either way.
 func _on_play() -> void:
+	LevelManager.set_current_level(resolve_continue_key(SaveManager.get_data()))
+	SceneRouter.goto("game")
+
+func _on_choose_world() -> void:
 	SceneRouter.goto("level_select")
 
-## Continue resumes the level stored in the save (MainMenuScene.ts passes
-## save.currentLevel to GameScene). Falls back to level_01 for unknown keys.
+## The level stored in the save (MainMenuScene.ts passes save.currentLevel to
+## GameScene). Falls back to level_01 for unknown keys and for no save at all.
 func resolve_continue_key(save: Dictionary) -> String:
 	var key := String(save.get("currentLevel", "level_01"))
 	return key if LevelManager.has_level(key) else "level_01"
-
-func _on_continue() -> void:
-	LevelManager.set_current_level(resolve_continue_key(SaveManager.get_data()))
-	SceneRouter.goto("game")
 
 
 func _on_progress() -> void:

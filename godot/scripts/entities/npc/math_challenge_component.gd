@@ -180,56 +180,89 @@ func _on_math_complete(data: Dictionary) -> void:
 			npc.get_tree().create_timer(0.22).timeout.connect(_launch_next, CONNECT_ONE_SHOT)
 			return
 		EventBus.owl_saved.emit()
-		# THE TEACHING MOMENT. curriculum_step_up fired while this answer was
-		# being recorded, so by now TutorialManager knows whether the child just
-		# levelled into an idea they have never been taught.
+		# THE TEACHING MOMENT, one beat later. curriculum_step_up fired while this
+		# answer was being recorded, so by now TutorialManager knows whether the
+		# child just levelled into an idea they have never been taught.
 		#
 		# After the win rather than before the question: the child has answered,
 		# the owl is free, the banner has said they moved up -- and the lesson is
 		# the explanation of what they moved up INTO. Same cards, opposite
 		# feeling, because it is now an answer to something they just did instead
 		# of a toll on something they were about to do.
-		if _teach_pending_lesson():
+		#
+		# ON A TIMER RATHER THAN INLINE, and that is the whole of a reported bug.
+		# MathChallenge._finish emits this signal and THEN closes its board, so
+		# right here the question is still on screen -- and Game.launch_math_tutorial
+		# refuses to put a lesson on top of a question. It refused silently, this
+		# branch took the lesson's word for it and returned, and the two lines
+		# below never ran: the owl stayed mid-encounter forever. It never flew
+		# away, its prompt stayed hidden, the re-trigger loop in npc.gd skipped it
+		# because it was still "interacting", and it went on eating the completion
+		# events of every OTHER owl in the level. "I go over an owl and nothing
+		# happens, and when I save it it doesn't fly away" is one bug, and it is
+		# this one.
+		if _has_pending_lesson():
+			npc.get_tree().create_timer(EARNED_LESSON_DELAY).timeout.connect(
+				_teach_pending_lesson, CONNECT_ONE_SHOT)
 			return
-	npc.end_interaction()
-	npc.fly_away()
+	_release_owl()
 
-## Deliver the lesson this child just earned, if there is one. Returns whether
-## anything opened, so the caller knows to leave the encounter running.
+## The same beat _launch_next waits, and for the same reason: it is how long the
+## board in front of this one takes to get off the screen.
+const EARNED_LESSON_DELAY := 0.22
+
+## Is there a lesson this win has earned?
+##
+## ONE LESSON PER OWL, still, and this is the case that proves the gate is
+## needed: a fresh child meets a domain, gets its opening lesson, answers the
+## freebie correctly, and that very answer levels them up into the next concept.
+## Without the gate the reward for their first ever correct answer is a second
+## board of cards, back to back, on one owl -- which is the ambush this whole
+## change exists to remove, rebuilt at the other end of the encounter.
+##
+## Nothing is lost by waiting: the debt is derived, not remembered, so it is
+## still owed at the next owl.
+func _has_pending_lesson() -> bool:
+	if _taught_this_encounter:
+		return false
+	return not TutorialManager.pending_lesson_any(_earned_domain()).is_empty()
+
+func _earned_domain() -> String:
+	return String(_last_domain) if _last_domain != null else ""
+
+## Deliver the lesson this child just earned.
 ##
 ## The owl is already freed and flies away when the lesson closes, so a child who
 ## skips loses nothing and a child who reads is not made to wait for their
-## reward.
-func _teach_pending_lesson() -> bool:
-	# ONE LESSON PER OWL, still, and this is the case that proves it is needed: a
-	# fresh child meets a domain, gets its opening lesson, answers the freebie
-	# correctly, and that very answer levels them up into the next concept.
-	# Without this gate the reward for their first ever correct answer is a second
-	# board of cards, back to back, on one owl -- which is the ambush this whole
-	# change exists to remove, rebuilt at the other end of the encounter.
-	#
-	# Nothing is lost by waiting: the debt is held per category and paid at the
-	# next owl.
-	if _taught_this_encounter:
-		return false
+## reward. If the lesson cannot open after all -- the debt was paid in the beat
+## we waited, the level is mid-reload, another board got there first -- the owl
+## is released anyway. There is no path out of a win that leaves the owl held.
+func _teach_pending_lesson() -> void:
+	if npc == null or not is_instance_valid(npc):
+		return
 	var game: Node = npc.get_game()
-	if game == null or game.is_math_tutorial_active():
-		return false
-	var domain := String(_last_domain) if _last_domain != null else ""
-	var lesson := TutorialManager.pending_lesson_any(domain)
+	var lesson: Dictionary = {}
+	if game != null and not _taught_this_encounter:
+		lesson = TutorialManager.pending_lesson_any(_earned_domain())
 	if lesson.is_empty():
-		return false
-	var tutorial_id := String(lesson.get("id", ""))
-	game.launch_math_tutorial(lesson, _on_earned_lesson_closed,
-		TutorialManager.depth_for(tutorial_id))
-	return true
+		_release_owl()
+		return
+	_taught_this_encounter = true
+	if not game.launch_math_tutorial(lesson, _on_earned_lesson_closed,
+			TutorialManager.depth_for(String(lesson.get("id", "")))):
+		_release_owl()
 
 ## An earned lesson ended. Unlike _on_tutorial_closed there is no held question
 ## waiting behind it -- the question is already answered -- so this just closes
 ## the encounter the win had reached.
 func _on_earned_lesson_closed(payload: Dictionary) -> void:
-	var tutorial_id := String(payload.get("tutorialId", ""))
-	TutorialManager.mark_seen(tutorial_id, bool(payload.get("skipped", false)))
+	TutorialManager.mark_seen(String(payload.get("tutorialId", "")),
+		bool(payload.get("skipped", false)))
+	_release_owl()
+
+## End the encounter and let the owl go. The single exit from a saved owl, so
+## that "saved" and "flew away" cannot come apart.
+func _release_owl() -> void:
 	if npc == null or not is_instance_valid(npc):
 		return
 	if npc.is_interacting():

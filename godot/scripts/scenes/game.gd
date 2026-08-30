@@ -952,7 +952,15 @@ func is_math_tutorial_active() -> bool:
 func get_math_tutorial() -> CanvasLayer:
 	return _math_tutorial
 
-## Open a lesson.
+## Open a lesson. Returns whether one actually opened.
+##
+## The return value is not decoration. A caller that opens a lesson is usually
+## HOLDING something on the lesson's behalf -- the owl mid-encounter, the
+## question it was taught for -- and a refusal it cannot see is a hold that is
+## never released. That is exactly how an owl came to sit on its perch forever
+## after being saved: the win launched its earned lesson while the challenge
+## board was still on screen, the refusal below fired silently, and the caller
+## believed a lesson was up and never flew the owl away.
 ##
 ## `over_challenge` is the help button's door in. Normally a lesson refuses to
 ## open while a question is on screen, because every automatic lesson either
@@ -961,11 +969,11 @@ func get_math_tutorial() -> CanvasLayer:
 ## is CanvasLayer 11 against the challenge's 10, so it lands on top and the
 ## question is exactly where they left it when they close it.
 func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable,
-		depth: String = TutorialManager.DEPTH_FULL, over_challenge: bool = false) -> void:
+		depth: String = TutorialManager.DEPTH_FULL, over_challenge: bool = false) -> bool:
 	if is_math_tutorial_active():
-		return
+		return false
 	if is_math_challenge_active() and not over_challenge:
-		return
+		return false
 	_math_tutorial = MATH_TUTORIAL_SCENE.instantiate()
 	add_child(_math_tutorial)
 	_math_tutorial.closed.connect(func(payload: Dictionary):
@@ -986,6 +994,7 @@ func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable,
 	if _player:
 		_player.set_physics_process(false)
 	_math_tutorial.present(tutorial, depth)
+	return true
 
 func _on_challenge_closed() -> void:
 	_math_challenge = null

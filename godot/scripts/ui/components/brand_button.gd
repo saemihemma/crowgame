@@ -43,6 +43,16 @@ var pulse := false
 ## which ones were missing it.
 var clicks := true
 
+## Whether this button may hold the keyboard focus.
+##
+## True everywhere except the maths board. That screen commits an answer with
+## Enter, and a focused Control eats `ui_accept` before any ancestor's input
+## handler runs -- so the board's "?" holding focus would turn every Enter meant
+## for an answer into a lesson opening. Set here rather than assigned by the
+## caller after construction, because _ready() runs when the button enters the
+## tree and would put FOCUS_ALL straight back over the top of it.
+var focusable := true
+
 static func make(text: String, button_role: int, on_press: Callable) -> BrandButton:
 	var b := BrandButton.new()
 	b.role = button_role
@@ -69,7 +79,7 @@ func _on_focus() -> void:
 
 func _ready() -> void:
 	custom_minimum_size.y = maxf(custom_minimum_size.y, MIN_HEIGHT)
-	focus_mode = Control.FOCUS_ALL
+	focus_mode = Control.FOCUS_ALL if focusable else Control.FOCUS_NONE
 	add_theme_font_size_override("font_size", 30 if role == Role.PRIMARY else 26)
 	_restyle()
 	ThemeManager.theme_changed.connect(func(_id): _restyle())
