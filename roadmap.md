@@ -371,16 +371,21 @@ pipeline, every pool is re-materialized through it, and the golden math fixtures
 are regenerated -- problem ELO is assigned from `difficulty`, so this moves
 Tier-1 numbers and cannot be done piecemeal.
 
-### A gated "padlock owl" variant that asks for more than one answer
-The baseline owl asks exactly one problem, and every dial that makes one owl
-different from another is on the owl: `problemCount`, `difficultyRange` and
-`problemTypes`, documented in `npc_registry.json`'s own `fields` block. So a new
-variant is a registry entry plus the `npc_id` a level spawns — no code change.
-Where it appears is settled: one hard-to-reach bonus owl at the end of each map,
-outside the door's requirement so it can never lock a level. What is left is
-content -- a visually distinct sprite and a reward worth the climb. The
-multi-problem UI (progress header, alternate-domain follow-ups) stays dormant at
-the baseline but keeps working for any NPC that raises the count.
+### A bonus owl worth the climb
+One hard-to-reach owl sits at the end of each map, outside the door's
+requirement so it can never lock a level. `owl_gauntlet` fills that slot today:
+the hardest difficulty band in the roster, one answer like every other owl. What
+is left is content -- a visually distinct sprite, and a reward worth the climb.
+
+*Changed 2026-08:* this entry used to describe the variant as one "that asks for
+more than one answer", on the reasoning that `problemCount` was a per-owl dial
+and a gated owl could raise it with no code change. Played, that was not a dial,
+it was a stall -- every level carried a three-question owl and level_05 carried
+two of them plus a triple, so a child running a platformer was stopped for three
+questions in a row, repeatedly, in a game whose whole loop is "meet an owl,
+answer one thing, keep running". One owl asks one question now, and
+`test_owl_chains.gd` fails the build on any owl that asks for two. The dial that
+survived is difficulty, which is what this owl should use.
 
 ### Multiplication and division reach a child late
 Both are served now: they are in every owl's `problemTypes`, they unlock off the
@@ -455,6 +460,22 @@ of completed tasks.** Do not add finished work here.
   `output/web/build_fingerprint.json` and `npm run validate` recomputes it.
   Content addressing (`index.<buildId>.pck`) busts caches and does NOT catch
   staleness: an export built from old sources still gets a valid name.
+- **One owl asks one question. Every owl, with no exception available.** Length
+  used to be a per-owl dial so a later gated owl could ask more without changing
+  the loop for everything else. In the hands of a child it was not a dial, it was
+  a stall. The roster still has range and the range is DIFFICULTY --
+  `difficultyRange` and `problemTypes` are the dials; `problemCount` is always 1
+  and `test_owl_chains.gd` enforces it. `owl_twin_chain` and `owl_triple_chain`
+  were deleted rather than set to 1, because at one question each they were
+  byte-identical to `owl_teacher_01`.
+- **A lesson answers something the child just did; it is never a toll on
+  something they are about to do.** Teaching used to fire in front of any
+  question whose concept was unseen. Each such lesson was justified on its own
+  and together they were an ambush. One lesson per maths CATEGORY now, for the
+  rung the child stands on, delivered after the answer that earned it, never more
+  than one per owl -- and the "?" on every question board reopens it forever,
+  recording nothing. The debt is DERIVED from the ladder rather than remembered,
+  so it survives quitting the game.
 - **Answer-feedback pacing lives in `data/tuning/math_tuning.json`.** It was
   hardcoded in one port and in `ui_tuning.json` in the other, so the two
   disagreed about how long a child waits after a miss.
