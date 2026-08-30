@@ -1,43 +1,13 @@
 #!/usr/bin/env node
 /**
- * The localisation CMS: `npm run cms`, then http://127.0.0.1:4173/admin/cms
+ * The localisation & component CMS: `npm run cms`, then http://127.0.0.1:4173/ (or /cms, /admin/cms)
  *
- * WHY THIS IS A LOCAL TOOL AND NOT A ROUTE ON THE API
- * --------------------------------------------------
- * The obvious place for an admin CMS is beside the owner's dashboard in
- * server/src/admin/. It is the wrong place, for three reasons that all point the
- * same way:
- *
- * 1. THE GUARDS. tools/validate_i18n.mjs is what makes this translation
- *    trustworthy: EN/IS lockstep, placeholder parity, the Latin-1 glyph
- *    allowlist that keeps Godot's font from drawing tofu, and a pixel fit budget
- *    that catches a translation too long for the box it lands in. It runs in
- *    330ms, so this server runs THE REAL ONE on every save rather than
- *    approximating it. A CMS on the deployed API could not: the API image ships
- *    tsc output, not the game's data files, the pools, or the catalog.
- *
- * 2. THE BLAST RADIUS. An in-game string editor already existed once and was
- *    deliberately deleted (see text_manager.gd) because a live editor on a
- *    shared family device lets anyone rewrite what a child reads. A server-side
- *    editor writing runtime overrides is a smaller version of the same thing: it
- *    would push unreviewed strings straight into a running game, past every
- *    guard above.
- *
- * 3. THE ARTEFACT. Edits here are edits to godot/data/i18n/*.json -- ordinary
- *    files, so an edit is a git diff. It can be read, reviewed, reverted, and it
- *    goes out with a build like every other change. Nothing about the game
- *    becomes dependent on a database being up, and the game stays offline-first.
- *
- * So: edit here, watch the guard pass, `git diff` to see what you changed,
- * commit, and the next `npm run web:build` carries it. That is the whole
- * delivery path, and it has no new moving parts in it.
- *
- * Bound to 127.0.0.1 on purpose. It writes to the working tree and has no auth,
- * which is safe for a tool on a developer's own machine and is not safe for
- * anything else. It is under tools/, which never ships.
+ * Edits here write directly to godot/data/i18n/*.json and tools/math_phrasing_catalog.mjs.
+ * Every edit runs tools/validate_i18n.mjs and rolls back if invalid.
+ * Includes direct Git integration so changes can be committed to the repo with 1 click.
  */
 import { createServer } from 'http';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { execFile } from 'child_process';
@@ -51,39 +21,79 @@ const VALIDATOR = 'tools/validate_i18n.mjs';
 
 const bundlePath = locale => join(ROOT, BUNDLE_DIR, `strings_${locale}.json`);
 
-/** Run the shipped guard over the tree as it stands right now. */
-function validate() {
+function getGitPath() {
+    const candidates = [
+        'git',
+        join(process.env.LOCALAPPDATA ?? '', 'Programs/Git/cmd/git.exe'),
+        'C:\\Program Files\\Git\\cmd\\git.exe',
+        'C:\\Program Files (x86)\\Git\\cmd\\git.exe',
+    ];
+    for (const c of candidates) {
+        if (c !== 'git' && existsSync(c)) return c;
+    }
+    return 'git';
+}
+
+function execPromise(cmd, args, cwd = ROOT) {
     return new Promise(done => {
-        execFile('node', [VALIDATOR], { cwd: ROOT, maxBuffer: 8 << 20 }, (err, stdout, stderr) => {
-            done({ ok: !err, output: `${stdout}${stderr}`.trim() });
+        execFile(cmd, args, { cwd, maxBuffer: 8 << 20 }, (err, stdout, stderr) => {
+            done({ code: err ? (err.code || 1) : 0, stdout: String(stdout || ''), stderr: String(stderr || '') });
         });
     });
 }
 
+/** Run the shipped guard over the tree as it stands right now. */
+async function validate() {
+    const res = await execPromise(process.execPath, [VALIDATOR]);
+    return { ok: res.code === 0, output: `${res.stdout}${res.stderr}`.trim() };
+}
+
 /** What the working tree is carrying that HEAD is not, for the two bundles. */
-function diffStat() {
-    return new Promise(done => {
-        execFile('git', ['diff', '--numstat', '--', BUNDLE_DIR], { cwd: ROOT }, (err, stdout) => {
-            if (err) return done(null);
-            const lines = stdout.trim().split('\n').filter(Boolean);
-            let added = 0;
-            for (const line of lines) added += Number(line.split('\t')[0]) || 0;
-            done({ files: lines.length, lines: added });
-        });
-    });
+async function diffStat() {
+    const git = getGitPath();
+    const res = await execPromise(git, ['diff', '--numstat', '--', BUNDLE_DIR]);
+    if (res.code !== 0) return null;
+    const lines = res.stdout.trim().split('\n').filter(Boolean);
+    let added = 0;
+    for (const line of lines) added += Number(line.split('\t')[0]) || 0;
+    return { files: lines.length, lines: added };
+}
+
+/** Get full git status info */
+async function gitStatus() {
+    const git = getGitPath();
+    const branchRes = await execPromise(git, ['rev-parse', '--abbrev-ref', 'HEAD']);
+    const statusRes = await execPromise(git, ['status', '--porcelain', '--', BUNDLE_DIR, 'tools/math_phrasing_catalog.mjs']);
+    const logRes = await execPromise(git, ['log', '-1', '--oneline']);
+
+    const branch = branchRes.stdout.trim() || 'unknown';
+    const changedLines = statusRes.stdout.trim().split('\n').filter(Boolean);
+    const lastCommit = logRes.stdout.trim() || '';
+
+    return {
+        branch,
+        dirty: changedLines.length > 0,
+        changedFiles: changedLines.map(l => l.trim()),
+        lastCommit,
+    };
+}
+
+/** Commit CMS edits directly to git */
+async function gitCommit(message) {
+    const git = getGitPath();
+    const commitMsg = message && message.trim() ? message.trim() : 'cms: update localization and components';
+    await execPromise(git, ['add', BUNDLE_DIR, 'tools/math_phrasing_catalog.mjs']);
+    const commitRes = await execPromise(git, ['commit', '-m', commitMsg]);
+    const status = await gitStatus();
+    return {
+        ok: commitRes.code === 0,
+        output: (commitRes.stdout || commitRes.stderr).trim(),
+        git: status,
+    };
 }
 
 /**
  * Write one key, then prove the tree is still valid.
- *
- * Read-modify-write of the whole bundle rather than a patch, so key ORDER is
- * preserved: the English bundle is not sorted (the phrasing sync appends to it),
- * and rewriting it sorted would bury one edited string in a 600-line diff.
- *
- * On a guard failure the file goes back exactly as it was. A CMS that leaves the
- * tree failing CI and tells you about it afterwards is a CMS you have to clean
- * up after, and the whole point of running the real validator on every save is
- * that you never have to.
  */
 async function writeKey({ key, locale, value }) {
     if (!LOCALES.includes(locale)) return { ok: false, error: `unknown locale '${locale}'` };
@@ -94,7 +104,7 @@ async function writeKey({ key, locale, value }) {
     const before = readFileSync(path, 'utf8');
     const bundle = JSON.parse(before);
     if (!(key in bundle)) return { ok: false, error: `'${key}' is not in strings_${locale}.json` };
-    if (bundle[key] === value) return { ok: true, unchanged: true, ...(await validate()) };
+    if (bundle[key] === value) return { ok: true, unchanged: true, ...(await validate()), git: await gitStatus() };
 
     bundle[key] = value;
     writeFileSync(path, `${JSON.stringify(bundle, null, 2)}\n`, 'utf8');
@@ -104,7 +114,7 @@ async function writeKey({ key, locale, value }) {
         writeFileSync(path, before, 'utf8');
         return { ok: false, reverted: true, error: result.output };
     }
-    return { ok: true, output: result.output, diff: await diffStat() };
+    return { ok: true, output: result.output, diff: await diffStat(), git: await gitStatus() };
 }
 
 const send = (res, code, body, type = 'application/json') => {
@@ -132,7 +142,7 @@ function readJson(req) {
 const server = createServer(async (req, res) => {
     const url = new URL(req.url, `http://${HOST}`);
     try {
-        if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/admin')) {
+        if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/cms' || url.pathname === '/admin')) {
             res.writeHead(302, { location: '/admin/cms' });
             return res.end();
         }
@@ -140,10 +150,18 @@ const server = createServer(async (req, res) => {
             return send(res, 200, PAGE, 'text/html; charset=utf-8');
         }
         if (req.method === 'GET' && url.pathname === '/api/model') {
-            return send(res, 200, { ...buildModel(ROOT), diff: await diffStat() });
+            return send(res, 200, { ...buildModel(ROOT), diff: await diffStat(), git: await gitStatus() });
         }
         if (req.method === 'GET' && url.pathname === '/api/validate') {
             return send(res, 200, await validate());
+        }
+        if (req.method === 'GET' && url.pathname === '/api/git/status') {
+            return send(res, 200, await gitStatus());
+        }
+        if (req.method === 'POST' && url.pathname === '/api/git/commit') {
+            const body = await readJson(req);
+            const result = await gitCommit(body.message);
+            return send(res, result.ok ? 200 : 400, result);
         }
         if (req.method === 'PUT' && url.pathname === '/api/key') {
             const body = await readJson(req);
@@ -159,10 +177,11 @@ const server = createServer(async (req, res) => {
 server.listen(PORT, HOST, () => {
     const { rows, totals } = buildModel(ROOT);
     const untranslated = rows.filter(r => r.translatable && r.is === r.en).length;
-    console.log(`Hörmann localisation CMS  ->  http://${HOST}:${PORT}/admin/cms`);
+    console.log(`Hörmann CMS  ->  http://${HOST}:${PORT}/ (and /cms, /admin/cms)`);
     console.log(
         `  ${totals.keys} phrases covering ${totals.problemsCovered} problem renderings` +
         `${untranslated > 0 ? `, ${untranslated} still reading as English` : ', all translated'}`,
     );
-    console.log(`  every save runs ${VALIDATOR} and rolls back if it fails`);
+    console.log(`  every save runs ${VALIDATOR} and validates immediately`);
+    console.log(`  Git-backed: edits update working tree and can be committed via UI or CLI`);
 });
