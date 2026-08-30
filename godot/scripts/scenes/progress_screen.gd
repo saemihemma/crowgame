@@ -39,7 +39,17 @@ func _ready() -> void:
 	var report: Dictionary = Progress.of_save(SaveManager.get_data())
 
 	var title := Label.new()
-	title.text = TextManager.t("progress.title")
+	# WHOSE JOURNEY. The screen is called "Mitt ferðalag" and never said whose it
+	# was -- which matters most on exactly the device this game is built for: a
+	# shared family tablet with two or three children's profiles on it. A child
+	# arriving here after somebody else played had no way to tell whether the 38%
+	# on the screen was theirs.
+	#
+	# The name goes in the title rather than in a row of its own, so it costs no
+	# vertical space on a screen that is already a scroller.
+	var who = ProfileManager.get_active_user()
+	title.text = TextManager.t("progress.title") if who == null \
+		else TextManager.t("progress.title_named", [String(who)])
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 40)
 	title.add_theme_color_override("font_color", ThemeManager.get_color_value("paper"))
@@ -125,6 +135,18 @@ func _row(data: Dictionary) -> Control:
 	if coins_total > 0:
 		_add_group(line, "big_coin", "coin",
 			PipRow.make(coins_total, int(data.get("coins", 0)), "coin", "coin"))
+		# THE TICK: every big coin in this level, found in one visit.
+		#
+		# Beside the coins rather than at the end of the row, because it is a
+		# statement ABOUT the coins and nothing else -- and only where it is true,
+		# so it is a thing to go and get rather than a column of empty boxes.
+		#
+		# It cannot be drawn from the pips, which is the whole reason the save
+		# carries the fact separately: three filled pips also describes a child who
+		# found one coin on each of three runs, and that child has never cleared
+		# this level in one go.
+		if bool(data.get("perfect", false)):
+			line.add_child(_perfect_tick())
 
 	var owls_total := int(data.get("owlsTotal", 0))
 	if owls_total > 0:
@@ -146,6 +168,19 @@ func _row(data: Dictionary) -> Control:
 	share.custom_minimum_size.x = 62.0
 	line.add_child(share)
 	return panel
+
+
+## The all-in-one-go badge, sized to the row's own icons so it reads as part of
+## the coin group rather than as a control.
+const TICK_SIZE := 30.0
+
+func _perfect_tick() -> Control:
+	var tick := PerfectTick.new()
+	tick.custom_minimum_size = Vector2(TICK_SIZE, TICK_SIZE)
+	tick.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	tick.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tick.tooltip_text = TextManager.t("progress.perfect")
+	return tick
 
 
 ## One icon, then its pips. The icon is what makes the row readable by a child

@@ -86,6 +86,10 @@ static func of_save(save: Dictionary) -> Dictionary:
 			"coinsTotal": coins_total,
 			"owls": owls,
 			"owlsTotal": owls_total,
+			# Every big coin in one visit. Deliberately NOT `coins == coinsTotal`:
+			# that reads true for a child who collected them one per run, which is
+			# the opposite of what the mark is for. See SaveManager.bank_run.
+			"perfect": bool(record.get("perfect", false)),
 		})
 	return {"overall": overall_fraction(fractions), "levels": rows}
 

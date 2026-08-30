@@ -61,7 +61,13 @@ func _ready() -> void:
 	add_child(_shade)
 
 	_label = Label.new()
-	_label.text = TextManager.t("game.oops" if _kind == Kind.STUMBLE else "game.out_of_lives")
+	# Losing the last heart now COSTS something -- this level's coins and owls go
+	# back to nothing (SaveManager.forget_level_run) -- and a cost a child cannot
+	# see is not a cost, it is a bug they will report. So the last-life beat says
+	# what it took, on a second line, in the plainest words the reading budget
+	# allows. The stumble says nothing extra, because it takes nothing.
+	_label.text = TextManager.t("game.oops") if _kind == Kind.STUMBLE else \
+		"%s\n%s" % [TextManager.t("game.out_of_lives"), TextManager.t("game.level_reset")]
 	_label.add_theme_font_size_override("font_size", int(Config.fx("death/font_size", 48)))
 	_label.add_theme_color_override("font_color", ThemeManager.get_color_value("death_text"))
 	_label.add_theme_color_override("font_shadow_color", ThemeManager.get_color_value("text_shadow"))

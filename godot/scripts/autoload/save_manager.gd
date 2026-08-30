@@ -131,7 +131,7 @@ func _merge_level_records(mine: Variant, theirs: Variant) -> Dictionary:
 			var record: Variant = (source as Dictionary)[key]
 			if not (record is Dictionary):
 				continue
-			var merged: Dictionary = out.get(key, {"bigCoins": [], "owls": 0})
+			var merged: Dictionary = out.get(key, {"bigCoins": [], "owls": 0, "perfect": false})
 			var found: Array = merged["bigCoins"]
 			var incoming: Variant = (record as Dictionary).get("bigCoins", [])
 			if incoming is Array:
@@ -142,6 +142,11 @@ func _merge_level_records(mine: Variant, theirs: Variant) -> Dictionary:
 			found.sort()
 			merged["bigCoins"] = found
 			merged["owls"] = maxi(int(merged["owls"]), int((record as Dictionary).get("owls", 0)))
+			# A perfect run on either device is a perfect run. Merging it as OR
+			# rather than last-writer-wins is the same rule the coins and the owl
+			# count already follow: this record only ever grows.
+			merged["perfect"] = bool(merged.get("perfect", false)) \
+				or bool((record as Dictionary).get("perfect", false))
 			out[key] = merged
 	return out
 
@@ -239,7 +244,8 @@ func has_big_coin(level_key: String, coin_id: String) -> bool:
 ## Element-wise best, never replace: the big coins are unioned and the owl count
 ## takes the higher. A child who clears a level a second time having found less
 ## must not lose what they already had.
-func bank_run(level_key: String, big_coins: Array, owls_freed: int) -> void:
+func bank_run(level_key: String, big_coins: Array, owls_freed: int,
+		perfect_run: bool = false) -> void:
 	if level_key == "":
 		return
 	if not (_data.get("levelRecords", null) is Dictionary):
@@ -254,7 +260,50 @@ func bank_run(level_key: String, big_coins: Array, owls_freed: int) -> void:
 	found.sort()
 	record["bigCoins"] = found
 	record["owls"] = maxi(int(record.get("owls", 0)), owls_freed)
+	# EVERY BIG COIN, IN ONE GO. A separate fact from `bigCoins`, and it has to
+	# be, because bigCoins is a union across every visit: a child who finds one
+	# coin on each of three runs ends with all three recorded and has never once
+	# cleared the level. The union is the right thing to draw on a HUD -- it is
+	# what they own -- and it is the wrong thing to put a tick beside.
+	#
+	# Latched, like everything else in this record: earned once, kept. Losing a
+	# tick to a later, lazier visit would make the mark mean "how I did last
+	# time", which is not a thing worth going back for.
+	record["perfect"] = bool(record.get("perfect", false)) or perfect_run
 	records[level_key] = record
+	if _auto_save_enabled: save()
+
+
+## THE COST OF RUNNING OUT OF HEARTS: this level, back to nothing.
+##
+## Death used to cost the current run and no more. bank_run only ever writes at
+## the door, so a run that ended in death banked nothing -- but everything BANKED
+## BY EARLIER RUNS survived, and with the level reloading and every coin
+## respawning, a child could lose all three hearts and be exactly where they
+## started the day. A punishment nobody can feel is not a punishment; it is a
+## loading screen.
+##
+## So the level's record goes. The three big coins have to be found again, the
+## owls have to be brought home again -- the whole of THIS PLACE, re-earned.
+##
+## What deliberately does NOT go, because losing it would punish the wrong thing:
+##
+##   * completedLevels, so the world stays unlocked and open. A child is never
+##     sent backwards through the map for dying, and never re-locked out of
+##     somewhere they have already been.
+##   * eloStats and learnerState, which are the maths. What a child knows is not
+##     a possession the game may take away, and the ELO exists to find their pace
+##     rather than to be spent -- see PRODUCT.md.
+##
+## The owner's decision, 2026-08: "losing progress in that level entirely, keep
+## your ELO, and keep that the level was unlocked."
+func forget_level_run(level_key: String) -> void:
+	if level_key == "":
+		return
+	var records: Variant = _data.get("levelRecords", null)
+	if not (records is Dictionary) or not (records as Dictionary).has(level_key):
+		return
+	(records as Dictionary).erase(level_key)
 	if _auto_save_enabled: save()
 
 
