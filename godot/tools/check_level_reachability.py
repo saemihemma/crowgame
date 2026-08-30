@@ -49,6 +49,56 @@ SPRINT_FROM = int(FLAGS.get("levels", {}).get("sprint_gaps_from", 99))
 WALK_ONLY = False
 
 
+# How wide the crow actually is, from the sprite contract rather than from a
+# number typed here. See the `why_width` note beside it: the collider was 1.25
+# tiles for a long time, which is wider than a one-tile hole, so seven authored
+# holes across five levels were solid ground -- a playtester photographed the
+# crow standing in mid-air over one. `gaps_the_body_bridges` below is what stops
+# that coming back the next time either number moves.
+PLAYER_BODY_W = int(
+    json.loads((ROOT / "data" / "registries" / "sprite_spec.json").read_text())
+    ["classes"]["character"]["body"]["width"]
+)
+
+
+def gaps_the_body_bridges(level, tile):
+    """Holes narrower than the crow, which are therefore not holes.
+
+    A gap in a row of solid tiles is a level-design statement: jump, or fall. It
+    stops being either the moment the player's collision box is wide enough to
+    rest on both lips at once -- and nothing about the level SAYS so, so the
+    designer authors a hop, the child walks over it, and the level is quietly a
+    tile flatter than it reads.
+
+    Row by row rather than platform by platform, because the compiled level has
+    no platforms left in it -- only tiles -- and a hole is a hole however the two
+    sides of it were authored.
+    """
+    grid = solid_grid(level)
+    w, h = level["width"], level["height"]
+    found = []
+    for row in range(h):
+        col = 0
+        while col < w:
+            if grid[row][col]:
+                col += 1
+                continue
+            start = col
+            while col < w and not grid[row][col]:
+                col += 1
+            # Open ends are the edge of the map, not a hole between two ledges.
+            if start == 0 or col >= w:
+                continue
+            # A hole needs a floor missing under it too: the empty air above a
+            # platform is not a gap a child can fall through.
+            if grid[row + 1][start] if row + 1 < h else False:
+                continue
+            width_px = (col - start) * tile
+            if width_px < PLAYER_BODY_W:
+                found.append((row, start, col - start, width_px))
+    return found
+
+
 def envelope(tile, speed):
     """How far the crow can move in one jump at `speed`, in tiles."""
     v = float(TUNING["jumpVelocity"])
@@ -266,8 +316,14 @@ def main():
     print(f"level reachability (walk {wa} across / {wu} up; "
           f"sprint {sa} across / {su} up from level {SPRINT_FROM})")
     problems = []
+    bridged = []
     for name in keys:
         problems += check(LEVELS / name)
+        level = json.loads((LEVELS / name).read_text())
+        for row, col, tiles, px in gaps_the_body_bridges(level, level["tilewidth"]):
+            bridged.append(f"{name}: row {row}, column {col} -- a {tiles}-tile "
+                           f"({px}px) hole, and the crow's box is {PLAYER_BODY_W}px, "
+                           f"so it stands on the hole instead of falling through it")
 
     # SECOND PASS: every level, at a walk, with the sprint budget taken away.
     #
@@ -297,7 +353,11 @@ def main():
         print("UNFINISHABLE AT A WALK (sprint is never taught, so this is a wall):")
         for p in walk_problems:
             print("  " + p)
-    if problems or walk_problems:
+    if bridged:
+        print("HOLES THAT ARE NOT HOLES (the collider bridges them):")
+        for b in bridged:
+            print("  " + b)
+    if problems or walk_problems or bridged:
         sys.exit(1)
     print(f"level reachability: clean, and clean again at a walk with no sprint "
           f"({len(keys)} levels)")
