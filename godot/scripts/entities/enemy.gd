@@ -14,7 +14,7 @@ var coin_reward := 2
 var _dir := -1
 var _dead := false
 
-@onready var _sprite: Sprite2D = $Sprite
+@onready var _sprite: Node = $Sprite
 @onready var _edge_ray: RayCast2D = $EdgeRay
 @onready var _hitbox: Area2D = $Hitbox
 
@@ -27,10 +27,18 @@ func _ready() -> void:
 	definition = _lookup(enemy_id)
 	speed = float(definition.get("speed", 40))
 	coin_reward = int(definition.get("coinReward", 2))
-	var tex := SpriteSheet.texture(SPRITE_KEY)
-	if tex != null:
-		_sprite.texture = tex
-	_sprite.offset = SpriteSheet.anchor_offset(SPRITE_KEY, SpriteSheet.grounding_sink())
+	if _sprite is AnimatedSprite2D:
+		var frames := SpriteSheet.frames(SPRITE_KEY)
+		if frames != null:
+			_sprite.sprite_frames = frames
+			var anim_name := frames.get_animation_names()[0] if frames.get_animation_names().size() > 0 else "default"
+			_sprite.play(anim_name)
+		_sprite.offset = SpriteSheet.anchor_offset(SPRITE_KEY, SpriteSheet.grounding_sink())
+	elif _sprite is Sprite2D:
+		var tex := SpriteSheet.texture(SPRITE_KEY)
+		if tex != null:
+			_sprite.texture = tex
+		_sprite.offset = SpriteSheet.anchor_offset(SPRITE_KEY, SpriteSheet.grounding_sink())
 	_hitbox.body_entered.connect(_on_body_entered)
 
 func _physics_process(delta: float) -> void:

@@ -29,17 +29,49 @@
             "loop": true,
             "anim": "walk"
         },
+        "crow_jump": {
+            "class": "character",
+            "path": "assets/sprites/characters/crow2/crow3/crow-jump-64px.png",
+            "frames": 4,
+            "fps": 8,
+            "loop": false,
+            "anim": "jump"
+        },
         "cockroach": {
             "class": "enemy",
-            "path": "assets/sprites/characters/npcs/cockroach.png",
+            "path": "assets/sprites/characters/npcs/cockroach-walk-64.png",
+            "frames": 4,
+            "fps": 8,
+            "loop": true,
+            "anim": "walk"
+        },
+        "spitter_beetle": {
+            "class": "enemy",
+            "path": "assets/sprites/characters/npcs/spitter-beetle-64.png",
             "frames": 1,
             "fps": 0,
             "loop": false,
             "anim": "idle"
         },
+        "poison_spit": {
+            "class": "attachment",
+            "path": "assets/sprites/objects/hazards/poison-spit-32.png",
+            "frames": 4,
+            "fps": 6,
+            "loop": true,
+            "anim": "puddle"
+        },
         "owl": {
             "class": "npc",
             "path": "assets/sprites/characters/npcs/owl-runtime-64.png",
+            "frames": 1,
+            "fps": 0,
+            "loop": false,
+            "anim": "idle"
+        },
+        "owl_heavy": {
+            "class": "npc",
+            "path": "assets/sprites/characters/npcs/owl-heavy-64.png",
             "frames": 1,
             "fps": 0,
             "loop": false,

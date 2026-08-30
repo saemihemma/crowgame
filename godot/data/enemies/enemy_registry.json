@@ -10,6 +10,17 @@
             "speed": 40,
             "damage": 1,
             "coinReward": 2
+        },
+        {
+            "id": "spitter_beetle",
+            "name": "Spitter Beetle",
+            "spriteKey": "spitter_beetle",
+            "frameWidth": 64,
+            "frameHeight": 64,
+            "behavior": "spit_patrol",
+            "speed": 25,
+            "damage": 1,
+            "coinReward": 3
         }
     ]
 }

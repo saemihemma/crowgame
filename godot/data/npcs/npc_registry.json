@@ -48,6 +48,41 @@
       "note": "Mid band, one answer. The roadside default, and what a level spawns unless it wants a specific shape."
     },
     {
+      "id": "owl_heavy_01",
+      "name": "Professor Hoot",
+      "spriteKey": "owl_heavy",
+      "behavior": "math_challenger",
+      "components": [
+        {
+          "type": "interactable"
+        },
+        {
+          "type": "math_challenge",
+          "problemTypes": [
+            "addition",
+            "counting",
+            "pattern_matching",
+            "subtraction",
+            "comparison",
+            "number_sequence",
+            "multiplication",
+            "division"
+          ],
+          "difficultyRange": [
+            1,
+            3
+          ],
+          "problemCount": 1
+        }
+      ],
+      "behaviorConfig": {
+        "rewardType": "stars",
+        "rewardAmount": 3,
+        "chainLinks": 1
+      },
+      "note": "Heavily chained 3-lock variant, pays 3 stars upon rescue."
+    },
+    {
       "id": "owl_gentle_01",
       "name": "Professor Hoot",
       "spriteKey": "owl",
