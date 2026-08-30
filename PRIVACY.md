@@ -144,17 +144,20 @@ Both are available from the moment anything is stored, not as a later addition:
 
 - **Export** — download everything held about your family as one file: the
 grown-up email, each child, their saves and save history, every answer recorded,
-the devices you have signed in, and the sync-conflict log. Two things are left
-out and the file says so in its own `notIncluded` field: live session credentials
-and in-flight sign-in codes, because handing those to whoever opens the file
-would only widen the damage if it leaked. A test derives the family's table list
-from the database and fails the build if a new one is neither exported nor named
-there, so "everything" is checkable rather than a promise.
+the devices you have signed in, your sign-in usernames, and the sync-conflict
+log. Three things are left out and the file says so in its own `notIncluded`
+field: live session credentials, in-flight sign-in codes, and the stored form of
+your PIN. The first two because handing them to whoever opens the file would only
+widen the damage if it leaked; the PIN because a 4-digit number has ten thousand
+possibilities, so its stored form in a downloaded file is not far off the number
+itself. The usernames it protects are exported in full. A test derives the
+family's table list from the database and fails the build if a new one is neither
+exported nor named there, so "everything" is checkable rather than a promise.
 - **Delete** — erase your family completely. Every child, every save, every
   answer. It is an immediate, permanent delete, not a hidden flag, and it cannot
   be undone.
 
-Ask us and we will do it for you, or use the cloud panel in the game.
+Ask us and we will do it for you.
 
 ## Protecting your child's progress (please read this one)
 

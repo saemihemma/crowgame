@@ -119,6 +119,39 @@ func set_profile_field(username: String, key: String, value: Variant) -> void:
 			_save()
 			return
 
+## One stored profile by name, or null.
+##
+## Case-insensitive, like login() and create_profile(): "Saemi" and "saemi" are
+## one child everywhere else here, and a lookup that disagreed would let the
+## sign-in screen create a second profile for a name it had just been told
+## already exists.
+func get_profile(username: String) -> Variant:
+	for p in _profiles:
+		if String(p.get("username", "")).to_lower() == username.strip_edges().to_lower():
+			return p
+	return null
+
+## Overwrite a local profile's PIN.
+##
+## Exists for exactly one caller: a child signing in on a shared machine that
+## already holds a profile under their name with a different PIN. The SERVER has
+## just authenticated them, so of the two records the local one is the stale
+## copy, and refusing to update it would leave a child locked out of their own
+## save by a name collision on somebody else's computer.
+##
+## Nothing else may call this. A PIN change from inside the game would be a way
+## to take another child's profile on a shared tablet, which is the thing the PIN
+## is there to prevent -- godot/tests/test_grownup_surfaces.gd holds the line.
+func set_profile_pin(username: String, pin: String) -> bool:
+	if not _is_four_digits(pin):
+		return false
+	for p in _profiles:
+		if String(p.get("username", "")).to_lower() == username.strip_edges().to_lower():
+			p["pinHash"] = _hash_pin(String(p.get("username", "")), pin)
+			_save()
+			return true
+	return false
+
 func has_profiles() -> bool:
 	return _profiles.size() > 0
 

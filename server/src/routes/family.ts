@@ -461,12 +461,22 @@ export async function registerFamilyRoutes(app: FastifyInstance): Promise<void> 
                 `select child_id, received_at
                    from play_pings where family_id = $1 order by child_id, received_at`,
                 [familyId]);
+            // The login accounts, WITHOUT pin_hash. PRIVACY.md promises everything
+            // held about a family, and a credential is the one thing an export
+            // must not carry: a downloaded file that contains the hash of a
+            // 4-digit PIN is ten thousand guesses away from being the PIN.
+            const accounts = await client.query(
+                `select username, created_at, last_login_at
+                   from accounts where family_id = $1 order by username`,
+                [familyId]);
             return {
                 exportedAt: new Date().toISOString(),
                 notIncluded: {
                     device_tokens: 'session credentials (SHA-256 hashes of live tokens)',
                     login_codes: 'in-flight sign-in links and pairing codes',
+                    accounts: 'the PIN hash only — the usernames themselves are below',
                 },
+                accounts: accounts.rows,
                 parents: parents.rows,
                 children: children.rows,
                 childAliases: childAliases.rows,

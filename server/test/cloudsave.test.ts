@@ -392,8 +392,17 @@ describe('cloud save', { skip: HAS_DB ? false : 'DATABASE_URL not set' }, () => 
         }
         assert.equal(body.parents[0].email, 'erasure@example.com',
             'the export must carry the real address, not an empty or placeholder row');
-        assert.deepEqual(Object.keys(body.notIncluded).sort(), ['device_tokens', 'login_codes'],
+        assert.deepEqual(Object.keys(body.notIncluded).sort(),
+            ['accounts', 'device_tokens', 'login_codes'],
             'the exclusions are part of the promise; changing them changes what the doc must say');
+        // `accounts` is a PARTIAL exclusion and the only one: the usernames are
+        // exported in full and it is the PIN hash alone that is withheld, because
+        // a downloaded file carrying the hash of a 4-digit PIN is ten thousand
+        // guesses away from being the PIN.
+        assert.ok(Array.isArray(body.accounts), 'the usernames themselves are still exported');
+        for (const row of body.accounts) {
+            assert.ok(!('pin_hash' in row), 'and no credential rides along with them');
+        }
 
         const deleted = await app.inject({
             method: 'DELETE', url: '/api/v1/family', headers: { cookie } });

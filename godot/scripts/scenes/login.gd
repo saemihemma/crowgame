@@ -116,7 +116,82 @@ func _show_profile_list() -> void:
 	_col.add_child(nb)
 	if first == null:
 		first = nb
+
+	# THE ROW THAT MAKES A STRANGE COMPUTER USABLE.
+	#
+	# The list above is the profiles ON THIS DEVICE, and for most of this game's
+	# life that was the only way in -- so a child sitting at a machine that had
+	# never seen them had exactly one option, "New player", which builds a second
+	# empty profile while their real progress sits somewhere they cannot reach.
+	# The owner asked for the opposite: "I wanna log into my progress at work
+	# tomorrow."
+	#
+	# So a name typed here is checked against the SERVER. Offered only where there
+	# is a server to check against: a build with no API behind it would be showing
+	# a door that opens onto nothing.
+	if CloudSync.has_server():
+		var sb := BrandButton.make(TextManager.t("login.i_have_a_name"),
+			BrandButton.Role.GHOST, _show_sign_in)
+		sb.custom_minimum_size.x = 320
+		sb.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		_col.add_child(sb)
+
 	first.grab_focus.call_deferred()
+
+## Signing in as a name that is not on this device.
+##
+## Deliberately the same two fields as the local PIN screen, in the same order,
+## because it is the same two facts -- a child should not have to understand that
+## one of these screens talks to a server and the other does not.
+func _show_sign_in() -> void:
+	_clear()
+	_title(TextManager.t("login.sign_in_title"), 34)
+	_name_edit = LineEdit.new()
+	_name_edit.placeholder_text = TextManager.t("login.name_placeholder")
+	_name_edit.max_length = ProfileManager.NAME_MAX_LENGTH
+	_name_edit.custom_minimum_size = Vector2(280, 48)
+	_name_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_col.add_child(_name_edit)
+	_title(TextManager.t("login.enter_pin"), 22)
+	_pin_edit = _make_pin_edit()
+	_status = _make_status()
+	_col.add_child(_status)
+	_action_button(TextManager.t("login.play"), _try_sign_in, BrandButton.Role.PRIMARY)
+	_action_button(TextManager.t("login.back"), _show_profile_list)
+	_name_edit.grab_focus()
+
+## Ask the server, then make this device look like the one the child left.
+##
+## A successful sign-in creates the LOCAL profile too, with the same name and
+## PIN, so everything downstream -- the save key, the PIN screen on the next
+## launch, the profile list -- works exactly as it does on the child's own
+## tablet. The server is where the save comes from; it is not a second identity
+## system running beside the local one.
+func _try_sign_in() -> void:
+	var username := _name_edit.text.strip_edges()
+	var pin := _pin_edit.text
+	_status.text = TextManager.t("login.signing_in")
+	var res: Dictionary = await CloudSync.sign_in(username, pin)
+	if not bool(res.get("ok", false)):
+		_status.text = TextManager.t(String(res.get("error", "login.sign_in_failed")))
+		_pin_edit.text = ""
+		_pin_edit.grab_focus()
+		return
+	# create_profile returns a string table key on failure; the one failure that
+	# can happen here is "that name is already on this device", which for a name
+	# the server just authenticated means the local profile is simply already
+	# there. Logging in is then the whole of the work.
+	if ProfileManager.get_profile(username) == null:
+		ProfileManager.create_profile(username, pin, 0)
+	if not ProfileManager.login(username, pin):
+		# The name exists locally with a DIFFERENT pin -- somebody else's profile
+		# on a shared machine. The server said this child is who they say they
+		# are, so the local record is the stale one.
+		ProfileManager.set_profile_pin(username, pin)
+		if not ProfileManager.login(username, pin):
+			_status.text = TextManager.t("login.sign_in_failed")
+			return
+	_finish_login()
 
 func _show_pin_entry(username: String) -> void:
 	_selected_user = username
@@ -385,19 +460,34 @@ func _try_create() -> void:
 		_pin_confirm_edit.grab_focus()
 		return
 	var res = ProfileManager.create_profile(_name_edit.text, _pin_edit.text, birth_year)
-	if res == true:
-		ProfileManager.login(_name_edit.text, _pin_edit.text)
-		_finish_login()
-	else:
+	if res != true:
 		# create_profile returns a string table key, not a sentence.
 		_status.text = TextManager.t(String(res))
+		return
+	# CLAIM THE NAME ON THE SERVER TOO, so this child exists somewhere other than
+	# this device. Without it, "log in at work tomorrow" has nothing to find.
+	#
+	# A failure here is NOT a failure to create a player. The game is
+	# offline-first and always has been: a child on a train, or on a build with
+	# no API behind it, gets a local profile and plays. The one answer worth
+	# stopping for is "that name is taken", because it is the child's own name
+	# that will not work tomorrow and they can still pick another one now.
+	if CloudSync.has_server():
+		var claim: Dictionary = await CloudSync.sign_up(
+			_name_edit.text.strip_edges(), _pin_edit.text)
+		if not bool(claim.get("ok", false)) and String(claim.get("error", "")) == "login.name_taken":
+			ProfileManager.delete_profile(_name_edit.text.strip_edges())
+			_status.text = TextManager.t("login.name_taken")
+			return
+	ProfileManager.login(_name_edit.text, _pin_edit.text)
+	_finish_login()
 
 func _finish_login() -> void:
 	SaveManager.switch_profile()
 	# Map this device's local childId to the server child and pull the cloud save
 	# if this device is enrolled. A no-op otherwise, and never blocking: the local
 	# save is already loaded and playable by this point.
-	if OS.has_feature("web") and CloudSync.is_enrolled():
+	if CloudSync.is_enrolled():
 		CloudSync.bind_active_profile()
 	var save := SaveManager.get_data()
 	ELOManager.initialize(save.get("eloStats", null))

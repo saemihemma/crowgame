@@ -122,6 +122,60 @@ func _refresh_session() -> void:
 	if was != _enrolled or was_reachable != _server_reachable:
 		state_changed.emit(_enrolled)
 
+## SIGN IN WITH THE NAME AND PIN THE CHILD ALREADY USES.
+##
+## The whole of the owner's requirement, in one sentence: "I wanna log into my
+## progress at work tomorrow." Before this, a machine that had never seen a child
+## had no way to reach them -- profiles were device-local, and cloud enrolment
+## was a separate thing you opted into by email from a menu row nobody pressed.
+## So the login screen IS the sign-in now, and there is nothing else to turn on.
+##
+## Returns {"ok": bool, "error": String, "childId": String}. `error` is a string
+## table KEY rather than a sentence, like ProfileManager.create_profile, so the
+## screen decides how to say it and the translator has one place to look.
+##
+## What a 4-digit PIN is and is not worth is stated once, at the fence that
+## actually protects it: server/migrations/007_username_pin_accounts.sql.
+func sign_in(username: String, pin: String) -> Dictionary:
+	return await _account_call("/auth/signin", username, pin)
+
+## Claim a name on the server, so the child can reach this save from anywhere.
+##
+## Separate from sign_in on purpose, all the way down to the route. A single
+## "log in or create" call cannot tell a typo from a new child: type "Saemj"
+## instead of "Saemi" and it hands back a brand-new empty account with the
+## progress nowhere in sight, which is the exact failure this feature exists to
+## prevent.
+func sign_up(username: String, pin: String) -> Dictionary:
+	return await _account_call("/auth/signup", username, pin)
+
+func _account_call(path: String, username: String, pin: String) -> Dictionary:
+	var res := await _request(HTTPClient.METHOD_POST, path, {"username": username, "pin": pin})
+	if res["ok"]:
+		# The device cookie came back on that response, so this device is signed
+		# in from here on and everything else in this file starts working.
+		_enrolled = true
+		_server_reachable = true
+		state_changed.emit(true)
+		var child := ""
+		if res["json"] is Dictionary:
+			child = String((res["json"] as Dictionary).get("childId", ""))
+		return {"ok": true, "error": "", "childId": child}
+	# A code of 0 is "nothing answered": no network, no API wired up, offline on a
+	# train. That is not a rejection and must not be reported as one -- the game
+	# is offline-first and playing locally is the correct outcome.
+	var code := int(res["code"])
+	var key := "login.offline"
+	if code == 401:
+		key = "login.wrong_name_or_pin"
+	elif code == 409:
+		key = "login.name_taken"
+	elif code == 429:
+		key = "login.too_many_tries"
+	elif code >= 400:
+		key = "login.sign_in_failed"
+	return {"ok": false, "error": key, "childId": ""}
+
 ## Ask the server to email a sign-in link. The link must be opened on THIS
 ## device, because clicking it is the top-level navigation that sets the cookie.
 ##
