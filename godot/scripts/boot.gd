@@ -140,8 +140,15 @@ func _arrive() -> void:
 		_prompt.text = TextManager.t(
 			"boot.tap_start" if TouchControls.supported() else "boot.press_start")
 		_prompt.visible = true
-		UiFx.elastic_entrance(_prompt)
-		_pulse(_prompt)
+		# The pulse waits for the entrance. Started together, the two tweens both
+		# wrote modulate:a every frame -- the entrance ramping 0 -> 1 while the
+		# pulse ramped 1 -> 0.45 -- and the prompt flickered in and out before
+		# settling. One animation at a time on one property.
+		var entrance := UiFx.elastic_entrance(_prompt)
+		if entrance == null:
+			_pulse(_prompt)
+		else:
+			entrance.finished.connect(_pulse.bind(_prompt))
 	# HERE, not on the press. This beacon is the boot funnel's DENOMINATOR -- it
 	# is what lets an empty errors table mean "nobody came" rather than
 	# "everyone's game failed to load". Firing it on the press instead made a
@@ -200,13 +207,20 @@ func _report_boot_ready() -> void:
 		"window.crowBootReady && window.crowBootReady({hadExistingSave:%s})" % had_save, true)
 
 
+## A slow breath, not a blink.
+##
+## The band used to run to 0.45, which on a short line of text at the size this
+## screen uses reads as the prompt disappearing and coming back -- a child waits
+## for it to finish rather than pressing. 0.72 is still clearly alive and never
+## stops being readable, and the longer period keeps it under the threshold
+## where the eye tracks it as movement.
 func _pulse(node: Control) -> void:
-	if UiFx.reduced_motion():
+	if not is_instance_valid(node) or UiFx.reduced_motion():
 		return
 	node.modulate.a = 1.0
 	var tween := node.create_tween().set_loops()
-	tween.tween_property(node, "modulate:a", 0.45, 0.8).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", 1.0, 0.8).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(node, "modulate:a", 0.72, 1.1).set_trans(Tween.TRANS_SINE)
+	tween.tween_property(node, "modulate:a", 1.0, 1.1).set_trans(Tween.TRANS_SINE)
 
 
 # ─── Composition ──────────────────────────────────────────────────────────────
