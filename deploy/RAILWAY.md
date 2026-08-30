@@ -138,27 +138,36 @@ For each environment (`staging`, then `prod`):
    > `deploy/api/Dockerfile`.
 4. **Settings → Source:** branch `main` for staging, `release` for prod.
 5. **Settings → Networking:** do **not** generate a public domain. Private only.
-6. **Variables:**
+6. **Variables.** Two are required and the game works completely without the
+   rest:
    ```
-   DATABASE_URL          = ${{ Postgres.DATABASE_URL }}
-   CROW_ENV              = staging | production
-   CROW_PUBLIC_BASE_URL  = https://<the web service's public domain>
-   CROW_MAIL_DRIVER      = http
-   CROW_MAIL_ENDPOINT    = <the mail processor's send URL>
-   CROW_MAIL_API_KEY     = <its key>
-   CROW_MAIL_FROM        = Hörmann <no-reply@your-domain>
+   DATABASE_URL = ${{ Postgres.DATABASE_URL }}
+   CROW_ENV     = staging | production
    ```
-   **The last five are not optional, and following this step without them ships a
-   production where cloud save can never be turned on.** `CROW_MAIL_DRIVER`
-   defaults to `log`, so `createMailer` returns a `LogMailer` with
-   `delivers = false`; every enrollment then answers `sent: false,
-   delivery: 'unavailable'` and writes the sign-in link to the server log instead
-   of the parent's inbox. The code degrades honestly and says so in the response —
-   this list was the gap, and it listed only the first two for as long as the
-   runbook has existed.
+   That is the whole of what a child signing in needs. Since 2026-08 the game's
+   login is a username and a PIN checked against this database
+   (`POST /api/v1/auth/signup` and `/signin`, migration 007), so cloud save
+   arrives with the database and there is nothing to switch on. It used to be an
+   enrolment flow that emailed a magic link, and this list used to say the mail
+   variables below were not optional. For the game, they no longer are needed at
+   all.
 
-   `CROW_PUBLIC_BASE_URL` is what the emailed link points at. Unset, the link is
-   relative and unusable from an inbox.
+   **Optional — only for the email magic link**, which the game itself no longer
+   uses. It is still how a parent reaches the report on a device with no child
+   profile, and how a second device is paired:
+   ```
+   CROW_PUBLIC_BASE_URL = https://<the web service's public domain>
+   CROW_MAIL_DRIVER     = http
+   CROW_MAIL_ENDPOINT   = <the mail processor's send URL>
+   CROW_MAIL_API_KEY    = <its key>
+   CROW_MAIL_FROM       = Hörmann <no-reply@your-domain>
+   ```
+   `CROW_MAIL_DRIVER` defaults to `log`, so `createMailer` returns a `LogMailer`
+   with `delivers = false`: `/auth/request-link` then answers `sent: false,
+   delivery: 'unavailable'` and writes the link to the server log rather than to
+   an inbox. That is an honest degraded state, not an outage, and nothing a child
+   touches goes through it. `CROW_PUBLIC_BASE_URL` is what the emailed link
+   points at; unset, the link is relative and unusable from an inbox.
 
    Note for PRIVACY.md: turning the mail driver on introduces the first third
    party that sees a parent's email address. That page says which one; keep the
