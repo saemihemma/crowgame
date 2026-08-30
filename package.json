@@ -20,6 +20,7 @@
     "math:phrasing": "node tools/fix_math_plural_grammar.mjs && node tools/derive_math_phrasing.mjs --write && node tools/sync_math_phrasing_bundles.mjs",
     "math:review": "tsx tools/review_math_batches.ts",
     "math:step-domains": "tsx tools/gen_step_domains.ts",
+    "math:stress": "node tools/stress_test_math_is.mjs",
     "math:sync-metadata": "tsx tools/sync_math_problem_metadata.ts",
     "process:audio": "node tools/process_audio.js",
     "typecheck": "tsc --noEmit",
