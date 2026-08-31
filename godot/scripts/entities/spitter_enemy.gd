@@ -77,7 +77,15 @@ func _physics_process(delta: float) -> void:
 func _telegraph_spit() -> void:
 	_is_charging = true
 	var tw := create_tween()
-	tw.tween_property(_sprite, "modulate", Color(0.4, 1.4, 0.4, 1.0), 0.5)
+	# Through the palette, like every other colour in the game (ARCHITECTURE
+	# rule: no inline Color literals -- check_hardcoding.py enforces it and this
+	# file was failing it). `hazard` is the role the spikes and the poison spit
+	# already use, so a world that retints its danger retints the beetle's
+	# wind-up with it. Lightened past 1.0 on purpose: this is a flash, and the
+	# overbright is what makes it read as charging rather than as a repaint.
+	var charge := ThemeManager.get_color_value("hazard").lightened(0.4)
+	charge.g = minf(charge.g * 1.6, 1.4)
+	tw.tween_property(_sprite, "modulate", charge, 0.5)
 
 func _spit_poison() -> void:
 	_is_charging = false
@@ -102,7 +110,8 @@ func kill() -> void:
 	AudioManager.play_event("enemy_defeat")
 	var fx_parent := get_parent()
 	if fx_parent != null:
-		DopamineFX.burst(fx_parent, global_position + Vector2(0, -24), Color(0.2, 0.9, 0.3), 20)
+		DopamineFX.burst(fx_parent, global_position + Vector2(0, -24),
+			ThemeManager.get_color_value("hazard"), int(Config.fx("burst/enemy", 20)))
 		DopamineFX.number_fly_up(fx_parent, global_position + Vector2(-10, -52), "+%d" % coin_reward)
 	var game := _find_game()
 	if game != null and game.has_method("award_enemy_coins"):
