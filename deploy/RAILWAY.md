@@ -425,6 +425,16 @@ npm run audio:gen -- --list            # what there is to make
 npm run audio:gen -- --dry-run --all   # every prompt, spends nothing
 ```
 
+There is one other place the key may legitimately live, and it is better than a
+shell: an **API credential on a Claude Code cloud environment**. The key is stored
+on the environment and Anthropic's agent proxy attaches the `xi-api-key` header
+*after* the request leaves the sandbox, so it never reaches the agent, the
+commands it runs, or the environment variables — and it grants network reach to
+that host on its own, so no allowlist entry is needed either. Run the generator
+with `--proxy-auth` there and it sends the request bare for the proxy to
+authenticate. Everything above still holds: the key is never in the repo, never
+in the game, and never on a Railway service.
+
 Two consequences worth being blunt about:
 
 - **Anything in `godot/**` is public.** The web build is ~52 MB of bytes served

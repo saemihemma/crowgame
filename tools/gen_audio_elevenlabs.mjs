@@ -4,6 +4,7 @@
  *
  * Usage:
  *   node tools/gen_audio_elevenlabs.mjs --list
+ *   node tools/gen_audio_elevenlabs.mjs --proxy-auth --family WORLD  # key held outside
  *   node tools/gen_audio_elevenlabs.mjs --dry-run --all      # every prompt, no key needed
  *   node tools/gen_audio_elevenlabs.mjs --key coin_collect --takes 4
  *   node tools/gen_audio_elevenlabs.mjs --family VOICE --takes 3
@@ -225,6 +226,24 @@ function buildPrompt(job) {
 
 // ── generating ───────────────────────────────────────────────────────────────
 
+/**
+ * The header that carries the key, or nothing at all.
+ *
+ * PROXY-ATTACHED CREDENTIALS. A Claude Code cloud environment can hold an "API
+ * credential": the key is stored on the environment and Anthropic's agent proxy
+ * adds the header AFTER the request has left the sandbox, so it never reaches
+ * the agent, the commands it runs, or the environment variables. Storing an
+ * ElevenLabs key that way is strictly better than exporting it -- and it also
+ * grants network reach to the host, which the environment's allowlist otherwise
+ * would not.
+ *
+ * In that mode there IS no key here to send, so `--proxy-auth` sends the request
+ * bare and lets the proxy authenticate it. Everything else is unchanged.
+ */
+function authHeader(apiKey) {
+    return apiKey ? { 'xi-api-key': apiKey } : {};
+}
+
 async function generate(job, take, apiKey) {
     const body = {
         text: buildPrompt(job),
@@ -236,7 +255,7 @@ async function generate(job, take, apiKey) {
     };
     const response = await fetch(ENDPOINT, {
         method: 'POST',
-        headers: { 'xi-api-key': apiKey, 'content-type': 'application/json' },
+        headers: { ...authHeader(apiKey), 'content-type': 'application/json' },
         body: JSON.stringify(body),
     });
     if (!response.ok) {
@@ -493,12 +512,16 @@ async function main() {
     }
 
     const apiKey = process.env.ELEVENLABS_API_KEY ?? '';
-    if (!apiKey) {
+    if (!apiKey && !has('--proxy-auth')) {
         console.error('ELEVENLABS_API_KEY is not set.\n');
-        console.error('  export ELEVENLABS_API_KEY=...       (your shell, or a gitignored .env)\n');
-        console.error('It belongs on YOUR machine only. Not in the repo, not in the game, not in');
-        console.error('Railway: nothing at runtime calls ElevenLabs, so nothing at runtime should');
-        console.error('be able to. Run with --dry-run to see the prompts without a key.');
+        console.error('  export ELEVENLABS_API_KEY=...   your shell, or a gitignored .env');
+        console.error('  --proxy-auth                    the key is attached outside this process');
+        console.error('                                  (a Claude Code cloud environment API');
+        console.error('                                  credential, or any egress proxy that adds');
+        console.error('                                  the xi-api-key header for you)\n');
+        console.error('A key of your own belongs on YOUR machine only. Not in the repo, not in the');
+        console.error('game, not in Railway: nothing at runtime calls ElevenLabs, so nothing at');
+        console.error('runtime should be able to. --dry-run prints the prompts without either.');
         process.exit(1);
     }
 
