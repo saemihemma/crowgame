@@ -444,7 +444,16 @@ uses* — so "is take 2 better" is a fair comparison rather than a loudness
 contest, which is the mistake a folder of files in a media player makes for you.
 A `shipped` button switches back. The takes row only appears where the takes
 directory exists, which is beside the repo while you are choosing and never in
-the deployed image.
+the deployed image — so on Windows, start the bench against your working copy:
+
+```powershell
+.\tools\audio_bench.ps1
+```
+
+That points every resolver at this checkout (the samples you are about to
+replace, and the takes just downloaded), sets the five environment variables the
+server needs, and opens `http://localhost:8099/audio`. It reads only; promoting a
+take stays a separate, deliberate command.
 
 **And there is a path for when the API is unreachable.** Only for that case — a
 corporate proxy, a sandbox, an outage. It is not how the bank gets made.
