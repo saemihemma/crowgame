@@ -1,6 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://b0crowenemy0001"]
+[gd_scene load_steps=4 format=3 uid="uid://d1spitterenemy01"]
 
-[ext_resource type="Script" path="res://scripts/entities/enemy.gd" id="1_enemy"]
+[ext_resource type="Script" path="res://scripts/entities/spitter_enemy.gd" id="1_spitter"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
 size = Vector2(48, 56)
@@ -8,12 +8,12 @@ size = Vector2(48, 56)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
 size = Vector2(48, 56)
 
-[node name="Enemy" type="CharacterBody2D"]
+[node name="SpitterEnemy" type="CharacterBody2D"]
 collision_layer = 4
 collision_mask = 1
-script = ExtResource("1_enemy")
+script = ExtResource("1_spitter")
 
-[node name="Sprite" type="AnimatedSprite2D" parent="."]
+[node name="Sprite" type="Sprite2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -28)

@@ -1,29 +1,5 @@
 /**
  * The CMS page, as one self-contained HTML string.
- *
- * A module exporting HTML rather than a static asset, matching
- * server/src/admin/page.ts -- and, like that page, no CDN and no framework, so
- * the tool has no install step and no supply chain of its own.
- *
- * THE ONE IDEA THIS PAGE IS BUILT AROUND
- * --------------------------------------
- * A translator's instinct is to work through a list top to bottom, and on a list
- * of 629 keys that is a week of work in which the most important string is
- * indistinguishable from the least. But these keys are not equal: editing
- * `math.expl.rel.taken` rewrites 951 problems, and most keys touch one screen.
- *
- * So the reuse count is not a detail in a tooltip, it is the sort order and the
- * loudest thing on the row. Work down the list and you translate the game in
- * roughly the order that matters. The header states the trade explicitly --
- * hundreds of phrases, not thousands of problems -- because that is the fact
- * that makes the job finishable, and it is the fact the JSON file hides.
- *
- * PREVIEWS ARE REAL SENTENCES
- * ---------------------------
- * Every row with parameters shows the template rendered with numbers taken from
- * an actual problem, in both languages, updating as you type. "{a} hópar af {b}"
- * is a thing to get right in the abstract; "3 hópar af 1 gera 3" is a thing you
- * can read aloud and hear is wrong.
  */
 export const PAGE = String.raw`<!doctype html>
 <html lang="en">
@@ -31,7 +7,7 @@ export const PAGE = String.raw`<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Hörmann Localisation</title>
+<title>Hörmann Localisation & Component CMS</title>
 <style>
 :root {
   color-scheme: light;
@@ -66,6 +42,9 @@ input[type=search], select { border: 1px solid var(--ring); background: var(--su
 input[type=search] { min-width: 240px; flex: 1 1 240px; }
 .pill { border: 1px solid var(--ring); background: var(--surface); color: var(--ink-2); border-radius: 999px; padding: 5px 11px; cursor: pointer; font: inherit; font-size: 13px; }
 .pill[aria-pressed=true] { background: var(--ink); color: var(--page); border-color: var(--ink); }
+.btn-git { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 6px 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+.btn-git:hover { opacity: 0.9; }
+.btn-git:disabled { opacity: 0.5; cursor: not-allowed; }
 .status { margin-left: auto; font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
 .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
 .dot.bad { background: var(--bad); }
@@ -99,25 +78,31 @@ textarea.err { border-color: var(--bad); }
 .msg.good { color: var(--good); }
 .msg.warn { color: var(--warn); }
 .empty { color: var(--muted); padding: 40px 0; text-align: center; }
-footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--ring); padding: 8px 20px; font-size: 12px; color: var(--ink-2); display: flex; gap: 14px; align-items: center; }
+footer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--ring); padding: 8px 20px; font-size: 12px; color: var(--ink-2); display: flex; gap: 14px; align-items: center; z-index: 10; }
+.git-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 6px; background: var(--sunk); font-weight: 500; }
 </style>
 </head>
 <body>
 <header>
-  <div class="title"><h1>Hörmann Localisation</h1><span class="mono" id="scale" style="color:var(--muted);font-size:12px"></span></div>
-  <p class="lede">Every sentence the game says is a <b>template</b>, and the numbers in it are parameters — so translating the game is a few hundred phrases, not the thousands of problems that use them. Rows are sorted by how many problems each phrase renders, so the top of this list is the most valuable work. <b>Every save runs the real i18n guard</b> and rolls the file back if it fails.</p>
+  <div class="title">
+    <h1>Hörmann Localisation & Component CMS</h1>
+    <span class="mono" id="scale" style="color:var(--muted);font-size:12px"></span>
+  </div>
+  <p class="lede">Every sentence the game says is a <b>template</b>, and numbers are parameters. Edit any string or component below. <b>Every save runs the real i18n guard</b> and writes directly to disk. Use the <b>Commit to Git</b> button to commit your edits so they stay authoritative.</p>
   <div class="controls">
     <input type="search" id="q" placeholder="Search key, English, or Icelandic…" autocomplete="off">
     <button class="pill" id="f-untranslated" aria-pressed="false">Reads as English</button>
     <button class="pill" id="f-used" aria-pressed="false">Used by problems</button>
+    <button class="btn-git" id="btn-commit" title="Commit current disk changes to Git">💾 Commit to Git</button>
     <span class="status"><span class="dot" id="dot"></span><span id="status">ready</span></span>
   </div>
   <div class="groupbar" id="groups"></div>
 </header>
 <main id="rows"><p class="empty">Loading…</p></main>
 <footer>
+  <span class="git-pill" id="git-branch">🌿 branch: ...</span>
   <span id="diff">no unsaved edits</span>
-  <span style="color:var(--muted)">Edits land in <code>godot/data/i18n/strings_*.json</code> — review with <code>git diff</code>, then commit.</span>
+  <span style="color:var(--muted);margin-left:auto">Edits land in <code>godot/data/i18n/strings_*.json</code> and are version-controlled by Git.</span>
 </footer>
 <script>
 const $ = s => document.querySelector(s);
@@ -126,17 +111,10 @@ const state = { q: '', group: null, untranslated: false, used: false };
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-/* Placeholders present in a template, as a sorted signature. The guard checks
-   this too; doing it here as well is what makes the warning appear while you
-   type rather than when you save. */
 const holders = s => [...String(s ?? '').matchAll(/\{([a-z0-9]+)\}/gi)].map(m => m[1]).sort();
 const sameHolders = (a, b) => holders(a).join(',') === holders(b).join(',');
-/* The Latin-1 rule from tools/validate_i18n.mjs: anything above it has no
-   guaranteed glyph in Godot's built-in font and draws as a box. */
 const tofu = s => [...String(s ?? '')].filter(c => c.codePointAt(0) > 0xff);
 
-/* Render a template the way TextManager.tp() would: named substitution, with a
-   nested { key, params } parameter rendered through its own template first. */
 function fill(template, params, bundle) {
   if (params == null) return String(template ?? '');
   return String(template ?? '').replace(/\{([a-z][a-z0-9]*)\}/gi, (whole, name) => {
@@ -176,13 +154,13 @@ function rowHtml(r) {
     ? '<span class="uses' + (hot ? ' hot' : '') + '">' + r.uses.toLocaleString() + ' problems</span>'
     : '<span class="tag">one screen</span>';
   const lock = r.lockedEn
-    ? '<span class="tag" title="Generated from tools/math_phrasing_catalog.mjs and round-tripped against every problem that uses it. Editing it here would be overwritten by npm run math:phrasing.">English is generated</span>'
+    ? '<span class="tag" title="Generated from tools/math_phrasing_catalog.mjs and round-tripped against every problem that uses it.">English is catalog template</span>'
     : '';
   const plural = r.pluralOn
-    ? '<span class="tag" title="Icelandic takes the singular at 1, 21, 31 — anything ending in 1 except 11. English only at 1.">inflects on {' + esc(r.pluralOn) + '}</span>'
+    ? '<span class="tag" title="Icelandic takes the singular at 1, 21, 31 — anything ending in 1 except 11.">inflects on {' + esc(r.pluralOn) + '}</span>'
     : '';
-  const variant = r.variant ? field(r.variant.key, 'is', r.variant.is, false, 'Icelandic — singular form') : '';
-  const variantEn = r.variant ? '<div class="field"><label>English — singular form</label><textarea disabled>' + esc(r.variant.en) + '</textarea></div>' : '';
+  const variant = r.variant ? field(r.variant.key, 'is', r.variant.is, false, 'Icelandic — singular form (.one)') : '';
+  const variantEn = r.variant ? '<div class="field"><label>English — singular form (.one)</label><textarea disabled>' + esc(r.variant.en) + '</textarea></div>' : '';
   return '<article class="row' + (r.translatable ? '' : ' dim') + '" data-key="' + esc(r.key) + '">' +
     '<div class="rowhead">' + uses + '<span class="key">' + esc(r.key) + '</span>' + lock + plural + '</div>' +
     '<div class="pair">' +
@@ -208,7 +186,7 @@ function render() {
   const list = MODEL.rows.filter(matches);
   $('#rows').innerHTML = list.length
     ? list.map(rowHtml).join('')
-    : '<p class="empty">Nothing matches that.</p>';
+    : '<p class="empty">Nothing matches that filter.</p>';
   for (const el of document.querySelectorAll('.row')) refreshPreview(el);
 }
 
@@ -226,19 +204,16 @@ function refreshPreview(el) {
   el.querySelector('[data-pv=en]').textContent = fill(enText, r.sample, enB);
   el.querySelector('[data-pv=is]').textContent = fill(isText, r.sample, isB);
 
-  /* Two checks the guard would fail on, surfaced before the save rather than
-     after it. Everything else — the pixel fit budget, the reading budget, the
-     round trip — needs the whole tree and is left to the real validator. */
   const msg = el.querySelector('[data-msg]');
   const problems = [];
   if (!sameHolders(enText, isText)) {
     problems.push('Placeholders differ: English has {' + holders(enText).join('} {') +
-      '}, Icelandic has {' + holders(isText).join('} {') + '}. A locale can never serve a half-substituted string, so the guard will refuse this.');
+      '}, Icelandic has {' + holders(isText).join('} {') + '}. A locale must match all placeholders.');
   }
   const bad = tofu(isText);
   if (bad.length) {
     problems.push('Not in Latin-1: ' + bad.map(c => c + ' (U+' + c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0') + ')').join(', ') +
-      ' — Godot\'s built-in font has no glyph for these and will draw boxes.');
+      ' — Godot\'s font only supports Latin-1.');
   }
   if (is) is.classList.toggle('err', problems.length > 0);
   if (problems.length) { msg.className = 'msg warn show'; msg.textContent = problems.join('\n'); }
@@ -258,24 +233,55 @@ async function save(key, locale, value, el) {
   if (body.ok) {
     const r = rowFor(key) || MODEL.rows.find(x => x.variant && x.variant.key === key);
     if (r) { if (r.key === key) r[locale] = value; else r.variant[locale] = value; }
-    msg.className = 'msg good show'; msg.textContent = 'Saved. i18n guard passed.';
+    msg.className = 'msg good show'; msg.textContent = 'Saved to disk & i18n guard passed.';
     msg.dataset.sticky = '1';
     setTimeout(() => { delete msg.dataset.sticky; msg.className = 'msg'; msg.textContent = ''; }, 2600);
-    setStatus('saved', true);
-    if (body.diff) $('#diff').textContent = body.diff.files
-      ? body.diff.files + ' bundle' + (body.diff.files === 1 ? '' : 's') + ' changed since HEAD'
-      : 'no unsaved edits';
+    setStatus('saved to disk', true);
+    updateGitStatus(body.git, body.diff);
   } else {
     msg.className = 'msg bad show';
     msg.dataset.sticky = '1';
-    msg.textContent = (body.reverted ? 'Rejected and rolled back — the file on disk is unchanged.\n\n' : 'Not saved.\n\n') + (body.error || '');
-    setStatus('guard refused the edit', false);
+    msg.textContent = (body.reverted ? 'Rejected and rolled back — disk file unchanged.\n\n' : 'Not saved.\n\n') + (body.error || '');
+    setStatus('guard refused edit', false);
   }
 }
 
 function setStatus(text, ok) {
   $('#status').textContent = text;
   $('#dot').className = 'dot' + (ok ? '' : ' bad');
+}
+
+function updateGitStatus(git, diff) {
+  if (git) {
+    $('#git-branch').textContent = '🌿 ' + git.branch + (git.dirty ? ' (uncommitted changes)' : ' (clean)');
+    $('#btn-commit').disabled = !git.dirty;
+  }
+  if (diff) {
+    $('#diff').textContent = diff.files
+      ? diff.files + ' bundle' + (diff.files === 1 ? '' : 's') + ' modified'
+      : 'all changes committed';
+  }
+}
+
+async function handleCommit() {
+  const msg = prompt('Enter a commit message for Git (or leave default):', 'cms: update localization and components');
+  if (msg === null) return; // user cancelled
+  setStatus('committing to git…', true);
+  $('#btn-commit').disabled = true;
+  const res = await fetch('/api/git/commit', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ message: msg }),
+  });
+  const data = await res.json().catch(() => ({ ok: false, output: 'Request failed' }));
+  if (data.ok) {
+    setStatus('committed to git', true);
+    alert('Committed to Git successfully!\n\n' + data.output);
+    updateGitStatus(data.git, { files: 0, lines: 0 });
+  } else {
+    setStatus('git commit failed', false);
+    alert('Git commit failed:\n\n' + (data.output || 'Unknown error'));
+  }
 }
 
 document.addEventListener('input', e => {
@@ -287,6 +293,7 @@ document.addEventListener('input', e => {
   saveTimer = setTimeout(() => save(t.dataset.key, t.dataset.field, t.value, t), 700);
 });
 
+$('#btn-commit').addEventListener('click', handleCommit);
 $('#q').addEventListener('input', e => { state.q = e.target.value; render(); });
 for (const [id, flag] of [['#f-untranslated', 'untranslated'], ['#f-used', 'used']]) {
   $(id).addEventListener('click', e => {
@@ -312,9 +319,7 @@ for (const [id, flag] of [['#f-untranslated', 'untranslated'], ['#f-used', 'used
     for (const other of $('#groups').querySelectorAll('button')) other.setAttribute('aria-pressed', String(other === b));
     render();
   });
-  if (MODEL.diff) $('#diff').textContent = MODEL.diff.files
-    ? MODEL.diff.files + ' bundle' + (MODEL.diff.files === 1 ? '' : 's') + ' changed since HEAD'
-    : 'no unsaved edits';
+  updateGitStatus(MODEL.git, MODEL.diff);
   render();
 })();
 </script>

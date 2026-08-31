@@ -22,6 +22,7 @@ extends CharacterBody2D
 
 const IDLE_SPRITE_KEY := "crow_idle"
 const WALK_SPRITE_KEY := "crow_walk"
+const JUMP_SPRITE_KEY := "crow_jump"
 
 const PROJECTILE_SCENE := preload("res://scenes/Projectile.tscn")
 @onready var WALK_SPEED_THRESHOLD: float = Config.ui("player/walk_speed_threshold", 10.0)  # |vx| for walk anim (Player.ts)
@@ -61,16 +62,6 @@ func _ready() -> void:
 	_laser_cooldown = float(combat.get("laser_cooldown_ms", 1000)) / 1000.0
 
 ## Fit the collider to the drawing, from sprite_spec.json.
-##
-## The scene used to state it: a 40x56 box at y = -28. The crow is drawn 47-51px
-## tall in a 64px frame, so up to 9 of those 56 pixels were above its head —
-## which is why a jump stopped a visible gap short of every platform's underside.
-## The number was never measured; it was half the frame height, the same literal
-## SpriteSheet already exists to keep out of scene files.
-##
-## A fresh shape rather than resizing the scene's: sub-resources are shared
-## between instances of a PackedScene, and this is the kind of edit that quietly
-## reaches through one.
 func _size_body() -> void:
 	var box := SpriteSheet.body_box(WALK_SPRITE_KEY)
 	if _body == null or box == Vector2.ZERO:
@@ -81,7 +72,6 @@ func _size_body() -> void:
 	# Grown upward from the feet, which sit on the node origin.
 	_body.position = Vector2(0.0, -box.y * 0.5)
 
-
 func _build_animations() -> void:
 	if _sprite == null:
 		return
@@ -91,6 +81,16 @@ func _build_animations() -> void:
 	var idle_tex := SpriteSheet.texture(IDLE_SPRITE_KEY)
 	if idle_tex != null:
 		frames.add_frame("idle", idle_tex)
+	
+	if SpriteSheet.has_sprite(JUMP_SPRITE_KEY):
+		var jump_frames := SpriteSheet.frames(JUMP_SPRITE_KEY)
+		if jump_frames != null and jump_frames.has_animation("jump"):
+			frames.add_animation("jump")
+			frames.set_animation_loop("jump", false)
+			frames.set_animation_speed("jump", 8.0)
+			for i in range(jump_frames.get_frame_count("jump")):
+				frames.add_frame("jump", jump_frames.get_frame_texture("jump", i))
+	
 	_sprite.sprite_frames = frames
 	# Anchor derived from the registry, never a literal — see SpriteSheet.anchor_offset.
 	_sprite.offset = SpriteSheet.anchor_offset(WALK_SPRITE_KEY, SpriteSheet.grounding_sink())
@@ -102,25 +102,16 @@ func _physics_process(delta: float) -> void:
 		"right": Input.is_action_pressed("move_right"),
 		"jump_just_pressed": Input.is_action_just_pressed("jump"),
 		"jump_held": Input.is_action_pressed("jump"),
-		# Space, which used to be a third jump key. Behind
-		# input/space_is_sprint so the old binding can be restored whole -- see
-		# feature_flags.json for why that flag also gates keyboard answering.
 		"sprint": Config.flag("input/space_is_sprint", true) and Input.is_action_pressed("sprint"),
 	}
 	var was_on_floor := is_on_floor()
 	PlayerMotion.compute_velocity(_state, input, was_on_floor, _tuning, delta)
 	velocity = Vector2(float(_state["vx"]), float(_state["vy"]))
-	# Captured before move_and_slide resolves the collision, which zeroes vy on a
-	# landing -- so this is the speed the crow actually hit the ground at.
 	var fall_speed := velocity.y
 	move_and_slide()
-	# Write resolved velocity back so collisions (landing/ceiling) reset feel state.
 	_state["vx"] = velocity.x
 	_state["vy"] = velocity.y
 
-	# The threshold lives in data/tuning/fx_tuning.json, like every other motion
-	# and FX figure -- it shipped as a bare const for one commit, in the file whose
-	# own README rule is that magic numbers do not live in .gd.
 	if not was_on_floor and is_on_floor() \
 			and fall_speed >= float(Config.fx("land_min_fall_speed", 220.0)):
 		AudioManager.play_event("land")
@@ -130,7 +121,6 @@ func _physics_process(delta: float) -> void:
 	elif input["right"]:
 		_facing = 1
 
-	# Jump just happened this tick (PlayerMotion flips is_jumping on launch).
 	var jumping_now := bool(_state["is_jumping"])
 	if jumping_now and not _was_jumping:
 		_on_jumped()
@@ -138,9 +128,6 @@ func _physics_process(delta: float) -> void:
 
 	_update_animation()
 
-	# Landing is read from the floor transition rather than from vy: vy is already
-	# zeroed by move_and_slide() on the tick the crow touches down, so a
-	# velocity test would miss the exact frame the squash belongs on.
 	var on_floor := is_on_floor()
 	if on_floor and not _was_on_floor:
 		_land_squash()
@@ -156,8 +143,10 @@ func _update_animation() -> void:
 		return
 	_sprite.flip_h = _facing < 0
 	if not is_on_floor():
-		# Airborne: static pose (Player.ts shows the static 'crow' texture).
-		if _sprite.animation != "idle":
+		if _sprite.sprite_frames != null and _sprite.sprite_frames.has_animation("jump"):
+			if _sprite.animation != "jump":
+				_sprite.play("jump")
+		elif _sprite.animation != "idle":
 			_sprite.play("idle")
 	elif absf(velocity.x) > WALK_SPEED_THRESHOLD:
 		if _sprite.animation != "walk":

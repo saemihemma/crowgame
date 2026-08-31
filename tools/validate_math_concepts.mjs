@@ -86,10 +86,11 @@ const deadZone = (domain, step) => (emittable.domains?.[domain]?.unreachable ?? 
 {
     const hash = createHash('sha256');
     hash.update(JSON.stringify(emittable.domains)).update('\0');
-    hash.update(readFileSync(join(ROOT, 'tools', 'math_curriculum.ts'), 'utf8'));
-    hash.update(readFileSync(join(ROOT, 'tools', 'gen_step_domains.ts'), 'utf8'));
+    const norm = p => readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
+    hash.update(norm(join(ROOT, 'tools', 'math_curriculum.ts')));
+    hash.update(norm(join(ROOT, 'tools', 'gen_step_domains.ts')));
     for (const file of readdirSync(join(DATA, 'math')).filter(f => f.startsWith('problems_')).sort()) {
-        hash.update(file).update('\0').update(readFileSync(join(DATA, 'math', file), 'utf8'));
+        hash.update(file).update('\0').update(norm(join(DATA, 'math', file)));
     }
     // The Godot test mirrors this list as a GDScript constant, because a test
     // cannot read a file outside godot/data. A mirror that can drift is a
