@@ -16,6 +16,17 @@
  * So a screen that looks right on the owner's iPad can be cut on a laptop, which
  * has happened, which is why FitBox exists. Shooting both is how you see it.
  *
+ * KNOWN LIMITATION, so nobody re-discovers it as a bug in the game. The steps
+ * that PLAY -- walking to the owl, the lesson, the maths board, and therefore
+ * anything in the dashboard's log tab -- land reliably at the laptop viewport
+ * and often stall at the spawn on the iPad one, with the game visibly still
+ * running behind the stalled crow. It is the harness, not the build: driving
+ * that viewport by hand through the same steps, without a screenshot after
+ * every one, walks the crow to the owl and opens the lesson exactly as the
+ * laptop run does. So read the iPad column for the login, the menu, the pause
+ * card and how a level LOOKS, and the laptop column for everything past the
+ * first owl.
+ *
  * Usage:
  *   node godot/tools/web_screens.mjs [--port 8062] [--out <dir>] [--keep]
  *
@@ -124,9 +135,20 @@ function walk(page, view) {
         // photograph the maths board -- and the only way the grown-up
         // dashboard's log tab has anything in it at all.
         ['walked', async () => {
-            await page.keyboard.down('ArrowRight');
-            await page.waitForTimeout(4000);
-            await page.keyboard.up('ArrowRight');
+            // PULSED, not held down once.
+            //
+            // A single long `down('ArrowRight')` walked the crow on one viewport
+            // and left it standing at the spawn on the other, in the same build,
+            // with the game visibly running behind it. The reason is in
+            // crow-focus.js's own header: Godot's blur handler RELEASES every
+            // held key, so any focus blip during the hold ends the walk -- and
+            // keydown has already fired, so nothing ever presses it again.
+            // Pressing repeatedly survives that, and is closer to what a child
+            // holding an arrow key actually produces anyway.
+            for (let i = 0; i < 34; i += 1) {
+                await page.keyboard.press('ArrowRight');
+                await page.waitForTimeout(90);
+            }
             await page.waitForTimeout(1200);
         }],
         // The first owl of a subject teaches before it asks, so what comes up

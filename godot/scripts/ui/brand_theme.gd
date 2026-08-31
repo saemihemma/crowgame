@@ -22,6 +22,8 @@ const FIELD_CORNER := 12
 const FIELD_PAD := 14
 const FIELD_MIN_HEIGHT := 56
 const PANEL_PAD := 22
+const FOCUS_RING_WIDTH := 4
+const FOCUS_RING_OUT := 4
 
 static var _cached: Theme = null
 static var _cached_for := ""
@@ -43,7 +45,6 @@ static func _build() -> Theme:
 	var theme := Theme.new()
 	var ink := ThemeManager.get_color_value("ink")
 	var paper := ThemeManager.get_color_value("paper")
-	var focus := ThemeManager.get_color_value("focus")
 
 	# Labels default to paper with an ink shadow. These screens sit on painted
 	# skies now, and unshadowed light text borrows its contrast from whichever
@@ -57,7 +58,20 @@ static func _build() -> Theme:
 	# Text fields: paper card, ink text, same shape language as an answer option.
 	var field := _field(paper, ink)
 	theme.set_stylebox("normal", "LineEdit", field)
-	theme.set_stylebox("focus", "LineEdit", _field(paper, focus, 4))
+	# A RING THAT CAN BE SEEN ON THE FIELD IT IS ON.
+	#
+	# This was `_field(paper, focus, 4)` -- the `focus` palette role, which is
+	# #FFFFFF because every other thing that takes focus in this game sits on ink
+	# or on a coloured fill. A text field is PAPER (#FFF8E7), so a white ring on
+	# it is a white ring on white: the login form gave a keyboard player no way
+	# at all to tell which of its fields they were typing into, which is the
+	# whole question when the form is a name and two PINs.
+	#
+	# Godot draws `focus` ON TOP of `normal` for a LineEdit, so this is an outer
+	# halo rather than a replacement: transparent inside, coin-yellow, and pushed
+	# out past the field's own ink outline, which stays. Coin because that is
+	# already what this game colours "the thing you are on".
+	theme.set_stylebox("focus", "LineEdit", _focus_ring(ThemeManager.get_color_value("coin")))
 	theme.set_stylebox("read_only", "LineEdit", _field(paper.darkened(0.15), ink))
 	theme.set_color("font_color", "LineEdit", ink)
 	theme.set_color("font_placeholder_color", "LineEdit", Color(ink, 0.5))
@@ -82,6 +96,17 @@ static func _build() -> Theme:
 	theme.set_stylebox("panel", "PanelContainer", panel)
 
 	return theme
+
+## Drawn over a field's own face, not instead of it: no fill, and pushed outward
+## so the ink outline underneath is still the field's edge.
+static func _focus_ring(colour: Color) -> StyleBoxFlat:
+	var box := StyleBoxFlat.new()
+	box.bg_color = Color(colour, 0.0)
+	box.set_corner_radius_all(FIELD_CORNER + FOCUS_RING_OUT)
+	box.set_border_width_all(FOCUS_RING_WIDTH)
+	box.border_color = colour
+	box.set_expand_margin_all(FOCUS_RING_OUT)
+	return box
 
 static func _field(fill: Color, border: Color, width := 3) -> StyleBoxFlat:
 	var box := StyleBoxFlat.new()
