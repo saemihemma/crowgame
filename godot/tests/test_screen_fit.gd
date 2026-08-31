@@ -169,3 +169,93 @@ func test_the_fit_arithmetic() -> void:
 	var pause_card := Vector2(352, 596)
 	assert_true(FitBox.scale_for(pause_card, view) < 1.0,
 		"the pause card does not fit 960x540 unscaled - if this ever passes, the card shrank")
+
+
+# --- the plumbing, not the arithmetic ---------------------------------------
+#
+# Every test above calls fitter.fit_for(view) BY HAND. That proves FitBox can do
+# the sum. It cannot prove the sum is ever performed on a real screen -- that the
+# fitter is actually handed the viewport's size at runtime -- and those are two
+# different failures with the same symptom: a card that is not where it should
+# be. A playtester reported the pause menu being off-centre while every test in
+# this file was green.
+#
+# So this one mounts the screen, lets it lay itself out, and touches nothing.
+
+## How far off-centre a card may sit before it reads as a mistake. One pixel of
+## rounding is fine; anything a child would notice is not.
+const CENTRE_SLACK := 2.0
+
+func _mounted(path: String) -> Node:
+	var root: Node = (load(path) as PackedScene).instantiate()
+	Engine.get_main_loop().root.add_child(root)
+	return root
+
+func test_the_pause_card_centres_itself_with_nobody_helping() -> void:
+	var pause := _mounted(SceneRouter.path_of("pause") if SceneRouter.path_of("pause") != "" else "res://scenes/Pause.tscn")
+	# Two frames: one for the tree to size the Controls, one for the deferred
+	# _fit FitBox schedules in _ready.
+	for i in 4:
+		await Engine.get_main_loop().process_frame
+
+	var fitters: Array = _fitters(pause, [])
+	assert_true(fitters.size() == 1, "the pause overlay has exactly one fitter (got %d)" % fitters.size())
+	if fitters.is_empty():
+		pause.queue_free()
+		return
+
+	var fitter: FitBox = fitters[0]
+	var view := Vector2(Engine.get_main_loop().root.size)
+	assert_true(fitter.size.x > 0.0 and fitter.size.y > 0.0,
+		"the fitter has a size to centre inside -- got %s, which means nothing " % str(fitter.size)
+		+ "ever told it how big the screen is")
+
+	var rect := fitter.card_rect()
+	var left := rect.position.x
+	var right := fitter.size.x - rect.end.x
+	var top := rect.position.y
+	var bottom := fitter.size.y - rect.end.y
+	assert_true(absf(left - right) <= CENTRE_SLACK,
+		"the card is centred horizontally: %.1fpx of room on the left, %.1f on the right" % [left, right])
+	assert_true(absf(top - bottom) <= CENTRE_SLACK,
+		"and vertically: %.1fpx above, %.1f below" % [top, bottom])
+	pause.queue_free()
+
+
+## EVERY ROW IN A COLUMN AGREES, or the column reads as misaligned.
+##
+## This is the bug the test above could not see. The pause card was centred
+## correctly and one row inside it was not: the language row was set to
+## HORIZONTAL_ALIGNMENT_LEFT with 52px of left content margin so its label
+## cleared the flag. Four rows agreeing and one disagreeing is precisely what a
+## centring mistake looks like from the sofa, and it was reported as one.
+func test_every_row_in_the_pause_card_is_aligned_the_same_way() -> void:
+	var pause := _mounted("res://scenes/Pause.tscn")
+	await Engine.get_main_loop().process_frame
+
+	var rows: Array = []
+	_buttons(pause, rows)
+	assert_true(rows.size() >= 4, "the pause card has its rows (%d)" % rows.size())
+
+	var alignments := {}
+	for row: Button in rows:
+		alignments[int(row.alignment)] = true
+	assert_eq(alignments.size(), 1,
+		"every row is aligned the same way -- found %d different alignments, which " % alignments.size()
+		+ "is a column that reads as off-centre even when the card is not")
+
+	# And no row is indented past the others by a stylebox margin, which is the
+	# other half of the same defect: alignment agreeing while the text does not.
+	var margins := {}
+	for row: Button in rows:
+		var box: StyleBox = row.get_theme_stylebox("normal")
+		margins[snappedf(box.content_margin_left if box != null else 0.0, 0.5)] = true
+	assert_eq(margins.size(), 1,
+		"and every row starts its text at the same inset (%s)" % str(margins.keys()))
+	pause.queue_free()
+
+func _buttons(node: Node, out: Array) -> void:
+	if node is BrandButton:
+		out.append(node)
+	for child in node.get_children():
+		_buttons(child, out)
