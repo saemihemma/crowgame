@@ -1,6 +1,6 @@
 # Serve the prebuilt Godot HTML5 export (output/web) as static files.
 #
-# The export is built in CI (see .github/workflows/build-web.yml) and committed,
+# The export is built in CI (see .github/workflows/ci.yml) and committed,
 # so this image is just Caddy + files: it deploys in seconds and needs no Godot
 # toolchain or export templates on the deploy path.
 #

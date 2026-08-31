@@ -1,8 +1,31 @@
-# The web image only serves the prebuilt Godot export. Keep the build context to
-# just what deploy/web/Dockerfile copies (output/web + the Caddyfile), so Railway
-# never touches the TS project, node_modules, or the Godot source.
+# The build context, shared by BOTH images — and that "both" is the thing that
+# went wrong once already.
+#
+# This file was written for deploy/web/Dockerfile alone, which copies output/web
+# and the Caddyfile and nothing else, so it denied everything and allowed those
+# two back. Then deploy/api/Dockerfile arrived, and its very first instruction —
+# COPY server/package.json — failed with
+#
+#     "/server/package.json": not found
+#
+# because Docker had already stripped server/ out of the context. The Dockerfile
+# was correct, the path existed in the repo, and the build still could not see
+# it. That failure names the file it wanted and says nothing about why, and
+# nothing catches it until a Railway build is already running.
+#
+# So: every top-level directory any Dockerfile COPYs from has to be allowed back
+# in here, and server/test/dockerignore.test.ts asserts exactly that by reading
+# the COPY lines out of both Dockerfiles.
 *
+
+# deploy/web/Dockerfile: the Caddyfile and the prebuilt Godot export.
 !deploy/
 !output/
 output/linux/
 output/*.zip
+
+# deploy/api/Dockerfile: the API sources it compiles. Not node_modules — the
+# image runs its own `npm ci` — and not dist, which is built inside the image.
+!server/
+server/node_modules/
+server/dist/
