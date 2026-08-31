@@ -263,10 +263,44 @@ on purpose.
 
 ### Music
 
+**One song per WORLD, named by the theme** — not per level. The keys used to be
+`level_01_music`…`level_05_music` and the mapping was *already* strictly per
+theme: all three Emberwood levels named `level_01_music`, all three Prism Hollow
+levels named `level_02_music`. So the names described the wrong thing, and levels
+6–8 were correct only because the author repeated himself — one edit from silent
+drift. `godot/data/themes/theme_<world>.json` names the track now, beside the
+palette and the bed; a level may still override it with its own `music`, and
+nothing does.
+
 | Key | File | Plays |
 | --- | --- | --- |
 | `title_music` | `assets/audio/music/title.mp3` | the title screen, and it keeps playing through login, the menu and level select |
-| `level_01_music` … `level_05_music` | `assets/audio/music/level_0N.mp3` | a level, named by that level's registry entry |
+| `music_emberwood` | `assets/audio/music/emberwood.mp3` | levels 1 and 6, and the practice arena |
+| `music_prism_hollow` | `assets/audio/music/prism_hollow.mp3` | levels 2 and 7 |
+| `music_sugarstorm` | `assets/audio/music/sugarstorm.mp3` | levels 3 and 8 |
+| `music_geyserworks` | `assets/audio/music/geyserworks.mp3` | level 4 |
+| `music_aurora_spire` | `assets/audio/music/aurora_spire.mp3` | level 5 |
+
+### Fades and loops
+
+**A level change crossfades.** `play_music` has carried a `crossfade_ms` since
+the audio system was written, and the underscore in front of it said the truth:
+it was ignored, so every door cut one track dead and slammed the next in from bar
+one. Walking through a door is the most common transition in the game and it was
+the harshest sound in it. Two players, one tween, `mix.music_crossfade_ms`
+(900 ms). `stop_music` fades too, over `mix.music_fade_out_ms` (700 ms), because a
+completion fanfare landing on a hard cut was the second-harshest.
+
+**A loop should not replay the intro.** Set `loop_offset` on a track and the
+repeat comes back to that point instead of to zero — four bars of intro heard
+every lap is the most obvious "this is a loop" tell there is. It is 0 on every
+track until someone finds the musical point in one; the field is there so that
+finding it is a data edit.
+
+**And the file itself should join cleanly.** `npm run audio:gen -- --promote`
+cross-fades a loop's tail over its head, so a track promoted through it comes
+back to bar one without a click. Nothing downstream does this: `AudioManager`
+sets the loop and plays the stream end to end.
 
 Two things about the title track are load-bearing:
 
@@ -302,17 +336,18 @@ The bed stops on the completion screen, which is not a place in the world.
 
 ### What the music still needs
 
-Three facts about the tracks that ship today, so nobody rediscovers them:
+Two facts about the tracks that ship today, so nobody rediscovers them:
 
-1. **`title.mp3` is a byte-identical copy of `level_01.mp3`.** It has its own key
-   so it can be replaced on its own, and it has not been. The title track should
-   be the Emberwood theme slowed down to a solo music box: *the game is about to
-   start*.
-2. **There are five tracks for eight levels**, so levels 6–8 replay 1–3. Correct
-   for now — a world's identity is its bed and its palette, and a fourth forest
-   track would be the least valuable file anyone could commission.
-3. **They are CC-BY 3.0 from CodeManu** (see `LICENSE_ATTRIBUTIONS.md`), which is
+1. **`title.mp3` is a byte-identical copy of the Emberwood track.** It has its
+   own key so it can be replaced on its own, and it has not been. The title track
+   should be the Emberwood theme slowed right down to a solo music box: *the game
+   is about to start*.
+2. **They are CC-BY 3.0 from CodeManu** (see `LICENSE_ATTRIBUTIONS.md`), which is
    the one licensing obligation in the audio tree. Replacing them removes it.
+
+There are five tracks for eight levels and that is now the design rather than a
+shortfall: a world's identity is its song, its bed and its palette together, and
+two levels in one world are meant to sound like one place.
 
 Tempo and instrument ladder for whoever writes the replacements — same
 instruments across all five so it is one game, different top layer so it is five
@@ -376,6 +411,21 @@ npm run audio:gen -- --promote coin_collect 3         # master take 3 into the g
 It refuses a take that blows the budget rather than shipping it (`--max-ms` to
 hard-cut, `--force` to overrule), because a coin that rings for a second and a
 half is not a loud coin, it is a different sound wearing the coin's name.
+
+**Three takes, then choose in the browser.** `--takes` defaults to 3, and every
+take that lands in `output/audio-takes/` shows up on `/audio` as a numbered
+button beside the sound it is for, played through the *same gain the shipped file
+uses* — so "is take 2 better" is a fair comparison rather than a loudness
+contest, which is the mistake a folder of files in a media player makes for you.
+A `shipped` button switches back. The takes row only appears where the takes
+directory exists, which is beside the repo while you are choosing and never in
+the deployed image.
+
+**And it all works with no API access at all.** `npm run audio:gen -- --script
+--out output/audio-prompts.md` writes every prompt as one document — with the
+duration to ask for, the duration the slot budgets, and the exact filename to
+save the download as — to paste into ElevenLabs by hand. That is the path that
+needs no key, no allowlist and no network, so it is the one that always works.
 
 ## 9. What ships today is a placeholder
 

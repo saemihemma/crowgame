@@ -11,7 +11,9 @@
     "ambience_volume": 1.0,
     "duck_db": -6.0,
     "duck_in_ms": 120,
-    "duck_out_ms": 400
+    "duck_out_ms": 400,
+    "music_crossfade_ms": 900,
+    "music_fade_out_ms": 700
   },
   "sfx": {
     "player_jump": {
@@ -39,7 +41,14 @@
       "volume": 0.6,
       "pool": 4,
       "pitch_jitter": 0.15,
-      "pitch_ladder": [0, 2, 4, 7, 9, 12],
+      "pitch_ladder": [
+        0,
+        2,
+        4,
+        7,
+        9,
+        12
+      ],
       "ladder_window_ms": 1200
     },
     "hurt": {
@@ -147,7 +156,13 @@
       "file": "assets/audio/sfx/correct.wav",
       "volume": 0.7,
       "pool": 1,
-      "pitch_ladder": [0, 2, 4, 5, 7]
+      "pitch_ladder": [
+        0,
+        2,
+        4,
+        5,
+        7
+      ]
     },
     "wrong": {
       "file": "assets/audio/sfx/wrong.wav",
@@ -202,7 +217,13 @@
       "file": "assets/audio/sfx/streak.wav",
       "volume": 0.55,
       "pool": 1,
-      "pitch_ladder": [0, 2, 4, 7, 9]
+      "pitch_ladder": [
+        0,
+        2,
+        4,
+        7,
+        9
+      ]
     },
     "milestone": {
       "file": "assets/audio/sfx/milestone.wav",
@@ -311,35 +332,42 @@
     }
   },
   "music": {
+    "_comment": "One track per WORLD, named by theme rather than by level. The keys used to be level_01_music..level_05_music and the mapping was already strictly per theme -- every Emberwood level played level_01_music -- so the names described the wrong thing and levels 6-8 were correct only because the author repeated himself. data/themes/theme_<world>.json names the track; a level may still override it with its own `music`. `loop_offset` is seconds skipped when the track repeats: set it past the intro and the loop comes back to the groove instead of replaying the intro every time round, which is the most obvious 'this is a loop' tell there is. 0 until someone finds the musical point in a track.",
     "title_music": {
       "file": "assets/audio/music/title.mp3",
       "volume": 0.35,
-      "loop": true
+      "loop": true,
+      "loop_offset": 0.0
     },
-    "level_01_music": {
-      "file": "assets/audio/music/level_01.mp3",
+    "music_emberwood": {
+      "file": "assets/audio/music/emberwood.mp3",
       "volume": 0.4,
-      "loop": true
+      "loop": true,
+      "loop_offset": 0.0
     },
-    "level_02_music": {
-      "file": "assets/audio/music/level_02.mp3",
+    "music_prism_hollow": {
+      "file": "assets/audio/music/prism_hollow.mp3",
       "volume": 0.4,
-      "loop": true
+      "loop": true,
+      "loop_offset": 0.0
     },
-    "level_03_music": {
-      "file": "assets/audio/music/level_03.mp3",
+    "music_sugarstorm": {
+      "file": "assets/audio/music/sugarstorm.mp3",
       "volume": 0.4,
-      "loop": true
+      "loop": true,
+      "loop_offset": 0.0
     },
-    "level_04_music": {
-      "file": "assets/audio/music/level_04.mp3",
+    "music_geyserworks": {
+      "file": "assets/audio/music/geyserworks.mp3",
       "volume": 0.4,
-      "loop": true
+      "loop": true,
+      "loop_offset": 0.0
     },
-    "level_05_music": {
-      "file": "assets/audio/music/level_05.mp3",
+    "music_aurora_spire": {
+      "file": "assets/audio/music/aurora_spire.mp3",
       "volume": 0.4,
-      "loop": true
+      "loop": true,
+      "loop_offset": 0.0
     }
   }
 }

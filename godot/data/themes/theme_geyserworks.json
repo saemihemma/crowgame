@@ -2,6 +2,7 @@
   "id": "geyserworks",
   "name": "Geyserworks",
   "ambience": "amb_geyserworks",
+  "music": "music_geyserworks",
   "palette": {
     "primary": "#C2582A",
     "secondary": "#3A3B44",

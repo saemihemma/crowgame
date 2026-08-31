@@ -31,7 +31,12 @@ var _master_volume := 1.0
 var _muted := false
 
 # ── Transports ──────────────────────────────────────────────────────────────
+## TWO music players, not one, because a crossfade needs both tracks audible for
+## the length of the fade. `_music_player` is whichever is currently the front
+## one; they swap on every change.
 var _music_player: AudioStreamPlayer
+var _music_spare: AudioStreamPlayer
+var _music_tween: Tween
 var _current_music_key := ""
 ## Ducking is an OFFSET rather than a second volume, so a duck that lands while
 ## the player is changing the volume cannot fight it: both feed one calculation.
@@ -68,6 +73,9 @@ func _ready() -> void:
 	_music_player = AudioStreamPlayer.new()
 	_music_player.bus = "Master"
 	add_child(_music_player)
+	_music_spare = AudioStreamPlayer.new()
+	_music_spare.bus = "Master"
+	add_child(_music_spare)
 	_bed_player = AudioStreamPlayer.new()
 	_bed_player.bus = "Master"
 	add_child(_bed_player)
@@ -143,20 +151,80 @@ func detach_loop(player: AudioStreamPlayer2D) -> void:
 
 # ── Music ───────────────────────────────────────────────────────────────────
 
-func play_music(key: String, _crossfade_ms: float = 500.0) -> void:
+## Start a track, fading whatever was playing out underneath it.
+##
+## THE CROSSFADE IS REAL NOW. This signature has carried a `_crossfade_ms` since
+## the audio system was written and the underscore said the truth: it was
+## ignored, so every level change cut one track dead and slammed the next one in
+## from bar one. Walking through a door is the most common transition in the game
+## and it was the harshest sound in it.
+##
+## Two players and one tween: the incoming track starts silent on the spare,
+## both are levelled across `crossfade_ms`, and the outgoing one stops at the
+## end. Called with a track already playing and the same key, it does nothing --
+## re-entering the same world must not restart the music, which is the whole
+## reason `current_music_key` exists.
+func play_music(key: String, crossfade_ms: float = -1.0) -> void:
 	if key == _current_music_key and _music_player.playing:
 		return
 	var def: Dictionary = _manifest.get("music", {}).get(key, {})
-	var stream := _load_stream(String(def.get("file", "")))
+	var stream := _prepare_music(def)
 	if stream == null:
 		return
-	if stream is AudioStreamMP3:
-		(stream as AudioStreamMP3).loop = bool(def.get("loop", true))
-	_music_player.stream = stream
+	if crossfade_ms < 0.0:
+		crossfade_ms = _mix_num("music_crossfade_ms", 900.0)
+
+	# Before anything touches the players: a second change inside one crossfade
+	# would otherwise hand the incoming role to the very player a live tween is
+	# still driving toward silence, and the new track would fade itself out.
+	if _music_tween != null and _music_tween.is_valid():
+		_music_tween.kill()
+
+	var outgoing := _music_player
+	var incoming := _music_spare
+	incoming.stream = stream
 	_current_music_key = key
-	_apply_music_volume()
+
+	var target := linear_to_db(_resolve_volume(float(def.get("volume", 1.0)),
+		_mix_num("music_volume", 1.0))) + _duck_db
+	# Not silence: -60 dB is inaudible and, unlike linear_to_db(0), is a number a
+	# tween can start from.
+	const SILENT_DB := -60.0
+	incoming.volume_db = SILENT_DB
 	if not _muted:
-		_music_player.play()
+		incoming.play()
+
+	_music_player = incoming
+	_music_spare = outgoing
+
+	if crossfade_ms <= 0.0 or not outgoing.playing:
+		incoming.volume_db = target
+		outgoing.stop()
+		return
+	var seconds := crossfade_ms / 1000.0
+	_music_tween = create_tween().set_parallel(true)
+	_music_tween.tween_property(incoming, "volume_db", target, seconds)
+	_music_tween.tween_property(outgoing, "volume_db", SILENT_DB, seconds)
+	_music_tween.chain().tween_callback(outgoing.stop)
+
+## A copy of the track, looping the way the manifest asks.
+##
+## `loop_offset` is the field that makes a loop stop sounding like a restart. A
+## track with four bars of intro replays those four bars every time round, which
+## is the single most obvious "this is a loop" tell there is; setting the offset
+## past the intro means the repeat comes back to the groove instead. A copy,
+## because these properties live on the resource and ResourceLoader hands out one
+## shared instance.
+func _prepare_music(def: Dictionary) -> AudioStream:
+	var stream := _load_stream(String(def.get("file", "")))
+	if stream == null:
+		return null
+	if stream is AudioStreamMP3:
+		var m := (stream as AudioStreamMP3).duplicate() as AudioStreamMP3
+		m.loop = bool(def.get("loop", true))
+		m.loop_offset = float(def.get("loop_offset", 0.0))
+		return m
+	return stream
 
 ## Which track is playing, or "" for silence.
 ##
@@ -168,9 +236,23 @@ func current_music_key() -> String:
 	return _current_music_key if is_instance_valid(_music_player) and _music_player.playing else ""
 
 
-func stop_music(_fade_ms: float = 500.0) -> void:
-	_music_player.stop()
+## Fade the track out and stop it. The completion screen is the only caller, and
+## a fanfare landing on a hard cut was the second-harshest moment in the game.
+func stop_music(fade_ms: float = -1.0) -> void:
+	if fade_ms < 0.0:
+		fade_ms = _mix_num("music_fade_out_ms", 700.0)
 	_current_music_key = ""
+	if _music_tween != null and _music_tween.is_valid():
+		_music_tween.kill()
+	if fade_ms <= 0.0 or not _music_player.playing:
+		_music_player.stop()
+		_music_spare.stop()
+		return
+	var player := _music_player
+	_music_tween = create_tween()
+	_music_tween.tween_property(player, "volume_db", -60.0, fade_ms / 1000.0)
+	_music_tween.tween_callback(player.stop)
+	_music_spare.stop()
 
 ## Pull the music down so something else can be heard over it, and let it back.
 ##
@@ -410,6 +492,8 @@ func set_muted(muted: bool) -> void:
 	if muted:
 		if is_instance_valid(_music_player):
 			_music_player.stop()
+		if is_instance_valid(_music_spare):
+			_music_spare.stop()
 		if is_instance_valid(_bed_player):
 			_bed_player.stop()
 		for p in _loops:
@@ -454,6 +538,11 @@ func get_master_volume() -> float: return _master_volume
 ## inaudible until the next level loads.
 func _apply_music_volume() -> void:
 	if not is_instance_valid(_music_player) or _current_music_key == "":
+		return
+	# A crossfade owns these decibels while it runs. Writing over it would jump
+	# the incoming track to full mid-fade; the fade lands on a level derived from
+	# the same numbers a fraction of a second later anyway.
+	if _music_tween != null and _music_tween.is_valid():
 		return
 	var def: Dictionary = _manifest.get("music", {}).get(_current_music_key, {})
 	var gain := _resolve_volume(float(def.get("volume", 1.0)), _mix_num("music_volume", 1.0))

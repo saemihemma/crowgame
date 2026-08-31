@@ -54,6 +54,46 @@ describe('audio review surface', () => {
         assert.match(response.body, /Hörmann Sound/);
     });
 
+    /**
+     * The page ships as a template literal, so a backslash the TEMPLATE consumes
+     * is a backslash the browser never sees.
+     *
+     * That is not hypothetical. `'this sound\\'s volume'` inside the literal
+     * emitted `'this sound's volume'`, which is a syntax error, which meant the
+     * whole page rendered blank — and the existing test passed, because it only
+     * checked that the HTML contained a title. Parsing the script is the cheapest
+     * possible guard against an entire class of quoting mistake in a 400-line
+     * string, and it needs no browser.
+     */
+    it('emits JavaScript that actually parses', async () => {
+        const { Script } = await import('node:vm');
+        const response = await app.inject({ method: 'GET', url: '/audio' });
+        const blocks = [...response.body.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+        assert.ok(blocks.length > 0, 'the page has a script block');
+        for (const [, code] of blocks) {
+            assert.ok((code ?? '').length > 500, 'and it is the real one, not a stub');
+            // Compiles without running: a syntax error throws here, and nothing
+            // in the page executes.
+            assert.doesNotThrow(() => new Script(code ?? '', { filename: 'audio-page.js' }),
+                'the page script must parse');
+        }
+    });
+
+    /**
+     * The page reads each sound's duration out of the same decode cache it plays
+     * from, so the cache key has to be the one it stores under. It was not: takes
+     * moved the cache from key to URL and the duration lookup kept the bare key,
+     * which made every row report "unreadable" while playing perfectly. Asserting
+     * the two helpers agree is the whole of the fix and needs no audio at all.
+     */
+    it('reads durations from the same cache key it plays from', async () => {
+        const response = await app.inject({ method: 'GET', url: '/audio' });
+        assert.match(response.body, /buffers\.get\(shippedUrl\(sound\.key\)\)/,
+            'the duration lookup uses the URL, like buffer() does');
+        assert.doesNotMatch(response.body, /buffers\.get\(sound\.key\)/,
+            'and never the bare key');
+    });
+
     it('is closed, not open, without a session', async () => {
         for (const url of ['/api/v1/audio/manifest', '/api/v1/audio/file/coin_collect']) {
             const response = await app.inject({ method: 'GET', url });
@@ -115,6 +155,46 @@ describe('audio review surface', () => {
             'the proximity loops are told apart from one-shots, so the page loops them');
 
         assert.ok(typeof library.mix['duck_db'] === 'number', 'the mix block reaches the page');
+    });
+
+    it('offers the takes waiting for each sound, and serves one', async () => {
+        const cookie = await openSession();
+        // The takes directory is working material and gitignored, so a test that
+        // needed real takes would be a test that only ran on one machine. Point
+        // the resolver at a directory this test creates instead.
+        const { mkdtemp, writeFile: write } = await import('node:fs/promises');
+        const { tmpdir } = await import('node:os');
+        const dir = await mkdtemp(resolve(tmpdir(), 'crow-takes-'));
+        // A minimal but real WAV, so the route's content type is exercised.
+        const wav = Buffer.concat([
+            Buffer.from('RIFF'), Buffer.from([36, 0, 0, 0]), Buffer.from('WAVEfmt '),
+            Buffer.from([16, 0, 0, 0, 1, 0, 1, 0, 0x44, 0xac, 0, 0, 0x88, 0x58, 1, 0, 2, 0, 16, 0]),
+            Buffer.from('data'), Buffer.from([0, 0, 0, 0]),
+        ]);
+        await write(resolve(dir, 'coin_collect-2.wav'), wav);
+        process.env['CROW_AUDIO_TAKES_ROOT'] = dir;
+
+        const listed = await app.inject({
+            method: 'GET', url: '/api/v1/audio/manifest', headers: { cookie },
+        });
+        const coin = (listed.json() as { sounds: Array<{ key: string; takes: number[] }> })
+            .sounds.find(s => s.key === 'coin_collect');
+        assert.deepEqual(coin?.takes, [2], 'the manifest lists the take that is there');
+
+        const served = await app.inject({
+            method: 'GET', url: '/api/v1/audio/take/coin_collect/2', headers: { cookie },
+        });
+        assert.equal(served.statusCode, 200);
+        assert.match(served.headers['content-type'] as string, /audio\/wav/);
+
+        // A take for a key that is not in the manifest is not a file to serve,
+        // and neither is a traversal dressed as a take number.
+        for (const url of ['/api/v1/audio/take/not_a_sound/2',
+                           '/api/v1/audio/take/coin_collect/..%2F..%2Fpackage.json']) {
+            const bad = await app.inject({ method: 'GET', url, headers: { cookie } });
+            assert.equal(bad.statusCode, 404, url);
+        }
+        delete process.env['CROW_AUDIO_TAKES_ROOT'];
     });
 
     it('serves a sample as audio', async () => {

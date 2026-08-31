@@ -4,6 +4,7 @@
  *
  * Usage:
  *   node tools/gen_audio_elevenlabs.mjs --list
+ *   node tools/gen_audio_elevenlabs.mjs --script --out output/audio-prompts.md
  *   node tools/gen_audio_elevenlabs.mjs --proxy-auth --family WORLD  # key held outside
  *   node tools/gen_audio_elevenlabs.mjs --dry-run --all      # every prompt, no key needed
  *   node tools/gen_audio_elevenlabs.mjs --key coin_collect --takes 4
@@ -54,7 +55,20 @@ const EVENTS = join(ROOT, 'godot/data/audio/sound_events.json');
 const DOC = join(ROOT, 'brand/SOUND_DESIGN.md');
 const TAKES = join(ROOT, 'output/audio-takes');
 
+const THEMES = join(ROOT, 'godot/data/themes');
+
 const ENDPOINT = 'https://api.elevenlabs.io/v1/sound-generation';
+/**
+ * The music endpoint is a DIFFERENT model and a different shape.
+ *
+ * NOT VERIFIED against the live API from this repo -- the environment this was
+ * written in cannot reach api.elevenlabs.io, so the request below is built from
+ * the documented shape and has never had a response. Treat a 4xx here as "check
+ * the current docs", not as "the tool is broken", and prefer `--script` for
+ * music until someone has seen it work once: a song is the one thing in the bank
+ * worth auditioning in a browser before it is worth automating.
+ */
+const MUSIC_ENDPOINT = 'https://api.elevenlabs.io/v1/music';
 
 /**
  * The house style, prepended to every prompt.
@@ -147,6 +161,15 @@ async function buildJobs() {
             brief: BED_BRIEF[key] ?? '',
         });
     }
+    for (const [key, def] of Object.entries(manifest.music ?? {})) {
+        if (key.startsWith('_')) continue;
+        jobs.push({
+            key, event: null, def, looping: true, family: 'MUSIC',
+            moment: key === 'title_music' ? 'Title screen song'
+                : `Song for the ${key.replace(/^music_/, '').replace(/_/g, ' ')} world`,
+            brief: '',
+        });
+    }
     return jobs;
 }
 
@@ -163,8 +186,35 @@ const BED_BRIEF = {
     amb_aurora_spire: 'The top of the world at night: high shimmer, very sparse, almost nothing happening. Where the game gets quiet.',
 };
 
+/**
+ * One song per WORLD, with the tempo and instrument ladder from §7 of the doc.
+ *
+ * Same instruments across all five so it is one game; a different lead so it is
+ * five places. All in C, to match the scale every cue is tuned to (§2) -- a track
+ * in another key would put the coin a semitone off its own music, which is the
+ * one thing the pentatonic rule exists to prevent.
+ */
+const WORLD_MUSIC = {
+    music_emberwood: { bpm: 96, lead: 'marimba', under: 'acoustic bass and a light shaker',
+        mood: 'a warm sunlit forest; friendly, walking pace, gently curious' },
+    music_prism_hollow: { bpm: 88, lead: 'celeste', under: 'struck glass bowls with long tails',
+        mood: 'a vast crystal cave; slower, spacious, a little mysterious but never frightening' },
+    music_sugarstorm: { bpm: 108, lead: 'music box', under: 'pizzicato strings',
+        mood: 'a bright sunny meadow; bouncy, playful, the happiest track in the game' },
+    music_geyserworks: { bpm: 100, lead: 'marimba', under: 'soft brass pulses on the beat',
+        mood: 'steam and friendly machinery; steady, purposeful, a working rhythm' },
+    music_aurora_spire: { bpm: 76, lead: 'celeste and a soft pad', under: 'almost nothing',
+        mood: 'the top of the world at night; floating, sparse, the quietest track in the game' },
+    title_music: { bpm: 84, lead: 'solo music box', under: 'nothing at all',
+        mood: 'the game is about to start. The Emberwood theme slowed right down to one '
+            + 'music box alone -- no percussion, no bass. An invitation, not a fanfare' },
+};
+
 /** Seconds to ask for. Short for a cue, long enough to be trimmed for a bed. */
 function duration(job) {
+    // A song. 75 seconds is the shortest thing that does not feel like a jingle
+    // on the third lap, and the loop is what makes the length stop mattering.
+    if (job.family === 'MUSIC') return 75;
     if (job.def.file?.includes('/ambience/')) return 12;
     if (job.looping) return 6;
     // The ladder in the doc: a run-ending fanfare may be long, a tick may not.
@@ -205,7 +255,26 @@ function promptableBrief(brief) {
         .trim();
 }
 
+/** The prompt for a song, which shares nothing with a sound-effect prompt. */
+function buildMusicPrompt(job) {
+    const w = WORLD_MUSIC[job.key];
+    if (!w) return `Instrumental background music for a children's game. ${job.moment}.`;
+    return [
+        'Instrumental background music for a gentle children\'s platform game, for ages 5 to 8.',
+        `${job.moment}: ${w.mood}.`,
+        `Lead instrument: ${w.lead}. Underneath: ${w.under}.`,
+        `Around ${w.bpm} BPM, in C major.`,
+        'Warm, simple, and repetitive enough to sit under play for a long time without',
+        'becoming annoying. Melodic but never busy: this plays UNDER sound effects and a',
+        'child answering maths questions, so it must leave the middle of the mix alone.',
+        'No drums louder than a light shaker, no build, no drop, no key change, no vocals,',
+        'no sudden dynamics, nothing dramatic or tense.',
+        'It must LOOP: end where it began, so the last bar leads back into the first.',
+    ].join(' ');
+}
+
 function buildPrompt(job) {
+    if (job.family === 'MUSIC') return buildMusicPrompt(job);
     const parts = [HOUSE, FAMILY_STYLE[job.family], job.moment + '.', promptableBrief(job.brief)];
     if (job.looping) {
         parts.push('A CONTINUOUS LOOPING TEXTURE with no beginning and no end: '
@@ -245,6 +314,7 @@ function authHeader(apiKey) {
 }
 
 async function generate(job, take, apiKey) {
+    if (job.family === 'MUSIC') return generateMusic(job, take, apiKey);
     const body = {
         text: buildPrompt(job),
         duration_seconds: duration(job),
@@ -266,6 +336,130 @@ async function generate(job, take, apiKey) {
     const path = join(TAKES, `${job.key}-${take}.mp3`);
     await writeFile(path, bytes);
     return { path, bytes: bytes.length };
+}
+
+/** A song, from the music model. See MUSIC_ENDPOINT for what is unverified. */
+async function generateMusic(job, take, apiKey) {
+    const response = await fetch(MUSIC_ENDPOINT, {
+        method: 'POST',
+        headers: { ...authHeader(apiKey), 'content-type': 'application/json' },
+        body: JSON.stringify({ prompt: buildPrompt(job), music_length_ms: duration(job) * 1000 }),
+    });
+    if (!response.ok) {
+        const detail = await response.text().catch(() => '');
+        throw new Error(`${job.key} take ${take}: HTTP ${response.status} ${detail.slice(0, 300)}\n`
+            + '    The music endpoint is unverified from this repo -- check the current '
+            + 'ElevenLabs docs, or use --script and paste the prompt into the browser.');
+    }
+    const bytes = Buffer.from(await response.arrayBuffer());
+    const path = join(TAKES, `${job.key}-${take}.mp3`);
+    await writeFile(path, bytes);
+    return { path, bytes: bytes.length };
+}
+
+// ── the script ───────────────────────────────────────────────────────────────
+
+/**
+ * Every prompt as one document, to paste into ElevenLabs by hand.
+ *
+ * THE PATH THAT NEEDS NO API KEY AND NO NETWORK, and therefore the one that
+ * always works. It carries the three things a prompt alone does not: how long to
+ * ask for, what the slot actually budgets, and the exact filename to save the
+ * download as — so a browser session and `--promote` meet in the middle.
+ *
+ * Ordered so a session can stop after any block and have finished something
+ * coherent: the crow, then the world, then the interface, then the songs.
+ */
+async function script(jobs, out) {
+    const order = { BODY: 0, WORLD: 1, VOICE: 2, MUSIC: 3, OTHER: 4 };
+    const sorted = [...jobs].sort((a, b) =>
+        (order[a.family] ?? 9) - (order[b.family] ?? 9) || a.key.localeCompare(b.key));
+
+    const lines = [
+        '# Hörmann — sound prompts',
+        '',
+        // Every .md in this repo declares what it is and who owns it, and
+        // tools/validate_docs.js checks it. A generated sheet is no exception --
+        // output/web/README.md sets the same precedent.
+        'Status: Supportive',
+        'Authority: None. Generated from brand/SOUND_DESIGN.md and',
+        '`godot/data/audio/audio_manifest.json` by `npm run audio:gen -- --script`;',
+        'those two are the truth and this is a convenience. Do not hand-edit — regenerate.',
+        '',
+        'One block per sound, in the order',
+        'worth recording them. Paste the prompt into ElevenLabs (Sound Effects for',
+        'everything except the songs, which go to the music model), set the duration, and',
+        'save the download as the filename given.',
+        '',
+        'Then master it into the game — this is the step that matters, because it matches',
+        'the take to the slot rather than trusting the download:',
+        '',
+        '```bash',
+        'mv ~/Downloads/whatever.mp3 output/audio-takes/<key>-1.mp3',
+        'npm run audio:gen -- --promote <key> 1',
+        'npm run audio:audit',
+        '```',
+        '',
+        '`--promote` trims the silence off the front, matches the peak to the sound\'s tier',
+        'on the reward ladder, cross-fades it if it loops, and refuses it if it blows the',
+        'duration budget. Take that seriously: **ask for the duration below**, because a',
+        'generator will happily hand back three seconds for a coin.',
+        '',
+    ];
+
+    let family = '';
+    for (const job of sorted) {
+        if (job.family !== family) {
+            family = job.family;
+            lines.push('', `## ${family}`, '');
+        }
+        const target = job.def.file ? `godot/${job.def.file}` : '(no slot)';
+        lines.push(`### \`${job.key}\`${job.event ? ` — fires on \`${job.event}\`` : ''}`);
+        lines.push('');
+        const slot = await slotSeconds(job);
+        lines.push(`- **Ask for:** ${duration(job)}s${job.looping ? ' (a loop — it gets cross-faded on promote)' : ''}`);
+        lines.push(`- **The slot budgets:** ${slot}`);
+        // The two numbers disagree on purpose for the short cues, and without
+        // saying so the script reads as a contradiction: a generator cannot
+        // reliably make a 200 ms event, so you ask for a second of it and the
+        // promote step cuts it down. Say it where the confusion happens.
+        const budget = Number.parseFloat(slot);
+        if (!job.looping && Number.isFinite(budget) && duration(job) > budget * 1.6) {
+            lines.push(`- **Shorter than you can ask for.** Take the second, then cut it:`
+                + ` \`--promote ${job.key} 1 --max-ms ${Math.max(120, Math.round(budget * 1600))}\``);
+        }
+        lines.push(`- **Save as:** \`${target}\``);
+        lines.push(`- **Promote with:** \`npm run audio:gen -- --promote ${job.key} 1\``);
+        lines.push('');
+        lines.push('```');
+        lines.push(buildPrompt(job));
+        lines.push('```');
+        lines.push('');
+    }
+
+    const text = lines.join('\n');
+    if (out) {
+        await mkdir(dirname(out), { recursive: true });
+        await writeFile(out, text);
+        console.log(`${sorted.length} prompts written to ${out.replace(ROOT + '/', '')}`);
+        return;
+    }
+    process.stdout.write(text);
+}
+
+/** What the placeholder in this slot is, so the script can state the budget. */
+async function slotSeconds(job) {
+    if (!job.def.file) return 'unknown';
+    const path = join(ROOT, 'godot', job.def.file);
+    if (!existsSync(path) || !path.endsWith('.wav')) {
+        return job.family === 'MUSIC' ? 'a loop, so any length works' : 'unknown';
+    }
+    try {
+        const { rate, samples } = readWav(await readFile(path));
+        return `${(samples.length / rate).toFixed(2)}s`;
+    } catch {
+        return 'unknown';
+    }
 }
 
 // ── promoting ────────────────────────────────────────────────────────────────
@@ -491,7 +685,7 @@ async function main() {
     const family = arg('--family');
     // --all is required rather than implied: without it, a mistyped --key would
     // silently select the whole bank, which with --takes 3 is 150 generations.
-    if (!only && !family && !has('--all')) {
+    if (!only && !family && !has('--all') && !has('--script') && !has('--dry-run')) {
         console.error('choose what to make: --key <manifest key>, --family BODY|WORLD|VOICE, or --all.');
         console.error('--list shows every key. --dry-run prints the prompts and spends nothing.');
         process.exit(1);
@@ -501,6 +695,11 @@ async function main() {
     if (wanted.length === 0) {
         console.error(`nothing matched. --list shows every key.`);
         process.exit(1);
+    }
+
+    if (has('--script')) {
+        const out = arg('--out');
+        return script(wanted, out ? resolve(out) : null);
     }
 
     if (has('--dry-run')) {

@@ -2,6 +2,7 @@
   "id": "prism_hollow",
   "name": "Prism Hollow",
   "ambience": "amb_prism_hollow",
+  "music": "music_prism_hollow",
   "palette": {
     "primary": "#2B2A5E",
     "secondary": "#4B3F7A",

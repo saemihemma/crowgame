@@ -2,6 +2,7 @@
   "id": "sugarstorm",
   "name": "Sugarstorm",
   "ambience": "amb_sugarstorm",
+  "music": "music_sugarstorm",
   "palette": {
     "primary": "#FF4FA3",
     "secondary": "#7B2FBF",

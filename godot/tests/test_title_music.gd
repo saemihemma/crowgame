@@ -45,10 +45,13 @@ func test_the_title_track_is_registered_and_its_file_exists() -> void:
 	assert_true(file != "", "'%s' names a file" % TITLE_KEY)
 	assert_true(ResourceLoader.exists("res://%s" % file),
 		"'%s' points at a file that is actually there: %s" % [TITLE_KEY, file])
-	# Its own file, not a level's. The owner swaps this one without touching the
+	# Its own file, not a world's. The owner swaps this one without touching the
 	# music a level plays, which is the whole reason it is a separate key.
 	for key in music:
-		if String(key) == TITLE_KEY:
+		# `_comment` keys are documentation inside the data file, which the repo
+		# uses widely; this loop predated the music section having one and cast
+		# the string straight to a Dictionary.
+		if String(key).begins_with("_") or String(key) == TITLE_KEY:
 			continue
 		assert_true(String((music[key] as Dictionary).get("file", "")) != file,
 			"'%s' has its own file so it can be replaced on its own; it currently shares one with '%s'"

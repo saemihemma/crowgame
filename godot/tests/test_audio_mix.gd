@@ -90,6 +90,18 @@ func test_every_world_has_a_bed_that_exists() -> void:
 		var file := String((beds.get(key, {}) as Dictionary).get("file", ""))
 		assert_true(file != "" and ResourceLoader.exists("res://%s" % file),
 			"bed '%s' points at a file that is there: %s" % [key, file])
+
+		# And its track, for the same reason and with the same failure mode. The
+		# music keys used to be named per LEVEL while the mapping was strictly per
+		# theme, so all three Emberwood levels named level_01_music and nothing
+		# said so; naming the track here is what makes that impossible to redo.
+		var music: Dictionary = _manifest().get("music", {})
+		var track := String(theme.get("music", ""))
+		assert_true(track != "", "theme '%s' names a music track" % id)
+		assert_true(music.has(track), "theme '%s' names track '%s', which the manifest has" % [id, track])
+		var track_file := String((music.get(track, {}) as Dictionary).get("file", ""))
+		assert_true(track_file != "" and ResourceLoader.exists("res://%s" % track_file),
+			"track '%s' points at a file that is there: %s" % [track, track_file])
 		seen += 1
 	assert_true(seen >= 5, "the scan reached the themes (%d)" % seen)
 
@@ -174,9 +186,15 @@ func test_no_moment_is_registered_at_silence() -> void:
 ## nobody can tune from data any more.
 func test_the_mix_block_is_present() -> void:
 	var mix: Dictionary = _manifest().get("mix", {})
-	for key in ["max_voices", "default_pool", "duck_db", "duck_in_ms", "duck_out_ms"]:
+	for key in ["max_voices", "default_pool", "duck_db", "duck_in_ms", "duck_out_ms",
+			"music_crossfade_ms", "music_fade_out_ms"]:
 		assert_true(mix.has(key), "mix declares '%s'" % key)
 	assert_true(float(mix.get("duck_db", 0.0)) < 0.0,
 		"a duck goes DOWN; duck_db is %.1f" % float(mix.get("duck_db", 0.0)))
 	assert_true(float(mix.get("duck_out_ms", 0.0)) > float(mix.get("duck_in_ms", 0.0)),
 		"the music comes back slower than it ducks, or the return is heard as an event")
+	# A crossfade shorter than this is a cut with extra steps. Walking through a
+	# door is the most common transition in the game and it used to be the
+	# harshest sound in it, because the parameter existed and was ignored.
+	assert_true(float(mix.get("music_crossfade_ms", 0.0)) >= 400.0,
+		"a level change crossfades over at least 400ms, or it reads as a cut")

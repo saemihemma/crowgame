@@ -101,6 +101,13 @@ canvas.wave { width: 150px; height: 38px; flex: none; opacity: .85; }
 .tile .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
 .tile .v { font-size: 19px; font-weight: 640; font-variant-numeric: tabular-nums; }
 .note { color: var(--muted); font-size: 12.5px; margin: 4px 0 0; }
+.takes { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.takes .takelabel { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+button.take { padding: 3px 10px; font-size: 12px; border-radius: 7px; min-width: 30px; }
+button.take.shipped { color: var(--muted); }
+button.take.on { background: var(--gold); border-color: transparent; color: #14130f; }
+.takes .promote { font-size: 11px; color: var(--muted); background: var(--raised);
+  padding: 3px 8px; border-radius: 6px; }
 .fam-BODY .ev { color: var(--body); } .fam-WORLD .ev { color: var(--world); }
 .fam-VOICE .ev { color: var(--voice); }
 @media (max-width: 720px) {
@@ -166,14 +173,18 @@ function audio() {
   return ctx;
 }
 
-async function buffer(key) {
-  if (buffers.has(key)) return buffers.get(key);
-  const res = await fetch('/api/v1/audio/file/' + encodeURIComponent(key));
-  if (!res.ok) throw new Error('fetch ' + key + ': ' + res.status);
+// Keyed by URL, not by sound, so a take caches beside the shipped file and
+// A/B-ing between them is instant after the first play of each.
+async function buffer(url) {
+  if (buffers.has(url)) return buffers.get(url);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('fetch ' + url + ': ' + res.status);
   const decoded = await audio().decodeAudioData(await res.arrayBuffer());
-  buffers.set(key, decoded);
+  buffers.set(url, decoded);
   return decoded;
 }
+const shippedUrl = key => '/api/v1/audio/file/' + encodeURIComponent(key);
+const takeUrl = (key, n) => '/api/v1/audio/take/' + encodeURIComponent(key) + '/' + n;
 
 function stopAll() {
   for (const node of live) { try { node.stop(); } catch (e) { /* already ended */ } }
@@ -182,8 +193,8 @@ function stopAll() {
 }
 
 /** Play one sound. semitones is the runtime pitch ladder; loop is for a bed. */
-async function play(sound, { semitones = 0, loop = false, when = 0, gainScale = 1 } = {}) {
-  const buf = await buffer(sound.key);
+async function play(sound, { semitones = 0, loop = false, when = 0, gainScale = 1, url = null } = {}) {
+  const buf = await buffer(url || shippedUrl(sound.key));
   const c = audio();
   const src = c.createBufferSource();
   src.buffer = buf;
@@ -202,9 +213,9 @@ async function play(sound, { semitones = 0, loop = false, when = 0, gainScale = 
 // Peak-per-column, drawn once per sound. It is not analysis; it is a shape you
 // can recognise a file by at a glance, which is what makes a list of forty
 // scannable at all.
-async function drawWave(canvas, sound) {
+async function drawWave(canvas, sound, url) {
   let buf;
-  try { buf = await buffer(sound.key); } catch (e) { return; }
+  try { buf = await buffer(url || shippedUrl(sound.key)); } catch (e) { return; }
   const dpr = window.devicePixelRatio || 1;
   const w = canvas.clientWidth * dpr, h = canvas.clientHeight * dpr;
   canvas.width = w; canvas.height = h;
@@ -233,7 +244,8 @@ function render(lib) {
 
   root.appendChild($('div', { class: 'top' }, [
     $('h1', { text: 'Hörmann Sound' }),
-    $('div', { class: 'sub', text: lib.sounds.length + ' sounds · the mix as shipped' }),
+    $('div', { class: 'sub', text: lib.sounds.length + ' sounds · '
+      + (lib.sounds.reduce((n, s) => n + s.takes.length, 0) || 'no') + ' takes waiting' }),
   ]));
 
   // The mix, up front: these are the numbers every row below is multiplied by.
@@ -297,6 +309,40 @@ function render(lib) {
         src.onended = () => { btn.classList.remove('on'); btn.textContent = '▶'; };
       });
 
+      // THE TAKE ROW: the point of the whole page when a batch has just come
+      // back. Each numbered button plays that take through the SAME gain the
+      // shipped sound uses, so "is take 2 better" is a fair comparison and not a
+      // loudness contest -- which is exactly the mistake a folder of files in a
+      // media player makes for you.
+      const takeRow = $('div', { class: 'takes' });
+      if (sound.takes.length) {
+        takeRow.appendChild($('span', { class: 'takelabel', text: 'takes' }));
+        for (const n of sound.takes) {
+          const tb = $('button', { class: 'take', text: String(n),
+            title: "Play take " + n + " at this sound's volume" });
+          tb.addEventListener('click', async () => {
+            stopAll();
+            tb.classList.add('on');
+            const src = await play(sound, { loop: loops, url: takeUrl(sound.key, n) });
+            src.onended = () => tb.classList.remove('on');
+            await drawWave(canvas, sound, takeUrl(sound.key, n));
+          });
+          takeRow.appendChild(tb);
+        }
+        const back = $('button', { class: 'take shipped', text: 'shipped',
+          title: 'Back to the file that is in the game' });
+        back.addEventListener('click', async () => {
+          stopAll();
+          await drawWave(canvas, sound, null);
+          const src = await play(sound, { loop: loops });
+          back.classList.add('on');
+          src.onended = () => back.classList.remove('on');
+        });
+        takeRow.appendChild(back);
+        takeRow.appendChild($('code', { class: 'promote',
+          text: 'npm run audio:gen -- --promote ' + sound.key + ' <n>' }));
+      }
+
       const tags = $('div', { class: 'meta' });
       const tag = (t, cls) => tags.appendChild($('span', { class: 'tag' + (cls ? ' ' + cls : ''), text: t }));
       if (sound.missing) tag('FILE MISSING', 'warn');
@@ -321,6 +367,7 @@ function render(lib) {
         $('div', { class: 'brief' }, [
           $('div', { text: sound.brief || '—' }),
           sound.firesFrom ? $('div', { class: 'fires', text: sound.firesFrom }) : null,
+          sound.takes.length ? takeRow : null,
         ]),
         canvas,
       ]);
@@ -330,7 +377,9 @@ function render(lib) {
       requestIdleCallback ? requestIdleCallback(() => paint()) : setTimeout(paint, 50);
       async function paint() {
         await drawWave(canvas, sound);
-        const b = buffers.get(sound.key);
+        // By URL, because that is what buffer() keys on now that takes share the
+        // cache. Reading it by bare key made every duration read "unreadable".
+        const b = buffers.get(shippedUrl(sound.key));
         durTag.textContent = b ? seconds(b) : 'unreadable';
       }
     }

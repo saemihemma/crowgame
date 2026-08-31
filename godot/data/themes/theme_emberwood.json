@@ -2,6 +2,7 @@
   "id": "emberwood",
   "name": "Emberwood",
   "ambience": "amb_emberwood",
+  "music": "music_emberwood",
   "palette": {
     "primary": "#3F8F5B",
     "secondary": "#8A5A2B",

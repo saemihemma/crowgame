@@ -1,4 +1,4 @@
-import { readFile, stat } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join, resolve, sep } from 'node:path';
 
@@ -55,6 +55,24 @@ function dataRoot(): string | null {
     ]);
 }
 
+/**
+ * Where `npm run audio:gen` leaves its takes.
+ *
+ * Present when the bench runs beside the repo, which is when you are actually
+ * choosing between versions; absent in the deployed API image, because takes are
+ * gitignored working material and have no business in a container. So this
+ * resolves to null there and every sound simply reports no takes — the page
+ * degrades to what it was rather than erroring.
+ */
+export function takesRoot(): string | null {
+    return firstExisting([
+        process.env['CROW_AUDIO_TAKES_ROOT'] ?? '',
+        join(process.cwd(), 'audio-takes'),
+        join(process.cwd(), '..', 'output', 'audio-takes'),
+        join(process.cwd(), 'output', 'audio-takes'),
+    ]);
+}
+
 function designDoc(): string | null {
     return firstExisting([
         process.env['CROW_SOUND_DESIGN_DOC'] ?? '',
@@ -81,6 +99,8 @@ export interface SoundEntry {
     firesFrom: string;
     bytes: number | null;
     missing: boolean;
+    /** Take numbers waiting in output/audio-takes/ for this key, ascending. */
+    takes: number[];
 }
 
 export interface AudioLibrary {
@@ -162,6 +182,21 @@ export async function loadAudioLibrary(): Promise<AudioLibrary> {
     const warnings: string[] = [];
     const sounds: SoundEntry[] = [];
 
+    // Which takes exist, read once rather than per sound: the directory holds
+    // <key>-<n>.mp3 and a 52-sound bank at three takes each is 156 files.
+    const takesByKey = new Map<string, number[]>();
+    const takes = takesRoot();
+    if (takes) {
+        for (const name of await readdir(takes).catch(() => [] as string[])) {
+            const m = /^([a-z0-9_]+)-(\d+)\.(mp3|wav|ogg)$/.exec(name);
+            if (!m?.[1] || !m[2]) continue;
+            const list = takesByKey.get(m[1]) ?? [];
+            list.push(Number(m[2]));
+            takesByKey.set(m[1], list);
+        }
+        for (const list of takesByKey.values()) list.sort((a, b) => a - b);
+    }
+
     const add = async (key: string, def: any, kind: string) => {
         const file = String(def?.file ?? '');
         // The manifest path is "assets/audio/sfx/x.wav", relative to the Godot
@@ -191,6 +226,7 @@ export async function loadAudioLibrary(): Promise<AudioLibrary> {
             firesFrom: doc?.firesFrom ?? '',
             bytes,
             missing: bytes === null,
+            takes: takesByKey.get(key) ?? [],
         });
     };
 
@@ -219,6 +255,29 @@ export async function loadAudioLibrary(): Promise<AudioLibrary> {
     }
 
     return { mix, sounds, warnings };
+}
+
+/**
+ * Absolute path of one TAKE, or null.
+ *
+ * The key is matched against the manifest first, so a take can only be served
+ * for a sound that exists, and the resolved path is proved to be inside the
+ * takes directory — the same two checks resolveSoundFile makes, for the same
+ * reason.
+ */
+export async function resolveTakeFile(key: string, take: string): Promise<{ path: string; contentType: string } | null> {
+    if (!/^[a-z0-9_]{1,64}$/.test(key) || !/^\d{1,4}$/.test(take)) return null;
+    const root = takesRoot();
+    const data = dataRoot();
+    if (!root || !data) return null;
+    const manifest = JSON.parse(await readFile(join(data, 'audio_manifest.json'), 'utf8')) as Record<string, any>;
+    if (!(manifest.sfx?.[key] ?? manifest.beds?.[key] ?? manifest.music?.[key])) return null;
+    for (const [ext, type] of [['mp3', 'audio/mpeg'], ['wav', 'audio/wav'], ['ogg', 'audio/ogg']] as const) {
+        const onDisk = resolve(join(root, `${key}-${take}.${ext}`));
+        if (onDisk !== root && !onDisk.startsWith(root + sep)) continue;
+        if (existsSync(onDisk)) return { path: onDisk, contentType: type };
+    }
+    return null;
 }
 
 /** Absolute path of one sound's file, or null if the key is not ours. */

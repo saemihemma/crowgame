@@ -87,3 +87,8 @@ output/pad-probe/
 # only the chosen one is promoted into godot/assets/audio (see the tool's
 # --promote). Same category as the other output/ review aids above.
 output/audio-takes/
+
+# The pasteable prompt sheet from `npm run audio:gen -- --script`. Derived from
+# brand/SOUND_DESIGN.md and the manifest, so committing it would be a second copy
+# of both, free to drift. Regenerate it in one command whenever it is wanted.
+output/audio-prompts.md

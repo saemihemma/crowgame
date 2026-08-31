@@ -2,6 +2,7 @@
   "id": "aurora_spire",
   "name": "Aurora Spire",
   "ambience": "amb_aurora_spire",
+  "music": "music_aurora_spire",
   "palette": {
     "primary": "#3A6EA8",
     "secondary": "#1E2A55",

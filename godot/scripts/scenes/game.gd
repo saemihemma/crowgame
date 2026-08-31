@@ -189,7 +189,16 @@ func _load_level(key: String) -> void:
 	SaveManager.set_current_level(key)
 	_spawn_entities()
 	_setup_camera()
+	# ONE TRACK PER WORLD, from the theme, with the level able to override it.
+	#
+	# The registry used to name a track per level, and the mapping was already
+	# strictly per theme -- all three Emberwood levels named level_01_music -- so
+	# the names described the wrong thing and levels 6-8 were right only because
+	# the author repeated himself. _apply_level_theme has run by here (line above),
+	# so the theme is the one this level is actually dressed in.
 	var music := String(entry.get("music", ""))
+	if music == "":
+		music = String(ThemeManager.get_theme().get("music", ""))
 	if music != "":
 		AudioManager.play_music(music)
 	EventBus.coins_changed.emit(coin_count)

@@ -619,6 +619,7 @@ record: the answer to "did my child's work get lost".
 | `POST` | `/api/v1/audio/logout` | none | drop that cookie |
 | `GET` | `/api/v1/audio/manifest` | **audio** | every sound, its mix and its brief |
 | `GET` | `/api/v1/audio/file/{key}` | **audio** | one sample, as audio bytes |
+| `GET` | `/api/v1/audio/take/{key}/{take}` | **audio** | one candidate take, for A/B against the shipped sample |
 
 The delete and export paths exist from the first release that stores anything.
 They are cheap now and awkward to retrofit, and for children's data a delete path
@@ -630,7 +631,9 @@ game's own samples and `brand/SOUND_DESIGN.md`. They are a **third** authorizati
 subject rather than a reuse of `admin`, and the reason is blast radius — `admin`
 aggregates data about real children, `audio` plays sound effects, and one secret
 for both would put the first behind whoever the owner wants to play a sound to.
-Unset `CROW_AUDIO_PASSWORD` and all four rows answer 404. Nothing in the game
+Unset `CROW_AUDIO_PASSWORD` and all five rows answer 404. The take row serves
+`output/audio-takes/`, which is gitignored working material and is not in the
+deployed image, so it 404s there and the page simply shows no takes. Nothing in the game
 calls them.
 
 The `admin` rows are a different subject from every other row in this table. They

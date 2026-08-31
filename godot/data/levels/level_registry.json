@@ -4,7 +4,6 @@
       "key": "level_99",
       "name": "Math Practice Arena",
       "mapFile": "data/levels/compiled/level_99.json",
-      "music": "level_01_music",
       "unlockRequirement": null,
       "order": 99,
       "mathGating": {
@@ -32,7 +31,6 @@
       "key": "level_01",
       "name": "Forest Clearing",
       "mapFile": "data/levels/compiled/level_01_forest.json",
-      "music": "level_01_music",
       "unlockRequirement": null,
       "order": 1,
       "mathGating": {
@@ -52,7 +50,6 @@
       "key": "level_02",
       "name": "Crystal Cave",
       "mapFile": "data/levels/compiled/level_02_cave.json",
-      "music": "level_02_music",
       "unlockRequirement": {
         "level": "level_01",
         "minStars": 0
@@ -75,7 +72,6 @@
       "key": "level_03",
       "name": "Sunny Meadow",
       "mapFile": "data/levels/compiled/level_03_meadow.json",
-      "music": "level_03_music",
       "unlockRequirement": {
         "level": "level_02",
         "minStars": 0
@@ -99,7 +95,6 @@
       "key": "level_04",
       "name": "Mossy Bridge",
       "mapFile": "data/levels/compiled/level_04_bridge.json",
-      "music": "level_04_music",
       "unlockRequirement": {
         "level": "level_03",
         "minStars": 0
@@ -123,7 +118,6 @@
       "key": "level_05",
       "name": "Treetop Trail",
       "mapFile": "data/levels/compiled/level_05_treetop.json",
-      "music": "level_05_music",
       "unlockRequirement": {
         "level": "level_04",
         "minStars": 0
@@ -149,7 +143,6 @@
       "key": "level_06",
       "name": "Emberwood Deep",
       "mapFile": "data/levels/compiled/level_06_emberwood_deep.json",
-      "music": "level_01_music",
       "unlockRequirement": {
         "level": "level_05",
         "minStars": 0
@@ -172,7 +165,6 @@
       "key": "level_07",
       "name": "Crystal Depths",
       "mapFile": "data/levels/compiled/level_07_crystal_depths.json",
-      "music": "level_02_music",
       "unlockRequirement": {
         "level": "level_06",
         "minStars": 0
@@ -195,7 +187,6 @@
       "key": "level_08",
       "name": "Meadow Heights",
       "mapFile": "data/levels/compiled/level_08_meadow_heights.json",
-      "music": "level_03_music",
       "unlockRequirement": {
         "level": "level_07",
         "minStars": 0

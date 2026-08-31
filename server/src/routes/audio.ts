@@ -3,7 +3,7 @@ import { stat } from 'node:fs/promises';
 import type { FastifyInstance } from 'fastify';
 import { config } from '../config.js';
 import { AUDIO_PAGE } from '../audio/page.js';
-import { loadAudioLibrary, resolveSoundFile } from '../lib/audioLibrary.js';
+import { loadAudioLibrary, resolveSoundFile, resolveTakeFile } from '../lib/audioLibrary.js';
 import { clearCookie, issueCookie, requireAudioSession, sameSecret } from '../lib/audioAuth.js';
 
 /**
@@ -74,6 +74,22 @@ export async function registerAudioRoutes(app: FastifyInstance): Promise<void> {
                 hint: 'deploy/api/Dockerfile must COPY godot/assets/audio, godot/data/audio and brand/SOUND_DESIGN.md, or set CROW_AUDIO_ROOT.',
             });
         }
+    });
+
+    // One TAKE, so three versions of a sound can be A/B'd against the one that
+    // ships without leaving the browser. Served only where the takes directory
+    // exists — beside the repo while you are choosing, never in the deployed
+    // image, where takes are gitignored working material.
+    app.get('/api/v1/audio/take/:key/:take', gated, async (request, reply) => {
+        const { key, take } = request.params as { key: string; take: string };
+        const found = await resolveTakeFile(key, take);
+        if (!found) return reply.code(404).send({ error: 'not found' });
+        const { size } = await stat(found.path);
+        return reply
+            .type(found.contentType)
+            .header('content-length', String(size))
+            .header('cache-control', 'no-store')
+            .send(createReadStream(found.path));
     });
 
     // One sample. The key is matched against the manifest and the resolved path
