@@ -7285,6 +7285,22 @@
         },
         {
           "id": 32,
+          "name": "ladder",
+          "type": "ladder",
+          "x": 2080,
+          "y": 416,
+          "width": 32,
+          "height": 96,
+          "properties": [
+            {
+              "name": "tiles",
+              "type": "int",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "id": 33,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 640,
@@ -7300,7 +7316,7 @@
           ]
         },
         {
-          "id": 33,
+          "id": 34,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 1664,
@@ -7316,7 +7332,7 @@
           ]
         },
         {
-          "id": 34,
+          "id": 35,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 2624,
@@ -7332,7 +7348,7 @@
           ]
         },
         {
-          "id": 35,
+          "id": 36,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 3136,
@@ -7348,7 +7364,7 @@
           ]
         },
         {
-          "id": 36,
+          "id": 37,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 3264,

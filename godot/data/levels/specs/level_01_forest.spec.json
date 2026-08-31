@@ -384,5 +384,12 @@
       2
     ],
     "teachingIntent": "First numbers: count what you see, then add small amounts."
-  }
+  },
+  "ladders": [
+    {
+      "x": 65,
+      "y": 13,
+      "tiles": 3
+    }
+  ]
 }

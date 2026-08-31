@@ -114,6 +114,9 @@ reset_store
 run_scene res://tests/integration/OwlProbe.tscn
 owl_status=$?
 reset_store
+run_scene res://tests/integration/ClimbProbe.tscn
+climb_status=$?
+
 run_scene res://tests/integration/ShootProbe.tscn
 shoot_status=$?
 reset_store
@@ -123,4 +126,4 @@ reset_store
 run_scene res://tests/integration/PerfProbe.tscn
 perf_status=$?
 
-exit $(( guard_status != 0 || asset_status != 0 || reach_status != 0 || unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 || shoot_status != 0 || death_status != 0 || perf_status != 0 ))
+exit $(( guard_status != 0 || asset_status != 0 || reach_status != 0 || unit_status != 0 || land_status != 0 || coin_status != 0 || owl_status != 0 || climb_status != 0 || shoot_status != 0 || death_status != 0 || perf_status != 0 ))

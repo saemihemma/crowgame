@@ -148,16 +148,64 @@ def solid_grid(level):
     return grid
 
 
-def standable(grid, w, h):
-    """Cells the crow can stand in: empty, with something solid underneath."""
-    return {(c, r) for r in range(h - 1) for c in range(w)
-            if not grid[r][c] and grid[r + 1][c]}
+def standable(grid, w, h, ladders=()):
+    """Cells the crow can stand in: empty, with something solid underneath.
+
+    A LADDER CELL COUNTS TOO. A ladder has no collision -- it is scenery the crow
+    chooses to grab -- so nothing under a rung is solid and none of its cells
+    would otherwise be standable. Without this, a level whose only way up is a
+    ladder reads to this checker as unfinishable, and the checker would be
+    telling the truth about a crow that cannot climb rather than about ours.
+    """
+    cells = {(c, r) for r in range(h - 1) for c in range(w)
+             if not grid[r][c] and grid[r + 1][c]}
+    for (c, top, tiles) in ladders:
+        for r in range(top, min(h, top + tiles)):
+            if 0 <= c < w and not grid[r][c]:
+                cells.add((c, r))
+    return cells
 
 
-def reachable_from(start, cells, up, across, max_fall):
+def ladder_cells(level, tile):
+    """Every ladder as (column, top row, height in tiles)."""
+    out = []
+    for layer in level["layers"]:
+        if layer.get("type") != "objectgroup":
+            continue
+        for obj in layer.get("objects", []):
+            if obj.get("type") != "ladder":
+                continue
+            out.append((int(obj["x"] // tile),
+                        int(obj["y"] // tile),
+                        max(1, int(obj.get("height", tile) // tile))))
+    return out
+
+
+def climb_links(ladders, cells):
+    """Cells a ladder joins to each other, regardless of the jump envelope.
+
+    Climbing is not jumping: a ladder is a vertical corridor the crow moves
+    freely along, so its cells reach each other at any distance. Modelling it as
+    a very tall jump would also let the crow LEAP that high anywhere, which is
+    the kind of shortcut that makes a reachability guard lie.
+    """
+    links = {}
+    for (c, top, tiles) in ladders:
+        column = [(c, r) for r in range(top, top + tiles) if (c, r) in cells]
+        for cell in column:
+            links.setdefault(cell, set()).update(x for x in column if x != cell)
+    return links
+
+
+def reachable_from(start, cells, up, across, max_fall, climbs=None):
+    climbs = climbs or {}
     seen, queue = {start}, deque([start])
     while queue:
         cx, cy = queue.popleft()
+        for nx, ny in climbs.get((cx, cy), ()):      # a ladder, climbed
+            if (nx, ny) not in seen:
+                seen.add((nx, ny))
+                queue.append((nx, ny))
         for nx, ny in cells:
             if (nx, ny) in seen:
                 continue
@@ -233,7 +281,9 @@ def check(path, quiet=False):
     speed, band = speed_for(path.stem)
     up, across = envelope(tile, speed)
     grid = solid_grid(level)
-    cells = standable(grid, w, h)
+    ladders = ladder_cells(level, tile)
+    cells = standable(grid, w, h, ladders)
+    climbs = climb_links(ladders, cells)
 
     spawn = object_cell(level, "player_spawn", tile)
     door = object_cell(level, "door", tile)
@@ -259,7 +309,7 @@ def check(path, quiet=False):
     if finish is None:
         return [f"{path.name}: door column {door[0]} has nowhere to stand"]
 
-    seen = reachable_from(start, cells, up, across, h)
+    seen = reachable_from(start, cells, up, across, h, climbs)
 
     # THREE KINDS OF GOAL, not one.
     #
