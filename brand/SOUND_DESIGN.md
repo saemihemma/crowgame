@@ -421,11 +421,17 @@ A `shipped` button switches back. The takes row only appears where the takes
 directory exists, which is beside the repo while you are choosing and never in
 the deployed image.
 
-**And it all works with no API access at all.** `npm run audio:gen -- --script
---out output/audio-prompts.md` writes every prompt as one document — with the
-duration to ask for, the duration the slot budgets, and the exact filename to
-save the download as — to paste into ElevenLabs by hand. That is the path that
-needs no key, no allowlist and no network, so it is the one that always works.
+**And it all works with no API access at all.**
+
+```bash
+npm run audio:gen -- --script      # -> output/audio-prompts.md
+```
+
+That writes every prompt as one document — with the duration to ask for, the
+duration the slot budgets, and the exact filename to save the download as — to
+paste into ElevenLabs by hand. No key, no allowlist, no network, and no ffmpeg:
+it needs Node and the repo and nothing else, which is why it is the path that
+always works. (`--out <path>` to put it elsewhere, `--out -` for stdout.)
 
 ## 9. What ships today is a placeholder
 

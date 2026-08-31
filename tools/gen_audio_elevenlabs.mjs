@@ -4,7 +4,7 @@
  *
  * Usage:
  *   node tools/gen_audio_elevenlabs.mjs --list
- *   node tools/gen_audio_elevenlabs.mjs --script --out output/audio-prompts.md
+ *   node tools/gen_audio_elevenlabs.mjs --script          # -> output/audio-prompts.md
  *   node tools/gen_audio_elevenlabs.mjs --proxy-auth --family WORLD  # key held outside
  *   node tools/gen_audio_elevenlabs.mjs --dry-run --all      # every prompt, no key needed
  *   node tools/gen_audio_elevenlabs.mjs --key coin_collect --takes 4
@@ -54,6 +54,15 @@ const MANIFEST = join(ROOT, 'godot/data/audio/audio_manifest.json');
 const EVENTS = join(ROOT, 'godot/data/audio/sound_events.json');
 const DOC = join(ROOT, 'brand/SOUND_DESIGN.md');
 const TAKES = join(ROOT, 'output/audio-takes');
+/**
+ * Where the prompt sheet lands by default.
+ *
+ * Absolute, off the script's own location rather than off the working directory,
+ * so `--script` puts the file in the same place whether it was run from the repo
+ * root, from tools/, or through `npm run` (which sets cwd to the package root and
+ * would otherwise be the only reliable way to invoke it).
+ */
+const SHEET = join(ROOT, 'output/audio-prompts.md');
 
 const THEMES = join(ROOT, 'godot/data/themes');
 
@@ -698,8 +707,11 @@ async function main() {
     }
 
     if (has('--script')) {
-        const out = arg('--out');
-        return script(wanted, out ? resolve(out) : null);
+        // Defaults to a real file in the repo rather than to stdout, because the
+        // sheet has an obvious home and asking for a path is asking the reader to
+        // know where they are. `--out -` still writes to stdout for a pipe.
+        const out = arg('--out', SHEET);
+        return script(wanted, out === '-' ? null : resolve(out));
     }
 
     if (has('--dry-run')) {
