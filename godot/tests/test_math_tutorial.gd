@@ -153,3 +153,71 @@ func test_the_guided_answer_is_the_true_answer() -> void:
 			if str(option) == str(correct):
 				found = true
 		assert_true(found, "%s: the correct answer is on offer" % tutorial["id"])
+
+
+## THE FIRST ROW OF ANSWERS A CHILD EVER MEETS IS REACHABLE FROM A KEYBOARD.
+##
+## The maths board grew arrows-and-Enter when a playtester asked for it on a PC.
+## This card did not, and it is the one every child hits FIRST -- the guided try
+## at the end of every lesson, before the board has ever opened. On a laptop it
+## was a wall: arrows did nothing, Enter did nothing, and the only key that
+## worked was a digit that nothing on the card mentions. The screen tour walked
+## into it, pressed both, and photographed the same card twice.
+func _guided_card(tutorial_id: String) -> CanvasLayer:
+	var overlay := _overlay(tutorial_id)
+	for i in CARDS_PER_LESSON - 1:
+		overlay.advance()
+	return overlay
+
+func test_the_lesson_card_marks_nothing_until_an_arrow_is_pressed() -> void:
+	var overlay := _guided_card("addition.make_ten")
+	assert_true(overlay._options.size() > 0, "the guided try has options to walk")
+	assert_eq(overlay._cursor.at, -1, "nothing is marked before an arrow is pressed")
+	for b: AnswerButton in overlay._options:
+		assert_true(not b._selected, "and nothing is drawn as selected")
+	_drop(overlay)
+
+func test_the_lesson_mark_walks_the_row_and_wraps() -> void:
+	var overlay := _guided_card("addition.make_ten")
+	var count: int = overlay._options.size()
+	overlay._move_cursor(1)
+	assert_eq(overlay._cursor.at, 0, "the first press lands on the leftmost option")
+	overlay._move_cursor(-1)
+	assert_eq(overlay._cursor.at, count - 1, "off the left edge wraps to the last option")
+	var marked := 0
+	for b: AnswerButton in overlay._options:
+		if b._selected:
+			marked += 1
+	assert_eq(marked, 1, "exactly one option is ever marked")
+	_drop(overlay)
+
+## Enter commits the marked option, and commits nothing when nothing is marked.
+func test_enter_answers_the_marked_option_on_a_lesson_card() -> void:
+	var overlay := _guided_card("addition.make_ten")
+	assert_eq(overlay._cursor.chosen(overlay._options), -1,
+		"a confirm with no mark chooses nothing at all")
+	overlay._move_cursor(1)
+	var at: int = overlay._cursor.at
+	overlay.choose(overlay._cursor.chosen(overlay._options))
+	assert_true((overlay._options[at] as AnswerButton)._state != AnswerButton.State.IDLE,
+		"the option the mark was standing on is the one that was answered")
+	_drop(overlay)
+
+## And a miss takes the mark off, so Enter is never one key from re-committing
+## the answer we already know is wrong.
+func test_a_missed_lesson_answer_clears_the_mark() -> void:
+	var overlay := _guided_card("addition.make_ten")
+	var last: Dictionary = (DataManager.get_dict("MATH_TUTORIALS")["tutorials"] as Array) \
+		.filter(func(t): return String(t["id"]) == "addition.make_ten")[0]["cards"][CARDS_PER_LESSON - 1]
+	var choice: Dictionary = last["choice"]
+	var options: Array = choice["options"]
+	var wrong := 0
+	for i in options.size():
+		if str(options[i]) != str(choice["correct"]):
+			wrong = i
+			break
+	overlay._cursor.set_to(overlay._options, wrong)
+	overlay.choose(wrong)
+	assert_eq(overlay._cursor.at, -1, "the mark comes off the option that was just missed")
+	assert_eq(overlay._cursor.chosen(overlay._options), -1, "so Enter now commits nothing")
+	_drop(overlay)

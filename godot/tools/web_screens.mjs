@@ -65,38 +65,128 @@ const resolveChromium = () => EXECUTABLE_CANDIDATES.find(existsSync);
  * WHICH screen a centre click opens, so every step is photographed and a human
  * reads the result.
  */
+/**
+ * The walk, as steps that each end in a screenshot.
+ *
+ * TYPED, NOT CLICKED, through the login. Every earlier version of this file
+ * clicked fields at fractions of the viewport height and it never once reached
+ * the game: the column is centred, the two viewports are different heights, and
+ * a click that misses a LineEdit by twenty pixels types the PIN into the name
+ * box and then stalls on a form it cannot submit. Tab is not the way out either
+ * -- in a web build the BROWSER owns Tab and moves DOM focus off the canvas
+ * entirely.
+ *
+ * So the walk uses the keyboard path login.gd now provides for its own sake
+ * (Login._advance_on_enter): every field's Enter moves to the next one, and the
+ * last field's Enter submits. That is deterministic whatever the layout does,
+ * which is what makes the screens past the login reachable at all.
+ *
+ * Past the login it is still blind clicks at the canvas centre, deliberately:
+ * those screens are rows of buttons, coordinate-precise clicking is what makes
+ * browser tests break on every layout change, and the point here is to reach
+ * each screen rather than to assert a layout.
+ */
+// The dashboard's tab strip is pinned to the TOP of the screen rather than
+// centred in it, so unlike everything else here it is at a fixed y whatever the
+// viewport is: BAR_TOP + button_height + 8 + half of TAB_HEIGHT, from
+// parent_report.gd. The three tabs are TAB_WIDTH + 10 apart.
+const TAB_STRIP_Y = 14 + 64 + 8 + 27;
+const TAB_STEP = 220;
+
 function walk(page, view) {
     const mid = { x: view.width / 2, y: view.height / 2 };
     const click = (dx = 0, dy = 0) => page.mouse.click(mid.x + dx, mid.y + dy);
-    /** Click the centre of the column at a fraction of the viewport height. */
-    const at = (fraction) => page.mouse.click(mid.x, view.height * fraction);
+    const type = async (text) => { await page.keyboard.type(text, { delay: 60 }); };
+    const enter = async () => { await page.keyboard.press('Enter'); await page.waitForTimeout(400); };
     return [
         // The canvas has to hold DOM focus before any key reaches Godot, and a
         // click is the only thing that gives it. This one lands between the
         // title and the button on purpose: it focuses and presses nothing.
         ['boot', async () => { await click(0, -80); }],
         // No profiles on a fresh browser, so the login screen's one primary
-        // action is "New player".
+        // action is "New player", and it is the only button under the title.
         ['new-player', async () => click(0, 60)],
-        // CLICK each field. Tab does NOT work here: the browser owns Tab and
-        // moves DOM focus off the canvas, so a tabbed walk types the PIN into
-        // the name box -- which is exactly what the first version of this file
-        // photographed. Fractions of the viewport, because the column is
-        // centred and the two viewports are different heights.
-        ['name', async () => { await at(0.26); await page.keyboard.type('Hormann'); }],
-        ['pin', async () => { await at(0.46); await page.keyboard.type('1234'); }],
-        ['pin-again', async () => { await at(0.66); await page.keyboard.type('1234'); }],
-        // The Create button is BELOW THE FOLD at 960x540 -- the form is four
-        // rows and a title, and the viewport is 540 tall. The login column is a
-        // ScrollContainer, so a wheel reaches it; a five-year-old's parent has
-        // to work that out for themselves, which is worth fixing separately.
-        ['scrolled', async () => { await page.mouse.wheel(0, 500); }],
-        ['signed-in', async () => { await at(0.78); await page.waitForTimeout(1500); }],
+        // _show_new_player focuses the name field for us, so nothing here has
+        // to know where that field is.
+        ['name', async () => { await type('Hormann'); }],
+        // Name -> birth year -> the PIN step. The year is optional and left
+        // empty, which is the path most families will take.
+        ['birth-year', enter],
+        ['pin-step', enter],
+        ['pin', async () => { await type('1234'); }],
+        ['pin-again', async () => { await enter(); await type('1234'); }],
+        ['signed-in', async () => { await enter(); await page.waitForTimeout(2500); }],
         ['main-menu', async () => page.waitForTimeout(800)],
         // Play is the primary row and now resumes straight into a level.
         ['playing', async () => { await click(0, -40); await page.waitForTimeout(3000); }],
+        // WALK RIGHT UNTIL SOMETHING HAPPENS. The first owl of act one is a few
+        // seconds along the ground, and reaching it is the only way to
+        // photograph the maths board -- and the only way the grown-up
+        // dashboard's log tab has anything in it at all.
+        ['walked', async () => {
+            await page.keyboard.down('ArrowRight');
+            await page.waitForTimeout(4000);
+            await page.keyboard.up('ArrowRight');
+            await page.waitForTimeout(1200);
+        }],
+        // The first owl of a subject teaches before it asks, so what comes up
+        // is a lesson card and not the board. Enter takes its Next/Skip.
+        ['lesson-done', async () => {
+            for (let i = 0; i < 6; i += 1) { await page.keyboard.press('Enter'); await page.waitForTimeout(700); }
+        }],
+        // THE KEYBOARD PATH THE OWNER ASKED FOR ON PC: left and right move a
+        // mark along the row of answers, Enter commits the one it is on. Both
+        // this card and the board behind it work the same way, which they did
+        // not until the tour photographed this card twice in a row unchanged.
+        ['answer-chosen', async () => {
+            await page.keyboard.press('ArrowRight');
+            await page.waitForTimeout(600);
+        }],
+        // Guess along the row until one lands. A wrong pick on a lesson card
+        // costs nothing and disables that option, and the mark skips disabled
+        // ones -- so walking right and confirming gets there in at most as many
+        // presses as there are options.
+        ['lesson-answered', async () => {
+            for (let i = 0; i < 4; i += 1) {
+                await page.keyboard.press('Enter');
+                await page.waitForTimeout(900);
+                await page.keyboard.press('ArrowRight');
+                await page.waitForTimeout(300);
+            }
+            await page.waitForTimeout(2500);
+        }],
+        // And now the board itself, which is the surface that RECORDS an
+        // answer -- the lesson deliberately never touches the learner model, so
+        // nothing before this puts a row in the dashboard's log.
+        ['board', async () => { await page.waitForTimeout(1200); }],
+        ['board-answered', async () => {
+            for (let i = 0; i < 4; i += 1) {
+                await page.keyboard.press('ArrowRight');
+                await page.waitForTimeout(300);
+                await page.keyboard.press('Enter');
+                await page.waitForTimeout(1400);
+            }
+            await page.waitForTimeout(2500);
+        }],
         // THE SCREEN THIS TOOL WAS WRITTEN FOR. `pause` is bound to Escape.
-        ['paused', async () => { await page.keyboard.press('Escape'); }],
+        ['paused', async () => { await page.keyboard.press('Escape'); await page.waitForTimeout(600); }],
+        // Out of the level, back to the menu, and into the grown-up dashboard,
+        // which is the screen with the most on it and the least tested layout.
+        // Quit is the last row of the pause card.
+        ['quit-to-menu', async () => { await click(0, 195); await page.waitForTimeout(2500); }],
+        // KEYBOARD, not a click, for the same reason the login form is typed:
+        // the menu's rows move as a child unlocks things (a returning player
+        // gets PLAY, a world picker and a progress row that a new one does not),
+        // so no fixed offset finds the last row twice running. Down walks the
+        // focus ring to the bottom whatever is on the screen.
+        ['dashboard', async () => {
+            for (let i = 0; i < 6; i += 1) { await page.keyboard.press('ArrowDown'); await page.waitForTimeout(120); }
+            await page.keyboard.press('Enter');
+            await page.waitForTimeout(2500);
+        }],
+        // The tab strip sits under the name; the three tabs are side by side.
+        ['dashboard-log', async () => { await page.mouse.click(mid.x, TAB_STRIP_Y); await page.waitForTimeout(1200); }],
+        ['dashboard-settings', async () => { await page.mouse.click(mid.x + TAB_STEP, TAB_STRIP_Y); await page.waitForTimeout(1200); }],
     ];
 }
 

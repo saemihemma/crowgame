@@ -114,6 +114,57 @@
         window.setTimeout(refocus, 0);
     }, true);
 
+    /**
+     * ENTER, WHICH THE SAME <input> WAS EATING.
+     *
+     * Godot's virtual-keyboard shim copies the injected <input>'s value into the
+     * focused LineEdit on every `input` event, so typing works. It does nothing
+     * at all with Enter. The key goes to the DOM input, the input has no form to
+     * submit, and the event dies there -- the engine never sees it, so
+     * LineEdit.text_submitted never fires and `ui_text_submit` never happens.
+     *
+     * What that looks like: the login form's Enter-to-move-on does nothing, and
+     * the next thing typed lands in the field you were already in. The PIN ends
+     * up appended to the child's name. Photographed at
+     * output/playwright/screens as "Hormann12341" in the name box.
+     *
+     * It is not a desktop-only nicety either -- it is worse on the device this
+     * game is actually played on. The injected input serves every LineEdit once
+     * html/experimental_virtual_keyboard is on (it has to be, or an iPad cannot
+     * type at all), and the big blue key an iPad offers at the end of a field IS
+     * Enter. So on the owner's iPad the obvious way to finish a field did
+     * nothing at all.
+     *
+     * The fix is to put the key where the engine listens. Blur first, which is
+     * what commits the value and dismisses the on-screen keyboard -- Godot keeps
+     * the LineEdit focused on its own side, so the Enter still arrives at the
+     * right control -- then dispatch a real keydown/keyup pair at the canvas,
+     * where Godot bound its handler.
+     */
+    function forwardEnterToCanvas() {
+        var element = canvas();
+        if (!element) return;
+        ['keydown', 'keyup'].forEach(function (type) {
+            element.dispatchEvent(new KeyboardEvent(type, {
+                key: 'Enter', code: 'Enter', keyCode: 13, which: 13,
+                bubbles: true, cancelable: true,
+            }));
+        });
+    }
+
+    document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Enter' || event.isComposing) return;
+        // Only the engine's own injected field. A future shell with a real form
+        // on the page must keep its own Enter.
+        var target = event.target;
+        if (!target || !TEXT_FIELDS[target.tagName]) return;
+        event.preventDefault();
+        try { target.blur(); } catch (ignored) { /* nothing to commit */ }
+        // After the blur has settled and focusout has handed the canvas back,
+        // so the engine is in the state it would be in for a real key press.
+        window.setTimeout(forwardEnterToCanvas, 0);
+    }, true);
+
     // The first press of all: the shell boots with focusCanvas, but a page that
     // loads in a background tab never gets it.
     if (document.readyState === 'complete') refocus();

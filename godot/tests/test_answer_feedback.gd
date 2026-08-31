@@ -123,7 +123,7 @@ func test_confirm_is_enter_and_never_space() -> void:
 func test_a_fresh_board_marks_nothing() -> void:
 	var panel := _board()
 	await Engine.get_main_loop().process_frame
-	assert_eq(panel._cursor, -1, "no option is marked before an arrow is pressed")
+	assert_eq(panel._cursor.at, -1, "no option is marked before an arrow is pressed")
 	for b: AnswerButton in panel._buttons:
 		assert_true(not b._selected, "and no option is drawn as selected")
 	panel.queue_free()
@@ -137,16 +137,16 @@ func test_the_mark_walks_the_row_and_wraps() -> void:
 	assert_eq(count, 4, "four options to walk")
 
 	panel._move_cursor(1)
-	assert_eq(panel._cursor, 0, "the first press lands on the leftmost option")
+	assert_eq(panel._cursor.at, 0, "the first press lands on the leftmost option")
 	panel._move_cursor(1)
-	assert_eq(panel._cursor, 1, "and the next moves one right")
+	assert_eq(panel._cursor.at, 1, "and the next moves one right")
 	for _i in count:
 		panel._move_cursor(1)
-	assert_eq(panel._cursor, 1, "a full lap comes back to where it started")
+	assert_eq(panel._cursor.at, 1, "a full lap comes back to where it started")
 	panel._move_cursor(-1)
-	assert_eq(panel._cursor, 0, "and left walks back")
+	assert_eq(panel._cursor.at, 0, "and left walks back")
 	panel._move_cursor(-1)
-	assert_eq(panel._cursor, count - 1, "off the left edge wraps to the last option")
+	assert_eq(panel._cursor.at, count - 1, "off the left edge wraps to the last option")
 
 	var marked := 0
 	for b: AnswerButton in panel._buttons:
@@ -173,7 +173,7 @@ func test_confirm_answers_the_marked_option() -> void:
 	var panel := _board()
 	await Engine.get_main_loop().process_frame
 	panel._move_cursor(1)
-	var at: int = panel._cursor
+	var at: int = panel._cursor.at
 	panel._commit_cursor()
 	await Engine.get_main_loop().process_frame
 	# The board answers by marking the option it took, so the mark tells us which

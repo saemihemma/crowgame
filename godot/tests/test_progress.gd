@@ -295,3 +295,46 @@ func test_the_progress_row_reports_the_perfect_run() -> void:
 			assert_true(bool(row.get("perfect", false)), "the row carries the tick")
 		assert_true(found, "the level is in the report")
 	)
+
+
+## THE PER-QUESTION LOG, which is what makes the grown-up dashboard's second tab
+## possible at all.
+##
+## Everything else the save records about maths is a counter -- totals, per-skill
+## tallies, a dedupe list of ids with no outcomes attached. None of those can
+## answer "what was he actually asked on Tuesday", which is the question the
+## owner asked for and the one a parent can act on.
+func test_the_save_keeps_a_log_of_the_questions_themselves() -> void:
+	SaveManager.record_math_attempt({
+		"skills": ["basic_addition"], "correct": true, "firstAttempt": true,
+		"hintsUsed": 0, "timeMs": 2400, "problemId": "cur_add_001",
+		"domain": "addition", "answeredAt": 1700000000000, "curriculumStep": 2,
+	})
+	var log: Array = SaveManager.get_data()["telemetry"]["attemptLog"]
+	assert_true(log.size() >= 1, "the attempt was logged")
+	var last: Dictionary = log[log.size() - 1]
+	assert_eq(String(last["id"]), "cur_add_001", "which question")
+	assert_eq(String(last["domain"]), "addition", "in which subject")
+	assert_true(bool(last["correct"]), "and how it went")
+	assert_true(bool(last["firstTry"]), "first try, which the ladder treats differently")
+	assert_eq(int(last["ms"]), 2400, "how long it took")
+	assert_eq(int(last["at"]), 1700000000000, "and when")
+
+
+## Bounded, because the save is synced. A lifetime of answers belongs in the
+## server's `attempts` table; what rides along in the save blob is the window a
+## parent can actually use.
+func test_the_log_stops_growing() -> void:
+	for i in SaveManager.ATTEMPT_LOG_MAX + 12:
+		SaveManager.record_math_attempt({
+			"skills": [], "correct": i % 2 == 0, "problemId": "p%d" % i,
+			"domain": "addition", "answeredAt": 1700000000000 + i,
+		})
+	var log: Array = SaveManager.get_data()["telemetry"]["attemptLog"]
+	assert_eq(log.size(), SaveManager.ATTEMPT_LOG_MAX,
+		"the log is capped at %d entries" % SaveManager.ATTEMPT_LOG_MAX)
+	# And it is the OLDEST that go: a log trimmed from the wrong end would leave
+	# a parent looking at last month.
+	assert_eq(String((log[log.size() - 1] as Dictionary)["id"]),
+		"p%d" % (SaveManager.ATTEMPT_LOG_MAX + 11),
+		"the newest answer survives the trim")

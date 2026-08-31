@@ -178,8 +178,19 @@ func complete_level(level_key: String) -> void:
 		(_data["completedLevels"] as Array).append(level_key)
 	if _auto_save_enabled: save()
 
+## How many questions the per-question log remembers.
+##
+## Sixty is about a fortnight of ordinary play for this child, and it is the
+## window a parent can actually use: "what happened in the last few sessions",
+## not an archive. It is also a size that can ride along in the save blob that
+## syncs to the server without turning a sync into an upload -- the LIFETIME
+## record already lives server-side in the `attempts` table, which is where a
+## long history belongs.
+const ATTEMPT_LOG_MAX := 60
+
 func record_math_attempt(attempt: Dictionary) -> void:
-	# attempt: { skills: Array, correct: bool, hintsUsed: int, timeMs: float, problemId: String }
+	# attempt: { skills, correct, firstAttempt, hintsUsed, timeMs, problemId,
+	#            domain, curriculumStep, answeredAt }
 	var stats: Dictionary = _data["mathStats"]
 	if attempt.get("correct", false):
 		stats["totalCorrect"] = int(stats["totalCorrect"]) + 1
@@ -203,6 +214,36 @@ func record_math_attempt(attempt: Dictionary) -> void:
 	answered.append(attempt.get("problemId", ""))
 	if answered.size() > 100:
 		tel["answeredProblemIds"] = answered.slice(answered.size() - 100)
+
+	# THE PER-QUESTION LOG, which is a different thing from every counter above.
+	#
+	# The counters answer "how is it going" and the report was built entirely out
+	# of them: percentages per domain, per kind of question, per rung. The owner
+	# asked for the other half -- "a log per problem" -- and there was nothing in
+	# the save that could produce one. `answeredProblemIds` is only a dedupe list;
+	# it does not record whether the child got them right.
+	#
+	# Which matters because a percentage cannot answer the question a parent
+	# actually sits down with: "63% in Taking away" says a rough patch exists
+	# somewhere, and the log says it was five 12-minus-something questions in a
+	# row on Tuesday. One of those you can help with.
+	#
+	# Newest LAST, like every other append-and-trim list here; the report reverses
+	# it once, where the reader is.
+	var log: Array = tel.get("attemptLog", [])
+	log.append({
+		"id": String(attempt.get("problemId", "")),
+		"domain": String(attempt.get("domain", "")),
+		"correct": bool(attempt.get("correct", false)),
+		"firstTry": bool(attempt.get("firstAttempt", false)),
+		"hints": int(attempt.get("hintsUsed", 0)),
+		"ms": int(attempt.get("timeMs", 0)),
+		"at": int(attempt.get("answeredAt", _now_ms())),
+		"step": int(attempt.get("curriculumStep", 0)),
+	})
+	if log.size() > ATTEMPT_LOG_MAX:
+		log = log.slice(log.size() - ATTEMPT_LOG_MAX)
+	tel["attemptLog"] = log
 	if _auto_save_enabled: save()
 
 
@@ -364,7 +405,11 @@ func _create_default_save() -> Dictionary:
 		# written when a level is FINISHED - see Game.transition_to_level.
 		"levelRecords": {},
 		"mathStats": {"totalCorrect": 0, "totalWrong": 0, "bySkill": {}},
-		"telemetry": {"hintUsage": 0, "problemsAttempted": 0, "answeredProblemIds": []},
+		# `attemptLog` is the grown-up report's per-question list -- see
+		# record_math_attempt for why it is kept and why it is kept short.
+		"telemetry": {
+			"hintUsage": 0, "problemsAttempted": 0, "answeredProblemIds": [], "attemptLog": [],
+		},
 		# Which concept tutorials this child has already been shown, and whether
 		# they sat through it or skipped it. Profile-scoped like everything else
 		# here: two children on one device get taught independently.

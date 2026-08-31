@@ -259,3 +259,75 @@ func _buttons(node: Node, out: Array) -> void:
 		out.append(node)
 	for child in node.get_children():
 		_buttons(child, out)
+
+
+## EVERY LOGIN SUB-STATE IS ON SCREEN.
+##
+## The login screen is two contracts in one scene and it used to apply the wrong
+## one to four of its five states. The profile list GROWS with the family, so it
+## scrolls and is tested next door in test_scrolling_lists.gd. The other four are
+## fixed columns -- a title, two or three fields, two buttons -- and every one of
+## them was in that same scroller, where content that does not fit is not shrunk,
+## it is simply GONE until you find the wheel.
+##
+## What was gone, at 960x540, was the Create button on the first screen a new
+## player ever sees: the form asked four questions under a title and above two
+## buttons, and its last row sat below the fold with nothing on screen to say so.
+## A parent setting the game up for a seven-year-old was left with a form and no
+## visible way to submit it. Fitted instead of scrolled, the last button is
+## always on screen whatever the viewport.
+##
+## WHY THERE IS NO "AND WITHOUT SHRINKING" ASSERTION HERE, which is the one you
+## would want -- fitting by scaling to 0.8 takes an 88px button below the tap
+## floor a seven-year-old needs. It cannot be asserted in this process:
+## test_headless_text_is_not_a_layout_oracle below measures the built-in font
+## reporting a line height of THREE TIMES the point size, so every label in these
+## columns is ~2.3x taller here than in a browser and any scale floor would be
+## gating on fiction. The real check on how much these columns shrink is the
+## screenshot tour (godot/tools/web_screens.mjs), which renders the actual font.
+func test_every_login_step_is_on_screen() -> void:
+	var scene: PackedScene = load(SceneRouter.path_of("login"))
+	# Named the way the sub-state is named in login.gd, so a failure says which
+	# screen to go and look at.
+	var steps := {
+		"new player (name)": func(n): n._show_new_player(),
+		"new player (PIN)": func(n): n._show_pick_pin(),
+		"sign in": func(n): n._show_sign_in(),
+		"PIN entry": func(n): n._show_pin_entry("Hormann"),
+	}
+	for label in steps:
+		var root: Node = scene.instantiate()
+		Engine.get_main_loop().root.add_child(root)
+		(steps[label] as Callable).call(root)
+		var fitters: Array = _fitters(root, [])
+		assert_true(fitters.size() == 1,
+			"login step '%s' is fitted, not scrolled: exactly one FitBox (got %d)"
+				% [label, fitters.size()])
+		if fitters.size() == 1:
+			for viewport in VIEWPORTS:
+				var result := _worst_overflow(root, viewport["size"])
+				assert_true(float(result["overflow"]) == 0.0,
+					"[login '%s' @ %s] overflows by %.0fpx (%s)"
+						% [label, str(viewport["size"]), float(result["overflow"]), result["where"]])
+		root.queue_free()
+
+
+## The reason the test above stops where it does, stated as a measurement rather
+## than a comment, so it cannot quietly stop being true.
+##
+## Godot's built-in font, in this headless process, reports get_height(n) == 3n.
+## A real one is nearer 1.3n. So every Label in every column measured here is
+## more than twice as tall as the one a child sees, and a "does it fit without
+## shrinking" gate would fail screens that are fine and pass none that are not.
+##
+## If this assertion ever goes red, the metrics have become trustworthy: put the
+## scale floor back into the login and menu fit tests, where it belongs.
+func test_headless_text_is_not_a_layout_oracle() -> void:
+	var probe := Label.new()
+	Engine.get_main_loop().root.add_child(probe)
+	var size := probe.get_theme_font_size("font_size")
+	var ratio := probe.get_theme_font("font").get_height(size) / float(size)
+	assert_true(ratio > 2.0,
+		"headless line height is %.2fx the point size, not the ~3x this suite assumes; text-height assertions are trustworthy again"
+			% ratio)
+	probe.queue_free()
