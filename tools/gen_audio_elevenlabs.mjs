@@ -993,7 +993,7 @@ async function main() {
     }
     console.log('\nListen on /audio, or with any player, then:');
     console.log('  node tools/gen_audio_elevenlabs.mjs --promote <key> <take>');
-    console.log('  python3 tools/audit_audio.py');
+    console.log('  npm run audio:audit');
 }
 
 main().catch(error => {

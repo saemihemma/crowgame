@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """Measure the audio bank against the design, for the things ears cannot check fast.
 
-Run: python3 tools/audit_audio.py [--json]
+Run: npm run audio:audit   (or python3 tools/audit_audio.py [--json])
+
+`npm run audio:audit` goes through tools/run_python.mjs, which finds whatever
+this machine calls Python -- `python3` does not exist on Windows, where the
+name is `py`.
 
 WHY THIS EXISTS. brand/SOUND_DESIGN.md makes four claims that are facts about
 waveforms rather than matters of taste, and every one of them is the kind that
@@ -22,7 +26,7 @@ A listening pass catches a bad sound. It does not catch a coin that has drifted
 need, and those are exactly what a generated or commissioned file does wrong.
 So this measures, and it is meant to be re-run after every promotion:
 
-    npm run audio:gen -- --promote coin_collect 2 && python3 tools/audit_audio.py
+    npm run audio:gen -- --promote coin_collect 2 && npm run audio:audit
 
 It reports rather than gates. The gate is godot/tests/test_audio_mix.gd, which
 checks the manifest; this checks the SAMPLES, and a "warn" here is a question for

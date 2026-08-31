@@ -406,7 +406,14 @@ trims, cross-faded if it loops, and writes it under the same name:
 ```bash
 npm run audio:gen -- --key coin_collect --takes 4     # into output/audio-takes/
 npm run audio:gen -- --promote coin_collect 3         # master take 3 into the game
+npm run audio:audit                                   # check it against the design
 ```
+
+(`audio:audit` and `audio:sfx` go through `tools/run_python.mjs`, which finds
+whatever this machine calls Python. `python3` does not exist on Windows, where
+the name is `py` — and a stock Windows carries a Microsoft Store stub called
+`python.exe` that is not Python at all. The launcher tries `py` first for exactly
+that reason, and detects the stub if it reaches it.)
 
 It refuses a take that blows the budget rather than shipping it (`--max-ms` to
 hard-cut, `--force` to overrule), because a coin that rings for a second and a
