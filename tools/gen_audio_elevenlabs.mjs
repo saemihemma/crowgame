@@ -4,7 +4,8 @@
  *
  * Usage:
  *   node tools/gen_audio_elevenlabs.mjs --check           # key + network, costs nothing
- *   node tools/gen_audio_elevenlabs.mjs --all --takes 3   # the whole bank, resumable
+ *   node tools/gen_audio_elevenlabs.mjs --family BODY --takes 3      # one family
+ *   node tools/gen_audio_elevenlabs.mjs --all --takes 3 --yes        # the lot, resumable
  *   node tools/gen_audio_elevenlabs.mjs --list
  *   node tools/gen_audio_elevenlabs.mjs --script          # -> output/audio-prompts.md
  *   node tools/gen_audio_elevenlabs.mjs --proxy-auth --family WORLD  # key held outside
@@ -68,7 +69,13 @@ const SHEET = join(ROOT, 'output/audio-prompts.md');
 
 const THEMES = join(ROOT, 'godot/data/themes');
 
-const ENDPOINT = 'https://api.elevenlabs.io/v1/sound-generation';
+/**
+ * Overridable so the retry and throttle logic can be tested against a local mock
+ * that returns 429s on demand. Nothing else should ever set it.
+ */
+const BASE = process.env.CROW_ELEVENLABS_BASE ?? 'https://api.elevenlabs.io';
+
+const ENDPOINT = `${BASE}/v1/sound-generation`;
 /**
  * The music endpoint is a DIFFERENT model and a different shape.
  *
@@ -79,7 +86,7 @@ const ENDPOINT = 'https://api.elevenlabs.io/v1/sound-generation';
  * music until someone has seen it work once: a song is the one thing in the bank
  * worth auditioning in a browser before it is worth automating.
  */
-const MUSIC_ENDPOINT = 'https://api.elevenlabs.io/v1/music';
+const MUSIC_ENDPOINT = `${BASE}/v1/music`;
 
 /**
  * The house style, prepended to every prompt.
@@ -326,43 +333,130 @@ function authHeader(apiKey) {
 
 async function generate(job, take, apiKey) {
     if (job.family === 'MUSIC') return generateMusic(job, take, apiKey);
-    const body = {
+    const bytes = await request(ENDPOINT, {
         text: buildPrompt(job),
         duration_seconds: duration(job),
         // Low influence lets the model make something musical; high influence
         // makes it follow the words literally and, in practice, blandly. 0.4 is
         // the setting that kept the brief without flattening the result.
         prompt_influence: 0.4,
-    };
-    const response = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { ...authHeader(apiKey), 'content-type': 'application/json' },
-        body: JSON.stringify(body),
-    });
-    if (!response.ok) {
-        const detail = await response.text().catch(() => '');
-        throw new Error(`${job.key} take ${take}: HTTP ${response.status} ${detail.slice(0, 300)}`);
-    }
-    const bytes = Buffer.from(await response.arrayBuffer());
+    }, apiKey, `${job.key} take ${take}`);
     const path = join(TAKES, `${job.key}-${take}.mp3`);
     await writeFile(path, bytes);
     return { path, bytes: bytes.length };
 }
 
+/**
+ * The throttle. ElevenLabs rate-limits hard, and a batch of 174 is exactly the
+ * shape that trips it.
+ *
+ * Three mechanisms, because concurrency alone is not enough: four workers with
+ * no spacing still fire four requests in the same millisecond, and a limiter
+ * measures arrivals per second rather than how many are in flight.
+ *
+ *  1. A MINIMUM GAP between request STARTS, shared across the workers. This is
+ *     the stagger, and it is what a per-second limiter actually responds to.
+ *  2. RETRY ON 429, honouring Retry-After when the response carries it, with
+ *     exponential backoff and jitter when it does not. Jitter matters: without
+ *     it every worker that got a 429 wakes up together and trips it again.
+ *  3. AN ADAPTIVE GAP. Every 429 widens the gap and it narrows back after a run
+ *     of successes, so a long batch converges on whatever pace the account is
+ *     actually allowed rather than on a number guessed here.
+ */
+const throttle = {
+    gapMs: 600,
+    minGapMs: 250,
+    maxGapMs: 8000,
+    nextAt: 0,
+    okStreak: 0,
+    backoffs: 0,
+
+    /** Wait for this request's turn in the shared stagger. */
+    async slot() {
+        const now = Date.now();
+        const at = Math.max(now, this.nextAt);
+        this.nextAt = at + this.gapMs;
+        if (at > now) await sleep(at - now);
+    },
+
+    /** A 429: slow everything down, not just this worker. */
+    widen() {
+        this.backoffs += 1;
+        this.okStreak = 0;
+        this.gapMs = Math.min(this.maxGapMs, Math.round(this.gapMs * 1.8));
+    },
+
+    /** Ten clean requests in a row: try a little faster again. */
+    narrow() {
+        this.okStreak += 1;
+        if (this.okStreak >= 10) {
+            this.okStreak = 0;
+            this.gapMs = Math.max(this.minGapMs, Math.round(this.gapMs * 0.8));
+        }
+    },
+};
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/**
+ * One request, with the rate limiter respected rather than fought.
+ *
+ * Retries only on 429 and 5xx. A 401 or a 422 will fail identically forever, and
+ * retrying it just spends the budget faster on the same mistake.
+ */
+async function request(url, body, apiKey, label, attempts = 5) {
+    for (let attempt = 1; ; attempt += 1) {
+        await throttle.slot();
+        let response;
+        try {
+            response = await fetch(url, {
+                method: 'POST',
+                headers: { ...authHeader(apiKey), 'content-type': 'application/json' },
+                body: JSON.stringify(body),
+            });
+        } catch (error) {
+            if (attempt >= attempts) throw new Error(`${label}: ${error.message}`);
+            await sleep(1000 * attempt);
+            continue;
+        }
+        if (response.ok) {
+            throttle.narrow();
+            return Buffer.from(await response.arrayBuffer());
+        }
+
+        const retryable = response.status === 429 || response.status >= 500;
+        const detail = (await response.text().catch(() => '')).slice(0, 300);
+        if (!retryable || attempt >= attempts) {
+            const hint = response.status === 401 ? ' — the key is not valid'
+                : response.status === 429 ? ' — still rate-limited after backing off; try --gap-ms 2000'
+                : '';
+            throw new Error(`${label}: HTTP ${response.status}${hint} ${detail}`);
+        }
+        if (response.status === 429) throttle.widen();
+        // Retry-After is what the server actually wants; the backoff is only for
+        // when it does not say. Jitter so the workers do not resynchronise.
+        const header = Number(response.headers.get('retry-after'));
+        const waitMs = Number.isFinite(header) && header > 0
+            ? header * 1000
+            : Math.min(30000, 800 * 2 ** attempt) + Math.random() * 400;
+        console.log(`      ${label}: ${response.status}, waiting ${(waitMs / 1000).toFixed(1)}s `
+            + `(gap now ${throttle.gapMs}ms)`);
+        await sleep(waitMs);
+    }
+}
+
 /** A song, from the music model. See MUSIC_ENDPOINT for what is unverified. */
 async function generateMusic(job, take, apiKey) {
-    const response = await fetch(MUSIC_ENDPOINT, {
-        method: 'POST',
-        headers: { ...authHeader(apiKey), 'content-type': 'application/json' },
-        body: JSON.stringify({ prompt: buildPrompt(job), music_length_ms: duration(job) * 1000 }),
-    });
-    if (!response.ok) {
-        const detail = await response.text().catch(() => '');
-        throw new Error(`${job.key} take ${take}: HTTP ${response.status} ${detail.slice(0, 300)}\n`
+    let bytes;
+    try {
+        bytes = await request(MUSIC_ENDPOINT,
+            { prompt: buildPrompt(job), music_length_ms: duration(job) * 1000 },
+            apiKey, `${job.key} take ${take}`);
+    } catch (error) {
+        throw new Error(`${error.message}\n`
             + '    The music endpoint is unverified from this repo -- check the current '
             + 'ElevenLabs docs, or use --script and paste the prompt into the browser.');
     }
-    const bytes = Buffer.from(await response.arrayBuffer());
     const path = join(TAKES, `${job.key}-${take}.mp3`);
     await writeFile(path, bytes);
     return { path, bytes: bytes.length };
@@ -686,7 +780,7 @@ async function check() {
     console.log(`key    : ${apiKey ? apiKey.slice(0, 6) + '…' + ` (${apiKey.length} chars)` : 'attached by a proxy'}`);
     let response;
     try {
-        response = await fetch('https://api.elevenlabs.io/v1/user/subscription',
+        response = await fetch(`${BASE}/v1/user/subscription`,
             { headers: authHeader(apiKey) });
     } catch (error) {
         console.error(`network: CANNOT REACH api.elevenlabs.io — ${error.message}`);
@@ -817,13 +911,36 @@ async function main() {
         console.log('--force regenerates them.');
         return;
     }
+
+    // A BUDGET GUARD, because every request costs credits and a mistyped
+    // selector is the expensive mistake: `--all --takes 5` is 290 generations
+    // and reads almost exactly like `--key x --takes 5`. Anything past the cap
+    // has to be asked for twice.
+    const cap = Number(arg('--max-requests', '40'));
+    if (plan.length > cap && !has('--yes')) {
+        console.error(`${plan.length} generations is more than --max-requests (${cap}).`);
+        console.error('That is real money on a metered account, so it needs saying twice:');
+        console.error(`  add --yes to run all ${plan.length}`);
+        console.error(`  or --max-requests ${plan.length} to raise the cap deliberately`);
+        console.error('  or narrow it: --family BODY, --family WORLD, --family VOICE, --key <one>');
+        console.error('\nA good first batch is one family at a time.');
+        process.exit(1);
+    }
+
     console.log(`${plan.length} generation(s) across ${wanted.length} sound(s)`
         + `${already ? `, skipping ${already} already there` : ''}.`);
 
-    const concurrency = Math.max(1, Number(arg('--concurrency', '4')));
+    // Two, not four. The account is rate-limited aggressively enough that the
+    // stagger below does the real pacing; more workers only means more of them
+    // waiting on the same shared gap.
+    const concurrency = Math.max(1, Number(arg('--concurrency', '2')));
+    throttle.gapMs = Math.max(0, Number(arg('--gap-ms', String(throttle.gapMs))));
+    console.log(`${concurrency} at a time, ${throttle.gapMs}ms apart, backing off on 429.`);
     const failures = [];
     let done = 0;
     let made = 0;
+    let consecutiveFailures = 0;
+    let aborted = false;
 
     // A small worker pool rather than Promise.all over everything: 174 requests
     // fired at once is a rate limit, and a rate limit mid-batch is 174 failures.
@@ -837,10 +954,23 @@ async function main() {
             try {
                 const { path, bytes } = await generate(job, take, apiKey);
                 made += 1;
+                consecutiveFailures = 0;
                 console.log(`${at} ${path.replace(ROOT + '/', '')}  ${(bytes / 1024).toFixed(0)} KB`);
             } catch (error) {
                 failures.push({ key: job.key, take, message: error.message });
                 console.error(`${at} FAILED ${job.key} take ${take}`);
+                // A run that has failed five times in a row is not unlucky, it is
+                // wrong: a bad key, a dead quota, a changed endpoint. Grinding
+                // through the remaining 169 spends the budget proving it.
+                if ((consecutiveFailures += 1) >= 5) {
+                    if (!aborted) {
+                        aborted = true;
+                        queue.length = 0;
+                        console.error('\n  five failures in a row — stopping rather than spending '
+                            + 'the rest of the batch on the same error.');
+                    }
+                    return;
+                }
             }
         }
     }
