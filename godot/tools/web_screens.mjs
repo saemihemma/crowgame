@@ -128,8 +128,12 @@ function walk(page, view) {
         ['pin-again', async () => { await enter(); await type('1234'); }],
         ['signed-in', async () => { await enter(); await page.waitForTimeout(2500); }],
         ['main-menu', async () => page.waitForTimeout(800)],
-        // Play is the primary row and now resumes straight into a level.
-        ['playing', async () => { await click(0, -40); await page.waitForTimeout(3000); }],
+        // PLAY is the primary row and opens the map -- it is the only way into a
+        // level now, and picking where to go is the point of it.
+        ['world-map', async () => { await click(0, -40); await page.waitForTimeout(2500); }],
+        // The first unlocked world already holds the focus, so Enter takes it
+        // without this needing to know where a card landed.
+        ['playing', async () => { await page.keyboard.press('Enter'); await page.waitForTimeout(3000); }],
         // WALK RIGHT UNTIL SOMETHING HAPPENS. The first owl of act one is a few
         // seconds along the ground, and reaching it is the only way to
         // photograph the maths board -- and the only way the grown-up

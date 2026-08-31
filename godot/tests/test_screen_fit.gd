@@ -398,3 +398,70 @@ func _badge_rows(node: Node, out: Array) -> void:
 		if child is TrophyBadge:
 			out.append(child)
 		_badge_rows(child, out)
+
+
+## ONE WAY TO START PLAYING, AND EVERY ROW THE SAME WIDTH.
+##
+## Both halves are owner rulings and both had been got wrong once. The menu
+## carried PLAY *and* "Choose a world", which are two buttons for the same thing
+## -- the complaint that produced the first fix, applied again to the fix. And
+## `custom_minimum_size` is a floor rather than a width, so the longest label on
+## the screen made its own button visibly wider than the rest, which reads as a
+## mistake rather than as a list.
+func test_the_menu_offers_one_way_in_and_rows_of_one_width() -> void:
+	var scene: PackedScene = load(SceneRouter.path_of("main_menu"))
+	var root: Node = scene.instantiate()
+	Engine.get_main_loop().root.add_child(root)
+
+	var rows: Array = []
+	_menu_rows(root, rows)
+	assert_true(rows.size() >= 1, "the menu has rows")
+
+	var primaries := 0
+	for row: BrandButton in rows:
+		assert_eq(row.custom_minimum_size.x, root.ROW_WIDTH,
+			"every row asks for the same width ('%s' asks for %.0f)"
+				% [row.text, row.custom_minimum_size.x])
+		if row.role == BrandButton.Role.PRIMARY:
+			primaries += 1
+	assert_eq(primaries, 1, "exactly one row is the thing you are meant to press")
+	root.queue_free()
+
+
+## The shrink itself, on labels rather than on today's font metrics.
+##
+## Asserted through the function and not through a rendered column on purpose:
+## headless, the built-in font reports a line height three times its point size
+## (see test_headless_text_is_not_a_layout_oracle), so what fits HERE says
+## nothing about what fits in a browser. What is testable either way is the
+## rule: too long shrinks, short is left alone, and nothing goes below the floor.
+func test_a_label_too_long_for_its_row_is_made_smaller() -> void:
+	var scene: PackedScene = load(SceneRouter.path_of("main_menu"))
+	var root: Node = scene.instantiate()
+	Engine.get_main_loop().root.add_child(root)
+
+	var long := BrandButton.make(
+		"Hvernig gengur barninu og hvad aetli thad se ad gera akkurat nuna",
+		BrandButton.Role.GHOST, Callable())
+	root.add_child(long)
+	var before: int = long.get_theme_font_size("font_size")
+	root._fit_label(long)
+	var after: int = long.get_theme_font_size("font_size")
+	assert_true(after < before,
+		"a label wider than its row is made smaller (%d -> %d)" % [before, after])
+	assert_true(after >= root.LABEL_MIN_SIZE,
+		"but never below the floor (got %d, floor %d)" % [after, root.LABEL_MIN_SIZE])
+
+	var short := BrandButton.make("Ok", BrandButton.Role.GHOST, Callable())
+	root.add_child(short)
+	var short_before: int = short.get_theme_font_size("font_size")
+	root._fit_label(short)
+	assert_eq(short.get_theme_font_size("font_size"), short_before,
+		"a label that already fits is left alone")
+	root.queue_free()
+
+func _menu_rows(node: Node, out: Array) -> void:
+	for child in node.get_children():
+		if child is BrandButton:
+			out.append(child)
+		_menu_rows(child, out)
