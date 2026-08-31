@@ -20,13 +20,40 @@ whole readability law, and everything below is downstream of it.
 | Family | What it is | Made of | Pitched? | Where it sits |
 | --- | --- | --- | --- | --- |
 | **BODY** | the crow | felt, servo, tin | **never** | 80–500 Hz, plus one tick at 3–6 kHz |
-| **WORLD** | things that are not you | wood, air, glass, water | rarely | below 700 Hz and above 5 kHz |
-| **VOICE** | reward, maths, interface | struck bells | **always** | 700 Hz – 5 kHz |
+| **WORLD** | things that are not you | wood, air, glass, water | rarely | anywhere, but always well below the cue it plays against |
+| **VOICE** | reward, maths, interface | struck bells | **always** | 350 Hz – 5 kHz |
 
-The band split is not decoration. VOICE owns 700 Hz – 5 kHz because that is
-where a child's hearing is sharpest and because it is the family that must
-always cut through; BODY and WORLD stay out of it, so a coin is audible over a
-landing, a bed and a music track at once without anything needing to duck.
+### What actually keeps the cues audible
+
+**The protected band is narrow: 900 Hz – 2.2 kHz.** That is where the sounds a
+child must never miss actually sit — the coin at 1568, a right answer at
+1046 + 1568, `milestone`, `streak` and `big_coin` at 1046. Nothing outside VOICE
+may be **both loud and dominant in that band**.
+
+That is a correction, and it is worth recording rather than quietly fixing,
+because the first version of this section was a nicer-sounding rule that was
+simply not true. It said VOICE owned 700 Hz – 5 kHz and the other two families
+stayed out of it. Then `tools/audit_audio.py` measured the bank and reported
+seventeen violations — of which **fourteen were the rule being wrong, not the
+sounds**:
+
+- eight VOICE cues are built on G4 (392 Hz) or C5 (523 Hz) — every board, lesson
+  and pause card — so a 700 Hz floor called the whole interface inaudible;
+- five ambience beds and the big-coin shimmer sit in the mid because glass and
+  metal in a world legitimately do, twenty-five decibels below a coin, where they
+  mask nothing.
+
+**The mechanism is level, not band exclusion.** The reward ladder in §3 already
+puts twelve or more decibels between a whisper-tier loop and a pickup-tier cue,
+and that separation — not a frequency box — is what makes a coin audible over a
+landing, a bed and a music track at once. A band-only rule cannot tell a bed at
+1319 Hz twenty-five decibels down from a laser at 1039 Hz three decibels down;
+the level rule can, and those were the three findings that turned out to be real.
+
+Two sounds were moved because of it, and both are better for it: `laser_shoot`
+came down an octave (it was sitting on the coin, and lower reads more like a
+toy), and `chain_break` went up to E7 — a link breaks on a **correct answer**, so
+at 1180 Hz it was fighting `correct` on the same beat.
 
 **The crow is a wind-up tin bird.** Look at the sprite: metal plating, a red lens
 for an eye, visible hydraulics. Every sound it makes has a mechanism in it — a
@@ -40,8 +67,12 @@ Every pitched sound in the game draws from **C major pentatonic** and nothing
 else:
 
 ```
-C4 D4 E4 G4 A4 · C5 D5 E5 G5 A5 · C6 D6 E6 G6 A6 · C7 E7 G7
+C3 D3 E3 G3 A3 · C4 D4 E4 G4 A4 · C5 D5 E5 G5 A5 · C6 D6 E6 G6 A6 · C7 D7 E7 G7 A7
 ```
+
+The bottom octave is not decoration either: `answer_wrong` is two taps on **C3**
+and `door_locked` is two knocks on **G3**. They are the two lowest and gentlest
+sounds in the game and the two the design cares most about getting right.
 
 A pentatonic set contains no semitone and no tritone, so **no two cues can clash
 and no cue can land sour against a music bed nobody has written yet.** That is
@@ -51,6 +82,26 @@ streak) without any of them going out of tune.
 
 Anything that is not in that list is not pitched — it is BODY or WORLD, and it
 belongs to the noise, wood and air vocabulary instead.
+
+### The four instruments
+
+VOICE is one modal synth in `tools/gen_sfx.py` with four voices, and which voice
+a moment gets is part of the design rather than a detail:
+
+| Voice | Character | Used for |
+| --- | --- | --- |
+| **glock** | bare bright metal, inharmonic, no resonator | coins, progress, milestones, the run-ending phrase |
+| **celeste** | warm, nearly harmonic, resonator underneath | anything that has to feel *kind*: a right answer, the reveal, an owl going home, every board and lesson |
+| **musicbox** | tiny, glassy, mechanical — a comb tooth plucked | the whole interface, and the chain link |
+| **marimba** | wooden and dark, deepest resonator | body under a bell, never alone |
+
+**This family is finished, not placeheld,** and that is a deliberate split: a
+text-to-audio model has no concept of pitch, and every sound here has to land on
+a named note in a named scale. So BODY and WORLD are waiting for recordings and
+VOICE is not. What makes the difference between a bell and a beep, in order:
+inharmonic partial ratios (1 : 2.76 : 5.40 : 8.93 : 13.34 for a struck bar), two
+slightly detuned polarisations beating against each other, per-partial decay, the
+mallet, and a resonator where the instrument has one.
 
 ## 3. The reward ladder
 
@@ -66,7 +117,7 @@ moment a six-year-old hears it — not the timbre, the *rank*.
 | 3 | `coin` | two bells rising | 200 ms | 0.58 |
 | 4 | `answer_correct`, `golden`, `streak` | two or three bells, warm | 260–390 ms | 0.68 |
 | 5 | `big_coin`, `milestone`, `ability`, `owl_saved` | 3–4 bells + a tail | 500–800 ms | 0.76 |
-| 6 | `big_coin_all`, `comeback`, `level_complete` | a phrase | 0.8–1.7 s | 0.86 |
+| 6 | `big_coin_all`, `comeback`, `level_complete` | a phrase | 0.8–1.75 s | 0.86 |
 
 The peaks are the `TIER` table in `tools/gen_sfx.py`, which asserts its own
 ordering on every run. `volume` in `audio_manifest.json` does the fine mix on top
@@ -361,6 +412,13 @@ the key, and the row.
 beds and music — is actually on disk, and `godot/tests/test_audio_mix.gd` proves
 the mix itself still holds: the ladder is in order, every world names a bed that
 exists, and every positional sound has a distance.
+
+Those check the **data**. `npm run audio:audit` checks the **samples**, which is
+the half a listening pass cannot do quickly: every pitched sound's dominant
+frequency against the scale (to the cent), every family's energy against its
+band, and nothing loud camping in the 900 Hz – 2.2 kHz cue core. Run it after
+every replacement — it is what caught both of the collisions named in §1, and it
+reports rather than gates, because a warning there is a question for a human.
 
 `play_sfx()` may only be called from `audio_manager.gd`, and the same guard
 enforces that: a sound played by key from a game script is a sound nobody can
