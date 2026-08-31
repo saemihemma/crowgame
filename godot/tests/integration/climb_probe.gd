@@ -28,8 +28,33 @@ var _msgs: Array[String] = []
 
 func _ready() -> void:
 	_game = GAME_SCENE.instantiate()
-	_game.level_key = "level_01"
+	_game.level_key = _level_with("ladder")
 	add_child(_game)
+
+## FIND a level that has the thing this probe is about, rather than naming one.
+##
+## This probe used to hardcode level_01, which worked while every level held a
+## bit of everything. The levels are zone acts now -- one new verb per zone -- so
+## level_01 is Emberwood I and holds no ladder at all, and a hardcoded key made
+## the probe fail for looking in the wrong place rather than for finding a bug.
+func _level_with(object_type: String) -> String:
+	for entry in LevelManager.get_levels():
+		var key := String((entry as Dictionary).get("key", ""))
+		var path := "res://%s" % LevelManager.map_file(key)
+		if not FileAccess.file_exists(path):
+			continue
+		var f := FileAccess.open(path, FileAccess.READ)
+		var level: Variant = JSON.parse_string(f.get_as_text())
+		f.close()
+		if not (level is Dictionary):
+			continue
+		for layer in (level as Dictionary).get("layers", []):
+			if String((layer as Dictionary).get("type", "")) != "objectgroup":
+				continue
+			for obj in (layer as Dictionary).get("objects", []):
+				if String((obj as Dictionary).get("type", "")) == object_type:
+					return key
+	return ""
 
 func _ladder() -> Ladder:
 	var found := get_tree().get_nodes_in_group("ladder")

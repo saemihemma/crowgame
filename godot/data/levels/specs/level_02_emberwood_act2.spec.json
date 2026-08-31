@@ -1,0 +1,187 @@
+{
+  "id": "level_02",
+  "name": "Emberwood II",
+  "theme": "emberwood",
+  "difficulty": 1,
+  "music": "forest_theme",
+  "criticalPath": {
+    "length": "short",
+    "motifs": [
+      "flat",
+      "hole",
+      "owl",
+      "ledge",
+      "gapledge",
+      "up"
+    ]
+  },
+  "platforms": [
+    {
+      "type": "ground",
+      "x": 0,
+      "width": 8,
+      "y": 16
+    },
+    {
+      "type": "ground",
+      "x": 9,
+      "width": 3,
+      "y": 16
+    },
+    {
+      "type": "ground",
+      "x": 13,
+      "width": 3,
+      "y": 16
+    },
+    {
+      "type": "ground",
+      "x": 17,
+      "width": 25,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 34,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 38,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "ground",
+      "x": 44,
+      "width": 35,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 61,
+      "width": 2,
+      "y": 15
+    },
+    {
+      "type": "platform",
+      "x": 63,
+      "width": 2,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 65,
+      "width": 2,
+      "y": 11
+    },
+    {
+      "type": "platform",
+      "x": 68,
+      "width": 6,
+      "y": 4
+    }
+  ],
+  "spawns": {
+    "player": {
+      "x": 2,
+      "y": 14
+    },
+    "npcs": [
+      {
+        "npc_id": "owl_gentle_01",
+        "x": 27,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_teacher_01",
+        "x": 52,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 70,
+        "y": 4,
+        "bonus": true,
+        "requiresAbility": "double_jump"
+      }
+    ],
+    "collectibles": [
+      {
+        "type": "big_coin",
+        "x": 31,
+        "y": 14,
+        "id": "c1"
+      },
+      {
+        "type": "big_coin",
+        "x": 56,
+        "y": 14,
+        "id": "c2"
+      },
+      {
+        "type": "coin",
+        "x": 6,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 15,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 24,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 33,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 42,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 51,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "type": "big_coin",
+        "x": 56,
+        "y": 14,
+        "id": "c3"
+      }
+    ]
+  },
+  "hazards": [],
+  "enemies": [],
+  "ladders": [],
+  "exits": [
+    {
+      "x": 77,
+      "y": 16,
+      "target_level": "level_03"
+    }
+  ],
+  "mathGating": {
+    "skills": [
+      "counting",
+      "addition"
+    ],
+    "difficultyBand": [
+      1,
+      2
+    ],
+    "teachingIntent": "First numbers: count what you see, then add small amounts."
+  }
+}

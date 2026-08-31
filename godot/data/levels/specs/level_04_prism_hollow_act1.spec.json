@@ -1,0 +1,150 @@
+{
+  "id": "level_04",
+  "name": "Prism Hollow I",
+  "theme": "prism_hollow",
+  "difficulty": 2,
+  "music": "cave_theme",
+  "criticalPath": {
+    "length": "short",
+    "motifs": [
+      "flat",
+      "owl",
+      "ladder",
+      "hole"
+    ]
+  },
+  "platforms": [
+    {
+      "type": "ground",
+      "x": 0,
+      "width": 28,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 21,
+      "width": 4,
+      "y": 13
+    },
+    {
+      "type": "ground",
+      "x": 29,
+      "width": 37,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 46,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 55,
+      "width": 6,
+      "y": 4
+    }
+  ],
+  "spawns": {
+    "player": {
+      "x": 2,
+      "y": 14
+    },
+    "npcs": [
+      {
+        "npc_id": "owl_gentle_01",
+        "x": 11,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_teacher_01",
+        "x": 37,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 57,
+        "y": 4,
+        "bonus": true,
+        "requiresAbility": "double_jump"
+      }
+    ],
+    "collectibles": [
+      {
+        "type": "big_coin",
+        "x": 15,
+        "y": 14,
+        "id": "c1"
+      },
+      {
+        "type": "big_coin",
+        "x": 41,
+        "y": 14,
+        "id": "c2"
+      },
+      {
+        "type": "coin",
+        "x": 6,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 15,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 33,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 42,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 51,
+        "y": 14
+      },
+      {
+        "type": "big_coin",
+        "x": 49,
+        "y": 14,
+        "id": "c3"
+      }
+    ]
+  },
+  "hazards": [],
+  "enemies": [],
+  "ladders": [
+    {
+      "x": 20,
+      "y": 13,
+      "tiles": 3
+    },
+    {
+      "x": 45,
+      "y": 13,
+      "tiles": 3
+    }
+  ],
+  "exits": [
+    {
+      "x": 64,
+      "y": 16,
+      "target_level": "level_05"
+    }
+  ],
+  "mathGating": {
+    "skills": [
+      "subtraction",
+      "addition"
+    ],
+    "difficultyBand": [
+      1,
+      3
+    ],
+    "teachingIntent": "Taking away: what is left when some of it goes."
+  }
+}
