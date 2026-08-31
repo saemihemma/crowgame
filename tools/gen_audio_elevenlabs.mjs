@@ -24,15 +24,28 @@
  *
  * TAKES ARE NOT ASSETS. Generation is cheap and wrong most of the time, so
  * nothing here overwrites a shipped file. Takes land in output/audio-takes/
- * (gitignored), you listen to them on /audio or in any player, and `--promote`
- * moves the one you chose into the game and repoints the manifest at it. That
- * separation is what stops a bank of forty carefully-ordered sounds being
- * degraded one hasty take at a time.
+ * (gitignored) and you listen to them before anything moves.
+ *
+ * `--promote` then does the mastering, and it is the part that matters most:
+ * THE PLACEHOLDER IS THE SPEC. Every generated file already carries the sample
+ * rate its slot wants, the peak its tier on the reward ladder requires, and the
+ * duration budget the design gives it -- so a take is matched to the file it
+ * replaces rather than to a table repeated in two languages. It is trimmed (a
+ * generator's half-second of room tone in front of a jump cue IS latency),
+ * peak-matched, cross-faded into itself if it loops, refused if it blows the
+ * duration budget, and written as WAV under the SAME FILENAME. So the manifest
+ * is never touched, no asset is orphaned, nothing depends on MP3 gapless
+ * behaviour, and `git checkout` is the whole of the undo.
+ *
+ * Needs ffmpeg on PATH for the decode. Nothing else.
  */
 import { mkdir, readFile, writeFile, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MANIFEST = join(ROOT, 'godot/data/audio/audio_manifest.json');
@@ -239,39 +252,196 @@ async function generate(job, take, apiKey) {
 // ── promoting ────────────────────────────────────────────────────────────────
 
 /**
- * Move a chosen take into the game.
+ * Read a 16-bit mono PCM WAV. Enough of a parser for the files gen_sfx.py wrote,
+ * and it is only ever pointed at those.
+ */
+function readWav(bytes) {
+    let at = 12; // past "RIFF____WAVE"
+    let rate = 44100, channels = 1, bits = 16;
+    let data = null;
+    while (at + 8 <= bytes.length) {
+        const id = bytes.toString('ascii', at, at + 4);
+        const size = bytes.readUInt32LE(at + 4);
+        const body = at + 8;
+        if (id === 'fmt ') {
+            channels = bytes.readUInt16LE(body + 2);
+            rate = bytes.readUInt32LE(body + 4);
+            bits = bytes.readUInt16LE(body + 14);
+        } else if (id === 'data') {
+            data = bytes.subarray(body, body + size);
+        }
+        at = body + size + (size % 2);
+    }
+    if (!data || bits !== 16) throw new Error('not a 16-bit PCM WAV');
+    const frames = Math.floor(data.length / 2 / channels);
+    const samples = new Float32Array(frames);
+    for (let i = 0; i < frames; i += 1) samples[i] = data.readInt16LE(i * 2 * channels) / 32768;
+    return { rate, samples };
+}
+
+function writeWav(samples, rate) {
+    const body = Buffer.alloc(samples.length * 2);
+    for (let i = 0; i < samples.length; i += 1) {
+        body.writeInt16LE(Math.round(Math.max(-1, Math.min(1, samples[i])) * 32767), i * 2);
+    }
+    const head = Buffer.alloc(44);
+    head.write('RIFF', 0);
+    head.writeUInt32LE(36 + body.length, 4);
+    head.write('WAVEfmt ', 8);
+    head.writeUInt32LE(16, 16);
+    head.writeUInt16LE(1, 20);          // PCM
+    head.writeUInt16LE(1, 22);          // mono
+    head.writeUInt32LE(rate, 24);
+    head.writeUInt32LE(rate * 2, 28);
+    head.writeUInt16LE(2, 32);
+    head.writeUInt16LE(16, 34);
+    head.write('data', 36);
+    head.writeUInt32LE(body.length, 40);
+    return Buffer.concat([head, body]);
+}
+
+/** Decode anything ffmpeg understands into mono float samples at `rate`. */
+function decode(path, rate) {
+    const { execFileSync } = require('node:child_process');
+    const raw = execFileSync('ffmpeg', [
+        '-v', 'error', '-i', path, '-f', 'f32le', '-ac', '1', '-ar', String(rate), '-',
+    ], { maxBuffer: 256 * 1024 * 1024 });
+    const out = new Float32Array(raw.length / 4);
+    for (let i = 0; i < out.length; i += 1) out[i] = raw.readFloatLE(i * 4);
+    return out;
+}
+
+function peakOf(samples) {
+    let peak = 0;
+    for (const s of samples) peak = Math.max(peak, Math.abs(s));
+    return peak;
+}
+
+function normalizeTo(samples, peak) {
+    const top = peakOf(samples);
+    if (top <= 0) return samples;
+    const k = peak / top;
+    const out = new Float32Array(samples.length);
+    for (let i = 0; i < samples.length; i += 1) out[i] = samples[i] * k;
+    return out;
+}
+
+/**
+ * Cut the silence off the front and most of it off the back.
  *
- * Three edits, all of them reversible with `git checkout`: the file lands beside
- * its siblings, audio_manifest.json is repointed at it, and the placeholder it
- * replaces is deleted. The delete is not optional — tools/validate_assets.js
- * fails on an asset nothing references, which is exactly the check that keeps
- * the tree from filling up with superseded sounds.
+ * Generators put a beat of room tone in front of almost everything, and on a
+ * cue that fires on a jump that beat IS latency: the sound arrives after the
+ * thing it belongs to. The tail is kept because a bell's decay is the sound.
+ */
+function trimSilence(samples, rate, floorDb = -46, tailMs = 60) {
+    const floor = Math.pow(10, floorDb / 20);
+    let first = 0;
+    while (first < samples.length && Math.abs(samples[first]) < floor) first += 1;
+    let last = samples.length - 1;
+    while (last > first && Math.abs(samples[last]) < floor) last -= 1;
+    if (first >= last) return samples;
+    const tail = Math.floor((tailMs / 1000) * rate);
+    const cut = samples.subarray(first, Math.min(samples.length, last + tail));
+    // A hard cut at the front is a click; four milliseconds of fade is not.
+    const fade = Math.floor(0.004 * rate);
+    const out = Float32Array.from(cut);
+    for (let i = 0; i < Math.min(fade, out.length); i += 1) {
+        out[i] *= i / fade;
+        out[out.length - 1 - i] *= i / fade;
+    }
+    return out;
+}
+
+/**
+ * Cross-fade the tail over the head so the loop joins itself silently.
+ *
+ * The same trick as gen_sfx.py::seamless, and it has to happen HERE rather than
+ * in the engine: AudioManager sets loop_mode on the stream and plays it end to
+ * end, so an unmatched join is an audible tick every couple of seconds forever.
+ * It is also why a promoted loop is written as WAV rather than kept as the MP3
+ * that came back -- MP3 carries encoder padding, and padding is a gap.
+ */
+function seamless(samples, rate, fadeMs = 250) {
+    const n = Math.floor((fadeMs / 1000) * rate);
+    if (n <= 0 || samples.length <= 2 * n) return samples;
+    const out = Float32Array.from(samples.subarray(0, samples.length - n));
+    const tail = samples.subarray(samples.length - n);
+    for (let i = 0; i < n; i += 1) {
+        const k = i / n;
+        out[i] = out[i] * k + tail[i] * (1 - k);
+    }
+    return out;
+}
+
+/**
+ * Land a chosen take in the slot its placeholder occupies.
+ *
+ * THE PLACEHOLDER IS THE SPEC, and that is what makes this safe. It already
+ * carries the sample rate the slot wants and, because gen_sfx.py normalises
+ * every file to its tier, the PEAK the reward ladder requires. So the new take
+ * is matched to the old file rather than to a table repeated in two languages,
+ * and the ladder cannot drift as sounds are replaced one at a time.
+ *
+ * Consequences, all of them deliberate:
+ *   - the filename does not change, so audio_manifest.json is not touched, no
+ *     asset is orphaned, and `git checkout` is the whole of the undo;
+ *   - the output is WAV, so nothing depends on MP3 gapless behaviour;
+ *   - a loop is cross-faded into itself, because nothing downstream will.
  */
 async function promote(key, take) {
     const source = join(TAKES, `${key}-${take}.mp3`);
     if (!existsSync(source)) throw new Error(`no take at ${source}`);
     const manifest = JSON.parse(await readFile(MANIFEST, 'utf8'));
-    const section = manifest.sfx?.[key] ? 'sfx' : manifest.beds?.[key] ? 'beds' : null;
-    if (!section) throw new Error(`"${key}" is not a key in audio_manifest.json`);
+    const def = manifest.sfx?.[key] ?? manifest.beds?.[key];
+    if (!def) throw new Error(`"${key}" is not a key in audio_manifest.json`);
 
-    const oldFile = manifest[section][key].file;
-    const newFile = oldFile.replace(/\.[a-z0-9]+$/i, '.mp3');
-    await writeFile(join(ROOT, 'godot', newFile), await readFile(source));
-    if (newFile !== oldFile) {
-        manifest[section][key].file = newFile;
-        await writeFile(MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
-        for (const stale of [join(ROOT, 'godot', oldFile), join(ROOT, 'godot', oldFile + '.import')]) {
-            await rm(stale, { force: true });
+    const target = join(ROOT, 'godot', def.file);
+    if (!existsSync(target)) throw new Error(`no placeholder to match at ${def.file}`);
+    const placeholder = readWav(await readFile(target));
+    const looping = def.file.includes('/ambience/')
+        || (Number(def.max_distance ?? 0) > 0 && def.pool === undefined && def.min_interval_ms === undefined);
+
+    let samples = decode(source, placeholder.rate);
+    const rawSeconds = samples.length / placeholder.rate;
+    samples = looping
+        ? seamless(samples, placeholder.rate)
+        : trimSilence(samples, placeholder.rate);
+    samples = normalizeTo(samples, peakOf(placeholder.samples));
+
+    // THE DURATION BUDGET IS PART OF THE DESIGN, so a take cannot quietly break
+    // it. brand/SOUND_DESIGN.md §4: anything that can fire more than once a
+    // second is ~120ms, and only the six celebrations run long. Generators
+    // ignore a requested duration constantly -- ask for one second and get
+    // three, with a coin that rings for as long as the jump before it.
+    //
+    // The placeholder is the budget, the same way it is the peak. 1.6x of it is
+    // slack for a real recording's decay; past that this is a different sound
+    // wearing the same name, and it refuses rather than warns.
+    const placeholderSeconds = placeholder.samples.length / placeholder.rate;
+    const outSeconds = samples.length / placeholder.rate;
+    const budget = Math.max(placeholderSeconds * 1.6, 0.12);
+    if (!looping && outSeconds > budget) {
+        const hardMs = Number(arg('--max-ms', '0'));
+        if (hardMs > 0) {
+            samples = trimSilence(samples.subarray(0, Math.floor((hardMs / 1000) * placeholder.rate)),
+                placeholder.rate, -60, 0);
+            samples = normalizeTo(samples, peakOf(placeholder.samples));
+        } else if (!has('--force')) {
+            throw new Error(
+                `${key}: the take is ${outSeconds.toFixed(2)}s and this slot budgets `
+                + `${placeholderSeconds.toFixed(2)}s (limit ${budget.toFixed(2)}s).\n`
+                + `  brand/SOUND_DESIGN.md §4 -- a cue this long stops being a cue.\n`
+                + `  Re-generate, or --max-ms ${Math.round(budget * 1000)} to hard-cut it, `
+                + `or --force to take it as it is.`);
         }
     }
-    console.log(`promoted ${key}: ${oldFile} -> ${newFile}`);
-    console.log('  next:  godot --headless --path godot --import');
-    console.log('         npm run validate:assets && bash godot/tools/build_web.sh');
-    if (section === 'beds' || Number(manifest.sfx?.[key]?.max_distance ?? 0) > 0) {
-        console.log('  NOTE: this one LOOPS. MP3 carries encoder padding, so the join will tick.');
-        console.log('        Re-encode and cross-fade before shipping it, e.g.:');
-        console.log(`        ffmpeg -i ${newFile} -af "afade=t=in:d=0.25,afade=t=out:st=<end-0.25>:d=0.25" -ar 22050 -ac 1 out.wav`);
-    }
+
+    await writeFile(target, writeWav(samples, placeholder.rate));
+    console.log(`${key} -> ${def.file}`);
+    console.log(`  ${rawSeconds.toFixed(2)}s in, ${(samples.length / placeholder.rate).toFixed(2)}s out`
+        + `  ${placeholder.rate} Hz  peak ${peakOf(placeholder.samples).toFixed(2)} (matched to the placeholder)`
+        + `${looping ? '  cross-faded for looping' : '  trimmed'}`);
+    console.log('  next:  godot --headless --path godot --import && npm run validate:assets');
 }
 
 // ── cli ──────────────────────────────────────────────────────────────────────

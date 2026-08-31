@@ -310,7 +310,21 @@ AudioManager.play_event("door")  →  sound_events.json: "door" → "door"
 **A loop or a bed must be seamless.** Nothing in the engine cross-fades a join:
 `AudioManager` sets `loop_mode` on a *copy* of the stream and plays it end to
 end, so an unmatched join is an audible tick every couple of seconds, forever.
-`tools/gen_sfx.py::seamless()` shows the cross-fade the placeholders use.
+`tools/gen_sfx.py::seamless()` is the cross-fade the placeholders use, and
+`npm run audio:gen -- --promote` applies the same one to anything it lands.
+
+**Or let the tool master it.** `--promote` matches a new take to the file it
+replaces — its rate, its peak on the ladder above, and its duration budget — then
+trims, cross-faded if it loops, and writes it under the same name:
+
+```bash
+npm run audio:gen -- --key coin_collect --takes 4     # into output/audio-takes/
+npm run audio:gen -- --promote coin_collect 3         # master take 3 into the game
+```
+
+It refuses a take that blows the budget rather than shipping it (`--max-ms` to
+hard-cut, `--force` to overrule), because a coin that rings for a second and a
+half is not a loud coin, it is a different sound wearing the coin's name.
 
 ## 9. What ships today is a placeholder
 
