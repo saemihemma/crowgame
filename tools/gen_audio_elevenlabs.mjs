@@ -3,6 +3,8 @@
  * Turn brand/SOUND_DESIGN.md into real sound effects, via ElevenLabs.
  *
  * Usage:
+ *   node tools/gen_audio_elevenlabs.mjs --check           # key + network, costs nothing
+ *   node tools/gen_audio_elevenlabs.mjs --all --takes 3   # the whole bank, resumable
  *   node tools/gen_audio_elevenlabs.mjs --list
  *   node tools/gen_audio_elevenlabs.mjs --script          # -> output/audio-prompts.md
  *   node tools/gen_audio_elevenlabs.mjs --proxy-auth --family WORLD  # key held outside
@@ -666,6 +668,63 @@ async function promote(key, take) {
     console.log('  next:  godot --headless --path godot --import && npm run validate:assets');
 }
 
+/**
+ * Prove the key works and the host is reachable, before spending anything.
+ *
+ * The first run of a batch job is the one that fails, and it fails for one of
+ * three boring reasons: no key, a network that will not let you out, or a key
+ * that is not valid. Each needs a different fix and a 403 on request one of 174
+ * does not tell you which. This asks the account endpoint, which costs no
+ * credits, and reports what is left.
+ */
+async function check() {
+    const apiKey = process.env.ELEVENLABS_API_KEY ?? '';
+    if (!apiKey && !has('--proxy-auth')) {
+        console.error('no ELEVENLABS_API_KEY, and no --proxy-auth. Nothing to check.');
+        process.exit(1);
+    }
+    console.log(`key    : ${apiKey ? apiKey.slice(0, 6) + '…' + ` (${apiKey.length} chars)` : 'attached by a proxy'}`);
+    let response;
+    try {
+        response = await fetch('https://api.elevenlabs.io/v1/user/subscription',
+            { headers: authHeader(apiKey) });
+    } catch (error) {
+        console.error(`network: CANNOT REACH api.elevenlabs.io — ${error.message}`);
+        console.error('         a proxy or firewall is refusing the connection, not ElevenLabs.');
+        process.exit(1);
+    }
+    if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        // A CORPORATE OR SANDBOX PROXY answers 403 to the CONNECT and its body
+        // talks about allowlists, which is a completely different problem from
+        // ElevenLabs refusing a key -- and calling it "reachable" sends whoever
+        // hit it to check their key when the key is fine.
+        const proxied = /allowlist|egress|not allowed|policy|forbidden by proxy/i.test(body);
+        if (proxied) {
+            console.error(`network: BLOCKED BEFORE IT LEFT THIS MACHINE — ${body.slice(0, 160)}`);
+            console.error('         a proxy or firewall is refusing the host, not ElevenLabs.');
+            console.error('         Your key was never sent. Run this where the host is reachable,');
+            console.error('         or allow api.elevenlabs.io in the network policy.');
+            process.exit(1);
+        }
+        console.error(`auth   : HTTP ${response.status} ${body.slice(0, 200)}`);
+        console.error(response.status === 401
+            ? '         reachable, but the key is not valid. Check it, or make a new one.'
+            : '         reachable, but the request was refused. The body above says why.');
+        process.exit(1);
+    }
+    const sub = await response.json();
+    const used = sub.character_count, limit = sub.character_limit;
+    console.log(`network: reachable`);
+    console.log(`auth   : OK`);
+    console.log(`tier   : ${sub.tier ?? 'unknown'} (${sub.status ?? 'unknown'})`);
+    if (Number.isFinite(used) && Number.isFinite(limit)) {
+        console.log(`credits: ${limit - used} left of ${limit}`);
+    }
+    console.log('\nReady. The whole bank at three takes each:');
+    console.log('  node tools/gen_audio_elevenlabs.mjs --all --takes 3');
+}
+
 // ── cli ──────────────────────────────────────────────────────────────────────
 
 function arg(name, fallback = null) {
@@ -681,6 +740,8 @@ async function main() {
         const i = process.argv.indexOf('--promote');
         return promote(process.argv[i + 1], process.argv[i + 2] ?? '1');
     }
+
+    if (has('--check')) return check();
 
     if (has('--list')) {
         for (const job of jobs) {
@@ -738,20 +799,71 @@ async function main() {
 
     const takes = Number(arg('--takes', '3'));
     await mkdir(TAKES, { recursive: true });
-    let made = 0;
+
+    // THE WHOLE BANK IS 174 REQUESTS at three takes, so this is a batch job and
+    // has to behave like one: it resumes, it runs several at once, and it says
+    // where it is. A sequential loop that starts over from zero when the wifi
+    // drops at request 140 is not a tool anybody runs twice.
+    const plan = [];
     for (const job of wanted) {
         for (let take = 1; take <= takes; take += 1) {
+            if (!has('--force') && existsSync(join(TAKES, `${job.key}-${take}.mp3`))) continue;
+            plan.push({ job, take });
+        }
+    }
+    const already = wanted.length * takes - plan.length;
+    if (plan.length === 0) {
+        console.log(`Nothing to do: all ${already} takes are already in output/audio-takes/.`);
+        console.log('--force regenerates them.');
+        return;
+    }
+    console.log(`${plan.length} generation(s) across ${wanted.length} sound(s)`
+        + `${already ? `, skipping ${already} already there` : ''}.`);
+
+    const concurrency = Math.max(1, Number(arg('--concurrency', '4')));
+    const failures = [];
+    let done = 0;
+    let made = 0;
+
+    // A small worker pool rather than Promise.all over everything: 174 requests
+    // fired at once is a rate limit, and a rate limit mid-batch is 174 failures.
+    const queue = plan.slice();
+    async function worker() {
+        for (;;) {
+            const item = queue.shift();
+            if (!item) return;
+            const { job, take } = item;
+            const at = `[${String(++done).padStart(3)}/${plan.length}]`;
             try {
                 const { path, bytes } = await generate(job, take, apiKey);
-                console.log(`  ${path.replace(ROOT + '/', '')}  ${(bytes / 1024).toFixed(0)} KB`);
                 made += 1;
+                console.log(`${at} ${path.replace(ROOT + '/', '')}  ${(bytes / 1024).toFixed(0)} KB`);
             } catch (error) {
-                console.error(`  ${error.message}`);
+                failures.push({ key: job.key, take, message: error.message });
+                console.error(`${at} FAILED ${job.key} take ${take}`);
             }
         }
     }
-    console.log(`\n${made} takes in output/audio-takes/.`);
-    console.log('Listen, then:  node tools/gen_audio_elevenlabs.mjs --promote <key> <take>');
+    await Promise.all(Array.from({ length: Math.min(concurrency, plan.length) }, worker));
+
+    console.log(`\n${made} take(s) in output/audio-takes/.`);
+    if (failures.length) {
+        console.log(`${failures.length} failed:`);
+        // Grouped, because 174 copies of one rate-limit message is not a report.
+        const byMessage = new Map();
+        for (const f of failures) {
+            const short = f.message.split('\n')[0].slice(0, 160);
+            byMessage.set(short, [...(byMessage.get(short) ?? []), `${f.key}-${f.take}`]);
+        }
+        for (const [message, keys] of byMessage) {
+            console.log(`  ${keys.length}x  ${message}`);
+            console.log(`        ${keys.slice(0, 8).join(' ')}${keys.length > 8 ? ' …' : ''}`);
+        }
+        console.log('\nRe-run the same command: what succeeded is skipped, only the gaps retry.');
+    }
+    console.log('\nListen on /audio, or with any player, then:');
+    console.log('  node tools/gen_audio_elevenlabs.mjs --promote <key> <take>');
+    console.log('  python3 tools/audit_audio.py');
 }
 
 main().catch(error => {

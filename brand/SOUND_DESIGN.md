@@ -412,6 +412,18 @@ It refuses a take that blows the budget rather than shipping it (`--max-ms` to
 hard-cut, `--force` to overrule), because a coin that rings for a second and a
 half is not a loud coin, it is a different sound wearing the coin's name.
 
+**The whole bank in one command.** This is the normal path, not the fallback:
+
+```bash
+npm run audio:gen -- --check            # key + network, spends nothing
+npm run audio:gen -- --all --takes 3    # 174 generations, resumable
+```
+
+It runs four at a time, skips takes already on disk (so re-running after a
+dropped connection retries only the gaps), and groups its failures by cause
+rather than printing the same rate-limit message a hundred times. `--force`
+regenerates what is already there; `--concurrency N` changes the pool.
+
 **Three takes, then choose in the browser.** `--takes` defaults to 3, and every
 take that lands in `output/audio-takes/` shows up on `/audio` as a numbered
 button beside the sound it is for, played through the *same gain the shipped file
@@ -421,7 +433,8 @@ A `shipped` button switches back. The takes row only appears where the takes
 directory exists, which is beside the repo while you are choosing and never in
 the deployed image.
 
-**And it all works with no API access at all.**
+**And there is a path for when the API is unreachable.** Only for that case — a
+corporate proxy, a sandbox, an outage. It is not how the bank gets made.
 
 ```bash
 npm run audio:gen -- --script      # -> output/audio-prompts.md
