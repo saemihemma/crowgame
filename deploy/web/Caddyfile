@@ -45,7 +45,39 @@
 	@api path /api/*
 	handle @api {
 		reverse_proxy {$CROW_API_UPSTREAM:} {
-			header_up X-Forwarded-For {remote_host}
+			# THE CLIENT IP. This line used to read
+			# `header_up X-Forwarded-For {remote_host}`, and that was a defect
+			# with a bigger blast radius than it looks:
+			#
+			# Caddy is NOT the edge here. Railway's proxy terminates TLS and
+			# forwards to this service over the private network, so
+			# {remote_host} is Railway's proxy — the same handful of addresses
+			# for every player alive. Overwriting X-Forwarded-For with it
+			# collapsed every per-IP rate limit in the API into ONE bucket, and
+			# a limiter with one bucket does the opposite of its job twice
+			# over: one noisy client spends the budget for everybody, and no
+			# attacker is ever isolated from anyone else.
+			#
+			# X-Envoy-External-Address is the real client address, derived by
+			# Railway's edge rather than copied from the request. Passing it
+			# under a name of our own keeps the API from having to guess which
+			# end of an X-Forwarded-For chain to believe, and `header_up` SETS
+			# rather than appends, so whatever a client sent under this name is
+			# replaced here. If the edge ever stops setting it the value is
+			# empty, and lib/clientIp.ts falls back to the socket address
+			# instead of trusting a blank.
+			#
+			# Measured, caddy 2.10 against a local echo upstream:
+			#   X-Envoy-External-Address: 198.51.100.7, plus a client-sent
+			#     X-Crow-Client-Ip: 6.6.6.6   -> upstream sees 198.51.100.7
+			#   no X-Envoy-External-Address, same forgery
+			#                                 -> upstream sees ""
+			# X-Forwarded-For arrives as Caddy's OWN peer in both cases, because
+			# Caddy ignores an incoming X-Forwarded-* from an untrusted hop. That
+			# is the whole reason this header has to exist: there is no
+			# arrangement of X-Forwarded-For here that carries the player.
+			header_up X-Crow-Client-Ip {http.request.header.X-Envoy-External-Address}
+
 			# The API is the only thing that should ever cache-control its own
 			# responses; never apply the static payload policy to it.
 		}
@@ -68,6 +100,16 @@
 	# media) stays environment-driven.
 	@payload path *.png *.svg *.wav *.mp3
 	header @payload Cache-Control "{$CROW_ASSET_CACHE:no-store}"
+
+	# Railway's healthcheck target for this service. It has to be a path that
+	# does not depend on the API or the database — this service is a file server
+	# and is healthy when it can answer, so anything heavier would fail a deploy
+	# for something that is not this service's fault. Without a healthcheck set,
+	# Railway swaps in a new deployment as soon as the container starts, which
+	# means a broken image replaces a working one before anything has proven it
+	# serves bytes.
+	@health path /healthz
+	respond @health "ok" 200
 
 	# Keep staging out of search results. Prod leaves this unset.
 	@robots path /robots.txt

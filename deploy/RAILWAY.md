@@ -36,6 +36,16 @@ a first-party auth cookie, and staging/prod separation by environment variable
 rather than by anything compiled into the client. It has to work that way, because
 promotion ships byte-identical files to both environments.
 
+It also means the API never sees a player's address directly, and that has bitten
+once already. Caddy is not the edge — Railway's proxy is — so `{remote_host}` at
+the Caddy hop is Railway's proxy, the same handful of addresses for every player
+alive. The Caddyfile used to set `X-Forwarded-For` to exactly that, which
+collapsed every per-IP rate limit in the API into ONE bucket: one noisy client
+spent the budget for everybody, and no attacker was ever isolated. Caddy now
+forwards Railway's own `X-Envoy-External-Address` as `X-Crow-Client-Ip`, and
+`server/src/lib/clientIp.ts` is the single place that decides what to believe.
+Verify it after any change to the proxy hop — §Verify a deploy, step 4.
+
 Both services build the same `deploy/web/Dockerfile`, which is Caddy plus the
 committed `output/web` export. No Godot toolchain runs on the deploy path, so a
 deploy is a seconds-long file copy, not a game build.
@@ -251,6 +261,35 @@ git fetch origin main
 git push origin origin/main:refs/heads/release
 ```
 
+### 2d. Set a healthcheck on every service that serves traffic
+
+Railway does not require one, and without one it swaps a new deployment in as
+soon as the container starts. That means a broken image replaces a working one
+before anything has proven it can answer — the deploy goes green, the site is
+down, and the only signal is a player telling you.
+
+**Settings → Deploy → Healthcheck Path:**
+
+| Service | Path | Why that path |
+| --- | --- | --- |
+| `crow-web-<env>` | `/healthz` | Caddy answers it itself. Not `/index.html` and not `/api/*`: this service is a file server, and a healthcheck that fails because the database is down would refuse to deploy a fix to a bug that has nothing to do with either |
+| `crow-api-<env>` | `/api/v1/health` | Deliberately DOES touch the database and reports `migrationsApplied`, because an API that cannot reach Postgres is not healthy in any useful sense |
+
+Leave the timeout at the default. The API's check is one `count(*)`; the web
+service's is a static string.
+
+### 2e. Turn on Postgres backups, then restore one
+
+Do this before a single child has an account, not after.
+
+Railway → the Postgres service → **Backups** → enable, and set the retention you
+are willing to lose data past. Then **restore one into a throwaway service and
+sign in against it.** The rollback section below explains why this is not
+optional: a forward-only migration means some rollbacks are a restore, and an
+untested restore is not a backup. For a database whose entire purpose is not
+losing a child's progress, this is the one setup step with no acceptable
+workaround.
+
 ## Deploying
 
 ### Normal flow
@@ -335,7 +374,78 @@ curl -sI https://<domain>/index.html | grep -i cache-control
 # 3. Which build is live?
 curl -s https://<domain>/build_id.txt
 curl -s https://<domain>/build_info.json    # commit + build time
+
+# 4. Is the API seeing real client addresses, or one proxy address for everybody?
+curl -s https://<domain>/api/v1/health      # then read the API service's log
+#   expect: remoteAddress differs between two callers on different networks.
+#   If every request logs the same address, the proxy hop has stopped forwarding
+#   X-Envoy-External-Address and every per-IP limit is now one shared bucket.
+#   See the Topology section.
 ```
+
+## Standing up to abuse
+
+Two different problems get called "DDoS", and Railway helps with neither in the
+same way.
+
+### What the API is protected by, and it is not the platform
+
+Every route inherits a per-IP ceiling — `CROW_GLOBAL_RATE_PER_MIN`, 600/min by
+default — and the routes that need a real budget have a tighter one of their own:
+
+| Surface | Budget | Keyed by | What it is for |
+| --- | --- | --- | --- |
+| everything, by default | 600/min | IP | nothing is unbounded. A ceiling, not a business rule |
+| `POST /api/v1/errors` | 20/min | IP | the one anonymous write |
+| `POST /api/v1/auth/signin` | 30/hour | IP | plus a per-ACCOUNT lock: 6 misses, 15 minutes. That one is the real fence — a 4-digit PIN is 13 bits, and an attacker has all the IPs they want |
+| `POST /api/v1/auth/signup` | 20/hour | IP | account-creation spam |
+| `/auth/request-link` | 10/hour | IP | mail sending |
+| save writes | 6/min | device | a household shares an IP; a device is one child |
+
+The default used to be *no* limit unless a route asked for one, and 12 of 20 did
+not — including `/api/v1/health` and `/api/v1/auth/session`, which are
+unauthenticated and hit an 8-connection pool on every call. `test/ratelimit.test.ts`
+now asserts the ceiling by exhausting it.
+
+Two things to know about the numbers. 600/min is 10 requests a second from one
+address: an order of magnitude above a child at play, and roughly double a
+classroom of thirty behind one school NAT. If you deploy somewhere many more
+players share an address, raise it — the symptom that says you must is 429s from
+one IP carrying many different device cookies. And the limiter is **in-memory**,
+which is correct for one replica and is the thing that pins the API to one
+replica; see the last section.
+
+### What nothing here protects against, and what to do about it
+
+A volumetric flood at the *web* service. Railway gives you no WAF, no per-IP
+edge limit, and no CDN, and Caddy has no built-in rate limiter — so the whole
+static payload is served, at full size, to anyone who asks, as many times as they
+ask. Railway bills egress. The gzip payload is ~17.7 MB, so ten thousand cold
+fetches is ~177 GB of billed transfer, arranged by anyone with a loop and no
+skill. That is the realistic attack on this game: not downtime, a bill.
+
+**Put Cloudflare (or any CDN) in front of the prod web service.** It is the
+single highest-value item on this page and it is free at this scale:
+
+1. Point the custom domain's DNS at Cloudflare, proxied (orange cloud), with
+   Railway's domain as the origin.
+2. Leave caching at default. The payload is content-addressed and served
+   `immutable`, so the edge holds it and origin egress collapses to roughly one
+   fetch per file per edge location — the same property that makes a returning
+   player free makes a flood cheap.
+3. Add a rate-limiting rule on `/api/*` — Cloudflare's free tier allows one — as
+   the outer fence in front of the in-process limiter.
+4. Leave `index.html` and `/api/*` uncached. Cloudflare respects the `no-store`
+   the Caddyfile already sets, so this needs no configuration; it needs
+   *checking*, once, per §Verify a deploy.
+
+Do this for prod. Staging does not need it and is better without the extra hop
+while iterating.
+
+One thing a CDN does not fix, because it is not volumetric: `error_groups` grows
+one permanent row per distinct error message from an unauthenticated caller, with
+no retention job. SECURITY.md carries it as a known hole. It is a slow bill
+rather than a fast one, and it is the next thing to bound.
 
 ## Cost notes
 
@@ -362,8 +472,18 @@ aggregates are kept forever and are tiny.
 - **No third-party analytics, ads, or tracking.** The only thing sent from a
   client is a save, an attempt batch, or an error report.
 - **No more than one API replica.** The rate limiter is in-memory, which is
-  correct for a single instance. Scaling out means moving it to Postgres or Redis
-  first — noted rather than pre-built.
+  correct for a single instance and is the *only* reason the count is one: the
+  service is otherwise stateless, and Postgres is nowhere near a limit. Two
+  replicas without changing it would give each its own counters, so every budget
+  on this page silently doubles.
+
+  The unlock, when the API stops keeping up, in order: move the limiter to a
+  shared store (Railway Redis is one service and `@fastify/rate-limit` takes a
+  `redis` option, so this is configuration rather than design), then raise the
+  replica count, then raise `CROW_DB_POOL_MAX` only if Postgres actually shows
+  waiting. Do not reorder those. The API is IO-light — a couple of statements per
+  request — so the first thing that will actually strain is Postgres write volume
+  on `attempts`, not the Node process.
 - **No preview environments per PR.** Staging is the shared pre-prod gate.
 - **No COOP/COEP headers.** The export is single-threaded specifically so it can
   be served from any static host without cross-origin isolation. If a

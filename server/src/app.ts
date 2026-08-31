@@ -2,6 +2,7 @@ import Fastify, { type FastifyInstance } from 'fastify';
 import rateLimit from '@fastify/rate-limit';
 import cookie from '@fastify/cookie';
 import { config } from './config.js';
+import { clientIp } from './lib/clientIp.js';
 import { registerErrorRoutes } from './routes/errors.js';
 import { registerHealthRoutes } from './routes/health.js';
 import { registerAuthRoutes } from './routes/auth.js';
@@ -27,11 +28,39 @@ export async function buildApp(): Promise<FastifyInstance> {
 
     // In-memory limiter: correct while the API is a single instance, which it is.
     // Scaling to more than one replica means moving this to Postgres or Redis —
-    // noted rather than pre-built.
+    // noted rather than pre-built (see deploy/RAILWAY.md).
+    //
+    // `global: true`, and that is the change worth explaining. It used to be
+    // false, which means a route got a budget only if its own registration asked
+    // for one — and 12 of the 20 did not. Two of those are unauthenticated and
+    // touch the database on every call (`/api/v1/health` counts a table,
+    // `/api/v1/auth/session` reads the device), and the pool is 8 connections
+    // wide. An unauthenticated flood at either one queues every request behind
+    // it, including the ones a child is waiting on. The rest are family routes
+    // behind a device cookie, which is a credential anyone can mint from
+    // `/auth/signup` — `GET /api/v1/family/export` is one query over every
+    // attempt a family ever made, and it had no limit at all.
+    //
+    // So the default is a ceiling, not a business rule: high enough that no real
+    // player or classroom can reach it, low enough that a single host cannot
+    // saturate the pool. The tight, meaningful budgets stay where they are, per
+    // route, and override this.
+    //
+    // Keyed by IP rather than by device on purpose. The ceiling exists to bound
+    // what one *host* can do, and a device cookie is not scarce — key it by
+    // device and an attacker mints twenty accounts and gets twenty ceilings.
+    // Per-device is right for a business rule (see `rateLimitKeyByDevice`) and
+    // wrong for this.
     await app.register(rateLimit, {
-        global: false,
-        max: config.errors.ratePerMinutePerIp,
+        global: true,
+        max: config.rateLimit.globalPerMinutePerIp,
         timeWindow: '1 minute',
+        // The key space is bounded and evicts LRU. Too small and a broad flood
+        // evicts real players' counters, which resets their budget rather than
+        // anyone's — it fails open, so it is sized well above the number of
+        // distinct addresses a day of real traffic has.
+        cache: config.rateLimit.keyCache,
+        keyGenerator: request => `ip:${clientIp(request)}`,
     });
 
     // Device auth is a cookie, so cookie parsing must be registered first.

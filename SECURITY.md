@@ -26,6 +26,17 @@ The attack surface is small on purpose:
   stores no text a *player* typed: no child id, no display name, no answer. The
   live caps are in `server/src/config.ts`.
 
+  **"IP rate-limited" was not true in production until 2026-08.** Not because the
+  limit was missing — it was there, and correct — but because the Caddy hop
+  overwrote `X-Forwarded-For` with Railway's proxy address, so every caller on
+  earth shared one bucket. A limiter with one bucket is not a weaker limiter; it
+  fails in both directions at once, throttling players who did nothing and
+  isolating no attacker from anyone. Every route now inherits a ceiling as well
+  (`CROW_GLOBAL_RATE_PER_MIN`), the client address is decided in exactly one
+  place (`server/src/lib/clientIp.ts`), and `server/test/ratelimit.test.ts`
+  asserts both — including that nothing else reads `request.ip` directly, which is
+  how a second, wrong answer to "who is this" would get in.
+
   **Known hole, and the sharpest one here.** It does store caller-supplied text —
   `message`, `stack`, `source` and sanitized `context` keys — and one of them
   persists: the message plus a context/stack sample is written into

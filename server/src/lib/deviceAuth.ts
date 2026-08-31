@@ -1,5 +1,6 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { config } from '../config.js';
+import { clientIp } from './clientIp.js';
 import { withAuthTables } from './familyDb.js';
 import { hashToken, newToken } from './tokens.js';
 
@@ -125,5 +126,5 @@ export function deviceOf(request: FastifyRequest): DeviceIdentity {
  */
 export function rateLimitKeyByDevice(request: FastifyRequest): string {
     const raw = request.cookies?.[COOKIE_NAME];
-    return raw ? `d:${hashToken(raw).toString('base64url')}` : `ip:${request.ip}`;
+    return raw ? `d:${hashToken(raw).toString('base64url')}` : `ip:${clientIp(request)}`;
 }

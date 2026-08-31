@@ -52,6 +52,23 @@ export const config = {
         ratePerMinutePerIp: int('CROW_ERROR_RATE_PER_MIN', 20),
     },
 
+    rateLimit: {
+        /**
+         * The ceiling every route inherits, per IP per minute. Not a business
+         * rule — those are per route in the handlers, and they are much tighter.
+         * This one exists so that no route is *unbounded*, which 12 of them were.
+         *
+         * 600/min is 10 requests a second from one address. A child at play is
+         * an order of magnitude under that; a classroom of thirty behind one
+         * school NAT is roughly half of it. Raise it for a deployment where many
+         * more players share an address, and watch for the symptom that says you
+         * must: 429s from one IP carrying many different device cookies.
+         */
+        globalPerMinutePerIp: int('CROW_GLOBAL_RATE_PER_MIN', 600),
+        /** Distinct keys the in-memory limiter holds before evicting LRU. */
+        keyCache: int('CROW_RATE_KEY_CACHE', 20_000),
+    },
+
     auth: {
         /** Magic links are short-lived; a parent clicks them within a minute or two. */
         linkTtlSeconds: int('CROW_LINK_TTL_SECONDS', 15 * 60),

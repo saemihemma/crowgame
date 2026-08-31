@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from 'fastify';
 import { config } from '../config.js';
 import { withAppRole } from '../db.js';
+import { clientIp } from '../lib/clientIp.js';
 import { coarsenIp, normalizeEvent, recordEvent, type IncomingErrorEvent } from '../lib/errorEvents.js';
 
 interface ErrorBatchBody {
@@ -82,7 +83,7 @@ export async function registerErrorRoutes(app: FastifyInstance): Promise<void> {
 
             const meta = {
                 userAgent: (request.headers['user-agent'] ?? '').slice(0, 400) || null,
-                ipPrefix: coarsenIp(request.ip),
+                ipPrefix: coarsenIp(clientIp(request)),
             };
 
             let stored = 0;
