@@ -4498,7 +4498,7 @@
           "id": 8,
           "name": "coin",
           "type": "collectible",
-          "x": 480,
+          "x": 768,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -4514,7 +4514,7 @@
           "id": 9,
           "name": "coin",
           "type": "collectible",
-          "x": 768,
+          "x": 1056,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -4530,38 +4530,6 @@
           "id": 10,
           "name": "coin",
           "type": "collectible",
-          "x": 1056,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
-          "id": 11,
-          "name": "coin",
-          "type": "collectible",
-          "x": 1344,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
-          "id": 12,
-          "name": "coin",
-          "type": "collectible",
           "x": 1632,
           "y": 448,
           "width": 32,
@@ -4575,7 +4543,7 @@
           ]
         },
         {
-          "id": 13,
+          "id": 11,
           "name": "big_coin",
           "type": "big_coin",
           "x": 1536,
@@ -4596,7 +4564,7 @@
           ]
         },
         {
-          "id": 14,
+          "id": 12,
           "name": "exit",
           "type": "door",
           "x": 2112,
@@ -4612,7 +4580,7 @@
           ]
         },
         {
-          "id": 15,
+          "id": 13,
           "name": "spikes",
           "type": "hazard",
           "x": 672,
@@ -4628,7 +4596,7 @@
           ]
         },
         {
-          "id": 16,
+          "id": 14,
           "name": "spikes",
           "type": "hazard",
           "x": 1472,

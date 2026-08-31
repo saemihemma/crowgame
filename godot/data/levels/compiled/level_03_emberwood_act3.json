@@ -5735,7 +5735,7 @@
           "id": 10,
           "name": "coin",
           "type": "collectible",
-          "x": 768,
+          "x": 1056,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -5751,7 +5751,7 @@
           "id": 11,
           "name": "coin",
           "type": "collectible",
-          "x": 1056,
+          "x": 1344,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -5767,7 +5767,7 @@
           "id": 12,
           "name": "coin",
           "type": "collectible",
-          "x": 1344,
+          "x": 1632,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -5783,22 +5783,6 @@
           "id": 13,
           "name": "coin",
           "type": "collectible",
-          "x": 1632,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
-          "id": 14,
-          "name": "coin",
-          "type": "collectible",
           "x": 1920,
           "y": 448,
           "width": 32,
@@ -5812,23 +5796,7 @@
           ]
         },
         {
-          "id": 15,
-          "name": "coin",
-          "type": "collectible",
-          "x": 2208,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
-          "id": 16,
+          "id": 14,
           "name": "exit",
           "type": "door",
           "x": 2752,

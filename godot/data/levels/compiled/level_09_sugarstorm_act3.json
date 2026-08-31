@@ -6487,7 +6487,7 @@
           "id": 12,
           "name": "coin",
           "type": "collectible",
-          "x": 1056,
+          "x": 1632,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -6503,7 +6503,7 @@
           "id": 13,
           "name": "coin",
           "type": "collectible",
-          "x": 1632,
+          "x": 1920,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -6519,7 +6519,7 @@
           "id": 14,
           "name": "coin",
           "type": "collectible",
-          "x": 1920,
+          "x": 2208,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -6535,7 +6535,7 @@
           "id": 15,
           "name": "coin",
           "type": "collectible",
-          "x": 2208,
+          "x": 2496,
           "y": 448,
           "width": 32,
           "height": 32,
@@ -6551,22 +6551,6 @@
           "id": 16,
           "name": "coin",
           "type": "collectible",
-          "x": 2496,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
-          "id": 17,
-          "name": "coin",
-          "type": "collectible",
           "x": 2784,
           "y": 448,
           "width": 32,
@@ -6580,7 +6564,7 @@
           ]
         },
         {
-          "id": 18,
+          "id": 17,
           "name": "exit",
           "type": "door",
           "x": 3136,
@@ -6596,7 +6580,7 @@
           ]
         },
         {
-          "id": 19,
+          "id": 18,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 224,
@@ -6612,7 +6596,7 @@
           ]
         },
         {
-          "id": 20,
+          "id": 19,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 416,
@@ -6628,7 +6612,7 @@
           ]
         },
         {
-          "id": 21,
+          "id": 20,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 1376,
@@ -6644,7 +6628,7 @@
           ]
         },
         {
-          "id": 22,
+          "id": 21,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 2208,

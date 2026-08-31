@@ -31,6 +31,9 @@ const CORNER := 8.0
 const LABEL_WIDTH := 250.0
 const COUNT_WIDTH := 170.0
 const GAP := 12.0
+## Kept clear on the right. The report scrolls, and a right-aligned tally drawn
+## to the full width is printed underneath the scrollbar.
+const RIGHT_GUTTER := 14.0
 ## Nothing is ever drawn at zero length: a subject the child gets none of right
 ## still has to be visibly a bar with nothing in it rather than an empty row that
 ## reads as missing data.
@@ -76,7 +79,7 @@ func _draw() -> void:
 		paper if indent == 0.0 else Color(paper, 0.72))
 
 	var track_x := LABEL_WIDTH + GAP
-	var track_w := maxf(0.0, size.x - track_x - COUNT_WIDTH - GAP)
+	var track_w := maxf(0.0, size.x - track_x - COUNT_WIDTH - GAP - RIGHT_GUTTER)
 	var track := Rect2(track_x, size.y * 0.2, track_w, size.y * 0.6)
 	draw_rect(track, Color(ink, 0.55), true)
 
@@ -91,5 +94,5 @@ func _draw() -> void:
 	var tally := TextManager.t("report_bar_count", [str(correct), str(attempted)]) \
 		if accuracy < 0.0 else TextManager.t("report_bar_tally",
 			[str(int(round(accuracy * 100.0))), str(correct), str(attempted)])
-	draw_string(font, Vector2(size.x - COUNT_WIDTH, baseline), tally,
+	draw_string(font, Vector2(size.x - COUNT_WIDTH - RIGHT_GUTTER, baseline), tally,
 		HORIZONTAL_ALIGNMENT_RIGHT, COUNT_WIDTH, font_size, paper)

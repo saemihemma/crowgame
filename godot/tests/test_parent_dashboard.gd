@@ -99,6 +99,37 @@ func test_the_overview_works_from_the_local_log_alone() -> void:
 	report.queue_free()
 
 
+## A BAR MEANS ONE THING, on both paths.
+##
+## It says "right first go" -- that is the number the ladder steers by and the
+## number the headline tile shows. The cloud report sends the RATE and the
+## all-attempts COUNT separately, and feeding one to the percentage and the other
+## to the tally shipped a bar reading "100% - 1/1" directly under a tile reading
+## 0%. Both numbers were true; together they read as a contradiction.
+func test_a_bar_and_the_headline_measure_the_same_thing() -> void:
+	var report := _mount()
+	# One answer, got right, but not first go: 100% accuracy, 0% first try.
+	var save := {"telemetry": {"attemptLog": [
+		{"domain": "counting", "correct": true, "firstTry": false, "at": 1, "ms": 3000},
+	]}}
+	var rows: Array = report._subjects({}, save)
+	assert_eq(int((rows[0] as Dictionary)["correct"]), 0,
+		"the bar counts answers got right FIRST GO, not answers got right eventually")
+	assert_eq(float((rows[0] as Dictionary)["accuracy"]), 0.0,
+		"so its percentage agrees with the headline tile")
+	assert_true(absf(report._first_try_rate({}, save)) < 0.001,
+		"and the headline tile says the same 0%")
+
+	# And the cloud path derives its sample from the rate it belongs to.
+	var cloud := {"domains": [
+		{"domain": "counting", "attempted": 10, "correct": 9, "firstTryAccuracy": 0.6},
+	]}
+	var cloud_rows: Array = report._subjects(cloud, {})
+	assert_eq(int((cloud_rows[0] as Dictionary)["correct"]), 6,
+		"six of ten right first go, not the nine that were right in the end")
+	report.queue_free()
+
+
 ## Newest first. The question a parent has is about this afternoon, and a log
 ## that opens on the child's first ever answer is one they have to scroll to the
 ## bottom of every time.

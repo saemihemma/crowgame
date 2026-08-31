@@ -21,6 +21,7 @@ class_name BrandTheme
 const FIELD_CORNER := 12
 const FIELD_PAD := 14
 const FIELD_MIN_HEIGHT := 56
+const PANEL_PAD := 22
 
 static var _cached: Theme = null
 static var _cached_for := ""
@@ -71,6 +72,13 @@ static func _build() -> Theme:
 	panel.set_corner_radius_all(20)
 	panel.set_border_width_all(3)
 	panel.border_color = Color(paper, 0.45)
+	# Breathing room INSIDE the card. Without it a PanelContainer draws its
+	# border hard against its content, and the session recap on the main menu
+	# shipped with "Great flying!" touching the edge of the box it was in.
+	panel.content_margin_left = PANEL_PAD
+	panel.content_margin_right = PANEL_PAD
+	panel.content_margin_top = PANEL_PAD * 0.75
+	panel.content_margin_bottom = PANEL_PAD * 0.75
 	theme.set_stylebox("panel", "PanelContainer", panel)
 
 	return theme

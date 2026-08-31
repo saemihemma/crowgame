@@ -33,6 +33,7 @@ const PARENT_REPORT := preload("res://scenes/ParentReport.tscn")
 const TITLE_SIZE := 92
 const SUBTITLE_SIZE := 26
 const COLUMN_SEPARATION := 14
+const RECAP_MIN_WIDTH := 420.0
 
 func _ready() -> void:
 	BrandTheme.apply(self)
@@ -97,7 +98,7 @@ func _ready() -> void:
 
 	# Trophy shelf: one badge per domain the child has actually met, grown
 	# from the highest step ever reached. Badges only ever grow.
-	_build_trophy_shelf()
+	_build_trophy_shelf(col)
 
 	# Session-end recap (peak-end rule): arriving here from play with
 	# something to celebrate shows one warm recap that ends on the best
@@ -106,9 +107,18 @@ func _ready() -> void:
 	if not recap.is_empty():
 		_show_recap(recap)
 
-## Code-drawn badge row along the bottom (TrophyBadge). Tier thresholds come
-## from the shared math_tuning.json (`trophies.tierSteps`).
-func _build_trophy_shelf() -> void:
+## Code-drawn badge row (TrophyBadge). Tier thresholds come from the shared
+## math_tuning.json (`trophies.tierSteps`).
+##
+## THE LAST ROW OF THE COLUMN, not a strip pinned to the bottom of the screen.
+## It used to be the latter, on the reasoning that the bottom band was empty --
+## and it was, until the menu became a FITTED column that uses the whole height.
+## After that the badges were drawn straight through the last button: a sprout
+## and the word "Counting" sitting on top of "How is my child doing?", which the
+## screen tour photographed at both viewports. Inside the column it is measured
+## with everything else, so it can never overlap and it shrinks with the rest
+## when the viewport is tight.
+func _build_trophy_shelf(col: VBoxContainer) -> void:
 	var tier_steps: Array = (DataManager.get_dict("MATH_TUNING").get("trophies", {}) as Dictionary).get("tierSteps", [])
 	if tier_steps.is_empty():
 		return
@@ -129,14 +139,9 @@ func _build_trophy_shelf() -> void:
 	var row := HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 28)
-	row.anchor_left = 0.0
-	row.anchor_right = 1.0
-	row.anchor_top = 1.0
-	row.anchor_bottom = 1.0
-	row.offset_top = -84
-	row.offset_bottom = -12
+	row.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(row)
+	col.add_child(row)
 	for badge in earned:
 		var cell := VBoxContainer.new()
 		cell.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -167,6 +172,11 @@ func _show_recap(recap: Dictionary) -> void:
 	dim.add_child(center)
 
 	var panel := PanelContainer.new()
+	# Wide enough to be a card. Sized to its text alone it was barely wider than
+	# "Problems solved: 1", and through a translucent panel the dimmed menu
+	# buttons behind lined up with its rows -- so the recap read as three
+	# separate boxes stacked on the menu rather than as one thing said once.
+	panel.custom_minimum_size.x = RECAP_MIN_WIDTH
 	center.add_child(panel)
 	var col := VBoxContainer.new()
 	col.alignment = BoxContainer.ALIGNMENT_CENTER

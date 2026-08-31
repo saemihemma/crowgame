@@ -5026,22 +5026,6 @@
           "id": 11,
           "name": "coin",
           "type": "collectible",
-          "x": 1632,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
-          "id": 12,
-          "name": "coin",
-          "type": "collectible",
           "x": 1920,
           "y": 448,
           "width": 32,
@@ -5055,7 +5039,7 @@
           ]
         },
         {
-          "id": 13,
+          "id": 12,
           "name": "big_coin",
           "type": "big_coin",
           "x": 1728,
@@ -5076,7 +5060,7 @@
           ]
         },
         {
-          "id": 14,
+          "id": 13,
           "name": "exit",
           "type": "door",
           "x": 2368,
@@ -5092,7 +5076,7 @@
           ]
         },
         {
-          "id": 15,
+          "id": 14,
           "name": "ladder",
           "type": "ladder",
           "x": 224,
@@ -5108,7 +5092,7 @@
           ]
         },
         {
-          "id": 16,
+          "id": 15,
           "name": "ladder",
           "type": "ladder",
           "x": 992,
@@ -5124,7 +5108,7 @@
           ]
         },
         {
-          "id": 17,
+          "id": 16,
           "name": "ladder",
           "type": "ladder",
           "x": 1792,

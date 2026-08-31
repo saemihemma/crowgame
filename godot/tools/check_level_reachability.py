@@ -359,6 +359,42 @@ def check(path, quiet=False):
     return []
 
 
+def stacked_collectibles(level, tile):
+    """Two coins drawn over each other.
+
+    A coin is anchored at its centre and a big coin is drawn wider than its
+    tile, so two of them within a tile of each other are one smudge on screen
+    rather than two things to collect -- and where one is a big coin, that is a
+    third of the level's score sitting where a child cannot see it is there.
+    The act author places the motif coins, the scatter and the big coins in
+    three separate passes, and nothing stopped a later pass landing on an
+    earlier one.
+
+    Geometry rather than reachability, but this is the file that already reads
+    every compiled level and knows what a tile is.
+    """
+    items = []
+    for layer in level["layers"]:
+        if layer.get("type") != "objectgroup":
+            continue
+        for obj in layer["objects"]:
+            # The compiler emits a big coin as its own object type and an
+            # ordinary one as a `collectible` carrying `collectible_type`, so
+            # the property is the reliable name and the type is the fallback.
+            kind = prop(obj, "collectible_type") or obj.get("type", "")
+            if kind not in ("coin", "big_coin"):
+                continue
+            items.append((kind,
+                          obj["x"] + obj.get("width", 0) / 2.0,
+                          obj["y"] + obj.get("height", 0) / 2.0))
+    found = []
+    for i, (a_kind, ax, ay) in enumerate(items):
+        for b_kind, bx, by in items[i + 1:]:
+            if abs(ax - bx) < tile * 2 and abs(ay - by) < tile * 2:
+                found.append((a_kind, int(ax), int(ay), b_kind, int(bx), int(by)))
+    return found
+
+
 def main():
     keys = [l["mapFile"].split("/")[-1] for l in json.loads(REGISTRY.read_text())["levels"]]
     wu, wa = envelope(32, float(TUNING["maxSpeed"]))
@@ -367,9 +403,13 @@ def main():
           f"sprint {sa} across / {su} up from level {SPRINT_FROM})")
     problems = []
     bridged = []
+    stacked = []
     for name in keys:
         problems += check(LEVELS / name)
         level = json.loads((LEVELS / name).read_text())
+        for a_type, ax, ay, b_type, bx, by in stacked_collectibles(level, level["tilewidth"]):
+            stacked.append(f"{name}: a {a_type} at ({ax},{ay}) and a {b_type} at "
+                           f"({bx},{by}) are drawn on top of each other")
         for row, col, tiles, px in gaps_the_body_bridges(level, level["tilewidth"]):
             bridged.append(f"{name}: row {row}, column {col} -- a {tiles}-tile "
                            f"({px}px) hole, and the crow's box is {PLAYER_BODY_W}px, "
@@ -407,7 +447,11 @@ def main():
         print("HOLES THAT ARE NOT HOLES (the collider bridges them):")
         for b in bridged:
             print("  " + b)
-    if problems or walk_problems or bridged:
+    if stacked:
+        print("COINS DRAWN ON TOP OF EACH OTHER:")
+        for c in stacked:
+            print("  " + c)
+    if problems or walk_problems or bridged or stacked:
         sys.exit(1)
     print(f"level reachability: clean, and clean again at a walk with no sprint "
           f"({len(keys)} levels)")

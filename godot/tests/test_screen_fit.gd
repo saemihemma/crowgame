@@ -331,3 +331,70 @@ func test_headless_text_is_not_a_layout_oracle() -> void:
 		"headless line height is %.2fx the point size, not the ~3x this suite assumes; text-height assertions are trustworthy again"
 			% ratio)
 	probe.queue_free()
+
+
+## NOTHING ON THE MAIN MENU IS PINNED TO A SCREEN EDGE THAT THE COLUMN NOW USES.
+##
+## The trophy shelf was: a badge row anchored to the bottom of the viewport, on
+## the reasoning that the bottom band was empty. It was, until this menu became a
+## FITTED column that uses the whole height -- after which the badges drew
+## straight through the last button, a sprout and the word "Counting" sitting on
+## top of "How is my child doing?".
+##
+## The fix is not a margin, because a margin is a guess about how tall the column
+## will be next time a row is added to it. The shelf is IN the column, so FitBox
+## measures it with everything else and it cannot overlap by construction. This
+## asserts that structure rather than today's pixels.
+func test_the_trophy_shelf_is_measured_with_the_menu_not_pinned_beside_it() -> void:
+	# A child who has earned a badge, so there is a shelf at all. Headless, the
+	# learner starts with no attempts anywhere and the shelf builds nothing --
+	# which is exactly the state this bug hid behind.
+	var before := LearnerStateManager.get_snapshot().duplicate(true)
+	var seeded := LearnerStateManager.get_snapshot().duplicate(true)
+	var tiers: Array = (DataManager.get_dict("MATH_TUNING").get("trophies", {}) as Dictionary) \
+		.get("tierSteps", [])
+	assert_true(not tiers.is_empty(), "the trophy tiers are configured")
+	var domain := String(MathDomains.ALL[0])
+	# Edited, not replaced: the progress record carries more fields than the shelf
+	# reads (winsAtCurrentStep among them) and the manager rebuilds its summary
+	# from all of them.
+	var progress: Dictionary = seeded["curriculumProgress"][domain]
+	progress["currentStep"] = int(tiers[0])
+	progress["highestStep"] = int(tiers[0])
+	progress["totalAttempts"] = 12
+	LearnerStateManager.replace_snapshot(seeded)
+
+	var scene: PackedScene = load(SceneRouter.path_of("main_menu"))
+	var root: Node = scene.instantiate()
+	Engine.get_main_loop().root.add_child(root)
+
+	var badges: Array = []
+	_badge_rows(root, badges)
+	assert_true(badges.size() >= 1,
+		"a child at step %d has earned a badge to place" % int(tiers[0]))
+	for badge: Node in badges:
+		var inside := false
+		var walk: Node = badge
+		while walk != null:
+			if walk is FitBox:
+				inside = true
+				break
+			walk = walk.get_parent()
+		assert_true(inside,
+			"the trophy shelf sits inside the fitted column, where FitBox measures it")
+
+	# And the whole menu, badges included, is still on the tightest screen.
+	for viewport in VIEWPORTS:
+		var result := _worst_overflow(root, viewport["size"])
+		assert_true(float(result["overflow"]) == 0.0,
+			"[main menu with badges @ %s] overflows by %.0fpx (%s)"
+				% [str(viewport["size"]), float(result["overflow"]), result["where"]])
+
+	root.queue_free()
+	LearnerStateManager.replace_snapshot(before)
+
+func _badge_rows(node: Node, out: Array) -> void:
+	for child in node.get_children():
+		if child is TrophyBadge:
+			out.append(child)
+		_badge_rows(child, out)

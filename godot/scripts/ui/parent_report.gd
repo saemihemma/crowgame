@@ -277,15 +277,20 @@ func _render_overview() -> void:
 	var save := _save_of(profile)
 
 	_tiles(cloud, save)
-	_body(TextManager.t("report_source_cloud" if not cloud.is_empty() else "report_source_local"))
 
+	# THE BARS ARE THE SCREEN, so nothing gets between them and the tiles that a
+	# parent does not need first. Both of the lines that used to sit here -- where
+	# the numbers came from, and how to read a bar -- were body-sized paragraphs,
+	# and together they pushed every bar below the fold on a 540-tall display.
+	# The reading note is a caption now and the provenance line has moved down to
+	# the footnotes, where a question nobody asks first belongs.
 	var subjects := _subjects(cloud, save)
 	if subjects.is_empty():
 		_body(TextManager.t("report_not_played_yet"))
 	else:
 		_heading(TextManager.t("report_subjects_title"),
 			int(Config.ui("parent_report/child_font_size", 30)))
-		_body(TextManager.t("report_subjects_intro"))
+		_caption(TextManager.t("report_subjects_intro"))
 		for subject in subjects:
 			_render_subject(subject as Dictionary)
 
@@ -294,6 +299,7 @@ func _render_overview() -> void:
 	elif cloud.get("grade", null) is Dictionary:
 		_render_grade(cloud["grade"])
 
+	_caption(TextManager.t("report_source_cloud" if not cloud.is_empty() else "report_source_local"))
 	_body(TextManager.t("report_what_this_is"))
 
 ## One subject: the bar, where the child has got to in it, how it breaks down by
@@ -317,8 +323,10 @@ func _render_subject(subject: Dictionary) -> void:
 	if progress is Dictionary:
 		var step := int((progress as Dictionary).get("currentStep", 0))
 		var best := maxi(step, int((progress as Dictionary).get("highestStep", 0)))
-		_caption(TextManager.t("report_domain_head", [
-			TextManager.t("domain_" + String(subject["domain"])), str(step), str(best)]))
+		# No subject name in it: this line sits directly under a bar that is
+		# already labelled with one, and "Counting - Counting level 2" is how the
+		# first version of it read.
+		_caption(TextManager.t("report_domain_head", [str(step), str(best)]))
 
 	for kind_entry in subject.get("kinds", []):
 		var kind: Dictionary = kind_entry
@@ -431,6 +439,13 @@ func _subjects(cloud: Dictionary, save: Dictionary) -> Array:
 			if attempted < MIN_ATTEMPTS_TO_SHOW:
 				continue
 			var first: Variant = d.get("firstTryAccuracy", null)
+			# RIGHT FIRST GO, on both halves of the bar. The report sends the rate
+			# and the all-attempts count separately, and feeding one to the
+			# percentage and the other to the tally put "100% - 1/1" next to a
+			# headline tile reading 0% -- both true, and side by side they read as
+			# a contradiction. So the sample is derived from the rate it belongs
+			# to, the same weighting the headline does.
+			var first_right := 0 if first == null else int(round(float(first) * attempted))
 			var kinds: Array = []
 			for kind_entry in d.get("kinds", []):
 				if not (kind_entry is Dictionary):
@@ -451,7 +466,7 @@ func _subjects(cloud: Dictionary, save: Dictionary) -> Array:
 			rows.append({
 				"domain": String(d.get("domain", "")),
 				"attempted": attempted,
-				"correct": int(d.get("correct", 0)),
+				"correct": first_right,
 				"accuracy": -1.0 if first == null else float(first),
 				"expectation": d.get("expectation", null),
 				"progress": d.get("progress", null),
@@ -477,12 +492,16 @@ func _subjects(cloud: Dictionary, save: Dictionary) -> Array:
 func _local_tallies(save: Dictionary) -> Array:
 	var by_domain: Dictionary = {}
 	for entry in _log_of(save):
-		var domain := String((entry as Dictionary).get("domain", ""))
+		var row: Dictionary = entry
+		var domain := String(row.get("domain", ""))
 		if domain.is_empty():
 			continue
 		var tally: Dictionary = by_domain.get(domain, {"attempted": 0, "correct": 0})
 		tally["attempted"] = int(tally["attempted"]) + 1
-		if bool((entry as Dictionary).get("correct", false)):
+		# Right FIRST GO, matching the cloud path and matching what the bar says
+		# it means. Plain accuracy here would make an offline bar and an online
+		# bar of the same play two different numbers.
+		if bool(row.get("correct", false)) and bool(row.get("firstTry", false)):
 			tally["correct"] = int(tally["correct"]) + 1
 		by_domain[domain] = tally
 	var rows: Array = []

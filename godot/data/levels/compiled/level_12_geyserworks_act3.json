@@ -6235,22 +6235,6 @@
           "id": 15,
           "name": "coin",
           "type": "collectible",
-          "x": 1920,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
-          "id": 16,
-          "name": "coin",
-          "type": "collectible",
           "x": 2208,
           "y": 448,
           "width": 32,
@@ -6264,23 +6248,7 @@
           ]
         },
         {
-          "id": 17,
-          "name": "coin",
-          "type": "collectible",
-          "x": 2496,
-          "y": 448,
-          "width": 32,
-          "height": 32,
-          "properties": [
-            {
-              "name": "collectible_type",
-              "type": "string",
-              "value": "coin"
-            }
-          ]
-        },
-        {
-          "id": 18,
+          "id": 16,
           "name": "exit",
           "type": "door",
           "x": 2976,
@@ -6296,7 +6264,7 @@
           ]
         },
         {
-          "id": 19,
+          "id": 17,
           "name": "spikes",
           "type": "hazard",
           "x": 224,
@@ -6312,7 +6280,7 @@
           ]
         },
         {
-          "id": 20,
+          "id": 18,
           "name": "spikes",
           "type": "hazard",
           "x": 1024,
@@ -6328,7 +6296,7 @@
           ]
         },
         {
-          "id": 21,
+          "id": 19,
           "name": "spitter_beetle",
           "type": "enemy",
           "x": 448,
@@ -6344,7 +6312,7 @@
           ]
         },
         {
-          "id": 22,
+          "id": 20,
           "name": "spitter_beetle",
           "type": "enemy",
           "x": 1472,
@@ -6360,7 +6328,7 @@
           ]
         },
         {
-          "id": 23,
+          "id": 21,
           "name": "cockroach_basic",
           "type": "enemy",
           "x": 2048,

@@ -313,21 +313,40 @@ function build(act, zone, actIndex, key) {
     // let a coin sit half inside the step above it.
     const clear = (cx, cy) => !occupied.has(`${cx},${cy - 1}`)
         && !occupied.has(`${cx},${cy}`) && !occupied.has(`${cx},${cy + 1}`);
+    // AND NOT ON TOP OF ANOTHER COIN. `clear` only knows about platforms, so a
+    // big coin dropped at an even share of the run landed squarely on a scatter
+    // coin -- two coins drawn over each other, which a child reads as one coin
+    // with a smudge, and which costs them a collectible they can see and cannot
+    // take twice. Photographed in act one by the screen tour.
+    //
+    // Two columns, not one: a big coin is drawn wider than its tile, so two
+    // coins in adjacent columns still touch.
+    const COIN_GAP = 2;
+    const spaced = (cx, cy) => collectibles.every(
+        c => Math.abs(c.x - cx) >= COIN_GAP || Math.abs(c.y - cy) >= COIN_GAP);
+    const free = (cx, cy) => clear(cx, cy) && spaced(cx, cy);
     for (let cx = 6; cx < x - 8; cx += 9) {
-        if (clear(cx, GROUND_Y - 2)) collectibles.push({ type: 'coin', x: cx, y: GROUND_Y - 2 });
+        if (free(cx, GROUND_Y - 2)) collectibles.push({ type: 'coin', x: cx, y: GROUND_Y - 2 });
     }
     // Any big coins the owls did not place (a short act) go on the ground, in
     // the first clear column at or after an even share of the run.
     while (bigCoins < 3) {
         bigCoins += 1;
         let bx = Math.floor(x * bigCoins / 4);
-        while (bx < x - 8 && !clear(bx, GROUND_Y - 2)) bx += 1;
+        while (bx < x - 8 && !free(bx, GROUND_Y - 2)) bx += 1;
         collectibles.push({ type: 'big_coin', x: bx, y: GROUND_Y - 2, id: `c${bigCoins}` });
     }
-    // And every coin the motifs placed, re-checked the same way.
+    // And every coin the motifs placed, re-checked the same way -- including
+    // against each other, since two motifs in a row can each place one at their
+    // own edge. The big coins are the three a level is SCORED on, so where a
+    // pair has to go, the ordinary coin is the one that goes.
     for (let i = collectibles.length - 1; i >= 0; i -= 1) {
         const c = collectibles[i];
-        if (!clear(c.x, c.y)) collectibles.splice(i, 1);
+        const others = collectibles.filter((_, j) => j !== i);
+        const collides = others.some(o => Math.abs(o.x - c.x) < COIN_GAP
+            && Math.abs(o.y - c.y) < COIN_GAP
+            && (o.type === 'big_coin' || c.type !== 'big_coin'));
+        if (!clear(c.x, c.y) || collides) collectibles.splice(i, 1);
     }
 
     ground(4);                                     // landing ground for the door

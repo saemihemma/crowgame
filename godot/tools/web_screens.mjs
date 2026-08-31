@@ -173,14 +173,33 @@ function walk(page, view) {
         // Out of the level, back to the menu, and into the grown-up dashboard,
         // which is the screen with the most on it and the least tested layout.
         // Quit is the last row of the pause card.
-        ['quit-to-menu', async () => { await click(0, 195); await page.waitForTimeout(2500); }],
+        // KEYBOARD AGAIN. A fixed offset for Quit put the click on the language
+        // row at 1180x820 and switched the whole game to Icelandic mid-tour --
+        // the pause card is centred, so its rows sit at different absolute
+        // heights on every viewport. Focus starts on Resume; four Downs reach
+        // Quit and saturate there.
+        ['quit-to-menu', async () => {
+            for (let i = 0; i < 4; i += 1) { await page.keyboard.press('ArrowDown'); await page.waitForTimeout(150); }
+            await page.keyboard.press('Enter');
+            await page.waitForTimeout(2500);
+        }],
+        // The session recap lands over the menu on arrival from play. Dismiss it
+        // so the shots after this are of the menu and the dashboard.
+        ['recap', async () => { await page.waitForTimeout(600); }],
+        ['menu-after-play', async () => { await page.keyboard.press('Enter'); await page.waitForTimeout(1200); }],
         // KEYBOARD, not a click, for the same reason the login form is typed:
         // the menu's rows move as a child unlocks things (a returning player
         // gets PLAY, a world picker and a progress row that a new one does not),
         // so no fixed offset finds the last row twice running. Down walks the
         // focus ring to the bottom whatever is on the screen.
         ['dashboard', async () => {
-            for (let i = 0; i < 6; i += 1) { await page.keyboard.press('ArrowDown'); await page.waitForTimeout(120); }
+            // FOUR, not more. The returning-player menu is five rows and the
+            // focus starts on the first, so four Downs lands on the last one and
+            // saturates there on the shorter menu a new player sees. A fifth
+            // escapes the column into the language chips in the corner, and the
+            // Enter after it switched the whole game to Icelandic -- which the
+            // iPad run of this tour did, and photographed.
+            for (let i = 0; i < 4; i += 1) { await page.keyboard.press('ArrowDown'); await page.waitForTimeout(150); }
             await page.keyboard.press('Enter');
             await page.waitForTimeout(2500);
         }],
