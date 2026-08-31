@@ -128,29 +128,38 @@ For each environment (`staging`, then `prod`):
 
 1. **New → Database → PostgreSQL.** Railway sets `DATABASE_URL` for you.
 2. **New → GitHub Repo →** the same repo. Name it `crow-api-<env>`.
-3. **Settings → Build:** Dockerfile Path = `deploy/api/Dockerfile`, Root
-   Directory blank. On the web service, the same field reads
-   `deploy/web/Dockerfile`.
+3. **Delete `railway.json` from the repo root FIRST, and only then set**
+   Settings → Build → Dockerfile Path = `deploy/api/Dockerfile`, Root Directory
+   blank.
 
-   > **THIS IS THE STEP THAT USED TO GO WRONG, and the reason it cannot any
-   > more.** There was a `railway.json` at the repo root pinning
-   > `deploy/web/Dockerfile`. Railway auto-detects that file for any service
-   > whose Root Directory is blank — which is every service here — and
-   > config-as-code beats the UI, so typing the API Dockerfile into this box
-   > changed nothing. The service built the *web* image: Caddy serving static
-   > files, with no Node in it.
+   > **THE STEP THAT GOES WRONG, and it cannot be done from this service alone.**
+   > `railway.json` at the repo root pins `deploy/web/Dockerfile`. Railway
+   > auto-detects it for any service whose Root Directory is blank — which is
+   > every service here — and config-as-code beats the UI, so typing the API
+   > Dockerfile into the box above changes nothing while that file exists. The
+   > service builds the *web* image: Caddy serving static files, no Node in it.
    >
-   > What that looked like, because it does not look like a build failure: the
-   > build SUCCEEDED in about ten seconds (a real API build takes a minute or
-   > more), and the pre-deploy command then died after two with `node: not
-   > found`. There is no `node` in `caddy:2-alpine` and no `dist/` either.
+   > It does not look like a build failure, which is why it has caught somebody
+   > already. The build SUCCEEDS in about ten seconds (a real API build takes a
+   > minute or more), and the pre-deploy command then dies after two with
+   > `node: not found` — there is no `node` in `caddy:2-alpine` and no `dist/`.
    >
-   > The file is deleted, and so is the `deploy/api/railway.json` that briefly
-   > replaced it. Railway deprecated config-as-code on 2026-08-28: existing files
-   > keep working until 2026-12-01, and a service that never used one cannot opt
-   > in — so building the fix on top of it would have been building on something
-   > already being switched off. These two fields in the UI are now the only
-   > place a Dockerfile path is stated, for both services.
+   > The file is still there because the WEB service depends on it: deleting it
+   > with nothing set in that service's UI leaves Railway guessing a builder for
+   > the game everybody is playing. So the order is fixed, and it is three steps
+   > across two services:
+   >
+   >   1. on the **web** service, set Dockerfile Path = `deploy/web/Dockerfile`
+   >      in the UI, so it no longer needs the file;
+   >   2. delete `railway.json` from the repo root and deploy that;
+   >   3. set Dockerfile Path = `deploy/api/Dockerfile` here.
+   >
+   > Do not reach for Settings → Config-as-code to point this service at its own
+   > file. Railway deprecated it on 2026-08-28: existing files work until
+   > 2026-12-01, and a service that never used one cannot opt in — which also
+   > means the root file has to go before that date regardless.
+   >
+   > Confirm the build log names `deploy/api/Dockerfile` before moving on.
 
 4. **Settings → Source:** branch `main` for staging, `release` for prod.
 5. **Settings → Networking:** do **not** generate a public domain. Private only.
@@ -196,12 +205,16 @@ For each environment (`staging`, then `prod`):
    ```
    node dist/migrate.js
    ```
-   Exactly that, and nothing in front of it. The runbook used to prefix it with
-   `CROW_JOB=migrate`, which was never doing anything: `CROW_JOB` selects the
-   role inside the image's own `CMD`, and a pre-deploy command replaces `CMD`
-   outright. It was harmless while it was a shell assignment and became a bug the
-   moment somebody trimmed the `=migrate` off it, leaving `migrate node
-   dist/migrate.js` — a command named `migrate`, which does not exist.
+   Exactly that, with nothing in front of it, and **on the API service only** —
+   the web service is a Caddy image with no Node in it, so a migrate command
+   there fails every deploy.
+
+   The runbook used to prefix this with `CROW_JOB=migrate`, which was never doing
+   anything: `CROW_JOB` selects the role inside the image's own `CMD`, and a
+   pre-deploy command replaces `CMD` outright. Harmless as a shell assignment,
+   and a bug the moment somebody trimmed the `=migrate` off it — leaving
+   `migrate node dist/migrate.js`, a command named `migrate`, which does not
+   exist.
 
    Migrations run here, never at app boot: a boot-time migration races every
    replica that starts at the same time.
