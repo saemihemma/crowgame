@@ -613,6 +613,15 @@ const bodyBox = {
     where: 'tutorial body, wrapping to at most three lines',
 };
 
+// The herald's shout -- the one line that announces a new idea before its first
+// card. It belongs to the overlay rather than to any card, so the "no orphan
+// tutorial.* key" sweep at the bottom would otherwise order it deleted.
+const heraldBox = {
+    size: Number(layout.herald_font_size ?? 32),
+    max: Number(layout.board_min_w ?? 620),
+    where: 'tutorial herald shout, one centred line',
+};
+
 const expectedKeys = new Set(['tutorial.skip', 'tutorial.next', 'tutorial.back', 'tutorial.start', 'tutorial.nice']);
 let measured = 0;
 
@@ -636,6 +645,9 @@ const measure = (key, box) => {
 };
 
 for (const key of expectedKeys) measure(key, titleBox);
+
+expectedKeys.add('tutorial.new_idea');
+measure('tutorial.new_idea', heraldBox);
 
 for (const tutorial of tutorials.tutorials) {
     const titleKey = `tutorial.${tutorial.id}.title`;

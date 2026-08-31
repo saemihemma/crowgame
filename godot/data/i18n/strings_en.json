@@ -564,6 +564,7 @@
   "tutorial.multiplication.zero_and_squares.title": "Nothing, and squares",
   "tutorial.multiplication.zero_and_squares.try": "Five times zero. Five boxes, nothing in any of them.",
   "tutorial.multiplication.zero_and_squares.worked": "Four times four is sixteen. The squares are worth knowing early; the rest lean on them.",
+  "tutorial.new_idea": "Something new to learn!",
   "tutorial.next": "Next",
   "tutorial.nice": "That's it!",
   "tutorial.number_sequence.big_skips.model": "Measure one gap and you have them all. 180 plus ten is 190. Only the tens digit moves.",

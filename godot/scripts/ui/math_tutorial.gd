@@ -61,6 +61,9 @@ var _back: BrandButton
 var _skip: BrandButton
 var _options: Array[AnswerButton] = []
 
+## The announcement that plays before a lesson's first card. See _show_herald().
+var _herald: Control = null
+
 func _ready() -> void:
 	TextManager.locale_changed.connect(func(_code): _refresh_text())
 
@@ -80,6 +83,11 @@ func present(tutorial: Dictionary, depth: String = TutorialManager.DEPTH_FULL) -
 	_done = false
 	_build()
 	_render()
+	# BRIEF is the reminder for a rung the child already climbed past, not a new
+	# idea, and heralding it would be the patronising half of the once-per-child
+	# rule arriving by another door.
+	if depth != TutorialManager.DEPTH_BRIEF:
+		_show_herald()
 
 ## Which authored cards this depth plays, in the authored order.
 ##
@@ -193,11 +201,126 @@ func _ms(key: String, fallback: float) -> float:
 func _layout(key: String, fallback: Variant) -> Variant:
 	return Config.tutorial("layout/%s" % key, fallback)
 
+## The moment a new idea arrives, given a beat of its own.
+##
+## A lesson used to simply appear on top of the question a child was about to
+## answer. Nothing said "this is new", so the one moment in the loop that is
+## unambiguously a REWARD -- you have got far enough to be taught something --
+## read as an interruption. The ladder advancing already has a celebration
+## (hud.gd, on curriculum_step_up); being taught a new idea had none.
+##
+## It is a title card ON the lesson, not a second thing to dismiss. The owner
+## asked to "click next etc" through the lesson, and making them clear an
+## announcement first would add a tap to the very moment being celebrated. So:
+## the board is already built underneath, the herald covers it for a beat, then
+## lifts. No extra tap, and a child who taps anyway gets card one immediately.
+##
+## The words are for the parent reading aloud; the burst and the chime are for
+## the child, who may not read yet. That split is why the copy stays one short
+## line in the brand's register rather than the "get ready to suffer" energy the
+## ask described -- the feeling is carried by the sound and the colour, which
+## every child gets, not by words half of them cannot read.
+func _show_herald() -> void:
+	# `herald_hold: 0` turns the beat off. That is how the contact-sheet harness
+	# photographs the cards themselves (godot/tools/capture_tutorials.sh) -- a
+	# title card in front of all 164 of them would make the one tool that exists
+	# for reviewing lesson layout useless. Data rather than a test-only branch, so
+	# the shipping path has no code in it that only the harness reaches.
+	var hold := float(_layout("herald_hold", 1.5))
+	if hold <= 0.0:
+		return
+
+	_herald = ColorRect.new()
+	# The board's own scrim is tuned to dim a bright LEVEL. Over the lesson board,
+	# which is already dark, it left the card fully readable underneath and the
+	# herald read as text lying on top of the lesson rather than as a card in front
+	# of it. Same themed colour, held at its own opacity.
+	var veil := ThemeManager.get_color_value("scrim")
+	veil.a = float(_layout("herald_scrim_alpha", 0.92))
+	_herald.color = veil
+	_herald.anchor_right = 1.0
+	_herald.anchor_bottom = 1.0
+	# Eats raw input so a stray tap on the board behind cannot advance a lesson
+	# the child has not seen the first card of. The public API is deliberately NOT
+	# blocked -- advance(), skip() and choose() dismiss it and carry on.
+	_herald.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(_herald)
+
+	var centre := CenterContainer.new()
+	centre.anchor_right = 1.0
+	centre.anchor_bottom = 1.0
+	_herald.add_child(centre)
+
+	# A CARD, not two lines floating on a veil. At 0.92 the scrim still let the
+	# lesson body ghost through, and the herald's own second line landed on top of
+	# it -- two texts occupying one band, which is the exact failure the veil was
+	# raised to fix. The card gives the words their own opaque ground, and reads as
+	# something arriving in FRONT of the lesson rather than written onto it. Same
+	# face as the board, so the announcement and the lesson are visibly one object
+	# handing over to the next.
+	var card := PanelContainer.new()
+	card.add_theme_stylebox_override("panel", _board_face())
+	centre.add_child(card)
+
+	var column := VBoxContainer.new()
+	column.alignment = BoxContainer.ALIGNMENT_CENTER
+	column.add_theme_constant_override("separation", int(_layout("separation", 16)))
+	card.add_child(column)
+
+	var shout := Label.new()
+	shout.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	shout.text = TextManager.t("tutorial.new_idea")
+	shout.add_theme_font_size_override("font_size", int(_layout("herald_font_size", 32)))
+	shout.add_theme_color_override("font_color", ThemeManager.get_color_value("coin"))
+	column.add_child(shout)
+
+	var what := Label.new()
+	what.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	what.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	what.custom_minimum_size = Vector2(float(_layout("body_wrap_width", 540)), 0)
+	what.text = TextManager.t("tutorial.%s.title" % tutorial_id())
+	what.add_theme_font_size_override("font_size", int(_layout("title_font_size", 30)))
+	what.add_theme_color_override("font_color", ThemeManager.get_color_value("paper"))
+	column.add_child(what)
+
+	AudioManager.play_event("milestone")
+	if not UiFx.reduced_motion():
+		var centre_point := Vector2(get_viewport().get_visible_rect().size.x / 2.0,
+			get_viewport().get_visible_rect().size.y / 2.0)
+		DopamineFX.burst(self, centre_point, ThemeManager.get_color_value("coin"), 24)
+		UiFx.elastic_entrance(card)
+
+	get_tree().create_timer(hold).timeout.connect(_dismiss_herald)
+
+## Lift the title card. Safe to call at any time and any number of times.
+func _dismiss_herald() -> void:
+	if not is_instance_valid(_herald):
+		_herald = null
+		return
+	var going := _herald
+	_herald = null
+	going.queue_free()
+
+func _input(event: InputEvent) -> void:
+	if not is_instance_valid(_herald):
+		return
+	var pressed: bool = (event is InputEventKey and event.pressed and not event.echo) \
+		or (event is InputEventMouseButton and event.pressed) \
+		or (event is InputEventScreenTouch and event.pressed) \
+		or (event is InputEventJoypadButton and event.pressed)
+	if pressed:
+		get_viewport().set_input_as_handled()
+		_dismiss_herald()
+
 # --- rendering ------------------------------------------------------------
 
 func _build() -> void:
 	for child in get_children():
 		child.queue_free()
+	# The herald is one of those children. Dropping the reference with it keeps a
+	# re-presented lesson from pointing at a freed card and swallowing the first
+	# tap on the new one.
+	_herald = null
 
 	var dim := ColorRect.new()
 	dim.color = ThemeManager.get_color_value("scrim")
@@ -283,6 +406,18 @@ func _render() -> void:
 ## One dot per card left to tap. A single-card lesson has none: a lone dot is
 ## an unexplained mark on a board a child is already reading a question off, and
 ## it says nothing a Next button has not already said.
+##
+## THREE STATES, ALL FILLED. The row used to be filled discs for cards seen and
+## 2px OUTLINE rings for cards to come, at 12px. An outline that thin, in accent
+## on the board's brown, does not survive being looked at on a tablet: the owner
+## read the row as a stray circle-arrow symbol and could not tell there were four
+## of them. Filled shapes downscale; outlines turn to mush. So an unseen card is
+## now a filled disc at low alpha, and contrast comes from VALUE rather than from
+## the presence of a hole.
+##
+## And the current card is bigger, not just brighter. "Where am I" should be
+## answerable by a child who cannot yet count the row, and size reads before
+## fill does.
 func _render_dots() -> void:
 	for child in _dots.get_children():
 		child.queue_free()
@@ -290,18 +425,25 @@ func _render_dots() -> void:
 	if not _dots.visible:
 		return
 	var accent := ThemeManager.get_color_value(String(Config.tutorial("roles/title", "accent")))
-	var diameter := float(_layout("dot_size", 12))
+	var diameter := float(_layout("dot_size", 18))
+	var current := diameter * float(_layout("dot_current_scale", 1.35))
+	var unseen_alpha := float(_layout("dot_unseen_alpha", 0.3))
 	for i in card_count():
+		var is_current := i == _index
+		var size := current if is_current else diameter
 		var dot := Panel.new()
-		dot.custom_minimum_size = Vector2(diameter, diameter)
+		dot.custom_minimum_size = Vector2(size, size)
+		# Centred on the row whatever its size, so the smaller discs do not sit on
+		# a different baseline from the current one.
+		dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		var style := StyleBoxFlat.new()
-		style.set_corner_radius_all(int(diameter * 0.5))
-		if i <= _index:
-			style.bg_color = accent
-		else:
-			style.bg_color = Color(0, 0, 0, 0)  # hardcode-ok: fully transparent, not a themed colour
-			style.set_border_width_all(int(_layout("dot_border", 2)))
-			style.border_color = accent
+		style.set_corner_radius_all(int(size * 0.5))
+		var fill := accent
+		if i > _index:
+			fill.a = unseen_alpha
+		elif not is_current:
+			fill.a = 0.65
+		style.bg_color = fill
 		dot.add_theme_stylebox_override("panel", style)
 		_dots.add_child(dot)
 

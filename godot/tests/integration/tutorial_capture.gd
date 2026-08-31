@@ -10,7 +10,20 @@ extends Node
 ## Launch it through godot/tools/capture_tutorials.sh, which supplies the
 ## display and the output directory.
 
+## The title card that heralds a new idea is switched off for the whole run.
+##
+## It is the right thing in the game and the wrong thing in a contact sheet: it
+## would stand in front of all 164 cards this tool exists to photograph. Written
+## through the loaded tuning dictionary rather than a flag in the overlay, so the
+## shipping path carries no branch that only this harness reaches.
+func _silence_herald() -> void:
+	var tuning: Dictionary = DataManager.get_dict("TUTORIAL_TUNING")
+	var layout: Variant = tuning.get("layout", null)
+	if layout is Dictionary:
+		(layout as Dictionary)["herald_hold"] = 0.0
+
 func _ready() -> void:
+	_silence_herald()
 	await get_tree().process_frame
 	var args: PackedStringArray = OS.get_cmdline_user_args()
 	var out_dir := "user://tutorial_captures"
