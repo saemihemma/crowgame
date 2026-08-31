@@ -182,3 +182,71 @@ func test_the_low_band_uses_many_shapes() -> void:
 		shapes[CountRow.shape_for(CountRow.marker_in(text))] = true
 	assert_true(shapes.size() >= 8,
 		"counting steps 0-1 draw at least 8 of the 12 shapes, got %d" % shapes.size())
+
+
+# --- every token has to be a polygon the engine can actually fill ------------
+#
+# The crescent was built from two overlapping circles, so its outline crossed
+# itself -- and a self-intersecting polygon is the one thing
+# Geometry2D.triangulate_polygon returns nothing for. CountRow._fill then fell
+# through to draw_colored_polygon, which is precisely the call that cannot draw a
+# concave shape, so the engine printed "Invalid polygon data, triangulation
+# failed" once per crescent token per frame. Fourteen of them in one owl
+# encounter.
+#
+# Every test in this file passed throughout. The suite only went red because
+# run_tests.sh fails on engine errors as well as on assertions, and it stayed
+# hidden until an unrelated change to the Icelandic phrasings started routing a
+# counting problem onto the crescent marker.
+#
+# So this checks the geometry rather than the drawing: an outline the
+# triangulator accepts is an outline the renderer can fill.
+
+## The radius CountRow draws at, from the same constants the renderer uses --
+## a shape that triangulates at one size and not another is still a bug.
+func _token_radius() -> float:
+	return CountRow.TOKEN * 0.44
+
+func test_every_shape_is_a_polygon_the_engine_can_fill() -> void:
+	var checked := 0
+	for marker: String in MARKER_SHAPES:
+		var shape := String(MARKER_SHAPES[marker])
+		var outline := CountRow.outline_for(shape, Vector2(64.0, 64.0), _token_radius())
+		if outline.is_empty():
+			continue  # drawn with primitives (circle, rect), not a polygon
+		assert_true(Geometry2D.triangulate_polygon(outline).size() >= 3,
+			"'%s' is a polygon the engine can fill -- if this fails the outline " % shape
+			+ "crosses itself, and the token is drawn as nothing plus an error")
+		checked += 1
+	assert_true(checked >= 4, "the polygon shapes were actually checked (%d)" % checked)
+
+## And the fallback, for the day some future outline does defeat the
+## triangulator: it must draw SOMETHING, and it must never be the call that just
+## refused. A fan from the centroid is convex triangle by convex triangle.
+##
+## Behavioural, not a source-text grep. The first version of this test read
+## _fill's own text looking for the old call, and went red on the sentence in
+## _fan's doc comment that NAMES the call it replaced -- a gate that fails on
+## prose is a gate nobody will keep.
+func test_an_outline_the_triangulator_refuses_is_still_drawn() -> void:
+	# A bow tie: the classic self-intersecting quad, which is what the crescent
+	# was without meaning to be.
+	var bowtie := PackedVector2Array([
+		Vector2(0, 0), Vector2(20, 20), Vector2(20, 0), Vector2(0, 20)])
+	assert_eq(Geometry2D.triangulate_polygon(bowtie).size(), 0,
+		"the triangulator does refuse this outline, so the fallback is the path under test")
+
+	var fan := CountRow.fan_triangles(bowtie)
+	assert_eq(fan.size(), bowtie.size(), "one triangle per edge, so nothing is left unfilled")
+	for tri: PackedVector2Array in fan:
+		assert_eq(tri.size(), 3, "and every piece is a triangle, which cannot be concave")
+
+	# Now actually draw it. The assertion is the suite itself: run_tests.sh fails
+	# on engine errors, so a regression here goes red on "Invalid polygon data"
+	# exactly as the crescent did.
+	var row := CountRow.new()
+	Engine.get_main_loop().root.add_child(row)
+	row._fill(bowtie, Color.RED, Color.BLACK)
+	await Engine.get_main_loop().process_frame
+	row.queue_free()
+	await Engine.get_main_loop().process_frame

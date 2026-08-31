@@ -29,7 +29,11 @@ const VIEWPORTS := [
 ## fit case like the others — and mounting it is the only headless thing that
 ## loads boot.gd at all. A parse error in it used to reach a browser before
 ## anything noticed, because no test had ever instantiated the title screen.
-const ROUTES := ["boot", "main_menu", "cloud_panel"]
+## `cloud_panel` used to be the third. Its scene is gone -- signing in IS the
+## login screen now, so there is no separate enrolment surface -- and `login` is
+## deliberately NOT its replacement: it scrolls, for the reason stated two
+## paragraphs up, and is covered by test_scrolling_lists.gd instead.
+const ROUTES := ["boot", "main_menu"]
 
 const PAUSE_SCENE := preload("res://scenes/Pause.tscn")
 

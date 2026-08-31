@@ -4,6 +4,10 @@ import { withAuthTables } from '../lib/familyDb.js';
 import { COOKIE_NAME, cookieOptions, deviceOf, enrollDevice, requireDevice } from '../lib/deviceAuth.js';
 import { hashToken, newPairingCode, newToken, normalizePairingCode } from '../lib/tokens.js';
 import { createMailer } from '../lib/mailer.js';
+import {
+    createAccount, findAccount, isLocked, isValidPin, isValidUsername,
+    LOCK_MINUTES, normalizeUsername, recordFailure, recordSuccess, verifyPin,
+} from '../lib/pinAuth.js';
 
 /**
  * Enrollment. Passwordless, because a 5-to-7-year-old cannot manage credentials
@@ -13,6 +17,18 @@ import { createMailer } from '../lib/mailer.js';
  * Two ways in, both single-use and short-lived:
  *   1. email magic link  — the first device, and any device with email to hand
  *   2. pairing code      — an already-enrolled device vouches for a new one
+ *
+ * AND, since 2026-08, a third that is the one the game actually uses:
+ *   3. username + PIN    — the account IS the login, on any machine
+ *
+ * The owner's decision for the trial: "keep it super simple - username and pin,
+ * nothing else", because a child has to be able to reach their own progress from
+ * a computer that has never seen them. The two passwordless routes above are
+ * kept because the parent report and the admin dashboard sign in through them
+ * and neither is a child-facing surface; the game no longer offers either.
+ *
+ * What a 4-digit PIN is worth, and why an attempt limit rather than the secret
+ * is what protects the account: migrations/007_username_pin_accounts.sql.
  */
 export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
     const mailer = createMailer();
@@ -195,6 +211,92 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
             const { token } = await enrollDevice(
                 familyId, request.headers['user-agent'] ?? null, 'paired device');
             return reply.setCookie(COOKIE_NAME, token, cookieOptions()).send({ enrolled: true });
+        },
+    );
+
+    // ── 4b. username + PIN: sign up ─────────────────────────────────────────
+    //
+    // Sign-up and sign-in are separate routes on purpose. A single "log in or
+    // create" endpoint cannot tell a typo from a new child -- type "Saemj"
+    // instead of "Saemi" and it silently hands you a brand-new empty account
+    // with your progress nowhere in sight, which is exactly the failure this
+    // whole feature exists to prevent.
+    app.post(
+        '/api/v1/auth/signup',
+        {
+            config: { rateLimit: { max: 20, timeWindow: '1 hour' } },
+            schema: {
+                body: {
+                    type: 'object',
+                    required: ['username', 'pin'],
+                    additionalProperties: false,
+                    properties: {
+                        username: { type: 'string', maxLength: 24 },
+                        pin: { type: 'string', maxLength: 4 },
+                    },
+                },
+            },
+        },
+        async (request: FastifyRequest<{ Body: { username: string; pin: string } }>, reply) => {
+            const username = normalizeUsername(request.body.username);
+            if (!isValidUsername(username)) return reply.code(400).send({ error: 'invalid username' });
+            if (!isValidPin(request.body.pin)) return reply.code(400).send({ error: 'invalid pin' });
+
+            const created = await createAccount(username, request.body.pin);
+            if (created === null) return reply.code(409).send({ error: 'username taken' });
+
+            const { token } = await enrollDevice(
+                created.familyId, request.headers['user-agent'] ?? null, 'pin account');
+            return reply
+                .setCookie(COOKIE_NAME, token, cookieOptions())
+                .send({ enrolled: true, username, childId: created.childId });
+        },
+    );
+
+    // ── 4c. username + PIN: sign in ─────────────────────────────────────────
+    app.post(
+        '/api/v1/auth/signin',
+        {
+            // The per-IP fence. The per-ACCOUNT one is in pinAuth and is the
+            // one that matters: an attacker with a guessable username has all
+            // the IPs they want and only ten thousand PINs to try.
+            config: { rateLimit: { max: 30, timeWindow: '1 hour' } },
+            schema: {
+                body: {
+                    type: 'object',
+                    required: ['username', 'pin'],
+                    additionalProperties: false,
+                    properties: {
+                        username: { type: 'string', maxLength: 24 },
+                        pin: { type: 'string', maxLength: 4 },
+                    },
+                },
+            },
+        },
+        async (request: FastifyRequest<{ Body: { username: string; pin: string } }>, reply) => {
+            const username = normalizeUsername(request.body.username);
+            const account = await findAccount(username);
+
+            // One answer for "no such account" and for "wrong PIN". Telling them
+            // apart is a free list of every username in the game, which is half
+            // of a 13-bit secret handed over.
+            if (account === null || !isValidPin(request.body.pin)) {
+                return reply.code(401).send({ error: 'wrong username or pin' });
+            }
+            if (isLocked(account)) {
+                return reply.code(429).send({ error: 'locked', minutes: LOCK_MINUTES });
+            }
+            if (!await verifyPin(request.body.pin, account.pin_hash)) {
+                await recordFailure(account.id);
+                return reply.code(401).send({ error: 'wrong username or pin' });
+            }
+
+            await recordSuccess(account.id);
+            const { token } = await enrollDevice(
+                account.family_id, request.headers['user-agent'] ?? null, 'pin account');
+            return reply
+                .setCookie(COOKIE_NAME, token, cookieOptions())
+                .send({ enrolled: true, username: account.username, childId: account.child_id });
         },
     );
 

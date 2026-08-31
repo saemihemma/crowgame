@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bqfaj2ypfc8si"
-path="res://.godot/imported/cockroach.png-96a825d32ff7663dc6cf30a08af898f1.ctex"
+uid="uid://dh5ovojn686fo"
+path="res://.godot/imported/crow-jump-64px.png-65772aece4df7747aabd323a0e834200.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/characters/npcs/cockroach.png"
-dest_files=["res://.godot/imported/cockroach.png-96a825d32ff7663dc6cf30a08af898f1.ctex"]
+source_file="res://assets/sprites/characters/crow2/crow3/crow-jump-64px.png"
+dest_files=["res://.godot/imported/crow-jump-64px.png-65772aece4df7747aabd323a0e834200.ctex"]
 
 [params]
 

@@ -465,3 +465,112 @@ func test_every_action_time_names_a_real_visual() -> void:
 		assert_true(float(pacing[key]) > 0.0, "%s is a positive duration" % key)
 		checked += 1
 	assert_true(checked >= 4, "the action times are actually being checked (%d)" % checked)
+
+
+# --- the owl is always released -------------------------------------------
+#
+# A lesson that is offered and refused used to strand the owl that offered it.
+# MathChallenge._finish emits math_challenge_complete and THEN closes its board,
+# so the earned lesson launched from inside that signal arrived while a question
+# was still on screen -- which Game.launch_math_tutorial refuses. It refused with
+# no return value, the caller assumed a lesson was up, and the two lines that end
+# the encounter and fly the owl away never ran.
+#
+# What a child saw: the owl they had just saved sat on its perch, its name gone,
+# and walking back over it did nothing for the rest of the level.
+
+## A stand-in for the level. Says a question is on screen, which is the state the
+## real one is in at the moment the win is announced.
+class _BusyGame extends Node:
+	var launches := 0
+	func is_math_challenge_active() -> bool:
+		return true
+	func is_math_tutorial_active() -> bool:
+		return false
+	func launch_math_challenge(_p: Dictionary, _o: Dictionary) -> void:
+		pass
+	## The real signature, including the refusal this test exists for.
+	func launch_math_tutorial(_t: Dictionary, _cb: Callable, _d: String = "",
+			over_challenge: bool = false) -> bool:
+		launches += 1
+		return over_challenge
+
+class _StubOwl extends Node:
+	var game: Node
+	var interacting := true
+	var ended := false
+	var flown := false
+	func get_game() -> Node:
+		return game
+	func is_interacting() -> bool:
+		return interacting
+	func end_interaction() -> void:
+		interacting = false
+		ended = true
+	func fly_away() -> void:
+		flown = true
+
+func _held_owl() -> Array:
+	var owl := _StubOwl.new()
+	var game := _BusyGame.new()
+	owl.game = game
+	Engine.get_main_loop().root.add_child(game)
+	Engine.get_main_loop().root.add_child(owl)
+	var component := MathChallengeComponent.new({"problemCount": 1})
+	component.npc = owl
+	return [owl, game, component]
+
+## The bug, at the seam it happened on: the lesson is refused, and the owl flies
+## away anyway. There is no path out of a win that leaves an owl held.
+func test_an_owl_flies_away_even_when_its_earned_lesson_cannot_open() -> void:
+	var seen := SaveManager.get_tutorials_seen().duplicate(true)
+	_clear_seen()
+	var parts := _held_owl()
+	var owl: Node = parts[0]
+	var game: Node = parts[1]
+	var component: MathChallengeComponent = parts[2]
+
+	component._last_domain = "addition"
+	assert_true(component._has_pending_lesson(), "a freshly cleared child is owed a lesson")
+	component._teach_pending_lesson()
+
+	assert_eq(game.launches, 1, "the lesson was offered")
+	assert_true(owl.ended, "and the encounter ended when it was refused")
+	assert_true(owl.flown, "and the owl the child saved actually left")
+
+	owl.queue_free()
+	game.queue_free()
+	_restore_seen(seen)
+
+## And with no lesson owed at all -- the ordinary owl, the overwhelmingly common
+## case -- the release is the same one line.
+func test_an_owl_with_nothing_to_teach_flies_away() -> void:
+	var parts := _held_owl()
+	var owl: Node = parts[0]
+	var game: Node = parts[1]
+	var component: MathChallengeComponent = parts[2]
+
+	component._taught_this_encounter = true  # nothing further is owed on this owl
+	assert_true(not component._has_pending_lesson(), "one lesson per owl, and it is spent")
+	component._teach_pending_lesson()
+
+	assert_eq(game.launches, 0, "no second board was even offered")
+	assert_true(owl.flown, "the owl left")
+
+	owl.queue_free()
+	game.queue_free()
+
+## The stub above is only honest while the real launcher still ANSWERS. The whole
+## bug was a refusal with nothing to refuse to, so the return type is the fix,
+## and a later hand quietly making it `void` again would restore the bug and
+## leave every test above passing against a stub.
+func test_the_real_launcher_reports_whether_it_opened() -> void:
+	var script: GDScript = load("res://scripts/scenes/game.gd")
+	var found := false
+	for method in script.get_script_method_list():
+		if String(method.get("name", "")) != "launch_math_tutorial":
+			continue
+		found = true
+		assert_eq(int((method["return"] as Dictionary).get("type", TYPE_NIL)), TYPE_BOOL,
+			"Game.launch_math_tutorial says whether a lesson actually opened")
+	assert_true(found, "Game.launch_math_tutorial exists to be checked")

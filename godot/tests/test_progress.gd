@@ -187,3 +187,111 @@ func test_reaching_the_door_is_what_writes_the_record() -> void:
 
 	g.free()
 	_reset_records()
+
+
+# --- what a death costs, and what it never touches -------------------------
+#
+# Death used to cost the current run and no more, which read as free: bank_run
+# only ever writes at the door, so a run ending in death banked nothing -- but
+# everything earlier runs had banked survived, the level reloaded, every coin
+# respawned, and a child could lose all three hearts and be exactly where they
+# started. The owner's decision (2026-08) is that the LEVEL goes back to nothing
+# while the world stays unlocked and the maths is never taken away.
+
+func _with_clean_save(body: Callable) -> void:
+	var before := SaveManager.get_data().duplicate(true)
+	body.call()
+	SaveManager._data = before
+
+func test_running_out_of_hearts_empties_this_levels_record() -> void:
+	_with_clean_save(func() -> void:
+		SaveManager.bank_run("level_01", ["c1", "c2", "c3"], 4, true)
+		SaveManager.bank_run("level_02", ["c1"], 1, false)
+		assert_eq(int(SaveManager.get_level_record("level_01").get("owls", 0)), 4,
+			"level 1 has a record to lose")
+
+		SaveManager.forget_level_run("level_01")
+
+		assert_true(SaveManager.get_level_record("level_01").is_empty(),
+			"the level a child died in is back to nothing")
+		assert_true(not SaveManager.has_big_coin("level_01", "c1"),
+			"and its big coins have to be found again")
+		assert_eq(int(SaveManager.get_level_record("level_02").get("owls", 0)), 1,
+			"but no other world is touched")
+	)
+
+## The two things death must never take. A world is never re-locked, and what a
+## child KNOWS is not a possession the game may confiscate -- PRODUCT.md.
+func test_death_never_relocks_a_world_or_touches_the_maths() -> void:
+	_with_clean_save(func() -> void:
+		SaveManager.complete_level("level_01")
+		SaveManager.bank_run("level_01", ["c1"], 2, false)
+		var elo_before := SaveManager.get_problems_attempted()
+
+		SaveManager.forget_level_run("level_01")
+
+		var cleared: Array = SaveManager.get_data().get("completedLevels", [])
+		assert_true(cleared.has("level_01"), "the world stays unlocked")
+		assert_eq(SaveManager.get_problems_attempted(), elo_before,
+			"and the maths is untouched")
+	)
+
+## Forgetting a level nobody has played is a no-op, not a crash. player_die()
+## calls this on every death, including the first one in a brand-new level.
+func test_forgetting_an_unplayed_level_does_nothing() -> void:
+	_with_clean_save(func() -> void:
+		SaveManager.forget_level_run("level_07")
+		SaveManager.forget_level_run("")
+		assert_true(SaveManager.get_level_record("level_07").is_empty(), "still nothing, still fine")
+	)
+
+
+# --- every coin, in one go -------------------------------------------------
+
+## The tick cannot be derived from the pips, and this is why: three filled pips
+## also describes a child who found one coin on each of three separate runs.
+func test_a_coin_per_run_is_not_a_perfect_run() -> void:
+	_with_clean_save(func() -> void:
+		SaveManager.bank_run("level_03", ["c1"], 1, false)
+		SaveManager.bank_run("level_03", ["c2"], 1, false)
+		SaveManager.bank_run("level_03", ["c3"], 1, false)
+		var record := SaveManager.get_level_record("level_03")
+		assert_eq((record.get("bigCoins", []) as Array).size(), 3,
+			"the child owns all three coins, and the HUD should say so")
+		assert_true(not bool(record.get("perfect", false)),
+			"but they have never cleared the level in one visit, so there is no tick")
+	)
+
+func test_all_the_coins_in_one_visit_earns_the_tick() -> void:
+	_with_clean_save(func() -> void:
+		SaveManager.bank_run("level_04", ["c1", "c2", "c3"], 3, true)
+		assert_true(bool(SaveManager.get_level_record("level_04").get("perfect", false)),
+			"all three in one go is the tick")
+	)
+
+## Latched, like every other fact in this record. A tick that a later, lazier
+## visit could take away would mean "how I did last time", which is not a thing
+## worth going back for.
+func test_a_later_worse_run_never_takes_the_tick_away() -> void:
+	_with_clean_save(func() -> void:
+		SaveManager.bank_run("level_05", ["c1", "c2", "c3"], 3, true)
+		SaveManager.bank_run("level_05", ["c1"], 1, false)
+		assert_true(bool(SaveManager.get_level_record("level_05").get("perfect", false)),
+			"earned once, kept")
+	)
+
+## And the row the journey screen draws carries it, so the screen never has to
+## re-derive the thing the save deliberately records separately.
+func test_the_progress_row_reports_the_perfect_run() -> void:
+	_with_clean_save(func() -> void:
+		var key := String(LevelManager.get_levels()[0].get("key", ""))
+		SaveManager.bank_run(key, ["c1", "c2", "c3"], 9, true)
+		var rows: Array = Progress.of_save(SaveManager.get_data()).get("levels", [])
+		var found := false
+		for row: Dictionary in rows:
+			if String(row.get("key", "")) != key:
+				continue
+			found = true
+			assert_true(bool(row.get("perfect", false)), "the row carries the tick")
+		assert_true(found, "the level is in the report")
+	)

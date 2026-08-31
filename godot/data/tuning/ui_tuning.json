@@ -69,18 +69,6 @@
       60
     ]
   },
-  "cloud_panel": {
-    "layer": 20,
-    "width": 720,
-    "min_height": 420,
-    "separation": 16,
-    "title_font_size": 40,
-    "body_font_size": 24,
-    "field_width": 520,
-    "field_height": 64,
-    "button_width": 420,
-    "button_height": 72
-  },
   "parent_report": {
     "layer": 21,
     "margin": 48,

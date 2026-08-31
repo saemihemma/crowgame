@@ -63,7 +63,7 @@ made a decision from it. The decision — is a first launch acceptable on home w
 
 | | Raw | gzip |
 | --- | --- | --- |
-| **whole payload** | **52.3 MB** | **~17.7 MB** |
+| **whole payload** | **52.4 MB** | **~17.7 MB** |
 
 Gzip is node's zlib at level 9; a server's own encoder will differ by a few
 tenths. Per-file sizes are `ls -la output/web` when you need them.
@@ -128,37 +128,71 @@ For each environment (`staging`, then `prod`):
 
 1. **New → Database → PostgreSQL.** Railway sets `DATABASE_URL` for you.
 2. **New → GitHub Repo →** the same repo. Name it `crow-api-<env>`.
-3. **Settings → Build:** Dockerfile Path = `deploy/api/Dockerfile`, Root
-   Directory blank.
+3. **Delete `railway.json` from the repo root FIRST, and only then set**
+   Settings → Build → Dockerfile Path = `deploy/api/Dockerfile`, Root Directory
+   blank.
 
-   > **Check the build log before moving on.** A root `railway.json` exists and
-   > pins `deploy/web/Dockerfile`. If it wins, this service silently builds and
-   > runs the *web* image — a Caddy serving static files, which passes a
-   > superficial health check and serves no API at all. Confirm the log names
-   > `deploy/api/Dockerfile`.
+   > **THE STEP THAT GOES WRONG, and it cannot be done from this service alone.**
+   > `railway.json` at the repo root pins `deploy/web/Dockerfile`. Railway
+   > auto-detects it for any service whose Root Directory is blank — which is
+   > every service here — and config-as-code beats the UI, so typing the API
+   > Dockerfile into the box above changes nothing while that file exists. The
+   > service builds the *web* image: Caddy serving static files, no Node in it.
+   >
+   > It does not look like a build failure, which is why it has caught somebody
+   > already. The build SUCCEEDS in about ten seconds (a real API build takes a
+   > minute or more), and the pre-deploy command then dies after two with
+   > `node: not found` — there is no `node` in `caddy:2-alpine` and no `dist/`.
+   >
+   > The file is still there because the WEB service depends on it: deleting it
+   > with nothing set in that service's UI leaves Railway guessing a builder for
+   > the game everybody is playing. So the order is fixed, and it is three steps
+   > across two services:
+   >
+   >   1. on the **web** service, set Dockerfile Path = `deploy/web/Dockerfile`
+   >      in the UI, so it no longer needs the file;
+   >   2. delete `railway.json` from the repo root and deploy that;
+   >   3. set Dockerfile Path = `deploy/api/Dockerfile` here.
+   >
+   > Do not reach for Settings → Config-as-code to point this service at its own
+   > file. Railway deprecated it on 2026-08-28: existing files work until
+   > 2026-12-01, and a service that never used one cannot opt in — which also
+   > means the root file has to go before that date regardless.
+   >
+   > Confirm the build log names `deploy/api/Dockerfile` before moving on.
+
 4. **Settings → Source:** branch `main` for staging, `release` for prod.
 5. **Settings → Networking:** do **not** generate a public domain. Private only.
-6. **Variables:**
+6. **Variables.** Two are required and the game works completely without the
+   rest:
    ```
-   DATABASE_URL          = ${{ Postgres.DATABASE_URL }}
-   CROW_ENV              = staging | production
-   CROW_PUBLIC_BASE_URL  = https://<the web service's public domain>
-   CROW_MAIL_DRIVER      = http
-   CROW_MAIL_ENDPOINT    = <the mail processor's send URL>
-   CROW_MAIL_API_KEY     = <its key>
-   CROW_MAIL_FROM        = Hörmann <no-reply@your-domain>
+   DATABASE_URL = ${{ Postgres.DATABASE_URL }}
+   CROW_ENV     = staging | production
    ```
-   **The last five are not optional, and following this step without them ships a
-   production where cloud save can never be turned on.** `CROW_MAIL_DRIVER`
-   defaults to `log`, so `createMailer` returns a `LogMailer` with
-   `delivers = false`; every enrollment then answers `sent: false,
-   delivery: 'unavailable'` and writes the sign-in link to the server log instead
-   of the parent's inbox. The code degrades honestly and says so in the response —
-   this list was the gap, and it listed only the first two for as long as the
-   runbook has existed.
+   That is the whole of what a child signing in needs. Since 2026-08 the game's
+   login is a username and a PIN checked against this database
+   (`POST /api/v1/auth/signup` and `/signin`, migration 007), so cloud save
+   arrives with the database and there is nothing to switch on. It used to be an
+   enrolment flow that emailed a magic link, and this list used to say the mail
+   variables below were not optional. For the game, they no longer are needed at
+   all.
 
-   `CROW_PUBLIC_BASE_URL` is what the emailed link points at. Unset, the link is
-   relative and unusable from an inbox.
+   **Optional — only for the email magic link**, which the game itself no longer
+   uses. It is still how a parent reaches the report on a device with no child
+   profile, and how a second device is paired:
+   ```
+   CROW_PUBLIC_BASE_URL = https://<the web service's public domain>
+   CROW_MAIL_DRIVER     = http
+   CROW_MAIL_ENDPOINT   = <the mail processor's send URL>
+   CROW_MAIL_API_KEY    = <its key>
+   CROW_MAIL_FROM       = Hörmann <no-reply@your-domain>
+   ```
+   `CROW_MAIL_DRIVER` defaults to `log`, so `createMailer` returns a `LogMailer`
+   with `delivers = false`: `/auth/request-link` then answers `sent: false,
+   delivery: 'unavailable'` and writes the link to the server log rather than to
+   an inbox. That is an honest degraded state, not an outage, and nothing a child
+   touches goes through it. `CROW_PUBLIC_BASE_URL` is what the emailed link
+   points at; unset, the link is relative and unusable from an inbox.
 
    Note for PRIVACY.md: turning the mail driver on introduces the first third
    party that sees a parent's email address. That page says which one; keep the
@@ -169,10 +203,22 @@ For each environment (`staging`, then `prod`):
    to end up with a service that looks healthy and is unreachable.
 7. **Settings → Deploy → Pre-deploy Command:**
    ```
-   CROW_JOB=migrate node dist/migrate.js
+   node dist/migrate.js
    ```
+   Exactly that, with nothing in front of it, and **on the API service only** —
+   the web service is a Caddy image with no Node in it, so a migrate command
+   there fails every deploy.
+
+   The runbook used to prefix this with `CROW_JOB=migrate`, which was never doing
+   anything: `CROW_JOB` selects the role inside the image's own `CMD`, and a
+   pre-deploy command replaces `CMD` outright. Harmless as a shell assignment,
+   and a bug the moment somebody trimmed the `=migrate` off it — leaving
+   `migrate node dist/migrate.js`, a command named `migrate`, which does not
+   exist.
+
    Migrations run here, never at app boot: a boot-time migration races every
    replica that starts at the same time.
+
 8. On the matching **web** service, add:
    ```
    CROW_API_UPSTREAM = crow-api-<env>.railway.internal:8080

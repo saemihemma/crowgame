@@ -82,7 +82,12 @@ func _build_animations() -> void:
 	if idle_tex != null:
 		frames.add_frame("idle", idle_tex)
 	
-	if SpriteSheet.has_sprite(JUMP_SPRITE_KEY):
+	# has_art, not has_sprite. `has_sprite` has never existed on SpriteSheet -- the
+	# method is has_art, and every other caller in the tree uses it. GDScript
+	# resolves a static call at PARSE time, so this one typo did not degrade the
+	# jump animation, it stopped player.gd compiling at all: no player node, no
+	# landing, no coin pickup, no shooting. It reached main.
+	if SpriteSheet.has_art(JUMP_SPRITE_KEY):
 		var jump_frames := SpriteSheet.frames(JUMP_SPRITE_KEY)
 		if jump_frames != null and jump_frames.has_animation("jump"):
 			frames.add_animation("jump")

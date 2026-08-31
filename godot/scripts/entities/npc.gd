@@ -72,11 +72,48 @@ func _process(delta: float) -> void:
 	for c in _components:
 		c.update_component(delta)
 	_update_idle_bob(delta)
+	_watchdog(delta)
 	# Phaser overlap is continuous: if the player stays in range, re-trigger
 	# once the interaction cooldown elapses (BaseNPC interaction loop).
 	if _player_in_range and not _interacting and not _flown and Time.get_ticks_msec() >= _cooldown_until:
 		interact()
 	_update_prompt_visibility()
+
+## An encounter with nothing on screen is over, whether or not anybody said so.
+##
+## A held owl is the worst failure this class has: the prompt goes, the
+## re-trigger loop above skips it, and standing on it does nothing for the rest
+## of the level -- while it goes on hearing every other owl's completion events.
+## It has happened twice now for two unrelated reasons (a component that declined
+## an offer already committed; a lesson that refused to open and was believed
+## anyway), both fixed at the source, and both would have been invisible to a
+## child either way.
+##
+## So the encounter also has to be able to end on its own. Held with no board and
+## no lesson for this long means the thing holding it is gone.
+##
+## Generous on purpose: the real gaps between boards are the 0.22s beats
+## MathChallengeComponent waits between a question, a lesson and the next
+## question. This is twenty of those. It is a floor under a bug, not a
+## mechanism -- if it ever fires, something above it is broken.
+const HELD_ENCOUNTER_TIMEOUT := 5.0
+
+var _held_seconds := 0.0
+
+func _watchdog(delta: float) -> void:
+	if not _interacting or _flown:
+		_held_seconds = 0.0
+		return
+	var game := get_game()
+	if game != null and (game.is_math_challenge_active() or game.is_math_tutorial_active()):
+		_held_seconds = 0.0
+		return
+	_held_seconds += delta
+	if _held_seconds < HELD_ENCOUNTER_TIMEOUT:
+		return
+	_held_seconds = 0.0
+	push_warning("Npc %s: encounter held with no board on screen; releasing." % npc_id)
+	end_interaction()
 
 func _update_idle_bob(delta: float) -> void:
 	# Idle float-bob from npc_tuning.json (cached at _ready; amplitude 8, speed 1.5).

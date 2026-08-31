@@ -599,6 +599,8 @@ record: the answer to "did my child's work get lost".
 | `GET` | `/api/v1/auth/consume` | link token | top-level nav; sets device cookie |
 | `POST` | `/api/v1/auth/pair` | device | issue a pairing code for a 2nd device |
 | `POST` | `/api/v1/auth/redeem` | none | redeem a pairing code, sets cookie |
+| `POST` | `/api/v1/auth/signup` | none | claim a username + PIN, sets cookie |
+| `POST` | `/api/v1/auth/signin` | none | username + PIN, sets cookie |
 | `GET` | `/api/v1/family/children` | device | list children for child-picking |
 | `POST` | `/api/v1/family/children` | device | create a child, returns server id |
 | `GET` | `/api/v1/children/{id}/save` | device | fetch authoritative save |

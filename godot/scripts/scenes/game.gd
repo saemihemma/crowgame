@@ -672,6 +672,13 @@ func player_die() -> void:
 	# Coins collected this level are lost (back to level-start count).
 	coin_count = coins_at_level_start
 	EventBus.coins_changed.emit(coin_count)
+	# And so is everything this level had ever banked. See
+	# SaveManager.forget_level_run for what survives and why: the world stays
+	# unlocked and the maths is never taken away, but the place itself has to be
+	# earned again. Before the reload, so _load_level rebuilds the level against
+	# the cleared record and the big coins come back solid rather than as the
+	# ghosts of coins the child no longer has.
+	SaveManager.forget_level_run(LevelManager.get_current_level_key())
 	if _player:
 		_player.set_physics_process(false)
 	# Full level reload, mirroring Phaser's scene.restart(): coins and enemies
@@ -755,7 +762,11 @@ func transition_to_level(target_level: String) -> void:
 	# found on a run that ended in death does not count: death reloads the level
 	# and the coin comes back, which is what makes a run a run. Banking is
 	# best-of, so a worse second visit takes nothing away.
-	SaveManager.bank_run(LevelManager.get_current_level_key(), _big_coins_found, _owls_freed)
+	# The fourth argument is the tick on the journey screen: every big coin in
+	# this level, found on THIS visit. It cannot be derived from the record, which
+	# unions across every visit a child has ever made.
+	var perfect: bool = _big_coins_in_level > 0 and _big_coins_found.size() >= _big_coins_in_level
+	SaveManager.bank_run(LevelManager.get_current_level_key(), _big_coins_found, _owls_freed, perfect)
 	LevelManager.transition_to(target_level)
 	if target_level == "__complete__":
 		AudioManager.stop_music()
@@ -952,7 +963,15 @@ func is_math_tutorial_active() -> bool:
 func get_math_tutorial() -> CanvasLayer:
 	return _math_tutorial
 
-## Open a lesson.
+## Open a lesson. Returns whether one actually opened.
+##
+## The return value is not decoration. A caller that opens a lesson is usually
+## HOLDING something on the lesson's behalf -- the owl mid-encounter, the
+## question it was taught for -- and a refusal it cannot see is a hold that is
+## never released. That is exactly how an owl came to sit on its perch forever
+## after being saved: the win launched its earned lesson while the challenge
+## board was still on screen, the refusal below fired silently, and the caller
+## believed a lesson was up and never flew the owl away.
 ##
 ## `over_challenge` is the help button's door in. Normally a lesson refuses to
 ## open while a question is on screen, because every automatic lesson either
@@ -961,11 +980,11 @@ func get_math_tutorial() -> CanvasLayer:
 ## is CanvasLayer 11 against the challenge's 10, so it lands on top and the
 ## question is exactly where they left it when they close it.
 func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable,
-		depth: String = TutorialManager.DEPTH_FULL, over_challenge: bool = false) -> void:
+		depth: String = TutorialManager.DEPTH_FULL, over_challenge: bool = false) -> bool:
 	if is_math_tutorial_active():
-		return
+		return false
 	if is_math_challenge_active() and not over_challenge:
-		return
+		return false
 	_math_tutorial = MATH_TUTORIAL_SCENE.instantiate()
 	add_child(_math_tutorial)
 	_math_tutorial.closed.connect(func(payload: Dictionary):
@@ -986,6 +1005,7 @@ func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable,
 	if _player:
 		_player.set_physics_process(false)
 	_math_tutorial.present(tutorial, depth)
+	return true
 
 func _on_challenge_closed() -> void:
 	_math_challenge = null

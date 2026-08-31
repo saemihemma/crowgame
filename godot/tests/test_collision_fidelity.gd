@@ -148,3 +148,32 @@ func test_the_player_box_never_reaches_outside_the_crow() -> void:
 				"walk frame %d,%d: the box spans x%d..%d but the crow is only drawn x%d..%d - collision outside the drawing" % [
 					fx, fy, left, right, lo, hi])
 	assert_true(frames >= 8, "every walk frame was measured (got %d)" % frames)
+
+
+## THE CROW HAS TO FIT THROUGH ITS OWN LEVEL'S HOLES.
+##
+## A playtester photographed the crow standing in mid-air over the one-tile gap
+## between two grass ledges in level 1. Nothing was wrong with the level: the
+## collider was 40px wide, which is 1.25 tiles, so it rested on both lips of a
+## 32px hole at once. Seven authored holes across five levels had never once been
+## holes, and no test could have noticed -- every rule about this box compared it
+## to the ART, and against the art 40px was correct.
+##
+## This is the runtime half of the guard; the level half ("no level may contain a
+## hole this box can bridge") is in check_level_reachability.py. Both read the
+## same two numbers, so they cannot disagree about which crow they are measuring.
+func test_the_crow_fits_through_a_one_tile_hole() -> void:
+	var manifest := _json(TILE_MANIFEST)
+	var tile := float(manifest.get("tileWidth", 32))
+	var box := SpriteSheet.body_box(WALK_SPRITE_KEY)
+	assert_true(box != Vector2.ZERO, "the crow has a declared body box")
+	if box == Vector2.ZERO:
+		return
+	assert_true(box.x < tile,
+		"the crow (%.0fpx) is narrower than a tile (%.0fpx), so a one-tile hole is a hole"
+		% [box.x, tile])
+	# And not so narrow that a ledge stops being catchable. Overhanging wingtips
+	# are the generous direction for a seven-year-old to be wrong in; a crow
+	# thinner than half a tile would slip off edges it visibly stands on.
+	assert_true(box.x > tile * 0.5,
+		"but wide enough to stand on a ledge (%.0fpx against a %.0fpx tile)" % [box.x, tile])

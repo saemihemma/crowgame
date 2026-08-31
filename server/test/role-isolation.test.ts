@@ -67,7 +67,13 @@ const POOL_OWNERS = new Set(['db.ts', 'familyDb.ts', 'migrate.ts', 'maintenance.
  * This list is the whole exception, and it is subtracted rather than the protected
  * set being enumerated — that direction matters. See RLS_DENOMINATOR below.
  */
-const AUTH_TABLES_WITHOUT_RLS = ['device_tokens', 'devices', 'login_codes', 'parents'];
+const AUTH_TABLES_WITHOUT_RLS = [
+    'device_tokens', 'devices', 'login_codes', 'parents',
+    // `accounts` is the username+PIN login (migration 007) and is the same kind
+    // of table for the same reason: signing in means finding a family FROM a
+    // username, so the policy would need the row it is being asked to authorize.
+    'accounts',
+];
 
 /**
  * RLS_DENOMINATOR — why the protected set is DERIVED and not listed.

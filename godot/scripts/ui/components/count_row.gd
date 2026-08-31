@@ -224,8 +224,23 @@ func _draw() -> void:
 ## All six stay clearly distinct from the coin, which is a disc with a face on
 ## it: a countable object that reads as currency would make a counting question
 ## look like a reward.
+
+## The crescent's sweep, and how deep the moon is bitten into it. Named rather
+## than inlined so the shape can be retuned without anybody having to re-derive
+## why two overlapping circles cannot be used for it.
+const SWEEP_STEPS := 16
+const CRESCENT_FROM := PI * 0.36
+const CRESCENT_TO := PI * 1.64
+const CRESCENT_BITE := 0.55
+
 func _draw_shape(shape: String, at: Vector2, radius: float, fill: Color, edge: Color) -> void:
 	const RIM := 3.0
+	# The polygon shapes all come from one place, so a test can ask for the same
+	# outline the renderer is about to fill -- see outline_for.
+	var outline := outline_for(shape, at, radius)
+	if not outline.is_empty():
+		_fill(outline, fill, edge)
+		return
 	match shape:
 		"ring":
 			draw_arc(at, radius * 0.78, 0, TAU, 32, fill, radius * 0.42)
@@ -234,88 +249,100 @@ func _draw_shape(shape: String, at: Vector2, radius: float, fill: Color, edge: C
 			var box := Rect2(at - Vector2(radius, radius) * 0.86, Vector2(radius, radius) * 1.72)
 			draw_rect(box, fill)
 			draw_rect(box, edge, false, RIM)
-		"diamond":
-			var d := PackedVector2Array([
-				at + Vector2(0, -radius), at + Vector2(radius, 0),
-				at + Vector2(0, radius), at + Vector2(-radius, 0)])
-			draw_colored_polygon(d, fill)
-			draw_polyline(_closed(d), edge, RIM)
-		"leaf":
-			# Two arcs meeting at a point top and bottom: a leaf rather than an
-			# ellipse, so it does not read as a squashed disc at token size.
-			var leaf := PackedVector2Array()
-			for i in 13:
-				var t := float(i) / 12.0
-				leaf.append(at + Vector2(sin(t * PI) * radius * 0.62, (t * 2.0 - 1.0) * radius))
-			for i in 13:
-				var t := float(i) / 12.0
-				leaf.append(at + Vector2(-sin((1.0 - t) * PI) * radius * 0.62, ((1.0 - t) * 2.0 - 1.0) * radius))
-			draw_colored_polygon(leaf, fill)
-			draw_polyline(_closed(leaf), edge, RIM)
 		"flower":
 			for i in 5:
 				var a := TAU * float(i) / 5.0 - PI * 0.5
 				draw_circle(at + Vector2(cos(a), sin(a)) * radius * 0.52, radius * 0.46, fill)
 			draw_circle(at, radius * 0.42, edge)
-		"star":
-			# Five points, alternating full and inner radius. Concave, so it goes
-			# through _fill rather than draw_colored_polygon directly.
-			var star := PackedVector2Array()
-			for i in 10:
-				var a := TAU * float(i) / 10.0 - PI * 0.5
-				var r := radius if i % 2 == 0 else radius * 0.46
-				star.append(at + Vector2(cos(a), sin(a)) * r)
-			_fill(star, fill, edge)
-		"triangle":
-			var tri := PackedVector2Array()
-			for i in 3:
-				var a := TAU * float(i) / 3.0 - PI * 0.5
-				tri.append(at + Vector2(cos(a), sin(a)) * radius)
-			draw_colored_polygon(tri, fill)
-			draw_polyline(_closed(tri), edge, RIM)
-		"hexagon":
-			var hex := PackedVector2Array()
-			for i in 6:
-				var a := TAU * float(i) / 6.0 - PI * 0.5
-				hex.append(at + Vector2(cos(a), sin(a)) * radius)
-			draw_colored_polygon(hex, fill)
-			draw_polyline(_closed(hex), edge, RIM)
-		"heart":
-			# The standard heart curve, sampled. Scaled so the widest span matches
-			# the shared token radius: every shape has to read as the same size.
-			var heart := PackedVector2Array()
-			for i in 25:
-				var t := TAU * float(i) / 24.0
-				var hx := pow(sin(t), 3.0) * 16.0
-				var hy := 13.0 * cos(t) - 5.0 * cos(2.0 * t) - 2.0 * cos(3.0 * t) - cos(4.0 * t)
-				heart.append(at + Vector2(hx, -hy) * radius / 16.0)
-			_fill(heart, fill, edge)
-		"egg":
-			# An oval that narrows toward the top, so it is not read as a squashed
-			# disc -- and the game's own word problems are about eggs in nests.
-			var egg := PackedVector2Array()
-			for i in 24:
-				var t := TAU * float(i) / 24.0
-				var width := radius * 0.72 * (1.0 - 0.20 * cos(t))
-				egg.append(at + Vector2(sin(t) * width, -cos(t) * radius))
-			draw_colored_polygon(egg, fill)
-			draw_polyline(_closed(egg), edge, RIM)
-		"crescent":
-			# Outer arc down one side, inner arc back on a shifted centre: the gap
-			# between the two circles is the moon.
-			var moon := PackedVector2Array()
-			for i in 17:
-				var t := lerpf(PI * 0.36, PI * 1.64, float(i) / 16.0)
-				moon.append(at + Vector2(sin(t), -cos(t)) * radius)
-			for i in 17:
-				var t := lerpf(PI * 1.64, PI * 0.36, float(i) / 16.0)
-				moon.append(at + Vector2(radius * 0.46, 0.0) + Vector2(sin(t), -cos(t)) * radius * 0.94)
-			_fill(moon, fill, edge)
 		_:
 			# "disc": a disc with a hard rim. Countable at a glance and the
 			# baseline every other shape is calibrated against.
 			draw_circle(at, radius, fill)
 			draw_arc(at, radius, 0, TAU, 32, edge, RIM)
+
+## The OUTLINE of a token, for the shapes that are polygons. Empty for the ones
+## drawn from primitives -- a ring, a square, a flower and a disc have no
+## polygon to get wrong.
+##
+## Split out of the drawing so the geometry has exactly one definition. The
+## crescent shipped as two overlapping circles whose outline crossed itself,
+## which is the one thing Geometry2D.triangulate_polygon refuses; nothing could
+## have caught it while the points existed only inside a _draw call, because a
+## test cannot see the inside of _draw. Now a test asks for the same outline the
+## renderer is about to fill.
+static func outline_for(shape: String, at: Vector2, radius: float) -> PackedVector2Array:
+	var points := PackedVector2Array()
+	match shape:
+		"diamond":
+			points = PackedVector2Array([
+				at + Vector2(0, -radius), at + Vector2(radius, 0),
+				at + Vector2(0, radius), at + Vector2(-radius, 0)])
+		"leaf":
+			# Two arcs meeting at a point top and bottom: a leaf rather than an
+			# ellipse, so it does not read as a squashed disc at token size.
+			for i in 13:
+				var t := float(i) / 12.0
+				points.append(at + Vector2(sin(t * PI) * radius * 0.62, (t * 2.0 - 1.0) * radius))
+			for i in 13:
+				var t := float(i) / 12.0
+				points.append(at + Vector2(-sin((1.0 - t) * PI) * radius * 0.62, ((1.0 - t) * 2.0 - 1.0) * radius))
+		"star":
+			# Five points, alternating full and inner radius. Concave, so it goes
+			# through _fill rather than draw_colored_polygon directly.
+			for i in 10:
+				var a := TAU * float(i) / 10.0 - PI * 0.5
+				var r := radius if i % 2 == 0 else radius * 0.46
+				points.append(at + Vector2(cos(a), sin(a)) * r)
+		"triangle":
+			for i in 3:
+				var a := TAU * float(i) / 3.0 - PI * 0.5
+				points.append(at + Vector2(cos(a), sin(a)) * radius)
+		"hexagon":
+			for i in 6:
+				var a := TAU * float(i) / 6.0 - PI * 0.5
+				points.append(at + Vector2(cos(a), sin(a)) * radius)
+		"heart":
+			# The standard heart curve, sampled. Scaled so the widest span matches
+			# the shared token radius: every shape has to read as the same size.
+			for i in 25:
+				var t := TAU * float(i) / 24.0
+				var hx := pow(sin(t), 3.0) * 16.0
+				var hy := 13.0 * cos(t) - 5.0 * cos(2.0 * t) - 2.0 * cos(3.0 * t) - cos(4.0 * t)
+				points.append(at + Vector2(hx, -hy) * radius / 16.0)
+		"egg":
+			# An oval that narrows toward the top, so it is not read as a squashed
+			# disc -- and the game's own word problems are about eggs in nests.
+			for i in 24:
+				var t := TAU * float(i) / 24.0
+				var width := radius * 0.72 * (1.0 - 0.20 * cos(t))
+				points.append(at + Vector2(sin(t) * width, -cos(t) * radius))
+		"crescent":
+			# Outer arc down one side, and an inner edge that RETURNS ALONG THE
+			# SAME ANGLES at a radius which dips inward and comes back to
+			# `radius` at both ends. So the outline closes on itself exactly, by
+			# construction, at every size.
+			#
+			# It used to be two circles: the outer one, and an inner arc on a
+			# centre shifted by 0.46r with radius 0.94r. Those two circles
+			# INTERSECT, so the outline crossed itself -- and a self-intersecting
+			# polygon is the one thing triangulate_polygon returns nothing for.
+			# _fill then fell through to draw_colored_polygon, which is the exact
+			# call that cannot draw a concave shape, and the engine printed
+			# "Invalid polygon data, triangulation failed" fourteen times in one
+			# owl encounter. Every test still passed: the suite fails on engine
+			# errors too, which is the only reason anybody found out.
+			for i in SWEEP_STEPS + 1:
+				var s := float(i) / float(SWEEP_STEPS)
+				var t := lerpf(CRESCENT_FROM, CRESCENT_TO, s)
+				points.append(at + Vector2(sin(t), -cos(t)) * radius)
+			for i in SWEEP_STEPS + 1:
+				var s := 1.0 - float(i) / float(SWEEP_STEPS)
+				var t := lerpf(CRESCENT_FROM, CRESCENT_TO, s)
+				# sin() is zero at both ends, so the inner edge meets the outer
+				# arc exactly where it must and bites deepest in the middle.
+				var dip := radius * (1.0 - CRESCENT_BITE * sin(PI * s))
+				points.append(at + Vector2(sin(t), -cos(t)) * dip)
+	return points
 
 ## Fill a possibly concave outline, then rim it.
 ##
@@ -335,8 +362,40 @@ func _fill(points: PackedVector2Array, fill: Color, edge: Color) -> void:
 				points[indices[i]], points[indices[i + 1]], points[indices[i + 2]]]), fill)
 			i += 3
 	else:
-		draw_colored_polygon(points, fill)
+		_fan(points, fill)
 	draw_polyline(_closed(points), edge, RIM)
+
+## The fallback, when the triangulator refuses an outline: a fan of triangles
+## from the centroid.
+##
+## This used to be `draw_colored_polygon(points, fill)`, which is not a fallback
+## at all -- it is the same call the four lines above exist to avoid, and the
+## only outlines that reach here are the concave ones it cannot draw. So the
+## "we still draw something rather than nothing" promise in the comment above was
+## backwards: it drew nothing AND logged an engine error, once per token per
+## frame. The crescent did exactly that until the shape itself was fixed.
+##
+## Every triangle here is convex by construction, so this can never fail. For an
+## outline that is star-shaped about its centroid -- which every token in this
+## file is -- the fan is also exactly right rather than an approximation.
+func _fan(points: PackedVector2Array, fill: Color) -> void:
+	for tri in fan_triangles(points):
+		draw_colored_polygon(tri, fill)
+
+## The fan itself, as data, so a test can check the geometry without a viewport.
+## Every triangle is convex by construction, which is the whole property that
+## makes this a safe fallback.
+static func fan_triangles(points: PackedVector2Array) -> Array[PackedVector2Array]:
+	var out: Array[PackedVector2Array] = []
+	if points.size() < 3:
+		return out
+	var centre := Vector2.ZERO
+	for p in points:
+		centre += p
+	centre /= float(points.size())
+	for i in points.size():
+		out.append(PackedVector2Array([centre, points[i], points[(i + 1) % points.size()]]))
+	return out
 
 ## A polyline needs its first point repeated to close; a polygon does not.
 static func _closed(points: PackedVector2Array) -> PackedVector2Array:
