@@ -28,6 +28,8 @@
     "_help_comment": "The \"?\" beside the owl. 88 is the Gate B3 tap-target floor -- a help button a child cannot reliably hit is a help button that does not exist, and this one is pressed by the child who is already struggling."
   },
   "player": {
+    "step_distance_px": 46.0,
+    "_step_distance_comment": "Pixels of ground travel between footsteps. 46 is a little under a third of the crow body width, which reads as a walk rather than a scurry, and it keeps the step under the 130ms floor in audio_manifest.json at full sprint.",
     "walk_speed_threshold": 10
   },
   "door": {

@@ -1,6 +1,7 @@
 {
   "id": "aurora_spire",
   "name": "Aurora Spire",
+  "ambience": "amb_aurora_spire",
   "palette": {
     "primary": "#3A6EA8",
     "secondary": "#1E2A55",
@@ -8,7 +9,7 @@
     "danger": "#FF4D4D",
     "textColor": "#FFF8E7",
     "textShadow": "#0A0C1E",
-        "overlay_shade": "#0A0C1E",
+    "overlay_shade": "#0A0C1E",
     "boardBg": "#1E2A55",
     "boardBorder": "#7CF5C4",
     "buttonBg": "#2F4E7A",

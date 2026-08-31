@@ -1,6 +1,7 @@
 {
   "id": "sugarstorm",
   "name": "Sugarstorm",
+  "ambience": "amb_sugarstorm",
   "palette": {
     "primary": "#FF4FA3",
     "secondary": "#7B2FBF",
@@ -8,7 +9,7 @@
     "danger": "#FF4D4D",
     "textColor": "#FFF8E7",
     "textShadow": "#1A0E2E",
-        "overlay_shade": "#1A0E2E",
+    "overlay_shade": "#1A0E2E",
     "boardBg": "#4B1B6B",
     "boardBorder": "#FFE14D",
     "buttonBg": "#7B2FBF",

@@ -96,6 +96,20 @@ export const config = {
     /** Absolute base used to build the magic link, e.g. https://crow.example.com */
     publicBaseUrl: str('CROW_PUBLIC_BASE_URL', ''),
 
+    /**
+     * The sound-review page at /audio.
+     *
+     * Its own password rather than the admin token, because the two guard very
+     * different things: the admin surface aggregates data about real children,
+     * this one plays the game's sound effects. Unset means /audio and everything
+     * under it answers 404 — off, not open.
+     */
+    audio: {
+        password: str('CROW_AUDIO_PASSWORD', ''),
+        /** Attempts per IP per minute at the password form. */
+        attemptsPerMinute: int('CROW_AUDIO_ATTEMPTS_PER_MIN', 10),
+    },
+
     admin: {
         /**
          * Bearer token for the owner's analytics surface. Unset means the whole

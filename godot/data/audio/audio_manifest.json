@@ -1,102 +1,313 @@
 {
+  "_comment": "Key -> file + mix. sound_events.json maps a gameplay MOMENT to a key here; nothing in .gd names a file. brand/SOUND_DESIGN.md is the design and the per-moment brief. Fields: volume (linear, on top of the player's master volume) | pool (how many of THIS sound may overlap; past it the oldest stops) | min_interval_ms (floor between two of the same sound — the anti-machine-gun) | pitch_jitter (SEMITONES either way, so a sound that fires constantly never repeats exactly) | pitch_ladder (semitone offsets a sound climbs while it keeps firing inside ladder_window_ms — the coin run) | max_distance + attenuation (positional sounds only) | loop is implied by use: attach_loop() loops whatever it is given.",
+  "mix": {
+    "_comment": "The mix, kept out of .gd because it is tuned by ear against the real files.",
+    "max_voices": 12,
+    "default_pool": 4,
+    "default_max_distance": 420,
+    "default_attenuation": 1.6,
+    "music_volume": 1.0,
+    "sfx_volume": 1.0,
+    "ambience_volume": 1.0,
+    "duck_db": -6.0,
+    "duck_in_ms": 120,
+    "duck_out_ms": 400
+  },
   "sfx": {
     "player_jump": {
       "file": "assets/audio/sfx/player_jump.wav",
-      "volume": 0.5
+      "volume": 0.5,
+      "pool": 2,
+      "pitch_jitter": 0.35,
+      "min_interval_ms": 90
     },
     "land": {
       "file": "assets/audio/sfx/land.wav",
-      "volume": 0.45
+      "volume": 0.45,
+      "pool": 2,
+      "pitch_jitter": 0.4
+    },
+    "step": {
+      "file": "assets/audio/sfx/step.wav",
+      "volume": 0.18,
+      "pool": 2,
+      "pitch_jitter": 0.9,
+      "min_interval_ms": 130
     },
     "coin_collect": {
       "file": "assets/audio/sfx/coin_collect.wav",
       "volume": 0.6,
-      "pool": 4
+      "pool": 4,
+      "pitch_jitter": 0.15,
+      "pitch_ladder": [0, 2, 4, 7, 9, 12],
+      "ladder_window_ms": 1200
     },
     "hurt": {
       "file": "assets/audio/sfx/hurt.wav",
-      "volume": 0.55
+      "volume": 0.55,
+      "pool": 1
     },
     "enemy_death": {
       "file": "assets/audio/sfx/enemy_death.wav",
       "volume": 0.55,
-      "pool": 3
+      "pool": 3,
+      "pitch_jitter": 0.5,
+      "max_distance": 520
     },
     "laser_shoot": {
       "file": "assets/audio/sfx/laser_shoot.wav",
       "volume": 0.5,
-      "pool": 4
+      "pool": 4,
+      "pitch_jitter": 0.4,
+      "min_interval_ms": 60
     },
     "owl_greet": {
       "file": "assets/audio/sfx/owl_greet.wav",
-      "volume": 0.55
+      "volume": 0.55,
+      "pool": 1,
+      "max_distance": 500
     },
     "owl_saved": {
       "file": "assets/audio/sfx/owl_saved.wav",
-      "volume": 0.7
+      "volume": 0.7,
+      "pool": 1
+    },
+    "wing": {
+      "file": "assets/audio/sfx/wing.wav",
+      "volume": 0.4,
+      "pool": 2,
+      "pitch_jitter": 0.5,
+      "max_distance": 500
     },
     "door": {
       "file": "assets/audio/sfx/door.wav",
-      "volume": 0.5
+      "volume": 0.5,
+      "pool": 1
+    },
+    "door_locked": {
+      "file": "assets/audio/sfx/door_locked.wav",
+      "volume": 0.4,
+      "pool": 1
     },
     "button": {
       "file": "assets/audio/sfx/button.wav",
       "volume": 0.45,
-      "pool": 3
-    },
-    "correct": {
-      "file": "assets/audio/sfx/correct.wav",
-      "volume": 0.7
-    },
-    "wrong": {
-      "file": "assets/audio/sfx/wrong.wav",
-      "volume": 0.45
-    },
-    "level_complete": {
-      "file": "assets/audio/sfx/level_complete.wav",
-      "volume": 0.75
-    },
-    "ability": {
-      "file": "assets/audio/sfx/ability.wav",
-      "volume": 0.6
-    },
-    "milestone": {
-      "file": "assets/audio/sfx/milestone.wav",
-      "volume": 0.7
-    },
-    "golden": {
-      "file": "assets/audio/sfx/golden.wav",
-      "volume": 0.65
-    },
-    "player_die": {
-      "file": "assets/audio/sfx/player_die.wav",
-      "volume": 0.55
-    },
-    "level_enter": {
-      "file": "assets/audio/sfx/level_enter.wav",
-      "volume": 0.6
-    },
-    "chain_break": {
-      "file": "assets/audio/sfx/chain_break.wav",
-      "volume": 0.5,
-      "pool": 3
+      "pool": 3,
+      "min_interval_ms": 40
     },
     "button_focus": {
       "file": "assets/audio/sfx/button_focus.wav",
       "volume": 0.3,
-      "pool": 3
+      "pool": 3,
+      "min_interval_ms": 55
+    },
+    "ui_hover": {
+      "file": "assets/audio/sfx/ui_hover.wav",
+      "volume": 0.16,
+      "pool": 2,
+      "min_interval_ms": 70
+    },
+    "ui_back": {
+      "file": "assets/audio/sfx/ui_back.wav",
+      "volume": 0.4,
+      "pool": 2,
+      "min_interval_ms": 40
+    },
+    "toggle_on": {
+      "file": "assets/audio/sfx/toggle_on.wav",
+      "volume": 0.45,
+      "pool": 1
+    },
+    "toggle_off": {
+      "file": "assets/audio/sfx/toggle_off.wav",
+      "volume": 0.4,
+      "pool": 1
+    },
+    "pause_open": {
+      "file": "assets/audio/sfx/pause_open.wav",
+      "volume": 0.4,
+      "pool": 1
+    },
+    "pause_close": {
+      "file": "assets/audio/sfx/pause_close.wav",
+      "volume": 0.4,
+      "pool": 1
+    },
+    "board_open": {
+      "file": "assets/audio/sfx/board_open.wav",
+      "volume": 0.45,
+      "pool": 1
+    },
+    "board_close": {
+      "file": "assets/audio/sfx/board_close.wav",
+      "volume": 0.35,
+      "pool": 1
+    },
+    "correct": {
+      "file": "assets/audio/sfx/correct.wav",
+      "volume": 0.7,
+      "pool": 1,
+      "pitch_ladder": [0, 2, 4, 5, 7]
+    },
+    "wrong": {
+      "file": "assets/audio/sfx/wrong.wav",
+      "volume": 0.4,
+      "pool": 1
+    },
+    "answer_reveal": {
+      "file": "assets/audio/sfx/answer_reveal.wav",
+      "volume": 0.5,
+      "pool": 1
+    },
+    "comeback": {
+      "file": "assets/audio/sfx/comeback.wav",
+      "volume": 0.72,
+      "pool": 1
+    },
+    "lesson_open": {
+      "file": "assets/audio/sfx/lesson_open.wav",
+      "volume": 0.4,
+      "pool": 1
+    },
+    "lesson_card": {
+      "file": "assets/audio/sfx/lesson_card.wav",
+      "volume": 0.3,
+      "pool": 2,
+      "pitch_jitter": 0.3,
+      "min_interval_ms": 90
+    },
+    "golden": {
+      "file": "assets/audio/sfx/golden.wav",
+      "volume": 0.65,
+      "pool": 1
+    },
+    "chain_break": {
+      "file": "assets/audio/sfx/chain_break.wav",
+      "volume": 0.5,
+      "pool": 3,
+      "pitch_jitter": 0.6,
+      "min_interval_ms": 70
     },
     "big_coin": {
-        "file": "assets/audio/sfx/big_coin.wav",
-        "volume": 0.65
+      "file": "assets/audio/sfx/big_coin.wav",
+      "volume": 0.65,
+      "pool": 1
     },
     "big_coin_all": {
-        "file": "assets/audio/sfx/big_coin_all.wav",
-        "volume": 0.7
+      "file": "assets/audio/sfx/big_coin_all.wav",
+      "volume": 0.7,
+      "pool": 1
     },
-    "door_locked": {
-      "file": "assets/audio/sfx/door_locked.wav",
-      "volume": 0.4
+    "streak": {
+      "file": "assets/audio/sfx/streak.wav",
+      "volume": 0.55,
+      "pool": 1,
+      "pitch_ladder": [0, 2, 4, 7, 9]
+    },
+    "milestone": {
+      "file": "assets/audio/sfx/milestone.wav",
+      "volume": 0.7,
+      "pool": 1
+    },
+    "ability": {
+      "file": "assets/audio/sfx/ability.wav",
+      "volume": 0.6,
+      "pool": 1
+    },
+    "player_die": {
+      "file": "assets/audio/sfx/player_die.wav",
+      "volume": 0.55,
+      "pool": 1
+    },
+    "level_enter": {
+      "file": "assets/audio/sfx/level_enter.wav",
+      "volume": 0.6,
+      "pool": 1
+    },
+    "level_complete": {
+      "file": "assets/audio/sfx/level_complete.wav",
+      "volume": 0.75,
+      "pool": 1
+    },
+    "enemy_charge": {
+      "file": "assets/audio/sfx/enemy_charge.wav",
+      "volume": 0.42,
+      "pool": 2,
+      "max_distance": 560,
+      "attenuation": 1.3
+    },
+    "enemy_spit": {
+      "file": "assets/audio/sfx/enemy_spit.wav",
+      "volume": 0.45,
+      "pool": 3,
+      "pitch_jitter": 0.5,
+      "max_distance": 520
+    },
+    "spit_land": {
+      "file": "assets/audio/sfx/spit_land.wav",
+      "volume": 0.35,
+      "pool": 3,
+      "pitch_jitter": 0.6,
+      "max_distance": 460
+    },
+    "roach_skitter": {
+      "file": "assets/audio/sfx/roach_skitter.wav",
+      "volume": 0.3,
+      "max_distance": 420,
+      "attenuation": 1.8
+    },
+    "puddle_bubble": {
+      "file": "assets/audio/sfx/puddle_bubble.wav",
+      "volume": 0.22,
+      "max_distance": 300,
+      "attenuation": 2.0
+    },
+    "spike_hiss": {
+      "file": "assets/audio/sfx/spike_hiss.wav",
+      "volume": 0.16,
+      "max_distance": 200,
+      "attenuation": 2.4
+    },
+    "door_hum": {
+      "file": "assets/audio/sfx/door_hum.wav",
+      "volume": 0.26,
+      "max_distance": 260,
+      "attenuation": 1.4
+    },
+    "big_coin_shimmer": {
+      "file": "assets/audio/sfx/big_coin_shimmer.wav",
+      "volume": 0.18,
+      "max_distance": 320,
+      "attenuation": 2.0
+    },
+    "owl_rustle": {
+      "file": "assets/audio/sfx/owl_rustle.wav",
+      "volume": 0.2,
+      "max_distance": 240,
+      "attenuation": 1.8
+    }
+  },
+  "beds": {
+    "_comment": "One non-positional ambience loop per WORLD, named from data/themes/theme_<world>.json. Not events: which bed plays is a property of the place, exactly like a level's music key.",
+    "amb_emberwood": {
+      "file": "assets/audio/ambience/emberwood.wav",
+      "volume": 0.22
+    },
+    "amb_prism_hollow": {
+      "file": "assets/audio/ambience/prism_hollow.wav",
+      "volume": 0.2
+    },
+    "amb_sugarstorm": {
+      "file": "assets/audio/ambience/sugarstorm.wav",
+      "volume": 0.2
+    },
+    "amb_geyserworks": {
+      "file": "assets/audio/ambience/geyserworks.wav",
+      "volume": 0.22
+    },
+    "amb_aurora_spire": {
+      "file": "assets/audio/ambience/aurora_spire.wav",
+      "volume": 0.18
     }
   },
   "music": {

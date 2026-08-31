@@ -22,7 +22,11 @@ RUN set -eux; \
     done; \
     ls -la /srv
 
-# Fail the build rather than deploy a broken config.
-RUN caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile 2>&1 | tail -2 || true
+# Fail the build rather than deploy a broken config -- which it now does. It
+# read `... | tail -2 || true`, and BOTH halves of that made it a no-op: a
+# pipeline exits with tail's status, and `|| true` swallowed whatever survived.
+# So the one check standing between a typo in the Caddyfile and every player
+# getting a 502 could not fail, in a file whose own comment says it must.
+RUN caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
 
 EXPOSE 8080

@@ -176,16 +176,26 @@ func _on_coins_changed(c: int) -> void:
 ## is what the three-pod layout keeps free so an event reads as an event.
 func _on_curriculum_step_up(payload: Dictionary) -> void:
 	var domain := String(payload.get("domain", ""))
+	AudioManager.play_event("milestone")
 	_show_celebration_banner(TextManager.t("math.step_up", [TextManager.t("domain." + domain)]))
 
-## The redemption arc: a skill missed earlier was just beaten on its
-## scheduled return. Celebrated harder than an ordinary win.
+## The redemption arc: a skill missed earlier was just beaten on its scheduled
+## return.
+##
+## PRODUCT.md commits to celebrating this HARDER than an ordinary win, and the
+## banner did -- while the sound did not: a comeback and a curriculum step-up both
+## played `milestone`, so the one moment the design singles out as the best in the
+## game was, to the ear, the same as levelling up. Its own cue now, and the only
+## sound in the game allowed to be bigger than a step-up outside a run ending.
 func _on_math_comeback(_payload: Dictionary) -> void:
+	AudioManager.play_event("comeback")
 	_show_celebration_banner(TextManager.t("math.comeback"))
 
+## The banner only. WHICH cue goes with it is the caller's, because the two
+## callers mean different things and a shared sound is what made them read as
+## one -- see _on_math_comeback above.
 func _show_celebration_banner(banner: String) -> void:
 	var center := Vector2(get_viewport().get_visible_rect().size.x / 2.0, 120.0)
-	AudioManager.play_event("milestone")
 	DopamineFX.burst(self, center, ThemeManager.get_color_value("coin"), 24)
 	DopamineFX.number_fly_up(self, center, banner, ThemeManager.get_color_value("coin"))
 

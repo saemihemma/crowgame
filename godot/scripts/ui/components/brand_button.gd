@@ -63,8 +63,20 @@ static func make(text: String, button_role: int, on_press: Callable) -> BrandBut
 	return b
 
 
+## BACK IS NOT FORWARD, and the role already knows which is which.
+##
+## Every button in the game played one identical tick, so "PLAY", "Resume",
+## "Back" and "Quit" were the same event to the ear -- and a child navigating a
+## menu by sound got no feedback at all about whether they were going in or out.
+## GHOST is the role the design already reserves for the thing you press to
+## leave (Quit, Back, "I already have a name"), so it is the answer to "which
+## sound", and no new field is needed to ask.
 func _pressed() -> void:
-	if clicks:
+	if not clicks:
+		return
+	if role == Role.GHOST:
+		AudioManager.play_event("ui_back")
+	else:
 		AudioManager.play_event("button")
 
 
@@ -77,6 +89,18 @@ func _on_focus() -> void:
 	if clicks:
 		AudioManager.play_event("button_focus")
 
+
+## The pointer arriving, quieter again than the focus ring.
+##
+## Three levels of "this is live": hover (a pointer is over it), focus (the
+## keyboard is on it), press (it happened). The game is played on a tablet where
+## hover does not exist, so this is entirely for the desktop build and for a
+## grown-up on the parent screens -- which is exactly why it is the quietest
+## sound in the game and why it takes the same `clicks` opt-out as the others.
+func _on_hover() -> void:
+	if clicks:
+		AudioManager.play_event("ui_hover")
+
 func _ready() -> void:
 	custom_minimum_size.y = maxf(custom_minimum_size.y, MIN_HEIGHT)
 	focus_mode = Control.FOCUS_ALL if focusable else Control.FOCUS_NONE
@@ -84,6 +108,7 @@ func _ready() -> void:
 	_restyle()
 	ThemeManager.theme_changed.connect(func(_id): _restyle())
 	focus_entered.connect(_on_focus)
+	mouse_entered.connect(_on_hover)
 	if pulse:
 		_start_pulse.call_deferred()
 

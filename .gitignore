@@ -70,3 +70,20 @@ output/focus-repro/
 output/pin-probe/
 output/touch-probe/
 output/pad-probe/
+
+# SECRETS. Nothing in this repo needs a credential at runtime, and the one
+# credential the project uses at all -- ELEVENLABS_API_KEY, for the offline
+# sound generator in tools/ -- belongs in a shell or in a file that is never
+# committed. Listed explicitly rather than trusted to habit: a key pushed once is
+# a key that has to be rotated, and the web build is public bytes.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ElevenLabs takes from tools/gen_audio_elevenlabs.mjs. Deliberately NOT assets:
+# generation is cheap and wrong most of the time, so takes accumulate here and
+# only the chosen one is promoted into godot/assets/audio (see the tool's
+# --promote). Same category as the other output/ review aids above.
+output/audio-takes/

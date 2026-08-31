@@ -13,6 +13,7 @@ var speed := 40.0
 var coin_reward := 2
 var _dir := -1
 var _dead := false
+var _skitter: AudioStreamPlayer2D
 
 @onready var _sprite: Node = $Sprite
 @onready var _edge_ray: RayCast2D = $EdgeRay
@@ -40,6 +41,13 @@ func _ready() -> void:
 			_sprite.texture = tex
 		_sprite.offset = SpriteSheet.anchor_offset(SPRITE_KEY, SpriteSheet.grounding_sink())
 	_hitbox.body_entered.connect(_on_body_entered)
+	# THE SKITTER. A cockroach is heard before it is seen: attach_loop mixes it
+	# by distance and pan against the level camera, so it arrives from the side
+	# it is actually on and grows as the crow closes. For a five-year-old this is
+	# not flavour, it is fairness -- a patrol coming the other way round a ledge
+	# is otherwise a hit nothing warned about. It dies with the node, which is
+	# also why a dead roach goes quiet without anyone stopping it.
+	_skitter = AudioManager.attach_loop("amb_roach", self)
 
 func _physics_process(delta: float) -> void:
 	if _dead:
@@ -64,7 +72,11 @@ func kill() -> void:
 		return
 	_dead = true
 	_hitbox.set_deferred("monitoring", false)
-	AudioManager.play_event("enemy_defeat")
+	# The skitter stops on the hit, not on the queue_free two tenths later: a
+	# roach that goes on walking after it bursts is the one thing the loop must
+	# never say.
+	AudioManager.detach_loop(_skitter)
+	AudioManager.play_event_at("enemy_defeat", self)
 	# Death burst + "+N" coin fly-up (GameScene.killEnemy feedback).
 	var fx_parent := get_parent()
 	if fx_parent != null:

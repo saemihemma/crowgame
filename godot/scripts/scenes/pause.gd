@@ -41,6 +41,10 @@ func _ready() -> void:
 	_title = title
 	_resume_btn = _button(col, TextManager.t("pause.resume"), _resume, BrandButton.Role.PRIMARY)
 	_sound_btn = _button(col, _sound_label(), _toggle_sound)
+	# Both rows own their own sound, for the same reason: the row IS the
+	# demonstration, and BrandButton's generic tick on top of it reads as a
+	# glitch rather than as "this is what that setting sounds like now".
+	_sound_btn.clicks = false
 	_volume_btn = _button(col, _volume_label(), _cycle_volume)
 	_volume_btn.clicks = false
 	_language_btn = _button(col, TextManager.endonym(TextManager.get_locale()), _cycle_locale)
@@ -153,14 +157,21 @@ func _cycle_volume() -> void:
 	if is_instance_valid(_volume_btn):
 		_volume_btn.text = _volume_label()
 
+## A toggle that sounds the same in both positions is not a toggle.
+##
+## The order is the whole of it, and it is forced by what mute does: the OFF cue
+## has to play BEFORE the mute lands or it is swallowed by it, and the ON cue has
+## to play AFTER the mute lifts for exactly the same reason. Two sounds rather
+## than one shared click, because "off" is the only setting in the game whose
+## confirmation is silence -- so the last thing a child hears has to say which
+## way the switch went.
 func _toggle_sound() -> void:
 	var now_muted := not AudioManager.is_muted()
-	# Turning sound OFF is acknowledged by BrandButton's own click, which has
-	# already played by the time this runs. Turning it back ON is not: that click
-	# was swallowed by the mute it is about to lift, so it is replayed here.
+	if now_muted:
+		AudioManager.play_event("toggle_off")
 	AudioManager.set_muted(now_muted)
 	if not now_muted:
-		AudioManager.play_event("button")
+		AudioManager.play_event("toggle_on")
 	if is_instance_valid(_sound_btn):
 		_sound_btn.text = _sound_label()
 

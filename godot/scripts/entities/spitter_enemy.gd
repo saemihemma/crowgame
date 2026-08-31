@@ -86,13 +86,20 @@ func _telegraph_spit() -> void:
 	var charge := ThemeManager.get_color_value("hazard").lightened(0.4)
 	charge.g = minf(charge.g * 1.6, 1.4)
 	tw.tween_property(_sprite, "modulate", charge, 0.5)
+	# THE TELEGRAPH HAD NO SOUND, and a telegraph nobody hears is not a
+	# telegraph. The wind-up is 0.6s of the beetle standing still and glowing --
+	# ample time to move if you know it is coming, and no time at all if the
+	# first you know of it is the blob already in the air. It carries further
+	# than the spit itself (max_distance 560) for the same reason: the warning
+	# has to reach the child before the thing it warns about does.
+	AudioManager.play_event_at("enemy_charge", self)
 
 func _spit_poison() -> void:
 	_is_charging = false
 	if _sprite != null:
 		_sprite.modulate = Color.WHITE
 		
-	AudioManager.play_event("jump") # spit whoosh sound
+	AudioManager.play_event_at("enemy_spit", self)
 	var spit: Area2D = POISON_SCENE.instantiate()
 	var spawn_pos := global_position + Vector2(_dir * 20.0, -20.0)
 	var initial_velocity := Vector2(_dir * spit_speed, -180.0)
@@ -107,7 +114,7 @@ func kill() -> void:
 		return
 	_dead = true
 	_hitbox.set_deferred("monitoring", false)
-	AudioManager.play_event("enemy_defeat")
+	AudioManager.play_event_at("enemy_defeat", self)
 	var fx_parent := get_parent()
 	if fx_parent != null:
 		DopamineFX.burst(fx_parent, global_position + Vector2(0, -24),

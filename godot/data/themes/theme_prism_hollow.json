@@ -1,6 +1,7 @@
 {
   "id": "prism_hollow",
   "name": "Prism Hollow",
+  "ambience": "amb_prism_hollow",
   "palette": {
     "primary": "#2B2A5E",
     "secondary": "#4B3F7A",
@@ -8,7 +9,7 @@
     "danger": "#FF4D4D",
     "textColor": "#FFF8E7",
     "textShadow": "#0A0818",
-        "overlay_shade": "#0A0818",
+    "overlay_shade": "#0A0818",
     "boardBg": "#241D52",
     "boardBorder": "#4DE3FF",
     "buttonBg": "#37306E",

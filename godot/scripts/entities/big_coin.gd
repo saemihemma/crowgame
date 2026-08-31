@@ -53,6 +53,12 @@ func _ready() -> void:
 		return
 	_anim.play("spin")
 	body_entered.connect(_on_body_entered)
+	# THE SHIMMER IS THE HINT, and its silence is half of it. A big coin you have
+	# never found emits a very quiet high shimmer from about a screen away; the
+	# ghost of one you already banked emits nothing, because it returns above
+	# with the collider off. So on a second visit the level itself tells a child
+	# which one is still out there, without a marker, a map or a word of text.
+	AudioManager.attach_loop("amb_big_coin", self)
 
 ## Already yours. Stop spinning on a single frame, drop to a dark tint of its own
 ## art, and stop existing as far as the player's body is concerned.
