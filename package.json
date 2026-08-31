@@ -8,6 +8,7 @@
     "ai:process": "node tools/process_ai_assets.js",
     "api:migrate": "npm --prefix server run migrate",
     "api:test": "npm --prefix server test",
+    "api:verify-restore": "npm --prefix server run verify:restore",
     "cms": "node tools/cms/server.mjs",
     "compile": "tsx tools/compile-levels.ts",
     "e2e:errors": "node godot/tools/error_pipeline_e2e.mjs",
@@ -30,8 +31,8 @@
     "validate:docs": "node tools/validate_docs.js",
     "validate:docs-test": "bash tools/test_validate_docs.sh",
     "validate:i18n": "node tools/validate_i18n.mjs",
-    "validate:pedagogy": "node tools/validate_icelandic_pedagogy.mjs",
     "validate:lesson-bands": "tsx tools/validate_lesson_bands.ts",
+    "validate:pedagogy": "node tools/validate_icelandic_pedagogy.mjs",
     "web:boot-smoke": "node godot/tools/web_boot_smoke.mjs",
     "web:build": "bash godot/tools/build_web.sh"
   },

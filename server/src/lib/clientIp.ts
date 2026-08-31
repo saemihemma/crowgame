@@ -42,8 +42,15 @@ function isBareIp(value: string): boolean {
     return isIP(value) !== 0;
 }
 
+/**
+ * `request.headers` is optional here, and deliberately so: this is called from a
+ * rate-limit `keyGenerator`, which is also called directly by tests with a stub
+ * request carrying only the fields the assertion is about. A helper on the
+ * limiter's hot path that throws on a shape it did not expect turns a wrong key
+ * into a 500, which is a worse failure than the one it was added to fix.
+ */
 export function clientIp(request: FastifyRequest): string {
-    const header = request.headers['x-crow-client-ip'];
+    const header = request.headers?.['x-crow-client-ip'];
     const raw = (Array.isArray(header) ? header[0] : header)?.trim() ?? '';
     return raw !== '' && isBareIp(raw) ? raw : request.ip;
 }

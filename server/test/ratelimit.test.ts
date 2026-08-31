@@ -68,6 +68,16 @@ describe('the client address the limiter keys on', () => {
         }
     });
 
+    it('survives a request with no headers bag at all', async () => {
+        const { clientIp } = await import('../src/lib/clientIp.js');
+        // rateLimitKeyByDevice is called directly by test/cloudsave.test.ts with a
+        // stub carrying only cookies. This threw, which turned every save write
+        // into a 500 for anyone reaching the limiter through that path — a helper
+        // on the limiter's hot path must not be pickier than Fastify is.
+        const stub = { cookies: {}, ip: '203.0.113.9' } as never;
+        assert.equal(clientIp(stub), '203.0.113.9');
+    });
+
     it('is forwarded by the Caddyfile, and NOT overwritten with the proxy hop', () => {
         // Directives only. The comment above the fixed line quotes the broken
         // one verbatim, because the reason it was wrong is the whole point of

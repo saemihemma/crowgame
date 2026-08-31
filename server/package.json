@@ -14,7 +14,8 @@
         "typecheck": "tsc -p tsconfig.json --noEmit",
         "migrate": "tsx src/migrate.ts",
         "maintenance": "tsx src/maintenance.ts",
-        "test": "CROW_SAVE_WRITES_PER_MIN=1000 LOG_LEVEL=error node --test --test-concurrency=1 --import tsx test/*.test.ts"
+        "test": "CROW_SAVE_WRITES_PER_MIN=1000 LOG_LEVEL=error node --test --test-concurrency=1 --import tsx test/*.test.ts",
+        "verify:restore": "tsx src/verifyRestore.ts"
     },
     "dependencies": {
         "@fastify/cookie": "^11.1.2",

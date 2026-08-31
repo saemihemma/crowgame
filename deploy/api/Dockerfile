@@ -1,10 +1,11 @@
-# Crow API. One image, three roles, selected by CROW_JOB:
-#   (unset)    -> the HTTP service
-#   migrate    -> pre-deploy migration runner
-#   retention  -> scheduled partition maintenance
+# Crow API. One image, four roles, selected by CROW_JOB:
+#   (unset)         -> the HTTP service
+#   migrate         -> pre-deploy migration runner
+#   retention       -> scheduled partition maintenance
+#   verify-restore  -> prove a restored backup is usable (deploy/RAILWAY.md §2e)
 #
-# Same image for all three so a scheduled job can never run different code than
-# the service it maintains.
+# Same image for all four so a scheduled job, or a one-off run against a restored
+# copy, can never run different code than the service it maintains.
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY server/package.json server/package-lock.json* ./
@@ -32,5 +33,6 @@ EXPOSE 8080
 CMD ["sh", "-c", "case \"$CROW_JOB\" in \
   migrate) exec node dist/migrate.js ;; \
   retention) exec node dist/maintenance.js ;; \
+  verify-restore) exec node dist/verifyRestore.js ;; \
   *) exec node dist/index.js ;; \
 esac"]

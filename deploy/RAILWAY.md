@@ -99,6 +99,37 @@ content-addressed (icons), and so staging can force `no-store` while iterating.
 Do this once, in the Railway dashboard. Nothing here is in the repo because
 Railway service wiring is not config-as-code in this project.
 
+### The order, and which steps are only doable in the dashboard
+
+Railway service wiring has no API surface in this repo — no token, no CLI, no
+config-as-code (it is deprecated, see §2b). So the steps below are the ones a
+person has to click, and they are listed in the order that avoids the two traps
+on this page: a service that silently builds the wrong image, and a prod service
+pointed at a branch that does not exist.
+
+| # | Step | Where | Section |
+| --- | --- | --- | --- |
+| 1 | Create `crow-web-staging`, Dockerfile Path `deploy/web/Dockerfile` **typed into the UI** | dashboard | §1 |
+| 2 | Create `crow-web-prod` the same way, branch `release` | dashboard | §2 |
+| 3 | Postgres + `crow-api-<env>` per environment | dashboard | §2b |
+| 4 | Delete `railway.json` from the repo root — **only after step 1 and 2 have the Dockerfile path set in the UI** | a commit | §2b |
+| 5 | Point the API services at `deploy/api/Dockerfile` | dashboard | §2b |
+| 6 | Pre-deploy command `node dist/migrate.js`, API services only | dashboard | §2b |
+| 7 | `CROW_API_UPSTREAM` on each web service | dashboard | §2b |
+| 8 | Retention cron service per environment | dashboard | §2c |
+| 9 | Healthcheck paths on every service that serves traffic | dashboard | §2d |
+| 10 | Backups on, then run the restore rehearsal | dashboard + one-off job | §2e |
+
+Step 4 is the one with a fixed position. `railway.json` pins
+`deploy/web/Dockerfile` for every service whose Root Directory is blank — which
+is all of them — and config-as-code beats the UI, so the API services cannot be
+pointed at their own Dockerfile while it exists. Deleting it *before* the web
+services carry the path in their own settings leaves Railway guessing a builder
+for the game people are playing. Steps 1-2, then 4, then 5. It has to go before
+2026-12-01 either way.
+
+`release` already exists (§3), so step 2 will not fail on a missing branch.
+
 ### 1. Create the project and the staging service
 
 1. **New Project → Deploy from GitHub repo →** select the `crowgame` repo.
@@ -254,7 +285,8 @@ this is a cron service rather than a database job.
 
 ### 3. Create the release branch
 
-The `release` branch must exist before `crow-web-prod` can deploy:
+`release` must exist before `crow-web-prod` can deploy. **It does** — created
+from `main` on 2026-08-31. If it is ever lost:
 
 ```bash
 git fetch origin main
@@ -283,12 +315,35 @@ service's is a static string.
 Do this before a single child has an account, not after.
 
 Railway → the Postgres service → **Backups** → enable, and set the retention you
-are willing to lose data past. Then **restore one into a throwaway service and
-sign in against it.** The rollback section below explains why this is not
-optional: a forward-only migration means some rollbacks are a restore, and an
-untested restore is not a backup. For a database whose entire purpose is not
-losing a child's progress, this is the one setup step with no acceptable
-workaround.
+are willing to lose data past.
+
+Then rehearse the restore, because the rollback section below is not a suggestion:
+a forward-only migration means some rollbacks are a *restore*, and an untested
+restore is not a backup.
+
+1. Restore the newest backup into a **new** Postgres service, never over the live
+   one.
+2. Point a one-off run of the API image at it with `CROW_JOB=verify-restore` and
+   `DATABASE_URL` set to the restored copy. Locally that is
+   `npm run api:verify-restore`.
+3. Read what it says. It exits non-zero if the copy is not usable.
+
+**The failure it exists to catch is not a missing row.** Postgres roles are
+CLUSTER-level, so a logical dump restored into a fresh cluster brings every table
+and index and *not* the `crow_app` role — and every request path in this service
+runs `set local role crow_app` (see `server/src/db.ts`). The restore then looks
+flawless in the dashboard, every child's save is present, and the API answers 500
+to every single request until somebody re-runs `node dist/migrate.js` against the
+copy. No row count can see that, which is why this is a script and not a look.
+
+Verified against a real `pg_dump` and restore into an empty database: schema
+level, the role, RLS FORCE, and the withheld DELETE on `attempts` all survive
+when the role exists in the target cluster, and the check fails with a non-zero
+exit when it does not.
+
+It also prints the newest save and the newest attempt in the copy. That gap is
+how much play a child would have to do again, and it is the number that decides
+your backup frequency — nothing in the dashboard will tell you it.
 
 ## Deploying
 
