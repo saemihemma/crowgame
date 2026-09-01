@@ -101,32 +101,31 @@ Railway service wiring is not config-as-code in this project.
 
 ### The order, and which steps are only doable in the dashboard
 
-Railway service wiring has no API surface in this repo — no token, no CLI, no
-config-as-code (it is deprecated, see §2b). So the steps below are the ones a
-person has to click, and they are listed in the order that avoids the two traps
-on this page: a service that silently builds the wrong image, and a prod service
-pointed at a branch that does not exist.
+Railway service wiring has no API surface in this repo — no token, no CLI, and no
+config-as-code any more (§2b). So every step below is one a person has to click,
+and the Dockerfile Path field is not optional on any service: with no config file
+left, a service that has it blank does not fall back to a sensible default, it
+falls back to Railway auto-detecting the repo. That guess reads the root
+`package.json` and announces "an Nx workspace with a Next.js app", which is how
+`crow-api-prod` failed its first build.
 
 | # | Step | Where | Section |
 | --- | --- | --- | --- |
 | 1 | Create `crow-web-staging`, Dockerfile Path `deploy/web/Dockerfile` **typed into the UI** | dashboard | §1 |
 | 2 | Create `crow-web-prod` the same way, branch `release` | dashboard | §2 |
 | 3 | Postgres + `crow-api-<env>` per environment | dashboard | §2b |
-| 4 | Delete `railway.json` from the repo root — **only after step 1 and 2 have the Dockerfile path set in the UI** | a commit | §2b |
-| 5 | Point the API services at `deploy/api/Dockerfile` | dashboard | §2b |
-| 6 | Pre-deploy command `node dist/migrate.js`, API services only | dashboard | §2b |
-| 7 | `CROW_API_UPSTREAM` on each web service | dashboard | §2b |
-| 8 | Retention cron service per environment | dashboard | §2c |
-| 9 | Healthcheck paths on every service that serves traffic | dashboard | §2d |
-| 10 | Backups on, then run the restore rehearsal | dashboard + one-off job | §2e |
+| 4 | Point **each** API service at `deploy/api/Dockerfile` — blank means auto-detect, not a default | dashboard | §2b |
+| 5 | Pre-deploy command `node dist/migrate.js`, API services only | dashboard | §2b |
+| 6 | `CROW_API_UPSTREAM` on each web service | dashboard | §2b |
+| 7 | Retention cron service per environment | dashboard | §2c |
+| 8 | Healthcheck paths on every service that serves traffic | dashboard | §2d |
+| 9 | Backups on, then run the restore rehearsal | dashboard + one-off job | §2e |
 
-Step 4 is the one with a fixed position. `railway.json` pins
-`deploy/web/Dockerfile` for every service whose Root Directory is blank — which
-is all of them — and config-as-code beats the UI, so the API services cannot be
-pointed at their own Dockerfile while it exists. Deleting it *before* the web
-services carry the path in their own settings leaves Railway guessing a builder
-for the game people are playing. Steps 1-2, then 4, then 5. It has to go before
-2026-12-01 either way.
+Step 8 has a prerequisite that is easy to miss: the web healthcheck is `/healthz`,
+which the Caddyfile answers, so setting it on a service whose deployed commit
+predates that route fails every deploy for four and a half minutes and then rolls
+back. Set the path and deploy a commit that has it, in that order or together —
+never the path alone.
 
 `release` already exists (§3), so step 2 will not fail on a missing branch.
 
