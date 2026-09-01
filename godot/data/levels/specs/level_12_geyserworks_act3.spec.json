@@ -1,0 +1,183 @@
+{
+  "id": "level_12",
+  "name": "Geyserworks III",
+  "theme": "geyserworks",
+  "difficulty": 4,
+  "music": "cave_theme",
+  "criticalPath": {
+    "length": "medium",
+    "motifs": [
+      "flat",
+      "spikes",
+      "spitter",
+      "owl",
+      "ledge",
+      "gapledge",
+      "bug"
+    ]
+  },
+  "platforms": [
+    {
+      "type": "ground",
+      "x": 0,
+      "width": 95,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 39,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 43,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 84,
+      "width": 6,
+      "y": 4
+    }
+  ],
+  "spawns": {
+    "player": {
+      "x": 2,
+      "y": 14
+    },
+    "npcs": [
+      {
+        "npc_id": "owl_teacher_01",
+        "x": 24,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_tough_01",
+        "x": 55,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_gentle_01",
+        "x": 73,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 86,
+        "y": 4,
+        "bonus": true,
+        "requiresAbility": "double_jump"
+      }
+    ],
+    "collectibles": [
+      {
+        "type": "big_coin",
+        "x": 28,
+        "y": 14,
+        "id": "c1"
+      },
+      {
+        "type": "big_coin",
+        "x": 59,
+        "y": 14,
+        "id": "c2"
+      },
+      {
+        "type": "big_coin",
+        "x": 77,
+        "y": 14,
+        "id": "c3"
+      },
+      {
+        "type": "coin",
+        "x": 6,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 15,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 24,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 33,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 42,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 51,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 69,
+        "y": 14
+      }
+    ]
+  },
+  "hazards": [
+    {
+      "type": "spikes",
+      "x": 7,
+      "y": 15,
+      "width": 2,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 32,
+      "y": 15,
+      "width": 3,
+      "height": 1
+    }
+  ],
+  "enemies": [
+    {
+      "enemy_id": "spitter_beetle",
+      "x": 14,
+      "y": 15
+    },
+    {
+      "enemy_id": "spitter_beetle",
+      "x": 46,
+      "y": 15
+    },
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 64,
+      "y": 15
+    }
+  ],
+  "ladders": [],
+  "exits": [
+    {
+      "x": 93,
+      "y": 16,
+      "target_level": "level_13"
+    }
+  ],
+  "mathGating": {
+    "skills": [
+      "addition",
+      "subtraction",
+      "number_sequence"
+    ],
+    "difficultyBand": [
+      1,
+      5
+    ],
+    "teachingIntent": "Adding and taking away past ten, and what comes next in a run."
+  }
+}

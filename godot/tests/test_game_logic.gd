@@ -222,7 +222,11 @@ func test_loading_a_level_sets_the_current_level_key() -> void:
 		"and loading another one moves it")
 	# The palette came from the same broken place, so it is pinned here too: it
 	# is the same one-line failure, not a second bug that happens to look alike.
-	assert_eq(ThemeManager.get_theme_id(), "prism_hollow",
+	# The theme comes from the REGISTRY, not from a literal. This used to name
+	# "prism_hollow" because level_02 happened to be the crystal cave; when the
+	# levels were rebuilt as zone acts, level_02 became Emberwood II and this test
+	# failed for having memorised the old roster rather than for finding a bug.
+	assert_eq(ThemeManager.get_theme_id(), String(LevelManager.get_level("level_02").get("theme", "")),
 		"the world wears its own palette, not the previous level's")
 	g.free()
 	LevelManager.set_current_level(was_level)
@@ -254,7 +258,7 @@ func test_swapping_levels_moves_the_current_level_key() -> void:
 	await g._swap_level("level_03")
 	assert_eq(LevelManager.get_current_level_key(), "level_03",
 		"walking through a door moves the game into the level behind it")
-	assert_eq(ThemeManager.get_theme_id(), "sugarstorm",
+	assert_eq(ThemeManager.get_theme_id(), String(LevelManager.get_level("level_03").get("theme", "")),
 		"and into that level's palette")
 	g.free()
 	LevelManager.set_current_level(was_level)

@@ -1,0 +1,170 @@
+{
+  "id": "level_11",
+  "name": "Geyserworks II",
+  "theme": "geyserworks",
+  "difficulty": 4,
+  "music": "cave_theme",
+  "criticalPath": {
+    "length": "short",
+    "motifs": [
+      "flat",
+      "spikes",
+      "ledge",
+      "gapledge",
+      "owl",
+      "ladder"
+    ]
+  },
+  "platforms": [
+    {
+      "type": "ground",
+      "x": 0,
+      "width": 78,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 14,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 18,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 41,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 67,
+      "width": 6,
+      "y": 4
+    }
+  ],
+  "spawns": {
+    "player": {
+      "x": 2,
+      "y": 14
+    },
+    "npcs": [
+      {
+        "npc_id": "owl_teacher_01",
+        "x": 23,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_tough_01",
+        "x": 49,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 69,
+        "y": 4,
+        "bonus": true,
+        "requiresAbility": "double_jump"
+      }
+    ],
+    "collectibles": [
+      {
+        "type": "big_coin",
+        "x": 27,
+        "y": 14,
+        "id": "c1"
+      },
+      {
+        "type": "big_coin",
+        "x": 53,
+        "y": 14,
+        "id": "c2"
+      },
+      {
+        "type": "coin",
+        "x": 6,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 24,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 33,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 51,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "type": "big_coin",
+        "x": 55,
+        "y": 14,
+        "id": "c3"
+      }
+    ]
+  },
+  "hazards": [
+    {
+      "type": "spikes",
+      "x": 8,
+      "y": 15,
+      "width": 2,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 31,
+      "y": 15,
+      "width": 3,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 57,
+      "y": 15,
+      "width": 2,
+      "height": 1
+    }
+  ],
+  "enemies": [],
+  "ladders": [
+    {
+      "x": 40,
+      "y": 13,
+      "tiles": 3
+    }
+  ],
+  "exits": [
+    {
+      "x": 76,
+      "y": 16,
+      "target_level": "level_12"
+    }
+  ],
+  "mathGating": {
+    "skills": [
+      "addition",
+      "subtraction",
+      "number_sequence"
+    ],
+    "difficultyBand": [
+      1,
+      5
+    ],
+    "teachingIntent": "Adding and taking away past ten, and what comes next in a run."
+  }
+}

@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0crowladder01"]
+
+[ext_resource type="Script" path="res://scripts/entities/ladder.gd" id="1_ladder"]
+
+[node name="Ladder" type="Area2D"]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_ladder")

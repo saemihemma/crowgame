@@ -20,12 +20,17 @@ var _selected_user := ""
 ## Every PIN field on the current sub-state. The create screen has two.
 var _pin_fields: Array[LineEdit] = []
 var _pin_confirm_edit: LineEdit
-var _scroll: ScrollContainer
+## Whatever is currently holding `_col`: a ScrollContainer for the profile list,
+## a FitBox for every other sub-state. See _mount.
+var _host: Control
 var _col: VBoxContainer
 var _pin_edit: LineEdit
 var _name_edit: LineEdit
 var _birth_year_edit: LineEdit
 var _status: Label
+## Carried between the two halves of "make a player", which is now two screens.
+var _new_name := ""
+var _new_year := ""
 
 func _ready() -> void:
 	# Painted world behind the sign-in, not the project's flat clear colour. This
@@ -34,29 +39,6 @@ func _ready() -> void:
 	BrandTheme.apply(self)
 	add_child(ScreenBackdrop.new())
 
-	# The profile list scrolls: laid out flat, a family with four or more
-	# children pushes "+ New User" off the bottom of the 540-tall viewport and
-	# a fifth can never be added -- the same defect the web build shipped.
-	_scroll = ScrollContainer.new()
-	_scroll.anchor_right = 1.0
-	_scroll.anchor_bottom = 1.0
-	_scroll.offset_top = LIST_TOP_MARGIN
-	_scroll.offset_bottom = -LIST_BOTTOM_MARGIN
-	_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	# Keeps a focused field on screen once the PIN step makes the column taller
-	# than the viewport.
-	_scroll.follow_focus = true
-	add_child(_scroll)
-
-	_col = VBoxContainer.new()
-	# Centred, not top-aligned: with one or two players the list is short, and
-	# pinned to the top it left three quarters of the screen empty under it.
-	# The scroller still takes over the moment the column outgrows the viewport.
-	_col.alignment = BoxContainer.ALIGNMENT_CENTER
-	_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_col.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	_col.add_theme_constant_override("separation", 10)
-	_scroll.add_child(_col)
 	# Language selector sits outside `_col`, so it survives the sub-state swaps
 	# and is reachable *before* the PIN screen -- this is where a parent sets the
 	# language up on first launch.
@@ -64,17 +46,60 @@ func _ready() -> void:
 	_show_profile_list()
 
 
+## SCROLL OR FIT, PER SUB-STATE -- the two are not interchangeable and this
+## screen used to use the wrong one for four of its five states.
+##
+## The profile list GROWS with the family: a fourth child pushes "New player" off
+## the bottom and a fifth could never be added, so it scrolls. Every other
+## sub-state is a fixed, known column -- a title, two or three fields and two
+## buttons -- and FitBox exists precisely for those (see its own header). The
+## difference is not cosmetic: in a scroller, content that does not fit is simply
+## GONE until you discover the wheel, and what did not fit at 960x540 was the
+## Create button on the very first screen a new player ever sees. Nothing told
+## you it was there. A parent setting the game up for a seven-year-old was left
+## with a form and no way to submit it.
+##
+## FitBox cannot do that. It shrinks the card until the whole of it is on screen,
+## so the last button is always visible whatever the viewport.
+func _mount(fitted: bool) -> void:
+	if _host != null and is_instance_valid(_host):
+		_host.queue_free()
+	_col = VBoxContainer.new()
+	# Centred, not top-aligned: with one or two players the list is short, and
+	# pinned to the top it left three quarters of the screen empty under it.
+	_col.alignment = BoxContainer.ALIGNMENT_CENTER
+	_col.add_theme_constant_override("separation", 10)
+	if fitted:
+		_host = FitBox.around(_col)
+	else:
+		var scroll := ScrollContainer.new()
+		scroll.anchor_right = 1.0
+		scroll.anchor_bottom = 1.0
+		scroll.offset_top = LIST_TOP_MARGIN
+		scroll.offset_bottom = -LIST_BOTTOM_MARGIN
+		scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+		# Keeps a focused row on screen in a list taller than the viewport.
+		scroll.follow_focus = true
+		_col.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_col.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		scroll.add_child(_col)
+		_host = scroll
+	add_child(_host)
+	# Behind the language chips, in front of the backdrop. The chips are added
+	# once in _ready and every sub-state swap re-adds the host on top of them.
+	move_child(_host, 1)
+
+
 func _on_locale_changed() -> void:
 	SceneRouter.goto("login")
 
-func _clear() -> void:
+func _clear(fitted := true) -> void:
 	# The PIN fields go with the sub-state they belonged to. queue_free() only
 	# schedules the node, so a stale entry stays valid for a frame or two and
 	# _process would keep driving dots that are on their way out.
 	_pin_fields.clear()
 	_pin_confirm_edit = null
-	for c in _col.get_children():
-		c.queue_free()
+	_mount(fitted)
 
 ## Headings carry their own contrast: they now sit on a painted sky rather than
 ## a flat fill, so plain white text would borrow its legibility from whichever
@@ -91,7 +116,7 @@ func _title(text: String, size := 40) -> void:
 	_col.add_child(t)
 
 func _show_profile_list() -> void:
-	_clear()
+	_clear(false)
 	_title(TextManager.t("login.subtitle"), 46)
 	# Each player is a paper card; adding one is the quieter ghost action. When
 	# every entry was an identical grey slab, "+ New User" looked exactly as
@@ -146,18 +171,16 @@ func _show_profile_list() -> void:
 func _show_sign_in() -> void:
 	_clear()
 	_title(TextManager.t("login.sign_in_title"), 34)
-	_name_edit = LineEdit.new()
-	_name_edit.placeholder_text = TextManager.t("login.name_placeholder")
-	_name_edit.max_length = ProfileManager.NAME_MAX_LENGTH
-	_name_edit.custom_minimum_size = Vector2(280, 48)
-	_name_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_col.add_child(_name_edit)
+	_name_edit = _make_name_edit()
 	_title(TextManager.t("login.enter_pin"), 22)
 	_pin_edit = _make_pin_edit()
 	_status = _make_status()
 	_col.add_child(_status)
 	_action_button(TextManager.t("login.play"), _try_sign_in, BrandButton.Role.PRIMARY)
 	_action_button(TextManager.t("login.back"), _show_profile_list)
+	# Enter walks the form. See _advance_on_enter.
+	_advance_on_enter(_name_edit, func(): _pin_edit.grab_focus())
+	_advance_on_enter(_pin_edit, _try_sign_in)
 	_name_edit.grab_focus()
 
 ## Ask the server, then make this device look like the one the child left.
@@ -207,26 +230,31 @@ func _show_pin_entry(username: String) -> void:
 	_col.add_child(_status)
 	_action_button(TextManager.t("login.play"), func(): _try_login(username, _pin_edit.text), BrandButton.Role.PRIMARY)
 	_action_button(TextManager.t("login.back"), _show_profile_list, BrandButton.Role.GHOST)
+	_advance_on_enter(_pin_edit, func(): _try_login(username, _pin_edit.text))
 	_pin_edit.grab_focus()
 
+
+## MAKING A PLAYER IS TWO SCREENS, NOT ONE.
+##
+## As one screen it asked four questions at once -- name, PIN, PIN again, birth
+## year -- under a title and above two buttons: eleven rows, 620px of column, on
+## a viewport that is exactly 540 tall on any 16:9 display. Fitted rather than
+## scrolled it would now all be visible, but only by shrinking every button below
+## the 88px floor that makes them hittable by a seven-year-old's finger.
+##
+## So it is split where the meaning already splits: WHO YOU ARE, then YOUR SECRET
+## CODE. Each half is short enough to sit on a 540-tall screen at full size, and
+## a child is asked one thing at a time -- which is how you would ask it out loud.
+##
+## The name and the year are carried in _new_name/_new_year rather than by
+## keeping the fields alive, because the sub-state swap frees every node in the
+## column and a reference to a freed LineEdit is the bug this screen has had
+## twice already.
 func _show_new_player() -> void:
 	_clear()
 	_title(TextManager.t("login.create_title"), 34)
-	_name_edit = LineEdit.new()
-	_name_edit.placeholder_text = TextManager.t("login.name_placeholder")
-	_name_edit.max_length = ProfileManager.NAME_MAX_LENGTH
-	_name_edit.custom_minimum_size = Vector2(280, 48)
-	_name_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_col.add_child(_name_edit)
-	_title(TextManager.t("login.pick_pin"), 22)
-	# Already parented by _make_pin_edit() — see the PIN screen above.
-	_pin_edit = _make_pin_edit()
-	# Typed twice, because a PIN is the only thing standing between a child and
-	# their own save and there is no way to recover a mistyped one: the profile
-	# would be created around four digits nobody knows. The login screen asks
-	# once -- a wrong PIN there costs a retry, not a save.
-	_title(TextManager.t("login.pin_again"), 22)
-	_pin_confirm_edit = _make_pin_edit()
+	_name_edit = _make_name_edit()
+	_name_edit.text = _new_name
 	# Birth YEAR, optional, for the parent report's grade comparison. A year and
 	# not a date on purpose: Icelandic school grade depends only on the calendar
 	# year of birth (docs/GRADE_EXPECTATIONS.md), so a date would be data about a
@@ -238,12 +266,90 @@ func _show_new_player() -> void:
 	_birth_year_edit.virtual_keyboard_type = LineEdit.KEYBOARD_TYPE_NUMBER
 	_birth_year_edit.custom_minimum_size = Vector2(280, 48)
 	_birth_year_edit.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_birth_year_edit.text = _new_year
 	_col.add_child(_birth_year_edit)
 	_status = _make_status()
 	_col.add_child(_status)
-	_action_button(TextManager.t("login.create"), _try_create, BrandButton.Role.PRIMARY)
+	_action_button(TextManager.t("login.next"), _to_pin_step, BrandButton.Role.PRIMARY)
 	_action_button(TextManager.t("login.back"), _show_profile_list, BrandButton.Role.GHOST)
+	_advance_on_enter(_name_edit, func(): _birth_year_edit.grab_focus())
+	_advance_on_enter(_birth_year_edit, _to_pin_step)
 	_name_edit.grab_focus()
+
+## Everything the first step can be wrong about is checked HERE, before the child
+## picks a PIN -- so a taken name costs a retype of the name and not of four
+## digits they have already typed twice.
+func _to_pin_step() -> void:
+	_new_name = _name_edit.text.strip_edges()
+	_new_year = _birth_year_edit.text.strip_edges()
+	var problem := _name_problem(_new_name)
+	if problem != "":
+		_status.text = TextManager.t(problem)
+		_name_edit.grab_focus()
+		return
+	if not _new_year.is_empty():
+		var this_year: int = Time.get_datetime_dict_from_system().get("year", 0)
+		var year := _new_year.to_int()
+		if year < this_year - 17 or year > this_year:
+			_status.text = TextManager.t("login.birth_year_invalid")
+			_birth_year_edit.grab_focus()
+			return
+	_show_pick_pin()
+
+## Name rules, asked of ProfileManager rather than restated, so the answer here
+## and the answer create_profile gives cannot drift apart. Returns a string table
+## key, or "" for a name that is fine.
+func _name_problem(name: String) -> String:
+	if name.is_empty():
+		return "login.name_empty"
+	if name.length() > ProfileManager.NAME_MAX_LENGTH:
+		return "login.name_too_long"
+	if ProfileManager.get_profile(name) != null:
+		return "login.name_taken"
+	return ""
+
+func _show_pick_pin() -> void:
+	_clear()
+	_title(TextManager.t("login.hi", [_new_name]), 32)
+	_title(TextManager.t("login.pick_pin"), 22)
+	_pin_edit = _make_pin_edit()
+	# Typed twice, because a PIN is the only thing standing between a child and
+	# their own save and there is no way to recover a mistyped one: the profile
+	# would be created around four digits nobody knows. The login screen asks
+	# once -- a wrong PIN there costs a retry, not a save.
+	_title(TextManager.t("login.pin_again"), 22)
+	_pin_confirm_edit = _make_pin_edit()
+	_status = _make_status()
+	_col.add_child(_status)
+	_action_button(TextManager.t("login.create"), _try_create, BrandButton.Role.PRIMARY)
+	_action_button(TextManager.t("login.back"), _show_new_player, BrandButton.Role.GHOST)
+	_advance_on_enter(_pin_edit, func(): _pin_confirm_edit.grab_focus())
+	_advance_on_enter(_pin_confirm_edit, _try_create)
+	_pin_edit.grab_focus()
+
+func _make_name_edit() -> LineEdit:
+	var e := LineEdit.new()
+	e.placeholder_text = TextManager.t("login.name_placeholder")
+	e.max_length = ProfileManager.NAME_MAX_LENGTH
+	e.custom_minimum_size = Vector2(280, 48)
+	e.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_col.add_child(e)
+	return e
+
+## Enter moves to the next field, and Enter on the last field submits.
+##
+## The owner asked for this on the maths board ("I need to use the keyboard on
+## PC") and it is the same complaint here: on a laptop the only way through this
+## form was the mouse, because Tab in a web build belongs to the BROWSER -- it
+## moves focus off the canvas entirely and the next thing you type goes nowhere
+## the game can see. `text_submitted` is Godot's own signal and arrives whatever
+## the host is.
+##
+## It is also the only path through the form that does not depend on where a
+## button happens to have landed, which is what makes the screen tour in
+## godot/tools/web_screens.mjs able to reach the game at all.
+func _advance_on_enter(field: LineEdit, then: Callable) -> void:
+	field.text_submitted.connect(func(_text: String) -> void: then.call())
 
 ## The PIN field and its dots are one object.
 ##
@@ -443,23 +549,16 @@ func _try_login(username: String, pin: String) -> void:
 		_pin_edit.text = ""
 
 func _try_create() -> void:
-	# Optional: empty passes, a typed year must be plausible for a school-age
-	# child so a typo cannot silently poison the grade comparison.
-	var birth_year := 0
-	var raw_year := _birth_year_edit.text.strip_edges()
-	if not raw_year.is_empty():
-		var this_year: int = Time.get_datetime_dict_from_system().get("year", 0)
-		birth_year = raw_year.to_int()
-		if birth_year < this_year - 17 or birth_year > this_year:
-			_status.text = TextManager.t("login.birth_year_invalid")
-			return
+	# The name and the year were checked on the step before this one; the year is
+	# optional and an empty string parses to 0, which is how "not given" travels.
+	var birth_year := _new_year.to_int()
 	# Before create_profile, so a mismatch costs a retype rather than a profile.
 	if _pin_confirm_edit != null and _pin_edit.text != _pin_confirm_edit.text:
 		_status.text = TextManager.t("login.pin_mismatch")
 		_pin_confirm_edit.text = ""
 		_pin_confirm_edit.grab_focus()
 		return
-	var res = ProfileManager.create_profile(_name_edit.text, _pin_edit.text, birth_year)
+	var res = ProfileManager.create_profile(_new_name, _pin_edit.text, birth_year)
 	if res != true:
 		# create_profile returns a string table key, not a sentence.
 		_status.text = TextManager.t(String(res))
@@ -473,13 +572,14 @@ func _try_create() -> void:
 	# stopping for is "that name is taken", because it is the child's own name
 	# that will not work tomorrow and they can still pick another one now.
 	if CloudSync.has_server():
-		var claim: Dictionary = await CloudSync.sign_up(
-			_name_edit.text.strip_edges(), _pin_edit.text)
+		var claim: Dictionary = await CloudSync.sign_up(_new_name, _pin_edit.text)
 		if not bool(claim.get("ok", false)) and String(claim.get("error", "")) == "login.name_taken":
-			ProfileManager.delete_profile(_name_edit.text.strip_edges())
+			ProfileManager.delete_profile(_new_name)
+			# Back to the name step, where the thing that is wrong can be fixed.
+			_show_new_player()
 			_status.text = TextManager.t("login.name_taken")
 			return
-	ProfileManager.login(_name_edit.text, _pin_edit.text)
+	ProfileManager.login(_new_name, _pin_edit.text)
 	_finish_login()
 
 func _finish_login() -> void:

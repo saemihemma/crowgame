@@ -72,6 +72,91 @@ func _size_body() -> void:
 	# Grown upward from the feet, which sit on the node origin.
 	_body.position = Vector2(0.0, -box.y * 0.5)
 
+## THE LADDER, and why "hold Up" needs no new key.
+##
+## Up and W are already `jump`. That is not a conflict to work around, it is the
+## whole reason this reads well: a child's instinct at the bottom of a ladder is
+## the same key they use to go up everywhere else. So on a ladder, the jump key
+## climbs. `climb_down` (Down, S) is the one new binding, because nothing else in
+## this game has ever meant "down".
+##
+## LETTING GO IS WALKING OFF. Deliberately not "press jump to release", which is
+## the other common scheme and is impossible here -- jump is the key that climbs.
+## Pressing left or right steps off the ladder and hands the crow back to
+## gravity, which is what a child tries anyway, and reaching the top simply walks
+## you onto whatever is there.
+##
+## Returns whether the crow is climbing, in which case the caller skips the
+## motion model entirely.
+const CLIMB_SPEED := 110.0
+
+var _ladder: Ladder = null
+
+func _climb(input: Dictionary, _delta: float) -> bool:
+	var here := _ladder_here()
+	if here == null:
+		_ladder = null
+		return false
+
+	var up: bool = input.get("jump_held", false)
+	var down: bool = Input.is_action_pressed("climb_down")
+	var sideways: bool = input.get("left", false) or input.get("right", false)
+
+	if _ladder == null:
+		# Not climbing yet: only a deliberate press starts it. Standing on a
+		# ladder's tile must not glue a child to it.
+		if not (up or down):
+			return false
+		_ladder = here
+
+	# Stepping off is a sideways press, and it hands the crow straight back to
+	# gravity with the speed it had -- no launch, no pause.
+	if sideways:
+		_ladder = null
+		return false
+
+	# Dead centre of the rungs rather than clinging to one rail. Snapped rather
+	# than tweened: a lerp here reads as the ladder pulling the crow around.
+	global_position.x = here.centre_x()
+	var vy := 0.0
+	if up and not down:
+		vy = -CLIMB_SPEED
+	elif down and not up:
+		vy = CLIMB_SPEED
+	# Climbing past the top is just walking off it.
+	if vy < 0.0 and global_position.y <= here.top_y():
+		_ladder = null
+		return false
+	velocity = Vector2(0.0, vy)
+	# The motion model is not running, so its state has to be told what happened
+	# or the first frame after the ladder would resume the old fall.
+	_state["vx"] = 0.0
+	_state["vy"] = vy
+	_state["is_jumping"] = false
+	_state["coyote_ms"] = float(_tuning.get("coyoteMs", 80.0))
+	return true
+
+## The ladder the crow is standing on, or null. Asked of the physics server each
+## tick rather than tracked with body_entered/exited: a ladder is scenery the
+## crow queries, and an enter/exit pair can be missed when a level reloads under
+## a climbing player.
+func _ladder_here() -> Ladder:
+	for area in get_tree().get_nodes_in_group("ladder"):
+		var ladder := area as Ladder
+		if ladder == null or not is_instance_valid(ladder):
+			continue
+		if absf(global_position.x - ladder.centre_x()) > Ladder.TILE * Ladder.CATCH_WIDTH * 0.5:
+			continue
+		if global_position.y < ladder.top_y() or global_position.y > ladder.bottom_y():
+			continue
+		return ladder
+	return null
+
+## Whether the crow is on a ladder right now, for the level guards and the tests.
+func is_climbing() -> bool:
+	return _ladder != null
+
+
 func _build_animations() -> void:
 	if _sprite == null:
 		return
@@ -110,6 +195,20 @@ func _physics_process(delta: float) -> void:
 		"sprint": Config.flag("input/space_is_sprint", true) and Input.is_action_pressed("sprint"),
 	}
 	var was_on_floor := is_on_floor()
+	# CLIMBING RUNS INSTEAD OF THE MOTION MODEL, NOT INSIDE IT.
+	#
+	# PlayerMotion.compute_velocity is parity-locked: tools/golden/
+	# gen_motion_fixtures.ts implements the same integration in TypeScript and
+	# test_motion_parity.gd checks this port reproduces it tick for tick. A climb
+	# state added inside that function would have to be added to the TS reference
+	# too, and would put a ladder -- a level feature -- inside the model of how a
+	# crow falls. So the ladder is handled here, around the call, and the feel
+	# model never learns that ladders exist.
+	if _climb(input, delta):
+		move_and_slide()
+		_update_animation()
+		_update_shape(delta)
+		return
 	PlayerMotion.compute_velocity(_state, input, was_on_floor, _tuning, delta)
 	velocity = Vector2(float(_state["vx"]), float(_state["vy"]))
 	var fall_speed := velocity.y

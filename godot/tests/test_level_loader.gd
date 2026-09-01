@@ -2,22 +2,45 @@ extends TestCase
 ## Slice 4: verify the compiled Tiled JSON parses into the structure the builder
 ## and gameplay expect (dimensions, layers, collide ids, object spawns).
 
-const LEVEL_PATH := "res://data/levels/compiled/level_01_forest.json"
-
+## THE FIRST STORY LEVEL, whichever one that is.
+##
+## This used to name res://data/levels/compiled/level_01_forest.json and assert a
+## width of 112. Both were facts about one level rather than about the loader, so
+## when the levels were rebuilt as zone acts the file stopped existing, FileAccess
+## returned null, and every test in here threw on a null before it could fail --
+## which is worse than failing, because the summary still read "0 failed".
+##
+## The path comes from the registry now and the dimensions are compared against
+## the level's OWN header. What is being tested is that the loader reproduces the
+## file it was given, which is true of any level.
 var _level: Dictionary = {}
 var _parsed: Dictionary = {}
+
+func _level_path() -> String:
+	for entry in LevelManager.get_levels():
+		var key := String((entry as Dictionary).get("key", ""))
+		if key == "level_99":
+			continue
+		return "res://%s" % LevelManager.map_file(key)
+	return ""
 
 ## Per-test setup: parse the compiled level once, then reuse it.
 func _reset() -> void:
 	if _level.is_empty():
-		var f := FileAccess.open(LEVEL_PATH, FileAccess.READ)
+		var path := _level_path()
+		var f := FileAccess.open(path, FileAccess.READ)
+		if f == null:
+			return
 		_level = JSON.parse_string(f.get_as_text())
 		f.close()
 		_parsed = LevelLoader.parse(_level)
 
 func test_dimensions() -> void:
-	assert_eq(_parsed["width"], 112, "width")
-	assert_eq(_parsed["height"], 20, "height")
+	assert_true(not _parsed.is_empty(), "the first story level's map file loads")
+	if _parsed.is_empty():
+		return
+	assert_eq(_parsed["width"], int(_level["width"]), "width matches the file's own header")
+	assert_eq(_parsed["height"], int(_level["height"]), "height matches the file's own header")
 	assert_eq(_parsed["tile_w"], 32, "tile width")
 	assert_eq(_parsed["tile_h"], 32, "tile height")
 
@@ -31,7 +54,8 @@ func test_tile_layers() -> void:
 	# ground data covers the whole grid.
 	for l in _parsed["tile_layers"]:
 		if l["name"] == "ground":
-			assert_eq((l["data"] as Array).size(), 112 * 20, "ground data length")
+			assert_eq((l["data"] as Array).size(), int(_level["width"]) * int(_level["height"]),
+				"ground data covers the whole grid")
 
 ## Every tile the ground layer places has to collide, and nothing in the
 ## decoration layer may.
@@ -89,7 +113,7 @@ func test_object_spawns() -> void:
 			if bool(s["props"].get("bonus", false)):
 				bonus_owl = s
 	assert_true(player_spawn != null, "has player_spawn")
-	assert_true(npcs >= 2, "level_01 spawns its owls (%d)" % npcs)
+	assert_true(npcs >= 2, "the level spawns its owls (%d)" % npcs)
 	assert_true(bonus_owl != null, "and one of them is flagged as the bonus owl")
 	if bonus_owl != null:
 		assert_true(String(bonus_owl["props"].get("npc_id", "")) != "",

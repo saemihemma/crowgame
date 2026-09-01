@@ -82,6 +82,13 @@ export interface LevelSpec {
         collectibles?: Array<{ type: string; x: number; y: number; id?: string }>;
     };
     hazards?: Array<{ type: string; x: number; y: number; width?: number; height?: number }>;
+    /**
+     * Climbable ladders. `y` is the TOP of the ladder and `tiles` is how far it
+     * hangs down, which is how a ladder is described out loud -- "from that
+     * ledge down to the floor". Ladders carry no collision, so one may overlap
+     * anything; see ladder.gd.
+     */
+    ladders?: Array<{ x: number; y: number; tiles: number }>;
     enemies?: Array<{ enemy_id: string; x: number; y: number }>;
     exits: Array<{ x: number; y: number; target_level: string }>;
 }
@@ -304,6 +311,21 @@ export function compileLevel(spec: LevelSpec): TiledMap {
             height: h,
             properties: [
                 { name: 'hazard_type', type: 'string', value: hazard.type },
+            ],
+        });
+    }
+
+    for (const ladder of spec.ladders || []) {
+        objects.push({
+            id: objectId++,
+            name: 'ladder',
+            type: 'ladder',
+            x: ladder.x * TILE_SIZE,
+            y: ladder.y * TILE_SIZE,
+            width: TILE_SIZE,
+            height: Math.max(1, ladder.tiles) * TILE_SIZE,
+            properties: [
+                { name: 'tiles', type: 'int', value: Math.max(1, ladder.tiles) },
             ],
         });
     }

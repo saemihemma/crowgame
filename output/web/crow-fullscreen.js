@@ -124,13 +124,25 @@
             corner.textContent = '⤢';
             corner.setAttribute('aria-label', 'Fill the screen');
             corner.title = 'Fill the screen';
-            // Bottom centre: the thumb clusters live at the two bottom corners and
-            // the HUD at the two top ones, so this is the one edge region that is
-            // never a control. Small and half-transparent, and gone the moment it
-            // has done its job.
-            corner.style.left = '50%';
-            corner.style.bottom = '6px';
-            corner.style.transform = 'translateX(-50%)';
+            // RIGHT EDGE, HALFWAY DOWN.
+            //
+            // It used to sit at bottom centre, on the reasoning that the thumb
+            // clusters own the bottom corners and the HUD the top ones, so the
+            // bottom middle is never a control. That is true of a level and
+            // false of every menu in the game: each one is a centred column, so
+            // the bottom middle is precisely where its LAST BUTTON is. The
+            // screen tour caught this chip sitting on top of Quit in the pause
+            // card, on Back in the login form, and on "How is my child doing?"
+            // on the main menu -- a dead 34px hole in the middle of the one row
+            // a grown-up is reaching for.
+            //
+            // The right edge at half height is the region that is free in both
+            // layouts: the owl counter and the coin pips are pinned to the top
+            // right, the jump and sprint pads to the bottom right, and no
+            // centred card is ever wide enough to reach the edge.
+            corner.style.right = '6px';
+            corner.style.top = '50%';
+            corner.style.transform = 'translateY(-50%)';
             corner.style.opacity = '0.55';
             corner.addEventListener('click', enter);
             document.body.appendChild(corner);

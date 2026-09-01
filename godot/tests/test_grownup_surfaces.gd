@@ -29,8 +29,19 @@ func test_report_strings_exist_in_both_locales() -> void:
 	# renders as "report_domain_line" on screen. Compare against the key itself.
 	var keys := [
 		"report_title", "report_what_this_is", "report_no_children",
-		"report_not_played_yet", "report_domain_line", "report_confidence_low",
-		"report_open", "menu.back",
+		"report_not_played_yet", "report_open", "menu.back",
+		# The dashboard's own furniture: the three tabs, the four headline
+		# tiles, and the per-question log. Every one of these is rendered from a
+		# key built by hand at a call site, so a typo is invisible until a
+		# parent opens the screen and reads "report_stat_elo" off it.
+		"report_tab_overview", "report_tab_log", "report_tab_settings",
+		"report_stat_elo", "report_stat_answered", "report_stat_first_try",
+		"report_stat_last_played", "report_subjects_title", "report_subjects_intro",
+		"report_bar_tally", "report_bar_count", "report_no_value",
+		"report_log_intro", "report_log_empty", "report_log_first_try",
+		"report_log_retry", "report_log_with_help", "report_log_unknown_question",
+		"report_when_today", "report_when_yesterday", "report_when_days_ago",
+		"report_next_child",
 		# The sign-in screen, which is the surface that replaced the cloud panel.
 		"login.i_have_a_name", "login.sign_in_title", "login.wrong_name_or_pin",
 		"login.name_taken", "login.too_many_tries", "login.offline",

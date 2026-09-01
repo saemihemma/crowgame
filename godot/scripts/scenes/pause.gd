@@ -67,21 +67,27 @@ const CARD_CORNER := 26
 ## the meaning anyway -- it is the same flag-plus-endonym pairing the player
 ## already met on the login screen and the main menu. The endonym is never
 ## translated, so someone lost in the wrong language can still get out.
+## THE LABEL STAYS CENTRED, like every other row.
+##
+## It used to be left-aligned, with 52px of left content margin added to clear
+## the flag. That made this the ONE row in a column of five whose words did not
+## line up with the others, and a playtester read the whole pause menu as
+## off-centre because of it -- correctly: four rows agreeing and one disagreeing
+## is exactly what a centring mistake looks like.
+##
+## The flag does not need the text moved. It is pinned to the left edge of a
+## 300px row, and the endonyms this game has ("English", "Íslenska") are about
+## 120px at this size, so a centred label spans roughly 90..210 and never reaches
+## the flag's 16..42. A longer endonym one day would want the pair measured and
+## centred as a group; two locales do not.
+const FLAG_INSET := 16.0
+
 func _add_flag(button: Button) -> void:
-	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_language_flag = FlagIcon.make(TextManager.get_locale(), FLAG_BOX)
 	# Centred against BrandButton.MIN_HEIGHT, not the old fixed 64: the button
 	# grew to clear the 88px touch floor and a flag pinned to 64 sat high in it.
-	_language_flag.position = Vector2(16.0, (BrandButton.MIN_HEIGHT - FLAG_BOX.y) * 0.5)
+	_language_flag.position = Vector2(FLAG_INSET, (BrandButton.MIN_HEIGHT - FLAG_BOX.y) * 0.5)
 	button.add_child(_language_flag)
-	var box := StyleBoxEmpty.new()
-	box.content_margin_left = 16.0 + FLAG_BOX.x + 10.0
-	for state in ["normal", "hover", "pressed", "focus"]:
-		var existing: StyleBox = button.get_theme_stylebox(state)
-		if existing is StyleBoxFlat:
-			var flat := (existing as StyleBoxFlat).duplicate() as StyleBoxFlat
-			flat.content_margin_left = box.content_margin_left
-			button.add_theme_stylebox_override(state, flat)
 
 
 ## Switch language without restarting anything.
