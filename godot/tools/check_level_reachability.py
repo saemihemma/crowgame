@@ -148,16 +148,64 @@ def solid_grid(level):
     return grid
 
 
-def standable(grid, w, h):
-    """Cells the crow can stand in: empty, with something solid underneath."""
-    return {(c, r) for r in range(h - 1) for c in range(w)
-            if not grid[r][c] and grid[r + 1][c]}
+def standable(grid, w, h, ladders=()):
+    """Cells the crow can stand in: empty, with something solid underneath.
+
+    A LADDER CELL COUNTS TOO. A ladder has no collision -- it is scenery the crow
+    chooses to grab -- so nothing under a rung is solid and none of its cells
+    would otherwise be standable. Without this, a level whose only way up is a
+    ladder reads to this checker as unfinishable, and the checker would be
+    telling the truth about a crow that cannot climb rather than about ours.
+    """
+    cells = {(c, r) for r in range(h - 1) for c in range(w)
+             if not grid[r][c] and grid[r + 1][c]}
+    for (c, top, tiles) in ladders:
+        for r in range(top, min(h, top + tiles)):
+            if 0 <= c < w and not grid[r][c]:
+                cells.add((c, r))
+    return cells
 
 
-def reachable_from(start, cells, up, across, max_fall):
+def ladder_cells(level, tile):
+    """Every ladder as (column, top row, height in tiles)."""
+    out = []
+    for layer in level["layers"]:
+        if layer.get("type") != "objectgroup":
+            continue
+        for obj in layer.get("objects", []):
+            if obj.get("type") != "ladder":
+                continue
+            out.append((int(obj["x"] // tile),
+                        int(obj["y"] // tile),
+                        max(1, int(obj.get("height", tile) // tile))))
+    return out
+
+
+def climb_links(ladders, cells):
+    """Cells a ladder joins to each other, regardless of the jump envelope.
+
+    Climbing is not jumping: a ladder is a vertical corridor the crow moves
+    freely along, so its cells reach each other at any distance. Modelling it as
+    a very tall jump would also let the crow LEAP that high anywhere, which is
+    the kind of shortcut that makes a reachability guard lie.
+    """
+    links = {}
+    for (c, top, tiles) in ladders:
+        column = [(c, r) for r in range(top, top + tiles) if (c, r) in cells]
+        for cell in column:
+            links.setdefault(cell, set()).update(x for x in column if x != cell)
+    return links
+
+
+def reachable_from(start, cells, up, across, max_fall, climbs=None):
+    climbs = climbs or {}
     seen, queue = {start}, deque([start])
     while queue:
         cx, cy = queue.popleft()
+        for nx, ny in climbs.get((cx, cy), ()):      # a ladder, climbed
+            if (nx, ny) not in seen:
+                seen.add((nx, ny))
+                queue.append((nx, ny))
         for nx, ny in cells:
             if (nx, ny) in seen:
                 continue
@@ -233,7 +281,9 @@ def check(path, quiet=False):
     speed, band = speed_for(path.stem)
     up, across = envelope(tile, speed)
     grid = solid_grid(level)
-    cells = standable(grid, w, h)
+    ladders = ladder_cells(level, tile)
+    cells = standable(grid, w, h, ladders)
+    climbs = climb_links(ladders, cells)
 
     spawn = object_cell(level, "player_spawn", tile)
     door = object_cell(level, "door", tile)
@@ -259,7 +309,7 @@ def check(path, quiet=False):
     if finish is None:
         return [f"{path.name}: door column {door[0]} has nowhere to stand"]
 
-    seen = reachable_from(start, cells, up, across, h)
+    seen = reachable_from(start, cells, up, across, h, climbs)
 
     # THREE KINDS OF GOAL, not one.
     #
@@ -309,6 +359,42 @@ def check(path, quiet=False):
     return []
 
 
+def stacked_collectibles(level, tile):
+    """Two coins drawn over each other.
+
+    A coin is anchored at its centre and a big coin is drawn wider than its
+    tile, so two of them within a tile of each other are one smudge on screen
+    rather than two things to collect -- and where one is a big coin, that is a
+    third of the level's score sitting where a child cannot see it is there.
+    The act author places the motif coins, the scatter and the big coins in
+    three separate passes, and nothing stopped a later pass landing on an
+    earlier one.
+
+    Geometry rather than reachability, but this is the file that already reads
+    every compiled level and knows what a tile is.
+    """
+    items = []
+    for layer in level["layers"]:
+        if layer.get("type") != "objectgroup":
+            continue
+        for obj in layer["objects"]:
+            # The compiler emits a big coin as its own object type and an
+            # ordinary one as a `collectible` carrying `collectible_type`, so
+            # the property is the reliable name and the type is the fallback.
+            kind = prop(obj, "collectible_type") or obj.get("type", "")
+            if kind not in ("coin", "big_coin"):
+                continue
+            items.append((kind,
+                          obj["x"] + obj.get("width", 0) / 2.0,
+                          obj["y"] + obj.get("height", 0) / 2.0))
+    found = []
+    for i, (a_kind, ax, ay) in enumerate(items):
+        for b_kind, bx, by in items[i + 1:]:
+            if abs(ax - bx) < tile * 2 and abs(ay - by) < tile * 2:
+                found.append((a_kind, int(ax), int(ay), b_kind, int(bx), int(by)))
+    return found
+
+
 def main():
     keys = [l["mapFile"].split("/")[-1] for l in json.loads(REGISTRY.read_text())["levels"]]
     wu, wa = envelope(32, float(TUNING["maxSpeed"]))
@@ -317,9 +403,13 @@ def main():
           f"sprint {sa} across / {su} up from level {SPRINT_FROM})")
     problems = []
     bridged = []
+    stacked = []
     for name in keys:
         problems += check(LEVELS / name)
         level = json.loads((LEVELS / name).read_text())
+        for a_type, ax, ay, b_type, bx, by in stacked_collectibles(level, level["tilewidth"]):
+            stacked.append(f"{name}: a {a_type} at ({ax},{ay}) and a {b_type} at "
+                           f"({bx},{by}) are drawn on top of each other")
         for row, col, tiles, px in gaps_the_body_bridges(level, level["tilewidth"]):
             bridged.append(f"{name}: row {row}, column {col} -- a {tiles}-tile "
                            f"({px}px) hole, and the crow's box is {PLAYER_BODY_W}px, "
@@ -357,7 +447,11 @@ def main():
         print("HOLES THAT ARE NOT HOLES (the collider bridges them):")
         for b in bridged:
             print("  " + b)
-    if problems or walk_problems or bridged:
+    if stacked:
+        print("COINS DRAWN ON TOP OF EACH OTHER:")
+        for c in stacked:
+            print("  " + c)
+    if problems or walk_problems or bridged or stacked:
         sys.exit(1)
     print(f"level reachability: clean, and clean again at a walk with no sprint "
           f"({len(keys)} levels)")

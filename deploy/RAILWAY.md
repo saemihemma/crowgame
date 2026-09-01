@@ -63,7 +63,7 @@ made a decision from it. The decision — is a first launch acceptable on home w
 
 | | Raw | gzip |
 | --- | --- | --- |
-| **whole payload** | **54.7 MB** | **~19.5 MB** |
+| **whole payload** | **51.7 MB** | **~17.7 MB** |
 
 Gzip is node's zlib at level 9; a server's own encoder will differ by a few
 tenths. Per-file sizes are `ls -la output/web` when you need them.
@@ -76,16 +76,18 @@ tree the bytes were built from, which matters because production error triage
 keys on that field. Read it as "built from this source", not "shipped in this
 commit".
 
-So a first launch transfers about **19.5 MB**, and a returning player transfers
+So a first launch transfers about **17.7 MB**, and a returning player transfers
 **nothing at all** for the payload — no bytes, no conditional request, no `304`.
 Only the 5 KB shell is re-fetched.
 
 
-The gzip figure moved from ~17.7 MB when the audio bank went from 23 sounds to
-52 (30 new effects, six proximity loops and five ambience beds). About 1.8 MB of
-that is **placeholder** cost: the generated bank is uncompressed 16-bit WAV
+**This figure is about to move, and the direction is not obvious.** The audio
+bank grew from 23 sounds to 52 (30 new effects, six proximity loops and five
+ambience beds), which measured ~1.8 MB gzipped in a trial export — but that cost
+is almost entirely **placeholder**: the generated bank is uncompressed 16-bit WAV
 because `tools/gen_sfx.py` has no encoder. Real files arrive as MP3 and give most
-of it back, so this number is expected to fall rather than rise — see
+of it back. The number above is the committed export's, and the committed export
+is the live game, so it stays honest until `npm run web:build` replaces it — see
 [brand/SOUND_DESIGN.md](../brand/SOUND_DESIGN.md) §9.
 
 `CROW_ASSET_CACHE` still exists for the handful of files that are *not*
@@ -135,38 +137,33 @@ For each environment (`staging`, then `prod`):
 
 1. **New → Database → PostgreSQL.** Railway sets `DATABASE_URL` for you.
 2. **New → GitHub Repo →** the same repo. Name it `crow-api-<env>`.
-3. **Delete `railway.json` from the repo root FIRST, and only then set**
-   Settings → Build → Dockerfile Path = `deploy/api/Dockerfile`, Root Directory
-   blank.
+3. **Settings → Build:** Dockerfile Path = `deploy/api/Dockerfile`, Root
+   Directory blank. The web service's own Build settings read
+   `deploy/web/Dockerfile`. Those two fields are the ONLY place either image is
+   named -- there is no config file in this repo any more, on purpose.
 
-   > **THE STEP THAT GOES WRONG, and it cannot be done from this service alone.**
-   > `railway.json` at the repo root pins `deploy/web/Dockerfile`. Railway
-   > auto-detects it for any service whose Root Directory is blank — which is
-   > every service here — and config-as-code beats the UI, so typing the API
-   > Dockerfile into the box above changes nothing while that file exists. The
-   > service builds the *web* image: Caddy serving static files, no Node in it.
+   > **THE HISTORY, because this cost a real evening.** A `railway.json` used to
+   > sit at the repo root pinning `deploy/web/Dockerfile`. Railway auto-detects
+   > that file for any service whose Root Directory is blank -- which is every
+   > service here -- and config-as-code beat the UI, so typing the API Dockerfile
+   > into the box above changed nothing. The API service built the *web* image:
+   > Caddy serving static files, with no Node in it.
    >
-   > It does not look like a build failure, which is why it has caught somebody
-   > already. The build SUCCEEDS in about ten seconds (a real API build takes a
-   > minute or more), and the pre-deploy command then dies after two with
-   > `node: not found` — there is no `node` in `caddy:2-alpine` and no `dist/`.
+   > It does not present as a build failure, which is why it is worth
+   > recognising by its shape: the build SUCCEEDS in about ten seconds (a real
+   > API build takes a minute or more), and the pre-deploy command then dies
+   > after two with `node: not found`. There is no `node` in `caddy:2-alpine`
+   > and no `dist/` either.
    >
-   > The file is still there because the WEB service depends on it: deleting it
-   > with nothing set in that service's UI leaves Railway guessing a builder for
-   > the game everybody is playing. So the order is fixed, and it is three steps
-   > across two services:
+   > Railway then deprecated the mechanism outright -- config-as-code on
+   > 2026-08-28, replaced by Infrastructure as Code (`.railway/railway.ts`) --
+   > with existing files working only until 2026-12-01 and no way for a new
+   > service to opt in. So the file had to go regardless, and it is gone.
    >
-   >   1. on the **web** service, set Dockerfile Path = `deploy/web/Dockerfile`
-   >      in the UI, so it no longer needs the file;
-   >   2. delete `railway.json` from the repo root and deploy that;
-   >   3. set Dockerfile Path = `deploy/api/Dockerfile` here.
-   >
-   > Do not reach for Settings → Config-as-code to point this service at its own
-   > file. Railway deprecated it on 2026-08-28: existing files work until
-   > 2026-12-01, and a service that never used one cannot opt in — which also
-   > means the root file has to go before that date regardless.
-   >
-   > Confirm the build log names `deploy/api/Dockerfile` before moving on.
+   > If this repo ever wants its deployment described in version control again,
+   > `.railway/railway.ts` is the supported way and it can define BOTH services
+   > in one place, which is the thing `railway.json` structurally could not do.
+   > Until somebody writes it, these two UI fields are the contract.
 
 4. **Settings → Source:** branch `main` for staging, `release` for prod.
 5. **Settings → Networking:** do **not** generate a public domain. Private only.

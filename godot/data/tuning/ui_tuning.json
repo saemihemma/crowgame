@@ -89,6 +89,8 @@
     "birth_year_field_width": 160,
     "birth_year_button_width": 180,
     "flag_button_width": 260,
-    "flag_reset_width": 160
+    "flag_reset_width": 160,
+    "tile_value_font_size": 38,
+    "tile_caption_font_size": 18
   }
 }

@@ -1,0 +1,208 @@
+{
+  "id": "level_14",
+  "name": "Aurora Spire II",
+  "theme": "aurora_spire",
+  "difficulty": 5,
+  "music": "forest_theme",
+  "criticalPath": {
+    "length": "short",
+    "motifs": [
+      "flat",
+      "ladder",
+      "gapledge",
+      "hole",
+      "owl",
+      "up",
+      "down",
+      "bug"
+    ]
+  },
+  "platforms": [
+    {
+      "type": "ground",
+      "x": 0,
+      "width": 14,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 8,
+      "width": 3,
+      "y": 12
+    },
+    {
+      "type": "platform",
+      "x": 11,
+      "width": 3,
+      "y": 12
+    },
+    {
+      "type": "ground",
+      "x": 16,
+      "width": 61,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 31,
+      "width": 2,
+      "y": 15
+    },
+    {
+      "type": "platform",
+      "x": 33,
+      "width": 2,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 35,
+      "width": 2,
+      "y": 11
+    },
+    {
+      "type": "platform",
+      "x": 35,
+      "width": 2,
+      "y": 10
+    },
+    {
+      "type": "platform",
+      "x": 37,
+      "width": 2,
+      "y": 12
+    },
+    {
+      "type": "platform",
+      "x": 39,
+      "width": 2,
+      "y": 14
+    },
+    {
+      "type": "platform",
+      "x": 58,
+      "width": 3,
+      "y": 11
+    },
+    {
+      "type": "platform",
+      "x": 66,
+      "width": 6,
+      "y": 4
+    }
+  ],
+  "spawns": {
+    "player": {
+      "x": 2,
+      "y": 14
+    },
+    "npcs": [
+      {
+        "npc_id": "owl_teacher_01",
+        "x": 23,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_tough_01",
+        "x": 49,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 68,
+        "y": 4,
+        "bonus": true,
+        "requiresAbility": "double_jump"
+      }
+    ],
+    "collectibles": [
+      {
+        "type": "big_coin",
+        "x": 27,
+        "y": 14,
+        "id": "c1"
+      },
+      {
+        "type": "big_coin",
+        "x": 53,
+        "y": 14,
+        "id": "c2"
+      },
+      {
+        "type": "coin",
+        "x": 6,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 15,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 24,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 42,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 51,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 60,
+        "y": 14
+      },
+      {
+        "type": "big_coin",
+        "x": 55,
+        "y": 14,
+        "id": "c3"
+      }
+    ]
+  },
+  "hazards": [],
+  "enemies": [
+    {
+      "enemy_id": "cockroach_basic",
+      "x": 40,
+      "y": 15
+    }
+  ],
+  "ladders": [
+    {
+      "x": 7,
+      "y": 12,
+      "tiles": 4
+    },
+    {
+      "x": 57,
+      "y": 11,
+      "tiles": 5
+    }
+  ],
+  "exits": [
+    {
+      "x": 75,
+      "y": 16,
+      "target_level": "level_15"
+    }
+  ],
+  "mathGating": {
+    "skills": [
+      "multiplication",
+      "division",
+      "subtraction"
+    ],
+    "difficultyBand": [
+      1,
+      5
+    ],
+    "teachingIntent": "Groups: many of the same, and sharing them out."
+  }
+}

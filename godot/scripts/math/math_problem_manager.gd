@@ -23,6 +23,16 @@ func init_from_data() -> void:
 	_pool.initialize(_all_problems)
 	_elo_strategy = ELOAwareStrategy.new(_pool)
 
+## One problem by id, or null. Public because the grown-up report turns a log of
+## answered ids back into the questions that were actually asked -- a list of
+## "cur_sub_014" tells a parent nothing, and "12 - 5 = ?" tells them where to
+## sit down with their child.
+##
+## A linear scan of a few thousand rows, the same as every other lookup here; the
+## report reads sixty of them once, when a screen opens.
+func find_problem(problem_id: String) -> Variant:
+	return _find_problem(problem_id)
+
 func mark_answered(problem_id: String) -> void:
 	_recent_problem_ids.append(problem_id)
 	_recent_problem_ids = _tail(_recent_problem_ids, MAX_RECENT_PROBLEM_IDS)

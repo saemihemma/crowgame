@@ -95,10 +95,15 @@ func _on_challenge_complete(data: Dictionary) -> void:
 		EventBus.math_comeback.emit({"domain": _domain, "skills": attempt["skills"]})
 	if step_after > step_before:
 		EventBus.curriculum_step_up.emit({"domain": _domain, "step": step_after})
+	# The extra four are for the grown-up report's per-question log: what was
+	# asked, whether it was got right first go, when, and which rung it was on.
+	# All of them were already in `attempt` -- they simply were not kept.
 	SaveManager.record_math_attempt({
 		"skills": attempt["skills"], "correct": attempt["correct"],
 		"hintsUsed": attempt["hintsUsed"], "timeMs": attempt["responseMs"],
-		"problemId": attempt["problemId"],
+		"problemId": attempt["problemId"], "domain": attempt["domain"],
+		"firstAttempt": attempt["firstAttempt"], "answeredAt": attempt["answeredAt"],
+		"curriculumStep": attempt["curriculumStep"],
 	})
 	SaveManager.save()
 	LearnerSyncService.submit_attempt(attempt)  # fire-and-forget; local-only when no API base

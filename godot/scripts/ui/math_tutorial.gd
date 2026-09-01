@@ -173,6 +173,10 @@ func choose(index: int) -> void:
 		_options[index].set_state(AnswerButton.State.WRONG)
 		_options[index].shake()
 		_options[index].disabled = true
+		# The mark comes off the option that was just missed. Leaving it there
+		# would leave Enter one key from re-committing the one answer we already
+		# know is wrong -- the same rule the board follows on a retry.
+		_cursor.set_to(_options, -1)
 		return
 	_answered = true
 	AudioManager.play_event("answer_correct")
@@ -382,8 +386,12 @@ func _render_controls(card: Dictionary) -> void:
 		# nothing. A browser harness driving the game hit it as a hard wall and
 		# could not get past the first owl.
 		#
-		# _unhandled_input below is the keyboard path, by digit, matching the
-		# board's.
+		# _unhandled_input below is the keyboard path -- digits, and a mark moved
+		# by the arrow keys and committed with Enter, matching the board's.
+		#
+		# A fresh row of options is a fresh question: nothing is marked until this
+		# child touches an arrow key.
+		_cursor.at = -1
 		return
 
 	_back = BrandButton.new()
@@ -404,14 +412,42 @@ func _render_controls(card: Dictionary) -> void:
 	_controls.add_child(_next)
 	_next.grab_focus()
 
-## The guided-try card, answerable from the keyboard by position. Same contract
-## as the board's: digits only, because they carry no movement meaning.
+## Where the mark is on this card's row of answers. Nothing until an arrow is
+## pressed; see AnswerCursor.
+var _cursor := AnswerCursor.new()
+
+## The guided-try card from the keyboard: exactly what the maths board offers,
+## because it is the same row of answers on a different surface.
 ##
-## Only the choice cards take a digit. On a card that has a Next, ui_accept
+## 1. A digit, 1 being the leftmost option: one key, one answer, no state.
+## 2. Left and right to move a mark along the row, Enter to commit it.
+##
+## The second used to exist only on the board, which is backwards -- this card is
+## the FIRST row of answers a child ever meets, and every child meets it before
+## they ever see the board. On a laptop it was a wall: arrows did nothing, Enter
+## did nothing, and the one key that worked was a digit that nothing on screen
+## mentions. The screen tour walked into it and stopped there, which is how it
+## was found.
+##
+## Only the choice cards take any of this. On a card that has a Next, ui_accept
 ## already works because BrandButton does take focus -- the FOCUS_NONE problem
 ## was only ever the AnswerButton options.
 func _unhandled_input(event: InputEvent) -> void:
-	if _options.is_empty():
+	if _options.is_empty() or _answered:
+		return
+	if event.is_action_pressed("answer_prev"):
+		_move_cursor(-1)
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("answer_next"):
+		_move_cursor(1)
+		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("answer_confirm"):
+		var marked := _cursor.chosen(_options)
+		if marked >= 0:
+			choose(marked)
+		get_viewport().set_input_as_handled()
 		return
 	for i in mini(_options.size(), 4):
 		if not event.is_action_pressed("answer_%d" % (i + 1)):
@@ -422,6 +458,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		choose(i)
 		get_viewport().set_input_as_handled()
 		return
+
+func _move_cursor(step: int) -> void:
+	if _cursor.move(_options, step):
+		AudioManager.play_event("button_focus")
 
 ## Every string on the card, in the active locale. Split out from _render so a
 ## language change mid-lesson re-letters the card in place instead of restarting

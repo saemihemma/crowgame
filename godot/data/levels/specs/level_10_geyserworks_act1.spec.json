@@ -1,0 +1,138 @@
+{
+  "id": "level_10",
+  "name": "Geyserworks I",
+  "theme": "geyserworks",
+  "difficulty": 4,
+  "music": "cave_theme",
+  "criticalPath": {
+    "length": "short",
+    "motifs": [
+      "flat",
+      "owl",
+      "spikes",
+      "ledge"
+    ]
+  },
+  "platforms": [
+    {
+      "type": "ground",
+      "x": 0,
+      "width": 68,
+      "y": 16
+    },
+    {
+      "type": "platform",
+      "x": 29,
+      "width": 3,
+      "y": 13
+    },
+    {
+      "type": "platform",
+      "x": 57,
+      "width": 6,
+      "y": 4
+    }
+  ],
+  "spawns": {
+    "player": {
+      "x": 2,
+      "y": 14
+    },
+    "npcs": [
+      {
+        "npc_id": "owl_gentle_01",
+        "x": 12,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_teacher_01",
+        "x": 38,
+        "y": 16
+      },
+      {
+        "npc_id": "owl_gauntlet",
+        "x": 59,
+        "y": 4,
+        "bonus": true,
+        "requiresAbility": "double_jump"
+      }
+    ],
+    "collectibles": [
+      {
+        "type": "big_coin",
+        "x": 16,
+        "y": 14,
+        "id": "c1"
+      },
+      {
+        "type": "big_coin",
+        "x": 42,
+        "y": 14,
+        "id": "c2"
+      },
+      {
+        "type": "coin",
+        "x": 6,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 24,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 33,
+        "y": 14
+      },
+      {
+        "type": "coin",
+        "x": 51,
+        "y": 14
+      },
+      {
+        "type": "big_coin",
+        "x": 48,
+        "y": 14,
+        "id": "c3"
+      }
+    ]
+  },
+  "hazards": [
+    {
+      "type": "spikes",
+      "x": 21,
+      "y": 15,
+      "width": 2,
+      "height": 1
+    },
+    {
+      "type": "spikes",
+      "x": 46,
+      "y": 15,
+      "width": 2,
+      "height": 1
+    }
+  ],
+  "enemies": [],
+  "ladders": [],
+  "exits": [
+    {
+      "x": 66,
+      "y": 16,
+      "target_level": "level_11"
+    }
+  ],
+  "mathGating": {
+    "skills": [
+      "addition",
+      "subtraction",
+      "number_sequence"
+    ],
+    "difficultyBand": [
+      1,
+      5
+    ],
+    "teachingIntent": "Adding and taking away past ten, and what comes next in a run."
+  }
+}

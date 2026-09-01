@@ -169,3 +169,299 @@ func test_the_fit_arithmetic() -> void:
 	var pause_card := Vector2(352, 596)
 	assert_true(FitBox.scale_for(pause_card, view) < 1.0,
 		"the pause card does not fit 960x540 unscaled - if this ever passes, the card shrank")
+
+
+# --- the plumbing, not the arithmetic ---------------------------------------
+#
+# Every test above calls fitter.fit_for(view) BY HAND. That proves FitBox can do
+# the sum. It cannot prove the sum is ever performed on a real screen -- that the
+# fitter is actually handed the viewport's size at runtime -- and those are two
+# different failures with the same symptom: a card that is not where it should
+# be. A playtester reported the pause menu being off-centre while every test in
+# this file was green.
+#
+# So this one mounts the screen, lets it lay itself out, and touches nothing.
+
+## How far off-centre a card may sit before it reads as a mistake. One pixel of
+## rounding is fine; anything a child would notice is not.
+const CENTRE_SLACK := 2.0
+
+func _mounted(path: String) -> Node:
+	var root: Node = (load(path) as PackedScene).instantiate()
+	Engine.get_main_loop().root.add_child(root)
+	return root
+
+func test_the_pause_card_centres_itself_with_nobody_helping() -> void:
+	var pause := _mounted(SceneRouter.path_of("pause") if SceneRouter.path_of("pause") != "" else "res://scenes/Pause.tscn")
+	# Two frames: one for the tree to size the Controls, one for the deferred
+	# _fit FitBox schedules in _ready.
+	for i in 4:
+		await Engine.get_main_loop().process_frame
+
+	var fitters: Array = _fitters(pause, [])
+	assert_true(fitters.size() == 1, "the pause overlay has exactly one fitter (got %d)" % fitters.size())
+	if fitters.is_empty():
+		pause.queue_free()
+		return
+
+	var fitter: FitBox = fitters[0]
+	var view := Vector2(Engine.get_main_loop().root.size)
+	assert_true(fitter.size.x > 0.0 and fitter.size.y > 0.0,
+		"the fitter has a size to centre inside -- got %s, which means nothing " % str(fitter.size)
+		+ "ever told it how big the screen is")
+
+	var rect := fitter.card_rect()
+	var left := rect.position.x
+	var right := fitter.size.x - rect.end.x
+	var top := rect.position.y
+	var bottom := fitter.size.y - rect.end.y
+	assert_true(absf(left - right) <= CENTRE_SLACK,
+		"the card is centred horizontally: %.1fpx of room on the left, %.1f on the right" % [left, right])
+	assert_true(absf(top - bottom) <= CENTRE_SLACK,
+		"and vertically: %.1fpx above, %.1f below" % [top, bottom])
+	pause.queue_free()
+
+
+## EVERY ROW IN A COLUMN AGREES, or the column reads as misaligned.
+##
+## This is the bug the test above could not see. The pause card was centred
+## correctly and one row inside it was not: the language row was set to
+## HORIZONTAL_ALIGNMENT_LEFT with 52px of left content margin so its label
+## cleared the flag. Four rows agreeing and one disagreeing is precisely what a
+## centring mistake looks like from the sofa, and it was reported as one.
+func test_every_row_in_the_pause_card_is_aligned_the_same_way() -> void:
+	var pause := _mounted("res://scenes/Pause.tscn")
+	await Engine.get_main_loop().process_frame
+
+	var rows: Array = []
+	_buttons(pause, rows)
+	assert_true(rows.size() >= 4, "the pause card has its rows (%d)" % rows.size())
+
+	var alignments := {}
+	for row: Button in rows:
+		alignments[int(row.alignment)] = true
+	assert_eq(alignments.size(), 1,
+		"every row is aligned the same way -- found %d different alignments, which " % alignments.size()
+		+ "is a column that reads as off-centre even when the card is not")
+
+	# And no row is indented past the others by a stylebox margin, which is the
+	# other half of the same defect: alignment agreeing while the text does not.
+	var margins := {}
+	for row: Button in rows:
+		var box: StyleBox = row.get_theme_stylebox("normal")
+		margins[snappedf(box.content_margin_left if box != null else 0.0, 0.5)] = true
+	assert_eq(margins.size(), 1,
+		"and every row starts its text at the same inset (%s)" % str(margins.keys()))
+	pause.queue_free()
+
+func _buttons(node: Node, out: Array) -> void:
+	if node is BrandButton:
+		out.append(node)
+	for child in node.get_children():
+		_buttons(child, out)
+
+
+## EVERY LOGIN SUB-STATE IS ON SCREEN.
+##
+## The login screen is two contracts in one scene and it used to apply the wrong
+## one to four of its five states. The profile list GROWS with the family, so it
+## scrolls and is tested next door in test_scrolling_lists.gd. The other four are
+## fixed columns -- a title, two or three fields, two buttons -- and every one of
+## them was in that same scroller, where content that does not fit is not shrunk,
+## it is simply GONE until you find the wheel.
+##
+## What was gone, at 960x540, was the Create button on the first screen a new
+## player ever sees: the form asked four questions under a title and above two
+## buttons, and its last row sat below the fold with nothing on screen to say so.
+## A parent setting the game up for a seven-year-old was left with a form and no
+## visible way to submit it. Fitted instead of scrolled, the last button is
+## always on screen whatever the viewport.
+##
+## WHY THERE IS NO "AND WITHOUT SHRINKING" ASSERTION HERE, which is the one you
+## would want -- fitting by scaling to 0.8 takes an 88px button below the tap
+## floor a seven-year-old needs. It cannot be asserted in this process:
+## test_headless_text_is_not_a_layout_oracle below measures the built-in font
+## reporting a line height of THREE TIMES the point size, so every label in these
+## columns is ~2.3x taller here than in a browser and any scale floor would be
+## gating on fiction. The real check on how much these columns shrink is the
+## screenshot tour (godot/tools/web_screens.mjs), which renders the actual font.
+func test_every_login_step_is_on_screen() -> void:
+	var scene: PackedScene = load(SceneRouter.path_of("login"))
+	# Named the way the sub-state is named in login.gd, so a failure says which
+	# screen to go and look at.
+	var steps := {
+		"new player (name)": func(n): n._show_new_player(),
+		"new player (PIN)": func(n): n._show_pick_pin(),
+		"sign in": func(n): n._show_sign_in(),
+		"PIN entry": func(n): n._show_pin_entry("Hormann"),
+	}
+	for label in steps:
+		var root: Node = scene.instantiate()
+		Engine.get_main_loop().root.add_child(root)
+		(steps[label] as Callable).call(root)
+		var fitters: Array = _fitters(root, [])
+		assert_true(fitters.size() == 1,
+			"login step '%s' is fitted, not scrolled: exactly one FitBox (got %d)"
+				% [label, fitters.size()])
+		if fitters.size() == 1:
+			for viewport in VIEWPORTS:
+				var result := _worst_overflow(root, viewport["size"])
+				assert_true(float(result["overflow"]) == 0.0,
+					"[login '%s' @ %s] overflows by %.0fpx (%s)"
+						% [label, str(viewport["size"]), float(result["overflow"]), result["where"]])
+		root.queue_free()
+
+
+## The reason the test above stops where it does, stated as a measurement rather
+## than a comment, so it cannot quietly stop being true.
+##
+## Godot's built-in font, in this headless process, reports get_height(n) == 3n.
+## A real one is nearer 1.3n. So every Label in every column measured here is
+## more than twice as tall as the one a child sees, and a "does it fit without
+## shrinking" gate would fail screens that are fine and pass none that are not.
+##
+## If this assertion ever goes red, the metrics have become trustworthy: put the
+## scale floor back into the login and menu fit tests, where it belongs.
+func test_headless_text_is_not_a_layout_oracle() -> void:
+	var probe := Label.new()
+	Engine.get_main_loop().root.add_child(probe)
+	var size := probe.get_theme_font_size("font_size")
+	var ratio := probe.get_theme_font("font").get_height(size) / float(size)
+	assert_true(ratio > 2.0,
+		"headless line height is %.2fx the point size, not the ~3x this suite assumes; text-height assertions are trustworthy again"
+			% ratio)
+	probe.queue_free()
+
+
+## NOTHING ON THE MAIN MENU IS PINNED TO A SCREEN EDGE THAT THE COLUMN NOW USES.
+##
+## The trophy shelf was: a badge row anchored to the bottom of the viewport, on
+## the reasoning that the bottom band was empty. It was, until this menu became a
+## FITTED column that uses the whole height -- after which the badges drew
+## straight through the last button, a sprout and the word "Counting" sitting on
+## top of "How is my child doing?".
+##
+## The fix is not a margin, because a margin is a guess about how tall the column
+## will be next time a row is added to it. The shelf is IN the column, so FitBox
+## measures it with everything else and it cannot overlap by construction. This
+## asserts that structure rather than today's pixels.
+func test_the_trophy_shelf_is_measured_with_the_menu_not_pinned_beside_it() -> void:
+	# A child who has earned a badge, so there is a shelf at all. Headless, the
+	# learner starts with no attempts anywhere and the shelf builds nothing --
+	# which is exactly the state this bug hid behind.
+	var before := LearnerStateManager.get_snapshot().duplicate(true)
+	var seeded := LearnerStateManager.get_snapshot().duplicate(true)
+	var tiers: Array = (DataManager.get_dict("MATH_TUNING").get("trophies", {}) as Dictionary) \
+		.get("tierSteps", [])
+	assert_true(not tiers.is_empty(), "the trophy tiers are configured")
+	var domain := String(MathDomains.ALL[0])
+	# Edited, not replaced: the progress record carries more fields than the shelf
+	# reads (winsAtCurrentStep among them) and the manager rebuilds its summary
+	# from all of them.
+	var progress: Dictionary = seeded["curriculumProgress"][domain]
+	progress["currentStep"] = int(tiers[0])
+	progress["highestStep"] = int(tiers[0])
+	progress["totalAttempts"] = 12
+	LearnerStateManager.replace_snapshot(seeded)
+
+	var scene: PackedScene = load(SceneRouter.path_of("main_menu"))
+	var root: Node = scene.instantiate()
+	Engine.get_main_loop().root.add_child(root)
+
+	var badges: Array = []
+	_badge_rows(root, badges)
+	assert_true(badges.size() >= 1,
+		"a child at step %d has earned a badge to place" % int(tiers[0]))
+	for badge: Node in badges:
+		var inside := false
+		var walk: Node = badge
+		while walk != null:
+			if walk is FitBox:
+				inside = true
+				break
+			walk = walk.get_parent()
+		assert_true(inside,
+			"the trophy shelf sits inside the fitted column, where FitBox measures it")
+
+	# And the whole menu, badges included, is still on the tightest screen.
+	for viewport in VIEWPORTS:
+		var result := _worst_overflow(root, viewport["size"])
+		assert_true(float(result["overflow"]) == 0.0,
+			"[main menu with badges @ %s] overflows by %.0fpx (%s)"
+				% [str(viewport["size"]), float(result["overflow"]), result["where"]])
+
+	root.queue_free()
+	LearnerStateManager.replace_snapshot(before)
+
+func _badge_rows(node: Node, out: Array) -> void:
+	for child in node.get_children():
+		if child is TrophyBadge:
+			out.append(child)
+		_badge_rows(child, out)
+
+
+## ONE WAY TO START PLAYING, AND EVERY ROW THE SAME WIDTH.
+##
+## Both halves are owner rulings and both had been got wrong once. The menu
+## carried PLAY *and* "Choose a world", which are two buttons for the same thing
+## -- the complaint that produced the first fix, applied again to the fix. And
+## `custom_minimum_size` is a floor rather than a width, so the longest label on
+## the screen made its own button visibly wider than the rest, which reads as a
+## mistake rather than as a list.
+func test_the_menu_offers_one_way_in_and_rows_of_one_width() -> void:
+	var scene: PackedScene = load(SceneRouter.path_of("main_menu"))
+	var root: Node = scene.instantiate()
+	Engine.get_main_loop().root.add_child(root)
+
+	var rows: Array = []
+	_menu_rows(root, rows)
+	assert_true(rows.size() >= 1, "the menu has rows")
+
+	var primaries := 0
+	for row: BrandButton in rows:
+		assert_eq(row.custom_minimum_size.x, root.ROW_WIDTH,
+			"every row asks for the same width ('%s' asks for %.0f)"
+				% [row.text, row.custom_minimum_size.x])
+		if row.role == BrandButton.Role.PRIMARY:
+			primaries += 1
+	assert_eq(primaries, 1, "exactly one row is the thing you are meant to press")
+	root.queue_free()
+
+
+## The shrink itself, on labels rather than on today's font metrics.
+##
+## Asserted through the function and not through a rendered column on purpose:
+## headless, the built-in font reports a line height three times its point size
+## (see test_headless_text_is_not_a_layout_oracle), so what fits HERE says
+## nothing about what fits in a browser. What is testable either way is the
+## rule: too long shrinks, short is left alone, and nothing goes below the floor.
+func test_a_label_too_long_for_its_row_is_made_smaller() -> void:
+	var scene: PackedScene = load(SceneRouter.path_of("main_menu"))
+	var root: Node = scene.instantiate()
+	Engine.get_main_loop().root.add_child(root)
+
+	var long := BrandButton.make(
+		"Hvernig gengur barninu og hvad aetli thad se ad gera akkurat nuna",
+		BrandButton.Role.GHOST, Callable())
+	root.add_child(long)
+	var before: int = long.get_theme_font_size("font_size")
+	root._fit_label(long)
+	var after: int = long.get_theme_font_size("font_size")
+	assert_true(after < before,
+		"a label wider than its row is made smaller (%d -> %d)" % [before, after])
+	assert_true(after >= root.LABEL_MIN_SIZE,
+		"but never below the floor (got %d, floor %d)" % [after, root.LABEL_MIN_SIZE])
+
+	var short := BrandButton.make("Ok", BrandButton.Role.GHOST, Callable())
+	root.add_child(short)
+	var short_before: int = short.get_theme_font_size("font_size")
+	root._fit_label(short)
+	assert_eq(short.get_theme_font_size("font_size"), short_before,
+		"a label that already fits is left alone")
+	root.queue_free()
+
+func _menu_rows(node: Node, out: Array) -> void:
+	for child in node.get_children():
+		if child is BrandButton:
+			out.append(child)
+		_menu_rows(child, out)

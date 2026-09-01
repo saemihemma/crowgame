@@ -29,8 +29,8 @@
     },
     {
       "key": "level_01",
-      "name": "Forest Clearing",
-      "mapFile": "data/levels/compiled/level_01_forest.json",
+      "name": "Emberwood I",
+      "mapFile": "data/levels/compiled/level_01_emberwood_act1.json",
       "unlockRequirement": null,
       "order": 1,
       "mathGating": {
@@ -48,13 +48,57 @@
     },
     {
       "key": "level_02",
-      "name": "Crystal Cave",
-      "mapFile": "data/levels/compiled/level_02_cave.json",
+      "name": "Emberwood II",
+      "mapFile": "data/levels/compiled/level_02_emberwood_act2.json",
       "unlockRequirement": {
         "level": "level_01",
         "minStars": 0
       },
       "order": 2,
+      "mathGating": {
+        "skills": [
+          "counting",
+          "addition"
+        ],
+        "difficultyBand": [
+          1,
+          2
+        ],
+        "teachingIntent": "First numbers: count what you see, then add small amounts."
+      },
+      "theme": "emberwood"
+    },
+    {
+      "key": "level_03",
+      "name": "Emberwood III",
+      "mapFile": "data/levels/compiled/level_03_emberwood_act3.json",
+      "unlockRequirement": {
+        "level": "level_02",
+        "minStars": 0
+      },
+      "order": 3,
+      "mathGating": {
+        "skills": [
+          "counting",
+          "addition"
+        ],
+        "difficultyBand": [
+          1,
+          2
+        ],
+        "teachingIntent": "First numbers: count what you see, then add small amounts."
+      },
+      "theme": "emberwood"
+    },
+    {
+      "key": "level_04",
+      "name": "Prism Hollow I",
+      "mapFile": "data/levels/compiled/level_04_prism_hollow_act1.json",
+      "unlockRequirement": {
+        "level": "level_03",
+        "minStars": 0
+      },
+      "order": 4,
       "mathGating": {
         "skills": [
           "subtraction",
@@ -64,19 +108,63 @@
           1,
           3
         ],
-        "teachingIntent": "Taking away: things vanish in the dark - subtraction on a steady addition base."
+        "teachingIntent": "Taking away: what is left when some of it goes."
       },
       "theme": "prism_hollow"
     },
     {
-      "key": "level_03",
-      "name": "Sunny Meadow",
-      "mapFile": "data/levels/compiled/level_03_meadow.json",
+      "key": "level_05",
+      "name": "Prism Hollow II",
+      "mapFile": "data/levels/compiled/level_05_prism_hollow_act2.json",
       "unlockRequirement": {
-        "level": "level_02",
+        "level": "level_04",
         "minStars": 0
       },
-      "order": 3,
+      "order": 5,
+      "mathGating": {
+        "skills": [
+          "subtraction",
+          "addition"
+        ],
+        "difficultyBand": [
+          1,
+          3
+        ],
+        "teachingIntent": "Taking away: what is left when some of it goes."
+      },
+      "theme": "prism_hollow"
+    },
+    {
+      "key": "level_06",
+      "name": "Prism Hollow III",
+      "mapFile": "data/levels/compiled/level_06_prism_hollow_act3.json",
+      "unlockRequirement": {
+        "level": "level_05",
+        "minStars": 0
+      },
+      "order": 6,
+      "mathGating": {
+        "skills": [
+          "subtraction",
+          "addition"
+        ],
+        "difficultyBand": [
+          1,
+          3
+        ],
+        "teachingIntent": "Taking away: what is left when some of it goes."
+      },
+      "theme": "prism_hollow"
+    },
+    {
+      "key": "level_07",
+      "name": "Sugarstorm I",
+      "mapFile": "data/levels/compiled/level_07_sugarstorm_act1.json",
+      "unlockRequirement": {
+        "level": "level_06",
+        "minStars": 0
+      },
+      "order": 7,
       "mathGating": {
         "skills": [
           "comparison",
@@ -85,108 +173,16 @@
         ],
         "difficultyBand": [
           1,
-          3
+          4
         ],
-        "teachingIntent": "More or less: compare what you just learned to count."
+        "teachingIntent": "More, fewer, the same: comparing amounts you can see."
       },
       "theme": "sugarstorm"
     },
     {
-      "key": "level_04",
-      "name": "Mossy Bridge",
-      "mapFile": "data/levels/compiled/level_04_bridge.json",
-      "unlockRequirement": {
-        "level": "level_03",
-        "minStars": 0
-      },
-      "order": 4,
-      "mathGating": {
-        "skills": [
-          "addition",
-          "subtraction",
-          "counting"
-        ],
-        "difficultyBand": [
-          2,
-          4
-        ],
-        "teachingIntent": "Take away: undo the adding, under pressure."
-      },
-      "theme": "geyserworks"
-    },
-    {
-      "key": "level_05",
-      "name": "Treetop Trail",
-      "mapFile": "data/levels/compiled/level_05_treetop.json",
-      "unlockRequirement": {
-        "level": "level_04",
-        "minStars": 0
-      },
-      "order": 5,
-      "mathGating": {
-        "skills": [
-          "number_sequence",
-          "addition",
-          "subtraction",
-          "multiplication",
-          "division"
-        ],
-        "difficultyBand": [
-          1,
-          5
-        ],
-        "teachingIntent": "Everything together, at the top of the climb. Multiplication and division appear here once earned (unlock-gated by addition mastery)."
-      },
-      "theme": "aurora_spire"
-    },
-    {
-      "key": "level_06",
-      "name": "Emberwood Deep",
-      "mapFile": "data/levels/compiled/level_06_emberwood_deep.json",
-      "unlockRequirement": {
-        "level": "level_05",
-        "minStars": 0
-      },
-      "order": 6,
-      "mathGating": {
-        "skills": [
-          "addition",
-          "subtraction"
-        ],
-        "difficultyBand": [
-          3,
-          5
-        ],
-        "teachingIntent": "Back to the first wood, with the easy sums gone: addition and subtraction with no comfort rung to fall back on."
-      },
-      "theme": "emberwood"
-    },
-    {
-      "key": "level_07",
-      "name": "Crystal Depths",
-      "mapFile": "data/levels/compiled/level_07_crystal_depths.json",
-      "unlockRequirement": {
-        "level": "level_06",
-        "minStars": 0
-      },
-      "order": 7,
-      "mathGating": {
-        "skills": [
-          "multiplication",
-          "addition"
-        ],
-        "difficultyBand": [
-          2,
-          5
-        ],
-        "teachingIntent": "Equal groups underground: multiplication carried on the addition a child already trusts."
-      },
-      "theme": "prism_hollow"
-    },
-    {
       "key": "level_08",
-      "name": "Meadow Heights",
-      "mapFile": "data/levels/compiled/level_08_meadow_heights.json",
+      "name": "Sugarstorm II",
+      "mapFile": "data/levels/compiled/level_08_sugarstorm_act2.json",
       "unlockRequirement": {
         "level": "level_07",
         "minStars": 0
@@ -194,17 +190,178 @@
       "order": 8,
       "mathGating": {
         "skills": [
-          "division",
+          "comparison",
+          "counting",
+          "addition"
+        ],
+        "difficultyBand": [
+          1,
+          4
+        ],
+        "teachingIntent": "More, fewer, the same: comparing amounts you can see."
+      },
+      "theme": "sugarstorm"
+    },
+    {
+      "key": "level_09",
+      "name": "Sugarstorm III",
+      "mapFile": "data/levels/compiled/level_09_sugarstorm_act3.json",
+      "unlockRequirement": {
+        "level": "level_08",
+        "minStars": 0
+      },
+      "order": 9,
+      "mathGating": {
+        "skills": [
+          "comparison",
+          "counting",
+          "addition"
+        ],
+        "difficultyBand": [
+          1,
+          4
+        ],
+        "teachingIntent": "More, fewer, the same: comparing amounts you can see."
+      },
+      "theme": "sugarstorm"
+    },
+    {
+      "key": "level_10",
+      "name": "Geyserworks I",
+      "mapFile": "data/levels/compiled/level_10_geyserworks_act1.json",
+      "unlockRequirement": {
+        "level": "level_09",
+        "minStars": 0
+      },
+      "order": 10,
+      "mathGating": {
+        "skills": [
+          "addition",
+          "subtraction",
+          "number_sequence"
+        ],
+        "difficultyBand": [
+          1,
+          5
+        ],
+        "teachingIntent": "Adding and taking away past ten, and what comes next in a run."
+      },
+      "theme": "geyserworks"
+    },
+    {
+      "key": "level_11",
+      "name": "Geyserworks II",
+      "mapFile": "data/levels/compiled/level_11_geyserworks_act2.json",
+      "unlockRequirement": {
+        "level": "level_10",
+        "minStars": 0
+      },
+      "order": 11,
+      "mathGating": {
+        "skills": [
+          "addition",
+          "subtraction",
+          "number_sequence"
+        ],
+        "difficultyBand": [
+          1,
+          5
+        ],
+        "teachingIntent": "Adding and taking away past ten, and what comes next in a run."
+      },
+      "theme": "geyserworks"
+    },
+    {
+      "key": "level_12",
+      "name": "Geyserworks III",
+      "mapFile": "data/levels/compiled/level_12_geyserworks_act3.json",
+      "unlockRequirement": {
+        "level": "level_11",
+        "minStars": 0
+      },
+      "order": 12,
+      "mathGating": {
+        "skills": [
+          "addition",
+          "subtraction",
+          "number_sequence"
+        ],
+        "difficultyBand": [
+          1,
+          5
+        ],
+        "teachingIntent": "Adding and taking away past ten, and what comes next in a run."
+      },
+      "theme": "geyserworks"
+    },
+    {
+      "key": "level_13",
+      "name": "Aurora Spire I",
+      "mapFile": "data/levels/compiled/level_13_aurora_spire_act1.json",
+      "unlockRequirement": {
+        "level": "level_12",
+        "minStars": 0
+      },
+      "order": 13,
+      "mathGating": {
+        "skills": [
           "multiplication",
+          "division",
           "subtraction"
         ],
         "difficultyBand": [
-          3,
+          1,
           5
         ],
-        "teachingIntent": "Sharing out, up high: division against the multiplication it undoes, with subtraction underneath."
+        "teachingIntent": "Groups: many of the same, and sharing them out."
       },
-      "theme": "sugarstorm"
+      "theme": "aurora_spire"
+    },
+    {
+      "key": "level_14",
+      "name": "Aurora Spire II",
+      "mapFile": "data/levels/compiled/level_14_aurora_spire_act2.json",
+      "unlockRequirement": {
+        "level": "level_13",
+        "minStars": 0
+      },
+      "order": 14,
+      "mathGating": {
+        "skills": [
+          "multiplication",
+          "division",
+          "subtraction"
+        ],
+        "difficultyBand": [
+          1,
+          5
+        ],
+        "teachingIntent": "Groups: many of the same, and sharing them out."
+      },
+      "theme": "aurora_spire"
+    },
+    {
+      "key": "level_15",
+      "name": "Aurora Spire III",
+      "mapFile": "data/levels/compiled/level_15_aurora_spire_act3.json",
+      "unlockRequirement": {
+        "level": "level_14",
+        "minStars": 0
+      },
+      "order": 15,
+      "mathGating": {
+        "skills": [
+          "multiplication",
+          "division",
+          "subtraction"
+        ],
+        "difficultyBand": [
+          1,
+          5
+        ],
+        "teachingIntent": "Groups: many of the same, and sharing them out."
+      },
+      "theme": "aurora_spire"
     }
   ]
 }

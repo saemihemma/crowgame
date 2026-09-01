@@ -211,46 +211,26 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
-## Where the keyboard cursor is standing, as an index into the ROW, or -1 for
-## "no child has touched an arrow key on this board". -1 is the state a touch
-## player is always in, and the reason the mark is invisible to them.
-var _cursor := -1
+## The mark, and the rules for moving it, live in AnswerCursor -- shared with the
+## lesson card's guided-try row, which is the same row of answers on a different
+## surface and had none of this until the screen tour walked into it.
+var _cursor := AnswerCursor.new()
 
-## Step the mark along the row, skipping options the board has taken away.
-##
-## Wraps, because four options in a row have two ends and a seven-year-old
-## holding Right down should not silently stop. The first press lands on the
-## leftmost option rather than moving from nowhere.
 func _move_cursor(step: int) -> void:
-	var count := _buttons.size()
-	if count == 0:
-		return
-	var at := _cursor
-	for _i in count:
-		at = 0 if at < 0 else posmod(at + step, count)
-		if not _buttons[at].disabled:
-			break
-	if at < 0 or at >= count or _buttons[at].disabled:
-		return
-	_set_cursor(at)
-	AudioManager.play_event("button_focus")
+	if _cursor.move(_buttons, step):
+		AudioManager.play_event("button_focus")
 
 func _set_cursor(at: int) -> void:
-	_cursor = at
-	for i in _buttons.size():
-		_buttons[i].set_selected(i == at)
+	_cursor.set_to(_buttons, at)
 
-## Enter commits whatever the mark is on, and nothing when it is on nothing.
-##
-## A confirm with no mark is deliberately inert rather than defaulting to the
-## first option: the one irreversible action on this screen must never happen
-## because a key was leaned on.
 func _commit_cursor() -> void:
-	if _cursor < 0 or _cursor >= _buttons.size() or _buttons[_cursor].disabled:
+	var at := _cursor.chosen(_buttons)
+	if at < 0 or at >= _display_order.size():
 		return
-	if _cursor >= _display_order.size():
-		return
-	submit_answer(_display_order[_cursor])
+	# Position, not value index: the options are shuffled per render, and "the
+	# second thing I can see" is the only thing a key can honestly mean.
+	# `_display_order[i]` is the translation the mouse path already goes through.
+	submit_answer(_display_order[at])
 
 ## Hand the board back for the second try. The wrong option stays marked: it is
 ## a fact about what has already been tried, and clearing it would invite the
@@ -459,7 +439,7 @@ func _build_ui(opts: Dictionary) -> void:
 	_buttons.clear()
 	# A fresh row of options is a fresh question: nothing is marked until this
 	# child touches an arrow key again.
-	_cursor = -1
+	_cursor.at = -1
 	var options: Array = current_problem.get("answer", {}).get("options", [])
 	# Shuffle the on-screen order; submit_answer still takes the index into
 	# answer.options, so callers and tests keep their contract.
@@ -697,34 +677,7 @@ func _on_locale_changed() -> void:
 
 ## One of the problem's three sentences, in the active locale.
 ##
-## The pools keep prompt.text, hint and explanation in canonical English because
-## tools/math_verifier.ts parses the operands out of prompt.text, the replay key
-## tests it with literal English prefixes, and the golden fixtures compare it byte
-## for byte. Localisation is an overlay: an optional `phrasing` sibling naming an
-## i18n key, its numeric parameters and, where the wording inflects, the parameter
-## that drives plural agreement. Anything unresolvable falls back to the English,
-## so a child sees their own language or they see English, never a raw key.
-##
-## Was mirrored by the retired web build's phrasing module; this is
-## now the only implementation.
+## The rule itself lives in MathPhrasing, because the grown-up report renders the
+## same sentences now and there must be exactly one fallback chain.
 func _localised(field: String) -> String:
-	var english := ""
-	if field == "prompt":
-		english = String(current_problem.get("prompt", {}).get("text", ""))
-	else:
-		english = String(current_problem.get(field, ""))
-
-	var phrasing: Variant = current_problem.get("phrasing", null)
-	if not (phrasing is Dictionary):
-		return english
-	var ref: Variant = (phrasing as Dictionary).get(field, null)
-	if not (ref is Dictionary) or not (ref as Dictionary).has("key"):
-		return english
-
-	var entry := ref as Dictionary
-	var rendered := TextManager.tp(
-		String(entry["key"]),
-		entry.get("params", {}),
-		String(entry.get("plural", "")),
-	)
-	return english if rendered.is_empty() else rendered
+	return MathPhrasing.localise(current_problem, field)

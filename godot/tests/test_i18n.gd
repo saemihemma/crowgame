@@ -202,10 +202,16 @@ func test_ui_counters_agree_with_their_number() -> void:
 	assert_eq(tm.tp("hud.coins_milestone", {"n": 1}, "n"), "1 mynt!", "singular at 1")
 	assert_eq(tm.tp("hud.coins_milestone", {"n": 21}, "n"), "21 mynt!", "Icelandic singular at 21")
 	assert_eq(tm.tp("hud.coins_milestone", {"n": 11}, "n"), "11 myntir!", "but not at 11")
-	assert_eq(tm.tp("menu.continue_detail", {"world": "Emberskógur", "owls": 4}, "owls"),
-		"Emberskógur · 4 uglur heima", "plural owls")
-	assert_eq(tm.tp("menu.continue_detail", {"world": "Emberskógur", "owls": 1}, "owls"),
-		"Emberskógur · 1 ugla heima", "singular owl")
+	# The owl count. This used to be pinned on menu.continue_detail, the caption
+	# under the menu's Play row -- and that row is gone: PLAY opens the map now,
+	# which is where "where was I" belongs. The same rule this file states two
+	# tests up applies to its own pins: you cannot pin grammar in a string nobody
+	# renders. The locked-door card is where a child meets an owl count now, and
+	# it inflects in the dative, which `bjarga` governs.
+	assert_eq(tm.tp("door.locked", {"n": 4}, "n"),
+		"Bjargaðu 4 uglum í viðbót!", "plural owls, dative")
+	assert_eq(tm.tp("door.locked", {"n": 1}, "n"),
+		"Bjargaðu 1 uglu í viðbót!", "singular owl, dative")
 
 	tm.set_locale("en")
 	assert_eq(tm.tp("hud.coins_milestone", {"n": 21}, "n"), "21 coins!", "English stays plural at 21")

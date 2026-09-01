@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b0crowclimbprobe"]
+
+[ext_resource type="Script" path="res://tests/integration/climb_probe.gd" id="1_climb"]
+
+[node name="ClimbProbe" type="Node"]
+script = ExtResource("1_climb")
