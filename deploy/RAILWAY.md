@@ -250,9 +250,18 @@ Then open `https://<web domain>/audio` and type it. That is the whole setup.
 
 Four things about it are deliberate:
 
-- **Unset means 404, not open.** `/audio` and all three endpoints behind it answer
-  exactly like routes that do not exist, so the page is unprobeable until the
-  owner switches it on. Same posture as `/admin`.
+- **Unset means 404, not open — on a deployed host.** `/audio` and all three
+  endpoints behind it answer exactly like routes that do not exist, so the page
+  is unprobeable until the owner switches it on. Same posture as `/admin`.
+
+  The condition is `CROW_ENV`, not the password alone. Every Railway service sets
+  it (`staging` or `production`, §2), so forgetting the password here fails
+  closed. On a developer's machine `CROW_ENV` is unset, and there an empty
+  password means the bench is **open** instead: `tools/audio_bench.ps1` starts it
+  with no gate at all, because choosing between takes is a hundred reloads
+  against a working copy and the thing being guarded is a folder of sound effects
+  the developer just generated. See `config.audio.open`, and
+  `server/test/audio_off.test.ts`, which exists to prove this exact line.
 - **It is NOT the admin token.** `CROW_ADMIN_TOKEN` guards aggregated data about
   real children; this guards a page that plays sound effects. One secret for both
   would mean handing the analytics surface to anyone the owner wants to play a

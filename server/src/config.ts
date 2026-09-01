@@ -19,6 +19,16 @@ function str(name: string, fallback: string): string {
     return raw === undefined || raw === '' ? fallback : raw;
 }
 
+/**
+ * Resolved ahead of the literal because these two decide each other.
+ *
+ * An empty audio password means two different things depending on where the
+ * process is running, and neither of them can be expressed without the other:
+ * "off" on a deployed host, "open" on a developer's machine. See `audio.open`.
+ */
+const environment = str('CROW_ENV', 'development');
+const audioPassword = str('CROW_AUDIO_PASSWORD', '');
+
 export const config = {
     /**
      * Railway routes to the service over its private network, which is IPv6.
@@ -29,7 +39,7 @@ export const config = {
     port: int('PORT', 8080),
 
     databaseUrl: process.env['DATABASE_URL'] ?? '',
-    environment: str('CROW_ENV', 'development'),
+    environment,
 
     errors: {
         /**
@@ -101,11 +111,33 @@ export const config = {
      *
      * Its own password rather than the admin token, because the two guard very
      * different things: the admin surface aggregates data about real children,
-     * this one plays the game's sound effects. Unset means /audio and everything
-     * under it answers 404 — off, not open.
+     * this one plays the game's sound effects.
+     *
+     * Unset means 404 on a deployed host — off, not open, the same posture the
+     * admin surface takes. On a developer's machine it means OPEN instead: see
+     * `open` below for why that is a different question rather than a laxer
+     * answer to the same one.
      */
     audio: {
-        password: str('CROW_AUDIO_PASSWORD', ''),
+        password: audioPassword,
+        /**
+         * No password required at all, because there is nobody to keep out.
+         *
+         * THE CONDITION IS THE ENVIRONMENT, NOT THE PASSWORD. "Empty means open"
+         * on its own would be a trapdoor: CROW_AUDIO_PASSWORD unset in Railway
+         * today means the page is off, and the same line of config would
+         * silently publish every sound endpoint to the open web instead. The
+         * failure would be invisible, because a page that loads looks correct.
+         *
+         * So the deployed default is unchanged and only a machine that has NOT
+         * been told where it is -- CROW_ENV unset, which no Railway service ever
+         * is -- opens the door. That is exactly the machine running
+         * tools/audio_bench.ps1 against a working copy, where the "secret" is a
+         * directory of sound effects the developer just generated.
+         *
+         * Setting a password still works everywhere, including here.
+         */
+        open: audioPassword === '' && environment === 'development',
         /** Attempts per IP per minute at the password form. */
         attemptsPerMinute: int('CROW_AUDIO_ATTEMPTS_PER_MIN', 10),
     },

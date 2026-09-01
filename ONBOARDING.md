@@ -122,7 +122,7 @@ shows you. Full-screen cards go in a `FitBox` for that reason, and
 | add or change a string | `npm run cms` — it edits both locales together and runs the guard on every save. Hand-editing the bundles still works; keep them key-for-key. |
 | add a level object type | one entry in `spawn_registry.json` + a scene with `setup_from_spawn(spawn)`. No `game.gd` change. |
 | add or replace a sound | [brand/SOUND_DESIGN.md](./brand/SOUND_DESIGN.md) — moment → `sound_events.json` → `audio_manifest.json` → the file |
-| hear every sound in a browser | `/audio` on the deployed web domain, password `CROW_AUDIO_PASSWORD` — see [deploy/RAILWAY.md](./deploy/RAILWAY.md) §2d |
+| hear every sound in a browser | `.	oolsudio_bench.ps1` locally (no password); or `/audio` on the deployed web domain with `CROW_AUDIO_PASSWORD` — see [deploy/RAILWAY.md](./deploy/RAILWAY.md) §2d |
 | regenerate the placeholder bank | `npm run audio:sfx` (synthesized, deterministic) |
 | commission real sounds | `npm run audio:gen -- --list`, then `--dry-run` before spending anything |
 | add a sprite | `python3 godot/tools/check_assets.py --spec`, then [the sprite contract](./ARCHITECTURE.md#the-sprite-contract) |

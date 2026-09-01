@@ -1,7 +1,7 @@
 # Start the sound bench at http://localhost:8099/audio, on this machine.
 #
-#   .\tools\audio_bench.ps1
-#   .\tools\audio_bench.ps1 -Password hunter2 -Port 9000
+#   .\tools\audio_bench.ps1                              # no password, straight in
+#   .\tools\audio_bench.ps1 -Password hunter2 -Port 9000  # with the real gate
 #
 # WHY THIS EXISTS. /audio normally runs on the deployed API, where the samples
 # were copied into the image and takes do not exist. While you are CHOOSING
@@ -15,9 +15,11 @@
 
 [CmdletBinding()]
 param(
-    # Anything you like. It gates the page in the same way CROW_AUDIO_PASSWORD
-    # gates it in production, so the page behaves identically to the deployed one.
-    [string]$Password = 'local',
+    # Empty by default: on this machine CROW_ENV is unset, so an empty password
+    # means the bench opens straight onto the sounds. Pass anything here to get
+    # the real gate instead, which is worth doing once before deploying because
+    # it is the only way to see the page behave as the deployed one does.
+    [string]$Password = '',
     [int]$Port = 8099,
     # Open the browser once the server answers.
     [switch]$NoBrowser
@@ -56,6 +58,9 @@ if (Test-Path $takes) {
 # Point every resolver at THIS working copy. Without these the server looks for
 # the layout it has inside the Docker image and finds nothing.
 $env:CROW_AUDIO_PASSWORD    = $Password
+# Left unset deliberately, and it is what makes an empty password mean "open"
+# rather than "off": see config.audio.open. A deployed host always sets it.
+$env:CROW_ENV               = ''
 $env:CROW_AUDIO_ROOT        = Join-Path $repo 'godot/assets/audio'
 $env:CROW_AUDIO_DATA_ROOT   = Join-Path $repo 'godot/data/audio'
 $env:CROW_SOUND_DESIGN_DOC  = Join-Path $repo 'brand/SOUND_DESIGN.md'
@@ -72,7 +77,11 @@ if (-not $env:LOG_LEVEL) { $env:LOG_LEVEL = 'warn' }
 $url = "http://localhost:$Port/audio"
 Write-Host ''
 Write-Host "  $url" -ForegroundColor Green
-Write-Host "  password: $Password"
+if ($Password -eq '') {
+    Write-Host '  password: none - open, because this is not a deployed host'
+} else {
+    Write-Host "  password: $Password"
+}
 Write-Host "  takes:    $takeCount waiting in output/audio-takes/"
 Write-Host '  Ctrl+C to stop.'
 Write-Host ''

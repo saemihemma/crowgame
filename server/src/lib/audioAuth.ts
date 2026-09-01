@@ -13,9 +13,14 @@ import { config } from '../config.js';
  *
  * Three choices worth stating:
  *
- *  - With CROW_AUDIO_PASSWORD unset, everything here answers 404, exactly like a
- *    route that does not exist. Off, not open, and unprobeable -- the same
- *    posture requireAdmin takes.
+ *  - With CROW_AUDIO_PASSWORD unset on a deployed host, everything here answers
+ *    404, exactly like a route that does not exist. Off, not open, and
+ *    unprobeable -- the same posture requireAdmin takes.
+ *  - With it unset on a developer's machine (CROW_ENV unset, so config.audio.open
+ *    is true), the gate is not there at all. Choosing between takes means
+ *    reloading this page a hundred times against a working copy, and a password
+ *    on that loop protects a folder of sound effects from the person who just
+ *    generated them.
  *  - The password is exchanged ONCE for a cookie. `<audio src>` cannot carry an
  *    Authorization header, so a bearer scheme would force every sample through a
  *    fetch-and-blob dance; a cookie makes the page ordinary HTML.
@@ -71,11 +76,14 @@ export function hasValidCookie(request: FastifyRequest): boolean {
 /**
  * Guard for everything behind the gate.
  *
- * 404 when the feature is off, 401 when it is on and the caller has no cookie —
- * so "is there an audio page here" is only answerable by someone who already
- * knows there is.
+ * Nothing when the bench is open, 404 when the feature is off, 401 when it is on
+ * and the caller has no cookie — so on any deployed host "is there an audio page
+ * here" is only answerable by someone who already knows there is.
  */
 export async function requireAudioSession(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+    // Open first, because "off" and "open" are the same empty password read in
+    // two different places. The environment decides which; see config.audio.open.
+    if (config.audio.open) return;
     if (config.audio.password === '') {
         return reply.code(404).send({ error: 'not found' });
     }

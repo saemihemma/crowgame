@@ -19,11 +19,21 @@ import { clearCookie, issueCookie, requireAudioSession, sameSecret } from '../li
 export async function registerAudioRoutes(app: FastifyInstance): Promise<void> {
     const gated = { preHandler: requireAudioSession };
 
+    // An unguarded surface should never be a thing you discover. This is the
+    // developer default and entirely intended, but it is written into the log so
+    // that a host which somehow reached it without meaning to says so out loud
+    // on the way up, rather than looking healthy and being open.
+    if (config.audio.open) {
+        app.log.warn('/audio is open: no CROW_AUDIO_PASSWORD, and CROW_ENV says development');
+    }
+
     // The page. Public bytes with zero data in them — every fetch it makes is
     // behind the cookie — but still 404 when the feature is off, matching the
     // off-not-open posture the admin surface takes.
     app.get('/audio', async (_request, reply) => {
-        if (config.audio.password === '') return reply.code(404).send({ error: 'not found' });
+        if (!config.audio.open && config.audio.password === '') {
+            return reply.code(404).send({ error: 'not found' });
+        }
         return reply.type('text/html; charset=utf-8').send(AUDIO_PAGE);
     });
 
@@ -43,6 +53,10 @@ export async function registerAudioRoutes(app: FastifyInstance): Promise<void> {
         },
         bodyLimit: 4 * 1024,
     }, async (request, reply) => {
+        // Already inside. The page never gets here -- it only draws the form
+        // after a 401 -- but an endpoint that 404s while the page it belongs to
+        // serves happily is a contradiction someone will eventually debug.
+        if (config.audio.open) return reply.send({ ok: true });
         if (config.audio.password === '') return reply.code(404).send({ error: 'not found' });
         const { password } = request.body as { password: string };
         if (!sameSecret(password, config.audio.password)) {

@@ -224,28 +224,12 @@ describe('audio review surface', () => {
 });
 
 /**
- * And the off switch, in its own process-level state.
+ * The off switch and the open door both live in their own files now.
  *
- * Kept separate because config.ts freezes the environment at import: proving
- * "unset means 404" in the same module as "set means 200" would need the module
- * graph reloaded, which node:test cannot do cleanly. This suite asserts the
- * BRANCH instead — that both routes consult the same emptiness check — which is
- * the part that can actually rot.
+ * This suite used to assert them by reading the source of the guard, because
+ * config.ts freezes the environment at import and one module cannot hold two
+ * configurations. A second FILE can: `node --test` gives each one its own
+ * process. See audio_off.test.ts (deployed, no password: 404) and
+ * audio_open.test.ts (developer machine, no password: open), which pin the
+ * behaviour instead of the shape of the code that produces it.
  */
-describe('audio review surface, switched off', () => {
-    it('answers 404 rather than 401 when no password is configured', async () => {
-        const { config } = await import('../src/config.ts');
-        // The live config has a password (set above), so read the source of the
-        // guard rather than the running app: every audio route must gate on the
-        // empty password before it gates on the cookie, or "is there an audio
-        // page here" becomes answerable by a stranger.
-        const { readFileSync } = await import('node:fs');
-        const auth = readFileSync(resolve(REPO, 'server', 'src', 'lib', 'audioAuth.ts'), 'utf8');
-        const routes = readFileSync(resolve(REPO, 'server', 'src', 'routes', 'audio.ts'), 'utf8');
-        assert.match(auth, /password === ''[\s\S]{0,120}404/,
-            'requireAudioSession answers 404 before it answers 401');
-        assert.equal((routes.match(/password === ''/g) ?? []).length, 2,
-            'the page and the login both check it too, since neither runs the preHandler');
-        assert.ok(config.audio.password !== undefined, 'the config exposes the switch');
-    });
-});

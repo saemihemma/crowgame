@@ -631,7 +631,10 @@ game's own samples and `brand/SOUND_DESIGN.md`. They are a **third** authorizati
 subject rather than a reuse of `admin`, and the reason is blast radius — `admin`
 aggregates data about real children, `audio` plays sound effects, and one secret
 for both would put the first behind whoever the owner wants to play a sound to.
-Unset `CROW_AUDIO_PASSWORD` and all five rows answer 404. The take row serves
+Unset `CROW_AUDIO_PASSWORD` on a deployed host and all five rows answer 404;
+unset it on a developer's machine, where `CROW_ENV` is also unset, and they are
+open instead (`config.audio.open`) — the gate is worth nothing on the machine
+that made the files, and everything on the one serving them to the internet. The take row serves
 `output/audio-takes/`, which is gitignored working material and is not in the
 deployed image, so it 404s there and the page simply shows no takes. Nothing in the game
 calls them.

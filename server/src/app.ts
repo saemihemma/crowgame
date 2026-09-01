@@ -45,7 +45,8 @@ export async function buildApp(): Promise<FastifyInstance> {
     await registerAdminRoutes(app);
     await registerReportRoutes(app);
     // The sound-review bench at /audio, and the three endpoints it calls. Off
-    // (404) unless CROW_AUDIO_PASSWORD is set; see lib/audioAuth.ts.
+    // (404) on a deployed host unless CROW_AUDIO_PASSWORD is set, and open with
+    // no password on a developer's machine; see config.audio.open.
     await registerAudioRoutes(app);
 
     // The dashboard shell. Public bytes with zero data in them — every fetch it
