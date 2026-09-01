@@ -76,6 +76,19 @@ const THEMES = join(ROOT, 'godot/data/themes');
 const BASE = process.env.CROW_ELEVENLABS_BASE ?? 'https://api.elevenlabs.io';
 
 const ENDPOINT = `${BASE}/v1/sound-generation`;
+
+/**
+ * THE PROMPT BUDGET, and it is a hard API limit rather than a style preference:
+ * /v1/sound-generation rejects anything over 450 characters outright, with
+ * `text_too_long` and no partial credit. /v1/music is a different model with a
+ * different cap (4100), so a song is never in danger and only the effects are.
+ *
+ * 450 is small. It is roughly two sentences of house style, one of family
+ * character, and whatever is left for the sound itself -- which is why
+ * `buildPrompt` spends it in priority order rather than assembling a string and
+ * hoping. Both numbers were measured against the live API, not read off a page.
+ */
+const MAX_SFX_PROMPT = 450;
 /**
  * The music endpoint is a DIFFERENT model and a different shape.
  *
@@ -94,13 +107,20 @@ const MUSIC_ENDPOINT = `${BASE}/v1/music`;
  * Text-to-audio models drift toward cinema: everything arrives big, wet and
  * three seconds long. Every clause here is load-bearing against that, and they
  * are the same rules brand/SOUND_DESIGN.md states for a human.
+ *
+ * TERSE ON PURPOSE. This block used to read like prose and spent 300 of the 450
+ * characters available, which left nothing for the sound itself. Every
+ * constraint it made is still made -- audience, dryness, warmth, no speech,
+ * instant onset -- in a third of the room. A generator is not the reader who
+ * needs a sentence to flow, and brand/SOUND_DESIGN.md still keeps the long form
+ * for the reader who does.
  */
 const HOUSE = [
-    'Children\'s video game sound effect for ages 5 to 8.',
-    'Clean, dry, close-miked, mono, no reverb, no room, no music bed.',
-    'Warm and friendly, never harsh, never startling, never scary.',
-    'No speech, no voice, no animal cries, no cinematic impact, no sub-bass boom.',
-    'Starts immediately with no silence at the front.',
+    'Game sound effect for children aged 5-8.',
+    'Dry, close, mono, no reverb, no music.',
+    'Warm, never harsh or scary.',
+    'No speech, no animal cry, no boom.',
+    'Starts instantly.',
 ].join(' ');
 
 /**
@@ -108,13 +128,28 @@ const HOUSE = [
  * the part that makes forty separate generations sound like one game.
  */
 const FAMILY_STYLE = {
-    BODY: 'The character is a small WIND-UP TIN BIRD: felt, soft metal, a tiny servo motor. '
-        + 'Mechanical but toy-like and lovable. Mid-low, dry, physical. Not a real bird, not a weapon.',
-    WORLD: 'A storybook world object: wood, air, glass, leaves or water. '
-        + 'Soft-edged and slightly distant, sitting behind the action rather than on top of it.',
-    VOICE: 'A tuned percussion instrument: glockenspiel, celeste, music box or marimba. '
-        + 'Bell-like with a natural decay, in C major pentatonic, warm and musical.',
-    OTHER: 'Soft, musical and unobtrusive.',
+    BODY: 'A small wind-up tin bird: felt, soft metal, tiny servo. '
+        + 'Toy-like, mid-low, dry, physical. Not a real bird, not a weapon.',
+    WORLD: 'A storybook object: wood, air, glass, leaves or water. '
+        + 'Soft-edged, distant, behind the action.',
+    VOICE: 'Tuned percussion: glockenspiel, celeste or music box. '
+        + 'Bell-like, natural decay, C major pentatonic.',
+    OTHER: 'Soft, musical, unobtrusive.',
+};
+
+/**
+ * The tail clauses, named so their cost against MAX_SFX_PROMPT is countable.
+ *
+ * These outrank the brief. A looping bed that arrives as a one-shot is unusable
+ * whatever else the prompt said, and the two CRITICAL rails are in the file
+ * precisely because the model ignores them when they are buried -- so they are
+ * reserved out of the budget first and the brief takes what is left.
+ */
+const LOOPING = 'A continuous even texture: no beginning, no end, no dominant event, seamlessly loopable.';
+const ONE_SHOT = 'One single short event, not a sequence or loop.';
+const CRITICAL = {
+    wrong: 'CRITICAL: not failure. No buzzer, no descending wah, no error tone. Flat, low, soft, short.',
+    door_locked: 'CRITICAL: not a buzzer, not an error. Two gentle knocks on warm wood.',
 };
 
 // ── reading the design ───────────────────────────────────────────────────────
@@ -291,24 +326,67 @@ function buildMusicPrompt(job) {
     ].join(' ');
 }
 
+/**
+ * As much of the brief as the budget has left, cut at a sentence boundary.
+ *
+ * A half-sentence is worse than no sentence: "a soft wooden knock, then a" tells
+ * the model to make something it cannot finish. So whole sentences are kept
+ * while they fit and the rest is dropped, in the order the doc wrote them --
+ * the first sentence of a brief is reliably the one describing the sound, and
+ * the later ones are reliably the qualifications.
+ */
+function fitBrief(fixed, brief) {
+    let room = MAX_SFX_PROMPT - fixed - 1;
+    const kept = [];
+    for (const sentence of brief.split(/(?<=[.!?])\s+/)) {
+        if (!sentence.trim()) continue;
+        const cost = sentence.length + (kept.length ? 1 : 0);
+        if (cost > room) break;
+        kept.push(sentence);
+        room -= cost;
+    }
+    return kept.join(' ');
+}
+
+/**
+ * The prompt, assembled in priority order against MAX_SFX_PROMPT.
+ *
+ * The rails -- house style, family character, the moment, loop-or-one-shot, and
+ * a CRITICAL note where there is one -- are reserved first, because each of them
+ * changes what the model makes rather than merely describing it. The brief then
+ * takes whatever is left. That ordering is the whole design: when a prompt runs
+ * out of room it loses detail about the sound, never the rules that keep fifty
+ * separate generations sounding like one game.
+ */
 function buildPrompt(job) {
     if (job.family === 'MUSIC') return buildMusicPrompt(job);
-    const parts = [HOUSE, FAMILY_STYLE[job.family], job.moment + '.', promptableBrief(job.brief)];
-    if (job.looping) {
-        parts.push('A CONTINUOUS LOOPING TEXTURE with no beginning and no end: '
-            + 'even, steady, no single dominant event, so it can be cut and cross-faded into a seamless loop.');
-    } else {
-        parts.push('One single short event, not a sequence and not a loop.');
+
+    const head = [HOUSE, FAMILY_STYLE[job.family], job.moment + '.'];
+    const tail = [job.looping ? LOOPING : ONE_SHOT, CRITICAL[job.key]].filter(Boolean);
+
+    const fixed = [...head, ...tail].join(' ').length;
+    // A job whose rails alone do not fit is a bug in the rails, not a prompt to
+    // send: the API would take the money for a 400. Fail here, where --dry-run
+    // finds it, rather than at request time.
+    if (fixed >= MAX_SFX_PROMPT) {
+        throw new Error(`${job.key}: rails alone are ${fixed} chars, over the ${MAX_SFX_PROMPT} limit.`);
     }
-    // The two rails from the doc that a model will otherwise ignore.
-    if (job.key === 'wrong') {
-        parts.push('CRITICAL: this must NOT sound like failure. No buzzer, no descending "wah", '
-            + 'no error tone. Flat in pitch, low, soft and short. A child hears it hundreds of times.');
+
+    const brief = promptableBrief(job.brief);
+    const kept = fitBrief(fixed, brief);
+    if (brief && !kept) {
+        // THE FAMILY YIELDS TO THE BRIEF when there is only room for one, and the
+        // ambience beds are why. Their whole identity lives in the brief -- "a
+        // crystal cave, low room tone, occasional glass drips" -- while the WORLD
+        // style says only "a storybook object, soft-edged, distant". Squeeze the
+        // brief out of all five and they become the same prompt under five names,
+        // which is the one outcome worse than losing the house voice on one job.
+        const bare = [HOUSE, job.moment + '.'];
+        const rescued = fitBrief([...bare, ...tail].join(' ').length, brief);
+        if (rescued) return [...bare, rescued, ...tail].join(' ');
     }
-    if (job.key === 'door_locked') {
-        parts.push('CRITICAL: not a buzzer and not an error. Two gentle knocks on warm wood.');
-    }
-    return parts.filter(Boolean).join(' ');
+
+    return [...head, kept, ...tail].filter(Boolean).join(' ');
 }
 
 // ── generating ───────────────────────────────────────────────────────────────
