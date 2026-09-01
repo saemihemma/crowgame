@@ -85,11 +85,25 @@ def scan() -> list:
 
 
 AUDIO_EVENTS = os.path.join(os.path.dirname(__file__), "..", "data", "audio", "sound_events.json")
-EVENT_CALL_RE = re.compile(r'play_event\(\s*"([a-z_]+)"\s*\)')
+
+# The event is always the FIRST argument, on every entry point AudioManager has.
+#
+# That is a deliberate shape rather than a coincidence: the guard has to be able
+# to read the moment out of a call site without parsing GDScript, so the API is
+# arranged so one regex can. It also cannot end at the closing paren any more --
+# `play_event("streak", {"pitch_step": n})` is a legitimate call, and matching
+# `"x")` reported it as an event nobody fires.
+EVENT_CALL_RE = re.compile(
+	r'\b(?:play_event|play_event_at|attach_loop)\(\s*"([a-z_]+)"')
 
 
 def check_audio_events() -> list:
-	"""Every play_event key is registered, and every registered event has a caller.
+	"""Every event key a script fires is registered, and every registered event has a caller.
+
+	"Fires" means any of AudioManager's three moment entry points --
+	play_event (a sound with no place), play_event_at (a sound somewhere in the
+	world) and attach_loop (a proximity loop that lives as long as its node).
+	All three take the event first so this can read them without parsing.
 
 	Rule 6 above funnels sound through play_event, which is the right shape and
 	silent about the thing that actually breaks: `AudioManager.play_event` does
@@ -143,13 +157,13 @@ def audio_problems(registered: set, called: dict) -> list:
 	for key in sorted(set(called) - registered):
 		for rel, i in called[key]:
 			problems.append(
-				"%s:%d  play_event(\"%s\") names no event in data/audio/sound_events.json "
+				"%s:%d  names no event in data/audio/sound_events.json: \"%s\" "
 				"-- AudioManager.play_event returns silently on an unknown key, so this is "
 				"a sound that never plays" % (rel, i, key))
 
 	for key in sorted(registered - set(called)):
 		problems.append(
-			"data/audio/sound_events.json: event \"%s\" has no play_event caller in "
+			"data/audio/sound_events.json: event \"%s\" is fired by nothing in "
 			"godot/scripts -- either wire it up or remove the registration" % key)
 
 	return problems

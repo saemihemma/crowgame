@@ -28,6 +28,11 @@ func configure(w: float, h: float) -> void:
 func _ready() -> void:
 	configure(_pending.x, _pending.y)
 	body_entered.connect(_on_body_entered)
+	# Spikes are drawn as small triangles at the bottom of a zone and they are
+	# easy to miss on a tablet held at arm's length. A short attenuation (200px)
+	# keeps this a WARNING rather than a soundscape: you hear it about a jump
+	# before you are on it, and nowhere else in the level.
+	AudioManager.attach_loop("amb_hazard", self)
 
 func _draw_spikes() -> void:
 	# Row of triangles along the bottom of the zone.

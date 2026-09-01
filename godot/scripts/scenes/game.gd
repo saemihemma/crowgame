@@ -115,6 +115,11 @@ func _apply_level_theme(key: String) -> void:
 		return
 	if ThemeManager.get_theme_id() != theme_id:
 		ThemeManager.set_theme(theme_id)
+	# THE BED IS A PROPERTY OF THE PLACE, so it is named in the theme beside that
+	# world's palette rather than per level. Levels 1 and 6 are both Emberwood and
+	# share a track already; without this they would still have sounded like two
+	# different forests, because the track is the only thing they shared.
+	AudioManager.play_bed(String(ThemeManager.get_theme().get("ambience", "")))
 
 
 ## Build a level, from either direction into it.
@@ -184,7 +189,16 @@ func _load_level(key: String) -> void:
 	SaveManager.set_current_level(key)
 	_spawn_entities()
 	_setup_camera()
+	# ONE TRACK PER WORLD, from the theme, with the level able to override it.
+	#
+	# The registry used to name a track per level, and the mapping was already
+	# strictly per theme -- all three Emberwood levels named level_01_music -- so
+	# the names described the wrong thing and levels 6-8 were right only because
+	# the author repeated himself. _apply_level_theme has run by here (line above),
+	# so the theme is the one this level is actually dressed in.
 	var music := String(entry.get("music", ""))
+	if music == "":
+		music = String(ThemeManager.get_theme().get("music", ""))
 	if music != "":
 		AudioManager.play_music(music)
 	EventBus.coins_changed.emit(coin_count)
@@ -496,8 +510,13 @@ func _toggle_pause() -> void:
 	# Same reason as the maths board: the pads sit under the pause card and would
 	# still take a thumb through it.
 	_set_touch_visible(false)
-	_pause_overlay.tree_exited.connect(func(): _set_touch_visible(true))
+	_pause_overlay.tree_exited.connect(func():
+		_set_touch_visible(true)
+		AudioManager.play_event("pause_close")
+		AudioManager.duck_music(false))
 	add_child(_pause_overlay)
+	AudioManager.play_event("pause_open")
+	AudioManager.duck_music(true)
 	get_tree().paused = true
 
 func award_enemy_coins(amount: int) -> void:
@@ -550,7 +569,13 @@ func _streak_toast() -> void:
 	var vw := float(ProjectSettings.get_setting("display/window/size/viewport_width"))
 	var key := "fx.streak_on_fire" if hot else "fx.streak_count"
 	DopamineFX.number_fly_up(layer, Vector2(vw * 0.5, 96.0), TextManager.t(key, [streak]))
-	AudioManager.play_event("milestone")
+	# THE STREAK IS AUDIBLE, and it climbs with itself: pitch_step walks `streak`
+	# up the sound's pentatonic ladder in audio_manifest.json, so answer four in a
+	# row and the toast rises four times. It used to borrow `milestone`, which is
+	# also the level-up sound -- so "you got three right" and "you levelled up"
+	# were the same event to the ear, and the one a child hears far more often was
+	# the one wearing the other's clothes.
+	AudioManager.play_event("streak", {"pitch_step": streak - 1})
 
 func _on_owl_saved() -> void:
 	_owls_freed += 1
@@ -770,6 +795,10 @@ func transition_to_level(target_level: String) -> void:
 	LevelManager.transition_to(target_level)
 	if target_level == "__complete__":
 		AudioManager.stop_music()
+		# The bed goes with it. The completion screen is not a place in the world,
+		# and leaving a forest breathing behind a fanfare is the one moment where
+		# ambience reads as a bug rather than as atmosphere.
+		AudioManager.stop_bed()
 		call_deferred("_show_completion_screen")
 		return
 	# Arriving somewhere new is its own moment. `door` marks getting CLOSE to the
@@ -941,6 +970,8 @@ func launch_math_challenge(problem: Dictionary, opts: Dictionary) -> void:
 	_math_challenge = MATH_CHALLENGE_SCENE.instantiate()
 	add_child(_math_challenge)
 	_math_challenge.closed.connect(_on_challenge_closed)
+	AudioManager.play_event("board_open")
+	AudioManager.duck_music(true)
 	_set_touch_visible(false)
 	_settle_camera_for_overlay()
 	if _player:
@@ -987,6 +1018,8 @@ func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable,
 		return false
 	_math_tutorial = MATH_TUTORIAL_SCENE.instantiate()
 	add_child(_math_tutorial)
+	AudioManager.play_event("lesson_open")
+	AudioManager.duck_music(true)
 	_math_tutorial.closed.connect(func(payload: Dictionary):
 		_math_tutorial = null
 		# Hand the screen back to whatever was under the lesson. When the help
@@ -995,6 +1028,7 @@ func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable,
 		# where a thumb reaching for an answer jumps instead.
 		if not is_math_challenge_active():
 			_set_touch_visible(true)
+			AudioManager.duck_music(false)
 			if _player:
 				_player.set_physics_process(true)
 		if on_closed.is_valid():
@@ -1010,5 +1044,10 @@ func launch_math_tutorial(tutorial: Dictionary, on_closed: Callable,
 func _on_challenge_closed() -> void:
 	_math_challenge = null
 	_set_touch_visible(true)
+	# Only if the board was the last thing up: the help button can leave a lesson
+	# open over a closing question, and lifting the duck under it would swell the
+	# level's track back in under a card that is still being read.
+	if not is_math_tutorial_active():
+		AudioManager.duck_music(false)
 	if _player:
 		_player.set_physics_process(true)

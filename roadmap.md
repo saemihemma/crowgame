@@ -435,17 +435,30 @@ tuning-driven logic that decides when they appear (`math_tuning.json`
 the drawn primitives as the shipped look — for badges, pips, the golden
 frame, and the recap panel, wired in both `src/` and `godot/`.
 
-### The SFX are generated, not authored
-`tools/gen_sfx.py` synthesizes every effect procedurally. They are committed and
-they work, but they are placeholders in tone.
+### The audio bank is synthesized, not recorded
+`tools/gen_sfx.py` synthesizes every effect and every ambience bed procedurally.
+They are committed, they work, and they are now built to the design rather than
+merely present: `brand/SOUND_DESIGN.md` states the three families, the one scale
+and the strict reward ladder, and the generator follows all three. What a
+placeholder still lacks is TIMBRE — a synthesized bell is not a glockenspiel.
 
-The brief now exists: `brand/SOUND_DESIGN.md` lists every moment in the game,
-which file fires it, and how it should sound, and the swap procedure is copying
-a file over the old one — no code, manifest or registry change. So this is a
-commission, not an engineering task.
+Everything an engineer can do is done. The swap is one `cp` per file, `/audio`
+plays the whole bank in a browser at the volume the game uses, and
+`npm run audio:gen` turns each moment's brief into ElevenLabs prompts and lands
+takes in `output/audio-takes/` for review. So this is a commission and a
+listening pass, not an engineering task.
 
-*Done when:* someone decides whether these are the shipping sounds, and if not,
-whose they are.
+Two files carry a decision rather than a to-do:
+
+- **`title.mp3` is a byte-identical copy of `level_01.mp3`.** It has had its own
+  manifest key since the audio system was written precisely so it could be
+  replaced alone, and it never has been.
+- **The five music tracks are CC-BY 3.0** (CodeManu, see
+  `LICENSE_ATTRIBUTIONS.md`) and are the only licensing obligation in the audio
+  tree. Replacing them removes it.
+
+*Done when:* someone decides whether the synthesized bank is the shipping sound
+and, if not, whose it is — and the two music facts above are settled either way.
 
 ---
 

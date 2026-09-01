@@ -1,26 +1,59 @@
 {
-  "_comment": "Gameplay event -> sfx key (in audio_manifest.json). Call AudioManager.play_event('coin'); re-map a sound by editing here, no code change. brand/SOUND_DESIGN.md says what each moment is and how it should sound. godot/tools/check_hardcoding.py checks BOTH directions: every event a script fires is registered here, and every event registered here has a caller.",
-  "coin": "coin_collect",
+  "_comment": "Gameplay MOMENT -> sfx key (in audio_manifest.json). Call AudioManager.play_event('coin'), play_event_at('enemy_defeat', node) for something with a place in the world, or attach_loop('amb_roach', node) for a proximity loop; re-map a sound by editing here, no code change. brand/SOUND_DESIGN.md says what each moment is and how it should sound. godot/tools/check_hardcoding.py checks BOTH directions: every moment a script fires is registered here, and every moment registered here has a caller.",
+
   "jump": "player_jump",
   "land": "land",
-  "hurt": "hurt",
-  "enemy_defeat": "enemy_death",
+  "step": "step",
   "shoot": "laser_shoot",
+
+  "coin": "coin_collect",
+  "big_coin": "big_coin",
+  "big_coin_all": "big_coin_all",
+
+  "hurt": "hurt",
+  "player_die": "player_die",
+
+  "enemy_defeat": "enemy_death",
+  "enemy_charge": "enemy_charge",
+  "enemy_spit": "enemy_spit",
+  "spit_land": "spit_land",
+
   "owl_greet": "owl_greet",
   "owl_saved": "owl_saved",
-  "door": "door",
-  "button": "button",
+  "chain_break": "chain_break",
+  "wing": "wing",
+
+  "board_open": "board_open",
+  "board_close": "board_close",
   "answer_correct": "correct",
   "answer_wrong": "wrong",
+  "answer_reveal": "answer_reveal",
+  "comeback": "comeback",
+  "golden": "golden",
+  "streak": "streak",
+  "lesson_open": "lesson_open",
+  "lesson_card": "lesson_card",
+
+  "door": "door",
+  "door_locked": "door_locked",
+  "level_enter": "level_enter",
   "level_complete": "level_complete",
   "ability": "ability",
   "milestone": "milestone",
-  "golden": "golden",
-  "player_die": "player_die",
-  "level_enter": "level_enter",
-  "chain_break": "chain_break",
+
+  "button": "button",
   "button_focus": "button_focus",
-  "door_locked": "door_locked",
-  "big_coin": "big_coin",
-  "big_coin_all": "big_coin_all"
+  "ui_hover": "ui_hover",
+  "ui_back": "ui_back",
+  "toggle_on": "toggle_on",
+  "toggle_off": "toggle_off",
+  "pause_open": "pause_open",
+  "pause_close": "pause_close",
+
+  "amb_roach": "roach_skitter",
+  "amb_puddle": "puddle_bubble",
+  "amb_hazard": "spike_hiss",
+  "amb_door": "door_hum",
+  "amb_big_coin": "big_coin_shimmer",
+  "amb_owl": "owl_rustle"
 }

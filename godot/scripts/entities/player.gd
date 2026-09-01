@@ -44,6 +44,11 @@ var _shape := Vector2.ONE
 var _shape_target := Vector2.ONE
 var _land_tween: Tween = null
 var _was_on_floor := true
+## Footsteps are measured in DISTANCE, not in time: a step every N pixels of
+## ground travel stays in step with the walk cycle at any speed, so sprinting
+## speeds the steps up for free and nothing has to know that sprint exists.
+@onready var STEP_DISTANCE: float = Config.ui("player/step_distance_px", 46.0)
+var _step_travel := 0.0
 
 @onready var _sprite: AnimatedSprite2D = $Sprite
 @onready var _body: CollisionShape2D = $CollisionShape2D
@@ -220,6 +225,8 @@ func _physics_process(delta: float) -> void:
 			and fall_speed >= float(Config.fx("land_min_fall_speed", 220.0)):
 		AudioManager.play_event("land")
 
+	_update_footsteps(delta)
+
 	if input["left"]:
 		_facing = -1
 	elif input["right"]:
@@ -301,6 +308,23 @@ func _land_squash() -> void:
 	_land_tween.tween_property(_sprite, "scale", overshoot, squash_s).set_ease(Tween.EASE_OUT)
 	_land_tween.tween_property(_sprite, "scale", Vector2.ONE, settle_s).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	_land_tween.tween_callback(func(): _shape = Vector2.ONE)
+
+## One step per STEP_DISTANCE of ground covered.
+##
+## The crow used to move in silence, which is why the world felt like a diorama
+## rather than a place: nothing acknowledged the child's own input between the
+## jump and the landing. The travel counter resets in the air so stepping off a
+## ledge and back on does not fire a step it has not earned.
+func _update_footsteps(delta: float) -> void:
+	if not is_on_floor() or absf(velocity.x) <= WALK_SPEED_THRESHOLD:
+		_step_travel = 0.0
+		return
+	_step_travel += absf(velocity.x) * delta
+	if _step_travel < STEP_DISTANCE:
+		return
+	_step_travel = 0.0
+	AudioManager.play_event("step")
+
 
 func _on_jumped() -> void:
 	AudioManager.play_event("jump")

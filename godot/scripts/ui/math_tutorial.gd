@@ -140,12 +140,14 @@ func advance() -> void:
 		_finish(false)
 		return
 	_index += 1
+	AudioManager.play_event("lesson_card")
 	_render()
 
 func back() -> void:
 	if _done or _index == 0:
 		return
 	_index -= 1
+	AudioManager.play_event("lesson_card")
 	_render()
 
 ## The child's own way out, available from the first card. Recorded as skipped

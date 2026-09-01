@@ -1,73 +1,325 @@
 #!/usr/bin/env python3
-"""Procedurally synthesize Crow's UI/gameplay SFX as small 16-bit mono WAVs.
-
-Original by construction (no third-party samples → no licensing concerns),
-deterministic, tiny, and re-generatable. Kid-first sound design: bright and
-friendly; the "wrong" cue is gentle and low (never a harsh buzzer — pedagogy
-rail: mistakes are not punished).
+"""Synthesize every placeholder sound in Hörmann, in the shape the design asks for.
 
 Run: python3 tools/gen_sfx.py
-Writes one WAV per entry in SOUNDS to godot/assets/audio/sfx/. They are
-committed, because godot/data/audio/audio_manifest.json declares them as
-required assets and tools/validate_assets.js fails without them.
 
-These are PLACEHOLDERS with the right shape, not final sound design. Every one
-of them is meant to be replaced by dropping a real file over it — same name,
-same folder — with no code, manifest or registry change. brand/SOUND_DESIGN.md
-is the brief: what each moment is, when it fires, and how it should sound.
+Writes one file per entry in SOUNDS / LOOPS / BEDS, under
+godot/assets/audio/sfx/ and godot/assets/audio/ambience/. They are committed,
+because audio_manifest.json declares them as required assets and
+tools/validate_assets.js fails without them.
+
+WHAT THESE ARE. Placeholders, original by construction (no third-party samples,
+so no licensing question), deterministic, tiny, and re-generatable. Every one is
+meant to be REPLACED by dropping a real file over it -- same name, same folder,
+no code, manifest or registry change. brand/SOUND_DESIGN.md is the brief.
+
+WHAT THEY ARE NOT. Not "the right shape, roughly". The previous generation was a
+bank of square-wave chirps: correct wiring, no design. These are built to the
+three rules the doc states, so that the placeholder bank is already the design
+and the real files replace its TIMBRE rather than its structure:
+
+  1. THREE FAMILIES, told apart with your eyes shut.
+     BODY  the crow. Mechanism: felt, servo, tin. Mid-low, dry, unpitched.
+     WORLD things that are not you. Wood, air, glass, water. Softer, further.
+     VOICE reward, maths and UI. Pitched instruments, always, and the only
+           family allowed a melody.
+
+  2. ONE SCALE, AND IT CANNOT BE WRONG. Every pitched sound draws from C major
+     pentatonic and nothing else. A pentatonic set has no semitone in it, so no
+     cue can land sour against a music bed nobody has written yet -- which is the
+     whole reason to pick one before the music exists.
+
+  3. THE LADDER IS STRICT. Each reward tier is longer AND louder than the one
+     below it, and no two tiers share a shape. That ordering is what makes a big
+     coin unmistakable from a coin at the moment a six-year-old hears it, and it
+     is enforced here by construction (see TIER).
 """
-import math, os, struct, wave
+import math
+import os
+import random
+import struct
+import wave
 
-SR = 44100
+SR = 44100          # one-shots
+SR_LOOP = 22050     # loops and beds: longer, quieter, and nothing above 8 kHz
+
 _ROOT = os.path.join(os.path.dirname(__file__), "..")
-# The Godot tree is the only runtime that ships.
-OUTS = [
-    os.path.join(_ROOT, "godot", "assets", "audio", "sfx"),
-]
+SFX_DIR = os.path.join(_ROOT, "godot", "assets", "audio", "sfx")
+AMB_DIR = os.path.join(_ROOT, "godot", "assets", "audio", "ambience")
+
+# ── The scale ────────────────────────────────────────────────────────────────
+# C major pentatonic, C4..G7. Named so a sound reads as music in the source.
+C4, D4, E4, G4, A4 = 261.63, 293.66, 329.63, 392.00, 440.00
+C5, D5, E5, G5, A5 = 523.25, 587.33, 659.25, 783.99, 880.00
+C6, D6, E6, G6, A6 = 1046.50, 1174.66, 1318.51, 1567.98, 1760.00
+C7, E7, G7 = 2093.00, 2637.02, 3135.96
+C3, G3 = 130.81, 196.00
+
+# ── The loudness ladder ─────────────────────────────────────────────────────
+# Peak each sound is normalised to. Ordering IS the design: a tier may never be
+# louder than the tier above it, and audio_manifest.json's per-key `volume` then
+# does the fine mix on top. Kept as one table so the ordering is checkable by
+# reading rather than by listening to twenty files in turn.
+TIER = {
+    "whisper": 0.10,   # ambience, hover
+    "tick": 0.22,      # focus rings, footsteps, page turns
+    "click": 0.34,     # buttons, small world detail
+    "body": 0.46,      # the crow moving, world events
+    "pickup": 0.58,    # a coin
+    "win": 0.68,       # a right answer
+    "prize": 0.76,     # a big coin, a milestone, an owl freed
+    "fanfare": 0.86,   # 3/3, a comeback, a run finished
+}
 
 
-def _env(i, n, attack=0.01, decay=None):
-    # Quick linear attack + exponential decay; avoids click at start/end.
-    a = max(1, int(attack * SR))
+# ── Generators ───────────────────────────────────────────────────────────────
+
+def _env(i, n, attack=0.004, decay=5.0):
+    """Quick attack, exponential decay. The attack is what stops the click."""
+    a = max(1, int(attack * SR_CUR[0]))
     if i < a:
         return i / a
     t = (i - a) / max(1, n - a)
-    d = 5.0 if decay is None else decay
-    return math.exp(-d * t)
+    return math.exp(-decay * t)
 
 
-def tone(freq, dur, vol=0.6, wave_kind="sine", decay=None):
-    n = int(dur * SR)
-    out = []
-    for i in range(n):
-        ph = 2 * math.pi * freq * (i / SR)
-        if wave_kind == "square":
-            s = 1.0 if math.sin(ph) >= 0 else -1.0
-        elif wave_kind == "saw":
-            s = 2.0 * ((freq * i / SR) % 1.0) - 1.0
-        else:
-            s = math.sin(ph)
-        out.append(s * vol * _env(i, n, decay=decay))
+def _fade(samples, ms=6.0):
+    """Fade the very ends to zero. Belt and braces against a DC click."""
+    n = max(1, int(ms / 1000.0 * SR_CUR[0]))
+    out = list(samples)
+    for i in range(min(n, len(out))):
+        k = i / n
+        out[i] *= k
+        out[-1 - i] *= k
     return out
 
 
-def chirp(f0, f1, dur, vol=0.6, wave_kind="sine"):
-    n = int(dur * SR)
+SR_CUR = [SR]  # the rate the current bank is being written at
+
+
+def sine(freq, dur, vol=0.6, decay=5.0, attack=0.004, vibrato=0.0, vib_hz=6.0):
+    n = int(dur * SR_CUR[0])
     out = []
+    ph = 0.0
     for i in range(n):
-        t = i / n
-        f = f0 + (f1 - f0) * t
-        ph = 2 * math.pi * f * (i / SR)
-        s = (1.0 if math.sin(ph) >= 0 else -1.0) if wave_kind == "square" else math.sin(ph)
-        out.append(s * vol * _env(i, n))
+        f = freq * (1.0 + vibrato * math.sin(2 * math.pi * vib_hz * i / SR_CUR[0]))
+        ph += 2 * math.pi * f / SR_CUR[0]
+        out.append(math.sin(ph) * vol * _env(i, n, attack, decay))
     return out
 
 
-def noise(dur, vol=0.5, decay=8.0):
-    import random
-    rng = random.Random(1234)
-    n = int(dur * SR)
-    return [(rng.uniform(-1, 1)) * vol * _env(i, n, decay=decay) for i in range(n)]
+def glide(f0, f1, dur, vol=0.6, decay=4.0, attack=0.004, shape="sine"):
+    """One note sliding to another. Exponential in pitch, so it reads musical."""
+    n = int(dur * SR_CUR[0])
+    out = []
+    ph = 0.0
+    for i in range(n):
+        t = i / max(1, n - 1)
+        f = f0 * pow(f1 / f0, t)
+        ph += 2 * math.pi * f / SR_CUR[0]
+        s = math.sin(ph)
+        if shape == "tri":
+            s = 2.0 / math.pi * math.asin(max(-1.0, min(1.0, s)))
+        elif shape == "saw":
+            s = 2.0 * ((ph / (2 * math.pi)) % 1.0) - 1.0
+        out.append(s * vol * _env(i, n, attack, decay))
+    return out
+
+
+# ── The reward instruments ───────────────────────────────────────────────────
+#
+# One modal synth, four voices. This is the part of the bank a text-to-audio
+# generator cannot do, and the reason it is worth doing properly here: those
+# models have no concept of pitch, and every reward in this game has to land on a
+# named note in a named scale (§2). So BODY and WORLD are placeholders waiting for
+# recordings, and VOICE is the finished article.
+#
+# What separates a bell from a beep, in the order the difference matters:
+#
+#  1. INHARMONIC PARTIAL RATIOS. A struck free-free metal bar resonates at
+#     1 : 2.76 : 5.40 : 8.93 : 13.34 — nothing like the integer series of a
+#     string. That spacing IS the metallic quality; get it wrong and no amount of
+#     envelope shaping rescues it.
+#  2. TWO DETUNED POLARISATIONS. A real bar vibrates in two planes at very
+#     slightly different frequencies, and the beating between them is the slow
+#     shimmer every real glockenspiel has and every sine stack lacks. Under a
+#     Hertz of detune, and it is the single largest realism win in this file.
+#  3. PER-PARTIAL DECAY. High modes die first, steeply. A bell whose partials all
+#     decay together sounds like an organ.
+#  4. THE MALLET. A few milliseconds of band-limited noise, pitched by how hard
+#     the mallet is: plastic is bright, felt is not.
+#  5. A RESONATOR, where the instrument has one. A glockenspiel bar is bare; a
+#     celeste and a marimba sit over tubes, and that is most of their warmth.
+VOICES = {
+    # Bright, bare, short. The coin family and every UI tick.
+    "glock": dict(
+        ratios=(1.0, 2.756, 5.404, 8.933, 13.34),
+        amps=(1.0, 0.30, 0.13, 0.06, 0.03),
+        decays=(1.0, 2.1, 3.4, 5.0, 7.0),
+        mallet=4200, mallet_amt=0.13, detune=0.7, body=0.10),
+    # Warmer and rounder, nearly harmonic, with a resonator under it. Everything
+    # that has to feel kind: a right answer, the reveal, an owl going home.
+    "celeste": dict(
+        ratios=(1.0, 2.0, 3.01, 4.16, 5.43),
+        amps=(1.0, 0.42, 0.20, 0.09, 0.04),
+        decays=(1.0, 1.6, 2.4, 3.4, 4.6),
+        mallet=2200, mallet_amt=0.07, detune=0.45, body=0.22),
+    # Tiny, glassy, and mechanical. The interface: a comb tooth being plucked.
+    "musicbox": dict(
+        ratios=(1.0, 3.01, 6.21, 10.4),
+        amps=(1.0, 0.24, 0.10, 0.05),
+        decays=(1.0, 2.6, 4.2, 6.0),
+        mallet=5200, mallet_amt=0.18, detune=1.1, body=0.05),
+    # Wooden and dark, with the deepest resonator. Used as BODY under a bell
+    # rather than alone.
+    "marimba": dict(
+        ratios=(1.0, 3.9, 9.2),
+        amps=(1.0, 0.22, 0.08),
+        decays=(1.0, 2.8, 4.5),
+        mallet=1500, mallet_amt=0.10, detune=0.35, body=0.35),
+}
+
+## How many partials get the two-polarisation treatment.
+##
+## Only the low ones. The fifth mode of a glockenspiel bar is gone in a tenth of
+## a second, so beating it against a twin nobody hears doubles the cost of the
+## file for nothing.
+_DETUNED_MODES = 3
+
+
+def bell(freq, dur, vol=0.6, decay=4.5, voice="glock", strike=1.0):
+    """One struck note, on one of the four VOICES above.
+
+    `decay` is the fundamental's rate; every partial scales off it. `strike`
+    scales the mallet, and 0.0 removes it — which is what turns a note into a
+    pad, for the sustained things (the tail under level_complete) that should
+    swell rather than be hit.
+    """
+    spec = VOICES[voice]
+    n = int(dur * SR_CUR[0])
+    out = [0.0] * n
+    nyquist = SR_CUR[0] * 0.45
+
+    for k, (ratio, amp, dmul) in enumerate(zip(spec["ratios"], spec["amps"], spec["decays"])):
+        f = freq * ratio
+        if f > nyquist:
+            continue          # never alias: a partial above Nyquist folds back as a wrong note
+        # One envelope per partial, reused by both polarisations: _env calls exp,
+        # and this is the hot loop of the whole generator.
+        env = [_env(i, n, 0.0016, decay * dmul) for i in range(n)]
+        detune = spec["detune"] if k < _DETUNED_MODES else 0.0
+        planes = (-0.5, 0.5) if detune > 0.0 else (0.0,)
+        a = amp * vol / len(planes)
+        for plane in planes:
+            w = 2.0 * math.pi * (f + plane * detune) / SR_CUR[0]
+            for i in range(n):
+                out[i] += math.sin(w * i) * a * env[i]
+
+    # The resonator: the fundamental again, slower in and slower out, well under
+    # the bar itself. This is what a tube adds, and why a celeste sounds like a
+    # room rather than like a signal.
+    if spec["body"] > 0.0 and freq <= nyquist:
+        env = [_env(i, n, 0.012, decay * 0.7) for i in range(n)]
+        w = 2.0 * math.pi * freq / SR_CUR[0]
+        a = spec["body"] * vol
+        for i in range(n):
+            out[i] += math.sin(w * i) * a * env[i]
+
+    # The mallet.
+    if strike > 0.0 and spec["mallet_amt"] > 0.0:
+        hit = band(noise(0.007, 1.0, decay=40.0, seed=int(freq) + 7),
+                   spec["mallet"] * 0.5, min(spec["mallet"] * 2.0, nyquist))
+        a = vol * spec["mallet_amt"] * strike
+        for i in range(min(len(hit), n)):
+            out[i] += hit[i] * a
+    return out
+
+
+def noise(dur, vol=0.5, decay=8.0, seed=1234):
+    rng = random.Random(seed)
+    n = int(dur * SR_CUR[0])
+    return [rng.uniform(-1, 1) * vol * _env(i, n, 0.001, decay) for i in range(n)]
+
+
+def lowpass(samples, cutoff):
+    """One-pole low-pass. Crude, and exactly right for turning white noise into
+    air, wind, felt and breath -- which is most of what the world is made of."""
+    a = 1.0 - math.exp(-2 * math.pi * cutoff / SR_CUR[0])
+    out, y = [], 0.0
+    for s in samples:
+        y += a * (s - y)
+        out.append(y)
+    return out
+
+
+def highpass(samples, cutoff):
+    lp = lowpass(samples, cutoff)
+    return [s - l for s, l in zip(samples, lp)]
+
+
+def band(samples, low, high):
+    return highpass(lowpass(samples, high), low)
+
+
+def servo(f0, f1, dur, vol=0.35):
+    """A small motor. The crow is a tin bird, and this is what says so.
+
+    A saw through a low-pass with the cutoff tracking the pitch, plus a whisper
+    of noise for the brushes. Under a felt thump it reads as machinery; on its
+    own it would read as a synthesizer, which is why it is never used alone.
+    """
+    core = glide(f0, f1, dur, vol, decay=3.0, attack=0.003, shape="saw")
+    core = lowpass(core, max(f0, f1) * 3.0)
+    grit = lowpass(noise(dur, vol * 0.30, decay=3.0, seed=int(f0)), max(f0, f1) * 2.0)
+    return mix(core, grit)
+
+
+def tick(freq, dur=0.02, vol=0.5):
+    """The smallest sound in the game: one filtered click."""
+    return band(noise(dur, vol, decay=26.0, seed=int(freq)), freq * 0.6, freq * 2.2)
+
+
+def thump(freq, dur, vol=0.5, decay=9.0):
+    """Felt on wood. The body of every landing, knock and step."""
+    return mix(sine(freq, dur, vol, decay=decay, attack=0.002),
+               lowpass(noise(dur * 0.55, vol * 0.34, decay=decay + 4), 900))
+
+
+def air(dur, vol=0.3, low=400, high=3000, swell=0.5, seed=7):
+    """Breath, wind, a page turning, a wing. Noise with a shape on it."""
+    n = int(dur * SR_CUR[0])
+    rng = random.Random(seed)
+    raw = [rng.uniform(-1, 1) for _ in range(n)]
+    shaped = band(raw, low, high)
+    out = []
+    for i in range(n):
+        t = i / max(1, n - 1)
+        # A swell: rise to `swell` of the way through, then fall.
+        e = math.sin(math.pi * min(1.0, t / swell if t < swell else (1 - t) / (1 - swell)))
+        out.append(shaped[i] * vol * max(0.0, e))
+    return out
+
+
+def arp(freqs, step=0.09, vol=0.6, dur=None, decay=5.0, voice="glock", strike=1.0):
+    """A phrase. Notes overlap by design -- a run of separated bells is a
+    doorbell, a run of overlapping ones is music."""
+    length = dur if dur is not None else step * 3.0
+    out = []
+    for k, f in enumerate(freqs):
+        out = mix(out, shift(bell(f, length, vol, decay, voice, strike), step * k))
+    return out
+
+
+# ── Combining ────────────────────────────────────────────────────────────────
+
+def mix(a, b):
+    n = max(len(a), len(b))
+    out = [0.0] * n
+    for i, s in enumerate(a):
+        out[i] += s
+    for i, s in enumerate(b):
+        out[i] += s
+    return out
 
 
 def seq(*parts):
@@ -78,89 +330,427 @@ def seq(*parts):
 
 
 def shift(samples, seconds):
-    """Delay a sound by `seconds`, so two copies read as one two-part gesture."""
-    return [0.0] * int(seconds * SR) + list(samples)
+    return [0.0] * int(seconds * SR_CUR[0]) + list(samples)
 
 
-def mix(a, b):
-    n = max(len(a), len(b))
-    return [(a[i] if i < len(a) else 0) + (b[i] if i < len(b) else 0) for i in range(n)]
+def gain(samples, k):
+    return [s * k for s in samples]
 
 
-def arp(freqs, step=0.09, vol=0.6, wave_kind="sine"):
-    return seq(*[tone(f, step, vol, wave_kind, decay=4.0) for f in freqs])
+def pad(samples, seconds):
+    """Room at the end for a tail, so a decay is not clipped by the file ending."""
+    return list(samples) + [0.0] * int(seconds * SR_CUR[0])
 
 
-def write(name, samples):
-    frames = bytearray()
-    for s in samples:
-        v = int(max(-1.0, min(1.0, s)) * 32767)
-        frames += struct.pack("<h", v)
+def seamless(samples, fade_ms=120.0):
+    """Make a loop join itself without a click.
 
-    paths = []
-    for out_dir in OUTS:
-        os.makedirs(out_dir, exist_ok=True)
-        path = os.path.join(out_dir, name + ".wav")
-        with wave.open(path, "w") as w:
-            w.setnchannels(1)
-            w.setsampwidth(2)
-            w.setframerate(SR)
-            w.writeframes(frames)
-        paths.append(os.path.relpath(path))
-    return " + ".join(paths)
+    The last `fade_ms` is cross-faded over the first, and then cut. Any generated
+    texture becomes loopable this way, which is what lets a bed be built out of
+    random events rather than out of whole cycles.
+    """
+    n = int(fade_ms / 1000.0 * SR_CUR[0])
+    if n <= 0 or len(samples) <= 2 * n:
+        return samples
+    out = list(samples[:-n])
+    tail = samples[-n:]
+    for i in range(n):
+        k = i / n
+        out[i] = out[i] * k + tail[i] * (1.0 - k)
+    return out
 
 
-SOUNDS = {
-    "player_jump": chirp(320, 760, 0.16, 0.5, "square"),
-    "land": mix(tone(150, 0.12, 0.5, "sine", decay=9.0), noise(0.07, 0.18)),
-    "coin_collect": seq(tone(880, 0.05, 0.5), tone(1320, 0.10, 0.55)),
-    "hurt": chirp(420, 170, 0.22, 0.45, "saw"),
-    "enemy_death": noise(0.18, 0.5, decay=10.0),
-    "laser_shoot": chirp(1300, 380, 0.12, 0.4, "square"),
-    "owl_greet": seq(tone(540, 0.14, 0.4), tone(450, 0.16, 0.4)),
-    "owl_saved": arp([523, 659, 784, 1047], 0.10, 0.55),
-    "door": mix(tone(190, 0.22, 0.4, "sine", decay=6.0), noise(0.10, 0.14)),
-    "button": tone(1000, 0.05, 0.4),
-    "correct": seq(tone(659, 0.09, 0.5), tone(988, 0.16, 0.55)),
-    "wrong": chirp(300, 240, 0.24, 0.4, "sine"),  # gentle, low — not punitive
-    "level_complete": arp([523, 659, 784, 1047, 1319], 0.11, 0.6),
-    "ability": chirp(760, 1640, 0.18, 0.5, "sine"),
-    "milestone": arp([784, 988, 1175], 0.10, 0.6),
-    # Golden problem arrival: a fast, high shimmer distinct from the win
-    # sounds — it announces the problem, it is not the reward itself.
-    "golden": arp([1319, 1568, 1976, 2637], 0.06, 0.5),
-    # The crow goes down: a short fall, not a game-over sting. Losing a life
-    # costs the coins from this level and nothing else, and the sound should
-    # say "again" rather than "you failed".
-    "player_die": chirp(560, 180, 0.30, 0.45, "sine"),
-    # Stepping through the door into the next level. Rising, and distinct from
-    # `door` (getting close), which is the low wooden open.
-    "level_enter": arp([392, 523, 659], 0.10, 0.5),
-    # One link off an owl's chain. Short and metallic; it fires up to three
-    # times in a row on a gauntlet owl, so it must not outstay its beat.
-    "chain_break": mix(tone(1180, 0.09, 0.35, "square", decay=12.0), noise(0.05, 0.20, decay=14.0)),
-    # The focus ring moving between menu buttons. Quieter and higher than the
-    # click, because it fires on every arrow press and a sound at click volume
-    # would turn holding Down into a machine gun.
-    "button_focus": tone(1320, 0.035, 0.22, "sine", decay=18.0),
-    # One of the three big coins. The coin sound's bigger cousin: same family,
-    # unmistakably rarer. It has to be recognisably NOT the ordinary coin, because
-    # the two mean different things -- one goes into a purse, this is a third of a
-    # level.
-    "big_coin": seq(tone(784, 0.08, 0.5), tone(1047, 0.09, 0.55), tone(1319, 0.16, 0.6)),
-    # All three in one level. The only sound in the game that is allowed to be a
-    # small fanfare outside the completion screen, because 3/3 is the achievement
-    # the other two were progress toward. Shorter than `level_complete`, which
-    # still has to be the biggest thing a run ends on.
-    "big_coin_all": arp([784, 1047, 1319, 1568, 2093], 0.09, 0.6),
-    # The door will not open yet. A soft double knock, deliberately NOT the hurt
-    # sound and nothing like a buzzer: the child has done nothing wrong, they
-    # have somewhere left to go. Same pedagogy rail as the wrong-answer cue.
-    "door_locked": mix(tone(196, 0.10, 0.35, "sine", decay=9.0),
-                       shift(tone(196, 0.10, 0.30, "sine", decay=9.0), 0.14)),
-}
+def normalize(samples, peak):
+    top = max((abs(s) for s in samples), default=0.0)
+    if top <= 0.0:
+        return samples
+    return [s * (peak / top) for s in samples]
+
+
+# ── The bank: one-shots ──────────────────────────────────────────────────────
+# Ordered by family, because the families are the design.
+
+def build_sounds():
+    return {
+        # ── BODY: the crow. A wind-up tin bird. ──────────────────────────────
+        # Never pitched to the scale: the body is the one family that must not
+        # sound like the reward family, or every jump would read as a small win.
+        "player_jump": (TIER["body"], mix(
+            thump(180, 0.07, 0.5, decay=14.0),
+            shift(gain(servo(320, 880, 0.10, 0.30), 0.9), 0.012))),
+        "land": (TIER["body"], mix(
+            thump(110, 0.13, 0.6, decay=11.0),
+            shift(tick(3200, 0.014, 0.30), 0.02))),
+        # The quietest thing the crow does, and it fires more than anything else
+        # in the game. Two layers only: felt, and one small piece of metal.
+        "step": (TIER["tick"], mix(
+            thump(165, 0.035, 0.5, decay=26.0),
+            shift(tick(2800, 0.010, 0.22), 0.006))),
+        # A toy ray-gun, not a weapon. Falling, hollow, and over before it lands.
+        #
+        # MOVED DOWN AN OCTAVE after tools/audit_audio.py measured the first
+        # version with 97% of its energy in the reward band and a dominant of
+        # 1039 Hz -- which is where the coin (1568) and the win (1046) live. A
+        # child shooting while collecting coins would have had the two fighting.
+        # Lower is also simply more toy-like: a hollow "pyoo" rather than a zap.
+        "laser_shoot": (TIER["body"], lowpass(
+            mix(glide(900, 300, 0.12, 0.5, decay=6.0, shape="tri"),
+                sine(170, 0.07, 0.22, decay=14.0)), 2600)),
+        # Alarming enough to notice, gentle enough not to frighten: a soft
+        # whoomph with one piece of the crow coming loose over the top.
+        "hurt": (TIER["body"], mix(
+            lowpass(noise(0.16, 0.42, decay=9.0, seed=3), 900),
+            shift(bell(520, 0.22, 0.30, decay=7.0, voice="glock"), 0.03))),
+        # "Again", not "you failed". It falls a perfect FIFTH, which is the most
+        # consonant interval there is, so it lands settled rather than sad -- and
+        # the servo winding down under it is the toy stopping, not a death.
+        "player_die": (TIER["body"], pad(mix(
+            glide(C5, G4, 0.42, 0.42, decay=3.4),
+            gain(servo(600, 150, 0.34, 0.30), 0.8)), 0.06)),
+        # Three soft puffs, falling away. Used by the owl leaving, which is the
+        # one moment in the game where something goes home.
+        "wing": (TIER["body"], seq(
+            air(0.10, 0.42, 300, 2600, 0.4, seed=11),
+            air(0.09, 0.32, 280, 2400, 0.4, seed=12),
+            air(0.09, 0.22, 260, 2200, 0.4, seed=13))),
+
+        # ── WORLD: wood, air, glass, water. ─────────────────────────────────
+        # Satisfying, never gory: the roach bursts into sparks. A dry pop with
+        # a short crunch on the front and nothing wet anywhere in it.
+        "enemy_death": (TIER["body"], mix(
+            band(noise(0.09, 0.5, decay=22.0, seed=5), 700, 5200),
+            sine(190, 0.15, 0.42, decay=13.0))),
+        # THE TELEGRAPH. It has to be unmistakably a WIND-UP: rising, swelling,
+        # and clearly unfinished, so that a child hears a question and has half a
+        # second to answer it with their feet.
+        "enemy_charge": (TIER["click"], mix(
+            servo(200, 620, 0.50, 0.40),
+            shift(gain(air(0.18, 0.20, 600, 3200, 0.85, seed=17), 0.8), 0.30))),
+        "enemy_spit": (TIER["click"], mix(
+            band(noise(0.12, 0.42, decay=11.0, seed=6), 500, 2600),
+            glide(900, 420, 0.12, 0.24, decay=7.0))),
+        "spit_land": (TIER["click"], mix(
+            band(noise(0.09, 0.40, decay=17.0, seed=8), 300, 1800),
+            sine(150, 0.11, 0.34, decay=15.0))),
+        # A small metallic snap. It fires link after link on a gauntlet owl, so
+        # it must not outstay its beat: 90 ms, and inharmonic so two in a row do
+        # not sound like an interval.
+        # MOVED UP for the same reason, and it is the worse collision of the two:
+        # a link breaks on a CORRECT ANSWER, so at 1180 Hz it was landing in the
+        # same beat and the same band as `correct` itself. Up at E7 it reads as
+        # metal rather than as a note, and the two stop competing.
+        "chain_break": (TIER["click"], mix(
+            bell(2637, 0.075, 0.34, decay=15.0, voice="musicbox"),
+            tick(5200, 0.010, 0.34))),
+        # A low wooden open. An invitation: the door has noticed you.
+        "door": (TIER["body"], mix(
+            sine(190, 0.26, 0.44, decay=5.0, attack=0.05),
+            gain(air(0.24, 0.16, 200, 1400, 0.5, seed=21), 1.0))),
+        # NOT a buzzer and not the hurt sound. Arriving before the owls are free
+        # is arriving early, not doing something wrong, so it is two soft knocks
+        # on the same piece of wood.
+        "door_locked": (TIER["click"], mix(
+            thump(G3, 0.10, 0.42, decay=16.0),
+            shift(thump(G3, 0.10, 0.34, decay=16.0), 0.15))),
+        # Two low hoots, unhurried. This is who you meet before doing maths.
+        "owl_greet": (TIER["click"], mix(
+            seq(sine(540, 0.15, 0.40, decay=5.0, attack=0.03, vibrato=0.012),
+                sine(450, 0.18, 0.36, decay=5.0, attack=0.03, vibrato=0.012)),
+            gain(air(0.32, 0.10, 400, 1600, 0.5, seed=23), 0.8))),
+
+        # ── VOICE: the reward ladder. Bells, in the scale, strictly ordered. ─
+        # Tier 2. The brightest two notes in the game, and the one everybody
+        # remembers. audio_manifest.json walks it up a pentatonic ladder on a
+        # run, so five coins in a row are a rising phrase.
+        "coin_collect": (TIER["pickup"], pad(seq(
+            bell(E6, 0.06, 0.5, decay=9.0, voice="glock"),
+            bell(G6, 0.11, 0.55, decay=7.0, voice="glock")), 0.03)),
+        # Tier 3. Clearly better than a coin, and clearly not a fanfare: there
+        # may be three in a row. The streak moves it up the scale from here.
+        "correct": (TIER["win"], pad(mix(
+            bell(C6, 0.26, 0.5, decay=5.5, voice="celeste"),
+            shift(bell(G6, 0.24, 0.45, decay=5.5, voice="celeste"), 0.09)), 0.05)),
+        # Low, soft, short, and FLAT IN PITCH -- two taps on the same note, so
+        # there is no descent to read as disappointment. A seven-year-old will
+        # hear this often and it has to stay survivable the hundredth time. It is
+        # also, deliberately, quieter than the coin.
+        "wrong": (TIER["click"], mix(
+            thump(C3, 0.09, 0.44, decay=17.0),
+            shift(thump(C3, 0.09, 0.40, decay=17.0), 0.12))),
+        # THE SETUP. A missed question ends in teaching, and this is the sound of
+        # the answer arriving with its explanation. An open fifth, soft attack,
+        # unhurried: it says "here it is", and it is the one cue in the game that
+        # follows a mistake and is warm.
+        "answer_reveal": (TIER["win"], pad(mix(
+            bell(C5, 0.50, 0.42, decay=3.2, voice="celeste", strike=0.2),
+            shift(bell(G5, 0.46, 0.38, decay=3.2, voice="celeste", strike=0.2), 0.10)), 0.08)),
+        # Tier 4. The coin's bigger cousin -- same family, unmistakably rarer:
+        # three notes where the coin has two, and a shimmer the coin never gets.
+        "big_coin": (TIER["prize"], pad(mix(
+            arp([G5, C6, E6], 0.085, 0.5, dur=0.30, decay=5.0, voice="glock"),
+            shift(gain(arp([E7, G7], 0.05, 0.16, dur=0.18, decay=9.0, voice="glock"), 0.5), 0.16)), 0.06)),
+        # Tier 5, and the only small fanfare allowed outside the completion
+        # screen: 3/3 is the achievement the other two were progress toward.
+        # Still shorter than level_complete, which has to stay the biggest thing.
+        "big_coin_all": (TIER["prize"], pad(
+            arp([G5, C6, E6, G6, C7], 0.075, 0.55, dur=0.42, decay=4.2, voice="glock"), 0.10)),
+        # The streak, as one note. The pitch ladder in the manifest walks it up
+        # with the count, so the phrase is played by the child rather than by the
+        # file: four right answers in a row is four rising notes.
+        "streak": (TIER["win"], pad(bell(C6, 0.22, 0.5, decay=6.5, voice="glock"), 0.04)),
+        # A level-up. Three rising notes: shorter than a win, brighter than a
+        # click, and never used for anything that is not a genuine step up.
+        "milestone": (TIER["prize"], pad(
+            arp([G5, C6, E6], 0.085, 0.55, dur=0.30, decay=5.0, voice="glock"), 0.06)),
+        # THE BEST MOMENT IN THE GAME. A skill missed earlier, beaten on its
+        # return. Bigger than a level-up on purpose -- PRODUCT.md asks for the
+        # worst moment available to be converted into the best one, and this is
+        # the sound of that conversion landing.
+        "comeback": (TIER["fanfare"], pad(mix(
+            arp([C5, E5, G5, C6, E6], 0.09, 0.6, dur=0.55, decay=3.6, voice="celeste"),
+            shift(gain(arp([G6, C7], 0.08, 0.3, dur=0.40, decay=4.0, voice="glock"), 0.7), 0.42)), 0.16)),
+        # Something you can do now that you could not before: one note opening
+        # upward into a shimmer.
+        "ability": (TIER["prize"], pad(mix(
+            glide(C5, C6, 0.34, 0.40, decay=3.0, attack=0.02),
+            shift(gain(arp([C6, E6, G6], 0.05, 0.30, dur=0.24, decay=7.0, voice="glock"), 0.8), 0.16)), 0.08)),
+        # Announces the problem; it is NOT the reward. Fast, high, and gone.
+        "golden": (TIER["win"], pad(
+            arp([E6, G6, C7, E7], 0.048, 0.42, dur=0.20, decay=9.0, voice="glock"), 0.05)),
+        # The chain is off and the owl is going home. Four notes and one wing.
+        "owl_saved": (TIER["prize"], pad(mix(
+            arp([C5, E5, G5, C6], 0.095, 0.55, dur=0.38, decay=4.2, voice="celeste"),
+            shift(gain(air(0.12, 0.22, 300, 2400, 0.4, seed=31), 0.9), 0.34)), 0.10)),
+        # A departure, and deliberately not the same sound as being near the
+        # door: that one is an invitation, this one is leaving.
+        "level_enter": (TIER["win"], pad(
+            arp([G4, C5, E5], 0.085, 0.5, dur=0.28, decay=5.0, voice="celeste"), 0.06)),
+        # Tier 8, once per run, and the longest thing in the game.
+        "level_complete": (TIER["fanfare"], pad(mix(
+            arp([C5, E5, G5, C6, E6, G6, C7], 0.105, 0.58, dur=0.70, decay=3.0, voice="glock"),
+            shift(gain(bell(C6, 0.9, 0.34, decay=2.0, voice="celeste", strike=0.0), 0.9), 0.62)), 0.2)),
+
+        # ── VOICE: boards, lessons and the interface. ────────────────────────
+        # The maths board is a ROOM the child steps into: felt sliding in, and
+        # one soft note to say where they have arrived. game.gd ducks the music
+        # under it at the same moment.
+        "board_open": (TIER["click"], mix(
+            gain(air(0.30, 0.26, 260, 2200, 0.75, seed=41), 1.0),
+            shift(bell(C5, 0.28, 0.30, decay=4.0, voice="celeste", strike=0.3), 0.10))),
+        # And stepping back out. Quieter than arriving: opening is something
+        # happening to the child, closing is being handed the level back.
+        "board_close": (TIER["tick"], mix(
+            gain(air(0.22, 0.22, 240, 1800, 0.35, seed=42), 1.0),
+            shift(bell(G4, 0.18, 0.22, decay=6.0, voice="celeste", strike=0.2), 0.05))),
+        "lesson_open": (TIER["click"], mix(
+            gain(air(0.26, 0.24, 300, 2600, 0.7, seed=43), 1.0),
+            shift(bell(G4, 0.26, 0.28, decay=4.4, voice="celeste", strike=0.25), 0.09))),
+        # A page turning. It fires four times in a four-card lesson, so it is a
+        # texture rather than a note -- a cue with a pitch would build a melody
+        # nobody wrote.
+        "lesson_card": (TIER["tick"], air(0.11, 0.40, 700, 5200, 0.35, seed=44)),
+        "pause_open": (TIER["click"], mix(
+            gain(air(0.22, 0.24, 220, 1600, 0.3, seed=45), 1.0),
+            shift(bell(G4, 0.22, 0.26, decay=5.0, voice="celeste", strike=0.2), 0.06))),
+        "pause_close": (TIER["click"], mix(
+            gain(air(0.20, 0.24, 260, 2000, 0.7, seed=46), 1.0),
+            shift(bell(C5, 0.20, 0.26, decay=5.5, voice="celeste", strike=0.2), 0.05))),
+        # The shortest sound in the game.
+        "button": (TIER["click"], pad(bell(C6, 0.05, 0.5, decay=22.0, voice="musicbox"), 0.01)),
+        # A tick above the click and quieter: it fires on every arrow press, and
+        # at click volume holding Down is a machine gun.
+        "button_focus": (TIER["tick"], pad(bell(G6, 0.032, 0.42, decay=30.0, voice="musicbox", strike=0.4), 0.01)),
+        # Quieter again. Hover does not exist on the tablet this is played on, so
+        # this is entirely for a grown-up at a desk and is priced accordingly.
+        "ui_hover": (TIER["whisper"], pad(bell(A6, 0.022, 0.4, decay=38.0, voice="musicbox", strike=0.3), 0.01)),
+        # BACK IS NOT FORWARD. Two notes DOWN, against every other UI cue in the
+        # game -- which is the entire information content of the sound.
+        "ui_back": (TIER["click"], pad(seq(
+            bell(G5, 0.055, 0.44, decay=16.0, voice="musicbox"),
+            bell(D5, 0.075, 0.40, decay=13.0, voice="musicbox")), 0.02)),
+        # A toggle that sounds the same in both positions is not a toggle.
+        "toggle_on": (TIER["click"], pad(seq(
+            bell(E5, 0.06, 0.44, decay=14.0, voice="musicbox"),
+            bell(A5, 0.09, 0.48, decay=11.0, voice="musicbox")), 0.02)),
+        "toggle_off": (TIER["click"], pad(seq(
+            bell(A5, 0.06, 0.42, decay=14.0, voice="musicbox"),
+            bell(E5, 0.09, 0.38, decay=11.0, voice="musicbox")), 0.02)),
+    }
+
+
+# ── The bank: proximity loops ────────────────────────────────────────────────
+# Everything here is heard BEFORE the thing it belongs to is on screen, which is
+# the whole point of it. They are quiet by construction (whisper/tick tier) and
+# `seamless` cross-faces the join so nothing ticks once a second forever.
+
+def build_loops():
+    rng = random.Random(99)
+
+    # THE SKITTER. Six dry ticks a second with a little jitter, which is the
+    # difference between an insect and a metronome. A child hears a cockroach
+    # coming round a ledge before they can see it -- for a five-year-old that is
+    # not flavour, it is the difference between a fair hit and an ambush.
+    skitter = [0.0] * int(1.0 * SR_CUR[0])
+    for k in range(6):
+        at = k / 6.0 + rng.uniform(-0.012, 0.012)
+        skitter = mix(skitter, shift(tick(2500 + rng.uniform(-500, 500), 0.008, 0.45), at))
+
+    # Still dangerous. Slow, low, wet, and quiet enough to sit under everything.
+    bubbles = lowpass(noise(1.6, 0.06, decay=0.0, seed=55), 500)
+    for k in range(9):
+        bubbles = mix(bubbles, shift(
+            glide(rng.uniform(170, 320), rng.uniform(200, 380), 0.07, 0.30, decay=12.0),
+            rng.uniform(0.0, 1.5)))
+
+    # A warning, not a soundscape: 200px of attenuation in the manifest keeps it
+    # to about one jump's distance, so it says "here" and nowhere else.
+    hiss = air(2.0, 0.5, 2600, 7000, 0.5, seed=61)
+    hiss = [s * (0.55 + 0.45 * math.sin(2 * math.pi * 0.6 * i / SR_CUR[0]))
+            for i, s in enumerate(hiss)]
+
+    # The door has noticed you. A low warm fifth with a slow breath in it -- the
+    # invitation, which is why a locked door does not play it.
+    hum = mix(sine(98, 2.0, 0.34, decay=0.0, attack=0.2),
+              sine(147, 2.0, 0.18, decay=0.0, attack=0.2))
+    hum = [s * (0.7 + 0.3 * math.sin(2 * math.pi * 0.5 * i / SR_CUR[0]))
+           for i, s in enumerate(hum)]
+
+    # THE HINT, and its silence is half of it: a banked big coin is a ghost and
+    # emits nothing, so on a second visit the level itself tells a child which
+    # one they never found.
+    shimmer = [0.0] * int(2.0 * SR_CUR[0])
+    for j, f in enumerate([C7, E7, G7]):
+        part = sine(f, 2.0, 0.16 / (1 + j), decay=0.0, attack=0.3)
+        shimmer = mix(shimmer, [s * (0.45 + 0.55 * math.sin(
+            2 * math.pi * (0.33 + 0.11 * j) * i / SR_CUR[0])) for i, s in enumerate(part)])
+
+    # An owl breathing on its perch. The encounter fires on proximity with no
+    # button to press, so this is the only warning a maths board is coming.
+    rustle = seq(air(1.0, 0.42, 350, 1900, 0.5, seed=71),
+                 air(1.0, 0.34, 320, 1700, 0.5, seed=72))
+
+    return {
+        "roach_skitter": (TIER["tick"], skitter),
+        "puddle_bubble": (TIER["whisper"], bubbles),
+        "spike_hiss": (TIER["whisper"], hiss),
+        "door_hum": (TIER["tick"], hum),
+        "big_coin_shimmer": (TIER["whisper"], shimmer),
+        "owl_rustle": (TIER["whisper"], rustle),
+    }
+
+
+# ── The bank: one ambience bed per world ─────────────────────────────────────
+# A bed is what makes two levels in the same biome sound like the same PLACE.
+# Nothing in a bed sits between 700 Hz and 5 kHz with any energy: that band
+# belongs to the reward family, and a bed that competes for it is a bed that
+# makes every cue in the game harder for a child to hear.
+
+def build_beds():
+    rng = random.Random(2026)
+    dur = 6.0
+
+    def wind(seed, low, high, rate, depth=0.5, vol=0.5):
+        n = int(dur * SR_CUR[0])
+        raw = [rng.uniform(-1, 1) for _ in range(n)]
+        shaped = band(raw, low, high)
+        return [s * vol * (1.0 - depth + depth * (0.5 + 0.5 * math.sin(
+            2 * math.pi * rate * i / SR_CUR[0]))) for i, s in enumerate(shaped)]
+
+    def sprinkle(base, events, note_pool, dur_range, vol, decay):
+        out = base
+        for _ in range(events):
+            out = mix(out, shift(
+                bell(rng.choice(note_pool), rng.uniform(*dur_range), vol, decay=decay,
+                     voice="celeste", strike=0.0),
+                rng.uniform(0.0, dur - 0.6)))
+        return out
+
+    # EMBERWOOD -- warm forest. Leaves, and a bird far enough away to be scenery.
+    ember = wind(1, 300, 2200, 0.11, 0.55, 0.5)
+    for _ in range(4):
+        ember = mix(ember, shift(gain(seq(
+            glide(2100, 2600, 0.05, 0.18, decay=10.0),
+            glide(2500, 2000, 0.06, 0.14, decay=10.0)), 1.0), rng.uniform(0.5, 5.0)))
+
+    # PRISM HOLLOW -- a cave. Room tone underneath, glass overhead, nothing in
+    # between, which is exactly what makes a cave sound big.
+    prism = mix(wind(2, 60, 260, 0.07, 0.4, 0.55), wind(3, 3000, 7000, 0.09, 0.7, 0.10))
+    prism = sprinkle(prism, 7, [C6, E6, G6, C7], (0.30, 0.55), 0.16, 5.0)
+
+    # SUGARSTORM -- bright meadow. Light breeze and small bells: the only bed
+    # that is allowed to be cheerful.
+    sugar = wind(4, 500, 3000, 0.16, 0.5, 0.42)
+    sugar = sprinkle(sugar, 9, [G6, A6, C7, E7], (0.16, 0.30), 0.13, 8.0)
+
+    # GEYSERWORKS -- steam and machinery. The one bed with a low rumble in it,
+    # and the one that breathes on a schedule you can feel.
+    geyser = mix(wind(5, 40, 200, 0.05, 0.35, 0.6), wind(6, 1800, 6000, 0.33, 0.85, 0.16))
+    for k in range(3):
+        geyser = mix(geyser, shift(gain(air(0.9, 0.30, 900, 5000, 0.35, seed=80 + k), 1.0),
+                                   0.4 + 1.9 * k))
+
+    # AURORA SPIRE -- the top of the world. Slowest, sparsest, highest. Almost
+    # nothing happens, which is the point: it is where the game gets quiet.
+    aurora = mix(wind(7, 2200, 6500, 0.06, 0.75, 0.16), wind(8, 80, 300, 0.04, 0.5, 0.30))
+    aurora = sprinkle(aurora, 4, [C6, G6, C7], (0.7, 1.2), 0.15, 2.2)
+
+    return {
+        "emberwood": (TIER["whisper"], ember),
+        "prism_hollow": (TIER["whisper"], prism),
+        "sugarstorm": (TIER["whisper"], sugar),
+        "geyserworks": (TIER["whisper"], geyser),
+        "aurora_spire": (TIER["whisper"], aurora),
+    }
+
+
+# ── Writing ──────────────────────────────────────────────────────────────────
+
+def write(directory, name, samples, rate):
+    os.makedirs(directory, exist_ok=True)
+    path = os.path.join(directory, "%s.wav" % name)
+    with wave.open(path, "w") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(rate)
+        w.writeframes(b"".join(
+            struct.pack("<h", int(max(-1.0, min(1.0, s)) * 32767)) for s in samples))
+    return path
+
+
+def main() -> int:
+    written = 0
+
+    SR_CUR[0] = SR
+    for name, (peak, samples) in build_sounds().items():
+        out = normalize(_fade(samples, 4.0), peak)
+        write(SFX_DIR, name, out, SR)
+        print("  %-20s %5.2fs  peak %.2f" % (name, len(out) / SR, peak))
+        written += 1
+
+    SR_CUR[0] = SR_LOOP
+    print("loops (seamless, %d Hz):" % SR_LOOP)
+    for name, (peak, samples) in build_loops().items():
+        out = normalize(seamless(samples), peak)
+        write(SFX_DIR, name, out, SR_LOOP)
+        print("  %-20s %5.2fs  peak %.2f" % (name, len(out) / SR_LOOP, peak))
+        written += 1
+
+    print("beds (seamless, %d Hz):" % SR_LOOP)
+    for name, (peak, samples) in build_beds().items():
+        out = normalize(seamless(samples, 400.0), peak)
+        write(AMB_DIR, name, out, SR_LOOP)
+        print("  %-20s %5.2fs  peak %.2f" % (name, len(out) / SR_LOOP, peak))
+        written += 1
+
+    # The ladder is the design, so it is asserted rather than trusted: a tier may
+    # never be louder than the tier above it. This is the one thing in the file a
+    # careless edit could quietly invert.
+    order = list(TIER.values())
+    assert order == sorted(order), "TIER is out of order; the reward ladder is the design"
+
+    print("Done: %d files" % written)
+    return 0
+
 
 if __name__ == "__main__":
-    for name, samples in SOUNDS.items():
-        print("wrote", write(name, samples), "(%.2fs)" % (len(samples) / SR))
-    print("Done: %d sfx" % len(SOUNDS))
+    raise SystemExit(main())

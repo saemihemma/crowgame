@@ -197,12 +197,21 @@ function collectFiles(dir, extensions) {
 
 function extractManifestAudioAssets() {
     const audioManifest = loadJson(AUDIO_MANIFEST_PATH);
-    const sfx = Object.values(audioManifest.sfx || {}).map(entry => normalizeToLiveAssetPath(entry.file));
-    const music = Object.values(audioManifest.music || {}).map(entry => normalizeToLiveAssetPath(entry.file));
+    // `_comment` keys are documentation inside the manifest and carry no `file`;
+    // filtering on the key is what keeps them from becoming an asset named
+    // "undefined" that is always missing.
+    const files = section => Object.entries(audioManifest[section] || {})
+        .filter(([key, entry]) => !key.startsWith('_') && entry && entry.file)
+        .map(([, entry]) => normalizeToLiveAssetPath(entry.file));
 
     return {
-        sfx: [...new Set(sfx)].sort(),
-        music: [...new Set(music)].sort(),
+        sfx: [...new Set(files('sfx'))].sort(),
+        // The ambience beds. A missing bed is silent by construction --
+        // AudioManager.play_bed returns on a stream it cannot load -- so without
+        // this check a world would simply stop having a place-sound and nothing
+        // anywhere would say so.
+        beds: [...new Set(files('beds'))].sort(),
+        music: [...new Set(files('music'))].sort(),
     };
 }
 
@@ -278,6 +287,7 @@ function main() {
     const compiledLevelAssets = extractCompiledLevelAssets();
     const referencedAssets = [
         ...audioAssets.sfx,
+        ...audioAssets.beds,
         ...audioAssets.music,
         ...bootVisuals,
         ...compiledLevelAssets,
@@ -290,6 +300,7 @@ function main() {
     console.log(`${colors.green}OK${colors.reset} compiled level tileset image paths extracted from JSON`);
 
     printGroup('Sound Effects', audioAssets.sfx, missingAssets);
+    printGroup('Ambience Beds', audioAssets.beds, missingAssets);
     printGroup('Music Tracks', audioAssets.music, missingAssets);
     printGroup('Boot-Loaded Visual Assets', bootVisuals, missingAssets);
     printGroup('Compiled Level Tileset Assets', compiledLevelAssets, missingAssets);

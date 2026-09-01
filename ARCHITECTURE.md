@@ -615,10 +615,29 @@ record: the answer to "did my child's work get lost".
 | `GET` | `/api/v1/admin/ladder-tuning` | **admin** | current ladder weights |
 | `GET` | `/api/v1/admin/errors` | **admin** | grouped client errors |
 | `POST` | `/api/v1/admin/errors/{fingerprint}/status` | **admin** | triage an error group |
+| `POST` | `/api/v1/audio/session` | **none** | exchange the sound-bench password for a cookie |
+| `POST` | `/api/v1/audio/logout` | none | drop that cookie |
+| `GET` | `/api/v1/audio/manifest` | **audio** | every sound, its mix and its brief |
+| `GET` | `/api/v1/audio/file/{key}` | **audio** | one sample, as audio bytes |
+| `GET` | `/api/v1/audio/take/{key}/{take}` | **audio** | one candidate take, for A/B against the shipped sample |
 
 The delete and export paths exist from the first release that stores anything.
 They are cheap now and awkward to retrofit, and for children's data a delete path
 is not optional.
+
+The `audio` rows are the owner's sound bench (`/audio`, served by
+`server/src/routes/audio.ts`) and they read no database at all: they serve the
+game's own samples and `brand/SOUND_DESIGN.md`. They are a **third** authorization
+subject rather than a reuse of `admin`, and the reason is blast radius — `admin`
+aggregates data about real children, `audio` plays sound effects, and one secret
+for both would put the first behind whoever the owner wants to play a sound to.
+Unset `CROW_AUDIO_PASSWORD` on a deployed host and all five rows answer 404;
+unset it on a developer's machine, where `CROW_ENV` is also unset, and they are
+open instead (`config.audio.open`) — the gate is worth nothing on the machine
+that made the files, and everything on the one serving them to the internet. The take row serves
+`output/audio-takes/`, which is gitignored working material and is not in the
+deployed image, so it 404s there and the page simply shows no takes. Nothing in the game
+calls them.
 
 The `admin` rows are a different subject from every other row in this table. They
 authorize the **owner**, not a device and not a parent — `server/src/lib/adminAuth.ts`

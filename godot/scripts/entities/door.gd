@@ -25,6 +25,11 @@ var _opened := false
 ## otherwise be sealed in a doorway that had already opened.
 var _player_inside := false
 var _refuse_cooldown := 0.0
+## The approach hum. Attached while the door will open and detached while it
+## will not, because the hum and the swing are the same fact: a door that sings
+## you over and then refuses you is a worse message than one that stays quiet.
+var _hum: AudioStreamPlayer2D
+var _hum_attached := false
 
 @onready var _anim: AnimatedSprite2D = $Anim
 
@@ -71,9 +76,16 @@ func _process(delta: float) -> void:
 	# A locked door does not open its animation either. The invitation and the
 	# permission are the same fact, and a door that swings wide and then refuses
 	# contact is a worse message than one that stays shut.
+	if not locked and not _hum_attached:
+		_hum_attached = true
+		_hum = AudioManager.attach_loop("amb_door", self)
+	elif locked and _hum_attached:
+		_hum_attached = false
+		AudioManager.detach_loop(_hum)
+
 	if near and not locked and not _opened:
 		_opened = true
-		AudioManager.play_event("door")
+		AudioManager.play_event_at("door", self)
 		if _anim.sprite_frames and _anim.sprite_frames.has_animation("open"):
 			_anim.play("open")
 	elif (not near or locked) and _opened:

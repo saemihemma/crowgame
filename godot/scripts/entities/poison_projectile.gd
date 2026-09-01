@@ -7,8 +7,17 @@ class_name PoisonProjectile
 const SPIT_SPRITE_KEY := "poison_spit"
 
 var velocity := Vector2.ZERO
-var gravity := 600.0
+## NOT `gravity`. Area2D has a native `gravity` property (its own gravity
+## override for bodies inside it), so `var gravity` was a REDEFINITION and
+## GDScript refuses to compile the whole file over it -- which meant this script
+## never loaded, PoisonProjectile.tscn could not be instantiated, and the spitter
+## beetle's whole attack was dead in every build. Silent, because nothing spawns
+## a spitter in a test and a failed script load is a log line rather than a
+## crash. Found while wiring the puddle's sound; renamed rather than shadowed.
+var fall_accel := 600.0
 var _is_puddle := false
+var _bubble: AudioStreamPlayer2D
+var _bubble_base_db := 0.0
 var _puddle_timer := 1.8
 var _max_puddle_time := 1.8
 
@@ -38,8 +47,12 @@ func _physics_process(delta: float) -> void:
 		# Fade away gradually
 		var alpha := clampf(_puddle_timer / _max_puddle_time, 0.0, 1.0)
 		modulate.a = alpha
+		# The bubbling fades with the sprite rather than cutting at the end, so
+		# "it is going" and "it is gone" are two different sounds.
+		if is_instance_valid(_bubble):
+			_bubble.volume_db = linear_to_db(clampf(alpha, 0.0001, 1.0)) + _bubble_base_db
 	else:
-		velocity.y += gravity * delta
+		velocity.y += fall_accel * delta
 		position += velocity * delta
 		
 		# If it falls below screen or travels for too long in air
@@ -61,6 +74,15 @@ func _turn_to_puddle() -> void:
 	velocity = Vector2.ZERO
 	if _sprite != null:
 		_sprite.play("puddle")
+	# Two sounds, and they say different things. `spit_land` is the event -- the
+	# blob has arrived and there is now something here. The bubble loop is the
+	# STATE, and it is the useful one: it says "still dangerous" for as long as
+	# the puddle lasts and then stops, so a child who is looking at the far side
+	# of the screen still knows when the ground is theirs again.
+	AudioManager.play_event_at("spit_land", self)
+	_bubble = AudioManager.attach_loop("amb_puddle", self)
+	if is_instance_valid(_bubble):
+		_bubble_base_db = _bubble.volume_db
 
 func _hurt_player(player_node: Node) -> void:
 	var game := _find_game()

@@ -22,6 +22,21 @@ RUN npm ci --omit=dev && npm cache clean --force
 COPY --from=build /app/dist ./dist
 COPY server/migrations ./migrations
 
+# The sound-review bench at /audio serves the game's OWN samples, so it needs
+# them. ~3 MB, and it is the only reason anything from the Godot tree is in this
+# image.
+#
+# Why here and not in the web image, where the game already is: the web build
+# packs every sample into index.pck, so a browser cannot address one to play it.
+# Copying the tree gives every sound a URL behind the password.
+#
+# All three are optional at runtime -- server/src/lib/audioLibrary.ts returns a
+# 503 naming what is missing, and /audio is 404 unless CROW_AUDIO_PASSWORD is
+# set -- so an image built without them is degraded, never broken.
+COPY godot/assets/audio ./audio
+COPY godot/data/audio ./audio-data
+COPY brand/SOUND_DESIGN.md ./SOUND_DESIGN.md
+
 # Never run as root.
 USER node
 

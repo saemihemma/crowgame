@@ -105,7 +105,13 @@ func submit_answer(index: int) -> void:
 	EventBus.math_answer_submitted.emit({"problemId": current_problem.get("id", ""), "selectedAnswer": options[index], "isCorrect": is_correct})
 
 	if is_correct:
-		AudioManager.play_event("answer_correct")
+		# THE STREAK IS IN THE PITCH. game.gd has already counted this answer by
+		# the time we get here (math_answer_submitted is emitted above and Godot
+		# signals are synchronous), so `streak` includes it and the first correct
+		# answer sits at step 0. A wrong answer pauses the streak without
+		# resetting it -- BRAND_SYSTEM §10.2 -- so the pitch HOLDS on a miss
+		# rather than falling, and the sound tells the same story the flame does.
+		AudioManager.play_event("answer_correct", {"pitch_step": _streak_step()})
 		_done = true
 		_set_buttons_enabled(false)
 		_mark(index, AnswerButton.State.RIGHT)
@@ -277,6 +283,15 @@ func _reveal_answer() -> void:
 	if explanation == "":
 		explanation = _localised("hint")
 	_show_hint(explanation)
+	# THE MOST IMPORTANT SOUND IN THE GAME, and it had none.
+	#
+	# PRODUCT.md: "a missed question is a setup, not a punishment" -- a failed
+	# challenge ends in teaching, and the worst moment available is deliberately
+	# converted into the best one. That conversion was silent: the child heard
+	# `wrong`, and then the answer appeared with its explanation to no sound at
+	# all, so the beat that carries the whole design landed as nothing happening.
+	# Warm, unhurried, and clearly not a failure noise.
+	AudioManager.play_event("answer_reveal")
 
 ## What to say about a wrong answer.
 ##
@@ -622,8 +637,24 @@ func _set_buttons_enabled(enabled: bool) -> void:
 		b.self_modulate = Color(1, 1, 1, 1.0 if enabled else LOCKED_ALPHA) # hardcode-ok
 
 func _close() -> void:
+	# The board leaving is its own sound, and quieter than its arrival: opening is
+	# something happening TO the child, closing is them being handed the level
+	# back. game.gd lifts the music duck off the back of `closed`.
+	AudioManager.play_event("board_close")
 	closed.emit()
 	queue_free()
+
+
+## How far up its ladder the correct-answer sound should sit.
+##
+## Read off the Game rather than counted here, because the streak belongs to the
+## RUN: this board is built per question and thrown away, and a counter living
+## here would restart at every owl.
+func _streak_step() -> int:
+	var game := _game()
+	if game == null:
+		return 0
+	return maxi(0, int(game.streak) - 1)
 
 
 ## Retitle an open overlay when the locale changes.

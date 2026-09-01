@@ -91,6 +91,15 @@ So a first launch transfers about **17.7 MB**, and a returning player transfers
 Only the 5 KB shell is re-fetched.
 
 
+**This figure is about to move, and the direction is not obvious.** The audio
+bank grew from 23 sounds to 52 (30 new effects, six proximity loops and five
+ambience beds), which measured ~1.8 MB gzipped in a trial export — but that cost
+is almost entirely **placeholder**: the generated bank is uncompressed 16-bit WAV
+because `tools/gen_sfx.py` has no encoder. Real files arrive as MP3 and give most
+of it back. The number above is the committed export's, and the committed export
+is the live game, so it stays honest until `npm run web:build` replaces it — see
+[brand/SOUND_DESIGN.md](../brand/SOUND_DESIGN.md) §9.
+
 `CROW_ASSET_CACHE` still exists for the handful of files that are *not*
 content-addressed (icons), and so staging can force `no-store` while iterating.
 
@@ -259,7 +268,53 @@ For each environment (`staging`, then `prod`):
    CROW_API_UPSTREAM = crow-api-<env>.railway.internal:8080
    ```
    Leave it unset and `/api/*` returns 503 while the game still runs local-only —
-   which is the correct degraded behaviour, not an outage.
+   which is the correct degraded behaviour, not an outage. The same variable also
+   carries `/audio` (below), for the same reason and with the same fallback.
+
+### 2d. Turn on the sound bench at /audio
+
+The owner's sound-review page: every effect and every song in the game, played in
+a browser at the volume and pitch the game actually uses. It is how a sound gets
+iterated without a Godot install — see [brand/SOUND_DESIGN.md](../brand/SOUND_DESIGN.md).
+
+**One variable, on the API service:**
+
+```
+CROW_AUDIO_PASSWORD = <anything you like>
+```
+
+Then open `https://<web domain>/audio` and type it. That is the whole setup.
+
+Four things about it are deliberate:
+
+- **Unset means 404, not open — on a deployed host.** `/audio` and all three
+  endpoints behind it answer exactly like routes that do not exist, so the page
+  is unprobeable until the owner switches it on. Same posture as `/admin`.
+
+  The condition is `CROW_ENV`, not the password alone. Every Railway service sets
+  it (`staging` or `production`, §2), so forgetting the password here fails
+  closed. On a developer's machine `CROW_ENV` is unset, and there an empty
+  password means the bench is **open** instead: `tools/audio_bench.ps1` starts it
+  with no gate at all, because choosing between takes is a hundred reloads
+  against a working copy and the thing being guarded is a folder of sound effects
+  the developer just generated. See `config.audio.open`, and
+  `server/test/audio_off.test.ts`, which exists to prove this exact line.
+- **It is NOT the admin token.** `CROW_ADMIN_TOKEN` guards aggregated data about
+  real children; this guards a page that plays sound effects. One secret for both
+  would mean handing the analytics surface to anyone the owner wants to play a
+  sound to.
+- **The password is exchanged once for a signed, HttpOnly cookie**, and the login
+  is rate-limited per IP (`CROW_AUDIO_ATTEMPTS_PER_MIN`, default 10). A cookie
+  rather than a bearer token because `<audio src>` cannot carry a header.
+- **It lives on the API, and Caddy routes `/audio` to it.** The web build packs
+  every sample into `index.pck`, so a browser cannot address one to play it; the
+  API image carries the sample tree (~3 MB) instead. With `CROW_API_UPSTREAM`
+  unset, `/audio` returns 503 like `/api/*` and nothing a player touches changes.
+
+**No ElevenLabs key goes anywhere near Railway.** Sound generation is an offline
+authoring step (`npm run audio:gen`) that runs on the owner's machine and commits
+its output; nothing at runtime calls ElevenLabs, so nothing at runtime holds a
+credential for it. See §"Secrets, and where they are not" below.
 
 ### 2c. Create the retention job
 
@@ -513,6 +568,56 @@ Error-log storage is bounded by construction: raw events live 30 days in daily
 partitions that get dropped, and per-fingerprint hourly caps mean a bug hitting a
 thousand children costs a thousand counter bumps rather than a thousand rows. The
 aggregates are kept forever and are tiny.
+
+## Secrets, and where they are not
+
+Every credential this project uses, and the one rule that decides where it goes:
+**a secret belongs to the process that makes the call, and nowhere else.**
+
+| Secret | Lives on | Never |
+| --- | --- | --- |
+| `DATABASE_URL` | API + retention services | the web service, the client |
+| `CROW_ADMIN_TOKEN` | API service | the web service, a URL, a log line |
+| `CROW_AUDIO_PASSWORD` | API service | the web service, a URL |
+| `CROW_MAIL_API_KEY` | API service | anywhere else |
+| `ELEVENLABS_API_KEY` | **the owner's own machine only** | Railway, the repo, the game |
+
+The last row is the one that is easy to get wrong, so it is worth stating in
+full. The sound generator (`tools/gen_audio_elevenlabs.mjs`) is an offline
+authoring tool in the same category as `npm run cms` and `npm run
+math:materialize`: it runs by hand, writes files into `godot/assets/audio/`, and
+those files are committed. **The game never calls ElevenLabs and the API never
+calls ElevenLabs**, so neither of them should be able to.
+
+```bash
+export ELEVENLABS_API_KEY=...          # your shell profile, or a gitignored .env
+npm run audio:gen -- --list            # what there is to make
+npm run audio:gen -- --dry-run --all   # every prompt, spends nothing
+```
+
+There is one other place the key may legitimately live, and it is better than a
+shell: an **API credential on a Claude Code cloud environment**. The key is stored
+on the environment and Anthropic's agent proxy attaches the `xi-api-key` header
+*after* the request leaves the sandbox, so it never reaches the agent, the
+commands it runs, or the environment variables — and it grants network reach to
+that host on its own, so no allowlist entry is needed either. Run the generator
+with `--proxy-auth` there and it sends the request bare for the proxy to
+authenticate. Everything above still holds: the key is never in the repo, never
+in the game, and never on a Railway service.
+
+Two consequences worth being blunt about:
+
+- **Anything in `godot/**` is public.** The web build is ~52 MB of bytes served
+  to anyone with the URL, and `index.pck` is a container, not a safe. A key put
+  in a tuning file, a scene, or a `.gd` constant is a key you have published.
+- **Anything in a Railway variable is readable by the service it is on.** That is
+  fine for a database URL the API needs; it is not a reason to put a key there
+  for a call nothing makes. A credential with no caller is pure liability — it
+  can only ever leak, never be used.
+
+If a key does leak: rotate it at the provider first (ElevenLabs keys are
+account-wide and metered, so a leaked one is somebody else's bill), then remove
+it. Removing it from a later commit does not remove it from the history.
 
 ## What is deliberately not set up
 

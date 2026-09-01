@@ -4,7 +4,6 @@
       "key": "level_99",
       "name": "Math Practice Arena",
       "mapFile": "data/levels/compiled/level_99.json",
-      "music": "level_01_music",
       "unlockRequirement": null,
       "order": 99,
       "mathGating": {
@@ -32,7 +31,6 @@
       "key": "level_01",
       "name": "Emberwood I",
       "mapFile": "data/levels/compiled/level_01_emberwood_act1.json",
-      "music": "level_01_music",
       "unlockRequirement": null,
       "order": 1,
       "mathGating": {
@@ -52,7 +50,6 @@
       "key": "level_02",
       "name": "Emberwood II",
       "mapFile": "data/levels/compiled/level_02_emberwood_act2.json",
-      "music": "level_02_music",
       "unlockRequirement": {
         "level": "level_01",
         "minStars": 0
@@ -75,7 +72,6 @@
       "key": "level_03",
       "name": "Emberwood III",
       "mapFile": "data/levels/compiled/level_03_emberwood_act3.json",
-      "music": "level_03_music",
       "unlockRequirement": {
         "level": "level_02",
         "minStars": 0
@@ -98,7 +94,6 @@
       "key": "level_04",
       "name": "Prism Hollow I",
       "mapFile": "data/levels/compiled/level_04_prism_hollow_act1.json",
-      "music": "level_04_music",
       "unlockRequirement": {
         "level": "level_03",
         "minStars": 0
@@ -121,7 +116,6 @@
       "key": "level_05",
       "name": "Prism Hollow II",
       "mapFile": "data/levels/compiled/level_05_prism_hollow_act2.json",
-      "music": "level_05_music",
       "unlockRequirement": {
         "level": "level_04",
         "minStars": 0
@@ -144,7 +138,6 @@
       "key": "level_06",
       "name": "Prism Hollow III",
       "mapFile": "data/levels/compiled/level_06_prism_hollow_act3.json",
-      "music": "level_06_music",
       "unlockRequirement": {
         "level": "level_05",
         "minStars": 0
@@ -167,7 +160,6 @@
       "key": "level_07",
       "name": "Sugarstorm I",
       "mapFile": "data/levels/compiled/level_07_sugarstorm_act1.json",
-      "music": "level_07_music",
       "unlockRequirement": {
         "level": "level_06",
         "minStars": 0
@@ -191,7 +183,6 @@
       "key": "level_08",
       "name": "Sugarstorm II",
       "mapFile": "data/levels/compiled/level_08_sugarstorm_act2.json",
-      "music": "level_08_music",
       "unlockRequirement": {
         "level": "level_07",
         "minStars": 0
@@ -215,7 +206,6 @@
       "key": "level_09",
       "name": "Sugarstorm III",
       "mapFile": "data/levels/compiled/level_09_sugarstorm_act3.json",
-      "music": "level_09_music",
       "unlockRequirement": {
         "level": "level_08",
         "minStars": 0
@@ -239,7 +229,6 @@
       "key": "level_10",
       "name": "Geyserworks I",
       "mapFile": "data/levels/compiled/level_10_geyserworks_act1.json",
-      "music": "level_10_music",
       "unlockRequirement": {
         "level": "level_09",
         "minStars": 0
@@ -263,7 +252,6 @@
       "key": "level_11",
       "name": "Geyserworks II",
       "mapFile": "data/levels/compiled/level_11_geyserworks_act2.json",
-      "music": "level_11_music",
       "unlockRequirement": {
         "level": "level_10",
         "minStars": 0
@@ -287,7 +275,6 @@
       "key": "level_12",
       "name": "Geyserworks III",
       "mapFile": "data/levels/compiled/level_12_geyserworks_act3.json",
-      "music": "level_12_music",
       "unlockRequirement": {
         "level": "level_11",
         "minStars": 0
@@ -311,7 +298,6 @@
       "key": "level_13",
       "name": "Aurora Spire I",
       "mapFile": "data/levels/compiled/level_13_aurora_spire_act1.json",
-      "music": "level_13_music",
       "unlockRequirement": {
         "level": "level_12",
         "minStars": 0
@@ -335,7 +321,6 @@
       "key": "level_14",
       "name": "Aurora Spire II",
       "mapFile": "data/levels/compiled/level_14_aurora_spire_act2.json",
-      "music": "level_14_music",
       "unlockRequirement": {
         "level": "level_13",
         "minStars": 0
@@ -359,7 +344,6 @@
       "key": "level_15",
       "name": "Aurora Spire III",
       "mapFile": "data/levels/compiled/level_15_aurora_spire_act3.json",
-      "music": "level_15_music",
       "unlockRequirement": {
         "level": "level_14",
         "minStars": 0

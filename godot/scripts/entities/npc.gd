@@ -67,6 +67,12 @@ func _ready() -> void:
 	_zone.body_entered.connect(_on_body_entered)
 	_zone.body_exited.connect(_on_body_exited)
 	EventBus.math_challenge_complete.connect(_on_challenge_complete)
+	# An owl breathing on its perch, heard about two body-lengths out. The
+	# encounter fires on proximity with no button to press, so this is the only
+	# warning a child gets that a maths board is about to arrive -- which is
+	# exactly what it is for. It ends when the owl flies away, because the node
+	# it hangs on does.
+	AudioManager.attach_loop("amb_owl", self)
 
 func _process(delta: float) -> void:
 	for c in _components:
@@ -248,7 +254,7 @@ func interact() -> void:
 		_interacting = false
 		_cooldown_until = Time.get_ticks_msec() + DECLINED_BACKOFF_MS
 		return
-	AudioManager.play_event("owl_greet")
+	AudioManager.play_event_at("owl_greet", self)
 
 func end_interaction() -> void:
 	_interacting = false
@@ -323,7 +329,7 @@ func _break_link() -> void:
 	var burst := SpriteSheet.texture(CHAIN_BURST_SPRITE)
 	if burst != null:
 		link.texture = burst
-	AudioManager.play_event("chain_break")
+	AudioManager.play_event_at("chain_break", self)
 	DopamineFX.burst(get_parent(), link.global_position,
 		ThemeManager.get_color_value("enemy_pop"), int(Config.fx("burst/chain_link", 12)))
 	var tw := link.create_tween().set_parallel(true)
@@ -342,6 +348,11 @@ func fly_away() -> void:
 	while not _chain_links.is_empty():
 		_break_link()
 	_zone.monitoring = false
+	# The wings. `owl_saved` is the fanfare Game plays for the child; this is the
+	# owl itself leaving, and they are deliberately two sounds -- one is about
+	# the achievement and one is about the bird, and hearing both is what makes
+	# the departure read as a departure rather than as a score.
+	AudioManager.play_event_at("wing", self)
 	var tw := create_tween().set_parallel(true)
 	tw.tween_property(_sprite, "position:y", _sprite.position.y - 400.0, 0.8).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tw.tween_property(_sprite, "modulate:a", 0.0, 0.8)

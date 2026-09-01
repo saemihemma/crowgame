@@ -83,6 +83,24 @@
 		}
 	}
 
+	# The sound-review bench. Served by the API, not from /srv, because the
+	# samples a browser has to fetch live in index.pck here and are not
+	# addressable -- see server/src/lib/audioLibrary.ts.
+	#
+	# It is a separate matcher from @api rather than a path under it because the
+	# owner types the URL: `<domain>/audio`. Everything it then calls is under
+	# /api/v1/audio/* and goes through @api above like any other endpoint.
+	#
+	# With CROW_API_UPSTREAM unset this returns 503, exactly as /api/* does, and
+	# the game is unaffected either way -- nothing in the player-facing build
+	# touches this path.
+	@audio path /audio /audio/*
+	handle @audio {
+		reverse_proxy {$CROW_API_UPSTREAM:} {
+			header_up X-Forwarded-For {remote_host}
+		}
+	}
+
 	# Prefer the precompressed .br/.gz written by build_web.sh over compressing
 	# a 35 MB wasm on every request. Falls back to on-the-fly for anything else.
 	encode zstd gzip

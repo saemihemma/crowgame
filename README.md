@@ -46,7 +46,7 @@ toolchain — is in [ONBOARDING.md](./ONBOARDING.md) under "The loop".
 | [roadmap.md](./roadmap.md) | open work only — finished items are deleted, and `npm run validate` enforces that |
 | [deploy/RAILWAY.md](./deploy/RAILWAY.md) | staging, prod, promotion, rollback |
 | [brand/](./brand/) | art direction, the pixel law, and the level art bible |
-| [brand/SOUND_DESIGN.md](./brand/SOUND_DESIGN.md) | every sound the game makes, what it is for, and how to swap the file |
+| [brand/SOUND_DESIGN.md](./brand/SOUND_DESIGN.md) | every sound the game makes, what it is for, and how to swap the file — and `/audio` plays the lot in a browser |
 
 For parents: **[PRIVACY.md](./PRIVACY.md)** says in plain language what the game
 stores about a child, what leaves the device, and how to delete all of it. To
@@ -69,7 +69,8 @@ because that is what the data is for.
 5. No type-to-behaviour switches for content — new level objects come from
    `spawn_registry.json` plus a scene with `setup_from_spawn(spawn)`.
 6. No scattered `play_sfx("key")` — fire semantic events via
-   `AudioManager.play_event("coin")`, mapped in `data/audio/sound_events.json`.
+   `AudioManager.play_event("coin")`, `play_event_at("enemy_defeat", node)` or
+   `attach_loop("amb_roach", node)`, mapped in `data/audio/sound_events.json`.
 
 **2, 3, 4 and 6 are enforced** by `godot/tools/check_hardcoding.py` in CI.
 Genuine exceptions take `# hardcode-ok` on the line. **1 and 5 are conventions
