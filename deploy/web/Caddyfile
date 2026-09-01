@@ -97,7 +97,11 @@
 	@audio path /audio /audio/*
 	handle @audio {
 		reverse_proxy {$CROW_API_UPSTREAM:} {
-			header_up X-Forwarded-For {remote_host}
+			# Same header, same reason, as the @api block above: {remote_host}
+			# here is Railway's proxy, not the caller. A second proxy block is
+			# exactly how the one-bucket bug comes back, so server/test/
+			# ratelimit.test.ts greps the whole file rather than one block.
+			header_up X-Crow-Client-Ip {http.request.header.X-Envoy-External-Address}
 		}
 	}
 

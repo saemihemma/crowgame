@@ -73,7 +73,7 @@ made a decision from it. The decision — is a first launch acceptable on home w
 
 | | Raw | gzip |
 | --- | --- | --- |
-| **whole payload** | **51.7 MB** | **~17.7 MB** |
+| **whole payload** | **54.1 MB** | **~19.6 MB** |
 
 Gzip is node's zlib at level 9; a server's own encoder will differ by a few
 tenths. Per-file sizes are `ls -la output/web` when you need them.
@@ -86,7 +86,7 @@ tree the bytes were built from, which matters because production error triage
 keys on that field. Read it as "built from this source", not "shipped in this
 commit".
 
-So a first launch transfers about **17.7 MB**, and a returning player transfers
+So a first launch transfers about **19.6 MB**, and a returning player transfers
 **nothing at all** for the payload — no bytes, no conditional request, no `304`.
 Only the 5 KB shell is re-fetched.
 
@@ -524,8 +524,8 @@ replica; see the last section.
 A volumetric flood at the *web* service. Railway gives you no WAF, no per-IP
 edge limit, and no CDN, and Caddy has no built-in rate limiter — so the whole
 static payload is served, at full size, to anyone who asks, as many times as they
-ask. Railway bills egress. The gzip payload is ~17.7 MB, so ten thousand cold
-fetches is ~177 GB of billed transfer, arranged by anyone with a loop and no
+ask. Railway bills egress. The gzip payload is ~19.6 MB, so ten thousand cold
+fetches is ~196 GB of billed transfer, arranged by anyone with a loop and no
 skill. That is the realistic attack on this game: not downtime, a bill.
 
 **Put Cloudflare (or any CDN) in front of the prod web service.** It is the
@@ -554,9 +554,9 @@ rather than a fast one, and it is the next thing to bound.
 ## Cost notes
 
 Railway bills egress. With a content-addressed payload served `immutable`, a
-returning player transfers ~5 KB per launch instead of ~17.6 MB. A player
-launching twice a day for a month is the difference between roughly 1.05 GB
-(60 launches at the derived ~17.6 MB, done by hand — this figure is NOT gated,
+returning player transfers ~5 KB per launch instead of ~19.6 MB. A player
+launching twice a day for a month is the difference between roughly 1.18 GB
+(60 launches at the derived ~19.6 MB, done by hand — this figure is NOT gated,
 unlike the table above) and
 300 KB. Across a class or a family group that is the difference between egress
 being a line item and being invisible.

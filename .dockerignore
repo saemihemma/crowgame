@@ -29,3 +29,16 @@ output/*.zip
 !server/
 server/node_modules/
 server/dist/
+
+# deploy/api/Dockerfile again: the sound-review bench serves the audio samples
+# and the design doc out of the API image, so those have to reach the context
+# too. This is deliberately the whole of godot/ (36 MB) rather than the two
+# audio subtrees (12 MB), and the reason is worth stating: re-including a NESTED
+# path under a `*` deny needs a rule per level, the semantics differ between the
+# classic builder and BuildKit, and getting it subtly wrong reproduces the exact
+# failure this file already caused once — a build that dies on a path sitting
+# right there in the repo. Twenty-four megabytes of context is a second of
+# upload. Certainty is worth more than the second.
+!godot/
+godot/.godot/
+!brand/
